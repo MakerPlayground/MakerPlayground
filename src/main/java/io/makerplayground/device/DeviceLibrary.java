@@ -1,7 +1,5 @@
 package io.makerplayground.device;
 
-import com.sun.tools.doclets.internal.toolkit.util.DocFinder;
-
 import java.util.*;
 
 /**
@@ -20,13 +18,13 @@ public enum DeviceLibrary {
 
         // TODO: Replace these dummy devices by loading output device and inputDevice from file or the server
         OutputDevice led = new OutputDevice("led", Collections.EMPTY_LIST, Arrays.asList(
-                new Action("on", Arrays.asList(new Parameter("brightness", ParameterType.NUMERIC_SLIDER))),
+                new Action("on", Arrays.asList(new Parameter("brightness", ParameterType.NUMERIC_SLIDER, Double.class))),
                 new Action("off", Collections.EMPTY_LIST)
         ));
         outputDevice.put("led", led);
 
         OutputDevice speaker = new OutputDevice("speaker", Collections.EMPTY_LIST, Arrays.asList(
-                new Action("play", Arrays.asList(new Parameter("volume", ParameterType.NUMERIC_TEXTBOX)))
+                new Action("play", Arrays.asList(new Parameter("volume", ParameterType.NUMERIC_TEXTBOX, Double.class)))
         ));
         outputDevice.put("speaker", speaker);
     }

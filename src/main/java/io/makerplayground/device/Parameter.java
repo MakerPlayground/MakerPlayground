@@ -7,10 +7,12 @@ package io.makerplayground.device;
 public class Parameter {
     private String name;
     private ParameterType parameterType;
+    private Class<?> type;
 
-    public Parameter(String name, ParameterType parameterType) {
+    public Parameter(String name, ParameterType parameterType, Class<?> type) {
         this.name = name;
         this.parameterType = parameterType;
+        this.type = type;
     }
 
     public String getName() {
@@ -19,5 +21,9 @@ public class Parameter {
 
     public ParameterType getParameterType() {
         return parameterType;
+    }
+
+    public Class<?> getType() {
+        return type;
     }
 }
