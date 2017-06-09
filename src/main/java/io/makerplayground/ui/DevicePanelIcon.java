@@ -44,13 +44,13 @@ public class DevicePanelIcon extends VBox {
         pane.setPrefHeight(50.0);
         pane.setPrefWidth(50.0);
         StackPane.setAlignment(deviceImgView, Pos.CENTER);
-
         anchorPane.getChildren().addAll(pane,removedButton);
         // TODO: Change it to an editable label
+
         TextField name = new TextField();
         name.textProperty().bindBidirectional(viewModel.nameProperty());
         name.setPrefWidth(50.0);
-
+        setSpacing(5.0);
         getChildren().addAll(anchorPane,name);
     }
 

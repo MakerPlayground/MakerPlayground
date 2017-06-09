@@ -58,6 +58,7 @@ public class DevicePanelView extends Accordion {
         inputPane.setVgap(5);
         Button newInputDeviceButton = new Button("+");
         newInputDeviceButton.setPrefSize(50.0,50.0);
+        inputPane.setRowValignment(TOP);
         newInputDeviceButton.setOnAction(event -> {
             // TODO: copy from output pane
         });
