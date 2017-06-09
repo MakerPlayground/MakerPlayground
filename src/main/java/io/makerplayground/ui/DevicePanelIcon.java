@@ -2,14 +2,15 @@ package io.makerplayground.ui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
 
 /**
  *
@@ -18,43 +19,29 @@ import javafx.scene.layout.VBox;
 public class DevicePanelIcon extends VBox {
 
     private final DevicePanelIconViewModel viewModel;
-    private Button removedButton;
+
+    @FXML private ImageView imageView;
+    @FXML private TextField nameTextField;
+    @FXML private Button removeButton;
 
     public DevicePanelIcon(DevicePanelIconViewModel viewModel) {
         this.viewModel = viewModel;
-        initView();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DevicePanelIcon.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getDeviceName() + ".png")));
+        nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
     }
 
-    private void initView() {
-        removedButton = new Button("x");
-        removedButton.setPrefSize(15,15);
-
-        AnchorPane anchorPane = new AnchorPane();
-        AnchorPane.setRightAnchor(removedButton,0.0);
-        AnchorPane.setTopAnchor(removedButton,0.0);
-        anchorPane.setPrefSize(50,50);
-
-        Image deviceImg = new Image(getClass().getResourceAsStream("/icons/" + viewModel.getDeviceName() + ".png"));
-        ImageView deviceImgView = new ImageView(deviceImg);
-        deviceImgView.setFitHeight(50);
-        deviceImgView.setPreserveRatio(true);
-
-        StackPane pane = new StackPane();
-        pane.getChildren().add(deviceImgView);
-        pane.setPrefHeight(50.0);
-        pane.setPrefWidth(50.0);
-        StackPane.setAlignment(deviceImgView, Pos.CENTER);
-        anchorPane.getChildren().addAll(pane,removedButton);
-        // TODO: Change it to an editable label
-
-        TextField name = new TextField();
-        name.textProperty().bindBidirectional(viewModel.nameProperty());
-        name.setPrefWidth(50.0);
-        setSpacing(5.0);
-        getChildren().addAll(anchorPane,name);
-    }
-
-    public void setOnAction(EventHandler<ActionEvent> e) {
-        removedButton.setOnAction(e);
+    public void setOnAction(EventHandler<ActionEvent> event) {
+        removeButton.setOnAction(event);
     }
 }
