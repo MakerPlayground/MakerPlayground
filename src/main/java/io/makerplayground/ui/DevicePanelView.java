@@ -9,6 +9,8 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -19,7 +21,7 @@ import static javafx.geometry.VPos.TOP;
  *
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
  */
-public class DevicePanelView extends Accordion {
+public class DevicePanelView extends VBox {
 
     private final DevicePanelViewModel viewModel;
     private final ViewFactory<DevicePanelIconViewModel, DevicePanelIcon> viewFactory = new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
@@ -84,7 +86,11 @@ public class DevicePanelView extends Accordion {
         TitledPane t1 = new TitledPane(labels.getString("Microcontroller"), mcuPane);
         TitledPane t2 = new TitledPane(labels.getString("Output Device"), outputPane);
         TitledPane t3 = new TitledPane(labels.getString("Input Device"), inputPane);
-        getPanes().addAll(t1, t2, t3);
+
+        t1.setExpanded(false);
+        t2.setExpanded(false);
+        t3.setExpanded(false);
+        getChildren().addAll(t1, t2, t3);
 
         setMinWidth(200);
     }
