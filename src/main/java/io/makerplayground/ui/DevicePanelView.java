@@ -3,6 +3,8 @@ package io.makerplayground.ui;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
@@ -10,6 +12,8 @@ import javafx.scene.layout.FlowPane;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static javafx.geometry.VPos.TOP;
 
 /**
  *
@@ -50,26 +54,31 @@ public class DevicePanelView extends Accordion {
         // TODO: add code for mcu
 
         FlowPane inputPane = new FlowPane();
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
-                new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, viewFactory, nodeConsumer);
-
+        inputPane.setHgap(5);
+        inputPane.setVgap(5);
         Button newInputDeviceButton = new Button("+");
+        newInputDeviceButton.setPrefSize(50.0,50.0);
         newInputDeviceButton.setOnAction(event -> {
             // TODO: copy from output pane
         });
         inputPane.getChildren().add(newInputDeviceButton);
+        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
+                new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, viewFactory, nodeConsumer);
 
         FlowPane outputPane = new FlowPane();
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
-                new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, viewFactory, nodeConsumer);
-
+        outputPane.setHgap(5);
+        outputPane.setVgap(5);
         Button newOutputDeviceButton = new Button("+");
+        newOutputDeviceButton.setPrefSize(50.0,50.0);
+        outputPane.setRowValignment(TOP);
         newOutputDeviceButton.setOnAction(event -> {
             // TODO: invoke device selector
             //DeviceSelectorView  selectorView = new DeviceSelectorView();
             //selectorView.show(getScene().getWindow());
         });
         outputPane.getChildren().add(newOutputDeviceButton);
+        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
+                new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, viewFactory, nodeConsumer);
 
         TitledPane t1 = new TitledPane(labels.getString("Microcontroller"), mcuPane);
         TitledPane t2 = new TitledPane(labels.getString("Output Device"), outputPane);

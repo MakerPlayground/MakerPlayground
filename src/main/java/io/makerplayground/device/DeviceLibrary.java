@@ -1,7 +1,5 @@
 package io.makerplayground.device;
 
-import com.sun.tools.doclets.internal.toolkit.util.DocFinder;
-
 import java.util.*;
 
 /**
