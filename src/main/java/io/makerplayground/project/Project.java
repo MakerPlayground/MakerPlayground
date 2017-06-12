@@ -12,17 +12,14 @@ import org.jgrapht.graph.SimpleDirectedGraph;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 public class Project {
-    private final DirectedGraph<DiagramVertex, DiagramEdge> diagram;  // TODO: make the graph observable some how
+    private final DirectedGraph<DiagramState, DiagramCondition> diagram;  // TODO: make the graph observable some how
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<ProjectDevice> inputDevice;
-
-    private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
-    private final ObservableList<ProjectDevice> unmodifiableInputDevice;
 
     private int numDevice = 1; // TODO: to be removed
 
     public Project() {
-        diagram = new SimpleDirectedGraph<DiagramVertex, DiagramEdge>((v1, v2) -> new DiagramEdge());
+        diagram = new SimpleDirectedGraph<DiagramState, DiagramCondition>((v1, v2) -> new DiagramCondition());
 
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
@@ -31,19 +28,25 @@ public class Project {
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
     }
 
+    private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
+
     public ObservableList<ProjectDevice> getOutputDevice() {
         return unmodifiableOutputDevice;
     }
 
     public void addOutputDevice(OutputDevice device) {
+        // TODO: add DeviceSetting object to every DiagramState
         // TODO: add logic to create a running number per device category
         outputDevice.add(new ProjectDevice(device.getName() + String.valueOf(numDevice), device));
         numDevice++;
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
+        // TODO: remove DeviceSetting object from every DiagramState
         return outputDevice.remove(device);
     }
+
+    private final ObservableList<ProjectDevice> unmodifiableInputDevice;
 
     public ObservableList<ProjectDevice> getInputDevice() {
         return unmodifiableInputDevice;

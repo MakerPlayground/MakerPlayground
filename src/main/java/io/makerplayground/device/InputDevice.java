@@ -38,9 +38,9 @@ public class InputDevice implements Device {
     LIGHT("Light", Arrays.asList());
 
     private final String name;
-    private final List<DiagramEdge> condition;
+    private final List<DiagramCondition> condition;
 
-    InputDevice(String name, List<DiagramEdge> condition) {
+    InputDevice(String name, List<DiagramCondition> condition) {
         this.name = name;
         this.condition = condition;
     }
@@ -49,7 +49,7 @@ public class InputDevice implements Device {
         return name;
     }
 
-    public List<DiagramEdge> getCondition() {
+    public List<DiagramCondition> getCondition() {
         return condition;
     }
 }*/

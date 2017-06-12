@@ -6,13 +6,13 @@ import javafx.collections.ObservableList;
 /**
  * Created by nuntipat on 6/2/2017 AD.
  */
-public class DiagramEdge {
+public class DiagramCondition {
 
     private final ObservableList<Point> edgePoint;
-    private final ObservableList<DeviceSettingPerState> activeInput;
-    private final ObservableList<DeviceSettingPerState> inactiveInput;
+    private final ObservableList<DeviceSetting> activeInput;
+    private final ObservableList<DeviceSetting> inactiveInput;
 
-    public DiagramEdge() {
+    public DiagramCondition() {
         this.edgePoint = FXCollections.observableArrayList();
         this.activeInput = FXCollections.observableArrayList();
         this.inactiveInput = FXCollections.observableArrayList();
@@ -22,11 +22,11 @@ public class DiagramEdge {
         return edgePoint;
     }
 
-    public ObservableList<DeviceSettingPerState> getActiveInput() {
+    public ObservableList<DeviceSetting> getActiveInput() {
         return activeInput;
     }
 
-    public ObservableList<DeviceSettingPerState> getInactiveInput() {
+    public ObservableList<DeviceSetting> getInactiveInput() {
         return inactiveInput;
     }
 }
