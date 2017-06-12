@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root fx:id="panelWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox fx:id="devicePanelPane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <VBox fx:id="projectButtonPane" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+         <children>
+            <Button fx:id="configureBtn" minWidth="150.0" mnemonicParsing="false" text="ConfigureDevice" />
+            <Button fx:id="generateBtn" minWidth="150.0" mnemonicParsing="false" text="Generate" />
+            <Button fx:id="uploadBtn" minWidth="150.0" mnemonicParsing="false" text="Upload" />
+         </children>
+      </VBox>
+   </children>
+</fx:root>
