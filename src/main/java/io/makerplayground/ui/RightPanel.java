@@ -1,6 +1,5 @@
 package io.makerplayground.ui;
 
-
 import io.makerplayground.project.Project;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -19,37 +18,35 @@ import java.io.IOException;
 public class RightPanel extends AnchorPane {
     private final Project project;
 
-//    @FXML private AnchorPane panelWindow ;
-//    @FXML private VBox devicePanelPane;
-//    @FXML private VBox projectButtonPane;
-//    @FXML private Button configureBtn;
-//    @FXML private Button generateBtn;
-//    @FXML private Button uploadBtn;
     public RightPanel(Project project){
         this.project = project;
         initView();
     }
+
     private void initView() {
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
-        VBox projectButton = new VBox();
-            Button configureBtn = new Button("Configure Device");
-            configureBtn.prefWidthProperty().bind((ObservableValue<? extends Number>) projectButton.widthProperty());
-            Button generateBtn = new Button("Generate");
-            generateBtn.prefWidthProperty().bind((ObservableValue<? extends Number>) projectButton.widthProperty());
-            Button uploadBtn = new Button("Upload");
-            uploadBtn.prefWidthProperty().bind((ObservableValue<? extends Number>) projectButton.widthProperty());
 
-        projectButton.getChildren().addAll(configureBtn,generateBtn,uploadBtn);
+        Button configureBtn = new Button("Configure Device");
+        Button generateBtn = new Button("Generate");
+        Button uploadBtn = new Button("Upload");
+
+        VBox projectButton = new VBox();
+        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);
         projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
 
-        getChildren().addAll(devicePanelView,projectButton);
+        configureBtn.prefWidthProperty().bind(projectButton.widthProperty());
+        generateBtn.prefWidthProperty().bind(projectButton.widthProperty());
+        uploadBtn.prefWidthProperty().bind(projectButton.widthProperty());
+
         AnchorPane.setLeftAnchor(devicePanelView,0.0);
         AnchorPane.setRightAnchor(devicePanelView,0.0);
         AnchorPane.setTopAnchor(devicePanelView,0.0);
         AnchorPane.setLeftAnchor(projectButton,0.0);
         AnchorPane.setRightAnchor(projectButton,0.0);
         AnchorPane.setBottomAnchor(projectButton,0.0);
+
+        getChildren().addAll(devicePanelView, projectButton);
     }
 }
