@@ -18,6 +18,7 @@ public class Main extends Application {
         Project dummyProject = new Project();
         dummyProject.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice("led"));
         dummyProject.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice("speaker"));
+        dummyProject.addState();
 
         primaryStage.setTitle("Maker Playground");
         primaryStage.setScene(new Scene(new MainWindow(dummyProject), 800, 600));

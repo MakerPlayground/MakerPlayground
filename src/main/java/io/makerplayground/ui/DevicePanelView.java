@@ -66,8 +66,9 @@ public class DevicePanelView extends Accordion {
         Button newOutputDeviceButton = new Button("+");
         newOutputDeviceButton.setOnAction(event -> {
             // TODO: invoke device selector
-            //DeviceSelectorView  selectorView = new DeviceSelectorView();
-            //selectorView.show(getScene().getWindow());
+//            DeviceSelectorView  selectorView = new DeviceSelectorView();
+//            selectorView.show(getScene().getWindow());
+            //viewModel.addDevice();
         });
         outputPane.getChildren().add(newOutputDeviceButton);
 

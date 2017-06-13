@@ -14,17 +14,23 @@ import java.util.HashMap;
 public class DynamicViewModelCreator<T, U> {
     private final ObservableList<T> model;
     private final ViewModelFactory<T, U> viewModelFactory;
+    private final Filter<T> filter;
 
     private final ObservableMap<T, U> controllerMap;
 
     public DynamicViewModelCreator(ObservableList<T> model, ViewModelFactory<T, U> viewModelFactory) {
+        this(model, viewModelFactory, null);
+    }
+
+    public DynamicViewModelCreator(ObservableList<T> model, ViewModelFactory<T, U> viewModelFactory, Filter<T> filter) {
         this.model = model;
         this.viewModelFactory = viewModelFactory;
-
+        this.filter = filter;
         this.controllerMap = FXCollections.observableMap(new HashMap<>());
 
         for (T t : model) {
-            addController(t);
+            if (this.filter == null || this.filter.apply(t))
+                addController(t);
         }
 
         model.addListener(new ListChangeListener<T>() {
@@ -39,10 +45,14 @@ public class DynamicViewModelCreator<T, U> {
                         throw new UnsupportedOperationException();
                     } else {
                         for (T remitem : c.getRemoved()) {
-                            removeController(remitem);
+                            if (DynamicViewModelCreator.this.filter == null
+                                    || DynamicViewModelCreator.this.filter.apply(remitem))
+                                removeController(remitem);
                         }
                         for (T additem : c.getAddedSubList()) {
-                            addController(additem);
+                            if (DynamicViewModelCreator.this.filter == null
+                                    || DynamicViewModelCreator.this.filter.apply(additem))
+                                addController(additem);
                         }
                     }
                 }

@@ -12,8 +12,7 @@ import javafx.collections.ObservableList;
 public class DiagramState {
 
     public enum DelayUnit {MilliSecond, Second};
-
-    private final SimpleStringProperty name;
+    private String name;
     private final Point topLeft;
     private final SimpleDoubleProperty width, height;
     private final ObservableList<DeviceSetting> deviceSetting;
@@ -21,7 +20,7 @@ public class DiagramState {
     private final DelayUnit delayUnit;
 
     DiagramState(String name) {
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.topLeft = new Point(20, 20);
         this.width = new SimpleDoubleProperty(200);
         this.height = new SimpleDoubleProperty(300);
@@ -31,16 +30,20 @@ public class DiagramState {
         this.delayUnit = DelayUnit.Second;
     }
 
-    public String getName() {
-        return name.get();
+    public void removeDevice(ProjectDevice device) {
+        for (DeviceSetting eachDevice: deviceSetting) {
+            if (eachDevice.getDevice().getDevice() == device) {
+                deviceSetting.remove(device);
+            }
+        }
     }
 
-    public SimpleStringProperty nameProperty() {
+    public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public Point getTopLeft() {

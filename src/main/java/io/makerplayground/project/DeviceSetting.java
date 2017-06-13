@@ -1,6 +1,8 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.Action;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.OutputDevice;
 import io.makerplayground.device.Parameter;
 
 import java.util.HashMap;
@@ -17,6 +19,7 @@ public class DeviceSetting {
 
     DeviceSetting(ProjectDevice device) {
         this.device = device;
+        this.action = DeviceLibrary.INSTANCE.getOutputDevice(device.getDevice().getName()).getAction().get(0);
         this.valueMap = new HashMap<>();
     }
 

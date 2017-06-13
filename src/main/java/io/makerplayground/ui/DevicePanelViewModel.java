@@ -1,5 +1,6 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.InputDevice;
 import io.makerplayground.device.OutputDevice;
 import io.makerplayground.project.Project;
@@ -17,8 +18,12 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), DevicePanelIconViewModel::new);
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), DevicePanelIconViewModel::new);
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), (ProjectDevice device) -> {
+            return new DevicePanelIconViewModel(device);
+        });
+        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), device -> {
+            return new DevicePanelIconViewModel(device);
+        });
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
@@ -40,6 +45,11 @@ public class DevicePanelViewModel {
         } else {
             return false;
         }
+    }
+
+    public void addDevice()
+    {
+        project.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice("led"));
     }
 
 }
