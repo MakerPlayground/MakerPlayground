@@ -32,24 +32,3 @@ public class InputDevice implements Device {
         return condition;
     }
 }
-
-/*public enum InputDevice {
-    TEMPERATURE("Temperature", Arrays.asList()),
-    LIGHT("Light", Arrays.asList());
-
-    private final String name;
-    private final List<DiagramCondition> condition;
-
-    InputDevice(String name, List<DiagramCondition> condition) {
-        this.name = name;
-        this.condition = condition;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<DiagramCondition> getCondition() {
-        return condition;
-    }
-}*/

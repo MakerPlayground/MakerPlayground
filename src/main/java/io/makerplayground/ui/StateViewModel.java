@@ -30,11 +30,6 @@ public class StateViewModel {
         this.x = new SimpleDoubleProperty(diagramState.getTopLeft().getX());
         this.y = new SimpleDoubleProperty(diagramState.getTopLeft().getY());
 
-//        for (DeviceSetting deviceSetting : diagramState.getUnmodifiableDeviceSetting()) {
-//            // TODO: assume every action is active
-//            active.add(deviceSetting);
-//        }
-
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(diagramState.getUnmodifiableDeviceSetting(), new ViewModelFactory<DeviceSetting, StateDeviceIconViewModel>() {
             @Override
             public StateDeviceIconViewModel newInstance(DeviceSetting deviceSetting) {

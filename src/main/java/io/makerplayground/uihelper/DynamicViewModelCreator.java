@@ -78,12 +78,4 @@ public class DynamicViewModelCreator<T, U> {
     public U getViewModel(T model) {
         return controllerMap.get(model);
     }
-
-//    public T getModel(U viewModel) {
-//        for (Map.Entry<T, U> entry : controllerMap.entrySet()) {
-//            if (entry.getValue() == viewModel)
-//                return entry.getKey();
-//        }
-//        return null;
-//    }
 }
