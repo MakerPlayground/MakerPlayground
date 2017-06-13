@@ -31,9 +31,10 @@ public class DiagramState {
     }
 
     public void removeDevice(ProjectDevice device) {
-        for (DeviceSetting eachDevice: deviceSetting) {
-            if (eachDevice.getDevice().getDevice() == device) {
-                deviceSetting.remove(device);
+        for (int i=deviceSetting.size()-1; i>=0; i--) {
+            DeviceSetting eachDevice = deviceSetting.get(i);
+            if (eachDevice.getDevice() == device) {
+                deviceSetting.remove(eachDevice);
             }
         }
     }

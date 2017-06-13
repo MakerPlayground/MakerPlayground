@@ -6,6 +6,7 @@ import io.makerplayground.device.OutputDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
+import io.makerplayground.uihelper.ViewModelFactory;
 
 /**
  *
@@ -18,8 +19,11 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), (ProjectDevice device) -> {
-            return new DevicePanelIconViewModel(device);
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), new ViewModelFactory<ProjectDevice, DevicePanelIconViewModel>() {
+            @Override
+            public DevicePanelIconViewModel newInstance(ProjectDevice device) {
+                return new DevicePanelIconViewModel(device);
+            }
         });
         this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), device -> {
             return new DevicePanelIconViewModel(device);

@@ -64,6 +64,7 @@ public class Project {
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
+
         for (DiagramState state : diagram.vertexSet()) {
             state.removeDevice(device);
         }
@@ -101,6 +102,10 @@ public class Project {
     public void removeState(DiagramState diagramState) {
         diagram.removeVertex(diagramState);
         observableDiagram.remove(diagramState);
+    }
+
+    public ObservableList<DiagramState> getObservableDiagram() {
+        return observableDiagram;
     }
 
     public DirectedGraph<DiagramState, DiagramCondition> getDiagram() {
