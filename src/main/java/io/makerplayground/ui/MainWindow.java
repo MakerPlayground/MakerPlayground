@@ -19,15 +19,14 @@ public class MainWindow extends BorderPane {
     }
 
     private void initView() {
-        DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
-        DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
+        RightPanel rightPanel = new RightPanel(project);
 
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
         SplitPane mainPane = new SplitPane();
         mainPane.setOrientation(Orientation.HORIZONTAL);
-        mainPane.getItems().addAll(canvasView ,devicePanelView);
+        mainPane.getItems().addAll(canvasView, rightPanel);
         mainPane.setDividerPositions(0.8);
 
         setCenter(mainPane);
