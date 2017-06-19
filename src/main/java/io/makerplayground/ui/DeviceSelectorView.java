@@ -1,7 +1,6 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.device.InputDevice;
-import io.makerplayground.device.OutputDevice;
+import io.makerplayground.device.GenericDevice;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -27,12 +26,12 @@ public class DeviceSelectorView extends Popup {
 
     private void initView() {
         FlowPane inputPane = new FlowPane();
-        for (Map.Entry<InputDevice, SimpleIntegerProperty> entry : viewModel.getInputDeviceMap().entrySet()) {
+        for (Map.Entry<GenericDevice, SimpleIntegerProperty> entry : viewModel.getInputDeviceMap().entrySet()) {
             // TODO: copy from output pane
         }
 
         FlowPane outputPane = new FlowPane();
-        for (Map.Entry<OutputDevice, SimpleIntegerProperty> entry : viewModel.getOutputDeviceMap().entrySet()) {
+        for (Map.Entry<GenericDevice, SimpleIntegerProperty> entry : viewModel.getOutputDeviceMap().entrySet()) {
             // TODO: replace by custom control
             Image deviceImg = new Image(getClass().getResourceAsStream("/icons/" + entry.getKey().getName() + ".png"));
             ImageView deviceImgView = new ImageView(deviceImg);
@@ -61,7 +60,7 @@ public class DeviceSelectorView extends Popup {
         VBox mainLayout = new VBox();
         mainLayout.getChildren().addAll(accordion, importButton);
 
-        getContent().addAll(new Label("Device Selector"), mainLayout);
+        getContent().addAll(new Label("GenericDevice Selector"), mainLayout);
     }
 }
 

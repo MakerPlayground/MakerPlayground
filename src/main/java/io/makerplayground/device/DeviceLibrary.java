@@ -9,45 +9,34 @@ import java.util.*;
 public enum DeviceLibrary {
     INSTANCE;
 
-    private final Map<String, OutputDevice> outputDevice;
-    private final Map<String, InputDevice> inputDevice;
+    private final Map<GenericDevice, List<Device>> inputDevice;
+    private final Map<GenericDevice, List<Device>> outputDevice;
 
     DeviceLibrary() {
-        outputDevice = new HashMap<>();
-        inputDevice = new HashMap<>();
+        Map<GenericDevice, List<Device>>  tmpInputDevice = new HashMap<>();
+        Map<GenericDevice, List<Device>>  tmpOutputDevice = new HashMap<>();
 
         // TODO: Replace these dummy devices by loading output device and inputDevice from file or the server
-        OutputDevice led = new OutputDevice("led", Collections.EMPTY_LIST, Arrays.asList(
-                new Action("on", Action.ActionType.Active, Arrays.asList(new Parameter("brightness", ParameterType.NUMERIC_SLIDER, Double.class))),
-                new Action("off", Action.ActionType.Inactive, Collections.EMPTY_LIST)
-        ));
-        outputDevice.put("led", led);
+        GenericDevice led = new GenericDevice("led", Arrays.asList(
+                new Action("on", ActionType.Active, Arrays.asList(new Parameter("brightness", Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.NUMERIC_SLIDER))),
+                new Action("off", ActionType.Inactive, Collections.emptyList())
+        ), Collections.emptyList());
+        tmpOutputDevice.put(led, Collections.emptyList());
 
-        OutputDevice speaker = new OutputDevice("speaker", Collections.EMPTY_LIST, Arrays.asList(
-                new Action("play", Action.ActionType.Active, Arrays.asList(new Parameter("volume", ParameterType.NUMERIC_TEXTBOX, Double.class)))
-        ));
-        outputDevice.put("speaker", speaker);
+        GenericDevice speaker = new GenericDevice("speaker", Arrays.asList(
+                new Action("play", ActionType.Active, Arrays.asList(new Parameter("volume", Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.NUMERIC_TEXTBOX)))
+        ), Collections.emptyList());
+        tmpOutputDevice.put(speaker, Collections.emptyList());
+
+        this.inputDevice = Collections.unmodifiableMap(tmpInputDevice);
+        this.outputDevice = Collections.unmodifiableMap(tmpOutputDevice);
     }
 
-    /**
-     * Get an object represent the output device by name.
-     * This method is mainly when read the project from the file.
-     * @param name
-     * @return an output device
-     */
-    public OutputDevice getOutputDevice(String name) {
-        return outputDevice.get(name);
+    public Set<GenericDevice> getInputDevice() {
+        return inputDevice.keySet();
     }
 
-    public Collection<OutputDevice> getOutputDevice() {
-        return Collections.unmodifiableCollection(outputDevice.values());
-    }
-
-    public InputDevice getInputDevice(String name) {
-        return inputDevice.get(name);
-    }
-
-    public Collection<InputDevice> getInputDevice() {
-        return Collections.unmodifiableCollection(inputDevice.values());
+    public Set<GenericDevice> getOutputDevice() {
+        return outputDevice.keySet();
     }
 }

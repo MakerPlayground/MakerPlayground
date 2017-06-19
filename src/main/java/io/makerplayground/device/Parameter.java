@@ -5,25 +5,31 @@ package io.makerplayground.device;
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
  */
 public class Parameter {
-    private String name;
-    private ParameterType parameterType;
-    private Class<?> type;
+    private final String name;
+    private final Constraint constraint;
+    private final ParameterType parameterType;
+    private final ControlType controlType;
 
-    public Parameter(String name, ParameterType parameterType, Class<?> type) {
+    public Parameter(String name, Constraint constraint, ParameterType parameterType, ControlType controlType) {
         this.name = name;
+        this.constraint = constraint;
         this.parameterType = parameterType;
-        this.type = type;
+        this.controlType = controlType;
     }
 
     public String getName() {
         return name;
     }
 
+    public Constraint getConstraint() {
+        return constraint;
+    }
+
     public ParameterType getParameterType() {
         return parameterType;
     }
 
-    public Class<?> getType() {
-        return type;
+    public ControlType getControlType() {
+        return controlType;
     }
 }

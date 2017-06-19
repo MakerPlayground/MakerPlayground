@@ -1,6 +1,7 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.Device;
+import io.makerplayground.device.GenericDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -10,12 +11,18 @@ import javafx.beans.property.StringProperty;
  */
 public class ProjectDevice {
     private final StringProperty name;
-    private final Device device;
-    // TODO: add actual device
+    private final GenericDevice genericDevice;
+    private Device actualDevice;
 
-    public ProjectDevice(String name, Device device) {
+    public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = new SimpleStringProperty(name);
-        this.device = device;
+        this.genericDevice = genericDevice;
+    }
+
+    public ProjectDevice(String name, GenericDevice genericDevice, Device device) {
+        this.name = new SimpleStringProperty(name);
+        this.genericDevice = genericDevice;
+        this.actualDevice = device;
     }
 
     public void setName(String name) {
@@ -30,7 +37,15 @@ public class ProjectDevice {
         return name;
     }
 
-    public Device getDevice() {
-        return device;
+    public GenericDevice getGenericDevice() {
+        return genericDevice;
+    }
+
+    public Device getActualDevice() {
+        return actualDevice;
+    }
+
+    public void setActualDevice(Device actualDevice) {
+        this.actualDevice = actualDevice;
     }
 }

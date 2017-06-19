@@ -1,8 +1,7 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.InputDevice;
-import io.makerplayground.device.OutputDevice;
+import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
@@ -19,15 +18,8 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), new ViewModelFactory<ProjectDevice, DevicePanelIconViewModel>() {
-            @Override
-            public DevicePanelIconViewModel newInstance(ProjectDevice device) {
-                return new DevicePanelIconViewModel(device);
-            }
-        });
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), device -> {
-            return new DevicePanelIconViewModel(device);
-        });
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), DevicePanelIconViewModel::new);
+        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), DevicePanelIconViewModel::new);
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
@@ -40,20 +32,12 @@ public class DevicePanelViewModel {
 
     public boolean removeDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
-
-        // TODO: avoid this cast if possible
-        if (deviceToBeRemoved.getDevice() instanceof InputDevice) {
-            return project.removeInputDevice(deviceToBeRemoved);
-        } else if (deviceToBeRemoved.getDevice() instanceof OutputDevice) {
-            return project.removeOutputDevice(deviceToBeRemoved);
-        } else {
-            return false;
-        }
+        return project.removeOutputDevice(deviceToBeRemoved);
     }
 
-    public void addDevice()
-    {
-        project.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice("led"));
+    public void addDevice() {
+        // TODO: remove with actual code
+        project.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice().iterator().next());
     }
 
 }

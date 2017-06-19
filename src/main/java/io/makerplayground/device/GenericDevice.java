@@ -4,31 +4,29 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Class to
+ *
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
  */
-public class OutputDevice implements Device {
+public class GenericDevice {
     private final String name;
-    private final List<Setting> setting;
     private final List<Action> action;
+    private final List<Value> value;
 
-    public OutputDevice(String name, List<Setting> setting, List<Action> action) {
+    public GenericDevice(String name, List<Action> action, List<Value> value) {
         this.name = name;
-        this.setting = Collections.unmodifiableList(setting);
         this.action = Collections.unmodifiableList(action);
+        this.value = Collections.unmodifiableList(value);
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
-    public List<Setting> getSetting() {
-        return setting;
-    }
-
     public List<Action> getAction() {
         return action;
+    }
+
+    public List<Value> getValue() {
+        return value;
     }
 }

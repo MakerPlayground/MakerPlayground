@@ -2,6 +2,7 @@ package io.makerplayground.project;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -9,46 +10,50 @@ import javafx.collections.ObservableList;
  *
  * Created by tanyagorn on 6/2/2017 AD.
  */
-public class DiagramState {
+public class State {
 
     public enum DelayUnit {MilliSecond, Second};
-    private String name;
-    private final Point topLeft;
+
+    private final StringProperty name;
+    private final ObservableList<UserSetting> setting;
+    private final Point position;
     private final SimpleDoubleProperty width, height;
-    private final ObservableList<DeviceSetting> deviceSetting;
-    private final SimpleDoubleProperty delayDuration;
+    private final SimpleDoubleProperty delay;
     private final DelayUnit delayUnit;
 
-    DiagramState(String name) {
-        this.name = name;
-        this.topLeft = new Point(20, 20);
+    State() {
+        this.name = new SimpleStringProperty("");
+        this.setting = FXCollections.observableArrayList();
+        this.position = new Point(20, 20);
         this.width = new SimpleDoubleProperty(200);
         this.height = new SimpleDoubleProperty(300);
-        this.deviceSetting = FXCollections.observableArrayList();
-        this.unmodifiableDeviceSetting = FXCollections.unmodifiableObservableList(this.deviceSetting);
-        this.delayDuration = new SimpleDoubleProperty(0);
+        this.delay = new SimpleDoubleProperty(0);
         this.delayUnit = DelayUnit.Second;
     }
 
     public void removeDevice(ProjectDevice device) {
-        for (int i=deviceSetting.size()-1; i>=0; i--) {
-            DeviceSetting eachDevice = deviceSetting.get(i);
+        for (int i = setting.size()-1; i>=0; i--) {
+            UserSetting eachDevice = setting.get(i);
             if (eachDevice.getDevice() == device) {
-                deviceSetting.remove(eachDevice);
+                setting.remove(eachDevice);
             }
         }
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
-    public Point getTopLeft() {
-        return topLeft;
+    public Point getPosition() {
+        return position;
     }
 
     public double getWidth() {
@@ -75,29 +80,23 @@ public class DiagramState {
         this.height.set(height);
     }
 
-    ObservableList<DeviceSetting> getDeviceSetting() {
-        return deviceSetting;
+    public double getDelay() {
+        return delay.get();
     }
 
-    private final ObservableList<DeviceSetting> unmodifiableDeviceSetting;
-
-    public ObservableList<DeviceSetting> getUnmodifiableDeviceSetting() {
-        return unmodifiableDeviceSetting;
+    public SimpleDoubleProperty delayProperty() {
+        return delay;
     }
 
-    public double getDelayDuration() {
-        return delayDuration.get();
-    }
-
-    public SimpleDoubleProperty delayDurationProperty() {
-        return delayDuration;
-    }
-
-    public void setDelayDuration(double delayDuration) {
-        this.delayDuration.set(delayDuration);
+    public void setDelay(double delay) {
+        this.delay.set(delay);
     }
 
     public DelayUnit getDelayUnit() {
         return delayUnit;
+    }
+
+    public ObservableList<UserSetting> getSetting() {
+        return setting;
     }
 }

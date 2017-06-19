@@ -4,11 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ *
  * Created by nuntipat on 6/5/2017 AD.
  */
 public class Action {
-    public enum ActionType {Active, Inactive};
-
     private final String name;
     private final ActionType type;
     private final List<Parameter> parameter;

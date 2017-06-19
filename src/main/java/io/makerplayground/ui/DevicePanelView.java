@@ -96,8 +96,8 @@ public class DevicePanelView extends VBox {
 //                new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, viewFactory, nodeConsumer);
 //
 //        TitledPane t1 = new TitledPane(labels.getString("Microcontroller"), mcuPane);
-//        TitledPane t2 = new TitledPane(labels.getString("Output Device"), outputPane);
-//        TitledPane t3 = new TitledPane(labels.getString("Input Device"), inputPane);
+//        TitledPane t2 = new TitledPane(labels.getString("Output GenericDevice"), outputPane);
+//        TitledPane t3 = new TitledPane(labels.getString("Input GenericDevice"), inputPane);
 //
 //        t1.setExpanded(false);
 //        t2.setExpanded(false);

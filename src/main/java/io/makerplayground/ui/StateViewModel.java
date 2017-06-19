@@ -1,10 +1,10 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.device.Action;
-import io.makerplayground.project.DeviceSetting;
-import io.makerplayground.project.DiagramState;
-import io.makerplayground.uihelper.Filter;
+import io.makerplayground.device.ActionType;
+import io.makerplayground.project.State;
+import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
+import io.makerplayground.uihelper.ModelFilter;
 import io.makerplayground.uihelper.ViewModelFactory;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,31 +14,31 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class StateViewModel {
 
-    private final DiagramState diagramState;
+    private final State state;
     private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
     private final SimpleDoubleProperty x;
     private final SimpleDoubleProperty y;
 
 
-    private final DynamicViewModelCreator<DeviceSetting, StateDeviceIconViewModel> dynamicViewModelCreator;
+    private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreator;
 
-    public StateViewModel(DiagramState diagramState) {
-        this.diagramState = diagramState;
-        this.name = new SimpleStringProperty(diagramState.getName());
-        this.delay = new SimpleDoubleProperty(diagramState.getDelayDuration());
-        this.x = new SimpleDoubleProperty(diagramState.getTopLeft().getX());
-        this.y = new SimpleDoubleProperty(diagramState.getTopLeft().getY());
+    public StateViewModel(State state) {
+        this.state = state;
+        this.name = new SimpleStringProperty(state.getName());
+        this.delay = new SimpleDoubleProperty(state.getDelay());
+        this.x = new SimpleDoubleProperty(state.getPosition().getX());
+        this.y = new SimpleDoubleProperty(state.getPosition().getY());
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(diagramState.getUnmodifiableDeviceSetting(), new ViewModelFactory<DeviceSetting, StateDeviceIconViewModel>() {
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(state.getSetting(), new ViewModelFactory<UserSetting, StateDeviceIconViewModel>() {
             @Override
-            public StateDeviceIconViewModel newInstance(DeviceSetting deviceSetting) {
-                return new StateDeviceIconViewModel(deviceSetting);
+            public StateDeviceIconViewModel newInstance(UserSetting userSetting) {
+                return new StateDeviceIconViewModel(userSetting);
             }
-        }, new Filter<DeviceSetting>() {
+        }, new ModelFilter<UserSetting>() {
             @Override
-            public boolean apply(DeviceSetting deviceSetting) {
-                return (deviceSetting.getAction().getType() == Action.ActionType.Active);
+            public boolean apply(UserSetting userSetting) {
+                return (userSetting.getAction().getType() == ActionType.Active);
             }
         });
         // TODO: Do the same for inactive - unchanged
@@ -60,7 +60,7 @@ public class StateViewModel {
         return delay;
     }
 
-    public DynamicViewModelCreator<DeviceSetting, StateDeviceIconViewModel> getDynamicViewModelCreator() {
+    public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
     }
 

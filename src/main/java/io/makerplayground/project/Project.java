@@ -1,14 +1,6 @@
 package io.makerplayground.project;
 
-import io.makerplayground.device.Action;
-import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.InputDevice;
-import io.makerplayground.device.OutputDevice;
-import io.makerplayground.ui.StateDeviceIconViewModel;
-import io.makerplayground.ui.StateViewModel;
-import io.makerplayground.uihelper.DynamicViewModelCreator;
-import io.makerplayground.uihelper.Filter;
-import io.makerplayground.uihelper.ViewModelFactory;
+import io.makerplayground.device.GenericDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jgrapht.DirectedGraph;
@@ -19,43 +11,37 @@ import org.jgrapht.graph.SimpleDirectedGraph;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 public class Project {
-    private final DirectedGraph<DiagramState, DiagramCondition> diagram;  // TODO: make the graph observable some how
-    private final ObservableList<ProjectDevice> outputDevice;
+    private final DirectedGraph<State, Condition> diagram;  // TODO: make the graph observable some how
     private final ObservableList<ProjectDevice> inputDevice;
-    private final ObservableList<DiagramState> observableDiagram;
+    private final ObservableList<ProjectDevice> outputDevice;
+    private final ObservableList<State> state;
+    private final ObservableList<Condition> condition;
 
-    private final DynamicViewModelCreator<DiagramState, StateViewModel> dynamicViewModelCreator;
+    private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
 
     private int numDevice = 1; // TODO: to be removed
 
     public Project() {
-        diagram = new SimpleDirectedGraph<DiagramState, DiagramCondition>((v1, v2) -> new DiagramCondition());
+        diagram = new SimpleDirectedGraph<State, Condition>((v1, v2) -> new Condition());
+
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
-        observableDiagram = FXCollections.observableArrayList();
+        state = FXCollections.observableArrayList();
+        condition = FXCollections.observableArrayList();
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
-
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(observableDiagram, new ViewModelFactory<DiagramState, StateViewModel>() {
-            @Override
-            public StateViewModel newInstance(DiagramState diagramState) {
-                return new StateViewModel(diagramState);
-            }
-        });
-
-}
-    private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
+    }
 
     public ObservableList<ProjectDevice> getOutputDevice() {
         return unmodifiableOutputDevice;
     }
 
-    public void addOutputDevice(OutputDevice device) {
+    public void addOutputDevice(GenericDevice device) {
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + String.valueOf(numDevice), device);
 
-        for (DiagramState state : diagram.vertexSet()) {
-            state.getDeviceSetting().add(new DeviceSetting(projectDevice));
+        for (State state : diagram.vertexSet()) {
+            state.getSetting().add(new UserSetting(projectDevice));
         }
 
         // TODO: add logic to create a running number per device category
@@ -65,7 +51,7 @@ public class Project {
 
     public boolean removeOutputDevice(ProjectDevice device) {
 
-        for (DiagramState state : diagram.vertexSet()) {
+        for (State state : diagram.vertexSet()) {
             state.removeDevice(device);
         }
 
@@ -78,7 +64,7 @@ public class Project {
         return unmodifiableInputDevice;
     }
 
-    public void addInputDevice(InputDevice device) {
+    public void addInputDevice(GenericDevice device) {
         // TODO: add logic to create a running number per device category
         inputDevice.add(new ProjectDevice(device.getName() + String.valueOf(numDevice), device));
         numDevice++;
@@ -89,26 +75,27 @@ public class Project {
     }
 
     public void addState() {
-        DiagramState state = new DiagramState("state" + (observableDiagram.size() + 1));
+        State state = new State();
+        state.setName("state" + (this.state.size() + 1));
         // Add every output device to be displayed in new state
         for (ProjectDevice projectDevice: outputDevice) {
-            DeviceSetting e = new DeviceSetting(projectDevice);
-            state.getDeviceSetting().add(e);
+            UserSetting e = new UserSetting(projectDevice);
+            state.getSetting().add(e);
         }
         diagram.addVertex(state);
-        observableDiagram.add(state);
+        this.state.add(state);
     }
 
-    public void removeState(DiagramState diagramState) {
-        diagram.removeVertex(diagramState);
-        observableDiagram.remove(diagramState);
+    public void removeState(State state) {
+        diagram.removeVertex(state);
+        this.state.remove(state);
     }
 
-    public ObservableList<DiagramState> getObservableDiagram() {
-        return observableDiagram;
+    public ObservableList<State> getState() {
+        return state;
     }
 
-    public DirectedGraph<DiagramState, DiagramCondition> getDiagram() {
+    public DirectedGraph<State, Condition> getDiagram() {
         return diagram;
     }
 }

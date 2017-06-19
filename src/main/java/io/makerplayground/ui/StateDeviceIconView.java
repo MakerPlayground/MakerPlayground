@@ -1,15 +1,11 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.project.DeviceSetting;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.NumberStringConverter;
 
 
 import java.io.IOException;

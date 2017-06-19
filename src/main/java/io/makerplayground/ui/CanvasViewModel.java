@@ -1,6 +1,6 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.project.DiagramState;
+import io.makerplayground.project.State;
 import io.makerplayground.project.Project;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.ViewModelFactory;
@@ -11,20 +11,20 @@ import io.makerplayground.uihelper.ViewModelFactory;
 public class CanvasViewModel {
 
     protected final Project project;
-    private final DynamicViewModelCreator<DiagramState, StateViewModel> paneStateViewModel;
+    private final DynamicViewModelCreator<State, StateViewModel> paneStateViewModel;
 
 
     public CanvasViewModel(Project project) {
         this.project = project;
-        this.paneStateViewModel = new DynamicViewModelCreator<DiagramState, StateViewModel>(project.getObservableDiagram(), new ViewModelFactory<DiagramState, StateViewModel>() {
+        this.paneStateViewModel = new DynamicViewModelCreator<State, StateViewModel>(project.getState(), new ViewModelFactory<State, StateViewModel>() {
             @Override
-            public StateViewModel newInstance(DiagramState diagramState) {
-                return new StateViewModel(diagramState);
+            public StateViewModel newInstance(State state) {
+                return new StateViewModel(state);
             }
         });
     }
 
-    public DynamicViewModelCreator<DiagramState, StateViewModel> getPaneStateViewModel() {
+    public DynamicViewModelCreator<State, StateViewModel> getPaneStateViewModel() {
         return paneStateViewModel;
     }
 }

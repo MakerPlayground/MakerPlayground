@@ -20,7 +20,7 @@ public class DevicePanelIconViewModel {
     }
 
     public String getDeviceName() {
-        return device.getDevice().getName();
+        return device.getGenericDevice().getName();
     }
 
     public String getName() {

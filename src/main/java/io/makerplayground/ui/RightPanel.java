@@ -27,7 +27,7 @@ public class RightPanel extends AnchorPane {
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
 
-        Button configureBtn = new Button("Configure Device");
+        Button configureBtn = new Button("Configure GenericDevice");
         Button generateBtn = new Button("Generate");
         Button uploadBtn = new Button("Upload");
 

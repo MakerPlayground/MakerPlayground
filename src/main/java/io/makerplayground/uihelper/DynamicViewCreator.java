@@ -9,8 +9,9 @@ import java.util.Map;
 
 /**
  *
- * @param <U> class of controller
- * @param <V> class of the view (subclass of Node) to be created
+ * @param <T>
+ * @param <U>
+ * @param <V>
  */
 public class DynamicViewCreator<T extends Parent, U,  V extends Node> {
     private final DynamicViewModelCreator<?, U> modelLoader;

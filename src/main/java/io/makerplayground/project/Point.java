@@ -1,13 +1,15 @@
 package io.makerplayground.project;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 /**
+ *
  * Created by tanyagorn on 6/9/2017.
  */
 public class Point {
-    private SimpleDoubleProperty x;
-    private SimpleDoubleProperty y;
+    private DoubleProperty x;
+    private DoubleProperty y;
 
     public Point(double x, double y) {
         this.x = new SimpleDoubleProperty(x);
@@ -18,7 +20,7 @@ public class Point {
         return x.get();
     }
 
-    public SimpleDoubleProperty xProperty() {
+    public DoubleProperty xProperty() {
         return x;
     }
 
@@ -30,7 +32,7 @@ public class Point {
         return y.get();
     }
 
-    public SimpleDoubleProperty yProperty() {
+    public DoubleProperty yProperty() {
         return y;
     }
 
