@@ -4,11 +4,14 @@ import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Created by tanyagorn on 6/13/2017.
@@ -56,13 +59,19 @@ public class CanvasView extends AnchorPane {
         setRightAnchor(hb, 8.0);
 
         Pane canvasPane = new Pane();
+
         DynamicViewCreator<Pane, StateViewModel, StateView> canvasViewCreator =
             new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
 
         ScrollPane scrollPane = new ScrollPane();
+
+        setTopAnchor(scrollPane,0.0);
+        setRightAnchor(scrollPane,0.0);
+        setBottomAnchor(scrollPane,0.0);
+        setLeftAnchor(scrollPane,0.0);
         scrollPane.setContent(canvasPane);
 
-        getChildren().addAll(hb, scrollPane);
+        getChildren().addAll(scrollPane,hb);
     }
 
 }

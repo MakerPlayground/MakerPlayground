@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TextField fx:id="nameTextField" />
-      <VBox prefHeight="200.0" prefWidth="100.0">
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
          <children>
             <Label text="Active" />
-            <HBox fx:id="activeIconHBox" prefHeight="100.0" prefWidth="200.0" />
+            <HBox fx:id="activeIconHBox" prefHeight="100.0" prefWidth="200.0" spacing="5.0" />
+            <Label layoutX="10.0" layoutY="10.0" text="Inactive" />
+            <HBox fx:id="activeIconHBox1" layoutX="10.0" layoutY="27.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0" />
          </children>
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
       </VBox>
-      <HBox>
+      <HBox alignment="CENTER_LEFT" spacing="5.0">
          <children>
-            <Label text="Label" />
-            <TextField fx:id="delayTextField" />
+            <Label text="Delay " />
+            <TextField fx:id="delayTextField" prefWidth="50.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </TextField>
+            <TitledPane animated="false" expanded="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" text="sec" />
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
       </HBox>
    </children>
 </fx:root>
