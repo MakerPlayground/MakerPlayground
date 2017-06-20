@@ -54,6 +54,8 @@ public class ProjectHelper {
             }
         }
         State s2 = dummyProject.addState();
+        s2.getPosition().setX(300.0);
+        s2.getPosition().setY(500.0);
         for(UserSetting setting : s2.getSetting()){
             if(setting.getDevice().getGenericDevice() == led){
                 for (Action action : led.getAction())
@@ -61,6 +63,7 @@ public class ProjectHelper {
                         setting.setAction(action);
             }
         }
+        dummyProject.addCondition(s1,s2);
         return dummyProject;
     }
 }

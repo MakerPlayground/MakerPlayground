@@ -1,6 +1,7 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
+import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
 import javafx.geometry.Insets;
@@ -49,18 +50,32 @@ public class CanvasView extends AnchorPane {
             canvasViewModel.project.addState();
         });
 
-        HBox hb = new HBox();
-        hb.setPadding(new Insets(10, 10, 10, 10));
-        hb.setSpacing(10);
-        hb.getChildren().addAll(btnAddState);
+//        HBox hb = new HBox();
+//        hb.setPadding(new Insets(10, 10, 10, 10));
+//        hb.setSpacing(10);
+//        hb.getChildren().addAll(btnAddState);
 
-        setTopAnchor(hb, 8.0);
-        setRightAnchor(hb, 8.0);
+
+        setTopAnchor(btnAddState, 8.0);
+        setRightAnchor(btnAddState, 8.0);
 
         Pane canvasPane = new Pane();
 
         DynamicViewCreator<Pane, StateViewModel, StateView> canvasViewCreator =
             new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
+
+        DynamicViewCreator<Pane, LineViewModel , LineView> lineViewCreator =
+                new DynamicViewCreator<>(canvasViewModel.getLineViewModel(), canvasPane, LineView::new, new NodeConsumer<Pane, LineView>() {
+                    @Override
+                    public void addNode(Pane parent, LineView node) {
+                        parent.getChildren().add(node);
+                    }
+
+                    @Override
+                    public void removeNode(Pane parent, LineView node) {
+                        parent.getChildren().remove(node);
+                    }
+                });
 
         ScrollPane scrollPane = new ScrollPane();
 
@@ -70,7 +85,8 @@ public class CanvasView extends AnchorPane {
         setLeftAnchor(scrollPane,0.0);
         scrollPane.setContent(canvasPane);
 
-        getChildren().addAll(scrollPane,hb);
+        getChildren().addAll(scrollPane,btnAddState);
     }
+
 
 }
