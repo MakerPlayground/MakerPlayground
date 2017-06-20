@@ -43,6 +43,7 @@ public class RightPanel extends AnchorPane {
         AnchorPane.setLeftAnchor(devicePanelView,0.0);
         AnchorPane.setRightAnchor(devicePanelView,0.0);
         AnchorPane.setTopAnchor(devicePanelView,0.0);
+        AnchorPane.setBottomAnchor(devicePanelView,120.0);
         AnchorPane.setLeftAnchor(projectButton,0.0);
         AnchorPane.setRightAnchor(projectButton,0.0);
         AnchorPane.setBottomAnchor(projectButton,0.0);
