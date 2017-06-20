@@ -6,12 +6,14 @@ package io.makerplayground.device;
  */
 public class Parameter {
     private final String name;
+    private final Object defaultValue;
     private final Constraint constraint;
     private final ParameterType parameterType;
     private final ControlType controlType;
 
-    public Parameter(String name, Constraint constraint, ParameterType parameterType, ControlType controlType) {
+    public Parameter(String name, Object defaultValue, Constraint constraint, ParameterType parameterType, ControlType controlType) {
         this.name = name;
+        this.defaultValue = defaultValue;
         this.constraint = constraint;
         this.parameterType = parameterType;
         this.controlType = controlType;
@@ -19,6 +21,10 @@ public class Parameter {
 
     public String getName() {
         return name;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 
     public Constraint getConstraint() {

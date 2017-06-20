@@ -4,48 +4,74 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
- * Created by nuntipat on 6/19/2017 AD.
+ * Class to represent constrains of a value which could be a number (min/max/unit) or a list of String
+ * which is considered to be valid.
+ * Created by Nuntipat Narkthong on 6/19/2017 AD.
  */
 public class Constraint {
-    private double min;
-    private double max;
-    private Unit unit;
-    private List<String> value;
+    private final double min;
+    private final double max;
+    private final Unit unit;
+    private final List<String> value;
 
     /**
      *
      */
     public static final Constraint NONE = new Constraint();
-    public static final Constraint ZERO_TO_HUNDRED = new Constraint(0, 100);
+    /**
+     *
+     */
+    public static final Constraint ZERO_TO_HUNDRED = new Constraint(0, 100, Unit.NOT_SPECIFIED);
 
-    private Constraint() {
+    Constraint() {
         this.min = 0;
         this.max = 0;
-        this.value = Collections.EMPTY_LIST;
+        this.unit = Unit.NOT_SPECIFIED;
+        this.value = Collections.emptyList();
     }
 
-    public Constraint(double min, double max) {
+    Constraint(double min, double max, Unit unit) {
         this.min = min;
         this.max = max;
+        this.unit = unit;
+        this.value = Collections.emptyList();
     }
 
-    public Constraint(List<String> value) {
+    Constraint(List<String> value) {
+        this.min = 0;
+        this.max = 0;
+        this.unit = Unit.NOT_SPECIFIED;
         this.value = value;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getMin() {
         return min;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getMax() {
         return max;
     }
 
+    /**
+     *
+     * @return
+     */
     public Unit getUnit() {
         return unit;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getValue() {
         return value;
     }

@@ -31,11 +31,14 @@ public class State {
         this.delayUnit = DelayUnit.Second;
     }
 
-    public void removeDevice(ProjectDevice device) {
-        for (int i = setting.size()-1; i>=0; i--) {
-            UserSetting eachDevice = setting.get(i);
-            if (eachDevice.getDevice() == device) {
-                setting.remove(eachDevice);
+    void addDevice(ProjectDevice device) {
+        setting.add(new UserSetting(device));
+    }
+
+    void removeDevice(ProjectDevice device) {
+        for (int i=setting.size() - 1; i>=0; i--) {
+            if (setting.get(i).getDevice() == device) {
+                setting.remove(i);
             }
         }
     }

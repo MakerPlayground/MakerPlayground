@@ -1,7 +1,8 @@
 package io.makerplayground.device;
 
 /**
- * Created by nuntipat on 6/19/2017 AD.
+ * Type of Action
+ * Created by Nuntipat Narkthong on 6/19/2017 AD.
  */
 public enum ActionType {
     Active, Inactive;

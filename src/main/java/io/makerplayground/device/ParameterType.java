@@ -5,4 +5,5 @@ package io.makerplayground.device;
  */
 public enum ParameterType {
     DOUBLE;
+    // TODO: add new parameter type
 }

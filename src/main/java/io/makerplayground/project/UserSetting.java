@@ -2,9 +2,8 @@ package io.makerplayground.project;
 
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
-
-import java.util.HashMap;
-import java.util.Map;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -13,12 +12,16 @@ import java.util.Map;
 public class UserSetting {
     private final ProjectDevice device;
     private Action action;
-    private final Map<Parameter, Object> valueMap;
+    private final ObservableMap<Parameter, Object> valueMap;
 
     UserSetting(ProjectDevice device) {
         this.device = device;
-        this.action = device.getGenericDevice().getAction().get(0);
-        this.valueMap = new HashMap<>();
+        this.action = device.getGenericDevice().getDefaultAction();
+        this.valueMap = FXCollections.observableHashMap();
+        // Initialize the map with default value of each parameter
+        for (Parameter param : this.action.getParameter()) {
+            this.valueMap.put(param, param.getDefaultValue());
+        }
     }
 
     public ProjectDevice getDevice() {
@@ -33,7 +36,7 @@ public class UserSetting {
         this.action = action;
     }
 
-    public Object getParameterValue(Parameter p) {
-        return valueMap.get(p);
+    public ObservableMap<Parameter, Object> getValueMap() {
+        return valueMap;
     }
 }

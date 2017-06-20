@@ -20,4 +20,13 @@ public class ProjectHelper {
         // TODO: implement code to save a project from file
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Create an instance of a dummy project
+     * @return a dummy project used while developing
+     * @deprecated
+     */
+    public static Project loadDummyProject() {
+        throw new UnsupportedOperationException();
+    }
 }

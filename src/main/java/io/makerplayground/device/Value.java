@@ -2,17 +2,15 @@ package io.makerplayground.device;
 
 /**
  *
- * Created by nuntipat on 6/19/2017 AD.
+ * Created by Nuntipat Narkthong on 6/19/2017 AD.
  */
 public class Value {
     private final String name;
     private final Constraint constraint;
-    private final Unit unit;
 
-    public Value(String name, Constraint constraint, Unit unit) {
+    public Value(String name, Constraint constraint) {
         this.name = name;
         this.constraint = constraint;
-        this.unit = unit;
     }
 
     public String getName() {
@@ -23,7 +21,4 @@ public class Value {
         return constraint;
     }
 
-    public Unit getUnit() {
-        return unit;
-    }
 }

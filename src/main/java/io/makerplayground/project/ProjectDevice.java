@@ -10,30 +10,26 @@ import javafx.beans.property.StringProperty;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 public class ProjectDevice {
-    private final StringProperty name;
+    private String name;
     private final GenericDevice genericDevice;
     private Device actualDevice;
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.genericDevice = genericDevice;
     }
 
     public ProjectDevice(String name, GenericDevice genericDevice, Device device) {
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.genericDevice = genericDevice;
         this.actualDevice = device;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
         return name;
     }
 

@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  *
- * Created by nuntipat on 6/19/2017 AD.
+ * Created by Nuntipat Narkthong on 6/19/2017 AD.
  */
 public class Device {
     private final String brand;
