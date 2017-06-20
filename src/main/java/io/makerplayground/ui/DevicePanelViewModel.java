@@ -6,6 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.ViewModelFactory;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -35,9 +36,12 @@ public class DevicePanelViewModel {
         return project.removeOutputDevice(deviceToBeRemoved);
     }
 
-    public void addDevice() {
-        // TODO: remove with actual code
-        project.addOutputDevice(DeviceLibrary.INSTANCE.getOutputDevice().iterator().next());
+    public void addDevice(ObservableList<ControlAddDevicePane> device) {
+        for (ControlAddDevicePane d : device) {
+            for (int i = 0; i < d.getCount(); i++) {
+                project.addOutputDevice(d.getGenericDevice());
+            }
+        }
     }
 
 }

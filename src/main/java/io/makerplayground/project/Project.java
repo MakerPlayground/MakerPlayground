@@ -6,6 +6,13 @@ import javafx.collections.ObservableList;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 /**
  *
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
@@ -38,15 +45,32 @@ public class Project {
     }
 
     public void addOutputDevice(GenericDevice device) {
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + String.valueOf(numDevice), device);
+        int maxCount = 0;
+        // Find all the same genericDevice's name in outputDevice list
+        // to get count for creating running number
+        List<ProjectDevice> deviceSameType = outputDevice.stream()
+                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
+                .collect(Collectors.toList());
+        for (ProjectDevice d : deviceSameType) {
+            if (d.getName().contains(device.getName())) {
+                // Extract number from string for creating running number
+                Pattern p = Pattern.compile("-?\\d+");
+                Matcher m = p.matcher(d.getName());
+                while (m.find()) {
+                    if (Integer.parseInt(m.group()) >= maxCount) {
+                        maxCount = Integer.parseInt(m.group());
+                    }
+                }
+            }
+        }
+
+        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
 
         for (State state : diagram.vertexSet()) {
             state.getSetting().add(new UserSetting(projectDevice));
         }
 
-        // TODO: add logic to create a running number per device category
         outputDevice.add(projectDevice);
-        numDevice++;
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
@@ -65,9 +89,13 @@ public class Project {
     }
 
     public void addInputDevice(GenericDevice device) {
-        // TODO: add logic to create a running number per device category
-        inputDevice.add(new ProjectDevice(device.getName() + String.valueOf(numDevice), device));
-        numDevice++;
+        // Find all the same genericDevice's name in outputDevice list
+        // to get count for creating running number
+        long deviceCount = outputDevice.stream()
+                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
+                .count();
+
+        inputDevice.add(new ProjectDevice(device.getName() + (deviceCount+1), device));
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
