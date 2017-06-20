@@ -3,6 +3,7 @@ package io.makerplayground.ui;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectHelper;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,15 +16,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // TODO: to be removed
-        Project dummyProject = new Project();
-        for (GenericDevice d : DeviceLibrary.INSTANCE.getOutputDevice()) {
-            dummyProject.addOutputDevice(d);
-        }
-        dummyProject.addState();
 
         primaryStage.setTitle("Maker Playground");
-        primaryStage.setScene(new Scene(new MainWindow(dummyProject), 800, 600));
+        primaryStage.setScene(new Scene(new MainWindow(ProjectHelper.loadDummyProject()), 800, 600));
         primaryStage.show();
     }
 

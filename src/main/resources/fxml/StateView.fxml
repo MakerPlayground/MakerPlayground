@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -13,9 +14,9 @@
       <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
          <children>
             <Label text="Active" />
-            <HBox fx:id="activeIconHBox" prefHeight="100.0" prefWidth="200.0" spacing="5.0" />
+            <FlowPane fx:id="activeIconFlowPane" prefHeight="100.0" prefWidth="200.0" />
             <Label layoutX="10.0" layoutY="10.0" text="Inactive" />
-            <HBox fx:id="activeIconHBox1" layoutX="10.0" layoutY="27.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0" />
+            <FlowPane fx:id="inactiveIconFlowPane" layoutX="10.0" layoutY="32.0" prefHeight="100.0" prefWidth="200.0" />
          </children>
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
