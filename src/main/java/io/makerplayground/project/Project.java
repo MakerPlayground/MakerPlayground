@@ -65,7 +65,6 @@ public class Project {
         }
 
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
-
         for (State state : diagram.vertexSet()) {
             state.getSetting().add(new UserSetting(projectDevice));
         }
@@ -74,7 +73,6 @@ public class Project {
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
-
         for (State state : diagram.vertexSet()) {
             state.removeDevice(device);
         }
@@ -89,13 +87,26 @@ public class Project {
     }
 
     public void addInputDevice(GenericDevice device) {
+        int maxCount = 0;
         // Find all the same genericDevice's name in outputDevice list
         // to get count for creating running number
-        long deviceCount = outputDevice.stream()
+        List<ProjectDevice> deviceSameType = outputDevice.stream()
                 .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
-                .count();
+                .collect(Collectors.toList());
+        for (ProjectDevice d : deviceSameType) {
+            if (d.getName().contains(device.getName())) {
+                // Extract number from string for creating running number
+                Pattern p = Pattern.compile("-?\\d+");
+                Matcher m = p.matcher(d.getName());
+                while (m.find()) {
+                    if (Integer.parseInt(m.group()) >= maxCount) {
+                        maxCount = Integer.parseInt(m.group());
+                    }
+                }
+            }
+        }
 
-        inputDevice.add(new ProjectDevice(device.getName() + (deviceCount+1), device));
+        inputDevice.add(new ProjectDevice(device.getName() + (maxCount+1), device));
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
