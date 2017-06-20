@@ -12,7 +12,6 @@ import java.io.File;
  */
 public class ProjectHelper {
     // Suppress default constructor for noninstantiability
-
     private ProjectHelper() {
     }
 
@@ -32,7 +31,6 @@ public class ProjectHelper {
      * @deprecated
      */
     public static Project loadDummyProject() {
-        // TODO: to be removed
         Project dummyProject = new Project();
 
         GenericDevice speaker = null;
