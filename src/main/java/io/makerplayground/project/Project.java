@@ -6,6 +6,13 @@ import javafx.collections.ObservableList;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 /**
  *
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
@@ -43,15 +50,33 @@ public class Project {
     }
 
     public void addOutputDevice(GenericDevice device) {
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + String.valueOf(numDevice), device);
-
-        for (State s : state) {
-            s.addDevice(projectDevice);
+        int maxCount = 0;
+        // Find all the same genericDevice's name in outputDevice list
+        // to get count for creating running number
+        List<ProjectDevice> deviceSameType = outputDevice.stream()
+                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
+                .collect(Collectors.toList());
+        for (ProjectDevice d : deviceSameType) {
+            if (d.getName().contains(device.getName())) {
+                // Extract number from string for creating running number
+                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
+                Matcher matcher = lastIntPattern.matcher(d.getName());
+                if (matcher.find()) {
+                    String someNumberStr = matcher.group(1);
+                    int lastNumberInt = Integer.parseInt(someNumberStr);
+                    if (lastNumberInt >= maxCount) {
+                        maxCount = lastNumberInt;
+                    }
+                }
+            }
         }
 
-        // TODO: add logic to create a running number per device category
+        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
+        for (State state : diagram.vertexSet()) {
+            state.getSetting().add(new UserSetting(projectDevice));
+        }
+
         outputDevice.add(projectDevice);
-        numDevice++;
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
@@ -67,15 +92,30 @@ public class Project {
     }
 
     public void addInputDevice(GenericDevice device) {
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + String.valueOf(numDevice), device);
-
-        for (State s : state) {
-            s.addDevice(projectDevice);
+        int maxCount = 0;
+        // Find all the same genericDevice's name in outputDevice list
+        // to get count for creating running number
+        List<ProjectDevice> deviceSameType = inputDevice.stream()
+                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
+                .collect(Collectors.toList());
+        for (ProjectDevice d : deviceSameType) {
+            if (d.getName().contains(device.getName())) {
+                // Extract number from string for creating running number
+                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
+                Matcher matcher = lastIntPattern.matcher(d.getName());
+                if (matcher.find()) {
+                    String someNumberStr = matcher.group(1);
+                    int lastNumberInt = Integer.parseInt(someNumberStr);
+                    if (lastNumberInt >= maxCount) {
+                        maxCount = lastNumberInt;
+                    }
+                }
+            }
         }
 
-        // TODO: add logic to create a running number per device category
-        inputDevice.add(projectDevice);
-        numDevice++;
+        // TODO: Add to condition
+
+        inputDevice.add(new ProjectDevice(device.getName() + (maxCount+1), device));
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
@@ -83,7 +123,7 @@ public class Project {
             s.removeDevice(device);
         }
 
-        return outputDevice.remove(device);
+        return inputDevice.remove(device);
     }
 
     public ObservableList<State> getState() {
