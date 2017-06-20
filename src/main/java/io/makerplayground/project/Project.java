@@ -1,6 +1,7 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jgrapht.DirectedGraph;

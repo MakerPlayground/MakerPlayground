@@ -84,8 +84,14 @@ public class DynamicViewModelCreator<T, U> {
 
     private void removeController(T model) {
         U node = controllerMap.remove(model);
-        if (node == null)
-            throw new IllegalStateException();
+        //if (node == null)
+        //    throw new IllegalStateException();
+    }
+
+    public void invalidate(T model) {
+        removeController(model);
+        if (this.modelFilter == null || this.modelFilter.apply(model))
+            addController(model);
     }
 
 //    public U getViewModel(T model) {
