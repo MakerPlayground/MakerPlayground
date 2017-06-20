@@ -54,11 +54,13 @@ public class Project {
         for (ProjectDevice d : deviceSameType) {
             if (d.getName().contains(device.getName())) {
                 // Extract number from string for creating running number
-                Pattern p = Pattern.compile("-?\\d+");
-                Matcher m = p.matcher(d.getName());
-                while (m.find()) {
-                    if (Integer.parseInt(m.group()) >= maxCount) {
-                        maxCount = Integer.parseInt(m.group());
+                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
+                Matcher matcher = lastIntPattern.matcher(d.getName());
+                if (matcher.find()) {
+                    String someNumberStr = matcher.group(1);
+                    int lastNumberInt = Integer.parseInt(someNumberStr);
+                    if (lastNumberInt >= maxCount) {
+                        maxCount = lastNumberInt;
                     }
                 }
             }
@@ -90,21 +92,25 @@ public class Project {
         int maxCount = 0;
         // Find all the same genericDevice's name in outputDevice list
         // to get count for creating running number
-        List<ProjectDevice> deviceSameType = outputDevice.stream()
+        List<ProjectDevice> deviceSameType = inputDevice.stream()
                 .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
                 .collect(Collectors.toList());
         for (ProjectDevice d : deviceSameType) {
             if (d.getName().contains(device.getName())) {
                 // Extract number from string for creating running number
-                Pattern p = Pattern.compile("-?\\d+");
-                Matcher m = p.matcher(d.getName());
-                while (m.find()) {
-                    if (Integer.parseInt(m.group()) >= maxCount) {
-                        maxCount = Integer.parseInt(m.group());
+                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
+                Matcher matcher = lastIntPattern.matcher(d.getName());
+                if (matcher.find()) {
+                    String someNumberStr = matcher.group(1);
+                    int lastNumberInt = Integer.parseInt(someNumberStr);
+                    if (lastNumberInt >= maxCount) {
+                        maxCount = lastNumberInt;
                     }
                 }
             }
         }
+
+        // TODO: Add to condition
 
         inputDevice.add(new ProjectDevice(device.getName() + (maxCount+1), device));
     }
