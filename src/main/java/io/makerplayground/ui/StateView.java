@@ -1,7 +1,6 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
-import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
 import javafx.beans.binding.Bindings;
@@ -11,9 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
@@ -26,7 +24,8 @@ public class StateView extends VBox {
 
     static class Delta { double x, y; }
 
-    @FXML private HBox activeIconHBox;
+    @FXML private FlowPane activeIconFlowPane;
+    @FXML private FlowPane inactiveIconFlowPane;
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
 
@@ -49,19 +48,36 @@ public class StateView extends VBox {
 
         nameTextField.textProperty().bindBidirectional(stateViewModel.nameProperty());
         Bindings.bindBidirectional(delayTextField.textProperty(), stateViewModel.delayProperty(), new NumberStringConverter());
-        DynamicViewCreator<HBox, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreator = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreator(), activeIconHBox, new ViewFactory<StateDeviceIconViewModel, StateDeviceIconView>() {
+
+        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorActive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorActive(), activeIconFlowPane, new ViewFactory<StateDeviceIconViewModel, StateDeviceIconView>() {
             @Override
             public StateDeviceIconView newInstance(StateDeviceIconViewModel stateDeviceIconViewModel) {
                 return new StateDeviceIconView(stateDeviceIconViewModel);
             }
-        }, new NodeConsumer<HBox, StateDeviceIconView>() {
+        }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
             @Override
-            public void addNode(HBox parent, StateDeviceIconView node) {
+            public void addNode(FlowPane parent, StateDeviceIconView node) {
                 parent.getChildren().add(node);
             }
 
             @Override
-            public void removeNode(HBox parent, StateDeviceIconView node) {
+            public void removeNode(FlowPane parent, StateDeviceIconView node) {
+                parent.getChildren().remove(node);
+            }
+        });
+        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorInactive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorInactive(), inactiveIconFlowPane, new ViewFactory<StateDeviceIconViewModel, StateDeviceIconView>() {
+            @Override
+            public StateDeviceIconView newInstance(StateDeviceIconViewModel stateDeviceIconViewModel) {
+                return new StateDeviceIconView(stateDeviceIconViewModel);
+            }
+        }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
+            @Override
+            public void addNode(FlowPane parent, StateDeviceIconView node) {
+                parent.getChildren().add(node);
+            }
+
+            @Override
+            public void removeNode(FlowPane parent, StateDeviceIconView node) {
                 parent.getChildren().remove(node);
             }
         });

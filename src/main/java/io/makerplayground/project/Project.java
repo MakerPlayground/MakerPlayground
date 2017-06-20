@@ -130,7 +130,7 @@ public class Project {
         return unmodifiableState;
     }
 
-    public void addState() {
+    public State addState() {
         State s = new State();
         // TODO: check for duplicate name
         s.setName("state" + (state.size() + 1));
@@ -142,6 +142,7 @@ public class Project {
 
         diagram.addVertex(s);
         state.add(s);
+        return s;
     }
 
     public void removeState(State s) {
