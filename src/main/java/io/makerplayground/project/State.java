@@ -1,5 +1,6 @@
 package io.makerplayground.project;
 
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,8 +23,9 @@ public class State {
 
     State() {
         this.name = new SimpleStringProperty("");
-        this.setting = FXCollections.observableArrayList();
-        this.position = new Point(20, 20);
+        // fire update event when actionProperty is invalidated / changed
+        this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.position = new Point(0, 0);
         this.width = new SimpleDoubleProperty(200);
         this.height = new SimpleDoubleProperty(300);
         this.delay = new SimpleDoubleProperty(0);

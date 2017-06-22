@@ -3,9 +3,11 @@ package io.makerplayground.ui;
 import io.makerplayground.project.State;
 import io.makerplayground.project.Project;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
+import io.makerplayground.uihelper.DynamicViewModelCreatorBuilder;
 import io.makerplayground.uihelper.ViewModelFactory;
 
 /**
+ *
  * Created by tanyagorn on 6/13/2017.
  */
 public class CanvasViewModel {
@@ -16,12 +18,10 @@ public class CanvasViewModel {
 
     public CanvasViewModel(Project project) {
         this.project = project;
-        this.paneStateViewModel = new DynamicViewModelCreator<State, StateViewModel>(project.getState(), new ViewModelFactory<State, StateViewModel>() {
-            @Override
-            public StateViewModel newInstance(State state) {
-                return new StateViewModel(state);
-            }
-        });
+        this.paneStateViewModel = new DynamicViewModelCreatorBuilder<State, StateViewModel>()
+                .setModel(project.getState())
+                .setViewModelFactory(StateViewModel::new)
+                .createDynamicViewModelCreator();
     }
 
     public DynamicViewModelCreator<State, StateViewModel> getPaneStateViewModel() {

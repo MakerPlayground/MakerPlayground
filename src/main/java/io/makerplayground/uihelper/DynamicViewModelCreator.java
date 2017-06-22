@@ -1,11 +1,16 @@
 package io.makerplayground.uihelper;
 
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * A helper class for creating instances of ViewModel based on the number of Model in an ObservableList provided.
@@ -16,33 +21,23 @@ import java.util.HashMap;
 public class DynamicViewModelCreator<T, U> {
     private final ObservableList<T> model;
     private final ViewModelFactory<T, U> viewModelFactory;
-    private final ModelFilter<T> modelFilter;
+    private final Predicate<T> filter;
 
     private final ObservableMap<T, U> controllerMap;
 
-    /**
-     *
-     * @param model list of Model objects to create a ViewModel
-     * @param viewModelFactory
-     */
     public DynamicViewModelCreator(ObservableList<T> model, ViewModelFactory<T, U> viewModelFactory) {
         this(model, viewModelFactory, null);
     }
 
-    /**
-     *
-     * @param model
-     * @param viewModelFactory
-     * @param modelFilter
-     */
-    public DynamicViewModelCreator(ObservableList<T> model, ViewModelFactory<T, U> viewModelFactory, ModelFilter<T> modelFilter) {
+    public DynamicViewModelCreator(ObservableList<T> model, ViewModelFactory<T, U> viewModelFactory, Predicate<T> filter) {
         this.model = model;
         this.viewModelFactory = viewModelFactory;
-        this.modelFilter = modelFilter;
+        this.filter = filter;
+
         this.controllerMap = FXCollections.observableMap(new HashMap<>());
 
         for (T t : model) {
-            if (this.modelFilter == null || this.modelFilter.apply(t))
+            if (this.filter == null || this.filter.test(t))
                 addController(t);
         }
 
@@ -51,20 +46,23 @@ public class DynamicViewModelCreator<T, U> {
             public void onChanged(Change<? extends T> c) {
                 while (c.next()) {
                     if (c.wasPermutated()) {
-                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
-                            throw new UnsupportedOperationException();
-                        }
-                    } else if (c.wasUpdated()) {
                         throw new UnsupportedOperationException();
+                    } else if (c.wasUpdated()) {
+                        for (T updatedItem : c.getList().subList(c.getFrom(), c.getTo())) {
+                            if (filter != null) {
+                                if (filter.test(updatedItem))
+                                    addController(updatedItem);
+                                else
+                                    removeController(updatedItem);
+                            }
+                        }
                     } else {
                         for (T removedItem : c.getRemoved()) {
-                            if (DynamicViewModelCreator.this.modelFilter == null
-                                    || DynamicViewModelCreator.this.modelFilter.apply(removedItem))
+                            if (filter == null || filter.test(removedItem))
                                 removeController(removedItem);
                         }
                         for (T addedItem : c.getAddedSubList()) {
-                            if (DynamicViewModelCreator.this.modelFilter == null
-                                    || DynamicViewModelCreator.this.modelFilter.apply(addedItem))
+                            if (filter == null || filter.test(addedItem))
                                 addController(addedItem);
                         }
                     }
@@ -84,17 +82,8 @@ public class DynamicViewModelCreator<T, U> {
 
     private void removeController(T model) {
         U node = controllerMap.remove(model);
-        //if (node == null)
-        //    throw new IllegalStateException();
+        if (node == null)
+            throw new IllegalStateException();
     }
 
-    public void invalidate(T model) {
-        removeController(model);
-        if (this.modelFilter == null || this.modelFilter.apply(model))
-            addController(model);
-    }
-
-//    public U getViewModel(T model) {
-//        return controllerMap.get(model);
-//    }
 }

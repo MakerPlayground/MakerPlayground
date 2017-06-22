@@ -1,11 +1,9 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import io.makerplayground.uihelper.ViewModelFactory;
+import io.makerplayground.uihelper.DynamicViewModelCreatorBuilder;
 import javafx.collections.ObservableList;
 
 /**
@@ -19,8 +17,14 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), DevicePanelIconViewModel::new);
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), DevicePanelIconViewModel::new);
+        this.inputChildViewModel = new DynamicViewModelCreatorBuilder<ProjectDevice, DevicePanelIconViewModel>()
+                .setModel(project.getInputDevice())
+                .setViewModelFactory(DevicePanelIconViewModel::new)
+                .createDynamicViewModelCreator();
+        this.outputChildViewModel = new DynamicViewModelCreatorBuilder<ProjectDevice, DevicePanelIconViewModel>()
+                .setModel(project.getOutputDevice())
+                .setViewModelFactory(DevicePanelIconViewModel::new)
+                .createDynamicViewModelCreator();
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
