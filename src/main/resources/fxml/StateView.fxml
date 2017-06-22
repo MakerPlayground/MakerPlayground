@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.FlowPane?>
@@ -14,9 +15,25 @@
       <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
          <children>
             <Label text="Active" />
-            <FlowPane fx:id="activeIconFlowPane" prefHeight="100.0" prefWidth="200.0" />
+            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <FlowPane fx:id="activeIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </FlowPane>
+               </content>
+            </ScrollPane>
             <Label layoutX="10.0" layoutY="10.0" text="Inactive" />
-            <FlowPane fx:id="inactiveIconFlowPane" layoutX="10.0" layoutY="32.0" prefHeight="100.0" prefWidth="200.0" />
+            <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <FlowPane fx:id="inactiveIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </FlowPane>
+               </content>
+            </ScrollPane>
          </children>
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
