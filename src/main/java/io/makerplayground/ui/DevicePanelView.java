@@ -24,6 +24,7 @@ public class DevicePanelView extends VBox {
     @FXML private FlowPane inputPane;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane microcontrollerPane;
+
     @FXML public void onAddDeviceClick() {
         DeviceSelectorView deviceSelectorView = new DeviceSelectorView();
         Optional<ObservableList<ControlAddDevicePane>> result = deviceSelectorView.showAndWait();

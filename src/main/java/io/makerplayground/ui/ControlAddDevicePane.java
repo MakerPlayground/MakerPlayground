@@ -74,7 +74,9 @@ public class ControlAddDevicePane extends VBox {
     }
 
     public void decrease() {
-        this.count = count - 1;
+        if (this.count > 0) {
+            this.count = count - 1;
+        }
     }
 
     public void increase() {

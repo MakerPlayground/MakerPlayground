@@ -6,6 +6,7 @@ import io.makerplayground.project.State;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 
 /**
+ *
  * Created by tanyagorn on 6/13/2017.
  */
 public class CanvasViewModel {
@@ -13,7 +14,6 @@ public class CanvasViewModel {
     protected final Project project;
     private final DynamicViewModelCreator<State, StateViewModel> paneStateViewModel;
     private final DynamicViewModelCreator<Condition,LineViewModel> lineViewModel;
-
 
     public CanvasViewModel(Project project) {
         this.project = project;

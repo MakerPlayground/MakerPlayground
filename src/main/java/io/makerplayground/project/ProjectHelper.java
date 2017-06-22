@@ -3,6 +3,7 @@ package io.makerplayground.project;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.ObjectProperty;
 
 import java.io.File;
 

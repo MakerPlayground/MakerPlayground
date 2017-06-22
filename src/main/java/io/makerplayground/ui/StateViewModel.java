@@ -4,8 +4,6 @@ import io.makerplayground.device.ActionType;
 import io.makerplayground.project.State;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import io.makerplayground.uihelper.ModelFilter;
-import io.makerplayground.uihelper.ViewModelFactory;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,7 +19,6 @@ public class StateViewModel {
     //private final SimpleDoubleProperty x;
     //private final SimpleDoubleProperty y;
 
-
     private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorActive;
     private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorInactive;
 
@@ -32,29 +29,11 @@ public class StateViewModel {
         //this.x = new SimpleDoubleProperty(state.getPosition().getX());
         //this.y = new SimpleDoubleProperty(state.getPosition().getY());
 
-        this.dynamicViewModelCreatorActive = new DynamicViewModelCreator<>(state.getSetting(), new ViewModelFactory<UserSetting, StateDeviceIconViewModel>() {
-            @Override
-            public StateDeviceIconViewModel newInstance(UserSetting userSetting) {
-                return new StateDeviceIconViewModel(userSetting);
-            }
-        }, new ModelFilter<UserSetting>() {
-            @Override
-            public boolean apply(UserSetting userSetting) {
-                return (userSetting.getAction().getType() == ActionType.Active);
-            }
-        });
-        this.dynamicViewModelCreatorInactive = new DynamicViewModelCreator<>(state.getSetting(), new ViewModelFactory<UserSetting, StateDeviceIconViewModel>() {
-            @Override
-            public StateDeviceIconViewModel newInstance(UserSetting userSetting) {
-                return new StateDeviceIconViewModel(userSetting);
-            }
-        }, new ModelFilter<UserSetting>() {
-            @Override
-            public boolean apply(UserSetting userSetting) {
-                return (userSetting.getAction().getType() == ActionType.Inactive);
-            }
-        });
-        // TODO: Do the same for inactive - unchanged
+        this.dynamicViewModelCreatorActive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
+                , userSetting -> userSetting.getAction().getType() == ActionType.Active);
+        this.dynamicViewModelCreatorInactive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
+                , userSetting -> userSetting.getAction().getType() == ActionType.Inactive);
+        // TODO: Do the same for unchanged
     }
 
     public String getName() {
@@ -76,9 +55,11 @@ public class StateViewModel {
     public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreatorActive() {
         return dynamicViewModelCreatorActive;
     }
+
     public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreatorInactive() {
         return dynamicViewModelCreatorInactive;
     }
+
     public double getX() {
         return state.getPosition().getX();
     }

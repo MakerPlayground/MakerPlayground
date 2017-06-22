@@ -1,11 +1,8 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import io.makerplayground.uihelper.ViewModelFactory;
 import javafx.collections.ObservableList;
 
 /**
