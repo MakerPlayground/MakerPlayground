@@ -1,5 +1,8 @@
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  *
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
@@ -11,7 +14,8 @@ public class Parameter {
     private final ParameterType parameterType;
     private final ControlType controlType;
 
-    public Parameter(String name, Object defaultValue, Constraint constraint, ParameterType parameterType, ControlType controlType) {
+    @JsonCreator
+    public Parameter(@JsonProperty("name") String name,@JsonProperty("defaultValue") Object defaultValue,@JsonProperty("constraint") Constraint constraint,@JsonProperty("parameterType") ParameterType parameterType,@JsonProperty("controlType") ControlType controlType) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.constraint = constraint;

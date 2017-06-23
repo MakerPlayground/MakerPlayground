@@ -9,10 +9,10 @@ import javafx.collections.ObservableMap;
  * Created by nuntipat on 6/2/2017 AD.
  */
 public class Condition {
-    private final ObservableList<Point> waypoint;
+    private final ObservableList<Double> waypoint;
     private final ObservableMap<ProjectDevice, UserSetting> setting;
 
-    private final ObservableList<Point> unmodifiableWaypoint;
+    private final ObservableList<Double> unmodifiableWaypoint;
     private final ObservableMap<ProjectDevice, UserSetting> unmodifiableSetting;
 
     Condition() {
@@ -23,7 +23,7 @@ public class Condition {
         unmodifiableSetting = FXCollections.unmodifiableObservableMap(setting);
     }
 
-    public ObservableList<Point> getUnmodifiableWaypoint() {
+    public ObservableList<Double> getUnmodifiableWaypoint() {
         return unmodifiableWaypoint;
     }
 

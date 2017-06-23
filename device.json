@@ -1,0 +1,108 @@
+[
+  {
+    "name": "led",
+    "action": [
+      {
+        "name": "blink",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "frequency",
+            "defaultValue": 1.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 1000.0,
+              "unit": "HERTZ",
+              "value": []
+            },
+            "parameterType": "DOUBLE",
+            "controlType": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "on",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "brightness",
+            "defaultValue": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT",
+              "value": []
+            },
+            "parameterType": "DOUBLE",
+            "controlType": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "defaultAction": {
+      "name": "off",
+      "type": "Inactive",
+      "parameter": []
+    },
+    "value": []
+  },
+  {
+    "name": "lcd",
+    "action": [
+      {
+        "name": "backlight_on",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "backlight_off",
+        "type": "Inactive",
+        "parameter": []
+      },
+      {
+        "name": "show_text",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "backlight",
+            "defaultValue": "on",
+            "constraint": {
+              "min": "",
+              "max": "",
+              "unit": "NOT_SPECIFIED",
+              "value": [
+                "backlight_on",
+                "backlight_off"
+              ]
+            },
+            "parameterType": "ENUM",
+            "controlType": "DROPDOWN"
+          },
+          {
+            "name": "text",
+            "defaultValue": "text",
+            "constraint": {
+              "min": "",
+              "max": "",
+              "unit": "NOT_SPECIFIED",
+              "value": []
+            },
+            "parameterType": "STRING",
+            "controlType": "TEXTBOX"
+          }
+        ]
+      }
+    ],
+    "defaultAction": {
+      "name": "backlight_off",
+      "type": "Inactive",
+      "parameter": []
+    },
+    "value": []
+  }
+]

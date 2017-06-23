@@ -1,5 +1,7 @@
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,7 +15,8 @@ public class GenericDevice {
     private final Action defaultAction;
     private final List<Value> value;
 
-    public GenericDevice(String name, List<Action> action, Action defaultAction, List<Value> value) {
+    @JsonCreator
+    public GenericDevice(@JsonProperty("name") String name,@JsonProperty("action") List<Action> action,@JsonProperty("defaultAction") Action defaultAction,@JsonProperty("value") List<Value> value) {
         this.name = name;
         this.action = Collections.unmodifiableList(action);
         this.defaultAction = defaultAction;
