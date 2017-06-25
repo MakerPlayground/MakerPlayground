@@ -17,12 +17,12 @@ public enum DeviceLibrary {
         Map<GenericDevice, List<Device>>  tmpOutputDevice = new HashMap<>();
 
         // TODO: Replace these dummy devices by loading output device and inputDevice from file or the server
-        Action action1 = new Action("on", ActionType.Active, Arrays.asList(new Parameter("brightness", 100, Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.NUMERIC_SLIDER)));
+        Action action1 = new Action("on", ActionType.Active, Arrays.asList(new Parameter("brightness", 50.00, Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.SLIDER)));
         Action action2 = new Action("off", ActionType.Inactive, Collections.emptyList());
         GenericDevice led = new GenericDevice("led", Arrays.asList(action1, action2), action2, Collections.emptyList());
         tmpOutputDevice.put(led, Collections.emptyList());
 
-        Action action3 = new Action("play", ActionType.Active, Arrays.asList(new Parameter("volume", 50, Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.NUMERIC_TEXTBOX)));
+        Action action3 = new Action("play", ActionType.Active, Arrays.asList(new Parameter("volume", 50.5, Constraint.ZERO_TO_HUNDRED, ParameterType.DOUBLE, ControlType.TIME)));
         Action action4 = new Action("stop", ActionType.Inactive, Collections.emptyList());
         GenericDevice speaker = new GenericDevice("speaker", Arrays.asList(action3, action4), action4, Collections.emptyList());
         tmpOutputDevice.put(speaker, Collections.emptyList());

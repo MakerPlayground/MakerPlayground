@@ -50,9 +50,9 @@ public class DynamicViewModelCreator<T, U> {
                     } else if (c.wasUpdated()) {
                         for (T updatedItem : c.getList().subList(c.getFrom(), c.getTo())) {
                             if (filter != null) {
-                                if (filter.test(updatedItem))
+                                if (filter.test(updatedItem) && !controllerMap.containsKey(updatedItem))
                                     addController(updatedItem);
-                                else
+                                else if (!filter.test(updatedItem) && controllerMap.containsKey(updatedItem))
                                     removeController(updatedItem);
                             }
                         }
