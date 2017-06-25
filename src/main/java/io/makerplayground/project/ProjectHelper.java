@@ -3,6 +3,7 @@ package io.makerplayground.project;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.ObjectProperty;
 
 import java.io.File;
 
@@ -54,6 +55,8 @@ public class ProjectHelper {
             }
         }
         State s2 = dummyProject.addState();
+        s2.getPosition().setX(300.0);
+        s2.getPosition().setY(500.0);
         for(UserSetting setting : s2.getSetting()){
             if(setting.getDevice().getGenericDevice() == led){
                 for (Action action : led.getAction())
@@ -61,6 +64,7 @@ public class ProjectHelper {
                         setting.setAction(action);
             }
         }
+        dummyProject.addCondition(s1,s2);
         return dummyProject;
     }
 }

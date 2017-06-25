@@ -7,6 +7,7 @@ package io.makerplayground.device;
 public enum ControlType {
     TEXTBOX,SPINBOX,DROPDOWN,SLIDER,
     NUMERIC_TEXTBOX,
-    NUMERIC_SLIDER;
+    NUMERIC_SLIDER,
+    TIME;
     // TODO: add more control type
 }

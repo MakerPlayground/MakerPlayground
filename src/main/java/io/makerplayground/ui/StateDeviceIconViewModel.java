@@ -1,7 +1,13 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.device.Action;
+import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Parameter;
 import io.makerplayground.project.UserSetting;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableMap;
 
 /**
  * Created by tanyagorn on 6/12/2017.
@@ -9,11 +15,16 @@ import javafx.beans.property.SimpleStringProperty;
 public class StateDeviceIconViewModel {
 
     private final UserSetting userSetting;
+    //private final SimpleObjectProperty<Action> action;
     private final SimpleStringProperty name;
 
     public StateDeviceIconViewModel(UserSetting userSetting) {
         this.userSetting = userSetting;
         this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+//        this.action = new SimpleObjectProperty<>(userSetting.getAction());
+//        this.action.addListener((observable, oldValue, newValue) -> {
+//            userSetting.setAction(newValue);
+//        });
     }
 
     public String getName() {
@@ -27,4 +38,30 @@ public class StateDeviceIconViewModel {
     public String getImageName() {
         return userSetting.getDevice().getGenericDevice().getName();
     }
+
+    public Action getAction() {
+        return userSetting.getAction();
+        //return action.get();
+    }
+
+    public ObjectProperty<Action> actionProperty() {
+        //return action;
+        return userSetting.actionProperty();
+    }
+
+    public GenericDevice getGenericDevice() {
+        return userSetting.getDevice().getGenericDevice();
+    }
+
+    public Object getParameterValue(Parameter p) {
+        //System.out.println("will return " + userSetting.getValueMap().get(p));
+        return userSetting.getValueMap().get(p);
+    }
+
+    public Object setParameterValue(Parameter p, Object o) {
+        //System.out.println("will set " + o);
+        //System.out.println(userSetting.getValueMap());
+        return userSetting.getValueMap().replace(p, o);
+    }
+
 }

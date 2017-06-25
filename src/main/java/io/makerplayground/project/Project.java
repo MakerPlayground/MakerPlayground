@@ -1,6 +1,7 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jgrapht.DirectedGraph;
@@ -32,7 +33,7 @@ public class Project {
     private int numDevice = 1; // TODO: to be removed
 
     public Project() {
-        diagram = new SimpleDirectedGraph<>((v1, v2) -> new Condition());
+        diagram = new SimpleDirectedGraph<>((v1, v2) -> new Condition(v1,v2));
 
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
@@ -152,4 +153,13 @@ public class Project {
     }
 
     // TODO: add method to manage condition
+    public Condition addCondition(State source, State dest) {
+        Condition c = diagram.addEdge(source, dest);
+        condition.add(c);
+        return c;
+    }
+
+    public ObservableList<Condition> getCondition() {
+        return condition;
+    }
 }

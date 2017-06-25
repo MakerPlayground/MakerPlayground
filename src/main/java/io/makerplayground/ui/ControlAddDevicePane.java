@@ -1,18 +1,18 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.device.GenericDevice;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
 
 /**
  * Created by tanyagorn on 6/20/2017.
@@ -20,43 +20,47 @@ import javafx.scene.layout.VBox;
 public class ControlAddDevicePane extends VBox {
     private GenericDevice genericDevice;
     private int count;
+    @FXML private VBox controllAddDevicePane;
+    @FXML private ImageView imageView;
+    @FXML private Label nameLabel;
+    @FXML private Button incBtn;
+    @FXML private Button decBtn;
+    @FXML private TextField numberTextField;
 
     public ControlAddDevicePane(GenericDevice genericDevice) {
         this.genericDevice = genericDevice;
         this.count = 0;
 
-        Image img = new Image(getClass().getResourceAsStream("/icons/" + genericDevice.getName() + ".png"));
-        ImageView imageView = new ImageView(img);
-        Label nameLabel = new Label(genericDevice.getName());
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ControlAddDevicePane.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
 
-        HBox hbox = new HBox();
-        setAlignment(Pos.CENTER);
-        Button decBtn = new Button("-");
-        decBtn.setPrefWidth(35);
-        TextField textField = new TextField("0");
-        textField.setPrefWidth(35);
-        Button incBtn = new Button("+");
-        incBtn.setPrefWidth(35);
-        hbox.getChildren().addAll(decBtn, textField, incBtn);
-        getChildren().addAll(imageView, nameLabel, hbox);
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
 
-        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + genericDevice.getName() + ".png")));
+        nameLabel.setText(genericDevice.getName());
+
+        numberTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                this.count = Integer.parseInt(textField.getText());
+                this.count = Integer.parseInt(numberTextField.getText());
             }
         });
 
         decBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 decrease();
-                textField.setText(String.valueOf(count));
+                numberTextField.setText(String.valueOf(count));
             }
         });
 
         incBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 increase();
-                textField.setText(String.valueOf(count));
+                numberTextField.setText(String.valueOf(count));
             }
         });
     }
@@ -70,7 +74,9 @@ public class ControlAddDevicePane extends VBox {
     }
 
     public void decrease() {
-        this.count = count - 1;
+        if (this.count > 0) {
+            this.count = count - 1;
+        }
     }
 
     public void increase() {

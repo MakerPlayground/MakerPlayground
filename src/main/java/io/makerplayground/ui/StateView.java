@@ -4,12 +4,10 @@ import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
 import javafx.beans.binding.Bindings;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
@@ -22,12 +20,13 @@ import java.io.IOException;
 public class StateView extends VBox {
     private final StateViewModel stateViewModel;
 
-    static class Delta { double x, y; }
-
     @FXML private FlowPane activeIconFlowPane;
     @FXML private FlowPane inactiveIconFlowPane;
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
+
+    private double dragDeltaX = 0;
+    private double dragDeltaY = 0;
 
     public StateView(StateViewModel stateViewModel) {
         this.stateViewModel = stateViewModel;
@@ -84,38 +83,26 @@ public class StateView extends VBox {
     }
 
     private void enableDrag() {
-        final Delta dragDelta = new Delta();
-        setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
-                dragDelta.x = StateView.this.getLayoutX() - mouseEvent.getX();
-                dragDelta.y = StateView.this.getLayoutY() - mouseEvent.getY();
-                getScene().setCursor(Cursor.MOVE);
-            }
-        });
-        setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
+        setOnMouseEntered(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
         });
-        setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                StateView.this.setLayoutX(mouseEvent.getX() + dragDelta.x);
-                StateView.this.setLayoutY(mouseEvent.getY() + dragDelta.y);
-            }
+        setOnMousePressed(mouseEvent -> {
+            dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
+            dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
+            getScene().setCursor(Cursor.MOVE);
         });
-        setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.HAND);
-                }
-            }
+        setOnMouseDragged(mouseEvent -> {
+            setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
+            setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
         });
-        setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.DEFAULT);
-                }
+        setOnMouseReleased(mouseEvent -> {
+            getScene().setCursor(Cursor.HAND);
+        });
+        setOnMouseExited(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                getScene().setCursor(Cursor.DEFAULT);
             }
         });
     }
