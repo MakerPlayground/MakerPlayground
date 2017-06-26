@@ -1,0 +1,29 @@
+.root{
+    -fx-border-color: transparent transparent transparent transparent;
+}
+.hbox{
+    -fx-border-color : white;
+}
+#decBtn{
+    -fx-background-color : #0768de;
+    -fx-text-fill : white;
+    -fx-border-color : #0768de;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5 0 0 5;
+    -fx-background-insets: 0, 0, 0;
+}
+#incBtn{
+    -fx-background-color : #0768de;
+    -fx-text-fill : white;
+    -fx-border-color : #0768de;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0 5 5 0;
+    -fx-background-insets: 0, 0, 0;
+}
+#numTextField{
+    -fx-background-color : white;
+    -fx-text-fill : black;
+    -fx-border-color : #0768de;
+    -fx-border-width: 0.5px;
+    -fx-background-insets: 0, 0, 0;
+}

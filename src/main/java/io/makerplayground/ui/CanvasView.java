@@ -4,20 +4,26 @@ import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+
+import java.io.IOException;
 
 /**
  * Created by tanyagorn on 6/13/2017.
  */
 public class CanvasView extends AnchorPane {
+    @FXML private AnchorPane anchorPane;
+    @FXML private Pane canvasPane;
+    @FXML private ScrollPane scrollPane;
+    @FXML private Button addStateBtn;
 
     private final CanvasViewModel canvasViewModel;
     private final ViewFactory<StateViewModel, StateView> viewFactory = new ViewFactory<StateViewModel, StateView>() {
@@ -41,25 +47,23 @@ public class CanvasView extends AnchorPane {
 
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/CanvasView.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
         initView();
     }
 
     private void initView() {
-        Button btnAddState = new Button("Add State");
-        btnAddState.setOnAction((event) -> {
+
+        addStateBtn.setOnAction((event) -> {
             canvasViewModel.project.addState();
         });
-
-//        HBox hb = new HBox();
-//        hb.setPadding(new Insets(10, 10, 10, 10));
-//        hb.setSpacing(10);
-//        hb.getChildren().addAll(btnAddState);
-
-
-        setTopAnchor(btnAddState, 8.0);
-        setRightAnchor(btnAddState, 8.0);
-
-        Pane canvasPane = new Pane();
 
         DynamicViewCreator<Pane, StateViewModel, StateView> canvasViewCreator =
             new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
@@ -76,16 +80,6 @@ public class CanvasView extends AnchorPane {
                         parent.getChildren().remove(node);
                     }
                 });
-
-        ScrollPane scrollPane = new ScrollPane();
-
-        setTopAnchor(scrollPane,0.0);
-        setRightAnchor(scrollPane,0.0);
-        setBottomAnchor(scrollPane,0.0);
-        setLeftAnchor(scrollPane,0.0);
-        scrollPane.setContent(canvasPane);
-
-        getChildren().addAll(scrollPane,btnAddState);
     }
 
 

@@ -5,59 +5,90 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.text.Font?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+
+<fx:root alignment="CENTER" style="-fx-background-color: transparent;" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TextField fx:id="nameTextField" />
-      <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+      <Arc id="arcNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <VBox id="statePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
          <children>
-            <Label text="Active" />
-            <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
-               <content>
-                  <FlowPane fx:id="activeIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </FlowPane>
-               </content>
-            </ScrollPane>
-            <Label layoutX="10.0" layoutY="10.0" text="Inactive" />
-            <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0">
-               <content>
-                  <FlowPane fx:id="inactiveIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </FlowPane>
-               </content>
-            </ScrollPane>
-         </children>
-         <VBox.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </VBox.margin>
-      </VBox>
-      <HBox alignment="CENTER_LEFT" spacing="5.0">
-         <children>
-            <Label text="Delay " />
-            <TextField fx:id="delayTextField" prefWidth="50.0">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
+            <TextField id="nameStateTextField" fx:id="nameTextField" prefHeight="40.0">
+               <font>
+                  <Font size="14.0" />
+               </font>
             </TextField>
-            <TitledPane animated="false" expanded="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" text="sec" />
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+               <children>
+                  <Label text="Active">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <FlowPane fx:id="activeIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </FlowPane>
+                     </content>
+                  </ScrollPane>
+                  <Label layoutX="10.0" layoutY="10.0" text="Inactive">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <FlowPane fx:id="inactiveIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </FlowPane>
+                     </content>
+                  </ScrollPane>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="10.0" />
+               </VBox.margin>
+            </VBox>
+            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" spacing="5.0">
+               <children>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/delayIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label id="delayLabel" text="Delay " />
+                  <TextField id="numberTextField" fx:id="delayTextField" prefWidth="50.0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </TextField>
+                  <TitledPane animated="false" expanded="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" text="sec" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </HBox>
+      </VBox>
+      <Arc fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

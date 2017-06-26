@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+
+<fx:root id="anchorPane" fx:id="anchorPane" stylesheets="@../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ScrollPane id="scrollPane" fx:id="scrollPane" layoutX="60.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <Pane id="canvasPane" fx:id="canvasPane" />
+         </content>
+      </ScrollPane>
+      <Button id="addStateBtn" fx:id="addStateBtn" mnemonicParsing="false" text="+ Add State" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+   </children>
+</fx:root>
