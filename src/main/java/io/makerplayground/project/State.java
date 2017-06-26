@@ -37,7 +37,7 @@ public class State {
         this.sourcePort.xProperty().bind(position.xProperty());
         this.sourcePort.yProperty().bind(position.yProperty().add(height.divide(2)));
         this.destPort = new Point(0, 0);
-        this.destPort.xProperty().bind(position.xProperty().add(width));
+        this.destPort.xProperty().bind(position.xProperty().add(width).add(30));
         this.destPort.yProperty().bind(position.yProperty().add(height.divide(2)));
     }
 
