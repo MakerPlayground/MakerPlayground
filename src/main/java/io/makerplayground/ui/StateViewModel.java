@@ -19,6 +19,8 @@ public class StateViewModel {
     //private final SimpleDoubleProperty x;
     //private final SimpleDoubleProperty y;
 
+    DevicePropertyWindow devicePropertyWindow;
+
     private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorActive;
     private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorInactive;
 
@@ -26,14 +28,14 @@ public class StateViewModel {
         this.state = state;
         this.name = new SimpleStringProperty(state.getName());
         this.delay = new SimpleDoubleProperty(state.getDelay());
-        //this.x = new SimpleDoubleProperty(state.getPosition().getX());
-        //this.y = new SimpleDoubleProperty(state.getPosition().getY());
 
         this.dynamicViewModelCreatorActive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
                 , userSetting -> userSetting.getAction().getType() == ActionType.Active);
         this.dynamicViewModelCreatorInactive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
                 , userSetting -> userSetting.getAction().getType() == ActionType.Inactive);
         // TODO: Do the same for unchanged
+
+        this.devicePropertyWindow = null;
     }
 
     public String getName() {

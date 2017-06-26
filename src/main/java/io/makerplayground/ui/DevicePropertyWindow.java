@@ -8,14 +8,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Created by tanyagorn on 6/20/2017.
@@ -105,46 +111,60 @@ public class DevicePropertyWindow extends PopOver {
             HBox customRow = new HBox();
             Label name = new Label(p.getName());
             customRow.getChildren().add(name);
+
             if (p.getControlType() == ControlType.SLIDER) {
                 Slider slider = new Slider();
+                TextField textField = new TextField();
+
+                // Set initial value and its constraint
+                textField.setText(String.valueOf(viewModel.getParameterValue(p)));
                 slider.setMin(p.getConstraint().getMin());
                 slider.setMax(p.getConstraint().getMax());
                 slider.setValue((Double) (viewModel.getParameterValue(p)));
-                customRow.getChildren().add(slider);
 
-                slider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
+                // Handle event
+                slider.valueProperty().addListener(new ChangeListener<Number>() {
                     @Override
-                    public void changed(
-                            ObservableValue<? extends Boolean> observableValue,
-                            Boolean wasChanging,
-                            Boolean changing) {
-                        String valueString = String.format("%1$.3f", slider.getValue());
-
-                        if (!changing) {
-                            viewModel.setParameterValue(p, slider.getValue());
-                        }
+                    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                        String valueString = String.format("%1$.2f", slider.getValue());
+                        viewModel.setParameterValue(p, slider.getValue());
+                        textField.setText(valueString);
                     }
                 });
+
+                textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                    Double value = Double.parseDouble(textField.getText());
+                    viewModel.setParameterValue(p, value);
+                    slider.setValue(value);
+                });
+
+                customRow.getChildren().addAll(slider, textField);
             }
+
             if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField ();
-                if (p.getParameterType() == ParameterType.DOUBLE)
+                if (p.getParameterType() == ParameterType.DOUBLE) {
                     textField.setText(String.valueOf(viewModel.getParameterValue(p)));
-                // else
-                customRow.getChildren().add(textField);
-
-                textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue) {
+                    textField.textProperty().addListener((observable, oldValue, newValue) -> {
                         viewModel.setParameterValue(p, Double.parseDouble(textField.getText()));
-                    }
-                });
+                    });
+                }
+                else if (p.getParameterType() == ParameterType.STRING) {
+                    textField.setText(String.valueOf(viewModel.getParameterValue(p)));
+                    textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                        viewModel.setParameterValue(p, textField.getText());
+                    });
+                }
+                // else
+
+                customRow.getChildren().add(textField);
             }
+
             if (p.getControlType() == ControlType.DROPDOWN) {
                 // Casting ArrayList to ObservableList
                 ObservableList<String> list = FXCollections.observableArrayList(p.getConstraint().getValue());
                 ComboBox comboBox = new ComboBox(list);
                 comboBox.getSelectionModel().select(viewModel.getParameterValue(p));
-                customRow.getChildren().add(comboBox);
 
                 comboBox.valueProperty().addListener(new ChangeListener() {
                     @Override
@@ -153,7 +173,10 @@ public class DevicePropertyWindow extends PopOver {
                         System.out.println("eiei");
                     }
                 });
+
+                customRow.getChildren().add(comboBox);
             }
+
             if (p.getControlType() == ControlType.SPINBOX) {
                 Spinner spinner = new Spinner();
                 spinner.setEditable(true);
@@ -162,21 +185,28 @@ public class DevicePropertyWindow extends PopOver {
                 SpinnerValueFactory valueFactory = //
                         new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
                                 p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
-
                 spinner.setValueFactory(valueFactory);
-                customRow.getChildren().add(spinner);
 
-                spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                   if (!newValue) {
-                       viewModel.setParameterValue(p, Double.parseDouble(spinner.getEditor().getText()));
-                   }
+                spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    viewModel.setParameterValue(p, Double.parseDouble(spinner.getEditor().getText()));
                 });
+
+                customRow.getChildren().add(spinner);
             }
+
             if (p.getControlType() == ControlType.TIME) {
                 Spinner spinnerMin = new Spinner();
                 Spinner spinnerSec = new Spinner();
                 spinnerMin.setEditable(true);
                 spinnerSec.setEditable(true);
+
+                // TODO: Must compatible with format from JSON
+                // Value factory.
+                SpinnerValueFactory valueFactory = //
+                        new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
+                                p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
+                spinnerMin.setValueFactory(valueFactory);
+                spinnerSec.setValueFactory(valueFactory);
 
                 customRow.getChildren().addAll(spinnerMin, spinnerSec);
             }

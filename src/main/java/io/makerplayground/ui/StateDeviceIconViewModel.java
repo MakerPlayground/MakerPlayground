@@ -15,7 +15,6 @@ import javafx.collections.ObservableMap;
 public class StateDeviceIconViewModel {
 
     private final UserSetting userSetting;
-    //private final SimpleObjectProperty<Action> action;
     private final SimpleStringProperty name;
 
     public StateDeviceIconViewModel(UserSetting userSetting) {

@@ -29,8 +29,12 @@ public class StateView extends VBox {
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
 
+    DevicePropertyWindow devicePropertyWindow;
+
+
     public StateView(StateViewModel stateViewModel) {
         this.stateViewModel = stateViewModel;
+        this.devicePropertyWindow = null;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateView.fxml"));
         fxmlLoader.setRoot(this);
@@ -49,11 +53,16 @@ public class StateView extends VBox {
         nameTextField.textProperty().bindBidirectional(stateViewModel.nameProperty());
         Bindings.bindBidirectional(delayTextField.textProperty(), stateViewModel.delayProperty(), new NumberStringConverter());
 
-        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorActive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorActive(), activeIconFlowPane, new ViewFactory<StateDeviceIconViewModel, StateDeviceIconView>() {
-            @Override
-            public StateDeviceIconView newInstance(StateDeviceIconViewModel stateDeviceIconViewModel) {
-                return new StateDeviceIconView(stateDeviceIconViewModel);
-            }
+        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorActive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorActive(), activeIconFlowPane, stateDeviceIconViewModel -> {
+            StateDeviceIconView stateDeviceIconView = new StateDeviceIconView(stateDeviceIconViewModel);
+            stateDeviceIconView.setOnMouseClicked(e -> {
+                if (this.devicePropertyWindow != null)
+                    this.devicePropertyWindow.hide();
+                DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(stateDeviceIconViewModel);
+                devicePropertyWindow.show(StateView.this);
+                this.devicePropertyWindow = devicePropertyWindow;
+            });
+            return stateDeviceIconView;
         }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
             @Override
             public void addNode(FlowPane parent, StateDeviceIconView node) {
@@ -65,11 +74,16 @@ public class StateView extends VBox {
                 parent.getChildren().remove(node);
             }
         });
-        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorInactive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorInactive(), inactiveIconFlowPane, new ViewFactory<StateDeviceIconViewModel, StateDeviceIconView>() {
-            @Override
-            public StateDeviceIconView newInstance(StateDeviceIconViewModel stateDeviceIconViewModel) {
-                return new StateDeviceIconView(stateDeviceIconViewModel);
-            }
+        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreatorInactive = new DynamicViewCreator<>(stateViewModel.getDynamicViewModelCreatorInactive(), inactiveIconFlowPane, stateDeviceIconViewModel -> {
+            StateDeviceIconView stateDeviceIconView = new StateDeviceIconView(stateDeviceIconViewModel);
+            stateDeviceIconView.setOnMouseClicked(e -> {
+                if (this.devicePropertyWindow != null)
+                    this.devicePropertyWindow.hide();
+                DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(stateDeviceIconViewModel);
+                devicePropertyWindow.show(StateView.this);
+                this.devicePropertyWindow = devicePropertyWindow;
+            });
+            return stateDeviceIconView;
         }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
             @Override
             public void addNode(FlowPane parent, StateDeviceIconView node) {

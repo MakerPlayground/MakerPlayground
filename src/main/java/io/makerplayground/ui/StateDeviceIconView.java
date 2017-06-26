@@ -31,6 +31,7 @@ public class StateDeviceIconView extends VBox {
     public StateDeviceIconView(StateDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIconView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -44,11 +45,11 @@ public class StateDeviceIconView extends VBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png" )));
 
-        this.setOnMouseClicked(e -> {
-            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
-            devicePropertyWindow.show(StateDeviceIconView.this.getParent());
+//        this.setOnMouseClicked(e -> {
+//            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+//            devicePropertyWindow.show(this.getParent());
+//        });
 
-        });
 
     }
 
