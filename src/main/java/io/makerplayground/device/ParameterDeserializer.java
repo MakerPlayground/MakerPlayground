@@ -29,16 +29,25 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
 
         String name = node.get("name").asText();
         Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
-        ParameterType parameterType = mapper.treeToValue(node.get("type"), ParameterType.class);
-        ControlType controlType = mapper.treeToValue(node.get("control"), ControlType.class);
+        ParameterType parameterType = mapper.treeToValue(node.get("parameterType"), ParameterType.class);
+        ControlType controlType = mapper.treeToValue(node.get("controlType"), ControlType.class);
 
         Object defaultValue = null;
         switch (parameterType) {
             case STRING:
-                defaultValue = mapper.treeToValue(node.get("default"), String.class);
+                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case DOUBLE:
-                defaultValue = mapper.treeToValue(node.get("default"), Double.class);
+                defaultValue = mapper.treeToValue(node.get("defaultValue"), Double.class);
+                break;
+            case ENUM:
+                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
+                break;
+            case MIX:
+                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
+                break;
+            case INTEGER:
+                defaultValue = mapper.treeToValue(node.get("defaultValue"), Integer.class);
                 break;
             default:
                 System.out.println("Format error!!!");
