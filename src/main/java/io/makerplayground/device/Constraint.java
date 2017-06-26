@@ -85,4 +85,14 @@ public class Constraint {
     public List<String> getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Constraint{" +
+                "min=" + min +
+                ", max=" + max +
+                ", unit=" + unit +
+                ", value=" + value +
+                '}';
+    }
 }

@@ -1,40 +1,52 @@
 [
   {
-    "name": "led",
+    "name": "speaker",
     "action": [
       {
-        "name": "blink",
+        "name": "play",
         "type": "Active",
         "parameter": [
           {
-            "name": "frequency",
-            "defaultValue": 1.0,
+            "name": "volume",
+            "default": 50.5,
             "constraint": {
               "min": 0.0,
-              "max": 1000.0,
-              "unit": "HERTZ",
+              "max": 100.0,
+              "unit": "NOT_SPECIFIED",
               "value": []
             },
-            "parameterType": "DOUBLE",
-            "controlType": "SPINBOX"
+            "type": "DOUBLE",
+            "control": "SLIDER"
           }
         ]
       },
+      {
+        "name": "stop",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "defaultAction": "stop",
+    "value": []
+  },
+  {
+    "name": "led",
+    "action": [
       {
         "name": "on",
         "type": "Active",
         "parameter": [
           {
             "name": "brightness",
-            "defaultValue": 100.0,
+            "default": 50.0,
             "constraint": {
               "min": 0.0,
               "max": 100.0,
-              "unit": "PERCENT",
+              "unit": "NOT_SPECIFIED",
               "value": []
             },
-            "parameterType": "DOUBLE",
-            "controlType": "SLIDER"
+            "type": "DOUBLE",
+            "control": "SLIDER"
           }
         ]
       },
@@ -44,65 +56,7 @@
         "parameter": []
       }
     ],
-    "defaultAction": {
-      "name": "off",
-      "type": "Inactive",
-      "parameter": []
-    },
-    "value": []
-  },
-  {
-    "name": "lcd",
-    "action": [
-      {
-        "name": "backlight_on",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "backlight_off",
-        "type": "Inactive",
-        "parameter": []
-      },
-      {
-        "name": "show_text",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "backlight",
-            "defaultValue": "on",
-            "constraint": {
-              "min": "",
-              "max": "",
-              "unit": "NOT_SPECIFIED",
-              "value": [
-                "backlight_on",
-                "backlight_off"
-              ]
-            },
-            "parameterType": "ENUM",
-            "controlType": "DROPDOWN"
-          },
-          {
-            "name": "text",
-            "defaultValue": "text",
-            "constraint": {
-              "min": "",
-              "max": "",
-              "unit": "NOT_SPECIFIED",
-              "value": []
-            },
-            "parameterType": "STRING",
-            "controlType": "TEXTBOX"
-          }
-        ]
-      }
-    ],
-    "defaultAction": {
-      "name": "backlight_off",
-      "type": "Inactive",
-      "parameter": []
-    },
+    "defaultAction": "off",
     "value": []
   }
 ]

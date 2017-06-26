@@ -51,4 +51,13 @@ public class Action {
     public List<Parameter> getParameter() {
         return parameter;
     }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", parameter=" + parameter +
+                '}';
+    }
 }

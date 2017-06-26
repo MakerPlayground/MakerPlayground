@@ -32,17 +32,18 @@ public enum DeviceLibrary {
         GenericDevice speaker = new GenericDevice("speaker", Arrays.asList(action3, action4), action4, Collections.emptyList());
         tmpOutputDevice.put(speaker, Collections.emptyList());
 
-        List <GenericDevice> temp = null;
-        try {
-//            Map<GenericDevice, List<Device>> temp = mapper.readValue(new File("device.json"), Map.class);
-//            mapper.writeValue(new File("device.json"), tmpOutputDevice.keySet());
-            temp = mapper.readValue(new File("device.json"), new TypeReference<List<GenericDevice>>(){});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0 ; i<temp.size() ; i++){
-            tmpOutputDevice.put(temp.get(i), Collections.emptyList());
-        }
+//        List <GenericDevice> temp = null;
+//        try {
+////            Map<GenericDevice, List<Device>> temp = mapper.readValue(new File("device.json"), Map.class);
+////            mapper.writeValue(new File("device.json"), tmpOutputDevice.keySet());
+//            temp = mapper.readValue(new File("device.json"), new TypeReference<List<GenericDevice>>(){});
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        for (int i = 0 ; i<temp.size() ; i++){
+//            tmpOutputDevice.put(temp.get(i), Collections.emptyList());
+//        }
+//        System.out.println(temp);
 
         this.inputDevice = Collections.unmodifiableMap(tmpInputDevice);
         this.outputDevice = Collections.unmodifiableMap(tmpOutputDevice);
