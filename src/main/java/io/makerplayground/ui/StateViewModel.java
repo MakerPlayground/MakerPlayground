@@ -75,4 +75,8 @@ public class StateViewModel {
     public DoubleProperty yProperty() {
         return state.getPosition().yProperty();
     }
+
+    public State getState(){
+        return state;
+    }
 }
