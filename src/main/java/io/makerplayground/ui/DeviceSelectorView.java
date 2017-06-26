@@ -49,7 +49,7 @@ public class DeviceSelectorView extends Dialog {
     }
 
     private void initView() {
-        setTitle("Add Device");
+        setTitle("Device Library");
         getDialogPane().setExpanded(true);
         for (GenericDevice d  : DeviceLibrary.INSTANCE.getOutputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);

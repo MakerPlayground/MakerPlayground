@@ -11,6 +11,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.NumberStringConverter;
 
@@ -19,7 +20,7 @@ import java.io.IOException;
 /**
  * Created by tanyagorn on 6/12/2017.
  */
-public class StateView extends VBox {
+public class StateView extends HBox {
     private final StateViewModel stateViewModel;
 
     static class Delta { double x, y; }

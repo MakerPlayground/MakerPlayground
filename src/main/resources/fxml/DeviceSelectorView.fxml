@@ -8,28 +8,15 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" style="-fx-background-color: #edeef3;" stylesheets="@../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <header>
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
     <content>
       <AnchorPane minHeight="0.0" minWidth="0.0">
          <children>
-            <VBox alignment="TOP_CENTER" layoutY="-6.0" prefWidth="400.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <VBox alignment="TOP_CENTER" layoutY="-6.0" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                <children>
-                  <TitledPane text="Microcontroller">
-                     <content>
-                        <ScrollPane fitToWidth="true" prefHeight="80.0">
-                           <content>
-                              <FlowPane fx:id="mcuPane" hgap="5.0" vgap="5.0">
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </FlowPane>
-                           </content>
-                        </ScrollPane>
-                     </content>
-                  </TitledPane>
                   <TitledPane text="Output Device">
                      <content>
                         <ScrollPane fitToWidth="true" prefHeight="150.0">

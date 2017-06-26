@@ -1,0 +1,71 @@
+#deviceTitle{
+    -fx-background-color : #0768de;
+    -fx-text-fill : white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+.titled-pane > .title{
+    -fx-background-color : white;
+    -fx-border-color: transparent transparent transparent #0768de;
+    -fx-border-width : 2px;
+}
+.titled-pane{
+    -fx-focus-color: transparent;
+    -fx-text-fill : #0768de;
+}
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color : #0768de;
+}
+.titled-pane > *.content{
+    -fx-background-color : transparent;
+    -fx-box-border : transparent;
+}
+
+.scroll-pane {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 2em;
+    -fx-padding:0 10 0 0;
+}
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 10;
+    -fx-padding:0 10 0 0;
+}
+.scroll-bar .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius:2em;
+}
+.scroll-bar .thumb{
+    -fx-background-color: derive(black,90%);
+    -fx-border-radius: 2em;
+    -fx-background-insets: 2, 0, 0;
+}
+
+#addBtn{
+    -fx-focus-color: transparent;
+    -fx-border-color : #0768de;
+    -fx-background-color : #0768de;
+    -fx-border-radius : 2em;
+    -fx-font-size : 22px;
+    -fx-text-fill : white;
+}
+#addBtn:pressed{
+    -fx-border-color : #0768de;
+    -fx-background-color : transparent;
+    -fx-border-radius : 0em;
+    -fx-font-size : 22px;
+    -fx-text-fill : #0768de;
+}
