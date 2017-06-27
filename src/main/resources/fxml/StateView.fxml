@@ -13,11 +13,10 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
 
-
-<fx:root alignment="CENTER" style="-fx-background-color: transparent;" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" style="-fx-background-color: transparent;" stylesheets="@../css/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
+      <Arc id="srcNode" fx:id="sourceNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" style="-fx-fill: #0768de;" type="ROUND" />
+      <VBox id="statePane" fx:id="statePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
          <children>
             <TextField id="nameStateTextField" fx:id="nameTextField" prefHeight="40.0">
                <font>
@@ -89,6 +88,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc id="desNode" fx:id="desNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" style="-fx-fill: #0768de;" type="ROUND" />
    </children>
 </fx:root>

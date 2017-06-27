@@ -3,12 +3,17 @@ package io.makerplayground.ui;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Arc;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
@@ -19,16 +24,17 @@ import java.io.IOException;
 public class StateView extends HBox {
     private final StateViewModel stateViewModel;
 
+    @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
     @FXML private FlowPane inactiveIconFlowPane;
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
+    @FXML private Arc sourceNode;
+    @FXML private Arc desNode;
 
-    DevicePropertyWindow devicePropertyWindow;
-
-
-    private double dragDeltaX = 0;
-    private double dragDeltaY = 0;
+    private DevicePropertyWindow devicePropertyWindow;
+    private double dragDeltaX;
+    private double dragDeltaY;
 
     public StateView(StateViewModel stateViewModel) {
         this.stateViewModel = stateViewModel;
@@ -118,5 +124,29 @@ public class StateView extends HBox {
                 getScene().setCursor(Cursor.DEFAULT);
             }
         });
+    }
+
+    public void setDesNodeOnDragDetectedEvent(EventHandler<MouseEvent> e) {
+        desNode.setOnDragDetected(e);
+    }
+
+    public void setSrcNodeOnDragOverEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragOver(e);
+    }
+
+    public void setSrcNodeOnDragEnteredEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragEntered(e);
+    }
+
+    public void setSrcNodeOnDragExitedEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragExited(e);
+    }
+
+    public void setSrcNodeOnDragDroppedEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragDropped(e);
+    }
+
+    public void setDesNodeOnDragDoneEvent(EventHandler<DragEvent> e) {
+        desNode.setOnDragDone(e);
     }
 }

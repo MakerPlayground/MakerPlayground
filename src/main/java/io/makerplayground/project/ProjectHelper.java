@@ -64,7 +64,7 @@ public class ProjectHelper {
                         setting.setAction(action);
             }
         }
-        dummyProject.addCondition(s1,s2);
+        //dummyProject.addCondition(s1,s2);
         return dummyProject;
     }
 }
