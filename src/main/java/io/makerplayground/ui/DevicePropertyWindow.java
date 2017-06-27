@@ -8,27 +8,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 /**
  * Created by tanyagorn on 6/20/2017.
  */
 public class DevicePropertyWindow extends PopOver {
     private final StateDeviceIconViewModel viewModel;
-
     private VBox paramVBox;
 
     public DevicePropertyWindow(StateDeviceIconViewModel viewModel) {
@@ -86,9 +79,6 @@ public class DevicePropertyWindow extends PopOver {
         });
         comboBox.getSelectionModel().select(viewModel.getAction());
         viewModel.actionProperty().bind(comboBox.getSelectionModel().selectedItemProperty());
-
-        //ComboBox comboBox = new ComboBox(options);
-        //comboBox.getSelectionModel().select(viewModel.getUserSetting().getAction().getName());
 
         paramVBox = new VBox();
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> {
@@ -210,6 +200,10 @@ public class DevicePropertyWindow extends PopOver {
 
                 customRow.getChildren().addAll(spinnerMin, spinnerSec);
             }
+
+//            if (p.getControlType() == ControlType.CUSTOMSEGMENT) {
+//                TextField digit1 = new TextField();
+//            }
 
             // TODO: Add more control type
             paramVBox.getChildren().add(customRow);

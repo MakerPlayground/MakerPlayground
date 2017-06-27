@@ -73,9 +73,9 @@ public class Project {
         }
 
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
-        for (State state : diagram.vertexSet()) {
-            state.getSetting().add(new UserSetting(projectDevice));
-        }
+//        for (State state : diagram.vertexSet()) {
+//            state.getSetting().add(new UserSetting(projectDevice));
+//        }
 
         outputDevice.add(projectDevice);
     }
@@ -137,9 +137,9 @@ public class Project {
         s.setName("state" + (state.size() + 1));
 
         // Add every output device to be displayed in new state
-        for (ProjectDevice projectDevice: outputDevice) {
-            s.addDevice(projectDevice);
-        }
+//        for (ProjectDevice projectDevice: outputDevice) {
+//            s.addDevice(projectDevice);
+//        }
 
         diagram.addVertex(s);
         state.add(s);

@@ -26,24 +26,44 @@ public class CanvasView extends AnchorPane {
     @FXML private Button addStateBtn;
 
     private final CanvasViewModel canvasViewModel;
-    private final ViewFactory<StateViewModel, StateView> viewFactory = new ViewFactory<StateViewModel, StateView>() {
+
+    private final ViewFactory<SceneViewModel, SceneView> viewFactory = new ViewFactory<SceneViewModel, SceneView>() {
         @Override
-        public StateView newInstance(StateViewModel canvasViewModel) {
-            StateView canvas = new StateView(canvasViewModel);
+        public SceneView newInstance(SceneViewModel sceneViewModel) {
+            SceneView canvas = new SceneView(sceneViewModel);
             return canvas;
         }
     };
-    private final NodeConsumer<Pane, StateView> nodeConsumer = new NodeConsumer<Pane, StateView>() {
+    private final NodeConsumer<Pane, SceneView> nodeConsumer = new NodeConsumer<Pane, SceneView>() {
         @Override
-        public void addNode(Pane parent, StateView node) {
+        public void addNode(Pane parent, SceneView node) {
             parent.getChildren().add(node);
         }
 
         @Override
-        public void removeNode(Pane parent, StateView node) {
+        public void removeNode(Pane parent, SceneView node) {
             parent.getChildren().remove(node);
         }
     };
+
+//    private final ViewFactory<StateViewModel, StateView> viewFactory = new ViewFactory<StateViewModel, StateView>() {
+//        @Override
+//        public StateView newInstance(StateViewModel canvasViewModel) {
+//            StateView canvas = new StateView(canvasViewModel);
+//            return canvas;
+//        }
+//    };
+//    private final NodeConsumer<Pane, StateView> nodeConsumer = new NodeConsumer<Pane, StateView>() {
+//        @Override
+//        public void addNode(Pane parent, StateView node) {
+//            parent.getChildren().add(node);
+//        }
+//
+//        @Override
+//        public void removeNode(Pane parent, StateView node) {
+//            parent.getChildren().remove(node);
+//        }
+//    };
 
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
@@ -65,7 +85,7 @@ public class CanvasView extends AnchorPane {
             canvasViewModel.project.addState();
         });
 
-        DynamicViewCreator<Pane, StateViewModel, StateView> canvasViewCreator =
+        DynamicViewCreator<Pane, SceneViewModel, SceneView> canvasViewCreator =
             new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
 
         DynamicViewCreator<Pane, LineViewModel , LineView> lineViewCreator =
@@ -81,6 +101,7 @@ public class CanvasView extends AnchorPane {
                     }
                 });
     }
+
 
 
 }

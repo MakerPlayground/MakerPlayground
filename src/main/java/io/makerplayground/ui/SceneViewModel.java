@@ -1,37 +1,36 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.device.ActionType;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.State;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 
 /**
- * Created by tanyagorn on 6/12/2017.
+ * Created by tanyagorn on 6/26/2017.
  */
-public class StateViewModel {
-
+public class SceneViewModel {
     private final State state;
     private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
+    private final Project project;
 
     DevicePropertyWindow devicePropertyWindow;
 
-    private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorActive;
-    private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreatorInactive;
+    private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreator;
 
-    public StateViewModel(State state) {
+    public SceneViewModel(State state, Project project) {
         this.state = state;
         this.name = new SimpleStringProperty(state.getName());
         this.delay = new SimpleDoubleProperty(state.getDelay());
+        this.project = project;
 
-        this.dynamicViewModelCreatorActive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
-                , userSetting -> userSetting.getAction().getType() == ActionType.Active);
-        this.dynamicViewModelCreatorInactive = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new
-                , userSetting -> userSetting.getAction().getType() == ActionType.Inactive);
-        // TODO: Do the same for unchanged
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new);
 
         this.devicePropertyWindow = null;
     }
@@ -52,12 +51,8 @@ public class StateViewModel {
         return delay;
     }
 
-    public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreatorActive() {
-        return dynamicViewModelCreatorActive;
-    }
-
-    public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreatorInactive() {
-        return dynamicViewModelCreatorInactive;
+    public DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> getDynamicViewModelCreator() {
+        return dynamicViewModelCreator;
     }
 
     public double getX() {
@@ -74,5 +69,21 @@ public class StateViewModel {
 
     public DoubleProperty yProperty() {
         return state.getPosition().yProperty();
+    }
+
+    public ObservableList<ProjectDevice> getProjectOutputDevice() {
+        return project.getOutputDevice();
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public ObservableList<UserSetting> getStateDevice() {
+        return state.getSetting();
+    }
+
+    public void removeStateDevice(ProjectDevice projectDevice) {
+        state.removeDevice(projectDevice);
     }
 }

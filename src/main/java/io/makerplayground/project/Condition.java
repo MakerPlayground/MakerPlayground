@@ -1,7 +1,5 @@
 package io.makerplayground.project;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -30,17 +28,8 @@ public class Condition {
         destNode.getSourcePort().xProperty().addListener((observable, oldValue, newValue) -> waypoint.set(2, newValue.doubleValue()));
         destNode.getSourcePort().yProperty().addListener((observable, oldValue, newValue) -> waypoint.set(3, newValue.doubleValue()));
 
-
         setting = FXCollections.observableHashMap();
         unmodifiableSetting = FXCollections.unmodifiableObservableMap(setting);
-    }
-
-    public State getSourceNode() {
-        return sourceNode;
-    }
-
-    public State getDestNode() {
-        return destNode;
     }
 
     public ObservableList<Double> getUnmodifiableWaypoint() {

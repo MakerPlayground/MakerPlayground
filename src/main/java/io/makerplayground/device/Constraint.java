@@ -1,5 +1,7 @@
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +30,14 @@ public class Constraint {
         this.max = 0;
         this.unit = Unit.NOT_SPECIFIED;
         this.value = Collections.emptyList();
+    }
+
+    @JsonCreator
+    Constraint(@JsonProperty("min") double min,@JsonProperty("max") double max,@JsonProperty("unit") Unit unit,@JsonProperty("value") List<String> value) {
+        this.min = min;
+        this.max = max;
+        this.unit = unit;
+        this.value = value;
     }
 
     Constraint(double min, double max, Unit unit) {
@@ -74,5 +84,15 @@ public class Constraint {
      */
     public List<String> getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Constraint{" +
+                "min=" + min +
+                ", max=" + max +
+                ", unit=" + unit +
+                ", value=" + value +
+                '}';
     }
 }

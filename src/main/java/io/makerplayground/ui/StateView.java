@@ -103,8 +103,8 @@ public class StateView extends HBox {
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent mouseEvent) {
                 // record a delta distance for the drag and drop operation.
-                dragDelta.x = StateView.this.getLayoutX() - mouseEvent.getX();
-                dragDelta.y = StateView.this.getLayoutY() - mouseEvent.getY();
+                dragDelta.x = StateView.this.getLayoutX() - mouseEvent.getSceneX();
+                dragDelta.y = StateView.this.getLayoutY() - mouseEvent.getSceneY();
                 getScene().setCursor(Cursor.MOVE);
             }
         });
@@ -115,8 +115,8 @@ public class StateView extends HBox {
         });
         setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent mouseEvent) {
-                StateView.this.setLayoutX(mouseEvent.getX() + dragDelta.x);
-                StateView.this.setLayoutY(mouseEvent.getY() + dragDelta.y);
+                StateView.this.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
+                StateView.this.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
             }
         });
         setOnMouseEntered(new EventHandler<MouseEvent>() {

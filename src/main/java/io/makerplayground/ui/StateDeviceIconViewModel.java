@@ -3,6 +3,7 @@ package io.makerplayground.ui;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.UserSetting;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,10 +21,6 @@ public class StateDeviceIconViewModel {
     public StateDeviceIconViewModel(UserSetting userSetting) {
         this.userSetting = userSetting;
         this.name = new SimpleStringProperty(userSetting.getDevice().getName());
-//        this.action = new SimpleObjectProperty<>(userSetting.getAction());
-//        this.action.addListener((observable, oldValue, newValue) -> {
-//            userSetting.setAction(newValue);
-//        });
     }
 
     public String getName() {
@@ -46,6 +43,10 @@ public class StateDeviceIconViewModel {
     public ObjectProperty<Action> actionProperty() {
         //return action;
         return userSetting.actionProperty();
+    }
+
+    public ProjectDevice getProjectDevice() {
+        return userSetting.getDevice();
     }
 
     public GenericDevice getGenericDevice() {

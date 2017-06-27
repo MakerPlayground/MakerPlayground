@@ -34,37 +34,37 @@ public class ProjectHelper {
     public static Project loadDummyProject() {
         Project dummyProject = new Project();
 
-        GenericDevice speaker = null;
-        GenericDevice led = null;
-        for (GenericDevice d : DeviceLibrary.INSTANCE.getOutputDevice()) {
-            if (d.getName().equals("led"))
-                led = d;
-            if (d.getName().equals("speaker"))
-                speaker = d;
+//        GenericDevice speaker = null;
+//        GenericDevice led = null;
+//        for (GenericDevice d : DeviceLibrary.INSTANCE.getOutputDevice()) {
+//            if (d.getName().equals("led"))
+//                led = d;
+//            if (d.getName().equals("speaker"))
+//                speaker = d;
+//
+//            dummyProject.addOutputDevice(d);
+//        }
 
-            dummyProject.addOutputDevice(d);
-        }
-
-        State s1 = dummyProject.addState();
-        for (UserSetting setting : s1.getSetting()) {
-            if(setting.getDevice().getGenericDevice() == led) {
-                for (Action action : led.getAction()) {
-                   if (action.getName().equals("on"))
-                       setting.setAction(action);
-                }
-            }
-        }
-        State s2 = dummyProject.addState();
-        s2.getPosition().setX(300.0);
-        s2.getPosition().setY(500.0);
-        for(UserSetting setting : s2.getSetting()){
-            if(setting.getDevice().getGenericDevice() == led){
-                for (Action action : led.getAction())
-                    if(action.getName().equals("off"))
-                        setting.setAction(action);
-            }
-        }
-        dummyProject.addCondition(s1,s2);
+//        State s1 = dummyProject.addState();
+//        for (UserSetting setting : s1.getSetting()) {
+//            if(setting.getDevice().getGenericDevice() == led) {
+//                for (Action action : led.getAction()) {
+//                   if (action.getName().equals("on"))
+//                       setting.setAction(action);
+//                }
+//            }
+//        }
+//        State s2 = dummyProject.addState();
+//        s2.getPosition().setX(300.0);
+//        s2.getPosition().setY(500.0);
+//        for(UserSetting setting : s2.getSetting()){
+//            if(setting.getDevice().getGenericDevice() == led){
+//                for (Action action : led.getAction())
+//                    if(action.getName().equals("off"))
+//                        setting.setAction(action);
+//            }
+//        }
+//        dummyProject.addCondition(s1,s2);
         return dummyProject;
     }
 }

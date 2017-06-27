@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -27,10 +28,16 @@ public class StateDeviceIconView extends VBox {
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
+    @FXML private Label action;
+    @FXML private Button removeStateDeviceBtn;
+//
+//    @FXML public void onRemoveStateDevice() {
+//
+//    }
+
 
     public StateDeviceIconView(StateDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
-
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIconView.fxml"));
         fxmlLoader.setRoot(this);
@@ -43,14 +50,17 @@ public class StateDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
+        action.setText(viewModel.getAction().getName());
+        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png" )));
 
-//        this.setOnMouseClicked(e -> {
-//            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
-//            devicePropertyWindow.show(this.getParent());
-//        });
-
-
+        iconImageView.setOnMouseClicked(e -> {
+            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            devicePropertyWindow.show(StateDeviceIconView.this);
+        });
     }
 
+    public void setOnRemove(EventHandler<ActionEvent> e) {
+        removeStateDeviceBtn.setOnAction(e);
+    }
 }

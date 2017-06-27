@@ -41,11 +41,11 @@ public class State {
         this.destPort.yProperty().bind(position.yProperty().add(height.divide(2)));
     }
 
-    void addDevice(ProjectDevice device) {
+    public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device));
     }
 
-    void removeDevice(ProjectDevice device) {
+    public void removeDevice(ProjectDevice device) {
         for (int i = setting.size() - 1; i >= 0; i--) {
             if (setting.get(i).getDevice() == device) {
                 setting.remove(i);
