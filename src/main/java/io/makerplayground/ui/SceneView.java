@@ -1,8 +1,11 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +22,7 @@ import javafx.scene.shape.Arc;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 /**
  * Created by tanyagorn on 6/12/2017.
@@ -26,18 +30,28 @@ import java.io.IOException;
 public class SceneView extends HBox {
     private final SceneViewModel sceneViewModel;
 
-    @FXML private VBox statePane;
-    @FXML private FlowPane activeIconFlowPane;
-    @FXML private FlowPane inactiveIconFlowPane;
-    @FXML private TextField nameTextField;
-    @FXML private TextField delayTextField;
-    @FXML private Arc sourceNode;
-    @FXML private Arc desNode;
+    @FXML
+    private VBox statePane;
+    @FXML
+    private FlowPane activeIconFlowPane;
+    @FXML
+    private FlowPane inactiveIconFlowPane;
+    @FXML
+    private TextField nameTextField;
+    @FXML
+    private TextField delayTextField;
+    @FXML
+    private Arc sourceNode;
+    @FXML
+    private Arc desNode;
 
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
     private double dragDeltaX;
     private double dragDeltaY;
+
+    private Button addOutputButton;
+
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
@@ -61,9 +75,11 @@ public class SceneView extends HBox {
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
 
-        Button addOutputButton = new Button("+");
+
+        addOutputButton = new Button("+");
         addOutputButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
+            @Override
+            public void handle(ActionEvent e) {
                 if (outputDeviceSelector != null) {
                     outputDeviceSelector.hide();
                 }
@@ -72,6 +88,7 @@ public class SceneView extends HBox {
                 outputDeviceSelector = outputDeviceSel;
             }
         });
+        addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
         activeIconFlowPane.getChildren().add(addOutputButton);
 
         DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreator =

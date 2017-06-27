@@ -1,14 +1,13 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.device.ActionType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.State;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
 /**
@@ -24,6 +23,8 @@ public class SceneViewModel {
 
     private final DynamicViewModelCreator<UserSetting, StateDeviceIconViewModel> dynamicViewModelCreator;
 
+    private final BooleanProperty hasDeviceToAdd;
+
     public SceneViewModel(State state, Project project) {
         this.state = state;
         this.name = new SimpleStringProperty(state.getName());
@@ -33,6 +34,14 @@ public class SceneViewModel {
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(state.getSetting(), StateDeviceIconViewModel::new);
 
         this.devicePropertyWindow = null;
+
+        hasDeviceToAdd = new SimpleBooleanProperty(state.getSetting().size() != project.getOutputDevice().size());
+        this.project.getOutputDevice().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(state.getSetting().size() != project.getOutputDevice().size());
+        });
+        this.state.getSetting().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(state.getSetting().size() != project.getOutputDevice().size());
+        });
     }
 
     public String getName() {
@@ -85,5 +94,9 @@ public class SceneViewModel {
 
     public void removeStateDevice(ProjectDevice projectDevice) {
         state.removeDevice(projectDevice);
+    }
+
+    public BooleanProperty hasDeviceToAddProperty() {
+        return hasDeviceToAdd;
     }
 }

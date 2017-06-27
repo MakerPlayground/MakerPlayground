@@ -30,10 +30,6 @@ public class StateDeviceIconView extends VBox {
     @FXML private ImageView iconImageView;
     @FXML private Label action;
     @FXML private Button removeStateDeviceBtn;
-//
-//    @FXML public void onRemoveStateDevice() {
-//
-//    }
 
 
     public StateDeviceIconView(StateDeviceIconViewModel viewModel) {
