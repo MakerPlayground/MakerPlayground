@@ -87,7 +87,7 @@ public class SceneView extends HBox {
     }
 
     private void enableDrag() {
-        final StateView.Delta dragDelta = new StateView.Delta();
+        final Delta dragDelta = new Delta();
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent mouseEvent) {
                 // record a delta distance for the drag and drop operation.
