@@ -25,7 +25,6 @@ import java.io.IOException;
 public class StateView extends HBox {
     private final StateViewModel stateViewModel;
 
-    static class Delta { double x, y; }
     @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
     @FXML private FlowPane inactiveIconFlowPane;
@@ -33,6 +32,9 @@ public class StateView extends HBox {
     @FXML private TextField delayTextField;
     @FXML private Arc sourceNode;
     @FXML private Arc desNode;
+
+    private double dragDeltaX;
+    private double dragDeltaY;
 
     public StateView(StateViewModel stateViewModel) {
         this.stateViewModel = stateViewModel;
@@ -90,38 +92,27 @@ public class StateView extends HBox {
     }
 
     private void enableDrag() {
-        final Delta dragDelta = new Delta();
-        statePane.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
-                dragDelta.x = StateView.this.getLayoutX() - mouseEvent.getX();
-                dragDelta.y = StateView.this.getLayoutY() - mouseEvent.getY();
-                getScene().setCursor(Cursor.MOVE);
-            }
+        statePane.setOnMousePressed(mouseEvent -> {
+            // record a delta distance for the drag and drop operation.
+            dragDeltaX = StateView.this.getLayoutX() - mouseEvent.getX();
+            dragDeltaY = StateView.this.getLayoutY() - mouseEvent.getY();
+            getScene().setCursor(Cursor.MOVE);
         });
-        statePane.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
+        statePane.setOnMouseReleased(mouseEvent -> {
+            getScene().setCursor(Cursor.HAND);
+        });
+        statePane.setOnMouseDragged(mouseEvent -> {
+            StateView.this.setLayoutX(mouseEvent.getX() + dragDeltaX);
+            StateView.this.setLayoutY(mouseEvent.getY() + dragDeltaY);
+        });
+        statePane.setOnMouseEntered(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
         });
-        statePane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                StateView.this.setLayoutX(mouseEvent.getX() + dragDelta.x);
-                StateView.this.setLayoutY(mouseEvent.getY() + dragDelta.y);
-            }
-        });
-        statePane.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.HAND);
-                }
-            }
-        });
-        statePane.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.DEFAULT);
-                }
+        statePane.setOnMouseExited(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                getScene().setCursor(Cursor.DEFAULT);
             }
         });
     }
@@ -141,9 +132,11 @@ public class StateView extends HBox {
     public void setSrcNodeOnDragExitedEvent(EventHandler<DragEvent> e) {
         sourceNode.setOnDragExited(e);
     }
+
     public void setSrcNodeOnDragDroppedEvent(EventHandler<DragEvent> e) {
         sourceNode.setOnDragDropped(e);
     }
+
     public void setDesNodeOnDragDoneEvent(EventHandler<DragEvent> e) {
         desNode.setOnDragDone(e);
     }

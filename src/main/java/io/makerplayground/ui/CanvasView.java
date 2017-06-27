@@ -37,85 +37,45 @@ public class CanvasView extends AnchorPane {
         @Override
         public StateView newInstance(StateViewModel stateViewModel) {
             StateView stateView = new StateView(stateViewModel);
-            stateView.setDesNodeOnDragDetectedEvent(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    //desNode = stateViewModel;
-                    System.out.println("drag detect");
-                    Dragboard db = stateView.startDragAndDrop(TransferMode.ANY);
-                    ClipboardContent clipboard = new ClipboardContent();
-                    clipboard.putString(stateViewModel.getName());
-                    db.setContent(clipboard);
-
-                    event.consume();
-                }
+            stateView.setDesNodeOnDragDetectedEvent(event -> {
+                Dragboard db = stateView.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent clipboard = new ClipboardContent();
+                clipboard.putString(stateViewModel.getName());
+                db.setContent(clipboard);
+                event.consume();
             });
-            stateView.setSrcNodeOnDragOverEvent(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    //sourceNode = stateViewModel;
-                    System.out.println("drag over");
-                    if (event.getGestureSource() != stateViewModel &&
-                            event.getDragboard().hasString()) {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                    }
-
-                    event.consume();
+            stateView.setSrcNodeOnDragOverEvent(event -> {
+                if (event.getGestureSource() != stateViewModel && event.getDragboard().hasString()) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
+
+                event.consume();
             });
-
-            stateView.setSrcNodeOnDragEnteredEvent(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    //sourceNode = stateViewModel;
-
-                    if (event.getGestureSource() != stateViewModel &&
-                            event.getDragboard().hasString()) {
-                        System.out.println("drag enter");
-                    }
-
-                    event.consume();
+            stateView.setSrcNodeOnDragEnteredEvent(event -> {
+                if (event.getGestureSource() != stateViewModel && event.getDragboard().hasString()) {
                 }
-            });
 
-            stateView.setSrcNodeOnDragExitedEvent(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    //sourceNode = stateViewModel;
-                    System.out.println("drag exited");
-                    event.consume();
-                }
+                event.consume();
             });
-            stateView.setSrcNodeOnDragDroppedEvent(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
+            stateView.setSrcNodeOnDragExitedEvent(event -> {
+                event.consume();
+            });
+            stateView.setSrcNodeOnDragDroppedEvent(event -> {
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                if (db.hasString()) {
+                    canvasViewModel.connectState(db.getString(), stateViewModel.getName());
+                    success = true;
+                }
+                event.setDropCompleted(success);
 
-                    Dragboard db = event.getDragboard();
-                    boolean success = false;
-                    if (db.hasString()) {
-                        //target.setText(db.getString());
-                        //sourceNode = stateViewModel;
-                        System.out.println("drag drop" + db.getString());
-                        canvasViewModel.connectState(db.getString(), stateViewModel.getName());
-                        success = true;
-                    }
-                    event.setDropCompleted(success);
-
-                    event.consume();
-                }
+                event.consume();
             });
-            stateView.setDesNodeOnDragDoneEvent(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    if (event.getTransferMode() == TransferMode.COPY) {
-                        System.out.println("drag done");
-                        //desNode = stateViewModel;
-                    }
-                    event.consume();
+            stateView.setDesNodeOnDragDoneEvent(event -> {
+                if (event.getTransferMode() == TransferMode.COPY) {
                 }
+                event.consume();
             });
-            //Project p = new Project();
-            //p.addCondition(sourceNode.getState(),desNode.getState());
             return stateView;
         }
     };
@@ -152,7 +112,17 @@ public class CanvasView extends AnchorPane {
         });
 
         DynamicViewCreator<Pane, StateViewModel, StateView> canvasViewCreator =
-            new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
+            new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, new NodeConsumer<Pane, StateView>() {
+                @Override
+                public void addNode(Pane parent, StateView node) {
+                    parent.getChildren().add(node);
+                }
+
+                @Override
+                public void removeNode(Pane parent, StateView node) {
+                    parent.getChildren().remove(node);
+                }
+            });
 
         DynamicViewCreator<Pane, LineViewModel , LineView> lineViewCreator =
                 new DynamicViewCreator<>(canvasViewModel.getLineViewModel(), canvasPane, LineView::new, new NodeConsumer<Pane, LineView>() {
