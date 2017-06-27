@@ -10,30 +10,38 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Arc;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
 
 /**
- * Created by tanyagorn on 6/26/2017.
+ * Created by tanyagorn on 6/12/2017.
  */
 public class SceneView extends HBox {
     private final SceneViewModel sceneViewModel;
-    static class Delta { double x, y; }
 
+    @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
+    @FXML private FlowPane inactiveIconFlowPane;
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
+    @FXML private Arc sourceNode;
+    @FXML private Arc desNode;
 
-    DevicePropertyWindow devicePropertyWindow;
-    OutputDeviceSelector outputDeviceSelector;
-
+    private DevicePropertyWindow devicePropertyWindow;
+    private OutputDeviceSelector outputDeviceSelector;
+    private double dragDeltaX;
+    private double dragDeltaY;
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
+        this.devicePropertyWindow = null;
         this.outputDeviceSelector = null;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateView.fxml"));
@@ -69,57 +77,68 @@ public class SceneView extends HBox {
         DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreator<>(sceneViewModel.getDynamicViewModelCreator(), activeIconFlowPane
                         , stateDeviceIconViewModel -> {
-                            StateDeviceIconView stateDeviceIconView = new StateDeviceIconView(stateDeviceIconViewModel);
-                            stateDeviceIconView.setOnRemove(event -> sceneViewModel.removeStateDevice(stateDeviceIconViewModel.getProjectDevice()));
-                            return stateDeviceIconView;
-                        }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
-                            @Override
-                            public void addNode(FlowPane parent, StateDeviceIconView node) {
-                                parent.getChildren().add(parent.getChildren().size() - 1, node);
-                            }
+                    StateDeviceIconView stateDeviceIconView = new StateDeviceIconView(stateDeviceIconViewModel);
+                    stateDeviceIconView.setOnRemove(event -> sceneViewModel.removeStateDevice(stateDeviceIconViewModel.getProjectDevice()));
+                    return stateDeviceIconView;
+                }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
+                    @Override
+                    public void addNode(FlowPane parent, StateDeviceIconView node) {
+                        parent.getChildren().add(parent.getChildren().size() - 1, node);
+                    }
 
-                            @Override
-                            public void removeNode(FlowPane parent, StateDeviceIconView node) {
-                                parent.getChildren().remove(node);
-                            }
-                        });
-
+                    @Override
+                    public void removeNode(FlowPane parent, StateDeviceIconView node) {
+                        parent.getChildren().remove(node);
+                    }
+                });
     }
 
     private void enableDrag() {
-        final Delta dragDelta = new Delta();
-        setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
-                dragDelta.x = SceneView.this.getLayoutX() - mouseEvent.getSceneX();
-                dragDelta.y = SceneView.this.getLayoutY() - mouseEvent.getSceneY();
-                getScene().setCursor(Cursor.MOVE);
-            }
-        });
-        setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
+        setOnMouseEntered(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
         });
-        setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                SceneView.this.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
-                SceneView.this.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
+        setOnMousePressed(mouseEvent -> {
+            dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
+            dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
+            getScene().setCursor(Cursor.MOVE);
+        });
+        setOnMouseDragged(mouseEvent -> {
+            setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
+            setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
+        });
+        setOnMouseReleased(mouseEvent -> {
+            getScene().setCursor(Cursor.HAND);
+        });
+        setOnMouseExited(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                getScene().setCursor(Cursor.DEFAULT);
             }
         });
-        setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.HAND);
-                }
-            }
-        });
-        setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.DEFAULT);
-                }
-            }
-        });
+    }
+
+    public void setDesNodeOnDragDetectedEvent(EventHandler<MouseEvent> e) {
+        desNode.setOnDragDetected(e);
+    }
+
+    public void setSrcNodeOnDragOverEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragOver(e);
+    }
+
+    public void setSrcNodeOnDragEnteredEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragEntered(e);
+    }
+
+    public void setSrcNodeOnDragExitedEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragExited(e);
+    }
+
+    public void setSrcNodeOnDragDroppedEvent(EventHandler<DragEvent> e) {
+        sourceNode.setOnDragDropped(e);
+    }
+
+    public void setDesNodeOnDragDoneEvent(EventHandler<DragEvent> e) {
+        desNode.setOnDragDone(e);
     }
 }

@@ -20,6 +20,20 @@ public class CanvasViewModel {
         this.lineViewModel = new DynamicViewModelCreator<Condition, LineViewModel>(project.getCondition(),LineViewModel::new);
     }
 
+    public void connectState(String state1, String state2) {
+        State source = null;
+        State dest = null;
+        for(State s : project.getState()){
+            if(s.getName().equalsIgnoreCase(state1)){
+                dest = s;
+            }
+            if(s.getName().equalsIgnoreCase(state2)){
+                source = s;
+            }
+        }
+        project.addCondition(dest, source);
+    }
+
     public DynamicViewModelCreator<Condition, LineViewModel> getLineViewModel() {
         return lineViewModel;
     }

@@ -1,18 +1,17 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
-import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
@@ -25,13 +24,55 @@ public class CanvasView extends AnchorPane {
     @FXML private ScrollPane scrollPane;
     @FXML private Button addStateBtn;
 
+    private SceneViewModel sourceNode;
+    private SceneViewModel desNode;
+
     private final CanvasViewModel canvasViewModel;
 
     private final ViewFactory<SceneViewModel, SceneView> viewFactory = new ViewFactory<SceneViewModel, SceneView>() {
         @Override
-        public SceneView newInstance(SceneViewModel sceneViewModel) {
-            SceneView canvas = new SceneView(sceneViewModel);
-            return canvas;
+        public SceneView newInstance(SceneViewModel stateViewModel) {
+            SceneView stateView = new SceneView(stateViewModel);
+            stateView.setDesNodeOnDragDetectedEvent(event -> {
+                Dragboard db = stateView.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent clipboard = new ClipboardContent();
+                clipboard.putString(stateViewModel.getName());
+                db.setContent(clipboard);
+                event.consume();
+            });
+            stateView.setSrcNodeOnDragOverEvent(event -> {
+                if (event.getGestureSource() != stateViewModel && event.getDragboard().hasString()) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                }
+
+                event.consume();
+            });
+            stateView.setSrcNodeOnDragEnteredEvent(event -> {
+                if (event.getGestureSource() != stateViewModel && event.getDragboard().hasString()) {
+                }
+
+                event.consume();
+            });
+            stateView.setSrcNodeOnDragExitedEvent(event -> {
+                event.consume();
+            });
+            stateView.setSrcNodeOnDragDroppedEvent(event -> {
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                if (db.hasString()) {
+                    canvasViewModel.connectState(db.getString(), stateViewModel.getName());
+                    success = true;
+                }
+                event.setDropCompleted(success);
+
+                event.consume();
+            });
+            stateView.setDesNodeOnDragDoneEvent(event -> {
+                if (event.getTransferMode() == TransferMode.COPY) {
+                }
+                event.consume();
+            });
+            return stateView;
         }
     };
     private final NodeConsumer<Pane, SceneView> nodeConsumer = new NodeConsumer<Pane, SceneView>() {
@@ -46,9 +87,9 @@ public class CanvasView extends AnchorPane {
         }
     };
 
-//    private final ViewFactory<StateViewModel, StateView> viewFactory = new ViewFactory<StateViewModel, StateView>() {
+//    private final ViewFactory<SceneViewModel, StateView> viewFactory = new ViewFactory<SceneViewModel, StateView>() {
 //        @Override
-//        public StateView newInstance(StateViewModel canvasViewModel) {
+//        public StateView newInstance(SceneViewModel canvasViewModel) {
 //            StateView canvas = new StateView(canvasViewModel);
 //            return canvas;
 //        }
@@ -101,7 +142,4 @@ public class CanvasView extends AnchorPane {
                     }
                 });
     }
-
-
-
 }
