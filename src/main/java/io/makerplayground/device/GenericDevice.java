@@ -1,5 +1,8 @@
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -7,6 +10,8 @@ import java.util.List;
  *
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
  */
+@JsonSerialize(using = GenericDeviceSerializer.class)
+@JsonDeserialize(using = GenericDeviceDeserializer.class)
 public class GenericDevice {
     private final String name;
     private final List<Action> action;
@@ -34,5 +39,15 @@ public class GenericDevice {
 
     public List<Value> getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "GenericDevice{" +
+                "name='" + name + '\'' +
+                ", action=" + action +
+                ", defaultAction=" + defaultAction +
+                ", value=" + value +
+                '}';
     }
 }
