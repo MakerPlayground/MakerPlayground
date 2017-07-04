@@ -16,7 +16,7 @@
                 "unit": "PERCENT"
               }
             ],
-            "parameterType": "DOUBLE",
+            "dataType": "DOUBLE",
             "controlType": "SLIDER"
           }
         ]
@@ -28,7 +28,7 @@
             "name": "Brightness",
             "defaultValue": 100.0,
             "constraint": [],
-            "parameterType": "DOUBLE",
+            "dataType": "DOUBLE",
             "controlType": "SLIDER"
           },
           {
@@ -42,7 +42,7 @@
                 "unit": "SECOND"
               }
             ],
-            "parameterType": "DOUBLE",
+            "dataType": "DOUBLE",
             "controlType": "SPINBOX"
           },
           {
@@ -53,7 +53,7 @@
               "Medium",
               "Fast"
             ],
-            "parameterType": "ENUM",
+            "dataType": "ENUM",
             "controlType": "DROPDOWN"
           }
         ]

@@ -1,23 +1,20 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Condition;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.shape.PathElement;
 
 /**
  * Created by USER on 20-Jun-17.
  */
 public class LineViewModel {
-    //private final ObservableList<Double> point;
     private final Condition condition;
 
     public LineViewModel(Condition condition) {
         this.condition = condition;
-        //this.point = FXCollections.observableArrayList();
     }
 
-    public ObservableList<Double> getPoint() {
-        //return point;
+    public ObservableList<PathElement> getPoint() {
         return condition.getUnmodifiableWaypoint();
     }
 }

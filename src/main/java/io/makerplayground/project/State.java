@@ -34,10 +34,10 @@ public class State {
 
         this.sourcePort = new Point(0, 0);
         this.sourcePort.xProperty().bind(position.xProperty());
-        this.sourcePort.yProperty().bind(position.yProperty().add(height.divide(2)));
+        this.sourcePort.yProperty().bind(position.yProperty().add(height.divide(2)).subtract(35));
         this.destPort = new Point(0, 0);
         this.destPort.xProperty().bind(position.xProperty().add(width).add(30));
-        this.destPort.yProperty().bind(position.yProperty().add(height.divide(2)));
+        this.destPort.yProperty().bind(position.yProperty().add(height.divide(2)).subtract(35));
     }
 
     public void addDevice(ProjectDevice device) {
