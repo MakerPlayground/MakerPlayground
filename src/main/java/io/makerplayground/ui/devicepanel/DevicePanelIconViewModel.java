@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.SimpleStringProperty;

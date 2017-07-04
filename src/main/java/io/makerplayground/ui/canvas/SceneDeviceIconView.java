@@ -1,30 +1,24 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PopupControl;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
 
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Created by tanyagorn on 6/12/2017.
  */
-public class StateDeviceIconView extends VBox {
+public class SceneDeviceIconView extends VBox {
 
-    private final StateDeviceIconViewModel viewModel;
+    private final SceneDeviceIconViewModel viewModel;
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
@@ -32,7 +26,7 @@ public class StateDeviceIconView extends VBox {
     @FXML private Button removeStateDeviceBtn;
 
 
-    public StateDeviceIconView(StateDeviceIconViewModel viewModel) {
+    public SceneDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIconView.fxml"));
@@ -52,7 +46,7 @@ public class StateDeviceIconView extends VBox {
 
         iconImageView.setOnMouseClicked(e -> {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
-            devicePropertyWindow.show(StateDeviceIconView.this);
+            devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }
 

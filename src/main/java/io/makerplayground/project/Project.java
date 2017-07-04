@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 public class Project {
-    private final DirectedGraph<State, Condition> diagram;  // TODO: make the graph observable some how
+    private final DirectedGraph<State, Condition> diagram;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<State> state;
@@ -33,7 +33,7 @@ public class Project {
     private int numDevice = 1; // TODO: to be removed
 
     public Project() {
-        diagram = new SimpleDirectedGraph<>((v1, v2) -> new Condition(v1,v2));
+        diagram = new SimpleDirectedGraph<>(Condition::new);
 
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
@@ -74,7 +74,7 @@ public class Project {
 
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
 //        for (State state : diagram.vertexSet()) {
-//            state.getSetting().add(new UserSetting(projectDevice));
+//            state.getSetting().add(new StateDeviceSetting(projectDevice));
 //        }
 
         outputDevice.add(projectDevice);

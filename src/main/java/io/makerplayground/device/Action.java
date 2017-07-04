@@ -11,20 +11,17 @@ import java.util.List;
  */
 public class Action {
     private final String name;
-    private final ActionType type;
     private final List<Parameter> parameter;
 
     /**
      * Create a new action. The constructor should only be invoked by the DeviceLibrary
      * in order to rebuild the library from file.
      * @param name name of this action
-     * @param type type of this action
      * @param parameter list of parameter
      */
     @JsonCreator
-    Action(@JsonProperty("name") String name,@JsonProperty("type") ActionType type,@JsonProperty("parameter") List<Parameter> parameter) {
+    Action(@JsonProperty("name") String name, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
-        this.type = type;
         this.parameter = Collections.unmodifiableList(parameter);
     }
 
@@ -34,14 +31,6 @@ public class Action {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Get the type of this action
-     * @return type of this action which is ActionType.active or ActionType.Inactive
-     */
-    public ActionType getType() {
-        return type;
     }
 
     /**
@@ -56,7 +45,6 @@ public class Action {
     public String toString() {
         return "Action{" +
                 "name='" + name + '\'' +
-                ", type=" + type +
                 ", parameter=" + parameter +
                 '}';
     }

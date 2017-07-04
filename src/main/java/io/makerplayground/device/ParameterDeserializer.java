@@ -29,11 +29,11 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
 
         String name = node.get("name").asText();
         Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
-        ParameterType parameterType = mapper.treeToValue(node.get("parameterType"), ParameterType.class);
+        DataType dataType = mapper.treeToValue(node.get("dataType"), DataType.class);
         ControlType controlType = mapper.treeToValue(node.get("controlType"), ControlType.class);
 
         Object defaultValue = null;
-        switch (parameterType) {
+        switch (dataType) {
             case STRING:
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
@@ -53,6 +53,6 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 System.out.println("Format error!!!");
         }
 
-        return new Parameter(name, defaultValue, constraint, parameterType, controlType);
+        return new Parameter(name, defaultValue, constraint, dataType, controlType);
     }
 }

@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;

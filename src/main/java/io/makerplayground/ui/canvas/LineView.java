@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.shape.Polyline;

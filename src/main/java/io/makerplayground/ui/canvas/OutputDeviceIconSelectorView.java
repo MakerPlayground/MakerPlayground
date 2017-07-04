@@ -1,6 +1,7 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.Main;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;

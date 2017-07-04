@@ -46,7 +46,7 @@ public class ProjectHelper {
 //        }
 
 //        State s1 = dummyProject.addState();
-//        for (UserSetting setting : s1.getSetting()) {
+//        for (StateDeviceSetting setting : s1.getSetting()) {
 //            if(setting.getDevice().getGenericDevice() == led) {
 //                for (Action action : led.getAction()) {
 //                   if (action.getName().equals("on"))
@@ -57,7 +57,7 @@ public class ProjectHelper {
 //        State s2 = dummyProject.addState();
 //        s2.getPosition().setX(300.0);
 //        s2.getPosition().setY(500.0);
-//        for(UserSetting setting : s2.getSetting()){
+//        for(StateDeviceSetting setting : s2.getSetting()){
 //            if(setting.getDevice().getGenericDevice() == led){
 //                for (Action action : led.getAction())
 //                    if(action.getName().equals("off"))

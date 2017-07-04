@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Button",
+    "action": [
+      {
+        "name": "Press",
+        "type": "",
+        "parameter": []
+      }
+    ],
+    "defaultAction": "",
+    "value": []
+  },
+  {
+    "name": "Temperature",
+    "action": [],
+    "defaultAction": "",
+    "value": [
+      {
+        "name": "temperature",
+        "constraint": {
+          "min": 0,
+          "max": 100.0,
+          "unit": "Celcius",
+          "value": []
+        }
+      }
+    ]
+  }
+]

@@ -1,9 +1,10 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Action;
 import io.makerplayground.device.ControlType;
+import io.makerplayground.device.DataType;
 import io.makerplayground.device.Parameter;
-import io.makerplayground.device.ParameterType;
+import io.makerplayground.ui.canvas.SceneDeviceIconViewModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,10 +22,10 @@ import org.controlsfx.control.PopOver;
  * Created by tanyagorn on 6/20/2017.
  */
 public class DevicePropertyWindow extends PopOver {
-    private final StateDeviceIconViewModel viewModel;
+    private final SceneDeviceIconViewModel viewModel;
     private VBox paramVBox;
 
-    public DevicePropertyWindow(StateDeviceIconViewModel viewModel) {
+    public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
         initView();
     }
@@ -108,8 +109,8 @@ public class DevicePropertyWindow extends PopOver {
 
                 // Set initial value and its constraint
                 textField.setText(String.valueOf(viewModel.getParameterValue(p)));
-                slider.setMin(p.getConstraint().getMin());
-                slider.setMax(p.getConstraint().getMax());
+//                slider.setMin(p.getConstraint().getMin());
+//                slider.setMax(p.getConstraint().getMax());
                 slider.setValue((Double) (viewModel.getParameterValue(p)));
 
                 // Handle event
@@ -133,13 +134,13 @@ public class DevicePropertyWindow extends PopOver {
 
             if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField ();
-                if (p.getParameterType() == ParameterType.DOUBLE) {
+                if (p.getDataType() == DataType.DOUBLE) {
                     textField.setText(String.valueOf(viewModel.getParameterValue(p)));
                     textField.textProperty().addListener((observable, oldValue, newValue) -> {
                         viewModel.setParameterValue(p, Double.parseDouble(textField.getText()));
                     });
                 }
-                else if (p.getParameterType() == ParameterType.STRING) {
+                else if (p.getDataType() == DataType.STRING) {
                     textField.setText(String.valueOf(viewModel.getParameterValue(p)));
                     textField.textProperty().addListener((observable, oldValue, newValue) -> {
                         viewModel.setParameterValue(p, textField.getText());
@@ -152,19 +153,19 @@ public class DevicePropertyWindow extends PopOver {
 
             if (p.getControlType() == ControlType.DROPDOWN) {
                 // Casting ArrayList to ObservableList
-                ObservableList<String> list = FXCollections.observableArrayList(p.getConstraint().getValue());
-                ComboBox comboBox = new ComboBox(list);
-                comboBox.getSelectionModel().select(viewModel.getParameterValue(p));
-
-                comboBox.valueProperty().addListener(new ChangeListener() {
-                    @Override
-                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        // TODO: test with real data
-                        System.out.println("eiei");
-                    }
-                });
-
-                customRow.getChildren().add(comboBox);
+//                ObservableList<String> list = FXCollections.observableArrayList(p.getConstraint().getValue());
+//                ComboBox comboBox = new ComboBox(list);
+//                comboBox.getSelectionModel().select(viewModel.getParameterValue(p));
+//
+//                comboBox.valueProperty().addListener(new ChangeListener() {
+//                    @Override
+//                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+//                        // TODO: test with real data
+//                        System.out.println("eiei");
+//                    }
+//                });
+//
+//                customRow.getChildren().add(comboBox);
             }
 
             if (p.getControlType() == ControlType.SPINBOX) {
@@ -172,10 +173,10 @@ public class DevicePropertyWindow extends PopOver {
                 spinner.setEditable(true);
 
                 // Value factory.
-                SpinnerValueFactory valueFactory = //
-                        new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
-                                p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
-                spinner.setValueFactory(valueFactory);
+//                SpinnerValueFactory valueFactory = //
+//                        new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
+//                                p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
+//                spinner.setValueFactory(valueFactory);
 
                 spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
                     viewModel.setParameterValue(p, Double.parseDouble(spinner.getEditor().getText()));
@@ -192,11 +193,11 @@ public class DevicePropertyWindow extends PopOver {
 
                 // TODO: Must compatible with format from JSON
                 // Value factory.
-                SpinnerValueFactory valueFactory = //
-                        new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
-                                p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
-                spinnerMin.setValueFactory(valueFactory);
-                spinnerSec.setValueFactory(valueFactory);
+//                SpinnerValueFactory valueFactory = //
+//                        new SpinnerValueFactory.DoubleSpinnerValueFactory(p.getConstraint().getMin(),
+//                                p.getConstraint().getMax(), (Double) viewModel.getParameterValue(p));
+//                spinnerMin.setValueFactory(valueFactory);
+//                spinnerSec.setValueFactory(valueFactory);
 
                 customRow.getChildren().addAll(spinnerMin, spinnerSec);
             }

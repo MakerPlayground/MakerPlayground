@@ -1,6 +1,8 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.canvas.CanvasView;
+import io.makerplayground.ui.canvas.CanvasViewModel;
 import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;

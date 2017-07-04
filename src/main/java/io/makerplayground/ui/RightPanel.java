@@ -1,19 +1,15 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.project.Project;
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import io.makerplayground.ui.devicepanel.DevicePanelView;
+import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by Mai.Manju on 12-Jun-17.

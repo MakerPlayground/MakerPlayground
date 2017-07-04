@@ -9,16 +9,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Value {
     private final String name;
+    private final DataType type;
     private final Constraint constraint;
 
     @JsonCreator
-    public Value(@JsonProperty("name") String name,@JsonProperty("constraint") Constraint constraint) {
+    public Value(@JsonProperty("name") String name, @JsonProperty("datatype") DataType type, @JsonProperty("constraint") Constraint constraint) {
         this.name = name;
+        this.type = type;
         this.constraint = constraint;
     }
 
     public String getName() {
         return name;
+    }
+
+    public DataType getType() {
+        return type;
     }
 
     public Constraint getConstraint() {

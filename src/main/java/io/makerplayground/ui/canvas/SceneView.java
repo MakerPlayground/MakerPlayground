@@ -1,11 +1,8 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -22,7 +19,6 @@ import javafx.scene.shape.Arc;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
-import java.util.function.Predicate;
 
 /**
  * Created by tanyagorn on 6/12/2017.
@@ -91,20 +87,20 @@ public class SceneView extends HBox {
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
         activeIconFlowPane.getChildren().add(addOutputButton);
 
-        DynamicViewCreator<FlowPane, StateDeviceIconViewModel, StateDeviceIconView> dynamicViewCreator =
+        DynamicViewCreator<FlowPane, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreator<>(sceneViewModel.getDynamicViewModelCreator(), activeIconFlowPane
-                        , stateDeviceIconViewModel -> {
-                    StateDeviceIconView stateDeviceIconView = new StateDeviceIconView(stateDeviceIconViewModel);
-                    stateDeviceIconView.setOnRemove(event -> sceneViewModel.removeStateDevice(stateDeviceIconViewModel.getProjectDevice()));
-                    return stateDeviceIconView;
-                }, new NodeConsumer<FlowPane, StateDeviceIconView>() {
+                        , sceneDeviceIconViewModel -> {
+                    SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
+                    sceneDeviceIconView.setOnRemove(event -> sceneViewModel.removeStateDevice(sceneDeviceIconViewModel.getProjectDevice()));
+                    return sceneDeviceIconView;
+                }, new NodeConsumer<FlowPane, SceneDeviceIconView>() {
                     @Override
-                    public void addNode(FlowPane parent, StateDeviceIconView node) {
+                    public void addNode(FlowPane parent, SceneDeviceIconView node) {
                         parent.getChildren().add(parent.getChildren().size() - 1, node);
                     }
 
                     @Override
-                    public void removeNode(FlowPane parent, StateDeviceIconView node) {
+                    public void removeNode(FlowPane parent, SceneDeviceIconView node) {
                         parent.getChildren().remove(node);
                     }
                 });

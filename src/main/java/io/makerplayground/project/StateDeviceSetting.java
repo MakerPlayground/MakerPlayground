@@ -13,12 +13,12 @@ import javafx.collections.ObservableMap;
  *
  * Created by tanyagorn on 6/9/2017.
  */
-public class UserSetting {
+public class StateDeviceSetting {
     private final ProjectDevice device;
-    private ObjectProperty<Action> action;
+    private final ObjectProperty<Action> action;
     private final ObservableMap<Parameter, Object> valueMap;
 
-    UserSetting(ProjectDevice device) {
+    StateDeviceSetting(ProjectDevice device) {
         this.device = device;
         this.action = new SimpleObjectProperty<>(device.getGenericDevice().getDefaultAction());
         this.valueMap = FXCollections.observableHashMap();

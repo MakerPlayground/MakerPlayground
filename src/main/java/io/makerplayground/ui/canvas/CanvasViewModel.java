@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Condition;
 import io.makerplayground.project.Project;

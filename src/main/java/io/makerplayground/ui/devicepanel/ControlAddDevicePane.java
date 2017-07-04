@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.GenericDevice;
 import javafx.event.ActionEvent;

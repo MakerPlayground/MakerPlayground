@@ -1,0 +1,69 @@
+[
+  {
+    "name": "LED",
+    "action": [
+      {
+        "name": "On",
+        "parameter": [
+          {
+            "name": "Brightness",
+            "defaultValue": 100.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "type": "INTEGER",
+                "unit": "PERCENT"
+              }
+            ],
+            "parameterType": "DOUBLE",
+            "controlType": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Blink",
+        "parameter": [
+          {
+            "name": "Brightness",
+            "defaultValue": 100.0,
+            "constraint": [],
+            "parameterType": "DOUBLE",
+            "controlType": "SLIDER"
+          },
+          {
+            "name": "Time period",
+            "defaultValue": 1.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 60.0,
+                "type": "FLOAT",
+                "unit": "SECOND"
+              }
+            ],
+            "parameterType": "DOUBLE",
+            "controlType": "SPINBOX"
+          },
+          {
+            "name": "Blink speed",
+            "defaultValue": "Medium",
+            "constraint": [
+              "Slow",
+              "Medium",
+              "Fast"
+            ],
+            "parameterType": "ENUM",
+            "controlType": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "parameter": []
+      }
+    ],
+    "defaultAction": "Off",
+    "value": []
+  }
+]

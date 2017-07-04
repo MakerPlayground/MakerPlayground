@@ -1,7 +1,6 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.UserSetting;
 
 /**
  * Created by tanyagorn on 6/26/2017.

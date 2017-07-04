@@ -1,7 +1,5 @@
 package io.makerplayground.project;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -11,19 +9,18 @@ import javafx.collections.ObservableMap;
  */
 public class Condition {
     private final ObservableList<Double> waypoint;
-    private final ObservableMap<ProjectDevice, UserSetting> setting;
+    private final ObservableMap<ProjectDevice, StateDeviceSetting> setting;
     private final State sourceNode;
     private final State destNode;
 //    private final State midFirstNode;
 //    private final State midSecondNode;
 
     private final ObservableList<Double> unmodifiableWaypoint;
-    private final ObservableMap<ProjectDevice, UserSetting> unmodifiableSetting;
+    private final ObservableMap<ProjectDevice, StateDeviceSetting> unmodifiableSetting;
 
     Condition(State sourceNode, State destNode) {
         this.sourceNode = sourceNode;
         this.destNode = destNode;
-
 
         waypoint = FXCollections.observableArrayList();
         unmodifiableWaypoint = FXCollections.unmodifiableObservableList(waypoint);
@@ -160,7 +157,7 @@ public class Condition {
         return unmodifiableWaypoint;
     }
 
-    public ObservableMap<ProjectDevice, UserSetting> getUnmodifiableSetting() {
+    public ObservableMap<ProjectDevice, StateDeviceSetting> getUnmodifiableSetting() {
         return unmodifiableSetting;
     }
 }

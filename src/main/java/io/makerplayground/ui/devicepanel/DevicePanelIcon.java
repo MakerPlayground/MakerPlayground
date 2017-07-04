@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devicepanel;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

@@ -2,7 +2,6 @@ package io.makerplayground.project;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -14,7 +13,7 @@ public class State {
     public enum DelayUnit {MilliSecond, Second};
 
     private final StringProperty name;
-    private final ObservableList<UserSetting> setting;
+    private final ObservableList<StateDeviceSetting> setting;
     private final Point position;
     private final SimpleDoubleProperty width, height;
     private final SimpleDoubleProperty delay;
@@ -42,7 +41,7 @@ public class State {
     }
 
     public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device));
+        setting.add(new StateDeviceSetting(device));
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -109,7 +108,7 @@ public class State {
         return delayUnit;
     }
 
-    public ObservableList<UserSetting> getSetting() {
+    public ObservableList<StateDeviceSetting> getSetting() {
         return setting;
     }
 

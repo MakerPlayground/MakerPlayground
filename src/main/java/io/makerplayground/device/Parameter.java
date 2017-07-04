@@ -1,26 +1,24 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  *
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
  */
-@JsonSerialize(using = ParameterSerializer.class)
 @JsonDeserialize(using = ParameterDeserializer.class)
 public class Parameter {
     private final String name;
     private final Object defaultValue;
     private final Constraint constraint;
-    private final ParameterType parameterType;
+    private final DataType dataType;
     private final ControlType controlType;
 
-    public Parameter(String name, Object defaultValue, Constraint constraint, ParameterType parameterType, ControlType controlType) {
+    public Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, ControlType controlType) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.constraint = constraint;
-        this.parameterType = parameterType;
+        this.dataType = dataType;
         this.controlType = controlType;
     }
 
@@ -36,8 +34,8 @@ public class Parameter {
         return constraint;
     }
 
-    public ParameterType getParameterType() {
-        return parameterType;
+    public DataType getDataType() {
+        return dataType;
     }
 
     public ControlType getControlType() {
@@ -50,7 +48,7 @@ public class Parameter {
                 "name='" + name + '\'' +
                 ", defaultValue=" + defaultValue +
                 ", constraint=" + constraint +
-                ", parameterType=" + parameterType +
+                ", dataType=" + dataType +
                 ", controlType=" + controlType +
                 '}';
     }

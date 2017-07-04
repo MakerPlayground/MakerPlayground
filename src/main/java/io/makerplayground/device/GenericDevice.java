@@ -10,7 +10,6 @@ import java.util.List;
  *
  * Created by Nuntipat Narkthong on 6/5/2017 AD.
  */
-@JsonSerialize(using = GenericDeviceSerializer.class)
 @JsonDeserialize(using = GenericDeviceDeserializer.class)
 public class GenericDevice {
     private final String name;
