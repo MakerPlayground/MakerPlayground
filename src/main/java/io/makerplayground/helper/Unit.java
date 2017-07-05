@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+package io.makerplayground.helper;
+
 /**
- * Provides classes for storing information of devices in this program.
- * <p>
- * The main class to use is {@link io.makerplayground.device.DeviceLibrary} ex.
- * <p>
- * To get a list of generic input device available uses <br>
- * {@code Set<GenericDevice> inputDevice = DeviceLibrary.INSTANCE.getInputDevice(); }
- *
+ * An enum represent unit of a numeric value
  */
-package io.makerplayground.device;
+public enum Unit {
+    NOT_SPECIFIED,HERTZ,PERCENT,SECOND,WAV
+    // TODO: add new unit
+}

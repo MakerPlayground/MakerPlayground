@@ -31,7 +31,8 @@ public class CanvasViewModel {
                 source = s;
             }
         }
-        project.addCondition(dest, source);
+        // TODO: bug
+        //project.addCondition(dest, source);
     }
 
     public DynamicViewModelCreator<Condition, LineViewModel> getLineViewModel() {

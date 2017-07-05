@@ -4,7 +4,7 @@ import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.StateDeviceSetting;
+import io.makerplayground.project.UserSetting;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -13,12 +13,12 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class SceneDeviceIconViewModel {
 
-    private final StateDeviceSetting stateDeviceSetting;
+    private final UserSetting userSetting;
     private final SimpleStringProperty name;
 
-    public SceneDeviceIconViewModel(StateDeviceSetting stateDeviceSetting) {
-        this.stateDeviceSetting = stateDeviceSetting;
-        this.name = new SimpleStringProperty(stateDeviceSetting.getDevice().getName());
+    public SceneDeviceIconViewModel(UserSetting userSetting) {
+        this.userSetting = userSetting;
+        this.name = new SimpleStringProperty(userSetting.getDevice().getName());
     }
 
     public String getName() {
@@ -30,36 +30,36 @@ public class SceneDeviceIconViewModel {
     }
 
     public String getImageName() {
-        return stateDeviceSetting.getDevice().getGenericDevice().getName();
+        return userSetting.getDevice().getGenericDevice().getName();
     }
 
     public Action getAction() {
-        return stateDeviceSetting.getAction();
+        return userSetting.getAction();
         //return action.get();
     }
 
     public ObjectProperty<Action> actionProperty() {
         //return action;
-        return stateDeviceSetting.actionProperty();
+        return userSetting.actionProperty();
     }
 
     public ProjectDevice getProjectDevice() {
-        return stateDeviceSetting.getDevice();
+        return userSetting.getDevice();
     }
 
     public GenericDevice getGenericDevice() {
-        return stateDeviceSetting.getDevice().getGenericDevice();
+        return userSetting.getDevice().getGenericDevice();
     }
 
     public Object getParameterValue(Parameter p) {
-        //System.out.println("will return " + stateDeviceSetting.getValueMap().get(p));
-        return stateDeviceSetting.getValueMap().get(p);
+        //System.out.println("will return " + userSetting.getValueMap().get(p));
+        return userSetting.getValueMap().get(p);
     }
 
     public Object setParameterValue(Parameter p, Object o) {
         //System.out.println("will set " + o);
-        //System.out.println(stateDeviceSetting.getValueMap());
-        return stateDeviceSetting.getValueMap().replace(p, o);
+        //System.out.println(userSetting.getValueMap());
+        return userSetting.getValueMap().replace(p, o);
     }
 
 }

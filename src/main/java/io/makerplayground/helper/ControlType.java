@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+package io.makerplayground.helper;
+
 /**
- * Provides classes for storing information of devices in this program.
- * <p>
- * The main class to use is {@link io.makerplayground.device.DeviceLibrary} ex.
- * <p>
- * To get a list of generic input device available uses <br>
- * {@code Set<GenericDevice> inputDevice = DeviceLibrary.INSTANCE.getInputDevice(); }
- *
+ * An enum represent type of UI control that should be used
  */
-package io.makerplayground.device;
+public enum ControlType {
+    TEXTBOX, SPINBOX, DROPDOWN, SLIDER, CUSTOMPRINT, TIME, CUSTOMSEGMENT, CHECKBOX
+    // TODO: add more control type
+}

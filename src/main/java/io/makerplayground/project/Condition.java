@@ -1,78 +1,69 @@
+/*
+ * Copyright 2017 The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.project;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.scene.shape.*;
 
 /**
- * Created by nuntipat on 6/2/2017 AD.
+ *
  */
 public class Condition {
-    private final ObservableList<PathElement> waypoint;
-    private final ObservableMap<ProjectDevice, StateDeviceSetting> setting;
-    private final State sourceNode;
-    private final State destNode;
+    private final ObservableList<UserSetting> setting;
+    private final ObjectProperty<State> sourceNode;
+    private final ObjectProperty<State> destNode;
 
-    private final ObservableList<PathElement> unmodifiableWaypoint;
-    private final ObservableMap<ProjectDevice, StateDeviceSetting> unmodifiableSetting;
+    private final ObservableList<UserSetting> unmodifiableSetting;
 
-    Condition(State sourceNode, State destNode) {
-        this.sourceNode = sourceNode;
-        this.destNode = destNode;
-        waypoint = FXCollections.observableArrayList();
-        unmodifiableWaypoint = FXCollections.unmodifiableObservableList(waypoint);
+    Condition() {
+        this.setting = FXCollections.observableArrayList();
+        this.sourceNode = new SimpleObjectProperty<>(null);
+        this.destNode = new SimpleObjectProperty<>(null);
 
-        recalculatePoint();
-
-        sourceNode.getDestPort().xProperty().addListener((observable, oldValue, newValue) -> {
-            recalculatePoint();
-        });
-
-        sourceNode.getDestPort().yProperty().addListener((observable, oldValue, newValue) -> {
-            recalculatePoint();
-        });
-
-        destNode.getSourcePort().xProperty().addListener((observable, oldValue, newValue) -> {
-            recalculatePoint();
-        });
-
-        destNode.getSourcePort().yProperty().addListener((observable, oldValue, newValue) -> {
-            recalculatePoint();
-        });
-
-        setting = FXCollections.observableHashMap();
-        unmodifiableSetting = FXCollections.unmodifiableObservableMap(setting);
-    }
-
-    private void recalculatePoint() {
-        MoveTo moveTo = new MoveTo();
-        moveTo.setX(sourceNode.getDestPort().getX());
-        moveTo.setY(sourceNode.getDestPort().getY());
-
-        CubicCurveTo cubicCurveTo = new CubicCurveTo();
-        cubicCurveTo.setControlX1(sourceNode.getDestPort().getX()*0.25 + destNode.getSourcePort().getX()*0.75);
-        cubicCurveTo.setControlY1(sourceNode.getDestPort().getY());
-        cubicCurveTo.setControlX2(destNode.getSourcePort().getX()*0.25 + sourceNode.getDestPort().getX()*0.75);
-        cubicCurveTo.setControlY2(destNode.getSourcePort().getY());
-        cubicCurveTo.setX(destNode.getSourcePort().getX());
-        cubicCurveTo.setY(destNode.getSourcePort().getY());
-        waypoint.setAll(moveTo,cubicCurveTo);
+        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
     }
 
     public State getSourceNode() {
+        return sourceNode.get();
+    }
+
+    public ObjectProperty<State> sourceNodeProperty() {
         return sourceNode;
     }
 
     public State getDestNode() {
+        return destNode.get();
+    }
+
+    public ObjectProperty<State> destNodeProperty() {
         return destNode;
     }
 
-    public ObservableList<PathElement> getUnmodifiableWaypoint() {
-        return unmodifiableWaypoint;
+    public void addDevice(ProjectDevice device) {
+        setting.add(new UserSetting(device));
     }
 
-    public ObservableMap<ProjectDevice, StateDeviceSetting> getUnmodifiableSetting() {
+    public void removeDevice(ProjectDevice device) {
+        setting.remove(device);
+    }
+
+    public ObservableList<UserSetting> getUnmodifiableSetting() {
         return unmodifiableSetting;
     }
 }

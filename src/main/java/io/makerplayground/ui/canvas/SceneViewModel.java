@@ -3,7 +3,7 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.State;
-import io.makerplayground.project.StateDeviceSetting;
+import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
@@ -20,7 +20,7 @@ public class SceneViewModel {
 
     DevicePropertyWindow devicePropertyWindow;
 
-    private final DynamicViewModelCreator<StateDeviceSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
+    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
 
@@ -59,24 +59,24 @@ public class SceneViewModel {
         return delay;
     }
 
-    public DynamicViewModelCreator<StateDeviceSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
+    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
     }
 
     public double getX() {
-        return state.getPosition().getX();
+        return state.getLeft();
     }
 
     public DoubleProperty xProperty() {
-        return state.getPosition().xProperty();
+        return state.leftProperty();
     }
 
     public double getY() {
-        return state.getPosition().getY();
+        return state.getTop();
     }
 
     public DoubleProperty yProperty() {
-        return state.getPosition().yProperty();
+        return state.topProperty();
     }
 
     public ObservableList<ProjectDevice> getProjectOutputDevice() {
@@ -87,7 +87,7 @@ public class SceneViewModel {
         return state;
     }
 
-    public ObservableList<StateDeviceSetting> getStateDevice() {
+    public ObservableList<UserSetting> getStateDevice() {
         return state.getSetting();
     }
 

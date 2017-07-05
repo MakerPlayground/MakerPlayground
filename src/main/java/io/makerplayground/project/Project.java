@@ -1,25 +1,34 @@
+/*
+ * Copyright 2017 The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- *
- * Created by Nuntipat Narkthong on 6/2/2017 AD.
+ * Represent a project
  */
 public class Project {
-    private final DirectedGraph<State, Condition> diagram;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<State> state;
@@ -30,11 +39,7 @@ public class Project {
     private final ObservableList<State> unmodifiableState;
     private final ObservableList<Condition> unmodifiableCondition;
 
-    private int numDevice = 1; // TODO: to be removed
-
     public Project() {
-        diagram = new SimpleDirectedGraph<>(Condition::new);
-
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         state = FXCollections.observableArrayList();
@@ -74,7 +79,7 @@ public class Project {
 
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
 //        for (State state : diagram.vertexSet()) {
-//            state.getSetting().add(new StateDeviceSetting(projectDevice));
+//            state.getSetting().add(new UserSetting(projectDevice));
 //        }
 
         outputDevice.add(projectDevice);
@@ -141,22 +146,26 @@ public class Project {
 //            s.addDevice(projectDevice);
 //        }
 
-        diagram.addVertex(s);
+        //diagram.addVertex(s);
         state.add(s);
         return s;
     }
 
     public void removeState(State s) {
         // TODO: remove edge connect to that state
-        diagram.removeVertex(s);
+        //diagram.removeVertex(s);
         state.remove(s);
     }
 
     // TODO: add method to manage condition
-    public Condition addCondition(State source, State dest) {
-        Condition c = diagram.addEdge(source, dest);
+    public Condition addCondition() {
+        Condition c = new Condition();
         condition.add(c);
         return c;
+    }
+
+    public void removeCondition(Condition c) {
+        condition.remove(c);
     }
 
     public ObservableList<Condition> getCondition() {

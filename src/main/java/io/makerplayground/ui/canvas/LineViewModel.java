@@ -1,6 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Condition;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.PathElement;
 
@@ -15,6 +16,8 @@ public class LineViewModel {
     }
 
     public ObservableList<PathElement> getPoint() {
-        return condition.getUnmodifiableWaypoint();
+        //return condition.getUnmodifiableWaypoint();
+        // TODO: bug
+        return FXCollections.emptyObservableList();
     }
 }

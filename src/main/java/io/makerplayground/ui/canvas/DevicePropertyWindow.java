@@ -1,10 +1,9 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Action;
-import io.makerplayground.device.ControlType;
-import io.makerplayground.device.DataType;
+import io.makerplayground.helper.ControlType;
+import io.makerplayground.helper.DataType;
 import io.makerplayground.device.Parameter;
-import io.makerplayground.ui.canvas.SceneDeviceIconViewModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

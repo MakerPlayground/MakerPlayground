@@ -17,88 +17,84 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.Unit;
 
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Created by Nuntipat Narkthong on 6/19/2017 AD.
+ * An interface for a constraint of some values ex. parameters of an action or possible values of an input device
  */
 @JsonDeserialize(using = ConstraintDeserializer.class)
-public class Constraint {
-    private final Map<Unit, Constraint.Value> numericValue;
-    private final List<String> categoricalValue;
+public interface Constraint {
 
     /**
-     * A special value indicating no constraint.
+     * Test a given number
+     * @param d the value to be tested
+     * @param unit the unit of the value to be tested
+     * @throws IllegalArgumentException if there isn't any constraint specify for this unit
+     * @return true if the value specify is valid otherwise return false
      */
-    public static final Constraint NONE = new Constraint();
+    boolean test(double d, Unit unit);
 
-    private Constraint() {
-        this.numericValue = Collections.emptyMap();
-        this.categoricalValue = Collections.emptyList();
-    }
+    /**
+     * Test a given string
+     * @param s a string to be tested
+     * @return true if the valid is valid otherwise return false
+     */
+    boolean test(String s);
 
-    private Constraint(Map<Unit, Constraint.Value> numericValue, List<String> categoricalValue) {
-        this.numericValue = numericValue;
-        this.categoricalValue = categoricalValue;
-    }
-
-    static Constraint createNumericConstraint(Constraint.Value value) {
-        return new Constraint(Collections.singletonMap(value.unit, value)
-                , Collections.emptyList());
-    }
-
-    static Constraint createNumericConstraint(List<Constraint.Value> constraintValues) {
-        Map<Unit, Constraint.Value> tmpNumericValue = new EnumMap<>(Unit.class);
-        for (Constraint.Value cn : constraintValues) {
-            tmpNumericValue.put(cn.unit, cn);
-        }
-        return new Constraint(tmpNumericValue, Collections.emptyList());
-    }
-
-    static Constraint createCategoricalConstraint(List<String> value) {
-        return new Constraint(Collections.emptyMap(), value);
-    }
-
-    @Override
-    public String toString() {
-        return "Constraint{" +
-                "numericValue=" + numericValue +
-                ", categoricalValue=" + categoricalValue +
-                '}';
-    }
-
-    static class Value {
-        enum Type {
-            INTEGER, FLOAT
-        }
-
-        public double min;
-        public double max;
-        public Type type;
-        public Unit unit;
-
-        Value() {
-        }
-
-        Value(double min, double max, Type type, Unit unit) {
-            this.min = min;
-            this.max = max;
-            this.type = type;
-            this.unit = unit;
+    /**
+     * A special value indicating no constraint (returns true for every tests)
+     */
+    Constraint NONE = new Constraint() {
+        @Override
+        public boolean test(double d, Unit unit) {
+            return true;
         }
 
         @Override
-        public String toString() {
-            return "Value{" +
-                    "min=" + min +
-                    ", max=" + max +
-                    ", type=" + type +
-                    ", unit=" + unit +
-                    '}';
+        public boolean test(String s) {
+            return true;
         }
+    };
+
+    /**
+     * Create a constraint for a numeric value
+     * @param min the minimum valid value (inclusive)
+     * @param max the maximum valid value (inclusive)
+     * @param type type of the value as an instance of {@link DataType}
+     * @param unit unit of the value as an instance of {@link Unit}
+     * @return an instance of {@link NumericConstraint}
+     */
+    static Constraint createNumericConstraint(double min, double max, DataType type, Unit unit) {
+        return new NumericConstraint(min, max, type, unit);
+    }
+
+    /**
+     * Create a constraint for a numeric value with multiple unit
+     * @param constraintValues list of {@link NumericConstraint.Value} to be used to initialize the constraint object
+     * @return an instance of {@link NumericConstraint}
+     */
+    static Constraint createNumericConstraint(List<NumericConstraint.Value> constraintValues) {
+        return new NumericConstraint(constraintValues);
+    }
+
+    /**
+     * Create a constrint that match only the specify string
+     * @param s the string to be matched
+     * @return an instance of {@link CategoricalConstraint}
+     */
+    static Constraint createCategoricalConstraint(String s) {
+        return new CategoricalConstraint(s);
+    }
+
+    /**
+     * Create a constrint to match a list of strings given
+     * @param value list of string to be matched
+     * @return an instance of {@link CategoricalConstraint}
+     */
+    static Constraint createCategoricalConstraint(List<String> value) {
+        return new CategoricalConstraint(value);
     }
 }

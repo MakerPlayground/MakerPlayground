@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.StateDeviceSetting;
+import io.makerplayground.project.UserSetting;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
@@ -24,7 +24,7 @@ public class OutputDeviceSelector extends PopOver {
             @Override
             public boolean test(ProjectDevice projectDevice) {
                 boolean found = true;
-                for (StateDeviceSetting userSetting : viewModel.getStateDevice()) {
+                for (UserSetting userSetting : viewModel.getStateDevice()) {
                     if (userSetting.getDevice().getName().equals(projectDevice.getName())) {
                         found = false;
                         break;

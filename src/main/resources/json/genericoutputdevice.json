@@ -38,7 +38,7 @@
               {
                 "min": 0.0,
                 "max": 60.0,
-                "type": "FLOAT",
+                "type": "DOUBLE",
                 "unit": "SECOND"
               }
             ],
@@ -63,7 +63,6 @@
         "parameter": []
       }
     ],
-    "defaultAction": "Off",
     "value": []
   }
 ]
