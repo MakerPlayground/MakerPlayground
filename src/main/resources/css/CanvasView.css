@@ -1,4 +1,19 @@
-
+.scroll-pane{
+    -fx-border-color: blue;
+    -fx-border-width:0;
+    -fx-padding: 0;
+}
+.scroll-pane:focused {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+.scroll-pane > .viewport {
+   -fx-background-color: #dbdbdb;
+   -fx-border-color: #dbdbdb;
+}
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 2em;

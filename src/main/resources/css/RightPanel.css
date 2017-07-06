@@ -15,9 +15,8 @@
 }
 .text-field{
     -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
-    -fx-border-color : white;
+    -fx-border-color :  white;
     -fx-border-width: 2px;
-    -fx-border-radius: 0em;
     -fx-background-inset : 0 0 0;
 }
 #arcNode{

@@ -1,29 +1,31 @@
 .root{
     -fx-border-color: transparent transparent transparent transparent;
 }
+.label{
+    -fx-text-fill : white;
+}
 .hbox{
-    -fx-border-color : white;
+    -fx-border-color : #313644;
+    -fx-border-width: 2px;
 }
 #decBtn{
-    -fx-background-color : #0768de;
+    -fx-background-color : #313644;
     -fx-text-fill : white;
-    -fx-border-color : #0768de;
+    -fx-border-color : #313644;
     -fx-border-width: 1px;
-    -fx-border-radius: 5 0 0 5;
     -fx-background-insets: 0, 0, 0;
 }
 #incBtn{
-    -fx-background-color : #0768de;
+    -fx-background-color : #313644;
     -fx-text-fill : white;
-    -fx-border-color : #0768de;
+    -fx-border-color : #313644;
     -fx-border-width: 1px;
-    -fx-border-radius: 0 5 5 0;
     -fx-background-insets: 0, 0, 0;
 }
 #numTextField{
     -fx-background-color : white;
     -fx-text-fill : black;
-    -fx-border-color : #0768de;
-    -fx-border-width: 0.5px;
+    -fx-border-color : #313644;
+    -fx-border-width: 2px;
     -fx-background-insets: 0, 0, 0;
 }

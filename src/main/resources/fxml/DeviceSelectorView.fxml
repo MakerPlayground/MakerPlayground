@@ -8,20 +8,20 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: #313644;" stylesheets="@../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <header>
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
     <content>
-      <AnchorPane minHeight="0.0" minWidth="0.0" style="-fx-background-color: white;">
+      <AnchorPane minHeight="0.0" minWidth="0.0" style="-fx-background-color: #4d5666;">
          <children>
-            <VBox alignment="TOP_CENTER" layoutY="-6.0" minWidth="600.0" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="TOP_CENTER" layoutY="-6.0" minWidth="600.0" style="-fx-background-color: #4d5666;" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TitledPane collapsible="false" text="Output Device">
                      <content>
                         <ScrollPane fitToWidth="true" prefHeight="150.0">
                            <content>
-                              <FlowPane fx:id="outputPane" hgap="5.0" vgap="5.0">
+                              <FlowPane fx:id="outputPane" hgap="10.0" vgap="10.0">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
@@ -34,7 +34,7 @@
                      <content>
                         <ScrollPane fitToWidth="true" prefHeight="150.0">
                            <content>
-                              <FlowPane fx:id="inputPane" hgap="5.0" vgap="5.0">
+                              <FlowPane fx:id="inputPane" hgap="10.0" vgap="10.0">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>

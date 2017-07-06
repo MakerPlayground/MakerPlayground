@@ -16,7 +16,7 @@ import java.io.IOException;
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
  */
 public class MainWindow extends BorderPane {
-
+    @FXML private SplitPane mainPane;
     private final Project project;
 
     public MainWindow(Project project) {
@@ -40,12 +40,7 @@ public class MainWindow extends BorderPane {
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
-        SplitPane mainPane = new SplitPane();
-        mainPane.setStyle("-fx-box-border: transparent;");
-        mainPane.setOrientation(Orientation.HORIZONTAL);
+        mainPane.setDividerPositions(0.8, 0.2);
         mainPane.getItems().addAll(canvasView, rightPanel);
-        mainPane.setDividerPositions(0.8);
-
-        setCenter(mainPane);
     }
 }
