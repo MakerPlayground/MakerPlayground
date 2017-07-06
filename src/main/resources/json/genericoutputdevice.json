@@ -205,7 +205,13 @@
           {
             "name": "Name",
             "defaultValue": "mkplay",
-            "constraint": [],
+            "constraint": [
+              {
+                "min": "",
+                "max": "",
+                "unit": "WAV"
+              }
+            ],
             "dataType": "STRING",
             "controlType": "TEXTBOX"
           },

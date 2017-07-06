@@ -3,10 +3,90 @@
     "name": "Button",
     "action": [
       {
-        "name": "Press",
+        "name": "Wait For Press",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Click count",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Count",
+            "defaultValue": 1.0,
+            "constraint": [
+              {
+                "min": 1.0,
+                "max": 100.0,
+                "unit": "TIME"
+              }
+            ],
+            "dataType": "INTEGER",
+            "controlType": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Wait For Release",
+        "type": "Active",
         "parameter": []
       }
     ],
     "value": []
+  },
+  {
+    "name": "Accelerometer",
+    "action": [
+      {
+        "name": "Compare",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Tap",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Free Fall",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Axis X",
+        "dataType": "DOUBLE",
+        "constraint": [
+          {
+            "min": 0.0,
+            "max": 200.0,
+            "unit": "METERPERSECSQUARE"
+          }
+        ]
+      },
+      {
+        "name": "Axis Y",
+        "dataType": "DOUBLE",
+        "constraint": [
+          {
+            "min": 0.0,
+            "max": 200.0,
+            "unit": "METERPERSECSQUARE"
+          }
+        ]
+      },
+      {
+        "name": "Axis Z",
+        "dataType": "DOUBLE",
+        "constraint": [
+          {
+            "min": 0.0,
+            "max": 200.0,
+            "unit": "METERPERSECSQUARE"
+          }
+        ]
+      }
+    ]
   }
 ]
