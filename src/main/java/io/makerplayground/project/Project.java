@@ -31,24 +31,28 @@ import java.util.stream.Collectors;
 public class Project {
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
-    private final ObservableList<State> state;
+    private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
+    private final ObservableList<Line> line;
 
     private final ObservableList<ProjectDevice> unmodifiableInputDevice;
     private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
-    private final ObservableList<State> unmodifiableState;
+    private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
+    private final ObservableList<Line> unmodifiableLine;
 
     public Project() {
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
-        state = FXCollections.observableArrayList();
+        scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
+        line = FXCollections.observableArrayList();
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
-        unmodifiableState = FXCollections.unmodifiableObservableList(state);
+        unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
+        unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
     public ObservableList<ProjectDevice> getOutputDevice() {
@@ -78,15 +82,15 @@ public class Project {
         }
 
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
-//        for (State state : diagram.vertexSet()) {
-//            state.getSetting().add(new UserSetting(projectDevice));
+//        for (Scene scene : diagram.vertexSet()) {
+//            scene.getSetting().add(new UserSetting(projectDevice));
 //        }
 
         outputDevice.add(projectDevice);
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
-        for (State s : state) {
+        for (Scene s : scene) {
             s.removeDevice(device);
         }
 
@@ -125,36 +129,36 @@ public class Project {
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
-        for (State s : state) {
+        for (Scene s : scene) {
             s.removeDevice(device);
         }
 
         return inputDevice.remove(device);
     }
 
-    public ObservableList<State> getState() {
-        return unmodifiableState;
+    public ObservableList<Scene> getScene() {
+        return unmodifiableScene;
     }
 
-    public State addState() {
-        State s = new State();
+    public Scene addState() {
+        Scene s = new Scene();
         // TODO: check for duplicate name
-        s.setName("State-" + (state.size() + 1));
+        s.setName("scene" + (scene.size() + 1));
 
-        // Add every output device to be displayed in new state
+        // Add every output device to be displayed in new scene
 //        for (ProjectDevice projectDevice: outputDevice) {
 //            s.addDevice(projectDevice);
 //        }
 
         //diagram.addVertex(s);
-        state.add(s);
+        scene.add(s);
         return s;
     }
 
-    public void removeState(State s) {
-        // TODO: remove edge connect to that state
+    public void removeState(Scene s) {
+        // TODO: remove edge connect to that scene
         //diagram.removeVertex(s);
-        state.remove(s);
+        scene.remove(s);
     }
 
     // TODO: add method to manage condition
@@ -169,6 +173,20 @@ public class Project {
     }
 
     public ObservableList<Condition> getCondition() {
-        return condition;
+        return unmodifiableCondition;
+    }
+
+    public Line addLine(NodeElement source, NodeElement destination) {
+        Line l = new Line(source, destination);
+        line.add(l);
+        return l;
+    }
+
+    public void removeLine(Line l) {
+        line.remove(l);
+    }
+
+    public ObservableList<Line> getLine() {
+        return unmodifiableLine;
     }
 }

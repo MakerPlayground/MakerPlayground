@@ -48,7 +48,7 @@ public class OutputDeviceSelector extends PopOver {
             outputIconView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    viewModel.getState().addDevice(p);
+                    viewModel.getScene().addDevice(p);
                     flowPane.getChildren().remove(outputIconView);
                 }
             });

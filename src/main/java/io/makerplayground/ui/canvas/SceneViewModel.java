@@ -2,7 +2,7 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.State;
+import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
@@ -13,7 +13,7 @@ import javafx.collections.ObservableList;
  * Created by tanyagorn on 6/26/2017.
  */
 public class SceneViewModel {
-    private final State state;
+    private final Scene scene;
     private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
     private final Project project;
@@ -22,20 +22,20 @@ public class SceneViewModel {
 
     private final BooleanProperty hasDeviceToAdd;
 
-    public SceneViewModel(State state, Project project) {
-        this.state = state;
-        this.name = new SimpleStringProperty(state.getName());
-        this.delay = new SimpleDoubleProperty(state.getDelay());
+    public SceneViewModel(Scene scene, Project project) {
+        this.scene = scene;
+        this.name = new SimpleStringProperty(scene.getName());
+        this.delay = new SimpleDoubleProperty(scene.getDelay());
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(state.getSetting(), SceneDeviceIconViewModel::new);
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), SceneDeviceIconViewModel::new);
 
-        hasDeviceToAdd = new SimpleBooleanProperty(state.getSetting().size() != project.getOutputDevice().size());
+        hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
         this.project.getOutputDevice().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(state.getSetting().size() != project.getOutputDevice().size());
+            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
-        this.state.getSetting().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(state.getSetting().size() != project.getOutputDevice().size());
+        this.scene.getSetting().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
     }
 
@@ -60,35 +60,35 @@ public class SceneViewModel {
     }
 
     public double getX() {
-        return state.getLeft();
+        return scene.getLeft();
     }
 
     public DoubleProperty xProperty() {
-        return state.leftProperty();
+        return scene.leftProperty();
     }
 
     public double getY() {
-        return state.getTop();
+        return scene.getTop();
     }
 
     public DoubleProperty yProperty() {
-        return state.topProperty();
+        return scene.topProperty();
     }
 
     public ObservableList<ProjectDevice> getProjectOutputDevice() {
         return project.getOutputDevice();
     }
 
-    public State getState() {
-        return state;
+    public Scene getScene() {
+        return scene;
     }
 
     public ObservableList<UserSetting> getStateDevice() {
-        return state.getSetting();
+        return scene.getSetting();
     }
 
     public void removeStateDevice(ProjectDevice projectDevice) {
-        state.removeDevice(projectDevice);
+        scene.removeDevice(projectDevice);
     }
 
     public BooleanProperty hasDeviceToAddProperty() {

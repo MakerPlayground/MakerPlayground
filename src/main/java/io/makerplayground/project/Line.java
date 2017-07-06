@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package io.makerplayground.ui.canvas;
-
-import javafx.beans.binding.Bindings;
-import javafx.scene.shape.Path;
+package io.makerplayground.project;
 
 /**
  *
  */
-public class LineView extends Path{
-    private final LineViewModel viewModel;
+public class Line {
+    private final NodeElement source;
+    private final NodeElement destination;
 
-    public LineView(LineViewModel viewModel) {
-        this.viewModel = viewModel;
-        Bindings.bindContentBidirectional(this.getElements(), viewModel.getPoint());
+    public Line(NodeElement source, NodeElement destination) {
+        this.source = source;
+        this.destination = destination;
+    }
+
+    public NodeElement getSource() {
+        return source;
+    }
+
+    public NodeElement getDestination() {
+        return destination;
     }
 }

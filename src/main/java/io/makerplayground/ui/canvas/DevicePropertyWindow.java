@@ -50,7 +50,7 @@ public class DevicePropertyWindow extends PopOver {
         row1.getChildren().addAll(imageView, customName);
 
         HBox row2 = new HBox();
-        Label state = new Label("State");
+        Label state = new Label("Scene");
 
         // Casting ArrayList to ObservableList
         ObservableList<Action> actionList = FXCollections.observableArrayList(viewModel.getGenericDevice().getAction());
