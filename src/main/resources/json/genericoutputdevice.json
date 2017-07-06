@@ -4,6 +4,7 @@
     "action": [
       {
         "name": "On",
+        "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
@@ -12,7 +13,6 @@
               {
                 "min": 0.0,
                 "max": 100.0,
-                "type": "INTEGER",
                 "unit": "PERCENT"
               }
             ],
@@ -23,11 +23,18 @@
       },
       {
         "name": "Blink",
+        "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
             "defaultValue": 100.0,
-            "constraint": [],
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "PERCENT"
+              }
+            ],
             "dataType": "DOUBLE",
             "controlType": "SLIDER"
           },
@@ -38,7 +45,6 @@
               {
                 "min": 0.0,
                 "max": 60.0,
-                "type": "DOUBLE",
                 "unit": "SECOND"
               }
             ],
@@ -60,6 +66,281 @@
       },
       {
         "name": "Off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "LCD",
+    "action": [
+      {
+        "name": "Print",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Backlight",
+            "defaultValue": "On",
+            "constraint": [
+              "On",
+              "Off"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          },
+          {
+            "name": "Print Text",
+            "defaultValue": "",
+            "constraint": [],
+            "dataType": "MIX",
+            "controlType": "CUSTOMPRINT"
+          }
+        ]
+      },
+      {
+        "name": "Clear",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Backlight",
+            "defaultValue": "On",
+            "constraint": [
+              "On",
+              "Off"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Buzzer",
+    "action": [
+      {
+        "name": "Tone",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Tone Frequency",
+            "defaultValue": 2000.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 10000.0,
+                "unit": "HERTZ"
+              }
+            ],
+            "dataType": "INTEGER",
+            "controlType": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Blink Tone",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Tone Frequency",
+            "defaultValue": 2000.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 10000.0,
+                "unit": "HERTZ"
+              }
+            ],
+            "dataType": "INTEGER",
+            "controlType": "SPINBOX"
+          },
+          {
+            "name": "Time Period",
+            "defaultValue": 1.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 60.0,
+                "unit": "SECOND"
+              }
+            ],
+            "dataType": "DOUBLE",
+            "controlType": "SPINBOX"
+          },
+          {
+            "name": "Blink Speed",
+            "defaultValue": "Medium",
+            "constraint": [
+              "Slow",
+              "Medium",
+              "Fast"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Stop",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Speaker",
+    "action": [
+      {
+        "name": "Play",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Name",
+            "defaultValue": "mkplay",
+            "constraint": [],
+            "dataType": "STRING",
+            "controlType": "TEXTBOX"
+          },
+          {
+            "name": "Repeat",
+            "defaultValue": "Loop",
+            "constraint": [
+              "1 time",
+              "Loop"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          },
+          {
+            "name": "Volume",
+            "defaultValue": 100.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "PERCENT"
+              }
+            ],
+            "dataType": "DOUBLE",
+            "controlType": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Pause",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Stop",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "7 Segment",
+    "action": [
+      {
+        "name": "Show Number",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "defaultValue": "",
+            "constraint": [],
+            "dataType": "MIX",
+            "controlType": "CUSTOMSEGMENT"
+          },
+          {
+            "name": "Colon",
+            "defaultValue": "TRUE",
+            "constraint": [
+              "TRUE",
+              "FALSE"
+            ],
+            "dataType": "ENUM",
+            "controlType": "CHECKBOX"
+          }
+        ]
+      },
+      {
+        "name": "Show Value",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "defaultValue": "",
+            "constraint": [
+              "value_list"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          },
+          {
+            "name": "Colon",
+            "defaultValue": "TRUE",
+            "constraint": [
+              "TRUE",
+              "FALSE"
+            ],
+            "dataType": "ENUM",
+            "controlType": "CHECKBOX"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "DC Motor",
+    "action": [
+      {
+        "name": "On",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Direction",
+            "defaultValue": "Forward",
+            "constraint": [
+              "Forward",
+              "Backward"
+            ],
+            "dataType": "ENUM",
+            "controlType": "DROPDOWN"
+          },
+          {
+            "name": "Speed",
+            "defaultValue": 100.0,
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "PERCENT"
+              }
+            ],
+            "dataType": "DOUBLE",
+            "controlType": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "type": "Inactive",
         "parameter": []
       }
     ],

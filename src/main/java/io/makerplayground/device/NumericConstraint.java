@@ -73,7 +73,6 @@ public class NumericConstraint implements Constraint {
     static class Value {
         public double min;
         public double max;
-        public DataType type;
         public Unit unit;
 
         Value() {
@@ -82,7 +81,6 @@ public class NumericConstraint implements Constraint {
         Value(double min, double max, DataType type, Unit unit) {
             this.min = min;
             this.max = max;
-            this.type = type;
             this.unit = unit;
         }
 
@@ -91,7 +89,6 @@ public class NumericConstraint implements Constraint {
             return "Value{" +
                     "min=" + min +
                     ", max=" + max +
-                    ", type=" + type +
                     ", unit=" + unit +
                     '}';
         }

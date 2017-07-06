@@ -18,6 +18,7 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.makerplayground.helper.ActionType;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
  */
 public class Action {
     private final String name;
+    private final ActionType type;
     private final List<Parameter> parameter;
 
     /**
@@ -35,8 +37,9 @@ public class Action {
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator
-    Action(@JsonProperty("name") String name, @JsonProperty("parameter") List<Parameter> parameter) {
+    Action(@JsonProperty("name") String name, @JsonProperty("type") ActionType type, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
+        this.type = type;
         this.parameter = Collections.unmodifiableList(parameter);
     }
 
@@ -46,6 +49,10 @@ public class Action {
      */
     public String getName() {
         return name;
+    }
+
+    public ActionType getType() {
+        return type;
     }
 
     /**
