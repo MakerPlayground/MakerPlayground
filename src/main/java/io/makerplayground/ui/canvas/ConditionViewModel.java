@@ -16,7 +16,7 @@ public class ConditionViewModel {
     private final Condition condition;
     private final Project project;
 
-    private final DynamicViewModelCreator<UserSetting, ConditionDeviceIconViewModel> dynamicViewModelCreator;
+    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
 
@@ -24,7 +24,7 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-         this.dynamicViewModelCreator = new DynamicViewModelCreator<UserSetting, ConditionDeviceIconViewModel>(condition.getSetting(), ConditionDeviceIconViewModel::new);
+         this.dynamicViewModelCreator = new DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel>(condition.getSetting(), SceneDeviceIconViewModel::new);
 
          hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
          this.project.getInputDevice().addListener((InvalidationListener) observable -> {
@@ -34,7 +34,7 @@ public class ConditionViewModel {
              hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
          });
     }
-    public DynamicViewModelCreator<UserSetting, ConditionDeviceIconViewModel> getDynamicViewModelCreator() {
+    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
     }
 

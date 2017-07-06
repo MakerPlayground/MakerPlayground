@@ -61,7 +61,7 @@ public class ConditionView extends HBox {
         });
         addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
 
-        DynamicViewCreator<HBox, ConditionDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
+        DynamicViewCreator<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreator<>(conditionViewModel.getDynamicViewModelCreator(), deviceIconHBox
                         , conditionDeviceIconViewModel -> {
                     ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);

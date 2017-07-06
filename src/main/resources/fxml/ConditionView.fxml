@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
@@ -7,16 +8,22 @@
 
 <fx:root alignment="CENTER" maxWidth="-Infinity" style="-fx-background-color: transparent;" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc fx:id="sourceNode" fill="DODGERBLUE" length="180.0" radiusX="20.0" radiusY="20.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
-      <ScrollPane fitToHeight="true" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="200.0">
+      <Arc fx:id="sourceNode" fill="DODGERBLUE" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+      <ScrollPane fitToHeight="true" maxHeight="80.0" minHeight="60.0" prefHeight="60.0" prefWidth="200.0" style="-fx-border-color: BLACK;">
         <content>
-            <HBox fx:id="deviceIconHBox" alignment="CENTER" maxHeight="100.0" minHeight="98.0" prefHeight="100.0">
+            <HBox fx:id="deviceIconHBox" alignment="CENTER" maxHeight="100.0" minHeight="44.0" prefHeight="44.0" prefWidth="41.0">
                <children>
-                  <Button fx:id="addInputButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" text="+" />
+                  <Button fx:id="addInputButton" maxWidth="50.0" minHeight="45.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="41.0" text="+" />
                </children>
             </HBox>
         </content>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+         <HBox.margin>
+            <Insets />
+         </HBox.margin>
       </ScrollPane>
-      <Arc fx:id="destNode" fill="DODGERBLUE" length="180.0" radiusX="20.0" radiusY="20.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="destNode" fill="DODGERBLUE" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

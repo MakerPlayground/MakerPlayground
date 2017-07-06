@@ -18,14 +18,14 @@ import java.io.IOException;
  */
 public class ConditionDeviceIconView extends VBox {
 
-    private final ConditionDeviceIconViewModel viewModel;
+    private final SceneDeviceIconViewModel viewModel;
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
     @FXML private Label action;
     @FXML private Button removeConditionDeviceBtn;
 
-    public ConditionDeviceIconView(ConditionDeviceIconViewModel viewModel) {
+    public ConditionDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionDeviceIconView.fxml"));
@@ -43,10 +43,10 @@ public class ConditionDeviceIconView extends VBox {
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png" )));
 
-//        iconImageView.setOnMouseClicked(e -> {
-//            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
-//            devicePropertyWindow.show(ConditionDeviceIconView.this);
-//        });
+        iconImageView.setOnMouseClicked(e -> {
+            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            devicePropertyWindow.show(ConditionDeviceIconView.this);
+        });
     }
 
     public void setOnRemove(EventHandler<ActionEvent> e) {
