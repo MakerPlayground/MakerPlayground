@@ -105,29 +105,31 @@ public class ConditionView extends HBox {
         });
     }
 
-    public void setDesNodeOnDragDetectedEvent(javafx.event.EventHandler<MouseEvent> e) {
+    public ConditionViewModel getSceneViewModel() {
+        return conditionViewModel;
+    }
+
+    public void setOnDesPortDragDetected(EventHandler<? super MouseEvent> e) {
         destNode.setOnDragDetected(e);
     }
 
-    public void setSrcNodeOnDragOverEvent(javafx.event.EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragOver(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragOver(e);
     }
 
-    public void setSrcNodeOnDragEnteredEvent(javafx.event.EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragEntered(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragEntered(e);
     }
 
-    public void setSrcNodeOnDragExitedEvent(javafx.event.EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragExited(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragExited(e);
     }
 
-    public void setSrcNodeOnDragDroppedEvent(javafx.event.EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragDropped(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragDropped(e);
     }
 
-    public void setDesNodeOnDragDoneEvent(javafx.event.EventHandler<DragEvent> e) {
+    public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {
         destNode.setOnDragDone(e);
     }
-
-
 }

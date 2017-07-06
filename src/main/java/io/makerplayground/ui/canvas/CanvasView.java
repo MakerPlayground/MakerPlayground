@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.project.Condition;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
@@ -69,7 +70,11 @@ public class CanvasView extends AnchorPane {
                 });
 
         DynamicViewCreator<Pane, ConditionViewModel, ConditionView> conditionViewCreator =
-                new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, ConditionView::new, new NodeConsumer<Pane, ConditionView>() {
+                new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, conditionViewModel -> {
+                    ConditionView conditionView = new ConditionView(conditionViewModel);
+                    addConditionConnectionEvent(conditionView);
+                    return conditionView;
+                }, new NodeConsumer<Pane, ConditionView>() {
                     @Override
                     public void addNode(Pane parent, ConditionView node) {
                         parent.getChildren().add(node);
@@ -122,7 +127,7 @@ public class CanvasView extends AnchorPane {
             Dragboard db = CanvasView.this.startDragAndDrop(TransferMode.ANY);
 
             ClipboardContent clipboard = new ClipboardContent();
-            clipboard.putString(sceneView.getSceneViewModel().getName());
+            clipboard.putString("");
             db.setContent(clipboard);
 
             guideLine.setStartX(event.getSceneX());
@@ -171,13 +176,61 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
-//        sceneView.setOnDesPortDragDone(event -> {
-//            if (event.getTransferMode() == TransferMode.MOVE) {
-//            }
-//
-//            guideLine.setVisible(false);
-//
-//            event.consume();
-//        });
+    }
+
+    private void addConditionConnectionEvent(ConditionView conditionView) {
+        conditionView.setOnDesPortDragDetected(event -> {
+            Dragboard db = CanvasView.this.startDragAndDrop(TransferMode.ANY);
+
+            ClipboardContent clipboard = new ClipboardContent();
+            clipboard.putString("");
+            db.setContent(clipboard);
+
+            guideLine.setStartX(event.getSceneX());
+            guideLine.setStartY(event.getSceneY());
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY());
+            guideLine.setVisible(true);
+
+            source = conditionView.getSceneViewModel().getCondition();
+
+            event.consume();
+        });
+        conditionView.setOnSrcPortDragOver(event -> {
+            System.out.println(event.getSceneX() + " " + event.getSceneY());
+
+            if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY());
+
+            event.consume();
+        });
+        conditionView.setOnSrcPortDragEntered(event -> {
+            if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
+                // TODO: add visual feedback
+            }
+
+            event.consume();
+        });
+        conditionView.setOnSrcPortDragExited(event -> {
+            // TODO: remove visual feedback
+
+            event.consume();
+        });
+        conditionView.setOnSrcPortDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                System.out.println("Connect to => " + db.getString());
+                success = true;
+            }
+            canvasViewModel.connectState(source, conditionView.getSceneViewModel().getCondition());
+            event.setDropCompleted(success);
+
+            event.consume();
+        });
     }
 }
