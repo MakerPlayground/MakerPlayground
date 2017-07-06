@@ -16,6 +16,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,12 +47,16 @@ public class DeviceSelectorView extends Dialog {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
         initView();
     }
 
     private void initView() {
-        setTitle("Device Library");
+        setTitle(" Device Library");
         getDialogPane().setExpanded(true);
+        Stage stage = (Stage) getDialogPane().getScene().getWindow();
+        stage.initStyle(StageStyle.UTILITY);
+
         for (GenericDevice d  : DeviceLibrary.INSTANCE.getOutputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
             outputPane.getChildren().add(controlDevicePane);

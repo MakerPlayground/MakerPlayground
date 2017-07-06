@@ -134,7 +134,7 @@ public class Project {
     public State addState() {
         State s = new State();
         // TODO: check for duplicate name
-        s.setName("state" + (state.size() + 1));
+        s.setName("State-" + (state.size() + 1));
 
         // Add every output device to be displayed in new state
 //        for (ProjectDevice projectDevice: outputDevice) {

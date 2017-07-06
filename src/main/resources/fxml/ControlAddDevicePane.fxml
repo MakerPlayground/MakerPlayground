@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="controllAddDevicePane" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" stylesheets="@../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="controllAddDevicePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" spacing="3.0" stylesheets="@../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="nameLabel" text="Label" />
       <ImageView fx:id="imageView" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
       <HBox alignment="TOP_CENTER">
          <children>
-            <Button id="decBtn" fx:id="decBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" text="-" />
-            <TextField id="numTextField" fx:id="numberTextField" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="35.0" text="0" />
-            <Button id="incBtn" fx:id="incBtn" mnemonicParsing="false" prefHeight="25.0" text="+" />
+            <Button id="decBtn" fx:id="decBtn" maxHeight="25.0" minHeight="25.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" text="-" />
+            <TextField id="numTextField" fx:id="numberTextField" alignment="CENTER_RIGHT" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" prefWidth="35.0" text="0" />
+            <Button id="incBtn" fx:id="incBtn" maxHeight="25.0" minHeight="25.0" mnemonicParsing="false" prefHeight="25.0" text="+" />
          </children>
       </HBox>
    </children>

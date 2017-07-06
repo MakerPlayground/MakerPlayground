@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Popup;
 
 
@@ -26,16 +27,16 @@ public class StateDeviceIconView extends VBox {
 
     private final StateDeviceIconViewModel viewModel;
 
-    @FXML private Label nameIconImageView;
+    @FXML private Text nameIconImageView;
     @FXML private ImageView iconImageView;
-    @FXML private Label action;
+    @FXML private Text action;
     @FXML private Button removeStateDeviceBtn;
 
 
     public StateDeviceIconView(StateDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIconView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIcon2View.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
@@ -48,7 +49,7 @@ public class StateDeviceIconView extends VBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         action.setText(viewModel.getAction().getName());
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
-        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png" )));
+        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
         iconImageView.setOnMouseClicked(e -> {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);

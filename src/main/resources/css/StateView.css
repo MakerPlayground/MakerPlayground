@@ -2,28 +2,30 @@
     -fx-background-color : white;
 }
 .text-field{
-    -fx-background-color : #0768de;
+    -fx-background-color : #313644;
     -fx-text-fill: white;
-    -fx-font-size : 16 px;
+    -fx-font-size : 14 px;
 }
 #numberTextField{
     -fx-background-color : white;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
     -fx-text-fill : black;
-    -fx-font-size : 11 px;
+    -fx-font-size : 9 px;
     -fx-font-weight : normal;
 }
 #stateBottomHBox{
-    -fx-background-color : #0768de;
+    -fx-background-color : #313644;
 }
 #delayLabel{
     -fx-text-fill : white;
 }
 .flow-pane{
-    -fx-background-color : #ecedf3;
+    -fx-background-color : white;
     -fx-border-color : null;
 }
 .scroll-pane {
-    -fx-background-color:transparent;
+    -fx-background-color:white;
 }
 
 .scroll-bar .increment-button {
@@ -55,5 +57,43 @@
     -fx-background-insets: 2, 0, 0;
 }
 .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+#TimeUnitComboBox{
+    -fx-background-color : #0768de;
+    -fx-border-color : #0768de;
+}
+.combo-box-base .text{
+    -fx-fill: white;
+}
+#TimeUnitComboBox .list-view .list-cell:filled:hover
+{
+    -fx-background-color: #5ac2ab;
+    -fx-text-fill: -fx-text-inner-color;
+}
+#TimeUnitComboBox .list-view .list-cell:filled;
+{
+    -fx-text-fill: black;
+}
+#TimeUnitComboBox .arrow{
+    -fx-background-color: white;
+}
+#TimeUnitComboBox: pressed .arrow-button {
+    -fx-background-color: white;
+}
+#TimeUnitComboBox: pressed .arrow {
+    -fx-background-color: #5ac2ab;
+}
+
+#addOutputButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('Add-toggle.png');
+    -fx-background-size : 50px;
+}
+#addOutputButton{
+    -fx-background-image: url('Add.png');
+    -fx-background-size : 50px;
     -fx-background-color: transparent;
 }
