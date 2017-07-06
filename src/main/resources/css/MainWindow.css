@@ -1,0 +1,15 @@
+.titled-pane > .title{
+    -fx-background-color : #313644;
+    -fx-border-color: #313644;
+    -fx-border-width : 2px;
+}
+.button{
+    -fx-background-color : transparent;
+    -fx-border-color : #5ac2ab;
+    -fx-text-fill: #5ac2ab;
+}
+.button:pressed{
+    -fx-background-color : #5ac2ab;
+    -fx-border-color : #5ac2ab;
+    -fx-text-fill: #231f20;
+}

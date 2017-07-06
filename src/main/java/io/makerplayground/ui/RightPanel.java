@@ -25,6 +25,7 @@ public class RightPanel extends AnchorPane {
     }
 
     private void initView() {
+        setStyle("-fx-background-color : #4d5666");
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
         Button configureBtn = new Button("Configure GenericDevice");
@@ -32,6 +33,7 @@ public class RightPanel extends AnchorPane {
         Button uploadBtn = new Button("Upload");
 
         VBox projectButton = new VBox();
+        projectButton.setStyle("-fx-background-color : #313644");
         projectButton.setSpacing(2.0);
         projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);

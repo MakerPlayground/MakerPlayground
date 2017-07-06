@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
@@ -13,62 +13,68 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
 
-<fx:root alignment="CENTER" style="-fx-background-color: transparent;" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="sourceNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
+      <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <VBox id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
          <children>
-            <TextField id="nameStateTextField" fx:id="nameTextField" prefHeight="40.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
-            <VBox prefHeight="130.0" prefWidth="100.0" spacing="5.0">
+            <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: #313644;">
                <children>
-                  <ScrollPane fitToWidth="true" prefHeight="130.0" prefWidth="200.0">
+                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" maxWidth="170.0" minWidth="170.0" prefHeight="30.0" style="-fx-border-color: #313644;">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644;">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../icons/cancel_state.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+            <VBox prefHeight="80.0" prefWidth="100.0" spacing="5.0">
+               <children>
+                  <ScrollPane fitToWidth="true" prefHeight="80.0" prefWidth="200.0">
                      <content>
-                        <FlowPane fx:id="activeIconFlowPane" hgap="5.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                        <FlowPane fx:id="activeIconFlowPane" columnHalignment="RIGHT" hgap="10.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
+                           <children>
+                              <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                           </children>
                         </FlowPane>
                      </content>
                   </ScrollPane>
                </children>
                <VBox.margin>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="10.0" />
+                  <Insets />
                </VBox.margin>
             </VBox>
-            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" spacing="5.0">
+            <HBox id="stateBottomHBox" alignment="CENTER" maxHeight="26.0" minHeight="26.0" spacing="5.0">
                <children>
                   <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../icons/delayIcon.png" />
                      </image>
                   </ImageView>
-                  <Label id="delayLabel" text="Delay " />
-                  <TextField id="numberTextField" fx:id="delayTextField" prefWidth="50.0">
+                  <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="25.0" minHeight="20.0" prefWidth="50.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
-                     <font>
-                        <Font size="10.0" />
-                     </font>
                   </TextField>
-                  <TitledPane animated="false" expanded="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" text="sec" />
+                  <ComboBox id="TimeUnitComboBox" fx:id="TimeUnitComboBox" maxHeight="20.0" minHeight="24.0" prefHeight="20.0" promptText="sec" style="-fx-border-color: transparent; -fx-background-color: transparent;" />
                </children>
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
             </HBox>
          </children>
       </VBox>
-      <Arc fx:id="desNode" fill="#0768de" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="desNode" fill="#313644" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

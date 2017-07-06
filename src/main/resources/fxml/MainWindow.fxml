@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<fx:root fx:id="mainWindowPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #dbdbdb;" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <TitledPane alignment="CENTER_RIGHT" collapsible="false" expanded="false" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER_RIGHT">
+         <graphic>
+            <Button maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" text="Tutorial" />
+         </graphic>
+      </TitledPane>
+   </top>
+</fx:root>

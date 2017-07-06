@@ -41,7 +41,7 @@ public class DevicePropertyWindow extends PopOver {
         HBox row1 = new HBox();
         row1.setSpacing(10);
 
-        Image img = new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png"));
+        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

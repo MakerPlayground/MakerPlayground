@@ -6,13 +6,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,12 +43,16 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
         initView();
     }
 
     private void initView() {
-        setTitle("Device Library");
+        setTitle(" Device Library");
         getDialogPane().setExpanded(true);
+        Stage stage = (Stage) getDialogPane().getScene().getWindow();
+        stage.initStyle(StageStyle.UTILITY);
+
         for (GenericDevice d  : DeviceLibrary.INSTANCE.getOutputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
             outputPane.getChildren().add(controlDevicePane);

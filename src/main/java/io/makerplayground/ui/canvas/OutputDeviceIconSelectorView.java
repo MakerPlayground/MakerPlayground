@@ -5,6 +5,7 @@ import io.makerplayground.ui.Main;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 
 /**
@@ -17,12 +18,16 @@ public class OutputDeviceIconSelectorView extends VBox {
         this.projectDevice = projectDevice;
 
         ImageView imv = new ImageView();
-        Image image = new Image(Main.class.getResourceAsStream("/icons/" + projectDevice.getGenericDevice().getName() + ".png"));
+        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons/" + projectDevice.getGenericDevice().getName() + ".png"));
         imv.setImage(image);
         imv.setFitHeight(50);
         imv.setPreserveRatio(true);
+        setAlignment(Pos.CENTER);
+        setMinSize(50,70);
 
         Label name = new Label(projectDevice.getName());
+        name.setMinWidth(70);
+        name.setAlignment(Pos.CENTER);
         getChildren().addAll(imv, name);
     }
 }
