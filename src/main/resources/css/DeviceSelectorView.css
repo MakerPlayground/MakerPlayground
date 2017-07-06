@@ -21,10 +21,10 @@
     -fx-box-border : transparent;
 }
 
-.scroll-pane {
-    -fx-background-color:transparent;
+.scroll-pane > .viewport{
+    -fx-background-color : #4d5666;
+    -fx-border-color : #4d5666;
 }
-
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
@@ -58,7 +58,7 @@
 }
 
 .flow-pane{
-    -fx-background-color : white;
+    -fx-background-color : #4d5666;
 }
 .button:pressed{
     -fx-background-color : #5ac2ab;

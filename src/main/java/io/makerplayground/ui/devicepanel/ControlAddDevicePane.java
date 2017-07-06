@@ -41,7 +41,7 @@ public class ControlAddDevicePane extends VBox {
             throw new RuntimeException(exception);
         }
 
-        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + genericDevice.getName() + ".png")));
+        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + genericDevice.getName() + ".png")));
         nameLabel.setText(genericDevice.getName());
 
         numberTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {

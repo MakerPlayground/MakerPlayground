@@ -15,32 +15,32 @@
 
 <fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
       <VBox id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
          <children>
-            <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: #313644;">
+            <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: #313644; -fx-border-color: #313644;">
                <children>
                   <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" maxWidth="170.0" minWidth="170.0" prefHeight="30.0" style="-fx-border-color: #313644;">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </TextField>
-                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644;">
+                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644; -fx-border-color: #313644;">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../icons/cancel_state.png" />
+                              <Image url="@../icons/cancel.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
                </children>
             </HBox>
-            <VBox prefHeight="80.0" prefWidth="100.0" spacing="5.0">
+            <VBox prefHeight="75.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <ScrollPane fitToWidth="true" prefHeight="80.0" prefWidth="200.0">
+                  <ScrollPane fitToWidth="true" prefHeight="75.0" prefWidth="200.0">
                      <content>
-                        <FlowPane fx:id="activeIconFlowPane" columnHalignment="RIGHT" hgap="10.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
+                        <FlowPane fx:id="activeIconFlowPane" columnHalignment="RIGHT" hgap="15.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
@@ -75,6 +75,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc fx:id="desNode" fill="#313644" length="180.0" radiusX="15.0" radiusY="15.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="desNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

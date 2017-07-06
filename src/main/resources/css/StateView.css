@@ -1,9 +1,13 @@
+.root{
+    -fx-focus-color: transparent;
+}
 #statePane{
     -fx-background-color : white;
 }
 .text-field{
     -fx-background-color : #313644;
     -fx-text-fill: white;
+    -fx-font-weight: bold;
     -fx-font-size : 14 px;
 }
 #numberTextField{
@@ -24,8 +28,20 @@
     -fx-background-color : white;
     -fx-border-color : null;
 }
-.scroll-pane {
+.scroll-pane{
+     -fx-focus-color: transparent;
+     -fx-background-insets: 0;
+     -fx-padding: 0;
+}
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+.scroll-pane > .viewport{
     -fx-background-color:white;
+    -fx-border-color : transparent;
 }
 
 .scroll-bar .increment-button {

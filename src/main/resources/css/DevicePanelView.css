@@ -9,6 +9,7 @@
     -fx-background-color : #3b424f;
     -fx-border-color: #3b424f transparent transparent #5ac2ab;
     -fx-border-width : 5px;
+    -fx-font-weight: bold;
 }
 .titled-pane{
     -fx-focus-color: transparent;
@@ -25,7 +26,6 @@
 .scroll-pane {
     -fx-background-color:transparent;
 }
-
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 2em;
@@ -45,14 +45,14 @@
     -fx-padding:0;
 }
 .scroll-bar .track{
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
+    -fx-background-color:   #4d5666;
+    -fx-border-color :   #4d5666;
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
     -fx-background-color: #51af98;
-    -fx-border-radius: 2em;
-    -fx-background-insets: 2, 0, 0;
+    -fx-border-radius: 0em;
+    -fx-background-insets: 0 3 0 3;
 }
 
 #addBtn{

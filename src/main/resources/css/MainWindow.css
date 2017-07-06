@@ -3,13 +3,24 @@
     -fx-border-color: #313644;
     -fx-border-width : 2px;
 }
-.button{
+#tutorialBtn{
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #5ac2ab;
 }
-.button:pressed{
+#tutorialBtn:pressed{
     -fx-background-color : #5ac2ab;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #231f20;
+}
+.split-pane{
+    -fx-box-border: red;
+    -fx-border-width:0;
+    -fx-border-insets:0;
+    -fx-background-insets:0;
+    -fx-padding: 0;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 0 0 0;
 }
