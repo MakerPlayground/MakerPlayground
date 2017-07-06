@@ -1,28 +1,12 @@
 [
   {
-    "brand": "generic",
-    "model": "led 5mm",
-    "url": "",
-    "compatibility": [
+    "name": "Button",
+    "action": [
       {
-        "name": "led",
-        "supported_action": [
-          {
-            "name": "on",
-            "parameter": [
-              {
-                "name": "brightness",
-                "constraint": []
-              }
-            ]
-          },
-          {
-            "name": "off",
-            "parameter": []
-          }
-        ],
-        "supported_value": []
+        "name": "Press",
+        "parameter": []
       }
-    ]
+    ],
+    "value": []
   }
 ]

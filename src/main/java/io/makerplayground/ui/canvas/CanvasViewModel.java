@@ -12,12 +12,13 @@ import io.makerplayground.uihelper.DynamicViewModelCreator;
 public class CanvasViewModel {
     protected final Project project;
     private final DynamicViewModelCreator<State, SceneViewModel> paneStateViewModel;
-    private final DynamicViewModelCreator<Condition,LineViewModel> lineViewModel;
+    private final DynamicViewModelCreator<Condition, ConditionViewModel> conditionViewModel;
+
 
     public CanvasViewModel(Project project) {
         this.project = project;
         this.paneStateViewModel = new DynamicViewModelCreator<>(project.getState(), state -> new SceneViewModel(state, project));
-        this.lineViewModel = new DynamicViewModelCreator<Condition, LineViewModel>(project.getCondition(),LineViewModel::new);
+        this.conditionViewModel = new DynamicViewModelCreator<>(project.getCondition(), condition -> new ConditionViewModel(condition, project));
     }
 
     public void connectState(String state1, String state2) {
@@ -35,8 +36,8 @@ public class CanvasViewModel {
         //project.addCondition(dest, source);
     }
 
-    public DynamicViewModelCreator<Condition, LineViewModel> getLineViewModel() {
-        return lineViewModel;
+    public DynamicViewModelCreator<Condition, ConditionViewModel> getConditionViewModel() {
+        return conditionViewModel;
     }
 
     public DynamicViewModelCreator<State, SceneViewModel> getPaneStateViewModel() {
