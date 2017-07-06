@@ -36,7 +36,7 @@ public class Value {
      * @param constraint an enumerated value ({@link Constraint}) indicating type of a constraint
      */
     @JsonCreator
-    public Value(@JsonProperty("name") String name, @JsonProperty("datatype") DataType type, @JsonProperty("constraint") Constraint constraint) {
+    public Value(@JsonProperty("name") String name, @JsonProperty("dataType") DataType type, @JsonProperty("constraint") Constraint constraint) {
         this.name = name;
         this.type = type;
         this.constraint = constraint;

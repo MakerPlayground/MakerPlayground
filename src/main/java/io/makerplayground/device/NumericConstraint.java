@@ -35,11 +35,10 @@ public class NumericConstraint implements Constraint {
      * be invoked by the DeviceLibrary in order to rebuild the library from file.
      * @param min the minimum value (inclusive)
      * @param max the maximum value (inclusive)
-     * @param type the type as an instance of {@link DataType}
      * @param unit the unit of the value
      */
-    NumericConstraint(double min, double max, DataType type, Unit unit) {
-        Value value = new Value(min, max, type, unit);
+    NumericConstraint(double min, double max, Unit unit) {
+        Value value = new Value(min, max, unit);
         this.numericValue = Collections.singletonMap(unit, value);
     }
 
@@ -73,16 +72,14 @@ public class NumericConstraint implements Constraint {
     static class Value {
         public double min;
         public double max;
-        public DataType type;
         public Unit unit;
 
         Value() {
         }
 
-        Value(double min, double max, DataType type, Unit unit) {
+        Value(double min, double max, Unit unit) {
             this.min = min;
             this.max = max;
-            this.type = type;
             this.unit = unit;
         }
 
@@ -91,7 +88,6 @@ public class NumericConstraint implements Constraint {
             return "Value{" +
                     "min=" + min +
                     ", max=" + max +
-                    ", type=" + type +
                     ", unit=" + unit +
                     '}';
         }

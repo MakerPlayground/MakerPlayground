@@ -63,12 +63,11 @@ public interface Constraint {
      * Create a constraint for a numeric value
      * @param min the minimum valid value (inclusive)
      * @param max the maximum valid value (inclusive)
-     * @param type type of the value as an instance of {@link DataType}
      * @param unit unit of the value as an instance of {@link Unit}
      * @return an instance of {@link NumericConstraint}
      */
-    static Constraint createNumericConstraint(double min, double max, DataType type, Unit unit) {
-        return new NumericConstraint(min, max, type, unit);
+    static Constraint createNumericConstraint(double min, double max, Unit unit) {
+        return new NumericConstraint(min, max, unit);
     }
 
     /**

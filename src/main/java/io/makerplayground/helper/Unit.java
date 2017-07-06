@@ -20,6 +20,7 @@ package io.makerplayground.helper;
  * An enum represent unit of a numeric value
  */
 public enum Unit {
-    NOT_SPECIFIED,HERTZ,PERCENT,SECOND,WAV
+    NOT_SPECIFIED,HERTZ,PERCENT,SECOND,WAV,
+    METERPERSECSQUARE,TIME
     // TODO: add new unit
 }
