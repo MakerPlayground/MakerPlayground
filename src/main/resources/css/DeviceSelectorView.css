@@ -1,19 +1,20 @@
 .root {
+    -fx-background-color : #313644;
     -fx-focus-color: transparent;
 }
 .dialog-pane{
-    -fx-background-color : #edeef3;
+    -fx-background-color : #313644;
 }
 .titled-pane > .title{
-    -fx-background-color : white;
-    -fx-border-color: transparent transparent transparent #0768de;
-    -fx-border-width : 2px;
+    -fx-background-color : #313644;
+    -fx-border-color: transparent transparent transparent #5ac2ab;
+    -fx-border-width : 5px;
 }
 .titled-pane{
-    -fx-text-fill : #0768de;
+    -fx-text-fill : white;
 }
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #0768de;
+    -fx-background-color : #5ac2ab;
 }
 .titled-pane > *.content{
     -fx-background-color : transparent;
@@ -59,14 +60,14 @@
 .flow-pane{
     -fx-background-color : white;
 }
-.button{
-    -fx-background-color : #0768de;
-    -fx-border-color : #0768de;
-    -fx-text-fill : white;
-}
 .button:pressed{
+    -fx-background-color : #5ac2ab;
+    -fx-border-color : #5ac2ab;
+    -fx-text-fill : #313644;
+}
+.button{
     -fx-focus-color: transparent;
-    -fx-border-color : #0768de;
-    -fx-background-color : #edeef3;
-    -fx-text-fill : #0768de;
+    -fx-border-color : #5ac2ab;
+    -fx-background-color : transparent;
+    -fx-text-fill : #5ac2ab;
 }

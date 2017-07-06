@@ -1,9 +1,13 @@
 package io.makerplayground.ui.devicepanel;
 
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.collections.ObservableList;
+
+import java.util.Map;
 
 /**
  *
@@ -16,7 +20,7 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), device -> new DevicePanelIconViewModel(device));
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), DevicePanelIconViewModel::new);
         this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), DevicePanelIconViewModel::new);
     }
 
@@ -33,10 +37,18 @@ public class DevicePanelViewModel {
         return project.removeOutputDevice(deviceToBeRemoved);
     }
 
-    public void addDevice(ObservableList<ControlAddDevicePane> device) {
-        for (ControlAddDevicePane d : device) {
-            for (int i = 0; i < d.getCount(); i++) {
-                project.addOutputDevice(d.getGenericDevice());
+    public void addDevice(Map<GenericDevice, Integer> device) {
+        for (GenericDevice genericDevice : device.keySet()) {
+            if (DeviceLibrary.INSTANCE.getInputDevice().contains(genericDevice)) {
+                for (int i = 0; i < device.get(genericDevice); i++) {
+                    project.addInputDevice(genericDevice);
+                }
+            } else if (DeviceLibrary.INSTANCE.getOutputDevice().contains(genericDevice)) {
+                for (int i = 0; i < device.get(genericDevice); i++) {
+                    project.addOutputDevice(genericDevice);
+                }
+            } else {
+                throw new IllegalStateException("We are in great danger!!!");
             }
         }
     }

@@ -1,5 +1,6 @@
 package io.makerplayground.ui.devicepanel;
 
+import io.makerplayground.device.GenericDevice;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import io.makerplayground.uihelper.ViewFactory;
@@ -9,7 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,10 +30,8 @@ public class DevicePanelView extends VBox {
 
     @FXML public void onAddDeviceClick() {
         DeviceSelectorView deviceSelectorView = new DeviceSelectorView();
-        Optional<ObservableList<ControlAddDevicePane>> result = deviceSelectorView.showAndWait();
-        if (result.isPresent()) {
-            viewModel.addDevice(result.get());
-        }
+        Optional<Map<GenericDevice, Integer>> result = deviceSelectorView.showAndWait();
+        result.ifPresent(viewModel::addDevice);
     }
 
     private final ViewFactory<DevicePanelIconViewModel, DevicePanelIcon> viewFactory = new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
@@ -69,5 +70,7 @@ public class DevicePanelView extends VBox {
               new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, viewFactory, nodeConsumer);
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
               new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, viewFactory, nodeConsumer);
+
     }
+
 }

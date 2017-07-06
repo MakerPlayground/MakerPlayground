@@ -65,7 +65,7 @@ public class Condition extends NodeElement {
         setting.remove(device);
     }
 
-    public ObservableList<UserSetting> getUnmodifiableSetting() {
+    public ObservableList<UserSetting> getSetting() {
         return unmodifiableSetting;
     }
 }

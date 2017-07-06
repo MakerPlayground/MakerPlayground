@@ -22,6 +22,7 @@ import org.controlsfx.control.PopOver;
  */
 public class DevicePropertyWindow extends PopOver {
     private final SceneDeviceIconViewModel viewModel;
+//    private final ConditionDeviceIconViewModel conditionViewModel;
     private VBox paramVBox;
 
     public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
@@ -29,13 +30,18 @@ public class DevicePropertyWindow extends PopOver {
         initView();
     }
 
+//    public DevicePropertyWindow(ConditionDeviceIconViewModel conditionViewModel) {
+//        this.conditionViewModel = conditionViewModel;
+//        initView();
+//    }
+
     private void initView() {
         VBox vbox = new VBox();
 
         HBox row1 = new HBox();
         row1.setSpacing(10);
 
-        Image img = new Image(getClass().getResourceAsStream("/icons/" + viewModel.getImageName() + ".png"));
+        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

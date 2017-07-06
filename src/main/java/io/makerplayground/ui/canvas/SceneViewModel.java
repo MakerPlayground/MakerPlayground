@@ -18,8 +18,6 @@ public class SceneViewModel {
     private final SimpleDoubleProperty delay;
     private final Project project;
 
-    DevicePropertyWindow devicePropertyWindow;
-
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
@@ -31,8 +29,6 @@ public class SceneViewModel {
         this.project = project;
 
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), SceneDeviceIconViewModel::new);
-
-        this.devicePropertyWindow = null;
 
         hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
         this.project.getOutputDevice().addListener((InvalidationListener) observable -> {

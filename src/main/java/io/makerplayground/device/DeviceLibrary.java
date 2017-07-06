@@ -37,9 +37,12 @@ public enum DeviceLibrary {
 
         ObjectMapper mapper = new ObjectMapper();
         List<GenericDevice> temp = null;
+        List<GenericDevice> temp2 = null;   //TODO : remove
 
         try {
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericoutputdevice.json")
+                    , new TypeReference<List<GenericDevice>>() {});
+            temp2 = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")    //TODO : Bug
                     , new TypeReference<List<GenericDevice>>() {});
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,6 +51,21 @@ public enum DeviceLibrary {
         for (GenericDevice device : temp) {
             tmpOutputDevice.put(device, Collections.emptyList());
         }
+
+        for (GenericDevice device : temp2) {
+            tmpInputDevice.put(device, Collections.emptyList());
+        }
+
+//        try {
+//            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
+//                    , new TypeReference<List<GenericDevice>>() {});
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        for (GenericDevice device : temp) {
+//            tmpInputDevice.put(device, Collections.emptyList());
+//        }
 
         this.inputDevice = Collections.unmodifiableMap(tmpInputDevice);
         this.outputDevice = Collections.unmodifiableMap(tmpOutputDevice);

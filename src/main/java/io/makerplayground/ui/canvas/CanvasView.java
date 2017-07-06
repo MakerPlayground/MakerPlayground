@@ -24,6 +24,7 @@ public class CanvasView extends AnchorPane {
     @FXML private Pane canvasPane;
     @FXML private ScrollPane scrollPane;
     @FXML private Button addStateBtn;
+    @FXML private Button addConditionBtn;
 
     private final CanvasViewModel canvasViewModel;
     private Line guideLine;
@@ -46,6 +47,9 @@ public class CanvasView extends AnchorPane {
         addStateBtn.setOnAction((event) -> {
             canvasViewModel.project.addState();
         });
+        addConditionBtn.setOnAction((event) -> {
+            canvasViewModel.project.addCondition();
+        });
 
         DynamicViewCreator<Pane, SceneViewModel, SceneView> canvasViewCreator =
                 new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, sceneViewModel -> {
@@ -61,6 +65,19 @@ public class CanvasView extends AnchorPane {
                     @Override
                     public void removeNode(Pane parent, SceneView node) {
                         parent.getChildren().remove(node);
+                    }
+                });
+
+        DynamicViewCreator<Pane, ConditionViewModel, ConditionView> conditionViewCreator =
+                new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, ConditionView::new, new NodeConsumer<Pane, ConditionView>() {
+                    @Override
+                    public void addNode(Pane parent, ConditionView node) {
+                        parent.getChildren().add(node);
+                    }
+
+                    @Override
+                    public void removeNode(Pane parent, ConditionView node) {
+                        parent.getChildren().add(node);
                     }
                 });
 

@@ -54,8 +54,7 @@ public class SceneView extends HBox {
     private OutputDeviceSelector outputDeviceSelector;
     private double dragDeltaX;
     private double dragDeltaY;
-
-    private Button addOutputButton;
+    @FXML private Button addOutputButton;
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
@@ -80,7 +79,7 @@ public class SceneView extends HBox {
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
 
 
-        addOutputButton = new Button("+");
+
         addOutputButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -93,7 +92,7 @@ public class SceneView extends HBox {
             }
         });
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
-        activeIconFlowPane.getChildren().add(addOutputButton);
+
 
         DynamicViewCreator<FlowPane, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreator<>(sceneViewModel.getDynamicViewModelCreator(), activeIconFlowPane

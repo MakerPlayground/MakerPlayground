@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-
-<fx:root id="anchorPane" fx:id="anchorPane" stylesheets="@../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="anchorPane" fx:id="anchorPane" style="-fx-background-color: transparent; -fx-border-color: transparent;" stylesheets="@../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ScrollPane id="scrollPane" fx:id="scrollPane" layoutX="60.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ScrollPane id="scrollPane" fx:id="scrollPane" layoutX="60.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <Pane id="canvasPane" fx:id="canvasPane" />
+            <Pane id="canvasPane" fx:id="canvasPane" style="-fx-background-color: #dbdbdb;" />
          </content>
       </ScrollPane>
       <Button id="addStateBtn" fx:id="addStateBtn" mnemonicParsing="false" text="+ Add State" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+      <Button fx:id="addConditionBtn" layoutX="168.0" layoutY="75.0" mnemonicParsing="false" text="+ Add Condition" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="65.0" />
    </children>
 </fx:root>
