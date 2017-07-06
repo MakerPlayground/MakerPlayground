@@ -22,12 +22,18 @@ import org.controlsfx.control.PopOver;
  */
 public class DevicePropertyWindow extends PopOver {
     private final SceneDeviceIconViewModel viewModel;
+//    private final ConditionDeviceIconViewModel conditionViewModel;
     private VBox paramVBox;
 
     public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
         initView();
     }
+
+//    public DevicePropertyWindow(ConditionDeviceIconViewModel conditionViewModel) {
+//        this.conditionViewModel = conditionViewModel;
+//        initView();
+//    }
 
     private void initView() {
         VBox vbox = new VBox();

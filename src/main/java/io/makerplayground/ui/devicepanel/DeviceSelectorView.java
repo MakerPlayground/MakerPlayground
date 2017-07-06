@@ -10,20 +10,26 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * Created by Nuntipat Narkthong on 6/7/2017 AD.
  */
-public class DeviceSelectorView extends Dialog {
+public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
     @FXML private DialogPane deviceSelectorPane;
     @FXML private FlowPane mcuPane;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane inputPane;
     //private final DeviceSelectorViewModel viewModel;\
     private ObservableList<ControlAddDevicePane> outputDevice;
+    private ObservableList<ControlAddDevicePane> inputDevice;
 
     public DeviceSelectorView() {
+        this.inputDevice = FXCollections.observableArrayList();
         this.outputDevice = FXCollections.observableArrayList();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DeviceSelectorView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
@@ -45,15 +51,26 @@ public class DeviceSelectorView extends Dialog {
             outputPane.getChildren().add(controlDevicePane);
             this.outputDevice.add(controlDevicePane);
         }
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getInputDevice()) {
+            ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
+            inputPane.getChildren().add(controlDevicePane);
+            this.inputDevice.add(controlDevicePane);
+        }
         ButtonType importButtonType = new ButtonType("Import", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(importButtonType, ButtonType.CANCEL);
 
         setResultConverter(dialogButton -> {
             if (dialogButton == importButtonType) {
+                Map<GenericDevice, Integer> deviceToBeAdded = new HashMap<>();
                 for (ControlAddDevicePane d : outputDevice) {
-                    System.out.println(d.getGenericDevice().getName() + " " + d.getCount());
+                    System.out.println("Added output: " + d.getGenericDevice().getName() + " " + d.getCount());
+                    deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
                 }
-                return outputDevice;
+                for (ControlAddDevicePane d : inputDevice) {
+                    System.out.println("Added input: " + d.getGenericDevice().getName() + " " + d.getCount());
+                    deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
+                }
+                return deviceToBeAdded;
             }
             return null;
         });

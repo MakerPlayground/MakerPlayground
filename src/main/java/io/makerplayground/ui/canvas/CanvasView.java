@@ -23,6 +23,7 @@ public class CanvasView extends AnchorPane {
     @FXML private Pane canvasPane;
     @FXML private ScrollPane scrollPane;
     @FXML private Button addStateBtn;
+    @FXML private Button addConditionBtn;
 
     private SceneViewModel sourceNode;
     private SceneViewModel desNode;
@@ -125,21 +126,25 @@ public class CanvasView extends AnchorPane {
         addStateBtn.setOnAction((event) -> {
             canvasViewModel.project.addState();
         });
+        addConditionBtn.setOnAction((event) -> {
+            canvasViewModel.project.addCondition();
+        });
 
         DynamicViewCreator<Pane, SceneViewModel, SceneView> canvasViewCreator =
             new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, viewFactory, nodeConsumer);
 
-        DynamicViewCreator<Pane, LineViewModel , LineView> lineViewCreator =
-                new DynamicViewCreator<>(canvasViewModel.getLineViewModel(), canvasPane, LineView::new, new NodeConsumer<Pane, LineView>() {
+        DynamicViewCreator<Pane, ConditionViewModel , ConditionView> conditionViewCreator =
+                new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, ConditionView::new, new NodeConsumer<Pane, ConditionView>() {
                     @Override
-                    public void addNode(Pane parent, LineView node) {
+                    public void addNode(Pane parent, ConditionView node) {
                         parent.getChildren().add(node);
                     }
 
                     @Override
-                    public void removeNode(Pane parent, LineView node) {
-                        parent.getChildren().remove(node);
+                    public void removeNode(Pane parent, ConditionView node) {
+                        parent.getChildren().add(node);
                     }
                 });
+
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Arc?>
+
+<fx:root alignment="CENTER" maxWidth="-Infinity" style="-fx-background-color: transparent;" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Arc fx:id="sourceNode" fill="DODGERBLUE" length="180.0" radiusX="20.0" radiusY="20.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+      <ScrollPane fitToHeight="true" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="200.0">
+        <content>
+            <HBox fx:id="deviceIconHBox" alignment="CENTER" maxHeight="100.0" minHeight="98.0" prefHeight="100.0">
+               <children>
+                  <Button fx:id="addInputButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" text="+" />
+               </children>
+            </HBox>
+        </content>
+      </ScrollPane>
+      <Arc fx:id="destNode" fill="DODGERBLUE" length="180.0" radiusX="20.0" radiusY="20.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+   </children>
+</fx:root>
