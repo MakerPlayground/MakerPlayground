@@ -16,70 +16,41 @@
 
 package io.makerplayground.project;
 
-import javafx.beans.Observable;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  *
  */
-public class State {
+public class NodeElement {
+    private static final double PORT_RADIUS = 15;
 
-    public enum DelayUnit {MilliSecond, Second};
+    private final SimpleDoubleProperty top;
+    private final SimpleDoubleProperty left;
+    private final SimpleDoubleProperty width;
+    private final SimpleDoubleProperty height;
 
-    private final StringProperty name;
-    private final ObservableList<UserSetting> setting;
-    private final SimpleDoubleProperty top, left, width, height;
-    private final SimpleDoubleProperty delay;
-    private final DelayUnit delayUnit;
+    private final ReadOnlyDoubleWrapper sourcePortX;
+    private final ReadOnlyDoubleWrapper sourcePortY;
+    private final ReadOnlyDoubleWrapper destPortX;
+    private final ReadOnlyDoubleWrapper destPortY;
 
-    private final ReadOnlyDoubleWrapper sourcePortX, sourcePortY;
-    private final ReadOnlyDoubleWrapper destPortX, destPortY;
+    NodeElement(double width, double height) {
+        this.top = new SimpleDoubleProperty();
+        this.left = new SimpleDoubleProperty();
+        this.width = new SimpleDoubleProperty(width);
+        this.height = new SimpleDoubleProperty(height);
 
-    State() {
-        this.name = new SimpleStringProperty("");
-        // fire update event when actionProperty is invalidated / changed
-        this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        this.top = new SimpleDoubleProperty(0);
-        this.left = new SimpleDoubleProperty(0);
-        this.width = new SimpleDoubleProperty(200);
-        this.height = new SimpleDoubleProperty(300);
-        this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = DelayUnit.Second;
         this.sourcePortX = new ReadOnlyDoubleWrapper();
         this.sourcePortY = new ReadOnlyDoubleWrapper();
         this.destPortX = new ReadOnlyDoubleWrapper();
         this.destPortY = new ReadOnlyDoubleWrapper();
 
-        this.sourcePortX.bind(left);
-        this.sourcePortY.bind(top.add(height.divide(2)).subtract(35));
-        this.destPortX.bind(left.add(width).add(30));
-        this.destPortY.bind(top.add(height.divide(2)).subtract(35));
-    }
-
-    public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device));
-    }
-
-    public void removeDevice(ProjectDevice device) {
-        for (int i = setting.size() - 1; i >= 0; i--) {
-            if (setting.get(i).getDevice() == device) {
-                setting.remove(i);
-            }
-        }
-    }
-
-    public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name.set(name);
+        this.sourcePortX.bind(this.left);
+        this.sourcePortY.bind(this.top.add(this.height.divide(2.0)));
+        this.destPortX.bind(this.left.add(this.width).add(PORT_RADIUS));
+        this.destPortY.bind(this.top.add(this.height.divide(2.0)));
     }
 
     public double getTop() {
@@ -90,12 +61,20 @@ public class State {
         return top;
     }
 
+    public void setTop(double top) {
+        this.top.set(top);
+    }
+
     public double getLeft() {
         return left.get();
     }
 
     public SimpleDoubleProperty leftProperty() {
         return left;
+    }
+
+    public void setLeft(double left) {
+        this.left.set(left);
     }
 
     public double getWidth() {
@@ -120,26 +99,6 @@ public class State {
 
     public void setHeight(double height) {
         this.height.set(height);
-    }
-
-    public double getDelay() {
-        return delay.get();
-    }
-
-    public SimpleDoubleProperty delayProperty() {
-        return delay;
-    }
-
-    public void setDelay(double delay) {
-        this.delay.set(delay);
-    }
-
-    public DelayUnit getDelayUnit() {
-        return delayUnit;
-    }
-
-    public ObservableList<UserSetting> getSetting() {
-        return setting;
     }
 
     public double getSourcePortX() {

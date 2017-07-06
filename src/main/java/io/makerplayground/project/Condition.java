@@ -24,14 +24,16 @@ import javafx.collections.ObservableList;
 /**
  *
  */
-public class Condition {
+public class Condition extends NodeElement {
     private final ObservableList<UserSetting> setting;
-    private final ObjectProperty<State> sourceNode;
-    private final ObjectProperty<State> destNode;
+    private final ObjectProperty<Scene> sourceNode;
+    private final ObjectProperty<Scene> destNode;
 
     private final ObservableList<UserSetting> unmodifiableSetting;
 
     Condition() {
+        super(200, 200);
+
         this.setting = FXCollections.observableArrayList();
         this.sourceNode = new SimpleObjectProperty<>(null);
         this.destNode = new SimpleObjectProperty<>(null);
@@ -39,19 +41,19 @@ public class Condition {
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
     }
 
-    public State getSourceNode() {
+    public Scene getSourceNode() {
         return sourceNode.get();
     }
 
-    public ObjectProperty<State> sourceNodeProperty() {
+    public ObjectProperty<Scene> sourceNodeProperty() {
         return sourceNode;
     }
 
-    public State getDestNode() {
+    public Scene getDestNode() {
         return destNode.get();
     }
 
-    public ObjectProperty<State> destNodeProperty() {
+    public ObjectProperty<Scene> destNodeProperty() {
         return destNode;
     }
 

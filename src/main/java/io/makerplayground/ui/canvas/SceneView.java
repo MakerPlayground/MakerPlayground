@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
@@ -21,25 +37,18 @@ import javafx.util.converter.NumberStringConverter;
 import java.io.IOException;
 
 /**
- * Created by tanyagorn on 6/12/2017.
+ *
  */
 public class SceneView extends HBox {
     private final SceneViewModel sceneViewModel;
 
-    @FXML
-    private VBox statePane;
-    @FXML
-    private FlowPane activeIconFlowPane;
-    @FXML
-    private FlowPane inactiveIconFlowPane;
-    @FXML
-    private TextField nameTextField;
-    @FXML
-    private TextField delayTextField;
-    @FXML
-    private Arc sourceNode;
-    @FXML
-    private Arc desNode;
+    @FXML private VBox statePane;
+    @FXML private FlowPane activeIconFlowPane;
+    @FXML private FlowPane inactiveIconFlowPane;
+    @FXML private TextField nameTextField;
+    @FXML private TextField delayTextField;
+    @FXML private Arc sourceNode;
+    @FXML private Arc desNode;
 
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
@@ -47,7 +56,6 @@ public class SceneView extends HBox {
     private double dragDeltaY;
 
     private Button addOutputButton;
-
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
@@ -131,27 +139,31 @@ public class SceneView extends HBox {
         });
     }
 
-    public void setDesNodeOnDragDetectedEvent(EventHandler<MouseEvent> e) {
+    public SceneViewModel getSceneViewModel() {
+        return sceneViewModel;
+    }
+
+    public void setOnDesPortDragDetected(EventHandler<? super MouseEvent> e) {
         desNode.setOnDragDetected(e);
     }
 
-    public void setSrcNodeOnDragOverEvent(EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragOver(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragOver(e);
     }
 
-    public void setSrcNodeOnDragEnteredEvent(EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragEntered(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragEntered(e);
     }
 
-    public void setSrcNodeOnDragExitedEvent(EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragExited(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragExited(e);
     }
 
-    public void setSrcNodeOnDragDroppedEvent(EventHandler<DragEvent> e) {
+    public void setOnSrcPortDragDropped(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragDropped(e);
     }
 
-    public void setDesNodeOnDragDoneEvent(EventHandler<DragEvent> e) {
+    public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {
         desNode.setOnDragDone(e);
     }
 }
