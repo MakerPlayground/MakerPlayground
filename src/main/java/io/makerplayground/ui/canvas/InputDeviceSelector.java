@@ -4,6 +4,7 @@ import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.UserSetting;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import org.controlsfx.control.PopOver;
@@ -35,6 +36,10 @@ public class InputDeviceSelector extends PopOver {
 
         FlowPane flowPane = new FlowPane();
         setContentNode(flowPane);
+        flowPane.setMaxWidth(245.0);
+        flowPane.setMinWidth(245.0);
+        flowPane.setPadding(new Insets(10.0,10.0,10.0,10.));
+        flowPane.setHgap(5.0);
 
         for (ProjectDevice p : projectDeviceList) {
             InputDeviceIconSelectorView inputIconView = new InputDeviceIconSelectorView(p);

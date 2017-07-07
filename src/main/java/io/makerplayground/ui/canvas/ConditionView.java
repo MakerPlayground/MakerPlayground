@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -23,6 +24,7 @@ public class ConditionView extends HBox {
     @FXML private Arc sourceNode;
     @FXML private Arc destNode;
     @FXML private HBox deviceIconHBox;
+    @FXML private TextField conditionTextField;
 
     private InputDeviceSelector inputDeviceSelector;
     private double dragDeltaX;
