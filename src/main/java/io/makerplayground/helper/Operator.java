@@ -20,5 +20,5 @@ package io.makerplayground.helper;
  * An enum represent an operator ex. >, <, <=, >=, =, etc.
  */
 public enum Operator {
-    EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN_OR_EQUAL
+    EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN_OR_EQUAL, EQUAL_LITERAL, EQUAL_VARIABLE
 }

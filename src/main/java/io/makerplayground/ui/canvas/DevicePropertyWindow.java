@@ -1,9 +1,11 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Action;
+import io.makerplayground.device.Value;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.project.Expression;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -212,6 +214,15 @@ public class DevicePropertyWindow extends PopOver {
 //            }
 
             // TODO: Add more control type
+            paramVBox.getChildren().add(customRow);
+        }
+
+        for (Value v : viewModel.getValue()) {
+            HBox customRow = new HBox();
+            Label name = new Label(v.getName());
+            ObservableList<Expression> e = viewModel.getExpression(v);
+            ExpressionControl expression = new ExpressionControl(e, viewModel.getProjectValue());
+            customRow.getChildren().addAll(name, expression);
             paramVBox.getChildren().add(customRow);
         }
     }

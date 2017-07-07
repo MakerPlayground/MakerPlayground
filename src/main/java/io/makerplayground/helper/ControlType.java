@@ -20,6 +20,6 @@ package io.makerplayground.helper;
  * An enum represent type of UI control that should be used
  */
 public enum ControlType {
-    TEXTBOX, SPINBOX, DROPDOWN, SLIDER, CUSTOMPRINT, TIME, CUSTOMSEGMENT, CHECKBOX
+    TEXTBOX, SPINBOX, DROPDOWN, SLIDER, CUSTOMPRINT, TIME, CUSTOMSEGMENT, CHECKBOX, EXPRESSION
     // TODO: add more control type
 }

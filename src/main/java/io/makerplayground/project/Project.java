@@ -17,6 +17,7 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -188,5 +189,13 @@ public class Project {
 
     public ObservableList<Line> getLine() {
         return unmodifiableLine;
+    }
+
+    public ObservableList<Value> getAvailableValue() {
+        ObservableList<Value> value = FXCollections.observableArrayList();
+        for (ProjectDevice projectDevice : inputDevice) {
+            value.addAll(projectDevice.getGenericDevice().getValue());
+        }
+        return value;
     }
 }
