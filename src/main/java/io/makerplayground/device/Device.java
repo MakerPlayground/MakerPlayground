@@ -16,12 +16,14 @@
 
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Represent an actual device/board ex. SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
  */
+@JsonDeserialize(using = DeviceDeserializer.class)
 public class Device {
     private final String brand;
     private final String model;

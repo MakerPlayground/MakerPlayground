@@ -35,6 +35,9 @@ public enum DeviceLibrary {
         Map<GenericDevice, List<Device>> tmpInputDevice = new HashMap<>();
         Map<GenericDevice, List<Device>> tmpOutputDevice = new HashMap<>();
 
+        List<Device> temp3 = null;
+        List<Device> temp4 = null;
+
         ObjectMapper mapper = new ObjectMapper();
         List<GenericDevice> temp = null;
         List<GenericDevice> temp2 = null;   //TODO : remove
@@ -44,6 +47,8 @@ public enum DeviceLibrary {
                     , new TypeReference<List<GenericDevice>>() {});
             temp2 = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")    //TODO : Bug
                     , new TypeReference<List<GenericDevice>>() {});
+            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
+                    , new TypeReference<List<Device>>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
