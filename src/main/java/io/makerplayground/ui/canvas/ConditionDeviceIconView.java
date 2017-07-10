@@ -23,7 +23,6 @@ public class ConditionDeviceIconView extends VBox {
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
-    @FXML private Label action;
     @FXML private Button removeConditionDeviceBtn;
 
     public ConditionDeviceIconView(SceneDeviceIconViewModel viewModel) {
@@ -40,8 +39,8 @@ public class ConditionDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
-        action.setText(viewModel.getAction().getName());
-        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
+        //action.setText(viewModel.getAction().getName());
+        //viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
         iconImageView.setOnMouseClicked(e -> {

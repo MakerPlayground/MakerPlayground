@@ -16,16 +16,16 @@
 <fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
+      <VBox id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../css/StateView.css">
          <children>
-            <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: #313644; -fx-border-color: #313644;">
+            <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: transparent;">
                <children>
-                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" maxWidth="170.0" minWidth="170.0" prefHeight="30.0" style="-fx-border-color: #313644;">
+                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" maxWidth="170.0" minWidth="170.0" prefHeight="30.0" style="-fx-border-color: #313644; -fx-border-radius: 10 0 0 0; -fx-background-color: #313644; -fx-background-radius: 10 0 0 0;">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </TextField>
-                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644; -fx-border-color: #313644;">
+                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644; -fx-background-radius: 0 10 0 0; -fx-border-color: #313644; -fx-border-radius: 0 10 0 0;">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -36,26 +36,19 @@
                   </Button>
                </children>
             </HBox>
-            <VBox prefHeight="75.0" prefWidth="100.0" spacing="10.0">
-               <children>
-                  <ScrollPane fitToWidth="true" prefHeight="75.0" prefWidth="200.0">
-                     <content>
-                        <FlowPane fx:id="activeIconFlowPane" columnHalignment="RIGHT" hgap="15.0" maxHeight="100.0" prefWidth="200.0" vgap="5.0">
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                           <children>
-                              <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
-                           </children>
-                        </FlowPane>
-                     </content>
-                  </ScrollPane>
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </VBox>
-            <HBox id="stateBottomHBox" alignment="CENTER" maxHeight="26.0" minHeight="26.0" spacing="5.0">
+            <ScrollPane fitToWidth="true" prefHeight="75.0" prefWidth="200.0">
+               <content>
+                  <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="15.0" maxHeight="75.0" prefHeight="75.0" prefWidth="200.0" vgap="7.5">
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                     </padding>
+                     <children>
+                        <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                     </children>
+                  </FlowPane>
+               </content>
+            </ScrollPane>
+            <HBox id="stateBottomHBox" alignment="CENTER" maxHeight="26.0" minHeight="26.0" spacing="5.0" style="-fx-background-radius: 0 0 10 10;">
                <children>
                   <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                      <image>

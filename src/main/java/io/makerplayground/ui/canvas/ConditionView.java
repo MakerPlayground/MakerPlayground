@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 
 import java.io.IOException;
@@ -18,13 +19,12 @@ import java.io.IOException;
 /**
  * Created by USER on 05-Jul-17.
  */
-public class ConditionView extends HBox {
+public class ConditionView extends VBox {
     private final ConditionViewModel conditionViewModel;
 
     @FXML private Arc sourceNode;
     @FXML private Arc destNode;
     @FXML private HBox deviceIconHBox;
-    @FXML private TextField conditionTextField;
 
     private InputDeviceSelector inputDeviceSelector;
     private double dragDeltaX;
@@ -36,7 +36,7 @@ public class ConditionView extends HBox {
         this.conditionViewModel = conditionViewModel;
         this.inputDeviceSelector = null;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView2.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

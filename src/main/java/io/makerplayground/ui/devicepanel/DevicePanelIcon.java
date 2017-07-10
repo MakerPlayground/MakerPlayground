@@ -37,7 +37,7 @@ public class DevicePanelIcon extends VBox {
             throw new RuntimeException(exception);
         }
 
-        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getDeviceName() + ".png")));
+        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/" + viewModel.getDeviceName() + ".png")));
         nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
     }
 
