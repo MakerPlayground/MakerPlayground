@@ -16,7 +16,10 @@
 
 package io.makerplayground.device;
 
+import io.makerplayground.helper.Port;
+
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +31,8 @@ public class Device {
     private final String url;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
     private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
+    private final List<Platform> supportPlatform;
+    private final Map<Port, Integer> port;
 
     /**
      * Construct a new device. The constructor should only be invoked by the DeviceLibrary
@@ -40,12 +45,16 @@ public class Device {
      */
     Device(String brand, String model, String url
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
-            , Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
+            , Map<GenericDevice, Map<Value, Constraint>> supportedValue
+            , List<Platform> supportPlatform
+            , Map<Port, Integer> port) {
         this.brand = brand;
         this.model = model;
         this.url = url;
         this.supportedAction = Collections.unmodifiableMap(supportedAction);
         this.supportedValue = Collections.unmodifiableMap(supportedValue);
+        this.supportPlatform = Collections.unmodifiableList(supportPlatform);
+        this.port = Collections.unmodifiableMap(port);
     }
 
     /**
