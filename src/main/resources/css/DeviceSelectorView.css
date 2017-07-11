@@ -3,15 +3,16 @@
     -fx-focus-color: transparent;
 }
 .dialog-pane{
-    -fx-background-color : #313644;
+    -fx-background-color : white;
 }
 .titled-pane > .title{
-    -fx-background-color : #313644;
-    -fx-border-color: transparent transparent transparent #5ac2ab;
-    -fx-border-width : 5px;
+    -fx-background-color : white;
+    -fx-border-color: transparent transparent #313644 transparent;
+    -fx-border-width : 2px;
 }
+
 .titled-pane{
-    -fx-text-fill : white;
+    -fx-text-fill : #313644;
     -fx-font-weight: bold;
 }
 .titled-pane > .title > .arrow-button .arrow{
@@ -23,8 +24,8 @@
 }
 
 .scroll-pane > .viewport{
-    -fx-background-color : #4d5666;
-    -fx-border-color : #4d5666;
+    -fx-background-color : white;
+    -fx-border-color : white;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
