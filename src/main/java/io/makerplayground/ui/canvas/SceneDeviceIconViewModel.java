@@ -74,6 +74,10 @@ public class SceneDeviceIconViewModel {
         return userSetting.getExpression().get(v);
     }
 
+    public void setExpression(Value v, ObservableList<Expression> expressions) {
+        userSetting.getExpression().replace(v, expressions);
+    }
+
     public List<Value> getValue() {
         return userSetting.getDevice().getGenericDevice().getValue();
     }

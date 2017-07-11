@@ -3,6 +3,7 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
 import io.makerplayground.project.Project;
 import javafx.beans.property.ObjectProperty;
@@ -43,4 +44,9 @@ public class ExpressionViewModel {
     public Expression getExpression() {
         return expression;
     }
+
+    public Unit getUnit() { return expression.getUnit(); }
+
+    public ObjectProperty<Unit> unitProperty() { return expression.unitProperty(); }
+
 }

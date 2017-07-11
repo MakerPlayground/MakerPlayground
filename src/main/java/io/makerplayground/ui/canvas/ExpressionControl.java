@@ -5,6 +5,8 @@ import io.makerplayground.project.Expression;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -14,12 +16,13 @@ import javafx.scene.layout.VBox;
  */
 public class ExpressionControl extends VBox{
 
-    private final DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator;
-    private final DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator;
+    private SimpleListProperty<Expression> expressionsList;
 
-    public ExpressionControl(ObservableList<Expression> expressionsList, ObservableList<Value> values) {
-        dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
-        dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {
+    public ExpressionControl(ObservableList<Value> values) {
+        expressionsList = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+        DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
+        DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {
             ExpressionView expressionView = new ExpressionView(expressionViewModel);
             expressionView.setOnRemovedBtnPressed(event -> expressionsList.remove(expressionView.getExpressionViewModel().getExpression()));
             return expressionView;
@@ -27,7 +30,7 @@ public class ExpressionControl extends VBox{
             @Override
             public void addNode(VBox parent, ExpressionView node) {
                 if (parent.getChildren().isEmpty()) {
-                    parent.getChildren().add( node);
+                    parent.getChildren().add(node);
                 } else {
                     parent.getChildren().add(parent.getChildren().size() - 1, node);
                 }
@@ -41,9 +44,22 @@ public class ExpressionControl extends VBox{
 
         Button button = new Button("+");
         button.setOnAction(event -> {
-            Expression e =new Expression();
+            Expression e = new Expression();
             expressionsList.add(e);
         });
         getChildren().add(button);
+    }
+
+    public ObservableList<Expression> getExpressionsList() {
+        return expressionsList.get();
+    }
+
+    public SimpleListProperty<Expression> expressionsListProperty() {
+        return expressionsList;
+    }
+
+    public void setExpressionsList(ObservableList<Expression> expressionsList) {
+        this.expressionsList.clear();
+        this.expressionsList.addAll(expressionsList);
     }
 }

@@ -2,8 +2,10 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Action;
 import io.makerplayground.device.CategoricalConstraint;
+import io.makerplayground.device.Value;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.project.Expression;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -99,18 +101,26 @@ public class DevicePropertyWindow extends PopOver {
         propertySheet.setSearchBoxVisible(false);
         propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {
             @Override
+
             public PropertyEditor<?> call(PropertySheet.Item param) {
-                Parameter p = ((ParameterPropertyItem) param).getParameter();
-                if (p.getControlType() == ControlType.SLIDER)
-                    return new SliderPropertyEditor(param);
-                else if (p.getControlType() == ControlType.TEXTBOX)
-                    return new TextBoxPropertyEditor(param);
-                else if (p.getControlType() == ControlType.DROPDOWN)
-                    return new DropDownPropertyEditor(param);
-                else if (p.getControlType() == ControlType.SPINBOX)
-                    return new SpinBoxPropertyEditor(param);
-                else
+                if (param instanceof ParameterPropertyItem) {
+                    Parameter p = ((ParameterPropertyItem) param).getParameter();
+                    if (p.getControlType() == ControlType.SLIDER)
+                        return new SliderPropertyEditor(param);
+                    else if (p.getControlType() == ControlType.TEXTBOX)
+                        return new TextBoxPropertyEditor(param);
+                    else if (p.getControlType() == ControlType.DROPDOWN)
+                        return new DropDownPropertyEditor(param);
+                    else if (p.getControlType() == ControlType.SPINBOX)
+                        return new SpinBoxPropertyEditor(param);
+                    else
+                        throw new IllegalStateException("Found unsupported type!!!");
+                } else if (param instanceof ValuePropertyItem) {
+                    return new ExpressionPropertyEditor(param);
+                } else {
                     return null;
+                }
+
             }
         });
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> {
@@ -245,14 +255,15 @@ public class DevicePropertyWindow extends PopOver {
 //            paramVBox.getChildren().add(customRow);
         }
 
-//        for (Value v : viewModel.getValue()) {
+        for (Value v : viewModel.getValue()) {
+            propertySheet.getItems().add(new ValuePropertyItem(v));
 //            HBox customRow = new HBox();
 //            Label name = new Label(v.getName());
 //            ObservableList<Expression> e = viewModel.getExpression(v);
 //            ExpressionControl expression = new ExpressionControl(e, viewModel.getProjectValue());
 //            customRow.getChildren().addAll(name, expression);
 //            paramVBox.getChildren().add(customRow);
-//        }
+        }
     }
 
     public class ParameterPropertyItem implements PropertySheet.Item {
@@ -310,6 +321,62 @@ public class DevicePropertyWindow extends PopOver {
         public Parameter getParameter() {
             return parameter;
         }
+    }
+
+    public class ValuePropertyItem implements PropertySheet.Item {
+        private final Value v;
+        private Object expressions;
+
+        public ValuePropertyItem(Value v) {
+            this.v = v;
+        }
+
+        @Override
+        public Optional<Class<? extends PropertyEditor<?>>> getPropertyEditorClass() {
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean isEditable() {
+            return true;
+        }
+
+        @Override
+        public Class<?> getType() {
+            return null;
+        }
+
+        @Override
+        public String getCategory() {
+            return "";
+        }
+
+        @Override
+        public String getName() {
+            return v.getName();
+        }
+
+        @Override
+        public String getDescription() {
+            return "wait for description in JSON";
+        }
+
+        @Override
+        public Object getValue() {
+            return viewModel.getExpression(v);
+        }
+
+        @Override
+        public void setValue(Object o) {
+            viewModel.setExpression(v, (ObservableList<Expression>) o);
+        }
+
+        @Override
+        public Optional<ObservableValue<? extends Object>> getObservableValue() {
+            return Optional.empty();
+        }
+
+        public Value getV() { return v;}
     }
 
     public class SliderPropertyEditor extends AbstractPropertyEditor<Number, Slider> {
@@ -396,5 +463,45 @@ public class DevicePropertyWindow extends PopOver {
             this.getEditor().getValueFactory().setValue(integer);
         }
     }
+
+    public class ExpressionPropertyEditor extends AbstractPropertyEditor<ObservableList<Expression>, ExpressionControl> {
+        public ExpressionPropertyEditor(PropertySheet.Item property, ExpressionControl control) {
+            super(property, control);
+        }
+
+        public ExpressionPropertyEditor(PropertySheet.Item property) {
+            this(property, new ExpressionControl(viewModel.getProjectValue()));
+        }
+
+        @Override
+        protected ObservableValue<ObservableList<Expression>> getObservableValue() {
+            return this.getEditor().expressionsListProperty();
+        }
+
+        @Override
+        public void setValue(ObservableList<Expression> expression) {
+            this.getEditor().setExpressionsList(expression);
+        }
+    }
+//
+//    public class ExpressionPropertyEditor extends PropertyEditor<ObservableList<Expression>, ExpressionControl> {
+//        public ExpressionPropertyEditor(PropertySheet.Item property, ExpressionControl control) {
+//            super(property, control);
+//        }
+//
+//        public ExpressionPropertyEditor(PropertySheet.Item property) {
+//            this(property, new ExpressionControl(viewModel.getProjectValue()));
+//        }
+//
+//        @Override
+//        protected ObservableValue<ObservableList<Expression>> getObservableValue() {
+//            return this.getEditor().expressionsListProperty();
+//        }
+//
+//        @Override
+//        public void setValue(ObservableList<Expression> expression) {
+//            this.getEditor().setExpressionsList(expression);
+//        }
+//    }
 
 }

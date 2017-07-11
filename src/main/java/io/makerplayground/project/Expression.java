@@ -18,6 +18,7 @@ package io.makerplayground.project;
 
 import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
+import io.makerplayground.helper.Unit;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -25,12 +26,14 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  */
 public class Expression {
+    private final ObjectProperty<Unit> unit;
     private final ObjectProperty<Operator> operator;
     private final ObjectProperty<Object> firstOperand;
     private final ObjectProperty<Object> secondOperand;
     private final ObjectProperty<OperandType> operandType;
 
     public Expression() {
+        unit = new SimpleObjectProperty<>(Unit.SECOND);
         operator = new SimpleObjectProperty<>(Operator.GREATER_THAN);
         firstOperand = new SimpleObjectProperty<>(0);
         secondOperand = new SimpleObjectProperty<>(0);
@@ -84,4 +87,10 @@ public class Expression {
     public void setOperandType(OperandType operandType) {
         this.operandType.set(operandType);
     }
+
+    public Unit getUnit() { return unit.get(); }
+
+    public ObjectProperty<Unit> unitProperty() { return unit; }
+
+    public void setUnit(Unit unit) { this.unit.set(unit); }
 }
