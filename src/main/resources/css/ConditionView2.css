@@ -72,7 +72,7 @@
     -fx-background-insets: 1, 1, 1;
 }
 .scroll-bar .thumb{
-    -fx-background-color: #313644;
+    -fx-background-color: derive(#313644,45%);
     -fx-border-radius: 2em;
     -fx-background-insets: 1, 1, 1;
 }

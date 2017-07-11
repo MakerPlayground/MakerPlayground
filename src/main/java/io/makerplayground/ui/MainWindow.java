@@ -6,7 +6,9 @@ import io.makerplayground.ui.canvas.CanvasViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
@@ -19,6 +21,7 @@ import java.io.IOException;
  */
 public class MainWindow extends BorderPane {
     @FXML private SplitPane mainPane;
+    @FXML private TextField projectNameTextField;
     private final Project project;
 
     public MainWindow(Project project) {
@@ -36,6 +39,7 @@ public class MainWindow extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
 
         RightPanel rightPanel = new RightPanel(project);
 

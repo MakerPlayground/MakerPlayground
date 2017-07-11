@@ -68,7 +68,7 @@
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(black,90%);
+    -fx-background-color: derive(#313644,45%);
     -fx-border-radius: 2em;
     -fx-background-insets: 2, 0, 0;
 }
