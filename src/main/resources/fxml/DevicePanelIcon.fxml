@@ -9,24 +9,24 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="70.0" spacing="3.0" style="-fx-border-color: white; -fx-background-color: white; -fx-background-insets: 2,0,0;; -fx-border-width: 2px; -fx-border-radius: 5;" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="55.0" style="-fx-background-color: white;" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackPane>
+      <StackPane maxHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0">
          <children>
-            <ImageView fx:id="imageView" fitHeight="40.0" fitWidth="40.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+            <ImageView fx:id="imageView" fitHeight="35.0" fitWidth="35.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
                <StackPane.margin>
-                  <Insets top="3.0" />
+                  <Insets />
                </StackPane.margin>
             </ImageView>
-            <Button id="deleteDeviceBtn" fx:id="removeButton" alignment="CENTER" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
+            <Button id="deleteDeviceBtn" fx:id="removeButton" alignment="CENTER" maxHeight="15.0" maxWidth="15.0" minHeight="15.0" minWidth="15.0" mnemonicParsing="false" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
                <StackPane.margin>
-                  <Insets bottom="20.0" />
+                  <Insets />
                </StackPane.margin>
                <font>
                   <Font size="8.0" />
                </font>
                <graphic>
-                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../icons/cancel.png" />
                      </image>
@@ -35,12 +35,15 @@
             </Button>
          </children>
       </StackPane>
-      <TextField fx:id="nameTextField" alignment="CENTER" maxHeight="20.0" minHeight="20.0" opacity="0.88" prefWidth="50.0">
+      <TextField fx:id="nameTextField" alignment="CENTER" maxHeight="20.0" minHeight="15.0" prefWidth="60.0">
          <font>
-            <Font size="11.0" />
+            <Font name="System Bold" size="10.0" />
          </font>
          <opaqueInsets>
             <Insets />
-         </opaqueInsets></TextField>
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin></TextField>
    </children>
 </fx:root>
