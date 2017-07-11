@@ -116,7 +116,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             supportedDevicevalue.put(genericDevice, supportedValue);
         }
 
-        return new Device(brand, model, url, supportedDeviceaction, supportedDevicevalue);
+        return new Device(brand, model, url, supportedDeviceaction, supportedDevicevalue, Collections.emptyList(), Collections.emptyMap());
 //        Map<Parameter, Constraint> supportparam = new HashMap<>();
 //        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
 //        supportparam.put(param, constraint);
