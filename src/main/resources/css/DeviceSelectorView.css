@@ -8,7 +8,7 @@
 .titled-pane > .title{
     -fx-background-color : white;
     -fx-border-color: transparent transparent #313644 transparent;
-    -fx-border-width : 2px;
+    -fx-border-width : 1px;
 }
 
 .titled-pane{
@@ -63,13 +63,13 @@
     -fx-background-color : #4d5666;
 }
 .button:pressed{
-    -fx-background-color : #5ac2ab;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill : #313644;
+    -fx-background-color : #313644;
+    -fx-border-color : #313644;
+    -fx-text-fill : white;
 }
 .button{
     -fx-focus-color: transparent;
-    -fx-border-color : #5ac2ab;
+    -fx-border-color : #313644;
     -fx-background-color : transparent;
-    -fx-text-fill : #5ac2ab;
+    -fx-text-fill : #313644;
 }

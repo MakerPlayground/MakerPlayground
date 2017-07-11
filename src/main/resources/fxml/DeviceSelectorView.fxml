@@ -13,17 +13,17 @@
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
     <content>
-      <AnchorPane minHeight="0.0" minWidth="0.0" style="-fx-background-color: white;">
+      <AnchorPane maxWidth="-Infinity" style="-fx-background-color: white;">
          <children>
-            <VBox alignment="TOP_CENTER" layoutY="-6.0" minWidth="600.0" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="TOP_CENTER" minWidth="550.0" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TitledPane collapsible="false" text="Input">
                      <content>
-                        <ScrollPane fitToWidth="true" prefHeight="150.0">
+                        <ScrollPane fitToWidth="true" prefHeight="115.0">
                            <content>
                               <FlowPane fx:id="inputPane" hgap="10.0" vgap="10.0">
                                  <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
                               </FlowPane>
                            </content>
@@ -32,11 +32,11 @@
                   </TitledPane>
                   <TitledPane collapsible="false" text="Output">
                      <content>
-                        <ScrollPane fitToWidth="true" prefHeight="150.0">
+                        <ScrollPane fitToWidth="true" prefHeight="115.0">
                            <content>
                               <FlowPane fx:id="outputPane" hgap="10.0" vgap="10.0">
                                  <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
                               </FlowPane>
                            </content>
@@ -47,4 +47,7 @@
             </VBox>
          </children></AnchorPane>
     </content>
+   <padding>
+      <Insets bottom="25.0" left="25.0" right="25.0" />
+   </padding>
 </fx:root>

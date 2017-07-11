@@ -4,11 +4,13 @@ import io.makerplayground.device.Action;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.ui.Main;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
+
+import java.io.File;
 
 /**
  * Created by tanyagorn on 6/20/2017.
@@ -37,9 +41,12 @@ public class DevicePropertyWindow extends PopOver {
 
     private void initView() {
         VBox vbox = new VBox();
+        vbox.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
 
         HBox row1 = new HBox();
+
         row1.setSpacing(10);
+        row1.setAlignment(Pos.CENTER_LEFT);
 
         Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
@@ -51,7 +58,8 @@ public class DevicePropertyWindow extends PopOver {
 
         HBox row2 = new HBox();
         Label state = new Label("Scene");
-
+        row2.setSpacing(1.25);
+        row2.setAlignment(Pos.CENTER_LEFT);
         // Casting ArrayList to ObservableList
         ObservableList<Action> actionList = FXCollections.observableArrayList(viewModel.getGenericDevice().getAction());
 
@@ -97,16 +105,22 @@ public class DevicePropertyWindow extends PopOver {
         vbox.getChildren().addAll(row1, row2, paramVBox);
 
         vbox.setPadding(new Insets(20, 20, 20, 20));
+        vbox.setSpacing(10.0);
         setContentNode(vbox);
     }
 
     private void redrawProperty() {
         paramVBox.getChildren().clear();
-
+        paramVBox.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
+        paramVBox.setSpacing(10.0);
         for (Parameter p : viewModel.getAction().getParameter()) {
             HBox customRow = new HBox();
+
             Label name = new Label(p.getName());
+
+            customRow.setAlignment(Pos.CENTER_LEFT);
             customRow.getChildren().add(name);
+            customRow.setSpacing(1.25);
 
             if (p.getControlType() == ControlType.SLIDER) {
                 Slider slider = new Slider();
