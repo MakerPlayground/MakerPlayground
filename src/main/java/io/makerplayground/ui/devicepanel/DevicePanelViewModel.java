@@ -5,7 +5,6 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import javafx.collections.ObservableList;
 
 import java.util.Map;
 
@@ -39,11 +38,11 @@ public class DevicePanelViewModel {
 
     public void addDevice(Map<GenericDevice, Integer> device) {
         for (GenericDevice genericDevice : device.keySet()) {
-            if (DeviceLibrary.INSTANCE.getInputDevice().contains(genericDevice)) {
+            if (DeviceLibrary.INSTANCE.getGenericInputDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
                     project.addInputDevice(genericDevice);
                 }
-            } else if (DeviceLibrary.INSTANCE.getOutputDevice().contains(genericDevice)) {
+            } else if (DeviceLibrary.INSTANCE.getGenericOutputDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
                     project.addOutputDevice(genericDevice);
                 }

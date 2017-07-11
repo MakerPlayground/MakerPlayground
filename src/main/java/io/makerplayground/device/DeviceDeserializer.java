@@ -38,18 +38,20 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             System.out.println(deviceName);
             // find device
             GenericDevice genericDevice = null;
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getInputDevice()) {
+            System.out.println(DeviceLibrary.INSTANCE);
+            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
                 if (tempdevice.getName().equals(deviceName)) {
                     genericDevice = tempdevice;
                     break;
                 }
             }
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getOutputDevice()) {
+            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
                 if (tempdevice.getName().equals(deviceName)) {
                     genericDevice = tempdevice;
                     break;
                 }
             }
+
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
@@ -89,7 +91,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             System.out.println(deviceName);
             // find device
             GenericDevice genericDevice = null;
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getInputDevice()) {
+            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
                 if (tempdevice.getName().equals(deviceName)) {
                     genericDevice = tempdevice;
                     break;

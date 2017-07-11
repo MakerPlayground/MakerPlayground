@@ -28,38 +28,48 @@ import java.util.*;
 public enum DeviceLibrary {
     INSTANCE;
 
-    private final Map<GenericDevice, List<Device>> inputDevice;
-    private final Map<GenericDevice, List<Device>> outputDevice;
+    private List<GenericDevice> genericInputDevice;
+    private List<GenericDevice> genericOutputDevice;
+    private List<Device> actualDevice;
 
     DeviceLibrary() {
-        Map<GenericDevice, List<Device>> tmpInputDevice = new HashMap<>();
-        Map<GenericDevice, List<Device>> tmpOutputDevice = new HashMap<>();
+    }
 
-        List<Device> temp3 = null;
-        List<Device> temp4 = null;
+    public void loadDeviceFromJSON() {
+        List<GenericDevice> temp;
+        List<Device> temp2;
 
         ObjectMapper mapper = new ObjectMapper();
-        List<GenericDevice> temp = null;
-        List<GenericDevice> temp2 = null;   //TODO : remove
 
         try {
+            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
+                    , new TypeReference<List<GenericDevice>>() {});
+            this.genericInputDevice = Collections.unmodifiableList(temp);
+
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericoutputdevice.json")
                     , new TypeReference<List<GenericDevice>>() {});
-            temp2 = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")    //TODO : Bug
-                    , new TypeReference<List<GenericDevice>>() {});
-            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
+            this.genericOutputDevice = Collections.unmodifiableList(temp);
+
+            temp2 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
                     , new TypeReference<List<Device>>() {});
+            this.actualDevice = Collections.unmodifiableList(temp2);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        for (GenericDevice device : temp) {
-            tmpOutputDevice.put(device, Collections.emptyList());
-        }
+    public List<GenericDevice> getGenericInputDevice() {
+        return genericInputDevice;
+    }
 
-        for (GenericDevice device : temp2) {
-            tmpInputDevice.put(device, Collections.emptyList());
-        }
+    public List<GenericDevice> getGenericOutputDevice() {
+        return genericOutputDevice;
+    }
+
+    public List<Device> getActualDevice() {
+        return actualDevice;
+    }
+}
 
 //        try {
 //            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
@@ -68,22 +78,9 @@ public enum DeviceLibrary {
 //            e.printStackTrace();
 //        }
 //
-//        for (GenericDevice device : temp) {
-//            tmpInputDevice.put(device, Collections.emptyList());
+//        for (GenericDevice actualDevice : temp) {
+//            tmpInputDevice.put(actualDevice, Collections.emptyList());
 //        }
-
-        this.inputDevice = Collections.unmodifiableMap(tmpInputDevice);
-        this.outputDevice = Collections.unmodifiableMap(tmpOutputDevice);
-    }
-
-    public Set<GenericDevice> getInputDevice() {
-        return inputDevice.keySet();
-    }
-
-    public Set<GenericDevice> getOutputDevice() {
-        return outputDevice.keySet();
-    }
-}
 
 //        Device d = new Device("Sparkfun", "Sparkdun Redboard", "http://www.ss"
 //                , Collections.singletonMap(new GenericDevice("led",
@@ -92,7 +89,7 @@ public enum DeviceLibrary {
 //                    , Collections.singletonMap(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER), Constraint.NONE)))
 //                , Collections.emptyMap());
 //        try {
-//            mapper.writeValue(new File("device.json"), d);
+//            mapper.writeValue(new File("actualDevice.json"), d);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

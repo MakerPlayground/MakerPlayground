@@ -73,5 +73,5 @@ public class Device {
     public String getUrl() {
         return url;
     }
-
+    
 }
