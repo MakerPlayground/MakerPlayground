@@ -19,10 +19,7 @@ package io.makerplayground.device;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Unit;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represent a constraint for a numeric value
@@ -48,8 +45,8 @@ public class NumericConstraint implements Constraint {
      * the library from file.
      * @param value list of {@link Value} for initializing new constraint instance
      */
-    NumericConstraint(List<Value> value) {
-        this.numericValue = new HashMap<>();
+    NumericConstraint(Collection<Value> value) {
+        this.numericValue = new EnumMap<>(Unit.class);
         for (Value v : value) {
             this.numericValue.put(v.unit, v);
         }
@@ -67,6 +64,29 @@ public class NumericConstraint implements Constraint {
     @Override
     public boolean test(String s) {
         return false;
+    }
+
+    @Override
+    public Constraint union(Constraint constraint) {
+        if (!(constraint instanceof NumericConstraint))
+            throw new ClassCastException();
+        NumericConstraint numericConstraint = (NumericConstraint) constraint;
+
+        Map<Unit, Value> m = new HashMap<>(numericValue);
+        Map<Unit, Value> m2 = numericConstraint.numericValue;
+        for (Unit u : m2.keySet()) {
+            if (m.containsKey(u)) {
+                Value v1 = m.get(u);
+                Value v2 = m2.get(u);
+                m.put(u, new Value(v1.min < v2.min ? v1.min : v2.min
+                        , v1.max > v2.max ? v1.max : v2.max
+                        , u));
+            } else {
+                m.put(u, m2.get(u));
+            }
+        }
+
+        return new NumericConstraint(m.values());
     }
 
     static class Value {

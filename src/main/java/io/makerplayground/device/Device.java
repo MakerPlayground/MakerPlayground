@@ -32,6 +32,7 @@ public class Device {
     private final String model;
     private final String url;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
+    //private final Map<GenericDevice, Integer> count;
     private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
     private final List<Platform> supportPlatform;
     private final Map<Port, Integer> port;
@@ -82,5 +83,9 @@ public class Device {
     public String getUrl() {
         return url;
     }
-    
+
+
+    public Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> getSupportedAction() {
+        return supportedAction;
+    }
 }

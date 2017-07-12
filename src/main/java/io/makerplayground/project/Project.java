@@ -21,6 +21,9 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import io.makerplayground.device.Processor;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
  */
 public class Project {
     private StringProperty projectName;
+    private final ObjectProperty<Processor> processor;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<Scene> scene;
@@ -48,6 +52,7 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
+        processor = new SimpleObjectProperty<>();
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
@@ -214,5 +219,17 @@ public class Project {
             value.addAll(projectDevice.getGenericDevice().getValue());
         }
         return value;
+    }
+
+    public Processor getProcessor() {
+        return processor.get();
+    }
+
+    public ObjectProperty<Processor> processorProperty() {
+        return processor;
+    }
+
+    public void setProcessor(Processor processor) {
+        this.processor.set(processor);
     }
 }
