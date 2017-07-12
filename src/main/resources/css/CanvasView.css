@@ -47,6 +47,7 @@
      -fx-focus-color: transparent;
      -fx-border-color : #313644;
      -fx-background-color : #313644;
+     -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
@@ -54,6 +55,7 @@
  #addStateBtn:pressed{
      -fx-border-color : #5ac2ab;
      -fx-background-color : #313644;
+     -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
@@ -62,6 +64,7 @@
      -fx-focus-color: transparent;
      -fx-border-color : #313644;
      -fx-background-color : #313644;
+     -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
@@ -69,6 +72,7 @@
  #addConditionBtn:pressed{
      -fx-border-color : #5ac2ab;
      -fx-background-color : #313644;
+     -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);

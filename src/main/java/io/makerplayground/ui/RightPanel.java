@@ -27,11 +27,12 @@ public class RightPanel extends AnchorPane {
 
     private void initView() {
         setStyle("-fx-background-color : #4d5666");
+        setMaxWidth(330.0);
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
-        Button configureBtn = new Button("Configure GenericDevice");
+        Button configureBtn = new Button("Configure Device");
         configureBtn.setOnAction(event -> validGenericDevice.getSupportedDeviceList(project));
-        Button generateBtn = new Button("Generate");
+        Button generateBtn = new Button("Generate Project");
         Button uploadBtn = new Button("Upload");
 
         VBox projectButton = new VBox();

@@ -110,7 +110,7 @@ public class Device {
                 }
             }
         }
-        
+
         return true;
     }
 }

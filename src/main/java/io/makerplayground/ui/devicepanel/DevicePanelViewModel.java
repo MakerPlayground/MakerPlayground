@@ -31,9 +31,13 @@ public class DevicePanelViewModel {
         return outputChildViewModel;
     }
 
-    public boolean removeDevice(DevicePanelIconViewModel device) {
+    public boolean removeOutputDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
         return project.removeOutputDevice(deviceToBeRemoved);
+    }
+    public boolean removeInputDevice(DevicePanelIconViewModel device) {
+        ProjectDevice deviceToBeRemoved = device.getDevice();
+        return project.removeInputDevice(deviceToBeRemoved);
     }
 
     public void addDevice(Map<GenericDevice, Integer> device) {

@@ -26,6 +26,7 @@ public class ConditionView extends VBox {
     @FXML private Circle sourceNode;
     @FXML private Circle destNode;
     @FXML private HBox deviceIconHBox;
+    @FXML private Button removeConditionBtn;
 
     private InputDeviceSelector inputDeviceSelector;
     private double dragDeltaX;
@@ -49,6 +50,7 @@ public class ConditionView extends VBox {
 
         layoutXProperty().bindBidirectional(conditionViewModel.xProperty());
         layoutYProperty().bindBidirectional(conditionViewModel.yProperty());
+        removeConditionBtn.setVisible(false);
         enableDrag();
 
         addInputButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -88,23 +90,32 @@ public class ConditionView extends VBox {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(javafx.scene.Cursor.HAND);
             }
+            removeConditionBtn.setVisible(false);
         });
         setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            removeConditionBtn.setVisible(true);
             getScene().setCursor(javafx.scene.Cursor.MOVE);
         });
         setOnMouseDragged(mouseEvent -> {
             setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
             setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            removeConditionBtn.setVisible(true);
         });
         setOnMouseReleased(mouseEvent -> {
             getScene().setCursor(javafx.scene.Cursor.HAND);
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            removeConditionBtn.setVisible(true);
         });
         setOnMouseExited(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(javafx.scene.Cursor.DEFAULT);
             }
+            removeConditionBtn.setVisible(false);
+            setStyle("-fx-effect:  dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);");
         });
     }
 
@@ -134,5 +145,9 @@ public class ConditionView extends VBox {
 
     public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {
         destNode.setOnDragDone(e);
+    }
+
+    public void setOnAction(EventHandler<ActionEvent> event) {
+        removeConditionBtn.setOnAction(event);
     }
 }

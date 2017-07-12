@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.Condition;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
@@ -30,8 +29,8 @@ public class CanvasView extends AnchorPane {
     private final CanvasViewModel canvasViewModel;
     private Line guideLine;
 
-    private NodeElement source;   // TODO: leak model into view
-    private NodeElement dest;      // TODO: leak model into view
+    private NodeElement source; // TODO: leak model into view
+    private NodeElement dest;   // TODO: leak model into view
 
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
@@ -56,6 +55,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, sceneViewModel -> {
                     SceneView sceneView = new SceneView(sceneViewModel);
                     addStateConnectionEvent(sceneView);
+                    sceneView.setOnAction(event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
                     return sceneView;
                 }, new NodeConsumer<Pane, SceneView>() {
                     @Override
@@ -73,6 +73,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, conditionViewModel -> {
                     ConditionView conditionView = new ConditionView(conditionViewModel);
                     addConditionConnectionEvent(conditionView);
+                    conditionView.setOnAction(event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
                     return conditionView;
                 }, new NodeConsumer<Pane, ConditionView>() {
                     @Override
@@ -82,7 +83,7 @@ public class CanvasView extends AnchorPane {
 
                     @Override
                     public void removeNode(Pane parent, ConditionView node) {
-                        parent.getChildren().add(node);
+                        parent.getChildren().remove(node);
                     }
                 });
 

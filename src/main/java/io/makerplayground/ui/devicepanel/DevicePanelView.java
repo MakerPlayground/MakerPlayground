@@ -34,14 +34,6 @@ public class DevicePanelView extends VBox {
         result.ifPresent(viewModel::addDevice);
     }
 
-    private final ViewFactory<DevicePanelIconViewModel, DevicePanelIcon> viewFactory = new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
-        @Override
-        public DevicePanelIcon newInstance(DevicePanelIconViewModel devicePanelIconViewModel) {
-            DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-            icon.setOnAction(event -> viewModel.removeDevice(devicePanelIconViewModel));
-            return icon;
-        }
-    };
     private final NodeConsumer<FlowPane, DevicePanelIcon> nodeConsumer = new NodeConsumer<FlowPane, DevicePanelIcon>() {
         @Override
         public void addNode(FlowPane parent, DevicePanelIcon node) {
@@ -67,9 +59,24 @@ public class DevicePanelView extends VBox {
             throw new RuntimeException(exception);
         }
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
-              new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, viewFactory, nodeConsumer);
+              new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
+                  @Override
+                  public DevicePanelIcon newInstance(DevicePanelIconViewModel devicePanelIconViewModel) {
+                      DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
+                      icon.setOnAction(event -> viewModel.removeInputDevice(devicePanelIconViewModel));
+                      return icon;
+                  }
+              }, nodeConsumer);
+
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
-              new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, viewFactory, nodeConsumer);
+              new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
+                  @Override
+                  public DevicePanelIcon newInstance(DevicePanelIconViewModel devicePanelIconViewModel) {
+                      DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
+                      icon.setOnAction(event -> viewModel.removeOutputDevice(devicePanelIconViewModel));
+                      return icon;
+                  }
+              }, nodeConsumer);
 
     }
 

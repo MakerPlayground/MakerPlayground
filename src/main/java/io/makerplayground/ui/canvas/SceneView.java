@@ -19,12 +19,15 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -49,12 +52,16 @@ public class SceneView extends HBox {
     @FXML private TextField delayTextField;
     @FXML private Arc sourceNode;
     @FXML private Arc desNode;
+    @FXML private Button removeSceneBtn;
+    @FXML private ComboBox<String> timeUnitComboBox;
+    @FXML private Button addOutputButton;
 
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
+
+    private final ObservableList<String> timeUnit = FXCollections.observableArrayList("ms", "s");
     private double dragDeltaX;
     private double dragDeltaY;
-    @FXML private Button addOutputButton;
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
@@ -75,10 +82,11 @@ public class SceneView extends HBox {
         layoutYProperty().bindBidirectional(sceneViewModel.yProperty());
         enableDrag();
 
+        timeUnitComboBox.getItems().addAll(timeUnit);
+        timeUnitComboBox.getSelectionModel().selectFirst();
+
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
-
-
 
         addOutputButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -118,23 +126,28 @@ public class SceneView extends HBox {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
+            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         });
         setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
             getScene().setCursor(Cursor.MOVE);
         });
         setOnMouseDragged(mouseEvent -> {
             setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
             setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
         });
         setOnMouseReleased(mouseEvent -> {
             getScene().setCursor(Cursor.HAND);
+            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
         });
         setOnMouseExited(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.DEFAULT);
             }
+            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         });
     }
 
@@ -164,5 +177,9 @@ public class SceneView extends HBox {
 
     public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {
         desNode.setOnDragDone(e);
+    }
+
+    public void setOnAction(EventHandler<ActionEvent> event) {
+        removeSceneBtn.setOnAction(event);
     }
 }
