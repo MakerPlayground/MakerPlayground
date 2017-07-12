@@ -5,6 +5,8 @@ import io.makerplayground.device.CategoricalConstraint;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.StringProperty;
@@ -31,8 +33,7 @@ import java.util.Optional;
  */
 public class DevicePropertyWindow extends PopOver {
     private final SceneDeviceIconViewModel viewModel;
-//    private final ConditionDeviceIconViewModel conditionViewModel;
-    //private VBox paramVBox;
+//    private final ObservableList<Unit> unitList;
     private PropertySheet propertySheet;
 
     public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
@@ -102,10 +103,10 @@ public class DevicePropertyWindow extends PopOver {
         propertySheet.setSearchBoxVisible(false);
         propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {
             @Override
-
-            public PropertyEditor<?> call(PropertySheet.Item param) {
-                if (param instanceof ParameterPropertyItem) {
-                    Parameter p = ((ParameterPropertyItem) param).getParameter();
+            public PropertyEditor<?> call(PropertySheet.Item item) {
+                if (item instanceof ParameterPropertyItem) {
+                    ParameterPropertyItem param = (ParameterPropertyItem) item;
+                    Parameter p = param.getParameter();
                     if (p.getControlType() == ControlType.SLIDER)
                         return new SliderPropertyEditor(param);
                     else if (p.getControlType() == ControlType.TEXTBOX)
@@ -116,8 +117,8 @@ public class DevicePropertyWindow extends PopOver {
                         return new SpinBoxPropertyEditor(param);
                     else
                         throw new IllegalStateException("Found unsupported type!!!");
-                } else if (param instanceof ValuePropertyItem) {
-                    return new ExpressionPropertyEditor(param);
+                } else if (item instanceof ValuePropertyItem) {
+                    return new ExpressionPropertyEditor(item);
                 } else {
                     return null;
                 }
@@ -256,14 +257,16 @@ public class DevicePropertyWindow extends PopOver {
 //            paramVBox.getChildren().add(customRow);
         }
 
-        for (Value v : viewModel.getValue()) {
-            propertySheet.getItems().add(new ValuePropertyItem(v));
+        if (viewModel.getAction().getName().equals("Compare")) {    // TODO: fragile
+            for (Value v : viewModel.getValue()) {
+                propertySheet.getItems().add(new ValuePropertyItem(v));
 //            HBox customRow = new HBox();
 //            Label name = new Label(v.getName());
 //            ObservableList<Expression> e = viewModel.getExpression(v);
 //            ExpressionControl expression = new ExpressionControl(e, viewModel.getProjectValue());
 //            customRow.getChildren().addAll(name, expression);
 //            paramVBox.getChildren().add(customRow);
+            }
         }
     }
 
@@ -380,24 +383,25 @@ public class DevicePropertyWindow extends PopOver {
         public Value getV() { return v;}
     }
 
-    public class SliderPropertyEditor extends AbstractPropertyEditor<Number, Slider> {
-        public SliderPropertyEditor(PropertySheet.Item property, Slider control)
+    public class SliderPropertyEditor extends AbstractPropertyEditor<NumberWithUnit, SliderWithUnit> {
+        public SliderPropertyEditor(ParameterPropertyItem property, SliderWithUnit control)
         {
             super(property, control);
         }
 
-        public SliderPropertyEditor(PropertySheet.Item item)
+        public SliderPropertyEditor(ParameterPropertyItem item)
         {
-            this(item, new Slider());
+            this(item, new SliderWithUnit());   // TODO: add constraint
+            this.getEditor().setUnit(FXCollections.observableArrayList(item.getParameter().getUnit()));
         }
 
         @Override
-        public void setValue(Number number) {
-            this.getEditor().setValue(number.doubleValue());
+        public void setValue(NumberWithUnit number) {
+            this.getEditor().setValue(number);
         }
 
         @Override
-        protected ObservableValue<Number> getObservableValue() {
+        protected ObservableValue<NumberWithUnit> getObservableValue() {
             return this.getEditor().valueProperty();
         }
     }
@@ -445,23 +449,24 @@ public class DevicePropertyWindow extends PopOver {
         }
     }
 
-    public class SpinBoxPropertyEditor extends AbstractPropertyEditor<Integer, Spinner<Integer>> {
-        public SpinBoxPropertyEditor(PropertySheet.Item property, Spinner<Integer> control) {
+    public class SpinBoxPropertyEditor extends AbstractPropertyEditor<NumberWithUnit, SpinnerWithUnit> {
+        public SpinBoxPropertyEditor(ParameterPropertyItem property, SpinnerWithUnit control) {
             super(property, control);
         }
 
-        public SpinBoxPropertyEditor(PropertySheet.Item property) {
-            this(property, new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100))); // TODO: fake data
+        public SpinBoxPropertyEditor(ParameterPropertyItem property) {
+            this(property, new SpinnerWithUnit());      // TODO: add constraint
+            this.getEditor().setUnit(FXCollections.observableArrayList(property.getParameter().getUnit()));
         }
 
         @Override
-        protected ObservableValue<Integer> getObservableValue() {
-            return this.getEditor().getValueFactory().valueProperty();
+        protected ObservableValue<NumberWithUnit> getObservableValue() {
+            return this.getEditor().valueProperty();
         }
 
         @Override
-        public void setValue(Integer integer) {
-            this.getEditor().getValueFactory().setValue(integer);
+        public void setValue(NumberWithUnit integer) {
+            this.getEditor().setValue(integer);
         }
     }
 

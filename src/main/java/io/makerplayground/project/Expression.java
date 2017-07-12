@@ -33,10 +33,10 @@ public class Expression {
     private final ObjectProperty<OperandType> operandType;
 
     public Expression() {
-        unit = new SimpleObjectProperty<>(Unit.SECOND);
-        operator = new SimpleObjectProperty<>(Operator.GREATER_THAN);
-        firstOperand = new SimpleObjectProperty<>(0);
-        secondOperand = new SimpleObjectProperty<>(0);
+        unit = new SimpleObjectProperty<>(Unit.NOT_SPECIFIED);
+        operator = new SimpleObjectProperty<>(Operator.GREATER_THAN_LITERAL);
+        firstOperand = new SimpleObjectProperty<>(0.0);
+        secondOperand = new SimpleObjectProperty<>(0.0);
         operandType = new SimpleObjectProperty<>();
     }
 
@@ -88,9 +88,26 @@ public class Expression {
         this.operandType.set(operandType);
     }
 
-    public Unit getUnit() { return unit.get(); }
+    public Unit getUnit() {
+        return unit.get();
+    }
 
-    public ObjectProperty<Unit> unitProperty() { return unit; }
+    public ObjectProperty<Unit> unitProperty() {
+        return unit;
+    }
 
-    public void setUnit(Unit unit) { this.unit.set(unit); }
+    public void setUnit(Unit unit) {
+        this.unit.set(unit);
+    }
+
+    @Override
+    public String toString() {
+        return "Expression{" +
+                "unit=" + unit +
+                ", operator=" + operator +
+                ", firstOperand=" + firstOperand +
+                ", secondOperand=" + secondOperand +
+                ", operandType=" + operandType +
+                '}';
+    }
 }

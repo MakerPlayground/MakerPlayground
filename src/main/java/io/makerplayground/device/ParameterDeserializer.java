@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 
 import java.io.IOException;
 
@@ -57,7 +59,7 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case DOUBLE:
-                defaultValue = mapper.treeToValue(node.get("defaultValue"), Double.class);
+                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Double.class), Unit.NOT_SPECIFIED); // TODO: change soon
                 break;
             case ENUM:
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
@@ -66,7 +68,7 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case INTEGER:
-                defaultValue = mapper.treeToValue(node.get("defaultValue"), Integer.class);
+                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Integer.class), Unit.NOT_SPECIFIED); // TODO: change soon
                 break;
             default:
                 System.out.println("Format error!!!");

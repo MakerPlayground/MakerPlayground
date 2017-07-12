@@ -19,6 +19,9 @@ package io.makerplayground.device;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.Unit;
+
+import java.util.Collection;
 
 /**
  * Represent a parameter of an action
@@ -70,6 +73,10 @@ public class Parameter {
      */
     public Constraint getConstraint() {
         return constraint;
+    }
+
+    public Collection<Unit> getUnit() {
+        return ((NumericConstraint) constraint).getUnit();
     }
 
     /**

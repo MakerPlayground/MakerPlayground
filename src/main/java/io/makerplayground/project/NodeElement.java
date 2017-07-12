@@ -47,7 +47,7 @@ public class NodeElement {
         this.destPortX = new ReadOnlyDoubleWrapper();
         this.destPortY = new ReadOnlyDoubleWrapper();
 
-        this.sourcePortX.bind(this.left);
+        this.sourcePortX.bind(this.left.add(5));
         this.sourcePortY.bind(this.top.add(this.height.divide(2.0)));
         this.destPortX.bind(this.left.add(this.width).add(PORT_RADIUS));
         this.destPortY.bind(this.top.add(this.height.divide(2.0)));

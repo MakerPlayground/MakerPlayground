@@ -52,6 +52,10 @@ public class NumericConstraint implements Constraint {
         }
     }
 
+    public Collection<Unit> getUnit() {
+        return numericValue.keySet();
+    }
+
     @Override
     public boolean test(double d, Unit unit) {
         Value v = numericValue.get(unit);

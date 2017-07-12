@@ -66,4 +66,12 @@ public class Value {
         return constraint;
     }
 
+    @Override
+    public String toString() {
+        return "Value{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", constraint=" + constraint +
+                '}';
+    }
 }

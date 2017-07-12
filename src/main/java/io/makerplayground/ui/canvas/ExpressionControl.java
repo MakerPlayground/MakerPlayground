@@ -2,6 +2,7 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Value;
 import io.makerplayground.project.Expression;
+import io.makerplayground.project.ProjectValue;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import io.makerplayground.uihelper.NodeConsumer;
@@ -11,6 +12,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 /**
  * Created by USER on 07-Jul-17.
  */
@@ -18,7 +21,7 @@ public class ExpressionControl extends VBox{
 
     private SimpleListProperty<Expression> expressionsList;
 
-    public ExpressionControl(ObservableList<Value> values) {
+    public ExpressionControl(List<ProjectValue> values) {
         expressionsList = new SimpleListProperty<>(FXCollections.observableArrayList());
 
         DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
