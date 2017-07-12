@@ -9,6 +9,7 @@ import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +21,16 @@ public class validGenericDevice {
 
     public static Map<ProjectDevice, List<Device>> getSupportedDeviceList(Project project) {
         List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice();
+        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
-        Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
         for (Scene s : project.getScene()) {
             for (UserSetting u : s.getSetting()) {
-                GenericDevice genericDevice = u.getDevice().getGenericDevice();
-                if (!tempMap.containsKey(genericDevice)) {
-                    tempMap.put(genericDevice, new HashMap<>());
+                ProjectDevice projectDevice = u.getDevice();
+                if (!tempMap.containsKey(projectDevice)) {
+                    tempMap.put(projectDevice, new HashMap<>());
                 }
 
-                Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(genericDevice);
+                Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
                 for (Parameter parameter : u.getValueMap().keySet()) {
                     Action action = u.getAction();
                     Object o = u.getValueMap().get(parameter);
@@ -61,7 +62,8 @@ public class validGenericDevice {
             }
         }
 
-        for (GenericDevice device : tempMap.keySet()) {
+        // Print to see result
+        for (ProjectDevice device : tempMap.keySet()) {
             System.out.println(device.getName());
             for (Action action : tempMap.get(device).keySet()) {
                 System.out.println(action.getName());
@@ -70,6 +72,19 @@ public class validGenericDevice {
                 }
             }
         }
-        return null;
+
+        System.out.println("Start next step");
+
+        Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
+        for (ProjectDevice device : tempMap.keySet()) {
+            selectableDevice.put(device, new ArrayList<>());
+            for (Device d : actualDevice) {
+                if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {
+                    selectableDevice.get(device).add(d);
+                }
+            }
+        }
+
+        return selectableDevice;
     }
 }

@@ -44,6 +44,7 @@ public interface Constraint {
      */
     boolean test(String s);
 
+    boolean isCompatible(Constraint constraint);
     Constraint union(Constraint constraint);
 
     /**
@@ -64,6 +65,9 @@ public interface Constraint {
         public Constraint union(Constraint constraint) {
             return constraint;
         }
+
+        @Override
+        public boolean isCompatible(Constraint constraint) { return true; }
     };
 
     /**

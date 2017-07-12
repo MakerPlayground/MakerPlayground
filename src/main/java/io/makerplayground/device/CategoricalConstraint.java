@@ -59,6 +59,11 @@ public class CategoricalConstraint implements Constraint {
     }
 
     @Override
+    public boolean isCompatible(Constraint constraint) {
+        return false;
+    }
+
+    @Override
     public Constraint union(Constraint constraint) {
         if (!(constraint instanceof CategoricalConstraint))
             throw new ClassCastException();

@@ -53,6 +53,21 @@ public class NumericConstraint implements Constraint {
     }
 
     @Override
+    public boolean isCompatible(Constraint genericConstraint) {
+        for (Unit unit : ((NumericConstraint) genericConstraint).numericValue.keySet()) {
+            if (this.numericValue.containsKey(unit)) {
+                if (!((this.numericValue.get(unit).min <= ((NumericConstraint) genericConstraint).numericValue.get(unit).min)
+                    && (this.numericValue.get(unit).max >= ((NumericConstraint) genericConstraint).numericValue.get(unit).max))) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean test(double d, Unit unit) {
         Value v = numericValue.get(unit);
         if (v == null) {
@@ -111,6 +126,7 @@ public class NumericConstraint implements Constraint {
                     ", unit=" + unit +
                     '}';
         }
+
     }
 
     @Override
@@ -119,4 +135,5 @@ public class NumericConstraint implements Constraint {
                 "numericValue=" + numericValue +
                 '}';
     }
+
 }
