@@ -1,10 +1,8 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.Condition;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
-import io.makerplayground.uihelper.ViewFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -14,7 +12,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Arc;
 import javafx.scene.shape.Line;
 
 import java.io.IOException;
@@ -28,13 +25,12 @@ public class CanvasView extends AnchorPane {
     @FXML private ScrollPane scrollPane;
     @FXML private Button addStateBtn;
     @FXML private Button addConditionBtn;
-    @FXML private Arc startNode;
 
     private final CanvasViewModel canvasViewModel;
     private Line guideLine;
 
-    private NodeElement source;   // TODO: leak model into view
-    private NodeElement dest;      // TODO: leak model into view
+    private NodeElement source; // TODO: leak model into view
+    private NodeElement dest;   // TODO: leak model into view
 
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
@@ -77,11 +73,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, conditionViewModel -> {
                     ConditionView conditionView = new ConditionView(conditionViewModel);
                     addConditionConnectionEvent(conditionView);
-                    conditionView.setOnAction(event ->
-                            canvasViewModel.project.removeCondition(conditionViewModel.getCondition())
-
-                    );
-
+                    conditionView.setOnAction(event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
                     return conditionView;
                 }, new NodeConsumer<Pane, ConditionView>() {
                     @Override

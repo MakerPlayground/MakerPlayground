@@ -54,17 +54,14 @@ public class SceneView extends HBox {
     @FXML private Arc desNode;
     @FXML private Button removeSceneBtn;
     @FXML private ComboBox<String> timeUnitComboBox;
+    @FXML private Button addOutputButton;
 
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
-    private ObservableList<String> timeUnit = FXCollections.observableArrayList(
-            "milisec",
-            "second",
-            "minute"
-    );
+
+    private final ObservableList<String> timeUnit = FXCollections.observableArrayList("ms", "s");
     private double dragDeltaX;
     private double dragDeltaY;
-    @FXML private Button addOutputButton;
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
