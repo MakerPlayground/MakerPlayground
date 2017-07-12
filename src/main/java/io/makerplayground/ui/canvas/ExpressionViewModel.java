@@ -1,17 +1,13 @@
 package io.makerplayground.ui.canvas;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
 import io.makerplayground.project.ProjectValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Created by USER on 07-Jul-17.

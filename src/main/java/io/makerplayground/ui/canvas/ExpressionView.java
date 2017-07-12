@@ -1,8 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import com.fasterxml.jackson.databind.deser.impl.PropertyValue;
-import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
