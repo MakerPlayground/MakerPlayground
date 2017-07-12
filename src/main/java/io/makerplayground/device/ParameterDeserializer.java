@@ -62,7 +62,7 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case ENUM:
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
-            case MIX:
+            case CUSTOM:
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case INTEGER:

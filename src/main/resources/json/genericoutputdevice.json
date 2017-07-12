@@ -93,7 +93,7 @@
             "name": "Print Text",
             "defaultValue": "",
             "constraint": [],
-            "dataType": "MIX",
+            "dataType": "CUSTOM",
             "controlType": "CUSTOMPRINT"
           }
         ]
@@ -264,7 +264,7 @@
             "name": "Value",
             "defaultValue": "",
             "constraint": [],
-            "dataType": "MIX",
+            "dataType": "CUSTOM",
             "controlType": "CUSTOMSEGMENT"
           },
           {
