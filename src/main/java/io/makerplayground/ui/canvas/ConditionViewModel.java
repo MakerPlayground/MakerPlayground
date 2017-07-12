@@ -24,7 +24,7 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-         this.dynamicViewModelCreator = new DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel>(condition.getSetting(), SceneDeviceIconViewModel::new);
+         this.dynamicViewModelCreator = new DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
 
          hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
          this.project.getInputDevice().addListener((InvalidationListener) observable -> {

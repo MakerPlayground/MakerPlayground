@@ -16,7 +16,9 @@
 
 package io.makerplayground.project;
 
+
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Value;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -204,5 +206,13 @@ public class Project {
 
     public void setProjectName(String projectName) {
         this.projectName.set(projectName);
+    }
+
+    public ObservableList<Value> getAvailableValue() {
+        ObservableList<Value> value = FXCollections.observableArrayList();
+        for (ProjectDevice projectDevice : inputDevice) {
+            value.addAll(projectDevice.getGenericDevice().getValue());
+        }
+        return value;
     }
 }

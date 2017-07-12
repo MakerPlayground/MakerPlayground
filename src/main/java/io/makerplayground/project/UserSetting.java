@@ -60,6 +60,11 @@ public class UserSetting {
             }
 
         });
+
+        // Initialize expression list
+        for (Value v : device.getGenericDevice().getValue()) {
+            expression.put(v, FXCollections.observableArrayList());
+        }
     }
 
     public ProjectDevice getDevice() {

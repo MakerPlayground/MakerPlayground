@@ -3,10 +3,16 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.device.Value;
+import io.makerplayground.project.Expression;
+import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.UserSetting;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+
+import java.util.List;
 
 /**
  * Created by tanyagorn on 6/12/2017.
@@ -15,10 +21,12 @@ public class SceneDeviceIconViewModel {
 
     private final UserSetting userSetting;
     private final SimpleStringProperty name;
+    private final Project project;
 
-    public SceneDeviceIconViewModel(UserSetting userSetting) {
+    public SceneDeviceIconViewModel(UserSetting userSetting, Project project) {
         this.userSetting = userSetting;
         this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+        this.project = project;
     }
 
     public String getName() {
@@ -62,4 +70,19 @@ public class SceneDeviceIconViewModel {
         return userSetting.getValueMap().replace(p, o);
     }
 
+    public ObservableList<Expression> getExpression(Value v) {
+        return userSetting.getExpression().get(v);
+    }
+
+    public void setExpression(Value v, ObservableList<Expression> expressions) {
+        userSetting.getExpression().replace(v, expressions);
+    }
+
+    public List<Value> getValue() {
+        return userSetting.getDevice().getGenericDevice().getValue();
+    }
+
+    public ObservableList<Value> getProjectValue() {
+        return project.getAvailableValue();
+    }
 }
