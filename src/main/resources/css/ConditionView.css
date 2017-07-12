@@ -38,22 +38,22 @@
     -fx-border-color : transparent;
 }
 
-.scroll-bar .increment-button {
+.scroll-bar:horizontal .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
-.scroll-bar .decrement-button {
+.scroll-bar:horizontal .decrement-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
-.scroll-bar .increment-arrow{
+.scroll-bar:horizontal .increment-arrow{
     -fx-shape: " ";
     -fx-padding:0;
     -fx-pref-height: 5;
 }
-.scroll-bar .decrement-arrow{
+.scroll-bar:horizontal .decrement-arrow{
     -fx-shape: " ";
     -fx-padding:0;
     -fx-pref-height: 5;

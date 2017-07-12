@@ -12,10 +12,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
@@ -50,7 +52,7 @@ public class DevicePropertyWindow extends PopOver {
         VBox vbox = new VBox();
         vbox.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
         HBox row1 = new HBox();
-        row1.setSpacing(10);
+
 
         Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
@@ -58,7 +60,10 @@ public class DevicePropertyWindow extends PopOver {
         imageView.setPreserveRatio(true);
 
         Label customName = new Label(viewModel.getName());
+        customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
         row1.getChildren().addAll(imageView, customName);
+        row1.setAlignment(Pos.CENTER_LEFT);
+        row1.setSpacing(10);
 
         HBox row2 = new HBox();
         Label state = new Label("Scene");
@@ -98,6 +103,7 @@ public class DevicePropertyWindow extends PopOver {
 
         //paramVBox = new VBox();
         propertySheet = new PropertySheet();
+
         propertySheet.setModeSwitcherVisible(false);
         propertySheet.setSearchBoxVisible(false);
         propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {
@@ -131,8 +137,11 @@ public class DevicePropertyWindow extends PopOver {
         redrawProperty();
 
         row2.getChildren().addAll(state, comboBox);
-        vbox.getChildren().addAll(row1, row2, propertySheet);
+        row2.setAlignment(Pos.CENTER_LEFT);
+        row2.setSpacing(5.0);
 
+        vbox.getChildren().addAll(row1, row2, propertySheet);
+        vbox.setSpacing(5.0);
         vbox.setPadding(new Insets(20, 20, 20, 20));
         setContentNode(vbox);
     }
