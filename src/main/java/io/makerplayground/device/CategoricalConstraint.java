@@ -60,7 +60,10 @@ public class CategoricalConstraint implements Constraint {
 
     @Override
     public boolean isCompatible(Constraint constraint) {
-        return false;
+        if (!(constraint instanceof CategoricalConstraint))
+            return false;
+
+        return categoricalValue.containsAll(((CategoricalConstraint) constraint).categoricalValue);
     }
 
     @Override

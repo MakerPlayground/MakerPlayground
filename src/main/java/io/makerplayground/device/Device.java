@@ -90,27 +90,27 @@ public class Device {
     }
 
     public boolean isSupport(GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap){
-
-        if (supportedAction.containsKey(genericDevice)) {
-            Map<Action, Map<Parameter, Constraint>> actionMapActualDevice = supportedAction.get(genericDevice);
-            for (Action action : theirMap.keySet()) {
-                if (actionMapActualDevice.containsKey(action)) {
-                    for (Parameter parameter : theirMap.get(action).keySet()) {
-                        Map<Parameter, Constraint> parameterMapActualDevice = actionMapActualDevice.get(action);
-                        if (parameterMapActualDevice.containsKey(parameter)) {
-                            if (!parameterMapActualDevice.get(parameter).isCompatible(theirMap.get(action).get(parameter)))
-                                return false;
-                        }
-                        else
-                            return false;
-                    }
-                }
-                else
-                    return false;
-            }
-            return true;
-        }
-        else
+        if (!supportedAction.containsKey(genericDevice)) {
             return false;
+        }
+
+        Map<Action, Map<Parameter, Constraint>> actionMapActualDevice = supportedAction.get(genericDevice);
+        for (Action action : theirMap.keySet()) {
+            if (!actionMapActualDevice.containsKey(action)) {
+                return false;
+            }
+
+            Map<Parameter, Constraint> parameterMapActualDevice = actionMapActualDevice.get(action);
+            for (Parameter parameter : theirMap.get(action).keySet()) {
+                if (!parameterMapActualDevice.containsKey(parameter)) {
+                    return false;
+                }
+                if (!parameterMapActualDevice.get(parameter).isCompatible(theirMap.get(action).get(parameter))) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 }

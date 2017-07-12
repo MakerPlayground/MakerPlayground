@@ -67,7 +67,7 @@ public interface Constraint {
         }
 
         @Override
-        public boolean isCompatible(Constraint constraint) { return true; }
+        public boolean isCompatible(Constraint constraint) { return (constraint == NONE); }
     };
 
     /**
