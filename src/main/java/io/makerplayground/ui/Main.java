@@ -20,6 +20,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // TODO: show progress indicator while loading if need
+        DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
         primaryStage.setTitle("MakerPlayground");
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));

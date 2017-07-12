@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "Sparkfun",
+    "model": "9590",
+    "url": "https://www.sparkfun.com/products/9590",
+    "supportdevice": [
+      {
+        "name": "LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": [
+                  {
+                    "min": 0.0,
+                    "max": 100.0,
+                    "unit": "PERCENT"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Blink",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": [
+                  {
+                    "min": 0.0,
+                    "max": 100.0,
+                    "unit": "PERCENT"
+                  }
+                ]
+              },
+              {
+                "name": "Time period",
+                "constraint": [
+                  {
+                    "min": 0.0,
+                    "max": 60.0,
+                    "unit": "SECOND"
+                  }
+                ]
+              },
+              {
+                "name": "Blink speed",
+                "constraint": [
+                  "Slow",
+                  "Medium",
+                  "Fast"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ]
+      }
+    ],
+    "supportvalue": [
+    ]
+  }
+]

@@ -53,12 +53,12 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
 
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getOutputDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
             outputPane.getChildren().add(controlDevicePane);
             this.outputDevice.add(controlDevicePane);
         }
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getInputDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
             inputPane.getChildren().add(controlDevicePane);
             this.inputDevice.add(controlDevicePane);

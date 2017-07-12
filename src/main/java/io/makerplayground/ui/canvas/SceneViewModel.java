@@ -28,7 +28,7 @@ public class SceneViewModel {
         this.delay = new SimpleDoubleProperty(scene.getDelay());
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), SceneDeviceIconViewModel::new);
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
         this.project.getOutputDevice().addListener((InvalidationListener) observable -> {

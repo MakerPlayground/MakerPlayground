@@ -20,12 +20,12 @@ public class DeviceSelectorViewModel {
         this.project = project;
 
         this.inputDeviceMap = FXCollections.observableHashMap();
-        for (GenericDevice device : DeviceLibrary.INSTANCE.getInputDevice()) {
+        for (GenericDevice device : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
             inputDeviceMap.put(device, new SimpleIntegerProperty(0));
         }
 
         this.outputDeviceMap = FXCollections.observableHashMap();
-        for (GenericDevice device : DeviceLibrary.INSTANCE.getOutputDevice()) {
+        for (GenericDevice device : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
             outputDeviceMap.put(device, new SimpleIntegerProperty(0));
         }
     }

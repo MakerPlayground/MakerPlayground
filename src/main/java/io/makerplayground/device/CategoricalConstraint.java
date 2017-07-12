@@ -45,6 +45,10 @@ public class CategoricalConstraint implements Constraint {
         this.categoricalValue = value;
     }
 
+    public Collection<String> getCategories() {
+        return categoricalValue;
+    }
+
     @Override
     public boolean test(double d, Unit unit) {
         return false;
