@@ -6,10 +6,11 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.shape.Circle?>
 
-<fx:root alignment="TOP_RIGHT" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);" stylesheets="@../css/ConditionView2.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
          <graphic>
@@ -20,10 +21,9 @@
             </ImageView>
          </graphic>
       </Button>
-      <HBox alignment="CENTER" maxWidth="-Infinity" style="-fx-background-color: transparent;" stylesheets="@../css/ConditionView2.css">
+      <StackPane maxWidth="210.0" minWidth="210.0">
          <children>
-            <Arc id="sourceNode" fx:id="sourceNode" fill="#ffffff00" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
-            <ScrollPane fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0">
+            <ScrollPane fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0" StackPane.alignment="CENTER">
               <content>
                   <HBox id="deviceIconHBox" fx:id="deviceIconHBox" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="55.0" spacing="10.0">
                      <children>
@@ -42,8 +42,9 @@
                   <Insets left="5.0" />
                </padding>
             </ScrollPane>
-            <Arc id="destNode" fx:id="destNode" fill="#ffffff00" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+            <Circle id="sourceNode" fx:id="sourceNode" fill="#313644" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_LEFT" />
+            <Circle id="destNode" fx:id="destNode" fill="#313644" layoutX="20.0" layoutY="48.0" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_RIGHT" />
          </children>
-      </HBox>
+      </StackPane>
    </children>
 </fx:root>

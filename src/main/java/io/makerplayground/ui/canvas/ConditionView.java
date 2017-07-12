@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 
@@ -22,8 +23,8 @@ import java.io.IOException;
 public class ConditionView extends VBox {
     private final ConditionViewModel conditionViewModel;
 
-    @FXML private Arc sourceNode;
-    @FXML private Arc destNode;
+    @FXML private Circle sourceNode;
+    @FXML private Circle destNode;
     @FXML private HBox deviceIconHBox;
 
     private InputDeviceSelector inputDeviceSelector;
