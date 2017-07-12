@@ -4,10 +4,8 @@ import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
-import io.makerplayground.project.Expression;
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.UserSetting;
+import io.makerplayground.helper.Unit;
+import io.makerplayground.project.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -82,7 +80,10 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getValue();
     }
 
-    public ObservableList<Value> getProjectValue() {
+    public List<ProjectValue> getProjectValue() {
         return project.getAvailableValue();
     }
+
+
+
 }

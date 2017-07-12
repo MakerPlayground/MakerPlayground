@@ -20,5 +20,21 @@ package io.makerplayground.helper;
  * An enum represent an operator ex. >, <, <=, >=, =, etc.
  */
 public enum Operator {
-    EQUAL, GREATER_THAN, LESS_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN_OR_EQUAL, EQUAL_LITERAL, EQUAL_VARIABLE
+    GREATER_THAN_LITERAL, LESS_THAN_LITERAL, GREATER_THAN_OR_EQUAL_LITERAL, LESS_THAN_OR_EQUAL_LITERAL, EQUAL_LITERAL,
+    GREATER_THAN_VARIABLE, LESS_THAN_VARIABLE, GREATER_THAN_OR_EQUAL_VARIABLE, LESS_THAN_OR_EQUAL_VARIABLE, EQUAL_VARIABLE,
+    BETWEEN;
+
+    public boolean isLiteral() {
+        return (this == GREATER_THAN_LITERAL) || (this == LESS_THAN_LITERAL) || (this == GREATER_THAN_OR_EQUAL_LITERAL)
+                || (this == LESS_THAN_OR_EQUAL_LITERAL) || (this == EQUAL_LITERAL); // TODO: add more
+    }
+
+    public boolean isVariable() {
+        return (this == GREATER_THAN_VARIABLE)|| (this ==  LESS_THAN_VARIABLE) || (this ==  GREATER_THAN_OR_EQUAL_VARIABLE)
+                || (this == LESS_THAN_OR_EQUAL_VARIABLE) || (this ==  EQUAL_VARIABLE ); // TODO: add more
+    }
+
+    public boolean isBetween() {
+        return this == BETWEEN; // TODO: add more
+    }
 }

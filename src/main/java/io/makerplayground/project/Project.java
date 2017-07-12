@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -225,10 +226,12 @@ public class Project {
         this.projectName.set(projectName);
     }
 
-    public ObservableList<Value> getAvailableValue() {
-        ObservableList<Value> value = FXCollections.observableArrayList();
+    public List<ProjectValue> getAvailableValue() {
+        List<ProjectValue> value = new ArrayList<>();
         for (ProjectDevice projectDevice : inputDevice) {
-            value.addAll(projectDevice.getGenericDevice().getValue());
+            for (Value v : projectDevice.getGenericDevice().getValue()) {
+                value.add(new ProjectValue(projectDevice, v));
+            }
         }
         return value;
     }

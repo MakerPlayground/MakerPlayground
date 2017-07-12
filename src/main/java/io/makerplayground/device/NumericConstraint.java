@@ -52,6 +52,10 @@ public class NumericConstraint implements Constraint {
         }
     }
 
+    public Collection<Unit> getUnit() {
+        return numericValue.keySet();
+    }
+
     @Override
     public boolean isCompatible(Constraint genericConstraint) {
         for (Unit unit : ((NumericConstraint) genericConstraint).numericValue.keySet()) {
