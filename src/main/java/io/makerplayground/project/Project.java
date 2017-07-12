@@ -17,6 +17,8 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
  * Represent a project
  */
 public class Project {
+    private StringProperty projectName;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<Scene> scene;
@@ -42,6 +45,7 @@ public class Project {
     private final ObservableList<Line> unmodifiableLine;
 
     public Project() {
+        projectName = new SimpleStringProperty("Untitled Project");
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
@@ -188,5 +192,17 @@ public class Project {
 
     public ObservableList<Line> getLine() {
         return unmodifiableLine;
+    }
+
+    public String getProjectName() {
+        return projectName.get();
+    }
+
+    public StringProperty projectNameProperty() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName.set(projectName);
     }
 }

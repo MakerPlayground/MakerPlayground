@@ -4,7 +4,7 @@
 #statePane{
     -fx-background-color : white;
 }
-.text-field{
+#nameStateTextField{
     -fx-background-color : #313644;
     -fx-text-fill: white;
     -fx-font-weight: bold;
@@ -68,7 +68,7 @@
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(black,90%);
+    -fx-background-color: derive(#313644,45%);
     -fx-border-radius: 2em;
     -fx-background-insets: 2, 0, 0;
 }
@@ -79,9 +79,6 @@
 #TimeUnitComboBox{
     -fx-background-color : #0768de;
     -fx-border-color : #0768de;
-}
-.combo-box-base .text{
-    -fx-fill: white;
 }
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {

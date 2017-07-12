@@ -101,6 +101,8 @@ public class CanvasView extends AnchorPane {
 
         guideLine = new Line();
         guideLine.setVisible(false);
+        guideLine.setStrokeWidth(3.25);
+        guideLine.setStyle("-fx-stroke: #313644;");
         canvasPane.getChildren().add(guideLine);
 
         setOnDragDone(event -> {

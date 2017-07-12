@@ -5,6 +5,7 @@ import io.makerplayground.ui.Main;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -28,7 +29,9 @@ public class InputDeviceIconSelectorView extends  VBox {
         setMinSize(50,70);
 
         Label name = new Label(projectDevice.getName());
+        name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
         name.setMinWidth(70);
+        name.setMaxWidth(70);
         name.setAlignment(Pos.CENTER);
         getChildren().addAll(imv, name);
     }

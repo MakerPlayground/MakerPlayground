@@ -9,23 +9,23 @@
     -fx-border-width: 2px;
 }
 #decBtn{
-    -fx-background-color : #313644;
-    -fx-text-fill : white;
+    -fx-background-image: url('reduce.png');
+    -fx-background-size : 20px;
     -fx-border-color : #313644;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
 }
 #incBtn{
-    -fx-background-color : #313644;
-    -fx-text-fill : white;
+    -fx-background-image: url('increase.png');
+    -fx-background-size : 20px;
     -fx-border-color : #313644;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
 }
 #numTextField{
     -fx-background-color : white;
-    -fx-text-fill : black;
-    -fx-border-color : #313644;
-    -fx-border-width: 2px;
+    -fx-text-fill : #313644;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
 }

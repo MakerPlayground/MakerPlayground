@@ -12,29 +12,36 @@
 }
 
 #deviceIconHBox{
-    -fx-background-color : transparent;
+    -fx-focus-color: transparent;
+    -fx-border-radius : 40;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0;
+    -fx-background-radius: 40;
+    -fx-padding: 0;
 }
 .scroll-pane{
      -fx-focus-color: transparent;
-     -fx-border-radius : 10;
-     -fx-background-color: #313644;
+     -fx-border-radius : 40;
+     -fx-background-color: white;
      -fx-background-insets: 0 0 0;
-     -fx-background-radius: 10;
-     -fx-padding: 5;
+     -fx-background-radius: 40;
+     -fx-padding: 7 17 7 17;
 }
 .scroll-pane:focused {
      -fx-focus-color: transparent;
-     -fx-border-radius : 10;
-     -fx-background-color: #313644;
+     -fx-border-radius : 40;
+     -fx-background-color: white;
      -fx-background-insets: 0 0 0;
-     -fx-background-radius: 10;
-     -fx-padding: 5;
+     -fx-background-radius: 40;
+     -fx-padding: 7 17 7 17;
 }
 .scroll-pane .corner {
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport{
-    -fx-background-color:#313644;
+    -fx-background-color:white;
+    -fx-background-insets: 0 0 0;
+    -fx-background-radius: 40;
     -fx-border-color : transparent;
 }
 
@@ -50,12 +57,12 @@
 }
 .scroll-bar .increment-arrow{
     -fx-shape: " ";
-    -fx-padding:0;
+    -fx-padding:0 10 0 10;
     -fx-pref-height: 5;
 }
 .scroll-bar .decrement-arrow{
     -fx-shape: " ";
-    -fx-padding:0;
+    -fx-padding:0 10 0 10;
     -fx-pref-height: 5;
 }
 .scroll-bar .track{
@@ -65,21 +72,22 @@
     -fx-background-insets: 1, 1, 1;
 }
 .scroll-bar .thumb{
-    -fx-background-color: white;
+    -fx-background-color: derive(#313644,45%);
     -fx-border-radius: 2em;
     -fx-background-insets: 1, 1, 1;
 }
 .scroll-bar {
     -fx-background-color: transparent;
 }
-#addInputButton{
+
+#addInputButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('Add-toggle.png');
+    -fx-background-image: url('AddCondition-toggle.png');
     -fx-background-size : 50px;
 }
-#addInputButton:pressed{
-    -fx-background-image: url('Add.png');
+#addInputButton{
+    -fx-background-image: url('AddCondition.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
 }

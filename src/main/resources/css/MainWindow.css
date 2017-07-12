@@ -3,6 +3,14 @@
     -fx-border-color: #313644;
     -fx-border-width : 2px;
 }
+#projectNameTextField{
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+#projectNameTextField:focus{
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
 #tutorialBtn{
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
@@ -14,7 +22,6 @@
     -fx-text-fill: #231f20;
 }
 .split-pane{
-    -fx-box-border: red;
     -fx-border-width:0;
     -fx-border-insets:0;
     -fx-background-insets:0;

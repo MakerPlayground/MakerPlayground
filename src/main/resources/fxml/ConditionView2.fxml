@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 
-
-<fx:root alignment="TOP_RIGHT" style="-fx-background-color: transparent;" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
          <graphic>
@@ -21,12 +20,12 @@
             </ImageView>
          </graphic>
       </Button>
-      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../css/ConditionView.css">
+      <HBox alignment="CENTER" maxWidth="-Infinity" style="-fx-background-color: transparent;" stylesheets="@../css/ConditionView2.css">
          <children>
-            <Arc id="sourceNode" fx:id="sourceNode" fill="#30354200" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="ROUND" />
-            <ScrollPane fitToHeight="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="110.0" prefWidth="200.0" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);">
+            <Arc id="sourceNode" fx:id="sourceNode" fill="#ffffff00" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
+            <ScrollPane fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0">
               <content>
-                  <HBox id="deviceIconHBox" fx:id="deviceIconHBox" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="95.0" spacing="20.0">
+                  <HBox id="deviceIconHBox" fx:id="deviceIconHBox" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="55.0" spacing="10.0">
                      <children>
                         <Button id="addInputButton" fx:id="addInputButton" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="50.0" minHeight="50.0" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0">
                            <HBox.margin>
@@ -35,7 +34,7 @@
                         </Button>
                      </children>
                      <padding>
-                        <Insets bottom="15.0" left="10.0" right="10.0" top="15.0" />
+                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
                      </padding>
                   </HBox>
               </content>
@@ -43,7 +42,7 @@
                   <Insets left="5.0" />
                </padding>
             </ScrollPane>
-            <Arc id="destNode" fx:id="destNode" fill="#30354200" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="ROUND" />
+            <Arc id="destNode" fx:id="destNode" fill="#ffffff00" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="TRANSPARENT" strokeType="INSIDE" type="ROUND" />
          </children>
       </HBox>
    </children>

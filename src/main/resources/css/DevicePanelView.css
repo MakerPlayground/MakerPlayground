@@ -26,6 +26,9 @@
 .scroll-pane {
     -fx-background-color:transparent;
 }
+.scroll-pane > .viewport {
+    -fx-background-color:#4d5666;
+}
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 2em;
@@ -59,7 +62,7 @@
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('AddDevice-toggle.png');
-    -fx-background-size : 20px;
+    -fx-background-size : 20.5px;
     -fx-border-color : transparent;
 }
 #addBtn:pressed{

@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root alignment="CENTER" maxHeight="65.0" maxWidth="45.0" minHeight="65.0" minWidth="45.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="50.0" minWidth="50.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackPane maxHeight="35.0" minHeight="35.0">
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="50.0" style="-fx-background-color: white; -fx-background-radius: 5;">
          <children>
             <ImageView fx:id="iconImageView" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
             <Button fx:id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
@@ -24,12 +24,7 @@
             </Button>
          </children>
       </StackPane>
-      <Label fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
-         <font>
-            <Font name="System Bold" size="10.0" />
-         </font>
-      </Label>
-      <Label fx:id="action" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" text="Label" textFill="#5ac2ab" textOverrun="LEADING_ELLIPSIS">
+      <Label fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" text="Label" textAlignment="CENTER" textFill="#313644" textOverrun="CENTER_WORD_ELLIPSIS">
          <font>
             <Font name="System Bold" size="10.0" />
          </font>
