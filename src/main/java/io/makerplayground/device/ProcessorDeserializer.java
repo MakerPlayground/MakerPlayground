@@ -49,5 +49,7 @@ public class ProcessorDeserializer extends StdDeserializer<Processor> {
 //            }
 //            return Constraint.createCategoricalConstraint(valueList);
 //        }
+    return null;
     }
+
 }

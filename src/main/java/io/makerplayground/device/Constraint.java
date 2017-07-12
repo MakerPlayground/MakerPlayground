@@ -44,6 +44,8 @@ public interface Constraint {
      */
     boolean test(String s);
 
+    Constraint union(Constraint constraint);
+
     /**
      * A special value indicating no constraint (returns true for every tests)
      */
@@ -56,6 +58,11 @@ public interface Constraint {
         @Override
         public boolean test(String s) {
             return true;
+        }
+
+        @Override
+        public Constraint union(Constraint constraint) {
+            return constraint;
         }
     };
 

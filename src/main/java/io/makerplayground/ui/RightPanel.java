@@ -1,5 +1,6 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.generator.validGenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.DevicePanelView;
 import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
@@ -29,6 +30,7 @@ public class RightPanel extends AnchorPane {
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
         Button configureBtn = new Button("Configure GenericDevice");
+        configureBtn.setOnAction(event -> validGenericDevice.getSupportedDeviceList(project));
         Button generateBtn = new Button("Generate");
         Button uploadBtn = new Button("Upload");
 

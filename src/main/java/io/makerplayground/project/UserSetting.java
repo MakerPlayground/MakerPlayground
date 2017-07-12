@@ -40,6 +40,7 @@ public class UserSetting {
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();
+
         this.expression = FXCollections.observableHashMap();
 
         // Initialize the map with default action and it's parameters

@@ -17,6 +17,9 @@
 package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Processor;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
  * Represent a project
  */
 public class Project {
+    private final ObjectProperty<Processor> processor;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<Scene> scene;
@@ -42,6 +46,7 @@ public class Project {
     private final ObservableList<Line> unmodifiableLine;
 
     public Project() {
+        processor = new SimpleObjectProperty<Processor>();
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
@@ -188,5 +193,17 @@ public class Project {
 
     public ObservableList<Line> getLine() {
         return unmodifiableLine;
+    }
+
+    public Processor getProcessor() {
+        return processor.get();
+    }
+
+    public ObjectProperty<Processor> processorProperty() {
+        return processor;
+    }
+
+    public void setProcessor(Processor processor) {
+        this.processor.set(processor);
     }
 }

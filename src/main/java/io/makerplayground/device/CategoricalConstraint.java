@@ -18,8 +18,7 @@ package io.makerplayground.device;
 
 import io.makerplayground.helper.Unit;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Represent a constraint for a numeric value
@@ -53,6 +52,17 @@ public class CategoricalConstraint implements Constraint {
     @Override
     public boolean test(String s) {
         return categoricalValue.contains(s);
+    }
+
+    @Override
+    public Constraint union(Constraint constraint) {
+        if (!(constraint instanceof CategoricalConstraint))
+            throw new ClassCastException();
+
+        CategoricalConstraint categoricalConstraint = (CategoricalConstraint) constraint;
+        Set<String> tmp = new HashSet<>(categoricalValue);
+        tmp.addAll(categoricalConstraint.categoricalValue);
+        return new CategoricalConstraint(tmp);
     }
 
     @Override
