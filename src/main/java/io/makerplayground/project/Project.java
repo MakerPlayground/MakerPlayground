@@ -165,6 +165,12 @@ public class Project {
         // TODO: remove edge connect to that scene
         //diagram.removeVertex(s);
         scene.remove(s);
+        for (int i=line.size()-1; i>=0; i--) {
+            Line l = line.get(i);
+            if (l.getSource() == s || l.getDestination() == s) {
+                line.remove(l);
+            }
+        }
     }
 
     // TODO: add method to manage condition
@@ -176,6 +182,12 @@ public class Project {
 
     public void removeCondition(Condition c) {
         condition.remove(c);
+        for (int i=line.size()-1; i>=0; i--) {
+            Line l = line.get(i);
+            if (l.getSource() == c || l.getDestination() == c) {
+                line.remove(l);
+            }
+        }
     }
 
     public ObservableList<Condition> getCondition() {

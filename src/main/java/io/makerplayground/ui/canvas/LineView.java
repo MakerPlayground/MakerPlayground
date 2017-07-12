@@ -17,6 +17,8 @@
 package io.makerplayground.ui.canvas;
 
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 
@@ -32,4 +34,5 @@ public class LineView extends Path{
         setStrokeWidth(3.25);
         setStyle("-fx-stroke: #313644;");
     }
+
 }

@@ -84,15 +84,21 @@
 #TimeUnitComboBox .list-cell {
     -fx-text-fill: white;
 }
+#TimeUnitComboBox .combo-box-popup .list-cell{
+    -fx-text-fill: #313644;
+    -fx-background-color: white;
+}
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {
     -fx-background-color: #5ac2ab;
-    -fx-text-fill: -fx-text-inner-color;
+    -fx-text-fill: white;
 }
-#TimeUnitComboBox .list-view .list-cell:filled;
-{
+#TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
+    -fx-background-color: derive(#cccccc,40%);
+    -fx-background-radius:0;
     -fx-text-fill: black;
 }
+
 #TimeUnitComboBox .arrow{
     -fx-background-color: white;
 }

@@ -16,7 +16,7 @@ public class SceneViewModel {
     private final Scene scene;
     private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
-    private final Project project;
+    protected final Project project;
 
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 

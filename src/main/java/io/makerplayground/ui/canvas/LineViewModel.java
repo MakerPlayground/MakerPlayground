@@ -52,4 +52,8 @@ public class LineViewModel {
     public ObservableList<PathElement> getPoint() {
         return path;
     }
+
+    public Line getLine() {
+        return line;
+    }
 }

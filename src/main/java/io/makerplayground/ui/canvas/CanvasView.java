@@ -4,6 +4,7 @@ import io.makerplayground.project.Condition;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
+import io.makerplayground.uihelper.ViewFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -13,6 +14,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Line;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ public class CanvasView extends AnchorPane {
     @FXML private ScrollPane scrollPane;
     @FXML private Button addStateBtn;
     @FXML private Button addConditionBtn;
+    @FXML private Arc startNode;
 
     private final CanvasViewModel canvasViewModel;
     private Line guideLine;
@@ -56,6 +59,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, sceneViewModel -> {
                     SceneView sceneView = new SceneView(sceneViewModel);
                     addStateConnectionEvent(sceneView);
+                    sceneView.setOnAction(event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
                     return sceneView;
                 }, new NodeConsumer<Pane, SceneView>() {
                     @Override
@@ -73,6 +77,11 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, conditionViewModel -> {
                     ConditionView conditionView = new ConditionView(conditionViewModel);
                     addConditionConnectionEvent(conditionView);
+                    conditionView.setOnAction(event ->
+                            canvasViewModel.project.removeCondition(conditionViewModel.getCondition())
+
+                    );
+
                     return conditionView;
                 }, new NodeConsumer<Pane, ConditionView>() {
                     @Override
@@ -82,7 +91,7 @@ public class CanvasView extends AnchorPane {
 
                     @Override
                     public void removeNode(Pane parent, ConditionView node) {
-                        parent.getChildren().add(node);
+                        parent.getChildren().remove(node);
                     }
                 });
 

@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
 
-<fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
       <VBox id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../css/StateView.css">
@@ -25,7 +25,7 @@
                         <Font size="14.0" />
                      </font>
                   </TextField>
-                  <Button maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644; -fx-background-radius: 0 5 0 0; -fx-border-color: #313644; -fx-border-radius: 0 5 0 0;">
+                  <Button fx:id="removeSceneBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" style="-fx-background-color: #313644; -fx-background-radius: 0 5 0 0; -fx-border-color: #313644; -fx-border-radius: 0 5 0 0;">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -60,7 +60,7 @@
                         <Insets />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox id="TimeUnitComboBox" fx:id="TimeUnitComboBox" maxHeight="20.0" minHeight="24.0" prefHeight="20.0" promptText="sec" style="-fx-border-color: transparent; -fx-background-color: transparent;" />
+                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" maxHeight="20.0" minHeight="24.0" prefHeight="20.0" promptText="sec" style="-fx-border-color: transparent; -fx-background-color: transparent;" />
                </children>
                <opaqueInsets>
                   <Insets />
