@@ -14,6 +14,7 @@
           {
             "name": "Count",
             "defaultValue": 1.0,
+            "defaultValueUnit": "TIME",
             "constraint": [
               {
                 "min": 1.0,
@@ -256,6 +257,7 @@
           {
             "name": "Frequency",
             "defaultValue": 2000.0,
+            "defaultValueUnit": "HERTZ",
             "constraint": [
               {
                 "min": 0.0,
@@ -298,6 +300,7 @@
           {
             "name": "Direction",
             "defaultValue": "North",
+            "defaultValueUnit": "",
             "constraint": [
               "North",
               "South",

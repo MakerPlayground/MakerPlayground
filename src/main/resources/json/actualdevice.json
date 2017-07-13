@@ -36,21 +36,13 @@
                 ]
               },
               {
-                "name": "Time period",
+                "name": "Time Period",
                 "constraint": [
                   {
                     "min": 0.0,
                     "max": 60.0,
                     "unit": "SECOND"
                   }
-                ]
-              },
-              {
-                "name": "Blink speed",
-                "constraint": [
-                  "Slow",
-                  "Medium",
-                  "Fast"
                 ]
               }
             ]
@@ -63,6 +55,31 @@
       }
     ],
     "supportvalue": [
+      {
+        "name": "Temperature",
+        "value": [
+          {
+            "name": "Temperature Value",
+            "constraint": [
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "CELSIUS"
+              },
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "FAHRENHEIT"
+              },
+              {
+                "min": 0.0,
+                "max": 100.0,
+                "unit": "KELVIN"
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 ]

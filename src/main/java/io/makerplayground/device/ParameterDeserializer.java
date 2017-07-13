@@ -59,7 +59,8 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case DOUBLE:
-                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Double.class), Unit.NOT_SPECIFIED); // TODO: change soon
+                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Double.class)
+                        , mapper.treeToValue(node.get("defaultValueUnit"), Unit.class));
                 break;
             case ENUM:
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
@@ -68,7 +69,8 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
                 break;
             case INTEGER:
-                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Integer.class), Unit.NOT_SPECIFIED); // TODO: change soon
+                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Integer.class)
+                        , mapper.treeToValue(node.get("defaultValueUnit"), Unit.class));
                 break;
             default:
                 System.out.println("Format error!!!");
