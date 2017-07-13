@@ -17,13 +17,14 @@
 package io.makerplayground.project;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Value;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import io.makerplayground.device.Processor;
+import io.makerplayground.device.Value;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Represent a project
  */
+@JsonSerialize(using = ProjectSerializer.class)
 public class Project {
     private StringProperty projectName;
     private final ObjectProperty<Processor> processor;
@@ -182,6 +184,8 @@ public class Project {
     // TODO: add method to manage condition
     public Condition addCondition() {
         Condition c = new Condition();
+        // TODO: check for duplicate name
+        c.setName("condition" + (condition.size() + 1));
         condition.add(c);
         return c;
     }

@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
@@ -30,6 +31,7 @@ import java.util.List;
 /**
  *
  */
+@JsonSerialize(using = UserSettingSerializer.class)
 public class UserSetting {
     private final ProjectDevice device;
     private final ObjectProperty<Action> action;

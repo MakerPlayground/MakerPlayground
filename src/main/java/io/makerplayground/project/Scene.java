@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import javafx.collections.ObservableList;
 /**
  *
  */
+@JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
     public enum DelayUnit {MilliSecond, Second}
 
