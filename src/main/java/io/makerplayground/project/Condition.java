@@ -32,7 +32,7 @@ public class Condition extends NodeElement {
     private final ObservableList<UserSetting> unmodifiableSetting;
 
     Condition() {
-        super(185, 115);
+        super(20,250,185, 115);
 
         this.setting = FXCollections.observableArrayList();
         this.sourceNode = new SimpleObjectProperty<>(null);
@@ -62,7 +62,11 @@ public class Condition extends NodeElement {
     }
 
     public void removeDevice(ProjectDevice device) {
-        setting.remove(device);
+        for (int i = setting.size() - 1; i >= 0; i--) {
+            if (setting.get(i).getDevice() == device) {
+                setting.remove(i);
+            }
+        }
     }
 
     public ObservableList<UserSetting> getSetting() {

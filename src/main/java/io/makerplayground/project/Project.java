@@ -19,11 +19,8 @@ package io.makerplayground.project;
 
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import io.makerplayground.device.Processor;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -51,6 +48,8 @@ public class Project {
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
 
+    private final Begin begin;
+
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
         processor = new SimpleObjectProperty<>();
@@ -59,12 +58,14 @@ public class Project {
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
+        begin = new Begin();
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+
     }
 
     public ObservableList<ProjectDevice> getOutputDevice() {
@@ -141,8 +142,8 @@ public class Project {
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
-        for (Scene s : scene) {
-            s.removeDevice(device);
+        for (Condition c : condition) {
+            c.removeDevice(device);
         }
 
         return inputDevice.remove(device);
@@ -246,5 +247,9 @@ public class Project {
 
     public void setProcessor(Processor processor) {
         this.processor.set(processor);
+    }
+
+    public Begin getBegin() {
+        return begin;
     }
 }

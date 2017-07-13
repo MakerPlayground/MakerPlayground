@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
@@ -40,6 +41,8 @@ public class SliderWithUnit extends HBox {
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));
         });
+        setSpacing(2);
+        setAlignment(Pos.CENTER);
         getChildren().addAll(slider, comboBox);
     }
 

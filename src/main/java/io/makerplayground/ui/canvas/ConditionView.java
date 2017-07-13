@@ -2,6 +2,8 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,23 +22,33 @@ import java.io.IOException;
 /**
  * Created by USER on 05-Jul-17.
  */
-public class ConditionView extends VBox {
+public class ConditionView extends VBox implements Selectable {
     private final ConditionViewModel conditionViewModel;
 
     @FXML private Circle sourceNode;
     @FXML private Circle destNode;
     @FXML private HBox deviceIconHBox;
     @FXML private Button removeConditionBtn;
+    @FXML private Button addInputButton;
 
     private InputDeviceSelector inputDeviceSelector;
     private double dragDeltaX;
     private double dragDeltaY;
 
-    @FXML private Button addInputButton;
+    private BooleanProperty select;
 
     public ConditionView(ConditionViewModel conditionViewModel) {
         this.conditionViewModel = conditionViewModel;
         this.inputDeviceSelector = null;
+        this.select = new SimpleBooleanProperty();
+
+        this.select.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            } else {
+                setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+            }
+        });
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView2.fxml"));
         fxmlLoader.setRoot(this);
@@ -50,7 +62,8 @@ public class ConditionView extends VBox {
 
         layoutXProperty().bindBidirectional(conditionViewModel.xProperty());
         layoutYProperty().bindBidirectional(conditionViewModel.yProperty());
-        removeConditionBtn.setVisible(false);
+
+        removeConditionBtn.visibleProperty().bind(select);
         enableDrag();
 
         addInputButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -85,37 +98,46 @@ public class ConditionView extends VBox {
                 });
     }
 
+    @Override
+    public BooleanProperty selectedProperty() {
+        return select;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return select.get();
+    }
+
+    @Override
+    public void setSelected(boolean b) {
+        select.set(b);
+    }
+
     private void enableDrag() {
         setOnMouseEntered(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(javafx.scene.Cursor.HAND);
             }
-            removeConditionBtn.setVisible(false);
         });
         setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-            removeConditionBtn.setVisible(true);
             getScene().setCursor(javafx.scene.Cursor.MOVE);
+
+            select.set(true);
+            mouseEvent.consume();
         });
         setOnMouseDragged(mouseEvent -> {
             setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
             setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-            removeConditionBtn.setVisible(true);
         });
         setOnMouseReleased(mouseEvent -> {
             getScene().setCursor(javafx.scene.Cursor.HAND);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-            removeConditionBtn.setVisible(true);
         });
         setOnMouseExited(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(javafx.scene.Cursor.DEFAULT);
             }
-            removeConditionBtn.setVisible(false);
-            setStyle("-fx-effect:  dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);");
         });
     }
 

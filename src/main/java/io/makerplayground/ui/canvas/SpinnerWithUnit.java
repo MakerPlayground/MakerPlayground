@@ -6,6 +6,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -28,6 +29,9 @@ public class SpinnerWithUnit extends HBox {
         spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100));
         spinner.setEditable(true);
         comboBox = new ComboBox<>();
+
+        setSpacing(2);
+        setAlignment(Pos.CENTER);
 
         numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(number,unit));
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
