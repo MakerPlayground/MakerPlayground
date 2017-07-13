@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,5 +247,12 @@ public class Project {
 
     public void setProcessor(Processor processor) {
         this.processor.set(processor);
+    }
+
+    public ObservableList<ProjectDevice> getAllDevice() {
+        ObservableList<ProjectDevice> allDevice = FXCollections.observableArrayList();
+        allDevice.addAll(inputDevice);
+        allDevice.addAll(outputDevice);
+        return allDevice;
     }
 }
