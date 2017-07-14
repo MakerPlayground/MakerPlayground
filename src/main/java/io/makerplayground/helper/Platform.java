@@ -1,4 +1,4 @@
-package io.makerplayground.device;
+package io.makerplayground.helper;
 
 /**
  *

@@ -28,6 +28,7 @@ import java.util.*;
 public enum DeviceLibrary {
     INSTANCE;
 
+    private List<Processor> processor;
     private List<GenericDevice> genericInputDevice;
     private List<GenericDevice> genericOutputDevice;
     private List<Device> actualDevice;
@@ -36,12 +37,17 @@ public enum DeviceLibrary {
     }
 
     public void loadDeviceFromJSON() {
+        List<Processor> temp3;
         List<GenericDevice> temp;
         List<Device> temp2;
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
+            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/processor.json")
+                    , new TypeReference<List<Processor>>() {});
+            this.processor = Collections.unmodifiableList(temp3);
+
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
                     , new TypeReference<List<GenericDevice>>() {});
             this.genericInputDevice = Collections.unmodifiableList(temp);
@@ -56,6 +62,12 @@ public enum DeviceLibrary {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println(processor);
+    }
+
+    public List<Processor> getProcessor() {
+        return processor;
     }
 
     public List<GenericDevice> getGenericInputDevice() {
