@@ -6,6 +6,7 @@ import io.makerplayground.project.ProjectValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
@@ -18,6 +19,9 @@ public class ExpressionView extends HBox {
 
     public ExpressionView(ExpressionViewModel expressionViewModel) {
         this.expressionViewModel = expressionViewModel;
+
+        setSpacing(2);
+        setAlignment(Pos.CENTER_LEFT);
 
         ComboBox<Operator> comboBox = new ComboBox<>(FXCollections.observableArrayList(Operator.values()));
         comboBox.getSelectionModel().select(expressionViewModel.getOperator());

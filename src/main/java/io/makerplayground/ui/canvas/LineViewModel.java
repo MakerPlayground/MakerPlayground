@@ -17,6 +17,8 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Line;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.CubicCurveTo;
@@ -29,6 +31,9 @@ import javafx.scene.shape.PathElement;
 public class LineViewModel {
     private final Line line;
     private final ObservableList<PathElement> path;
+
+    private final DoubleProperty centerX;
+    private final DoubleProperty centerY;
 
     public LineViewModel(Line line) {
         this.line = line;
@@ -47,9 +52,40 @@ public class LineViewModel {
         cubicCurveTo.xProperty().bind(line.getDestination().sourcePortXProperty());
         cubicCurveTo.yProperty().bind(line.getDestination().sourcePortYProperty());
         this.path = FXCollections.observableArrayList(moveTo, cubicCurveTo);
+
+        centerX = new SimpleDoubleProperty();
+        centerX.bind((moveTo.xProperty().multiply(0.125))
+                .add(cubicCurveTo.controlX1Property().multiply(0.375))
+                .add(cubicCurveTo.controlX2Property().multiply(0.375))
+                .add(cubicCurveTo.xProperty().multiply(0.125)));
+        centerY = new SimpleDoubleProperty();
+        centerY.bind((moveTo.yProperty().multiply(0.125))
+                .add(cubicCurveTo.controlY1Property().multiply(0.375))
+                .add(cubicCurveTo.controlY2Property().multiply(0.375))
+                .add(cubicCurveTo.yProperty().multiply(0.125)));
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public ObservableList<PathElement> getPoint() {
         return path;
+    }
+
+    public double getCenterX() {
+        return centerX.get();
+    }
+
+    public DoubleProperty centerXProperty() {
+        return centerX;
+    }
+
+    public double getCenterY() {
+        return centerY.get();
+    }
+
+    public DoubleProperty centerYProperty() {
+        return centerY;
     }
 }

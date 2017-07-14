@@ -40,6 +40,7 @@ public class DevicePropertyWindow extends PopOver {
 
     public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
+        setDetachable(false);
         initView();
     }
 

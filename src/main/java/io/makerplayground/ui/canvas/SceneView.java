@@ -19,6 +19,10 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -42,12 +46,11 @@ import java.io.IOException;
 /**
  *
  */
-public class SceneView extends HBox {
+public class SceneView extends HBox implements Selectable {
     private final SceneViewModel sceneViewModel;
 
     @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
-    @FXML private FlowPane inactiveIconFlowPane;
     @FXML private TextField nameTextField;
     @FXML private TextField delayTextField;
     @FXML private Arc sourceNode;
@@ -55,6 +58,8 @@ public class SceneView extends HBox {
     @FXML private Button removeSceneBtn;
     @FXML private ComboBox<String> timeUnitComboBox;
     @FXML private Button addOutputButton;
+
+    private BooleanProperty select;
 
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
@@ -67,6 +72,14 @@ public class SceneView extends HBox {
         this.sceneViewModel = sceneViewModel;
         this.devicePropertyWindow = null;
         this.outputDeviceSelector = null;
+        this.select = new SimpleBooleanProperty();
+        this.select.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            } else {
+                setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+            }
+        });
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateView.fxml"));
         fxmlLoader.setRoot(this);
@@ -126,28 +139,31 @@ public class SceneView extends HBox {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
             }
-            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+            //setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         });
         setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
             getScene().setCursor(Cursor.MOVE);
+
+            select.set(true);
+            mouseEvent.consume();
         });
         setOnMouseDragged(mouseEvent -> {
             setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
             setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
         });
         setOnMouseReleased(mouseEvent -> {
             getScene().setCursor(Cursor.HAND);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
         });
         setOnMouseExited(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.DEFAULT);
             }
-            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+            //setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         });
     }
 
@@ -181,5 +197,20 @@ public class SceneView extends HBox {
 
     public void setOnAction(EventHandler<ActionEvent> event) {
         removeSceneBtn.setOnAction(event);
+    }
+
+    @Override
+    public BooleanProperty selectedProperty() {
+        return select;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return select.get();
+    }
+
+    @Override
+    public void setSelected(boolean b) {
+        select.set(b);
     }
 }

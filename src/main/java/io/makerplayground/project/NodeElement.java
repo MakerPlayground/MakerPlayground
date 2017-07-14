@@ -38,9 +38,9 @@ public class NodeElement {
     private final ReadOnlyDoubleWrapper destPortX;
     private final ReadOnlyDoubleWrapper destPortY;
 
-    NodeElement(double width, double height) {
-        this.top = new SimpleDoubleProperty();
-        this.left = new SimpleDoubleProperty();
+    NodeElement(double top,double left,double width, double height) {
+        this.top = new SimpleDoubleProperty(top);
+        this.left = new SimpleDoubleProperty(left);
         this.width = new SimpleDoubleProperty(width);
         this.height = new SimpleDoubleProperty(height);
 
