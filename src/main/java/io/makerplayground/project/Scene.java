@@ -33,7 +33,7 @@ public class Scene extends NodeElement {
     private final DelayUnit delayUnit;
 
     Scene() {
-        super(200, 135);
+        super(20,20,200, 135);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed

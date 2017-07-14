@@ -13,12 +13,14 @@ public class CanvasViewModel {
     private final DynamicViewModelCreator<Scene, SceneViewModel> paneStateViewModel;
     private final DynamicViewModelCreator<Condition, ConditionViewModel> conditionViewModel;
     private final DynamicViewModelCreator<Line,LineViewModel> lineViewModel;
+    private final BeginSceneViewModel beginViewModel;
 
     public CanvasViewModel(Project project) {
         this.project = project;
         this.paneStateViewModel = new DynamicViewModelCreator<>(project.getScene(), scene -> new SceneViewModel(scene, project));
         this.conditionViewModel = new DynamicViewModelCreator<>(project.getCondition(), condition -> new ConditionViewModel(condition, project));
         this.lineViewModel = new DynamicViewModelCreator<>(project.getLine(), LineViewModel::new);
+        this.beginViewModel = new BeginSceneViewModel(project.getBegin(),project);
     }
 
     public void connectState(NodeElement nodeElement1, NodeElement nodeElement2) {
@@ -35,6 +37,10 @@ public class CanvasViewModel {
 
     public DynamicViewModelCreator<Scene, SceneViewModel> getPaneStateViewModel() {
         return paneStateViewModel;
+    }
+
+    public BeginSceneViewModel getBeginViewModel() {
+        return beginViewModel;
     }
 
     public Project getProject() {

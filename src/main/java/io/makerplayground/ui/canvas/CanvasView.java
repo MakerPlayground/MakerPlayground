@@ -3,12 +3,14 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -27,6 +29,10 @@ public class CanvasView extends AnchorPane {
     @FXML private Button addConditionBtn;
 
     private final CanvasViewModel canvasViewModel;
+    private final BeginSceneView beginSceneView;
+
+    private final SelectionGroup selectionGroup;
+
     private Line guideLine;
 
     private NodeElement source; // TODO: leak model into view
@@ -34,6 +40,15 @@ public class CanvasView extends AnchorPane {
 
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
+        this.selectionGroup = new SelectionGroup();
+        setOnMousePressed(event -> {
+            selectionGroup.deselect();
+        });
+
+        beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel());
+//        setBottomAnchor(beginSceneView,0.0);
+//        setTopAnchor(beginSceneView,0.0);
+//        setLeftAnchor(beginSceneView,20.0);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/CanvasView.fxml"));
         fxmlLoader.setRoot(this);
@@ -55,6 +70,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getPaneStateViewModel(), canvasPane, sceneViewModel -> {
                     SceneView sceneView = new SceneView(sceneViewModel);
                     addStateConnectionEvent(sceneView);
+                    selectionGroup.getSelectable().add(sceneView);
                     sceneView.setOnAction(event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
                     return sceneView;
                 }, new NodeConsumer<Pane, SceneView>() {
@@ -73,6 +89,7 @@ public class CanvasView extends AnchorPane {
                 new DynamicViewCreator<>(canvasViewModel.getConditionViewModel(), canvasPane, conditionViewModel -> {
                     ConditionView conditionView = new ConditionView(conditionViewModel);
                     addConditionConnectionEvent(conditionView);
+                    selectionGroup.getSelectable().add(conditionView);
                     conditionView.setOnAction(event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
                     return conditionView;
                 }, new NodeConsumer<Pane, ConditionView>() {
@@ -86,9 +103,15 @@ public class CanvasView extends AnchorPane {
                         parent.getChildren().remove(node);
                     }
                 });
+        addBeginConnectionEvent(beginSceneView);
 
         DynamicViewCreator<Pane, LineViewModel, LineView> lineViewCreator =
-                new DynamicViewCreator<>(canvasViewModel.getLineViewModel(), canvasPane, LineView::new, new NodeConsumer<Pane, LineView>() {
+                new DynamicViewCreator<>(canvasViewModel.getLineViewModel(), canvasPane, viewModel -> {
+                    LineView lineView = new LineView(viewModel);
+                    lineView.setOnAction(event -> canvasViewModel.project.removeLine(viewModel.getLine()));
+                    selectionGroup.getSelectable().add(lineView);
+                    return lineView;
+                }, new NodeConsumer<Pane, LineView>() {
                     @Override
                     public void addNode(Pane parent, LineView node) {
                         parent.getChildren().add(node);
@@ -104,7 +127,7 @@ public class CanvasView extends AnchorPane {
         guideLine.setVisible(false);
         guideLine.setStrokeWidth(3.25);
         guideLine.setStyle("-fx-stroke: #313644;");
-        canvasPane.getChildren().add(guideLine);
+        canvasPane.getChildren().addAll(guideLine,beginSceneView);
 
         setOnDragDone(event -> {
             if (event.getTransferMode() == TransferMode.MOVE) {
@@ -235,5 +258,61 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
+    }
+
+    private void addBeginConnectionEvent(BeginSceneView beginSceneView) {
+        beginSceneView.setOnDesPortDragDetected(event -> {
+            Dragboard db = CanvasView.this.startDragAndDrop(TransferMode.ANY);
+
+            ClipboardContent clipboard = new ClipboardContent();
+            clipboard.putString("");
+            db.setContent(clipboard);
+
+            guideLine.setStartX(event.getSceneX());
+            guideLine.setStartY(event.getSceneY());
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY());
+            guideLine.setVisible(true);
+
+            source = beginSceneView.getBeginSceneViewModel().getBegin();
+
+            event.consume();
+        });
+//        beginSceneView.setOnSrcPortDragOver(event -> {
+//            System.out.println(event.getSceneX() + " " + event.getSceneY());
+//
+//            if (event.getGestureSource() != beginSceneView && event.getDragboard().hasString()) {
+//                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+//            }
+//
+//            guideLine.setEndX(event.getSceneX());
+//            guideLine.setEndY(event.getSceneY());
+//
+//            event.consume();
+//        });
+//        beginSceneView.setOnSrcPortDragEntered(event -> {
+//            if (event.getGestureSource() != beginSceneView && event.getDragboard().hasString()) {
+//                // TODO: add visual feedback
+//            }
+//
+//            event.consume();
+//        });
+//        beginSceneView.setOnSrcPortDragExited(event -> {
+//            // TODO: remove visual feedback
+//
+//            event.consume();
+//        });
+//        beginSceneView.setOnSrcPortDragDropped(event -> {
+//            Dragboard db = event.getDragboard();
+//            boolean success = false;
+//            if (db.hasString()) {
+//                System.out.println("Connect to => " + db.getString());
+//                success = true;
+//            }
+//            canvasViewModel.connectState(source, beginSceneView.getSceneViewModel().getCondition());
+//            event.setDropCompleted(success);
+//
+//            event.consume();
+//        });
     }
 }
