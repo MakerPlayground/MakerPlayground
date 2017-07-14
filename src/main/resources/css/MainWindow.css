@@ -31,3 +31,27 @@
 .split-pane *.split-pane-divider {
     -fx-padding: 0 0 0 0;
 }
+#saveBtn{
+    -fx-background-image: url('save.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}
+#saveBtn:pressed{
+    -fx-background-image: url('save-toggle.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}
+#loadBtn{
+    -fx-background-image: url('load.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}
+#loadBtn:pressed{
+    -fx-background-image: url('load-toggle.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}

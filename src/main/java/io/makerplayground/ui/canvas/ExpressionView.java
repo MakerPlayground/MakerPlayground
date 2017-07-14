@@ -42,6 +42,8 @@ public class ExpressionView extends HBox {
         Label l = new Label("to");
         l.visibleProperty().bind(expressionViewModel.betweenModeProperty());
         l.managedProperty().bind(l.visibleProperty());
+        l.setMaxWidth(20);
+        l.setAlignment(Pos.CENTER);
 
         Spinner<Double> spinnerTo = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, expressionViewModel.getSecondOperandAsDouble()));
         spinnerTo.setEditable(true);

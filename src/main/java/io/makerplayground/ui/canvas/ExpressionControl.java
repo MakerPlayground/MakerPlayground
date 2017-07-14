@@ -26,7 +26,7 @@ public class ExpressionControl extends VBox{
         expressionsList = new SimpleListProperty<>(FXCollections.observableArrayList());
 
         setSpacing(2.0);
-        setAlignment(Pos.CENTER_LEFT);
+        setAlignment(Pos.TOP_CENTER);
 
         DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
         DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {
