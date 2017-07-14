@@ -1,11 +1,20 @@
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Processor;
 import javafx.beans.property.ObjectProperty;
+import jdk.nashorn.internal.parser.JSONParser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -18,7 +27,16 @@ public class ProjectHelper {
 
     public static Project loadProject(File f) {
         // TODO: implement code to load a project from file
-        throw new UnsupportedOperationException();
+        ObjectMapper mapper = new ObjectMapper();
+        Project p = null;
+        try {
+            p = mapper.readValue(ProjectHelper.class.getResourceAsStream("/json/processor.json")
+                    , new TypeReference<List<Processor>>() {
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return p;
     }
 
     public static boolean saveProject(Project p) {

@@ -23,10 +23,6 @@ public class NodeElementSerializer extends StdSerializer<NodeElement> {
         jsonGenerator.writeObjectField("left",nodeElement.getLeft());
         jsonGenerator.writeObjectField("width",nodeElement.getWidth());
         jsonGenerator.writeObjectField("height",nodeElement.getHeight());
-        jsonGenerator.writeObjectField("sourcePortX",nodeElement.getSourcePortX());
-        jsonGenerator.writeObjectField("sourcePortY",nodeElement.getSourcePortY());
-        jsonGenerator.writeObjectField("destPortX",nodeElement.getDestPortX());
-        jsonGenerator.writeObjectField("destPortY",nodeElement.getDestPortY());
 
         jsonGenerator.writeEndObject();
     }

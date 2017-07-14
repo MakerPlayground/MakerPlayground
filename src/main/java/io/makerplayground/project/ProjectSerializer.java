@@ -67,9 +67,9 @@ public class ProjectSerializer extends StdSerializer<Project> {
                 jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
 
             if (line.getDestination() instanceof Scene)
-                jsonGenerator.writeStringField("destination", ((Scene) line.getSource()).getName());
+                jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
             else if (line.getDestination() instanceof Condition)
-                jsonGenerator.writeStringField("destination", ((Condition) line.getSource()).getName());
+                jsonGenerator.writeStringField("destination", ((Condition) line.getDestination()).getName());
 
             jsonGenerator.writeEndObject();
         }

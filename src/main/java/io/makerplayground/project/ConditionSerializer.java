@@ -42,6 +42,17 @@ public class ConditionSerializer extends StdSerializer<Condition> {
             jsonGenerator.writeStringField("destNode", "");
         }
 
+        jsonGenerator.writeObjectFieldStart("position");
+        jsonGenerator.writeNumberField("top",condition.getTop());
+        jsonGenerator.writeNumberField("left",condition.getLeft());
+        jsonGenerator.writeNumberField("width",condition.getWidth());
+        jsonGenerator.writeNumberField("height",condition.getHeight());
+        jsonGenerator.writeNumberField("sourcePortX",condition.getSourcePortX());
+        jsonGenerator.writeNumberField("sourcePortY",condition.getSourcePortY());
+        jsonGenerator.writeNumberField("destPortX",condition.getDestPortX());
+        jsonGenerator.writeNumberField("destPortY",condition.getDestPortY());
+        jsonGenerator.writeEndObject();
+
         jsonGenerator.writeEndObject();
     }
 }

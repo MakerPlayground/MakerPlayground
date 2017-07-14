@@ -30,8 +30,18 @@ public class SceneSerializer extends StdSerializer<Scene> {
        jsonGenerator.writeEndArray();
 
        jsonGenerator.writeObjectField("delay",scene.getDelay());
-
        jsonGenerator.writeObjectField("delayUnit",scene.getDelayUnit());
+
+       jsonGenerator.writeObjectFieldStart("position");
+       jsonGenerator.writeNumberField("top",scene.getTop());
+       jsonGenerator.writeNumberField("left",scene.getLeft());
+       jsonGenerator.writeNumberField("width",scene.getWidth());
+       jsonGenerator.writeNumberField("height",scene.getHeight());
+       jsonGenerator.writeNumberField("sourcePortX",scene.getSourcePortX());
+       jsonGenerator.writeNumberField("sourcePortY",scene.getSourcePortY());
+       jsonGenerator.writeNumberField("destPortX",scene.getDestPortX());
+       jsonGenerator.writeNumberField("destPortY",scene.getDestPortY());
+       jsonGenerator.writeEndObject();
 
        jsonGenerator.writeEndObject();
    }

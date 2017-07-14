@@ -17,6 +17,7 @@
 package io.makerplayground.project;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Processor;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  * Represent a project
  */
 @JsonSerialize(using = ProjectSerializer.class)
+@JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     private StringProperty projectName;
     private final ObjectProperty<Processor> processor;

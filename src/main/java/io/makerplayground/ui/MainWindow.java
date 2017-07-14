@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
@@ -53,15 +54,6 @@ public class MainWindow extends BorderPane {
             }
         });
 
-//        loadButton.setOnAction(event -> {
-//            try {
-//                project = mapper.readValue(new File("C:\\Users\\USER\\Desktop\\file.json"), Project.class);
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-
         projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
 
         RightPanel rightPanel = new RightPanel(project);
@@ -71,5 +63,9 @@ public class MainWindow extends BorderPane {
 
         mainPane.setDividerPositions(0.8, 0.2);
         mainPane.getItems().addAll(canvasView, rightPanel);
+    }
+
+    public void onLoadPressed(EventHandler<javafx.event.ActionEvent> e) {
+        loadButton.setOnAction(e);
     }
 }

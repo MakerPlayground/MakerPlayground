@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
@@ -25,6 +26,7 @@ import javafx.beans.property.SimpleObjectProperty;
 /**
  *
  */
+@JsonSerialize (using = ExpressionSerializer.class)
 public class Expression {
     private final ObjectProperty<Unit> unit;
     private final ObjectProperty<Operator> operator;
