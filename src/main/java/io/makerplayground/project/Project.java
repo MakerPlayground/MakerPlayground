@@ -18,6 +18,7 @@ package io.makerplayground.project;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Processor;
 import io.makerplayground.device.Value;
@@ -56,7 +57,7 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        processor = new SimpleObjectProperty<>();
+        processor = new SimpleObjectProperty<>(DeviceLibrary.INSTANCE.getProcessor().get(0));
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();

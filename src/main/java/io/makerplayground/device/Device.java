@@ -18,6 +18,7 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.PeripheralType;
 import io.makerplayground.helper.Platform;
 
 import java.util.Collections;
@@ -33,10 +34,11 @@ public class Device {
     private final String model;
     private final String url;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
-    //private final Map<GenericDevice, Integer> count;
+        private  Map<GenericDevice, Integer> count; // TODO: add some data
     private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
     private final List<Platform> supportPlatform;
-    private final Map<Peripheral, Integer> port;
+    private final Map<PeripheralType, Integer> port; // TODO: add some data
+        private  Map<PeripheralType, Integer> requirePort;
 
     /**
      * Construct a new device. The constructor should only be invoked by the DeviceLibrary
@@ -51,7 +53,7 @@ public class Device {
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
             , List<Platform> supportPlatform
-            , Map<Peripheral, Integer> port) {
+            , Map<PeripheralType, Integer> port) {
         this.brand = brand;
         this.model = model;
         this.url = url;

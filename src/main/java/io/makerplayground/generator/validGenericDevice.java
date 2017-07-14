@@ -71,6 +71,9 @@ public class validGenericDevice {
             }
         }
 
+
+        //TODO: platform
+        
         // Get the list of compatible device
         Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
         for (ProjectDevice device : tempMap.keySet()) {

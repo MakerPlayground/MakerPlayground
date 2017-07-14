@@ -5,7 +5,6 @@ import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.PinType;
 import io.makerplayground.helper.Platform;
 
-import java.util.List;
 import java.util.Map;
 
 /**
