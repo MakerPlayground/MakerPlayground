@@ -16,15 +16,20 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
  *
  */
+@JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
+    private final StringProperty name;
     private final ObservableList<UserSetting> setting;
     private final ObjectProperty<Scene> sourceNode;
     private final ObjectProperty<Scene> destNode;
@@ -32,13 +37,26 @@ public class Condition extends NodeElement {
     private final ObservableList<UserSetting> unmodifiableSetting;
 
     Condition() {
-        super(185, 115);
+        super(20,250,185, 115);
 
+        this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
         this.sourceNode = new SimpleObjectProperty<>(null);
         this.destNode = new SimpleObjectProperty<>(null);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
+    }
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     public Scene getSourceNode() {
@@ -62,7 +80,11 @@ public class Condition extends NodeElement {
     }
 
     public void removeDevice(ProjectDevice device) {
-        setting.remove(device);
+        for (int i = setting.size() - 1; i >= 0; i--) {
+            if (setting.get(i).getDevice() == device) {
+                setting.remove(i);
+            }
+        }
     }
 
     public ObservableList<UserSetting> getSetting() {

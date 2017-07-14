@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import javafx.collections.ObservableList;
 /**
  *
  */
+@JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
     public enum DelayUnit {MilliSecond, Second}
 
@@ -33,7 +35,7 @@ public class Scene extends NodeElement {
     private final DelayUnit delayUnit;
 
     Scene() {
-        super(200, 135);
+        super(20,20,200, 135);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed

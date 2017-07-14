@@ -1,5 +1,6 @@
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,6 +10,7 @@ import javafx.beans.property.StringProperty;
  *
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
+@JsonSerialize (using = ProjectDeviceSerializer.class)
 public class ProjectDevice {
     private String name;
     private final GenericDevice genericDevice;

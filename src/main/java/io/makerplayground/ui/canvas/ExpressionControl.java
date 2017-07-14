@@ -9,6 +9,7 @@ import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
@@ -23,6 +24,9 @@ public class ExpressionControl extends VBox{
 
     public ExpressionControl(List<ProjectValue> values) {
         expressionsList = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+        setSpacing(2.0);
+        setAlignment(Pos.CENTER_LEFT);
 
         DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
         DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {

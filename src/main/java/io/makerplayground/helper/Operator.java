@@ -20,9 +20,20 @@ package io.makerplayground.helper;
  * An enum represent an operator ex. >, <, <=, >=, =, etc.
  */
 public enum Operator {
-    GREATER_THAN_LITERAL, LESS_THAN_LITERAL, GREATER_THAN_OR_EQUAL_LITERAL, LESS_THAN_OR_EQUAL_LITERAL, EQUAL_LITERAL,
-    GREATER_THAN_VARIABLE, LESS_THAN_VARIABLE, GREATER_THAN_OR_EQUAL_VARIABLE, LESS_THAN_OR_EQUAL_VARIABLE, EQUAL_VARIABLE,
-    BETWEEN_LITERAL, BETWEEN_VARIABLE;
+    GREATER_THAN_LITERAL ("> numeral"), LESS_THAN_LITERAL("< numeral"), GREATER_THAN_OR_EQUAL_LITERAL(">= numeral"), LESS_THAN_OR_EQUAL_LITERAL("<= numeral"), EQUAL_LITERAL("= numeral"),
+    GREATER_THAN_VARIABLE("> variable"), LESS_THAN_VARIABLE("< variable"), GREATER_THAN_OR_EQUAL_VARIABLE(">= variable"), LESS_THAN_OR_EQUAL_VARIABLE("<= variable"), EQUAL_VARIABLE("= variable"),
+    BETWEEN_LITERAL("Between number"), BETWEEN_VARIABLE("Between variable");
+
+    private final String name;
+
+    Operator(String s){
+        name = s;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
     public boolean isLiteral() {
         return (this == GREATER_THAN_LITERAL) || (this == LESS_THAN_LITERAL) || (this == GREATER_THAN_OR_EQUAL_LITERAL)

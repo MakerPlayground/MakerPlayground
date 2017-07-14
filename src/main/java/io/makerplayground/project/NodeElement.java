@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -23,6 +24,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 /**
  *
  */
+@JsonSerialize(using = NodeElementSerializer.class)
 public class NodeElement {
     private static final double PORT_RADIUS = 15;
 
@@ -36,9 +38,9 @@ public class NodeElement {
     private final ReadOnlyDoubleWrapper destPortX;
     private final ReadOnlyDoubleWrapper destPortY;
 
-    NodeElement(double width, double height) {
-        this.top = new SimpleDoubleProperty();
-        this.left = new SimpleDoubleProperty();
+    NodeElement(double top,double left,double width, double height) {
+        this.top = new SimpleDoubleProperty(top);
+        this.left = new SimpleDoubleProperty(left);
         this.width = new SimpleDoubleProperty(width);
         this.height = new SimpleDoubleProperty(height);
 
