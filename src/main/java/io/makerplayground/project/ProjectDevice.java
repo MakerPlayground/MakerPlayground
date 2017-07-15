@@ -3,8 +3,11 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.helper.Peripheral;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import java.util.Map;
 
 /**
  *
@@ -15,6 +18,9 @@ public class ProjectDevice {
     private String name;
     private final GenericDevice genericDevice;
     private Device actualDevice;
+    private Device dependentDevice;
+    private Map<Peripheral, Peripheral> deviceConnection; // connection from this device (key) to the processor (value)
+    private Map<String, String> connectedPin;
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = name;

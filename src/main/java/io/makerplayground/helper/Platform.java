@@ -4,5 +4,5 @@ package io.makerplayground.helper;
  *
  */
 public enum Platform {
-    ARDUINO, RPI, ARM
+    ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
 }

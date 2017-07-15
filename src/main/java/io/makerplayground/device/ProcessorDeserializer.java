@@ -18,17 +18,17 @@ import java.util.Map;
 /**
  *
  */
-public class ProcessorDeserializer extends StdDeserializer<Processor> {
+public class ProcessorDeserializer extends StdDeserializer<Microcontroller> {
     public ProcessorDeserializer() {
         this(null);
     }
 
-    public ProcessorDeserializer(Class<Processor> t) {
+    public ProcessorDeserializer(Class<Microcontroller> t) {
         super(t);
     }
 
     @Override
-    public Processor deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Microcontroller deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
@@ -50,7 +50,7 @@ public class ProcessorDeserializer extends StdDeserializer<Processor> {
             }
         }
 
-        return new Processor(name, platform, port);
+        return new Microcontroller(name, platform, port);
     }
 
 }

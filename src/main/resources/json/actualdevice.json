@@ -1,85 +1,89 @@
 [
   {
     "brand": "Sparkfun",
-    "model": "9590",
-    "url": "https://www.sparkfun.com/products/9590",
-    "supportdevice": [
+    "model": "Speaker - 0.5W (8 Ohm)",
+    "url": "https://www.sparkfun.com/products/9151",
+    "type": "DEVICE",
+    "formfactor": "STANDALONE",
+    "platform": [],
+    "port": [],
+    "connectivity": [],
+    "compatibility": [],
+    "dependency": [
+      "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302"
+    ]
+  },
+  {
+    "brand": "Adafruit",
+    "model": "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302",
+    "url": "https://www.adafruit.com/products/2130",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD",
+    "platform": [
+      "ARDUINO"
+    ],
+    "port": [
       {
-        "name": "LED",
+        "name": "vcc",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "x": 123,
+        "y": 456
+      }
+    ],
+    "connectivity": [
+      "I2C1"
+    ],
+    "compatibility": [
+      {
+        "name": "Speaker",
         "action": [
           {
-            "name": "On",
+            "name": "Play",
             "parameter": [
               {
-                "name": "Brightness",
-                "constraint": [
-                  {
-                    "min": 0.0,
-                    "max": 100.0,
-                    "unit": "PERCENT"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Blink",
-            "parameter": [
+                "name": "Name",
+                "constraint": []
+              },
               {
-                "name": "Brightness",
+                "name": "Repeat",
                 "constraint": [
-                  {
-                    "min": 0.0,
-                    "max": 100.0,
-                    "unit": "PERCENT"
-                  }
+                  "1 time",
+                  "Loop"
                 ]
               },
               {
-                "name": "Time Period",
+                "name": "Volume",
                 "constraint": [
                   {
                     "min": 0.0,
-                    "max": 60.0,
-                    "unit": "SECOND"
+                    "max": 100.0,
+                    "unit": "PERCENT"
                   }
                 ]
               }
             ]
           },
           {
-            "name": "Off",
+            "name": "Pause",
+            "parameter": []
+          },
+          {
+            "name": "Stop",
             "parameter": []
           }
+        ],
+        "value": [
+
         ]
       }
     ],
-    "supportvalue": [
-      {
-        "name": "Temperature",
-        "value": [
-          {
-            "name": "Temperature Value",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "CELSIUS"
-              },
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "FAHRENHEIT"
-              },
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "KELVIN"
-              }
-            ]
-          }
-        ]
-      }
+    "dependency": [
     ]
   }
 ]

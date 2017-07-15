@@ -17,30 +17,38 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.makerplayground.helper.DeviceType;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.PeripheralType;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Represent an actual device/board ex. SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
+ * Represent an actual device/board ex. Arduino UNO, SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
  */
 @JsonDeserialize(using = DeviceDeserializer.class)
 public class Device {
     private final String brand;
     private final String model;
     private final String url;
-    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
-    private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
-    private final List<Platform> supportPlatform;
 
-    private  Map<GenericDevice, Integer> count; // TODO: add some data
-    private final Map<PeripheralType, Integer> port; // TODO: add some data
-    private  Map<PeripheralType, Integer> requirePort;
+    private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
+    private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
+    private final EnumSet<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+
+    private final Map<String, DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
+                                                    // and port position and type ex. WIRE, GROOVE_3PIN
+    private final List<Peripheral> connectivity;      // possible connection for peripheral (at lease one should be selected) ex. I2C1, SPI1
+                                                    // or list of connection available for controller.
+                                                    // shield will contain empty list as every pin must be connected
+
+    private final Map<GenericDevice, Integer> supportedDevice;                                  // generic device(s) supported and number of instance available
+    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
+    private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;                   // value supported for each generic device
+
+
+    private final List<Device> dependency;                      // list of device that depend on this device ex. speakers that can be used with this amp
+                                                                // or an amplifier for a thermistor
 
     /**
      * Construct a new device. The constructor should only be invoked by the DeviceLibrary
@@ -51,18 +59,26 @@ public class Device {
      * @param supportedAction
      * @param supportedValue
      */
-    Device(String brand, String model, String url
+     Device(String brand, String model, String url, DeviceType deviceType, FormFactor formFactor
+            , EnumSet<Platform> supportedPlatform
+            , Map<String, DevicePort> port
+            , List<Peripheral> connectivity
+            , Map<GenericDevice, Integer> supportedDevice
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
-            , List<Platform> supportPlatform
-            , Map<PeripheralType, Integer> port) {
+            , List<Device> dependency) {
         this.brand = brand;
         this.model = model;
         this.url = url;
-        this.supportedAction = Collections.unmodifiableMap(supportedAction);
-        this.supportedValue = Collections.unmodifiableMap(supportedValue);
-        this.supportPlatform = Collections.unmodifiableList(supportPlatform);
-        this.port = Collections.unmodifiableMap(port);
+        this.deviceType = deviceType;
+        this.formFactor = formFactor;
+        this.supportedPlatform = supportedPlatform;
+        this.port = port;
+        this.connectivity = connectivity;
+        this.supportedDevice = supportedDevice;
+        this.supportedAction = supportedAction;
+        this.supportedValue = supportedValue;
+        this.dependency = dependency;
     }
 
     /**
@@ -119,14 +135,4 @@ public class Device {
         return true;
     }
 
-    public static class Connectivity {
-        private final DeviceType deviceType;
-        private final List<Platform> supportedPlatform;
-        private final Map<GenericDevice, Integer> supportedDevice;
-        private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
-        private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
-        private final Map<PeripheralType, Integer> connection;
-        private final Map<> interrupt;
-        private final List<> dependency;
-    }
 }
