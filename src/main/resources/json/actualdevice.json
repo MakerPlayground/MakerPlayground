@@ -1,5 +1,6 @@
 [
   {
+    "id": "COM-09151",
     "brand": "Sparkfun",
     "model": "Speaker - 0.5W (8 Ohm)",
     "url": "https://www.sparkfun.com/products/9151",
@@ -9,11 +10,23 @@
     "port": [],
     "connectivity": [],
     "compatibility": [],
-    "dependency": [
-      "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302"
-    ]
+    "dependency": []
   },
   {
+    "id": "BOB-00544",
+    "brand": "Sparkfun",
+    "model": "SparkFun microSD Transflash Breakout",
+    "url": "https://www.sparkfun.com/products/544",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD",
+    "platform": [],
+    "port": [],
+    "connectivity": [],
+    "compatibility": [],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit 2130",
     "brand": "Adafruit",
     "model": "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302",
     "url": "https://www.adafruit.com/products/2130",
@@ -43,47 +56,85 @@
       {
         "name": "Speaker",
         "action": [
-          {
-            "name": "Play",
-            "parameter": [
-              {
-                "name": "Name",
-                "constraint": []
-              },
-              {
-                "name": "Repeat",
-                "constraint": [
-                  "1 time",
-                  "Loop"
-                ]
-              },
-              {
-                "name": "Volume",
-                "constraint": [
-                  {
-                    "min": 0.0,
-                    "max": 100.0,
-                    "unit": "PERCENT"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Pause",
-            "parameter": []
-          },
-          {
-            "name": "Stop",
-            "parameter": []
-          }
+          "play",
+          "pause",
+          "stop"
         ],
-        "value": [
-
-        ]
+        "value": []
       }
     ],
     "dependency": [
+      {
+        "name": "Speaker",
+        "device": [
+          "COM-09151"
+        ]
+      },
+      {
+        "name": "Sd Card",
+        "device": [
+          "BOB-00544"
+        ]
+      }
     ]
+  },
+  {
+    "id": "SEN-13944",
+    "brand": "Sparkfun",
+    "model": "SparkFun 9DoF Sensor Stick",
+    "url": "https://www.sparkfun.com/products/13944",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD",
+    "platform": [
+      "ARDUINO"
+    ],
+    "port": [
+      {
+        "name": "vcc",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "x": 123,
+        "y": 456
+      }
+    ],
+    "connectivity": [
+      "I2C1"
+    ],
+    "compatibility": [
+      {
+        "name": "Accelerometer",
+        "property": [],
+        "action": [],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": 0.0,
+              "max": 0.0
+            }
+          },
+          {
+            "name": "Y",
+            "constraint": {
+              "min": 0.0,
+              "max": 0.0
+            }
+          },
+          {
+            "name": "Z",
+            "constraint": {
+              "min": 0.0,
+              "max": 0.0
+            }
+          }
+        ]
+      }
+    ],
+    "dependency": []
   }
 ]
