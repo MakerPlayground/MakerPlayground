@@ -17,52 +17,78 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Represent an actual device/board ex. SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
+ * Represent an actual device/board ex. Arduino UNO, SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
  */
 @JsonDeserialize(using = DeviceDeserializer.class)
 public class Device {
+    private final String id;
     private final String brand;
     private final String model;
     private final String url;
-    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;
-    //private final Map<GenericDevice, Integer> count;
-    private final Map<GenericDevice, Map<Value, Constraint>>  supportedValue;
-    private final List<Platform> supportPlatform;
-    private final Map<Peripheral, Integer> port;
+
+    private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
+    private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
+    private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+
+    private final List<DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
+    // and port position and type ex. WIRE, GROOVE_3PIN
+    private final List<Peripheral> connectivity;    // possible connection for peripheral (at lease one should be selected) ex. I2C1, SPI1
+    // or list of connection available for controller.
+    // shield will contain empty list as every pin must be connected
+
+    private final Map<GenericDevice, Integer> supportedDevice;                                  // generic device(s) supported and number of instance available
+    //private final Map<GenericDevice, Action> supportedAction;
+    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
+    private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
+
+
+    private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
+    // or an amplifier for a thermistor
 
     /**
      * Construct a new device. The constructor should only be invoked by the DeviceLibrary
      * in order to rebuild the library from file.
-     * @param brand brand of this device ex. Sparkfun
-     * @param model model of this device ex. SparkFun 9DoF IMU Breakout
-     * @param url url to produce description page ex. https://www.sparkfun.com/products/13284
+     *
+     * @param brand           brand of this device ex. Sparkfun
+     * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
+     * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
      * @param supportedAction
      * @param supportedValue
      */
-    Device(String brand, String model, String url
+    Device(String id, String brand, String model, String url, DeviceType deviceType, FormFactor formFactor
+            , Set<Platform> supportedPlatform
+            , List<DevicePort> port
+            , List<Peripheral> connectivity
+            , Map<GenericDevice, Integer> supportedDevice
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
-            , List<Platform> supportPlatform
-            , Map<Peripheral, Integer> port) {
+            , Map<String, List<String>> dependency) {
+        this.id = id;
         this.brand = brand;
         this.model = model;
         this.url = url;
-        this.supportedAction = Collections.unmodifiableMap(supportedAction);
-        this.supportedValue = Collections.unmodifiableMap(supportedValue);
-        this.supportPlatform = Collections.unmodifiableList(supportPlatform);
-        this.port = Collections.unmodifiableMap(port);
+        this.deviceType = deviceType;
+        this.formFactor = formFactor;
+        this.supportedPlatform = supportedPlatform;
+        this.port = port;
+        this.connectivity = connectivity;
+        this.supportedDevice = supportedDevice;
+        this.supportedAction = supportedAction;
+        this.supportedValue = supportedValue;
+        this.dependency = dependency;
     }
 
     /**
      * Get brand of this device
+     *
      * @return brand of this device ex. Sparkfun, Adafruit, etc.
      */
     public String getBrand() {
@@ -71,6 +97,7 @@ public class Device {
 
     /**
      * Get model of this device
+     *
      * @return model of this device ex. Sparkfun
      */
     public String getModel() {
@@ -79,6 +106,7 @@ public class Device {
 
     /**
      * Get the url to the product description page on manufacturer website
+     *
      * @return url to manufacturer website
      */
     public String getUrl() {
@@ -90,7 +118,7 @@ public class Device {
         return supportedAction;
     }
 
-    public boolean isSupport(GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap){
+    public boolean isSupport(GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
         if (!supportedAction.containsKey(genericDevice)) {
             return false;
         }
@@ -113,5 +141,24 @@ public class Device {
         }
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Device{" +
+                "id='" + id + '\'' +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", url='" + url + '\'' +
+                ", deviceType=" + deviceType +
+                ", formFactor=" + formFactor +
+                ", supportedPlatform=" + supportedPlatform +
+                ", port=" + port +
+                ", connectivity=" + connectivity +
+                ", supportedDevice=" + supportedDevice +
+                ", supportedAction=" + supportedAction +
+                ", supportedValue=" + supportedValue +
+                ", dependency=" + dependency +
+                '}';
     }
 }

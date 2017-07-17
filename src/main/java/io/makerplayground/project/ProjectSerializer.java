@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.makerplayground.device.Processor;
 
 import java.io.IOException;
 
@@ -30,7 +29,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeStringField("projectName", project.getProjectName());
 
 //        jsonGenerator.writeObjectFieldStart("processor");
-//        jsonGenerator.writeStringField("name",project.getProcessor().getName());
+//        jsonGenerator.writeStringField("name",project.getMicrocontroller().getName());
 //        jsonGenerator.writeEndObject();
 
         jsonGenerator.writeArrayFieldStart("inputDevice");

@@ -50,27 +50,27 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
 
         String name = node.get("name").asText();
         Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
-        DataType dataType = mapper.treeToValue(node.get("dataType"), DataType.class);
-        ControlType controlType = mapper.treeToValue(node.get("controlType"), ControlType.class);
+        DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
+        ControlType controlType = mapper.treeToValue(node.get("controltype"), ControlType.class);
 
         Object defaultValue = null;
         switch (dataType) {
             case STRING:
-                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
+                defaultValue = node.get("value").asText();
                 break;
             case DOUBLE:
-                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Double.class)
-                        , mapper.treeToValue(node.get("defaultValueUnit"), Unit.class));
+                defaultValue = new NumberWithUnit(node.get("value").asDouble()
+                        , Unit.valueOf(node.get("constraint").get("unit").asText()));
                 break;
             case ENUM:
-                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
+                defaultValue = node.get("value").asText();
                 break;
             case CUSTOM:
-                defaultValue = mapper.treeToValue(node.get("defaultValue"), String.class);
+                defaultValue = node.get("value").asText();
                 break;
             case INTEGER:
-                defaultValue = new NumberWithUnit(mapper.treeToValue(node.get("defaultValue"), Integer.class)
-                        , mapper.treeToValue(node.get("defaultValueUnit"), Unit.class));
+                defaultValue = new NumberWithUnit(node.get("value").asInt()
+                        , Unit.valueOf(node.get("constraint").get("unit").asText()));
                 break;
             default:
                 System.out.println("Format error!!!");

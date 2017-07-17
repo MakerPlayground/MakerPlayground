@@ -19,9 +19,10 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Processor;
 import io.makerplayground.device.Value;
+import io.makerplayground.helper.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     private StringProperty projectName;
-    private final ObjectProperty<Processor> processor;
+    private final ProjectController controller;
     private final ObservableList<ProjectDevice> inputDevice;
     private final ObservableList<ProjectDevice> outputDevice;
     private final ObservableList<Scene> scene;
@@ -58,7 +59,7 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        processor = new SimpleObjectProperty<>();
+        controller = new ProjectController(Platform.ARDUINO);
         outputDevice = FXCollections.observableArrayList();
         inputDevice = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
@@ -245,16 +246,8 @@ public class Project {
         return value;
     }
 
-    public Processor getProcessor() {
-        return processor.get();
-    }
-
-    public ObjectProperty<Processor> processorProperty() {
-        return processor;
-    }
-
-    public void setProcessor(Processor processor) {
-        this.processor.set(processor);
+    public ProjectController getController() {
+        return controller;
     }
 
     public ObservableList<ProjectDevice> getAllDevice() {

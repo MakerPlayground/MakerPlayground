@@ -25,7 +25,7 @@ import java.util.*;
  * Represent a constraint for a numeric value
  */
 public class NumericConstraint implements Constraint {
-    private final Map<Unit, Value> numericValue;
+    private final Map<Unit, Value> numericValue;    // TODO: edit because a map is not needed to store single constraint
 
     /**
      * Construct a constraint based on the specify min, max and unit. The constructor should only
