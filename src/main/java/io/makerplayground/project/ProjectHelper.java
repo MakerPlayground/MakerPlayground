@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Processor;
 import javafx.beans.property.ObjectProperty;
 import jdk.nashorn.internal.parser.JSONParser;
 
@@ -30,8 +29,8 @@ public class ProjectHelper {
         ObjectMapper mapper = new ObjectMapper();
         Project p = null;
         try {
-            p = mapper.readValue(ProjectHelper.class.getResourceAsStream("/json/processor.json")
-                    , new TypeReference<List<Processor>>() {
+            p = mapper.readValue(ProjectHelper.class.getResourceAsStream("/json/project.json")
+                    , new TypeReference<List<Project>>() {
                     });
         } catch (IOException e) {
             e.printStackTrace();

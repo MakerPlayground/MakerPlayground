@@ -113,6 +113,8 @@ public class Device {
         return url;
     }
 
+    public String getId() { return id; }
+
 
     public Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> getSupportedAction() {
         return supportedAction;

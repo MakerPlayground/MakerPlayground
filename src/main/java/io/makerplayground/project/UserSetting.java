@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
