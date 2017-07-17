@@ -1,35 +1,9 @@
 [
   {
-    "id": "COM-09151",
+    "id": "DEV-13743",
     "brand": "Sparkfun",
-    "model": "Speaker - 0.5W (8 Ohm)",
-    "url": "https://www.sparkfun.com/products/9151",
-    "type": "DEVICE",
-    "formfactor": "STANDALONE",
-    "platform": [],
-    "port": [],
-    "connectivity": [],
-    "compatibility": [],
-    "dependency": []
-  },
-  {
-    "id": "BOB-00544",
-    "brand": "Sparkfun",
-    "model": "SparkFun microSD Transflash Breakout",
-    "url": "https://www.sparkfun.com/products/544",
-    "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD",
-    "platform": [],
-    "port": [],
-    "connectivity": [],
-    "compatibility": [],
-    "dependency": []
-  },
-  {
-    "id": "Adafruit 2130",
-    "brand": "Adafruit",
-    "model": "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302",
-    "url": "https://www.adafruit.com/products/2130",
+    "model": "SparkFun Level Shifting microSD Breakout",
+    "url": "https://www.sparkfun.com/products/13743",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD",
     "platform": [
@@ -45,35 +19,95 @@
             "pintype": "VCC"
           }
         ],
+        "v_min": 3.3,
+        "v_max": 5,
         "x": 123,
         "y": 456
       }
     ],
     "connectivity": [
-      "I2C1"
+      "SPI_1"
+    ],
+    "compatibility": [],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit 2130",
+    "brand": "Adafruit",
+    "model": "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302",
+    "url": "https://www.adafruit.com/products/2130",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 100,
+    "height": 100,
+    "port": [
+      {
+        "name": "vcc",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 2.5,
+        "v_max": 5,
+        "x": 123,
+        "y": 456
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
     ],
     "compatibility": [
       {
         "name": "Speaker",
         "action": [
-          "play",
-          "pause",
-          "stop"
+          {
+            "name": "Play",
+            "parameter": [
+              {
+                "name": "Name",
+                "constraint": []
+              },
+              {
+                "name": "Repeat",
+                "constraint": [
+                  "1 time",
+                  "Loop"
+                ]
+              },
+              {
+                "name": "Volume",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Pause",
+            "parameter": []
+          },
+          {
+            "name": "Stop",
+            "parameter": []
+          }
         ],
-        "value": []
+        "value": [],
+        "count": 1
       }
     ],
     "dependency": [
       {
-        "name": "Speaker",
-        "device": [
-          "COM-09151"
-        ]
-      },
-      {
         "name": "Sd Card",
         "device": [
-          "BOB-00544"
+          "DEV-13743"
         ]
       }
     ]
@@ -98,12 +132,14 @@
             "pintype": "VCC"
           }
         ],
+        "v_min": 1.9,
+        "v_max": 3.6,
         "x": 123,
         "y": 456
       }
     ],
     "connectivity": [
-      "I2C1"
+      "I2C_1"
     ],
     "compatibility": [
       {
@@ -115,24 +151,28 @@
             "name": "X",
             "constraint": {
               "min": 0.0,
-              "max": 0.0
+              "max": 0.0,
+              "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Y",
             "constraint": {
               "min": 0.0,
-              "max": 0.0
+              "max": 0.0,
+              "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Z",
             "constraint": {
               "min": 0.0,
-              "max": 0.0
+              "max": 0.0,
+              "unit": "METERPERSECSQUARE"
             }
           }
-        ]
+        ],
+        "count": 1
       }
     ],
     "dependency": []

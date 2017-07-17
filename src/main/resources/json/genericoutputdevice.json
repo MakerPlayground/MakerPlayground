@@ -4,83 +4,65 @@
     "action": [
       {
         "name": "On",
+        "funcname": "on",
         "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
-            "defaultValue": 100.0,
-            "defaultValueUnit": "PERCENT",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "PERCENT"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SLIDER"
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
           }
         ]
       },
       {
         "name": "Blink",
+        "funcname": "blink",
         "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
-            "defaultValue": 100.0,
-            "defaultValueUnit": "PERCENT",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "PERCENT"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SLIDER"
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
           },
           {
             "name": "Time period",
-            "defaultValue": 1.0,
-            "defaultValueUnit": "SECOND",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 60.0,
-                "unit": "SECOND"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SPINBOX"
-          },
-          {
-            "name": "Period",
             "value": 1.0,
             "constraint": {
               "min": 0.0,
-              "max": 1.0
+              "max": 60.0,
+              "unit": "SECOND"
             },
-            "unit": "SECOND",
-            "dataType": "DOUBLE",
-            "controlType": "SPINBOX"
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
           },
           {
             "name": "Blink speed",
-            "defaultValue": "Medium",
-            "defaultValueUnit": "",
+            "value": "Medium",
             "constraint": [
               "Slow",
               "Medium",
               "Fast"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           }
         ]
       },
       {
         "name": "Off",
+        "funcname": "off",
         "type": "Inactive",
         "parameter": []
       }
@@ -92,48 +74,48 @@
     "action": [
       {
         "name": "Print",
+        "funcname": "print",
         "type": "Active",
         "parameter": [
           {
             "name": "Backlight",
-            "defaultValue": "On",
-            "defaultValueUnit": "",
+            "value": "On",
             "constraint": [
               "On",
               "Off"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           },
           {
             "name": "Print Text",
-            "defaultValue": "",
-            "defaultValueUnit": "",
+            "value": "",
             "constraint": [],
-            "dataType": "CUSTOM",
-            "controlType": "CUSTOMPRINT"
+            "datatype": "CUSTOM",
+            "controltype": "CUSTOMPRINT"
           }
         ]
       },
       {
         "name": "Clear",
+        "funcname": "clear",
         "type": "Active",
         "parameter": [
           {
             "name": "Backlight",
-            "defaultValue": "On",
-            "defaultValueUnit": "",
+            "value": "On",
             "constraint": [
               "On",
               "Off"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           }
         ]
       },
       {
         "name": "Off",
+        "funcname": "off",
         "type": "Inactive",
         "parameter": []
       }
@@ -145,72 +127,65 @@
     "action": [
       {
         "name": "Tone",
+        "funcname": "tone",
         "type": "Active",
         "parameter": [
           {
             "name": "Tone Frequency",
-            "defaultValue": 2000.0,
-            "defaultValueUnit": "HERTZ",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 10000.0,
-                "unit": "HERTZ"
-              }
-            ],
-            "dataType": "INTEGER",
-            "controlType": "SPINBOX"
+            "value": 2000.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "HERTZ"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
           }
         ]
       },
       {
         "name": "Blink Tone",
+        "funcname": "blinkTone",
         "type": "Active",
         "parameter": [
           {
             "name": "Tone Frequency",
-            "defaultValue": 2000.0,
-            "defaultValueUnit": "HERTZ",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 10000.0,
-                "unit": "HERTZ"
-              }
-            ],
-            "dataType": "INTEGER",
-            "controlType": "SPINBOX"
+            "value": 2000.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "HERTZ"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
           },
           {
             "name": "Time Period",
-            "defaultValue": 1.0,
-            "defaultValueUnit": "SECOND",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 60.0,
-                "unit": "SECOND"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SPINBOX"
+            "value": 1.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 60.0,
+              "unit": "SECOND"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
           },
           {
             "name": "Blink Speed",
-            "defaultValue": "Medium",
-            "defaultValueUnit": "",
+            "value": "Medium",
             "constraint": [
               "Slow",
               "Medium",
               "Fast"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           }
         ]
       },
       {
         "name": "Stop",
+        "funcname": "stop",
         "type": "Inactive",
         "parameter": []
       }
@@ -222,50 +197,48 @@
     "action": [
       {
         "name": "Play",
+        "funcname": "play",
         "type": "Active",
         "parameter": [
           {
             "name": "Name",
-            "defaultValue": "mkplay",
-            "defaultValueUnit": "",
+            "value": "untitled.wav",
             "constraint": [],
-            "dataType": "STRING",
-            "controlType": "TEXTBOX"
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
           },
           {
             "name": "Repeat",
-            "defaultValue": "Loop",
-            "defaultValueUnit": "",
+            "value": "Loop",
             "constraint": [
               "1 time",
               "Loop"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           },
           {
             "name": "Volume",
-            "defaultValue": 100.0,
-            "defaultValueUnit": "PERCENT",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "PERCENT"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SLIDER"
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
           }
         ]
       },
       {
         "name": "Pause",
+        "funcname": "pause",
         "type": "Active",
         "parameter": []
       },
       {
         "name": "Stop",
+        "funcname": "stop",
         "type": "Inactive",
         "parameter": []
       }
@@ -277,58 +250,57 @@
     "action": [
       {
         "name": "Show Number",
+        "funcname": "showNumber",
         "type": "Active",
         "parameter": [
           {
             "name": "Value",
-            "defaultValue": "",
-            "defaultValueUnit": "",
+            "value": "",
             "constraint": [],
-            "dataType": "CUSTOM",
-            "controlType": "CUSTOMSEGMENT"
+            "datatype": "CUSTOM",
+            "controltype": "CUSTOMSEGMENT"
           },
           {
             "name": "Colon",
-            "defaultValue": "TRUE",
-            "defaultValueUnit": "",
+            "value": "TRUE",
             "constraint": [
               "TRUE",
               "FALSE"
             ],
-            "dataType": "ENUM",
-            "controlType": "CHECKBOX"
+            "datatype": "ENUM",
+            "controltype": "CHECKBOX"
           }
         ]
       },
       {
         "name": "Show Value",
+        "funcname": "showValue",
         "type": "Active",
         "parameter": [
           {
             "name": "Value",
-            "defaultValue": "",
-            "defaultValueUnit": "",
+            "value": "",
             "constraint": [
               "value_list"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           },
           {
             "name": "Colon",
-            "defaultValue": "TRUE",
-            "defaultValueUnit": "",
+            "value": "TRUE",
             "constraint": [
               "TRUE",
               "FALSE"
             ],
-            "dataType": "ENUM",
-            "controlType": "CHECKBOX"
+            "datatype": "ENUM",
+            "controltype": "CHECKBOX"
           }
         ]
       },
       {
         "name": "Off",
+        "funcname": "off",
         "type": "Inactive",
         "parameter": []
       }
@@ -340,37 +312,35 @@
     "action": [
       {
         "name": "On",
+        "funcname": "on",
         "type": "Active",
         "parameter": [
           {
             "name": "Direction",
-            "defaultValue": "Forward",
-            "defaultValueUnit": "",
+            "value": "Forward",
             "constraint": [
               "Forward",
               "Backward"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           },
           {
             "name": "Speed",
-            "defaultValue": 100.0,
-            "defaultValueUnit": "PERCENT",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 100.0,
-                "unit": "PERCENT"
-              }
-            ],
-            "dataType": "DOUBLE",
-            "controlType": "SLIDER"
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
           }
         ]
       },
       {
         "name": "Off",
+        "funcname": "off",
         "type": "Inactive",
         "parameter": []
       }

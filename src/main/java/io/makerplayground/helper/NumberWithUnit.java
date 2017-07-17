@@ -19,4 +19,12 @@ public class NumberWithUnit {
     public Unit getUnit() {
         return u;
     }
+
+    @Override
+    public String toString() {
+        return "NumberWithUnit{" +
+                "d=" + d +
+                ", u=" + u +
+                '}';
+    }
 }

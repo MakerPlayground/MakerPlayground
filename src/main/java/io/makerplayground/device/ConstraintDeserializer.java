@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import io.makerplayground.helper.Unit;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,17 +46,12 @@ public class ConstraintDeserializer extends StdDeserializer<Constraint> {
         ObjectMapper mapper = new ObjectMapper();
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        if (!node.isArray()) {
-            throw new IllegalStateException("JSON format error!!!");
-        }
-        if (node.size() == 0) {
+
+        if (node.isArray() && node.size() == 0) {
             return Constraint.NONE;
-        } else if (node.get(0).isObject()) {
-            List<NumericConstraint.Value> valueList = new ArrayList<>();
-            for (JsonNode jn : node) {
-                valueList.add(mapper.treeToValue(jn, NumericConstraint.Value.class));
-            }
-            return Constraint.createNumericConstraint(valueList);
+        } else if (node.isObject()) {
+            return Constraint.createNumericConstraint(node.get("min").doubleValue(), node.get("max").doubleValue()
+                    , Unit.valueOf(node.get("unit").asText()));
         } else {
             List<String> valueList = new ArrayList<>();
             for (JsonNode jn : node) {
