@@ -17,20 +17,24 @@ import java.util.Map;
 public class ProjectDevice {
     private String name;
     private final GenericDevice genericDevice;
+    private boolean autoSelectDevice;
     private Device actualDevice;
-    private Device dependentDevice;
     private Map<Peripheral, Peripheral> deviceConnection; // connection from this device (key) to the processor (value)
-    private Map<String, String> connectedPin;
+    private Device dependentDevice;
+    private Map<Peripheral, Peripheral> dependentDeviceConnection; // connection from this device (key) to the processor (value)
+    //private Map<String, String> connectedPin;
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = name;
         this.genericDevice = genericDevice;
+        this.autoSelectDevice = true;
     }
 
     public ProjectDevice(String name, GenericDevice genericDevice, Device device) {
         this.name = name;
         this.genericDevice = genericDevice;
         this.actualDevice = device;
+        this.autoSelectDevice = true;
     }
 
     public void setName(String name) {

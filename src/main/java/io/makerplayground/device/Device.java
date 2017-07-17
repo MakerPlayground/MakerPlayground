@@ -23,6 +23,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Represent an actual device/board ex. Arduino UNO, SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
@@ -33,6 +35,8 @@ public class Device {
     private final String brand;
     private final String model;
     private final String url;
+    private final double width;
+    private final double height;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -63,7 +67,7 @@ public class Device {
      * @param supportedAction
      * @param supportedValue
      */
-    Device(String id, String brand, String model, String url, DeviceType deviceType, FormFactor formFactor
+    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
             , Set<Platform> supportedPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
@@ -75,6 +79,8 @@ public class Device {
         this.brand = brand;
         this.model = model;
         this.url = url;
+        this.width = width;
+        this.height = height;
         this.deviceType = deviceType;
         this.formFactor = formFactor;
         this.supportedPlatform = supportedPlatform;
@@ -84,6 +90,10 @@ public class Device {
         this.supportedAction = supportedAction;
         this.supportedValue = supportedValue;
         this.dependency = dependency;
+    }
+
+    public String getId() {
+        return id;
     }
 
     /**
@@ -113,6 +123,59 @@ public class Device {
         return url;
     }
 
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    public FormFactor getFormFactor() {
+        return formFactor;
+    }
+
+    public Set<Platform> getSupportedPlatform() {
+        return supportedPlatform;
+    }
+
+    public List<DevicePort> getPort() {
+        return port;
+    }
+
+    public List<DevicePort> getPort(Peripheral peripheral) {
+        return port.stream().filter(new Predicate<DevicePort>() {
+            @Override
+            public boolean test(DevicePort devicePort) {
+                return devicePort.getFunction().stream().anyMatch(new Predicate<DevicePort.DevicePortFunction>() {
+                    @Override
+                    public boolean test(DevicePort.DevicePortFunction devicePortFunction) {
+                        return devicePortFunction.getPeripheral() == peripheral;
+                    }
+                });
+            }
+        }).collect(Collectors.toList());
+    }
+
+    public List<Peripheral> getConnectivity() {
+        return connectivity;
+    }
+
+    public Map<GenericDevice, Integer> getSupportedDevice() {
+        return supportedDevice;
+    }
+
+    public Map<GenericDevice, Map<Value, Constraint>> getSupportedValue() {
+        return supportedValue;
+    }
+
+    public Map<String, List<String>> getDependency() {
+        return dependency;
+    }
 
     public Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> getSupportedAction() {
         return supportedAction;

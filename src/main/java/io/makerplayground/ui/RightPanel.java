@@ -1,5 +1,6 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.generator.Diagram;
 import io.makerplayground.generator.validGenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
@@ -9,6 +10,8 @@ import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -42,6 +45,12 @@ public class RightPanel extends AnchorPane {
         //configureBtn.setOnAction(event -> validGenericDevice.getSupportedDeviceList(project));
 
         Button generateBtn = new Button("Generate Project");
+        generateBtn.setOnAction(event -> {
+            Dialog dialog = new Dialog();
+            DialogPane dialogPane = dialog.getDialogPane();
+            dialogPane.setContent(new Diagram());
+            dialog.showAndWait();
+        });
         Button uploadBtn = new Button("Upload");
 
         VBox projectButton = new VBox();

@@ -7,6 +7,7 @@ import io.makerplayground.helper.PinType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Created by Palmn on 7/15/2017.
@@ -50,6 +51,22 @@ public class DevicePort {
         return function;
     }
 
+    public boolean isVcc() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.VCC);
+    }
+
+    public boolean isGnd() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.GND);
+    }
+
+    public boolean isSDA() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.I2C_SDA);
+    }
+
+    public boolean isSCL() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.I2C_SCL);
+    }
+
     public double getVmin() {
         return vmin;
     }
@@ -66,7 +83,7 @@ public class DevicePort {
         return y;
     }
 
-    private static class DevicePortFunction {
+    public static class DevicePortFunction {
         private Peripheral peripheral;
         private PinType pinType;
 
