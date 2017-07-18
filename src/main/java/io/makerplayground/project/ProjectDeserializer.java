@@ -35,14 +35,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     public Project deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        Project project = null;
-        String projectName = node.get("projectName").asText();
 
-        //TODO: add JsonNode for projectController
+        String projectName = node.get("projectName").asText();
+        Platform platform = Platform.valueOf(node.get("controller").get("platform").asText());
+        Device controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
+                device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
+        ProjectController projectController = new ProjectController(platform, controller);
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
         for (JsonNode inputDeviceNode : node.get("inputDevice")) {
-            ProjectDevice inputDevice = null;
             String name = inputDeviceNode.get("name").asText();     //TODO: fix later
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(name);
 
@@ -51,7 +52,8 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 String model = actualDeviceNode.get("model").asText();
                 //TODO: load actualDevice to project
             }
-            project.addInputDevice(genericDevice);
+
+            ProjectDevice inputDevice;
         }
 
         ObservableList<ProjectDevice> outputDevices = FXCollections.observableArrayList();
@@ -65,7 +67,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 String model = actualDeviceNode.get("model").asText();
                 //TODO: load actualDevice to project
             }
-            project.addOutputDevice(genericDevice);
         }
 
         ObservableList<Scene> scenes = FXCollections.observableArrayList();

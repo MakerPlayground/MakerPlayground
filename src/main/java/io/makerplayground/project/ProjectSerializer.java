@@ -28,10 +28,13 @@ public class ProjectSerializer extends StdSerializer<Project> {
 
         jsonGenerator.writeStringField("projectName", project.getProjectName());
 
-//        jsonGenerator.writeObjectFieldStart("projectController");
-//        jsonGenerator.writeStringField("platform",project.getController().getPlatform().name());
-//        jsonGenerator.writeStringField("controller",project.getController().getController().getId());
-//        jsonGenerator.writeEndObject();
+        jsonGenerator.writeObjectFieldStart("controller");
+        jsonGenerator.writeStringField("platform", project.getController().getPlatform().name());
+        if (project.getController() != null)
+            jsonGenerator.writeStringField("device", project.getController().getController().getId());
+        else
+            jsonGenerator.writeStringField("device", "");
+        jsonGenerator.writeEndObject();
 
         jsonGenerator.writeArrayFieldStart("inputDevice");
         for(ProjectDevice inputDevice : project.getInputDevice()) {

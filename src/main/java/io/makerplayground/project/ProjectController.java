@@ -14,6 +14,11 @@ public class ProjectController {
         this.platform = platform;
     }
 
+    ProjectController(Platform platform, Device controller) {
+        this.platform = platform;
+        this.controller = controller;
+    }
+
     public Platform getPlatform() {
         return platform;
     }
