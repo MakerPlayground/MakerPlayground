@@ -11,6 +11,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
+import javafx.stage.FileChooser;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -46,9 +47,18 @@ public class MainWindow extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         saveButton.setOnAction(event -> {
             try {
-                mapper.writeValue(new File("C:\\Users\\USER\\Desktop\\file.json"), project);
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save File");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+                        new FileChooser.ExtensionFilter("All Files", "*.*"));
+                File selectedFile = fileChooser.showSaveDialog(MainWindow.this.getScene().getWindow());
+                if (selectedFile != null) {
+                    mapper.writeValue(selectedFile, project);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

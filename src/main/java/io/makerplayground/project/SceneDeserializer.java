@@ -22,8 +22,6 @@ public class SceneDeserializer extends StdDeserializer<Scene> {
 
     public SceneDeserializer(ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) {
         this(null);
-        this.inputDevice = inputDevice;
-        this.outputDevice = outputDevice;
     }
 
     public SceneDeserializer(Class<?> vc) {
@@ -34,7 +32,6 @@ public class SceneDeserializer extends StdDeserializer<Scene> {
     public Scene deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();

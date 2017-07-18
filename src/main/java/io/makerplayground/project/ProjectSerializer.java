@@ -30,7 +30,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
 
         jsonGenerator.writeObjectFieldStart("controller");
         jsonGenerator.writeStringField("platform", project.getController().getPlatform().name());
-        if (project.getController() != null)
+        if (project.getController().getController() != null)
             jsonGenerator.writeStringField("device", project.getController().getController().getId());
         else
             jsonGenerator.writeStringField("device", "");
@@ -49,7 +49,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeObjectFieldStart("begin");
-        jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
+        jsonGenerator.writeNumberField("top", project.getBegin().getTop());
         jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
         jsonGenerator.writeEndObject();
 

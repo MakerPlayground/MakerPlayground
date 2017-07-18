@@ -65,6 +65,7 @@ public class Diagram extends Pane {
         int currentRow = 1;
 
         // draw controller
+        double lastY = BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
         Device controller = project.getController().getController();
         ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + controller.getId() + ".png")));
         if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
@@ -78,13 +79,15 @@ public class Diagram extends Pane {
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(controller).getX()
                                             , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE));
         } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
-            controllerPosition = new Position(BREADBOARD_LEFT_MARGIN, BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN);
+            controllerPosition = new Position(BREADBOARD_LEFT_MARGIN, lastY);
+            lastY = lastY + controller.getHeight();
         }
         controllerImage.setLayoutX(controllerPosition.getX());
         controllerImage.setLayoutY(controllerPosition.getY());
         this.getChildren().add(controllerImage);
 
-        // draw breakout board
+        // draw other device
+        double lastX = BREADBOARD_LEFT_MARGIN;
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
@@ -99,7 +102,8 @@ public class Diagram extends Pane {
                  deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(device).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
             } else if (device.getFormFactor() == FormFactor.STANDALONE) {
-                // TODO: do it now!!!
+                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
+                lastX = lastX + device.getWidth();
             }
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
@@ -139,47 +143,123 @@ public class Diagram extends Pane {
 
                 }
             }
+            else if (device.getFormFactor() == FormFactor.STANDALONE) {
+                for (DevicePort port : powerPort) {
+                    if (port.isVcc()) {
+                        createPowerLine(port.getX(), port.getY(), BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                    } else if (port.isGnd()) {
+                        createPowerLine(port.getX(), port.getY(), BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                    }
+                }
+            }
         }
 
         // connect i2c
-        //double sdaStartX = 0, sdaStartY = 0;
-        //double sclStartX = 0, sclStartY = 0;
+        double sdaStartX = 0, sdaStartY = 0;
+        double sclStartX = 0, sclStartY = 0;
         List<DevicePort> controllerI2CPort = controller.getPort(Peripheral.I2C_1);  // TODO: assume that we have only 1 I2C
         DevicePort startSDA = controllerI2CPort.stream().filter(DevicePort::isSDA).findFirst().get();
         DevicePort startSCL = controllerI2CPort.stream().filter(DevicePort::isSCL).findFirst().get();
+
+        // SDA: top side - go up
+        if (startSDA.getY() == getTopLeftHole(controller).getY()) {
+            sdaStartX = startSDA.getX();
+            sdaStartY = startSDA.getY() - HOLE_SPACE;
+        }
+        // SDA: Bottom side - go down
+        else if (startSDA.getY() != getTopLeftHole(controller).getY()) {
+            sdaStartX = startSDA.getX();
+            sdaStartY = startSDA.getY() + HOLE_SPACE;
+        }
+        // SCL: top side - go up
+        else if (startSCL.getY() == getTopLeftHole(controller).getY()) {
+            sclStartX = startSCL.getX();
+            sclStartY = startSCL.getY() - HOLE_SPACE;
+        }
+        // SCL: bottom side - go down
+        else if (startSCL.getY() != getTopLeftHole(controller).getY()) {
+            sclStartX = startSCL.getX();
+            sclStartY = startSCL.getY() + HOLE_SPACE;
+        }
+
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
-            List<DevicePort> powerPort = device.getPort(Peripheral.I2C_1);  // TODO: bug if device has more than 1 I2C which is unlikely
-            if (powerPort.isEmpty()) {
-                continue;
-            }
+            for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
+                if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlikely
+                    DevicePort desSDA = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSDA).findFirst().get();
+                    DevicePort desSCL = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCL).findFirst().get();
 
-            if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-                for (DevicePort port : powerPort) {
-                    if (port.isVcc()) {
-                        createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
-                    } else if (port.isGnd()) {
-                        createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                    if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+                        createPowerLine(sdaStartX, sdaStartY, desSDA.getX(), desSDA.getY() + HOLE_SPACE);
+                        createPowerLine(sclStartX, sclStartY, desSCL.getX(), desSCL.getY() + HOLE_SPACE);
+                        sdaStartX = desSDA.getX();
+                        sdaStartY = desSDA.getY() + (HOLE_SPACE * 2);
+                        sclStartX = desSCL.getX();
+                        sclStartY = desSCL.getY() + (HOLE_SPACE * 2);
+                    } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+                        DevicePort topLeftPort = getTopLeftHole(device);
+
+                        //SDA: top side - go up
+                        if (desSDA.getY() == topLeftPort.getY()) {
+                            createPowerLine(sdaStartX, sdaStartY, desSDA.getX(), desSDA.getY() - HOLE_SPACE);
+                            sdaStartY = desSDA.getY() - (HOLE_SPACE * 2);
+                        } //SDA: bottom side - go down
+                        else if (desSDA.getY() != topLeftPort.getY()) {
+                            createPowerLine(sdaStartX, sdaStartY, desSDA.getX(), desSDA.getY() + HOLE_SPACE);
+                            sdaStartY = desSDA.getY() + (HOLE_SPACE * 2);
+                        } //SCL: top side - go up
+                        else if (desSCL.getY() == topLeftPort.getY()) {
+                            createPowerLine(sdaStartX, sdaStartY, desSCL.getX(), desSCL.getY() - HOLE_SPACE);
+                            sclStartY = desSCL.getY() - (HOLE_SPACE * 2);
+                        } //SCL: bottom side - go down
+                        else if (desSCL.getY() != topLeftPort.getY()) {
+                            createPowerLine(sdaStartX, sdaStartY, desSCL.getX(), desSCL.getY() + HOLE_SPACE);
+                            sclStartY = desSCL.getY() + (HOLE_SPACE * 2);
+                        }
+                        sdaStartX = desSDA.getX();
+                        sclStartX = desSCL.getX();
+                    } else if (device.getFormFactor() == FormFactor.STANDALONE) {
+                        createPowerLine(sdaStartX, sdaStartY, desSDA.getX(), desSDA.getY());
+                        createPowerLine(sclStartX, sclStartY, desSCL.getX(), desSCL.getY());
                     }
                 }
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-                DevicePort topLeftPort = getTopLeftHole(device);
-                for (DevicePort port : powerPort) {
-                    if (port.getY() != topLeftPort.getY() ) {
-                        if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
-                        } else if (port.isGnd()) {
-                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
-                        }
-                    }
-                    else {
-                        if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_PWR_TOP_X, BREADBOARD_PWR_TOP_Y);
-                        } else if (port.isGnd()) {
-                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X, BREADBOARD_GND_TOP_Y);
-                        }
-                    }
+            }
+        }
 
+
+        // connect SPI, UART, GPIO
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            Device device = projectDevice.getActualDevice();
+            for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
+                Peripheral destPeripheral = projectDevice.getDeviceConnection().get(sourcePeripheral);
+                if (sourcePeripheral == Peripheral.SPI_1) {
+                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
+                    DevicePort sourceMISO = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
+                    DevicePort sourceSCK = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
+                    DevicePort sourceSS = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSS).findFirst().get();
+
+                    DevicePort desMOSI = controller.getPort(destPeripheral).stream().filter(DevicePort::isMOSI).findFirst().get();
+                    DevicePort desMISO = controller.getPort(destPeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
+                    DevicePort desSCK = controller.getPort(destPeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
+                    DevicePort desSS = controller.getPort(destPeripheral).stream().filter(DevicePort::isSS).findFirst().get();
+
+                    createLine(device, sourceMOSI, controller, desMOSI);
+                    createLine(device, sourceMISO, controller, desMISO);
+                    createLine(device, sourceSCK, controller, desSCK);
+                    createLine(device, sourceSS, controller, desSS);
+                } else if (sourcePeripheral == Peripheral.UART_1) {
+                    DevicePort sourceRX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isRX).findFirst().get();
+                    DevicePort sourceTX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isTX).findFirst().get();
+
+                    DevicePort desRX = controller.getPort(destPeripheral).stream().filter(DevicePort::isRX).findFirst().get();
+                    DevicePort desTX = controller.getPort(destPeripheral).stream().filter(DevicePort::isTX).findFirst().get();
+
+                    createLine(device, sourceRX, controller, desRX);
+                    createLine(device, sourceTX, controller, desTX);
+                } else if (sourcePeripheral == Peripheral.GPIO_1) {
+                    DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
+                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    createLine(device, sourcePort, controller, destPort);
                 }
             }
         }
@@ -227,6 +307,52 @@ public class Diagram extends Pane {
             else
                 return 1;
         }).get();
+    }
+
+    private void createLine(Device source, DevicePort sourcePort, Device dest, DevicePort destPort) {
+        double startX = 0, startY = 0;
+        double endX = 0, endY = 0;
+        if (source.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+            startX = sourcePort.getX();
+            startY = sourcePort.getY() + HOLE_SPACE;
+        } else if (source.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            DevicePort srcTopLeftPort = getTopLeftHole(source);
+
+            //top side - go up
+            if (sourcePort.getY() == srcTopLeftPort.getY()) {
+                startX = sourcePort.getX();
+                startY = sourcePort.getY() - HOLE_SPACE;
+            } //bottom side - go down
+            else if (sourcePort.getY() != srcTopLeftPort.getY()) {
+                startX = sourcePort.getX();
+                startY = sourcePort.getY() + HOLE_SPACE;
+            }
+        } else if (source.getFormFactor() == FormFactor.STANDALONE) {
+            startX = sourcePort.getX();
+            startY = sourcePort.getY();
+        }
+
+        if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+            endX = destPort.getX();
+            endY = destPort.getY() + HOLE_SPACE;
+        } else if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            DevicePort desTopLeftPort = getTopLeftHole(dest);
+
+            //top side - go up
+            if (destPort.getY() == desTopLeftPort.getY()) {
+                endX = destPort.getX();
+                endY = destPort.getY() - HOLE_SPACE;
+            } //bottom side - go down
+            else if (destPort.getY() != desTopLeftPort.getY()) {
+                endX = destPort.getX();
+                endY = destPort.getY() + HOLE_SPACE;
+            }
+        } else if (source.getFormFactor() == FormFactor.STANDALONE) {
+            endX = destPort.getX();
+            endY = destPort.getY();
+        }
+
+        createPowerLine(startX, startY, endX, endY);
     }
 
     private void createPowerLine(double x1, double y1, double x2, double y2) {

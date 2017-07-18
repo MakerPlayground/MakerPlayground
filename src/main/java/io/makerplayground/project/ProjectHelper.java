@@ -25,13 +25,10 @@ public class ProjectHelper {
     }
 
     public static Project loadProject(File f) {
-        // TODO: implement code to load a project from file
         ObjectMapper mapper = new ObjectMapper();
         Project p = null;
         try {
-            p = mapper.readValue(ProjectHelper.class.getResourceAsStream("/json/project.json")
-                    , new TypeReference<List<Project>>() {
-                    });
+            p = mapper.readValue(f, Project.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

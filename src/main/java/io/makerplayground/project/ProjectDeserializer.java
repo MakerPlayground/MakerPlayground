@@ -2,22 +2,17 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Platform;
-import io.makerplayground.helper.Unit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by USER on 14-Jul-17.
@@ -38,8 +33,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         String projectName = node.get("projectName").asText();
         Platform platform = Platform.valueOf(node.get("controller").get("platform").asText());
-        Device controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
-                device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
+        Device controller = null;
+        if (!node.get("controller").get("device").asText().isEmpty()) {
+            controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
+                    device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
+        }
         ProjectController projectController = new ProjectController(platform, controller);
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
