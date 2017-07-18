@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
@@ -27,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  */
 @JsonSerialize (using = ExpressionSerializer.class)
+@JsonDeserialize (using = ExpressionDeserializer.class)
 public class Expression {
     private final ObjectProperty<Unit> unit;
     private final ObjectProperty<Operator> operator;
@@ -40,6 +42,14 @@ public class Expression {
         firstOperand = new SimpleObjectProperty<>(0.0);
         secondOperand = new SimpleObjectProperty<>(0.0);
         operandType = new SimpleObjectProperty<>();
+    }
+
+    Expression(Unit unit, Operator operator, Object firstOperand, Object secondOperand, OperandType operandType) {
+        this.unit = new SimpleObjectProperty<>(unit);
+        this.operator = new SimpleObjectProperty<>(operator);
+        this.firstOperand = new SimpleObjectProperty<>(firstOperand);
+        this.secondOperand = new SimpleObjectProperty<>(secondOperand);
+        this.operandType = new SimpleObjectProperty<>(operandType);
     }
 
     public Operator getOperator() {

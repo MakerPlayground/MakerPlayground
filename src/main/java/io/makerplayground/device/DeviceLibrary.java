@@ -95,6 +95,15 @@ public enum DeviceLibrary {
     public List<Device> getActualDevice() {
         return actualDevice;
     }
+
+    public Device getActualDevice(String id) {
+        for (Device device : actualDevice) {
+            if (device.getId().equals(id)) {
+                return device;
+            }
+        }
+        return null;
+    }
 }
 
 //        try {

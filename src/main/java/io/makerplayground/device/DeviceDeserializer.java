@@ -37,6 +37,8 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         String brand = node.get("brand").asText();
         String model = node.get("model").asText();
         String url = node.get("url").asText();
+        double width = node.get("width").asDouble();
+        double height = node.get("height").asDouble();
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
@@ -97,7 +99,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             dependency.put(name, device);
         }
 
-        return new Device(id, brand, model, url, type, formFactor, platform, port, connectivity
+        return new Device(id, brand, model, url, width, height, type, formFactor, platform, port, connectivity
                 , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency);
     }
 }

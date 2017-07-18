@@ -7,4 +7,8 @@ public class Begin extends NodeElement{
     public Begin() {
         super(200,20,85, 50);
     }
+
+    public Begin(double top, double left) {
+        super(top, left, 85, 50);
+    }
 }

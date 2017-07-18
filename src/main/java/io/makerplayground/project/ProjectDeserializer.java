@@ -44,84 +44,59 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
         for (JsonNode inputDeviceNode : node.get("inputDevice")) {
-            String name = inputDeviceNode.get("name").asText();     //TODO: fix later
-            GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(name);
-
-            for (JsonNode actualDeviceNode : node.get("actualDevice")) {
-                String brand = actualDeviceNode.get("brand").asText();
-                String model = actualDeviceNode.get("model").asText();
-                //TODO: load actualDevice to project
-            }
-
-            ProjectDevice inputDevice;
+            inputDevices.add(mapper.treeToValue(inputDeviceNode, ProjectDevice.class));
         }
 
         ObservableList<ProjectDevice> outputDevices = FXCollections.observableArrayList();
         for (JsonNode outputDeviceNode : node.get("outputDevice")) {
-            ProjectDevice outputDevice = null;
-            String name = outputDeviceNode.get("name").asText();    //TODO: fix later
-            GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(name);
-
-            for (JsonNode actualDeviceNode : node.get("actualDevice")) {
-                String brand = actualDeviceNode.get("brand").asText();
-                String model = actualDeviceNode.get("model").asText();
-                //TODO: load actualDevice to project
-            }
+            outputDevices.add(mapper.treeToValue(outputDeviceNode, ProjectDevice.class));
         }
 
+        SceneDeserializer sceneDeserializer = new SceneDeserializer(inputDevices, outputDevices);
         ObservableList<Scene> scenes = FXCollections.observableArrayList();
         for (JsonNode sceneNode : node.get("scene")) {
-            Scene scene = null;
-
-            String name = sceneNode.get("name").asText();
-            scene.setName(name);
-            for (JsonNode sceneSettingNode : node.get("userSetting")) {
-                UserSetting userSetting = null;
-                String device = sceneSettingNode.get("device").asText();
-                userSetting.getDevice().setName(device);
-                //TODO: load UserSetting to project
-            }
-            scene.setDelay(sceneNode.get("delay").asDouble());
-            Unit delayUnit = Unit.valueOf(sceneNode.get("delayUnit").asText());
-            //TODO: load delayUnit
-            JsonNode positionNode = sceneNode.get("position");
-            scene.setTop(positionNode.get("top").asDouble());
-            scene.setLeft(positionNode.get("left").asDouble());
-            scene.setWidth(positionNode.get("width").asDouble());
-            scene.setHeight(positionNode.get("height").asDouble());
-            //TODO: add scene to project
-            scenes.add(scene);
+            scenes.add(sceneDeserializer.deserialize(sceneNode.traverse(), deserializationContext));
         }
 
+        ConditionDeserializer conditionDeserializer = new ConditionDeserializer(inputDevices, outputDevices, scenes);
         ObservableList<Condition> conditions = FXCollections.observableArrayList();
         for(JsonNode conditionNode : node.get("condition")) {
-            Condition condition = null;
-
-            for ( JsonNode conditionSettingNode : node.get("setting")) {
-                UserSetting userSetting = null;
-                String device = conditionSettingNode.get("device").asText();
-                userSetting.getDevice().setName(device);
-                //TODO: load UserSetting to project
-            }
-            //TODO: SourceNode and DestNode
-            JsonNode positionNode = conditionNode.get("position");
-            condition.setTop(positionNode.get("top").asDouble());
-            condition.setLeft(positionNode.get("left").asDouble());
-            condition.setWidth(positionNode.get("width").asDouble());
-            condition.setHeight(positionNode.get("height").asDouble());
-
-            conditions.add(condition);
+            conditions.add(conditionDeserializer.deserialize(conditionNode.traverse(), deserializationContext));
         }
 
         ObservableList<Line> lines = FXCollections.observableArrayList();
         for (JsonNode lineNode : node.get("line")) {
-            Line line = null;
-            //TODO: load Line
+            NodeElement source = null;
+            for (Scene s : scenes) {
+                if (s.getName().equals(lineNode.get("source"))) {
+                    source = s;
+                }
+            }
+            for (Condition c : conditions) {
+                if (c.getName().equals(lineNode.get("source"))) {
+                    source = c;
+                }
+            }
 
-            lines.add(line);
+            NodeElement dest = null;
+            for (Scene s : scenes) {
+                if (s.getName().equals(lineNode.get("destination"))) {
+                    dest = s;
+                }
+            }
+            for (Condition c : conditions) {
+                if (c.getName().equals(lineNode.get("destination"))) {
+                    dest = c;
+                }
+            }
+
+            lines.add(new Line(source, dest));
         }
 
-        return null;    //TODO: fix later
+        Begin begin = new Begin(node.get("begin").get("top").asDouble()
+                , node.get("begin").get("left").asDouble());
+
+        return new Project(projectName, projectController, inputDevices, outputDevices, scenes, conditions, lines, begin);
     }
 
 

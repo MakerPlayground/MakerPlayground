@@ -19,16 +19,14 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -48,14 +46,13 @@ public class Project {
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
+    private final Begin begin;
 
     private final ObservableList<ProjectDevice> unmodifiableInputDevice;
     private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
     private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
-
-    private final Begin begin;
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
@@ -72,7 +69,23 @@ public class Project {
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+    }
 
+    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice, ObservableList<Scene> scene, ObservableList<Condition> condition, ObservableList<Line> line, Begin begin) {
+        this.projectName = new SimpleStringProperty(name);
+        this.controller = controller;
+        this.inputDevice = inputDevice;
+        this.outputDevice = outputDevice;
+        this.scene = scene;
+        this.condition = condition;
+        this.line = line;
+        this.begin = begin;
+
+        unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
+        unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
+        unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
+        unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
+        unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
     public ObservableList<ProjectDevice> getOutputDevice() {

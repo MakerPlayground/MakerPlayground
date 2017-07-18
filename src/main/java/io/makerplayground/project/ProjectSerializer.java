@@ -38,25 +38,30 @@ public class ProjectSerializer extends StdSerializer<Project> {
 
         jsonGenerator.writeArrayFieldStart("inputDevice");
         for(ProjectDevice inputDevice : project.getInputDevice()) {
-            mapper.writeValue(jsonGenerator,inputDevice);
+            mapper.writeValue(jsonGenerator, inputDevice);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("outputDevice");
         for(ProjectDevice outputDevice : project.getOutputDevice()) {
-            mapper.writeValue(jsonGenerator,outputDevice);
+            mapper.writeValue(jsonGenerator, outputDevice);
         }
         jsonGenerator.writeEndArray();
 
+        jsonGenerator.writeObjectFieldStart("begin");
+        jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
+        jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
+        jsonGenerator.writeEndObject();
+
         jsonGenerator.writeArrayFieldStart("scene");
         for(Scene scene : project.getScene()) {
-            mapper.writeValue(jsonGenerator,scene);
+            mapper.writeValue(jsonGenerator, scene);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("condition");
         for(Condition condition : project.getCondition()) {
-            mapper.writeValue(jsonGenerator,condition);
+            mapper.writeValue(jsonGenerator, condition);
         }
         jsonGenerator.writeEndArray();
 

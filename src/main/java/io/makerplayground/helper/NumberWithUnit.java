@@ -1,5 +1,8 @@
 package io.makerplayground.helper;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by tanyagorn on 7/11/2017.
  */
@@ -7,7 +10,8 @@ public class NumberWithUnit {
     private double d;
     private Unit u;
 
-    public NumberWithUnit(double d, Unit u) {
+    @JsonCreator
+    public NumberWithUnit(@JsonProperty("value") double d, @JsonProperty("unit") Unit u) {
         this.d = d;
         this.u = u;
     }

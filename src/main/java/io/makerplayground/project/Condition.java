@@ -17,6 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.List;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,6 +46,18 @@ public class Condition extends NodeElement {
         this.destNode = new SimpleObjectProperty<>(null);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
+    }
+
+    public Condition(double top, double left, double width, double height
+            , String name, List<UserSetting> setting, Scene sourceNode, Scene destNode) {
+        super(top, left, width, height);
+
+        this.name = new SimpleStringProperty(name);
+        this.setting = FXCollections.observableList(setting);
+        this.sourceNode = new SimpleObjectProperty<>(sourceNode);
+        this.destNode = new SimpleObjectProperty<>(destNode);
+
+        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
     }
 
     public String getName() {

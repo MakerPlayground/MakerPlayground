@@ -37,7 +37,8 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         jsonGenerator.writeArrayFieldStart("valueMap");
         for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField(v.getKey().getName(), v.getValue());
+            jsonGenerator.writeStringField("name", v.getKey().getName());
+            jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -51,7 +52,7 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             //jsonGenerator.writeStartArray();
             for (Expression expression : e.getValue()) {
                 //jsonGenerator.writeObject(expresion);
-                mapper.writeValue(jsonGenerator,expression);
+                mapper.writeValue(jsonGenerator, expression);
             }
             jsonGenerator.writeEndArray();
 
