@@ -88,4 +88,6 @@ public class ProjectDevice {
     public void setDependentDeviceConnection(Map<Peripheral, Peripheral> dependentDeviceConnection) {
         this.dependentDeviceConnection = dependentDeviceConnection;
     }
+
+
 }

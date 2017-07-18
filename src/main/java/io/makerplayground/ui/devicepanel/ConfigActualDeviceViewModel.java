@@ -1,11 +1,19 @@
 package io.makerplayground.ui.devicepanel;
 
+import io.makerplayground.device.Action;
+import io.makerplayground.device.Constraint;
 import io.makerplayground.device.Device;
+import io.makerplayground.device.Parameter;
 import io.makerplayground.generator.validGenericDevice;
+import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +27,6 @@ public class ConfigActualDeviceViewModel {
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
         this.compatibleDeviceList = validGenericDevice.getSupportedDeviceList(project);
-        System.out.println(this.compatibleDeviceList);
     }
 
     public ObservableList<ProjectDevice> getOutputDevice() {
@@ -45,5 +52,34 @@ public class ConfigActualDeviceViewModel {
 
     public ObservableList<ProjectDevice> getAllDevice() {
         return project.getAllDevice();
+    }
+
+    public Map<ProjectDevice, List<Peripheral>> getDeviceCompatiblePort() {
+        List<Peripheral> processorPort = project.getController().getController().getConnectivity();
+
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            //connection from this device (key) to the processor (value)
+            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
+                if (processorPort.contains(p))
+                    processorPort.remove(p);
+            }
+        }
+
+        Map<ProjectDevice, List<Peripheral>> result = new HashMap<>();
+
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            List<Peripheral> possibleDevice = new ArrayList<>();
+            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
+                possibleDevice.add(p);
+            }
+            for (Peripheral p : processorPort) {
+                if (projectDevice.getActualDevice().getConnectivity().get(0).getType() == p.getType()) {
+                    possibleDevice.add(p);
+                }
+            }
+            result.put(projectDevice, possibleDevice);
+        }
+
+        return result;
     }
 }
