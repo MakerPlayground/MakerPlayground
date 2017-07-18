@@ -49,11 +49,43 @@ public class ProjectDevice {
         return genericDevice;
     }
 
+    public boolean isAutoSelectDevice() {
+        return autoSelectDevice;
+    }
+
+    public void setAutoSelectDevice(boolean autoSelectDevice) {
+        this.autoSelectDevice = autoSelectDevice;
+    }
+
     public Device getActualDevice() {
         return actualDevice;
     }
 
     public void setActualDevice(Device actualDevice) {
         this.actualDevice = actualDevice;
+    }
+
+    public Map<Peripheral, Peripheral> getDeviceConnection() {
+        return deviceConnection;
+    }
+
+    public void setDeviceConnection(Map<Peripheral, Peripheral> deviceConnection) {
+        this.deviceConnection = deviceConnection;
+    }
+
+    public Device getDependentDevice() {
+        return dependentDevice;
+    }
+
+    public void setDependentDevice(Device dependentDevice) {
+        this.dependentDevice = dependentDevice;
+    }
+
+    public Map<Peripheral, Peripheral> getDependentDeviceConnection() {
+        return dependentDeviceConnection;
+    }
+
+    public void setDependentDeviceConnection(Map<Peripheral, Peripheral> dependentDeviceConnection) {
+        this.dependentDeviceConnection = dependentDeviceConnection;
     }
 }

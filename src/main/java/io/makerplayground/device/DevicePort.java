@@ -67,6 +67,30 @@ public class DevicePort {
         return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.I2C_SCL);
     }
 
+    public boolean isMOSI() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.SPI_MOSI);
+    }
+
+    public boolean isMISO() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.SPI_MISO);
+    }
+
+    public boolean isSCK() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.SPI_SCK);
+    }
+
+    public boolean isSS() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.SPI_SS);
+    }
+
+    public boolean isRX() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.UART_RX);
+    }
+
+    public boolean isTX() {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.UART_TX);
+    }
+
     public double getVmin() {
         return vmin;
     }

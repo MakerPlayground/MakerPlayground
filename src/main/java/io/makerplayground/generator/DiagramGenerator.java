@@ -5,6 +5,6 @@ package io.makerplayground.generator;
  */
 public class DiagramGenerator {
     public static Diagram generateDiagram() {
-
+        return null;
     }
 }
