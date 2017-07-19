@@ -32,7 +32,7 @@ import javafx.collections.ObservableList;
 public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
-    private final ObjectProperty<Scene> sourceNode;
+    private final ObjectProperty<Scene> sourceNode; // TODO: to be remove
     private final ObjectProperty<Scene> destNode;
 
     private final ObservableList<UserSetting> unmodifiableSetting;
@@ -76,17 +76,17 @@ public class Condition extends NodeElement {
         return sourceNode.get();
     }
 
-    public ObjectProperty<Scene> sourceNodeProperty() {
-        return sourceNode;
-    }
+//    public ObjectProperty<Scene> sourceNodeProperty() {
+//        return sourceNode;
+//    }
 
     public Scene getDestNode() {
         return destNode.get();
     }
 
-    public ObjectProperty<Scene> destNodeProperty() {
-        return destNode;
-    }
+//    public ObjectProperty<Scene> destNodeProperty() {
+//        return destNode;
+//    }
 
     public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device));
