@@ -46,10 +46,13 @@ public class RightPanel extends AnchorPane {
 
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
-            Dialog dialog = new Dialog();
-            DialogPane dialogPane = dialog.getDialogPane();
-            dialogPane.setContent(new Diagram(project));
-            dialog.showAndWait();
+            GenerateViewModel generateViewModel = new GenerateViewModel(project);
+            GenerateView generateView = new GenerateView(generateViewModel);
+            generateView.showAndWait();
+//            Dialog dialog = new Dialog();
+//            DialogPane dialogPane = dialog.getDialogPane();
+//            dialogPane.setContent(new Diagram(project));
+//            dialog.showAndWait();
         });
         Button uploadBtn = new Button("Upload");
 

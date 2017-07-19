@@ -4,19 +4,17 @@ import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
-
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectController;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * Created by tanyagorn on 7/17/2017.
@@ -27,18 +25,18 @@ public class Diagram extends Pane {
     private static final double BREADBOARD_WIDTH = 936.48;
     private static final double BREADBOARD_HEIGHT = 302.4;
     private static final int    BREADBOARD_NUM_COLUMN = 5;
-    private static final double BREADBOARD_GND_BOT_X = 45.88;
-    private static final double BREADBOARD_GND_BOT_Y = 283.21;
-    private static final double BREADBOARD_PWR_BOT_X = 45.88;
-    private static final double BREADBOARD_PWR_BOT_Y = 268.81;
-    private static final double BREADBOARD_GND_TOP_X = 45.88;
-    private static final double BREADBOARD_GND_TOP_Y = 24.01;
-    private static final double BREADBOARD_PWR_TOP_X = 45.88;
-    private static final double BREADBOARD_PWR_TOP_Y = 9.61;
+    private static final double BREADBOARD_GND_BOT_X = 50.769;
+    private static final double BREADBOARD_GND_BOT_Y = 274.145;
+    private static final double BREADBOARD_PWR_BOT_X = 50.769;
+    private static final double BREADBOARD_PWR_BOT_Y = 288.574;
+    private static final double BREADBOARD_GND_TOP_X = 50.769;
+    private static final double BREADBOARD_GND_TOP_Y = 14.429;
+    private static final double BREADBOARD_PWR_TOP_X = 50.769;
+    private static final double BREADBOARD_PWR_TOP_Y = 28.857;
     private static final double HOLE_SPACE = 14.4;
     private static final double CENTER_SPACE = 43.2;
-    private static final double J1_POS_X = 17.04;
-    private static final double J1_POS_Y = 67.21;
+    private static final double J1_POS_X = 19.44;
+    private static final double J1_POS_Y = 69.6;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
 
@@ -53,8 +51,10 @@ public class Diagram extends Pane {
     }
 
     private void initDiagram() {
+        System.out.println("=============DIAGRAM=================");
+
         this.deviceTopLeftPos = new HashMap<>();
-        setPrefSize(1000, 600);
+        setPrefSize(1000, 1000);
 
         // draw breadboard
         ImageView breadBoard = new ImageView(new Image(getClass().getResourceAsStream("/device/breadboard_large@2x.png")));
@@ -62,7 +62,7 @@ public class Diagram extends Pane {
         breadBoard.setLayoutY(BREADBOARD_TOP_MARGIN);
         getChildren().add(breadBoard);
 
-        int currentRow = 1;
+        int currentRow = 0;
 
         // draw controller
         double lastY = BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
@@ -92,15 +92,15 @@ public class Diagram extends Pane {
             Device device = projectDevice.getActualDevice();
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-                currentRow += calculateNumberOfHoleWithoutLeftWing(device);
                 DevicePort topLeftPort = getTopLeftHole(device);
-                deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - topLeftPort.getX()
+                deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
                 currentRow += calculateNumberOfHoleWithoutLeftWing(device);
+            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
                 int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE);
-                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(device).getX()
+                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
+                currentRow += calculateNumberOfHoleWithoutLeftWing(device);
             } else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
                 lastX = lastX + device.getWidth();
@@ -118,9 +118,11 @@ public class Diagram extends Pane {
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
-                        createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                        createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                            , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                     } else if (port.isGnd()) {
-                        createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                        createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                          , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                     }
                 }
             } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
@@ -130,14 +132,14 @@ public class Diagram extends Pane {
                         if (port.isVcc()) {
                             createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
                         } else if (port.isGnd()) {
-                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                            createGndLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
                         }
                     }
                     else {
                         if (port.isVcc()) {
                             createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_PWR_TOP_X, BREADBOARD_PWR_TOP_Y);
                         } else if (port.isGnd()) {
-                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X, BREADBOARD_GND_TOP_Y);
+                            createGndLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X, BREADBOARD_GND_TOP_Y);
                         }
                     }
 
@@ -161,25 +163,34 @@ public class Diagram extends Pane {
         DevicePort startSDA = controllerI2CPort.stream().filter(DevicePort::isSDA).findFirst().get();
         DevicePort startSCL = controllerI2CPort.stream().filter(DevicePort::isSCL).findFirst().get();
 
-        // SDA: top side - go up
-        if (startSDA.getY() == getTopLeftHole(controller).getY()) {
-            sdaStartX = startSDA.getX();
-            sdaStartY = startSDA.getY() - HOLE_SPACE;
-        }
-        // SDA: Bottom side - go down
-        else if (startSDA.getY() != getTopLeftHole(controller).getY()) {
-            sdaStartX = startSDA.getX();
-            sdaStartY = startSDA.getY() + HOLE_SPACE;
-        }
-        // SCL: top side - go up
-        else if (startSCL.getY() == getTopLeftHole(controller).getY()) {
-            sclStartX = startSCL.getX();
-            sclStartY = startSCL.getY() - HOLE_SPACE;
-        }
-        // SCL: bottom side - go down
-        else if (startSCL.getY() != getTopLeftHole(controller).getY()) {
-            sclStartX = startSCL.getX();
-            sclStartY = startSCL.getY() + HOLE_SPACE;
+        if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            // SDA: top side - go up
+            if (startSDA.getY() == getTopLeftHole(controller).getY()) {
+                sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
+                sdaStartY = startSDA.getY() - HOLE_SPACE;
+            }
+            // SDA: Bottom side - go down
+            if (startSDA.getY() != getTopLeftHole(controller).getY()) {
+                sdaStartX = startSDA.getX();
+                sdaStartY = startSDA.getY() + HOLE_SPACE;
+            }
+            // SCL: top side - go up
+            if (startSCL.getY() == getTopLeftHole(controller).getY()) {
+                sclStartX = startSCL.getX() + BREADBOARD_LEFT_MARGIN;
+                sclStartY = startSCL.getY() - HOLE_SPACE;
+            }
+            // SCL: bottom side - go down
+            if (startSCL.getY() != getTopLeftHole(controller).getY()) {
+                sclStartX = startSCL.getX();
+                sclStartY = startSCL.getY() + HOLE_SPACE;
+            }
+        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+            //TODO: Implement this
+        } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
+            sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
+            sdaStartY = startSDA.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
+            sclStartX = startSCL.getX() + BREADBOARD_LEFT_MARGIN;
+            sclStartY = startSCL.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
         }
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
@@ -190,12 +201,12 @@ public class Diagram extends Pane {
                     DevicePort desSCL = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCL).findFirst().get();
 
                     if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-                        createPowerLine(sdaStartX, sdaStartY, desSDA.getX(), desSDA.getY() + HOLE_SPACE);
-                        createPowerLine(sclStartX, sclStartY, desSCL.getX(), desSCL.getY() + HOLE_SPACE);
-                        sdaStartX = desSDA.getX();
-                        sdaStartY = desSDA.getY() + (HOLE_SPACE * 2);
-                        sclStartX = desSCL.getX();
-                        sclStartY = desSCL.getY() + (HOLE_SPACE * 2);
+                        createSdaLine(sdaStartX, sdaStartY, desSDA.getX() + deviceTopLeftPos.get(projectDevice).getX(), desSDA.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE);
+                        createSclLine(sclStartX, sclStartY, desSCL.getX() + deviceTopLeftPos.get(projectDevice).getX(), desSCL.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE);
+                        sdaStartX = desSDA.getX() + deviceTopLeftPos.get(projectDevice).getX();
+                        sdaStartY = desSDA.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE;
+                        sclStartX = desSCL.getX() + deviceTopLeftPos.get(projectDevice).getX();
+                        sclStartY = desSCL.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE;
                     } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
                         DevicePort topLeftPort = getTopLeftHole(device);
 
@@ -227,7 +238,7 @@ public class Diagram extends Pane {
         }
 
 
-        // connect SPI, UART, GPIO
+        // connect SPI, UART, PWM
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
@@ -243,10 +254,10 @@ public class Diagram extends Pane {
                     DevicePort desSCK = controller.getPort(destPeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
                     DevicePort desSS = controller.getPort(destPeripheral).stream().filter(DevicePort::isSS).findFirst().get();
 
-                    createLine(device, sourceMOSI, controller, desMOSI);
-                    createLine(device, sourceMISO, controller, desMISO);
-                    createLine(device, sourceSCK, controller, desSCK);
-                    createLine(device, sourceSS, controller, desSS);
+                    createLine(projectDevice, sourceMOSI, project.getController(), desMOSI);
+                    createLine(projectDevice, sourceMISO, project.getController(), desMISO);
+                    createLine(projectDevice, sourceSCK, project.getController(), desSCK);
+                    createLine(projectDevice, sourceSS, project.getController(), desSS);
                 } else if (sourcePeripheral == Peripheral.UART_1) {
                     DevicePort sourceRX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isRX).findFirst().get();
                     DevicePort sourceTX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isTX).findFirst().get();
@@ -254,12 +265,16 @@ public class Diagram extends Pane {
                     DevicePort desRX = controller.getPort(destPeripheral).stream().filter(DevicePort::isRX).findFirst().get();
                     DevicePort desTX = controller.getPort(destPeripheral).stream().filter(DevicePort::isTX).findFirst().get();
 
-                    createLine(device, sourceRX, controller, desRX);
-                    createLine(device, sourceTX, controller, desTX);
+                    createLine(projectDevice, sourceRX, project.getController(), desRX);
+                    createLine(projectDevice, sourceTX, project.getController(), desTX);
                 } else if (sourcePeripheral == Peripheral.GPIO_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = controller.getPort(destPeripheral).get(0);
-                    createLine(device, sourcePort, controller, destPort);
+                    createLine(projectDevice, sourcePort, project.getController(), destPort);
+                } else if (sourcePeripheral == Peripheral.PWM_1) {
+                    DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
+                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    createLine(projectDevice, sourcePort, project.getController(), destPort);
                 }
             }
         }
@@ -275,7 +290,7 @@ public class Diagram extends Pane {
 
     private int calculateNumberOfHoleWithoutLeftWing(Device device) {
         DevicePort rightPort = device.getPort().stream().max(Comparator.comparingDouble(DevicePort::getX)).get();
-        int rightPaddingHoldCount = (int) Math.ceil(rightPort.getX() / HOLE_SPACE);
+        int rightPaddingHoldCount = (int) Math.ceil((device.getWidth() - rightPort.getX()) / HOLE_SPACE);
         return device.getPort().size() + rightPaddingHoldCount;
     }
 
@@ -309,53 +324,69 @@ public class Diagram extends Pane {
         }).get();
     }
 
-    private void createLine(Device source, DevicePort sourcePort, Device dest, DevicePort destPort) {
+    private void createLine(ProjectDevice source, DevicePort sourcePort, ProjectController dest, DevicePort destPort) {
         double startX = 0, startY = 0;
         double endX = 0, endY = 0;
-        if (source.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-            startX = sourcePort.getX();
-            startY = sourcePort.getY() + HOLE_SPACE;
-        } else if (source.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-            DevicePort srcTopLeftPort = getTopLeftHole(source);
+        if (source.getActualDevice().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+            startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
+            startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
+        } else if (source.getActualDevice().getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            DevicePort srcTopLeftPort = getTopLeftHole(source.getActualDevice());
 
             //top side - go up
             if (sourcePort.getY() == srcTopLeftPort.getY()) {
-                startX = sourcePort.getX();
-                startY = sourcePort.getY() - HOLE_SPACE;
+                startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
+                startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() - HOLE_SPACE;
             } //bottom side - go down
             else if (sourcePort.getY() != srcTopLeftPort.getY()) {
-                startX = sourcePort.getX();
-                startY = sourcePort.getY() + HOLE_SPACE;
+                startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
+                startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
             }
-        } else if (source.getFormFactor() == FormFactor.STANDALONE) {
-            startX = sourcePort.getX();
-            startY = sourcePort.getY();
+        }
+        else if (source.getActualDevice().getFormFactor() == FormFactor.STANDALONE) {
+            startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
+            startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY();
         }
 
-        if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-            endX = destPort.getX();
-            endY = destPort.getY() + HOLE_SPACE;
-        } else if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-            DevicePort desTopLeftPort = getTopLeftHole(dest);
+        if (dest.getController().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+            endX = controllerPosition.getX()  + destPort.getX();
+            endY = controllerPosition.getY() + destPort.getY() + HOLE_SPACE;
+        } else if (dest.getController().getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            DevicePort desTopLeftPort = getTopLeftHole(dest.getController());
 
             //top side - go up
             if (destPort.getY() == desTopLeftPort.getY()) {
-                endX = destPort.getX();
-                endY = destPort.getY() - HOLE_SPACE;
+                endX = controllerPosition.getX()  + destPort.getX();
+                endY = controllerPosition.getY() + destPort.getY() - HOLE_SPACE;
             } //bottom side - go down
             else if (destPort.getY() != desTopLeftPort.getY()) {
-                endX = destPort.getX();
-                endY = destPort.getY() + HOLE_SPACE;
+                endX = controllerPosition.getX() + destPort.getX();
+                endY = controllerPosition.getY() + destPort.getY() + HOLE_SPACE;
             }
-        } else if (source.getFormFactor() == FormFactor.STANDALONE) {
-            endX = destPort.getX();
-            endY = destPort.getY();
+        } else if (dest.getController().getFormFactor() == FormFactor.STANDALONE) {
+            endX = controllerPosition.getX() + destPort.getX();
+            endY = controllerPosition.getY() + destPort.getY();
         }
 
         createPowerLine(startX, startY, endX, endY);
     }
 
     private void createPowerLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        this.getChildren().add(line);
+    }
+
+    private void createGndLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        this.getChildren().add(line);
+    }
+
+    private void createSdaLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        this.getChildren().add(line);
+    }
+
+    private void createSclLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         this.getChildren().add(line);
     }
