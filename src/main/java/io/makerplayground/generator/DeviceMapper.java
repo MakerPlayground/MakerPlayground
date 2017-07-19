@@ -3,21 +3,18 @@ package io.makerplayground.generator;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tanyagorn on 7/11/2017.
  */
-public class validGenericDevice {
-
+public class DeviceMapper {
     public static Map<ProjectDevice, List<Device>> getSupportedDeviceList(Project project) {
         List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice();
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
@@ -70,21 +67,60 @@ public class validGenericDevice {
                 }
             }
         }
-
-
-        //TODO: platform
         
         // Get the list of compatible device
         Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
         for (ProjectDevice device : tempMap.keySet()) {
             selectableDevice.put(device, new ArrayList<>());
             for (Device d : actualDevice) {
-                if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {
+                if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {  // TODO: edit to filter platform
                     selectableDevice.get(device).add(d);
                 }
             }
         }
 
         return selectableDevice;
+    }
+
+    public static Map<ProjectDevice, List<Peripheral>> getDeviceCompatiblePort(Project project) {
+        Map<ProjectDevice, List<Peripheral>> result = new HashMap<>();
+
+        if (project.getController().getController() == null)
+        {
+            for (ProjectDevice projectDevice : project.getAllDevice()) {
+                result.put(projectDevice, Collections.emptyList());
+            }
+            return result;
+        }
+
+        List<Peripheral> processorPort = project.getController().getController().getConnectivity();
+
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            //connection from this device (key) to the processor (value)
+            for (Peripheral p : projectDevice.getDeviceConnection().values()) {
+                processorPort.remove(p);
+            }
+        }
+
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            List<Peripheral> possibleDevice = new ArrayList<>();
+            if (!projectDevice.isAutoSelectDevice() && (projectDevice.getActualDevice() != null)) { // calculate possible only if actual device is selected
+                for (Peripheral p : projectDevice.getDeviceConnection().values()) {
+                    possibleDevice.add(p);
+                }
+                System.out.println("Finding : " + projectDevice.getActualDevice().getConnectivity().get(0).getConnectionType());
+                for (Peripheral p : processorPort) {
+                    if (projectDevice.getActualDevice().getConnectivity().get(0).getConnectionType() == p.getConnectionType()) {
+                        possibleDevice.add(p);
+                        System.out.println("Found " + p);
+                    }
+                }
+            } else {
+                System.out.println("Skip : " + projectDevice.getName());
+            }
+            result.put(projectDevice, possibleDevice);
+        }
+
+        return result;
     }
 }

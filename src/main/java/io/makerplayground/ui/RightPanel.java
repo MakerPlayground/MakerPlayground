@@ -1,7 +1,6 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.Diagram;
-import io.makerplayground.generator.validGenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
@@ -40,9 +39,10 @@ public class RightPanel extends AnchorPane {
         configureBtn.setOnAction(event -> {
             ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
             ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
+            configActualDeviceView.showAndWait();
         });
 
-        //configureBtn.setOnAction(event -> validGenericDevice.getSupportedDeviceList(project));
+        //configureBtn.setOnAction(event -> DeviceMapper.getSupportedDeviceList(project));
 
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {

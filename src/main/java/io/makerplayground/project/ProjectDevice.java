@@ -77,8 +77,15 @@ public class ProjectDevice {
         return deviceConnection;
     }
 
-    public void setDeviceConnection(Map<Peripheral, Peripheral> deviceConnection) {
-        this.deviceConnection = deviceConnection;
+//    public void setDeviceConnection(Map<Peripheral, Peripheral> deviceConnection) {
+//        this.deviceConnection = deviceConnection;
+//    }
+    public void setDeviceConnection(Peripheral device, Peripheral processor) {
+        this.deviceConnection.put(device, processor);
+    }
+
+    public void removeDeviceConnection(Peripheral device) {
+        this.deviceConnection.remove(device);
     }
 
     public Device getDependentDevice() {
@@ -93,7 +100,11 @@ public class ProjectDevice {
         return dependentDeviceConnection;
     }
 
-    public void setDependentDeviceConnection(Map<Peripheral, Peripheral> dependentDeviceConnection) {
-        this.dependentDeviceConnection = dependentDeviceConnection;
+    public void setDependentDeviceConnection(Peripheral device, Peripheral processor) {
+        this.dependentDeviceConnection.put(device, processor);
     }
+
+//    public void setDependentDeviceConnection(Map<Peripheral, Peripheral> dependentDeviceConnection) {
+//        this.dependentDeviceConnection = dependentDeviceConnection;
+//    }
 }

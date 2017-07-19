@@ -8,9 +8,11 @@ import java.util.List;
  */
 public enum ConnectionType {
     GPIO,
+    ANALOG,
     INT,
     PWM,
     I2C,
     SPI,
-    UART
+    UART,
+    POWER
 }

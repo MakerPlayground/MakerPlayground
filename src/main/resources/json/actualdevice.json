@@ -649,7 +649,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "I2C_2",
+            "type": "I2C_1",
             "pintype": "I2C_SDA"
           }
         ],
@@ -732,7 +732,9 @@
         "y": 99.0
       }
     ],
-    "connectivity": [],
+    "connectivity": [
+      "I2C_1"
+    ],
     "compatibility": [
       {
         "name": "Gyroscope",
@@ -1309,7 +1311,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "I2C_1",
+            "type": "I2C_2",
             "pintype": "I2C_SCL"
           }
         ],
