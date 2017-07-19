@@ -9,11 +9,11 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 100,
-    "height": 100,
+    "width": 128.0,
+    "height": 173.0,
     "port": [
       {
-        "name": "vcc",
+        "name": "VCC",
         "type": "WIRE",
         "function": [
           {
@@ -22,9 +22,88 @@
           }
         ],
         "v_min": 3.3,
-        "v_max": 5,
-        "x": 123,
-        "y": 456
+        "v_max": 5.0,
+        "x": 10.0,
+        "y": 163.0
+      },
+      {
+        "name": "CS",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "SPI_1",
+            "pintype": "SPI_SS"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 24.4,
+        "y": 163.0
+      },
+      {
+        "name": "DI",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "SPI_1",
+            "pintype": "SPI_MOSI"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 38.8,
+        "y": 163.0
+      },
+      {
+        "name": "SCK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "SPI_1",
+            "pintype": "SPI_SCK"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 53.2,
+        "y": 163.0
+      },
+      {
+        "name": "DO",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "SPI_1",
+            "pintype": "SPI_MISO"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 67.6,
+        "y": 163.0
+      },
+      {
+        "name": "CO",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 82.0,
+        "y": 163.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 96.4,
+        "y": 163.0
       }
     ],
     "connectivity": [
@@ -34,7 +113,90 @@
     "dependency": []
   },
   {
-    "id": "Adafruit 2130",
+    "id": "Adafruit-1063",
+    "brand": "Adafruit",
+    "model": "Electret Microphone Amplifier - MAX4466 with Adjustable Gain",
+    "url": "https://www.adafruit.com/product/1063",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 79.2,
+    "height": 122.4,
+    "port": [
+      {
+        "name": "OUT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 21.646,
+        "y": 110.924
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 36.046,
+        "y": 110.924
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 2.4,
+        "v_max": 5.5,
+        "x": 50.446,
+        "y": 110.924
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Sound",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Sound Level",
+            "constraint": {
+              "min": 0.0,
+              "max": 0.0,
+              "unit": "DECIBEL"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-2130",
     "brand": "Adafruit",
     "model": "Adafruit Mono 2.5W Class D Audio Amplifier - PAM8302",
     "url": "https://www.adafruit.com/products/2130",
@@ -43,11 +205,48 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 100,
-    "height": 100,
+    "width": 86.4,
+    "height": 136.8,
     "port": [
       {
-        "name": "vcc",
+        "name": "A+",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "PWM_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 14.5,
+        "y": 119.5
+      },
+      {
+        "name": "A-",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 28.9,
+        "y": 119.5
+      },
+      {
+        "name": "SD",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 43.3,
+        "y": 119.5
+      },
+      {
+        "name": "VIN",
         "type": "WIRE",
         "function": [
           {
@@ -56,13 +255,27 @@
           }
         ],
         "v_min": 2.5,
-        "v_max": 5,
-        "x": 123,
-        "y": 456
+        "v_max": 5.0,
+        "x": 57.7,
+        "y": 119.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 72.1,
+        "y": 119.5
       }
     ],
     "connectivity": [
-      "I2C_1"
+      "PWM_1"
     ],
     "compatibility": [
       {
@@ -102,7 +315,7 @@
           }
         ],
         "value": [],
-        "count": 1
+        "count": 1.0
       }
     ],
     "dependency": [
@@ -115,6 +328,576 @@
     ]
   },
   {
+    "id": "Adafruit-2652",
+    "brand": "Adafruit",
+    "model": "Adafruit BME280 I2C or SPI Temperature Humidity Pressure Sensor",
+    "url": "https://www.adafruit.com/products/2652",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 100.8,
+    "height": 108.0,
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 4.366,
+        "y": 90.764
+      },
+      {
+        "name": "3Vo",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 18.766,
+        "y": 90.764
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 33.166,
+        "y": 90.764
+      },
+      {
+        "name": "SCK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 47.566,
+        "y": 90.764
+      },
+      {
+        "name": "SDO",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 61.966,
+        "y": 90.764
+      },
+      {
+        "name": "SDI",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 76.366,
+        "y": 90.764
+      },
+      {
+        "name": "CS",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 90.766,
+        "y": 90.764
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": -40.0,
+              "max": 85.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Pressuremeter",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Pressure",
+            "constraint": {
+              "min": 300.0,
+              "max": 1100.0,
+              "unit": "HECTOPASCAL"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-3251",
+    "brand": "Adafruit",
+    "model": "Adafruit Si7021 Temperature & Humidity Sensor Breakout Board",
+    "url": "https://www.adafruit.com/product/3251",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 86.4,
+    "height": 100.8,
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 11.566,
+        "y": 83.564
+      },
+      {
+        "name": "3Vo",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 25.966,
+        "y": 83.564
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 40.366,
+        "y": 83.564
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 54.766,
+        "y": 83.564
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 69.166,
+        "y": 83.564
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": -10.0,
+              "max": 85.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 0.0,
+              "max": 80.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-1032",
+    "brand": "Adafruit",
+    "model": "L3GD20H Triple-Axis Gyro Breakout Board - L3GD20/L3G4200 Upgrade - L3GD20H",
+    "url": "https://www.adafruit.com/product/1032",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 173.0,
+    "height": 108.0,
+    "port": [
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 29.0,
+        "y": 99.0
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_2",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 43.4,
+        "y": 99.0
+      },
+      {
+        "name": "SA0",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 57.8,
+        "y": 99.0
+      },
+      {
+        "name": "CS",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 72.2,
+        "y": 99.0
+      },
+      {
+        "name": "DRDY",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 86.6,
+        "y": 99.0
+      },
+      {
+        "name": "INT1",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 101.0,
+        "y": 99.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 115.4,
+        "y": 99.0
+      },
+      {
+        "name": "3Vo",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 129.8,
+        "y": 99.0
+      },
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 144.2,
+        "y": 99.0
+      }
+    ],
+    "connectivity": [],
+    "compatibility": [
+      {
+        "name": "Gyroscope",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          },
+          {
+            "name": "Y",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          },
+          {
+            "name": "Z",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-2023",
+    "brand": "Adafruit",
+    "model": "Contact-less Infrared Thermopile Sensor Breakout - TMP007",
+    "url": "https://www.adafruit.com/product/2023",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 116.0,
+    "height": 116.0,
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 2.2,
+        "v_max": 5.5,
+        "x": 14.5,
+        "y": 101.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 28.9,
+        "y": 101.5
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 2.2,
+        "v_max": 5.5,
+        "x": 43.3,
+        "y": 101.5
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 2.2,
+        "v_max": 5.5,
+        "x": 57.7,
+        "y": 101.5
+      },
+      {
+        "name": "ALERT",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 72.1,
+        "y": 101.5
+      },
+      {
+        "name": "AD1",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 86.5,
+        "y": 101.5
+      },
+      {
+        "name": "AD0",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 100.9,
+        "y": 101.5
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": -40.0,
+              "max": 125.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
     "id": "SEN-13944",
     "brand": "Sparkfun",
     "model": "SparkFun 9DoF Sensor Stick",
@@ -124,11 +907,25 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 100,
-    "height": 100,
+    "width": 130.0,
+    "height": 58.0,
     "port": [
       {
-        "name": "vcc",
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 1.9,
+        "v_max": 3.6,
+        "x": 7.5,
+        "y": 7.5
+      },
+      {
+        "name": "VDD",
         "type": "WIRE",
         "function": [
           {
@@ -138,8 +935,36 @@
         ],
         "v_min": 1.9,
         "v_max": 3.6,
-        "x": 123,
-        "y": 456
+        "x": 7.5,
+        "y": 21.9
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 1.9,
+        "v_max": 3.6,
+        "x": 7.5,
+        "y": 36.3
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 1.9,
+        "v_max": 3.6,
+        "x": 7.5,
+        "y": 50.7
       }
     ],
     "connectivity": [
@@ -148,37 +973,1495 @@
     "compatibility": [
       {
         "name": "Accelerometer",
-        "property": [],
-        "action": [],
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
         "value": [
           {
             "name": "X",
             "constraint": {
-              "min": 0.0,
-              "max": 0.0,
+              "min": -156.96,
+              "max": 156.96,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Y",
             "constraint": {
-              "min": 0.0,
-              "max": 0.0,
+              "min": -156.96,
+              "max": 156.96,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Z",
             "constraint": {
-              "min": 0.0,
-              "max": 0.0,
+              "min": -156.96,
+              "max": 156.96,
               "unit": "METERPERSECSQUARE"
             }
           }
         ],
-        "count": 1
+        "count": 1.0
       }
     ],
+    "dependency": []
+  },
+  {
+    "id": "DEV-13975",
+    "brand": "Sparkfun",
+    "model": "SparkFun RedBoard",
+    "url": "https://www.sparkfun.com/products/13975",
+    "type": "CONTROLLER",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 531.0,
+    "height": 410.0,
+    "port": [
+      {
+        "name": "0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "UART_1",
+            "pintype": "UART_RX"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 493.5,
+        "y": 21.907
+      },
+      {
+        "name": "1",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "UART_1",
+            "pintype": "UART_TX"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 474.5,
+        "y": 21.907
+      },
+      {
+        "name": "2",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 455.5,
+        "y": 21.907
+      },
+      {
+        "name": "3",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_4",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 435.5,
+        "y": 21.907
+      },
+      {
+        "name": "4",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_5",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 416.0,
+        "y": 21.907
+      },
+      {
+        "name": "5",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_6",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 397.0,
+        "y": 21.907
+      },
+      {
+        "name": "6",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_7",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 378.0,
+        "y": 21.907
+      },
+      {
+        "name": "7",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_8",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 359.0,
+        "y": 21.907
+      },
+      {
+        "name": "8",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_9",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 327.5,
+        "y": 21.907
+      },
+      {
+        "name": "9",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_10",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_4",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 308.5,
+        "y": 21.907
+      },
+      {
+        "name": "10",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_11",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_5",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "SPI_1",
+            "pintype": "SPI_SS"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 288.5,
+        "y": 21.907
+      },
+      {
+        "name": "11",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_12",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "PWM_6",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "SPI_2",
+            "pintype": "SPI_MOSI"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 269.5,
+        "y": 21.907
+      },
+      {
+        "name": "12",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_13",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "SPI_3",
+            "pintype": "SPI_MISO"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 250.5,
+        "y": 21.907
+      },
+      {
+        "name": "13",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_14",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "SPI_4",
+            "pintype": "SPI_SCK"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 231.5,
+        "y": 21.907
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 212.5,
+        "y": 21.907
+      },
+      {
+        "name": "AREF",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 193.5,
+        "y": 21.907
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 174.5,
+        "y": 21.907
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 154.5,
+        "y": 21.907
+      },
+      {
+        "name": "A5",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_5",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 492.542,
+        "y": 387.372
+      },
+      {
+        "name": "A4",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_4",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 473.475,
+        "y": 387.372
+      },
+      {
+        "name": "A3",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 454.408,
+        "y": 387.372
+      },
+      {
+        "name": "A2",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 435.341,
+        "y": 387.372
+      },
+      {
+        "name": "A1",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 416.274,
+        "y": 387.372
+      },
+      {
+        "name": "A0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_0",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 397.207,
+        "y": 387.372
+      },
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 357.76,
+        "y": 387.372
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 338.693,
+        "y": 387.372
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 319.626,
+        "y": 387.372
+      },
+      {
+        "name": "5V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 300.559,
+        "y": 387.372
+      },
+      {
+        "name": "3.3V",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 281.492,
+        "y": 387.372
+      },
+      {
+        "name": "RESET",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 262.425,
+        "y": 387.372
+      },
+      {
+        "name": "IOREF",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 243.358,
+        "y": 387.372
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2",
+      "GPIO_3",
+      "GPIO_4",
+      "GPIO_5",
+      "GPIO_6",
+      "GPIO_7",
+      "GPIO_8",
+      "GPIO_9",
+      "GPIO_10",
+      "GPIO_11",
+      "GPIO_12",
+      "GPIO_13",
+      "UART_1",
+      "I2C_1",
+      "SPI_1",
+      "PWM_1",
+      "PWM_2",
+      "PWM_3",
+      "PWM_4",
+      "PWM_5",
+      "PWM_6",
+      "ANALOG_1",
+      "ANALOG_2",
+      "ANALOG_3",
+      "ANALOG_4",
+      "ANALOG_5"
+    ],
+    "compatibility": [],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-1120",
+    "brand": "Adafruit",
+    "model": "Triple-axis Accelerometer+Magnetometer (Compass) Board - LSM303",
+    "url": "https://www.adafruit.com/product/1120",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 130.0,
+    "height": 117.0,
+    "port": [
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.5,
+        "y": 101.0
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 28.9,
+        "y": 101.0
+      },
+      {
+        "name": "I2",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 43.3,
+        "y": 101.0
+      },
+      {
+        "name": "I1",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 57.7,
+        "y": 101.0
+      },
+      {
+        "name": "DRDY",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 72.1,
+        "y": 101.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 86.5,
+        "y": 101.0
+      },
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 100.9,
+        "y": 101.0
+      },
+      {
+        "name": "3V3",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 115.3,
+        "y": 101.0
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Accelerometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Y",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Z",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Magnetometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Heading",
+            "constraint": [
+              "North",
+              "South"
+            ]
+          },
+          {
+            "name": "  ",
+            "constraint": [
+              "East",
+              "West"
+            ]
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinoall-29",
+    "brand": "Arduinoall",
+    "model": "PIR Motion Sensor Module HC-SR501",
+    "url": "https://www.arduinoall.com/product/29/pir-hc-sr501-%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%84%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B9%84%E0%B8%AB%E0%B8%A7-motion-sensor-module-hc-sr501",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 234.0,
+    "height": 391.0,
+    "port": [
+      {
+        "name": "5V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 98.5,
+        "y": 369.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 135.0,
+        "y": 369.0
+      },
+      {
+        "name": "DO",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 117.0,
+        "y": 369.0
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Presence",
+        "action": [
+          {
+            "name": "Detect Human",
+            "parameter": [
+              {
+                "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-1438",
+    "brand": "Adafruit",
+    "model": "Adafruit Motor/Stepper/Servo Shield for Arduino v2 Kit - v2.3",
+    "url": "https://www.adafruit.com/product/1438",
+    "type": "PERIPHERAL",
+    "formfactor": "SHIELD",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 454.0,
+    "height": 204.0,
+    "port": [
+      {
+        "name": "M1+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 17.0,
+        "y": 177.5
+      },
+      {
+        "name": "M1-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 17.0,
+        "y": 205.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 17.0,
+        "y": 230.5
+      },
+      {
+        "name": "M2+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 17.0,
+        "y": 260.5
+      },
+      {
+        "name": "M2-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 17.0,
+        "y": 290.5
+      },
+      {
+        "name": "V+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 156.0,
+        "y": 397.0
+      },
+      {
+        "name": "V-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 181.0,
+        "y": 397.0
+      },
+      {
+        "name": "M3+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 528.0,
+        "y": 348.5
+      },
+      {
+        "name": "M3-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 528.0,
+        "y": 322.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 528.0,
+        "y": 295.5
+      },
+      {
+        "name": "M4+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 528.0,
+        "y": 269.5
+      },
+      {
+        "name": "M4-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 528.0,
+        "y": 240.5
+      },
+      {
+        "name": "Servo1+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 64.0,
+        "y": 23.5
+      },
+      {
+        "name": "Servo1-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 83.0,
+        "y": 23.5
+      },
+      {
+        "name": "Servo1s",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 102.0,
+        "y": 23.5
+      },
+      {
+        "name": "Servo2+",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 64.0,
+        "y": 43.5
+      },
+      {
+        "name": "Servo2-",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 83.0,
+        "y": 43.5
+      },
+      {
+        "name": "Servo2s",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 102.0,
+        "y": 43.5
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 174.5,
+        "y": 21.907
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 154.5,
+        "y": 21.907
+      },
+      {
+        "name": "5V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 300.559,
+        "y": 387.372
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 319.626,
+        "y": 387.372
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "DC Motor",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Direction",
+                "constraint": [
+                  "Forward",
+                  "Backward"
+                ]
+              },
+              {
+                "name": "Speed",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-1119",
+    "brand": "Adafruit",
+    "model": "Tactile Switch Buttons",
+    "url": "https://www.adafruit.com/product/1119",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_TWOSIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 48.0,
+    "height": 65.0,
+    "port": [
+      {
+        "name": "S1A",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          },
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 4.5,
+        "y": 65.5
+      },
+      {
+        "name": "S1B",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          },
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 4.5,
+        "y": 0.5
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "Button",
+        "action": [
+          {
+            "name": "Wait For Press",
+            "parameter": [
+              {
+                "name": "isPressed",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Click Count",
+            "parameter": [
+              {
+                "name": "isMultiPressed",
+                "constraint": {
+                  "min": 1.0,
+                  "max": 100.0,
+                  "unit": "TIME"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Wait For Release",
+            "parameter": [
+              {
+                "name": "isReleased",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-292",
+    "brand": "Adafruit",
+    "model": "I2C / SPI character LCD backpack",
+    "url": "https://www.adafruit.com/products/292",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 284.286,
+    "height": 126.29,
+    "port": [
+      {
+        "name": "LAT",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 362.5,
+        "y": 121.5
+      },
+      {
+        "name": "DAT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 382.5,
+        "y": 121.5
+      },
+      {
+        "name": "CLK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 402.5,
+        "y": 121.5
+      },
+      {
+        "name": "5V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 422.5,
+        "y": 121.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 442.5,
+        "y": 121.5
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LCD",
+        "action": [
+          {
+            "name": "Print",
+            "parameter": [
+              {
+                "name": "Backlight",
+                "constraint": [
+                  "On",
+                  "Off"
+                ]
+              },
+              {
+                "name": "Print Text",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Clear",
+            "parameter": [
+              {
+                "name": "Backlight",
+                "constraint": [
+                  "On",
+                  "Off"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "COM-09590",
+    "brand": "Sparkfun",
+    "model": "LED - Basic Red 5mm",
+    "url": "https://www.sparkfun.com/products/9590",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 110.0,
+    "height": 111.0,
+    "port": [
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 0.0,
+        "y": 78.0
+      },
+      {
+        "name": "V+",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "PWM_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 1.8,
+        "v_max": 5.0,
+        "x": 102.5,
+        "y": 111.0
+      }
+    ],
+    "connectivity": [
+      "PWM_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Blink",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              },
+              {
+                "name": "Time period",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 60.0,
+                  "unit": "SECOND"
+                }
+              },
+              {
+                "name": "Blink speed",
+                "constraint": [
+                  "Slow",
+                  "Medium",
+                  "Fast"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Adafruit-1334",
+    "brand": "Adafruit",
+    "model": "RGB Color Sensor with IR filter and White LED - TCS34725",
+    "url": "https://www.adafruit.com/product/1334",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 154.0,
+    "height": 154.0,
+    "port": [
+      {
+        "name": "LED",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.5,
+        "v_max": 5.0,
+        "x": 19.25,
+        "y": 142.449
+      },
+      {
+        "name": "INT",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 38.5,
+        "y": 142.449
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 57.75,
+        "y": 142.449
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 77.0,
+        "y": 142.449
+      },
+      {
+        "name": "3V3",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 96.25,
+        "y": 142.449
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 115.5,
+        "y": 142.449
+      },
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.5,
+        "v_max": 5.0,
+        "x": 134.75,
+        "y": 142.449
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [],
     "dependency": []
   }
 ]

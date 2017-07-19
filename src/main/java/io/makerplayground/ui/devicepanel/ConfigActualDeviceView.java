@@ -152,7 +152,7 @@ public class ConfigActualDeviceView extends Dialog {
                 projectDevice.setDeviceConnection(result);
             });
 
-            entireDevice.getChildren().addAll(devicePic, checkBox, deviceComboBox);
+            entireDevice.getChildren().addAll(devicePic, checkBox, deviceComboBox, portComboBox);
             row.getChildren().add(entireDevice);
             allDevice.getChildren().add(row);
         }

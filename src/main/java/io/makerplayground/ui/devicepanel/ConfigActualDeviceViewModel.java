@@ -12,10 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tanyagorn on 7/11/2017.
@@ -54,7 +51,18 @@ public class ConfigActualDeviceViewModel {
         return project.getAllDevice();
     }
 
+    // Must be called after selected controller
     public Map<ProjectDevice, List<Peripheral>> getDeviceCompatiblePort() {
+        Map<ProjectDevice, List<Peripheral>> result = new HashMap<>();
+
+        if (project.getController().getController() == null)
+        {
+            for (ProjectDevice projectDevice : project.getAllDevice()) {
+                result.put(projectDevice, Collections.emptyList());
+            }
+            return result;
+        }
+
         List<Peripheral> processorPort = project.getController().getController().getConnectivity();
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
@@ -65,16 +73,16 @@ public class ConfigActualDeviceViewModel {
             }
         }
 
-        Map<ProjectDevice, List<Peripheral>> result = new HashMap<>();
-
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             List<Peripheral> possibleDevice = new ArrayList<>();
-            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
-                possibleDevice.add(p);
-            }
-            for (Peripheral p : processorPort) {
-                if (projectDevice.getActualDevice().getConnectivity().get(0).getType() == p.getType()) {
+            if (!projectDevice.isAutoSelectDevice() && (projectDevice.getActualDevice() != null)) { // calculate possible only if actual device is selected
+                for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                     possibleDevice.add(p);
+                }
+                for (Peripheral p : processorPort) {
+                    if (projectDevice.getActualDevice().getConnectivity().get(0).getType() == p.getType()) {
+                        possibleDevice.add(p);
+                    }
                 }
             }
             result.put(projectDevice, possibleDevice);
