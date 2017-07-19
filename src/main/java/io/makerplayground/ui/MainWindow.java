@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
+import javafx.stage.FileChooser;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -45,22 +47,22 @@ public class MainWindow extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         saveButton.setOnAction(event -> {
             try {
-                mapper.writeValue(new File("C:\\Users\\USER\\Desktop\\file.json"), project);
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save File");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+                        new FileChooser.ExtensionFilter("All Files", "*.*"));
+                File selectedFile = fileChooser.showSaveDialog(MainWindow.this.getScene().getWindow());
+                if (selectedFile != null) {
+                    mapper.writeValue(selectedFile, project);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-
-//        loadButton.setOnAction(event -> {
-//            try {
-//                project = mapper.readValue(new File("C:\\Users\\USER\\Desktop\\file.json"), Project.class);
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
 
         projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
 
@@ -71,5 +73,9 @@ public class MainWindow extends BorderPane {
 
         mainPane.setDividerPositions(0.8, 0.2);
         mainPane.getItems().addAll(canvasView, rightPanel);
+    }
+
+    public void onLoadPressed(EventHandler<javafx.event.ActionEvent> e) {
+        loadButton.setOnAction(e);
     }
 }

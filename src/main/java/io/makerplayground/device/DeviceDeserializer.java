@@ -2,10 +2,15 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import io.makerplayground.helper.DeviceType;
+import io.makerplayground.helper.FormFactor;
+import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.Platform;
 
 import java.io.IOException;
 import java.util.*;
@@ -28,113 +33,73 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
+        String id = node.get("id").asText();
         String brand = node.get("brand").asText();
         String model = node.get("model").asText();
         String url = node.get("url").asText();
+        double width = node.get("width").asDouble();
+        double height = node.get("height").asDouble();
+        DeviceType type = DeviceType.valueOf(node.get("type").asText());
+        FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
+        Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
+                , new TypeReference<List<Platform>>() {}));
+        List<DevicePort> port = mapper.readValue(node.get("port").traverse()
+                , new TypeReference<List<DevicePort>>() {});
+        List<Peripheral> connectivity = mapper.readValue(node.get("connectivity").traverse()
+                , new TypeReference<List<Peripheral>>() {});
 
+        Map<GenericDevice, Integer> supportedDevice = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
-        for (JsonNode deviceNode : node.get("supportdevice")) {
+        Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
+        for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
-            System.out.println(deviceName);
-            // find device
-            GenericDevice genericDevice = null;
-            System.out.println(DeviceLibrary.INSTANCE);
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
-                if (tempdevice.getName().equals(deviceName)) {
-                    genericDevice = tempdevice;
-                    break;
-                }
-            }
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
-                if (tempdevice.getName().equals(deviceName)) {
-                    genericDevice = tempdevice;
-                    break;
-                }
-            }
+            //System.out.println(deviceName);
+            GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
 
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
-                System.out.println(actionName);
-                // find action with name=actionName
-                Action action = null;
-                for (Action tempaction : genericDevice.getAction()) {
-                    if (tempaction.getName().equals(actionName)) {
-                        action = tempaction;
-                        break;
-                    }
-                }
+                //System.out.println(actionName);
+                Action action = genericDevice.getAction(actionName);
+
                 Map<Parameter, Constraint> supportedParam = new HashMap<>();
                 for (JsonNode parameterNode : actionNode.get("parameter")) {
                     String parameterName = parameterNode.get("name").asText();
-                    System.out.println(parameterName);
+                    //System.out.println(parameterName);
                     Constraint constraint = mapper.treeToValue(parameterNode.get("constraint"), Constraint.class);
-                    System.out.println(constraint);
-                    // find parameter with name=parameterName
-                    Parameter parameter = null;
-                    for (Parameter tempparam : action.getParameter()) {
-                        if (tempparam.getName().equals(parameterName)) {
-                            parameter = tempparam;
-                            break;
-                        }
-                    }
+                    //System.out.println(constraint);
+                    Parameter parameter = action.getParameter(parameterName);
                     supportedParam.put(parameter, constraint);
                 }
                 supportedAction.put(action, supportedParam);
             }
             supportedDeviceaction.put(genericDevice, supportedAction);
-        }
 
-        Map<GenericDevice, Map<Value, Constraint>>  supportedDevicevalue = new HashMap<>();
-        for (JsonNode deviceNode : node.get("supportvalue")) {
-            String deviceName = deviceNode.get("name").asText();
-            System.out.println(deviceName);
-            // find device
-            GenericDevice genericDevice = null;
-            for (GenericDevice tempdevice : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
-                if (tempdevice.getName().equals(deviceName)) {
-                    genericDevice = tempdevice;
-                    break;
-                }
-            }
             Map<Value, Constraint> supportedValue = new HashMap<>();
             for (JsonNode valueNode : deviceNode.get("value")) {
-                String actionName = valueNode.get("name").asText();
-                System.out.println(actionName);
+                String valueName = valueNode.get("name").asText();
+                //System.out.println(actionName);
                 Constraint constraint = mapper.treeToValue(valueNode.get("constraint"), Constraint.class);
-                System.out.println(constraint);
-                // find action with name=actionName
-                Value value = null;
-                for (Value tempaction : genericDevice.getValue()) {
-                    if (tempaction.getName().equals(actionName)) {
-                        value = tempaction;
-                        break;
-                    }
-                }
+                //System.out.println(constraint);
+                Value value = genericDevice.getValue(valueName);
                 supportedValue.put(value, constraint);
             }
-            supportedDevicevalue.put(genericDevice, supportedValue);
+            supportedDeviceValue.put(genericDevice, supportedValue);
+
+            supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
 
-        return new Device(brand, model, url, supportedDeviceaction, supportedDevicevalue, Collections.emptyList(), Collections.emptyMap());
-//        Map<Parameter, Constraint> supportparam = new HashMap<>();
-//        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
-//        supportparam.put(param, constraint);
-//
-//        List<Parameter> paramList = new ArrayList<>();
-//        JsonNode paramListNode = node.get("parameter");
-//        JsonNode actionListNode = node.get("action");
-//        if (!actionListNode.isArray()) {
-//            System.out.println("Format error!!!");
-//        }
-//        for (JsonNode paramNode : paramListNode) {
-//            Parameter param = mapper.treeToValue(paramNode, Parameter.class);
-//            paramList.add(param);
-//        }
-//
-//        if (supportparamNode.)
-//        Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportmap = new HashMap<>();
-//
-//        return Device(brand, model, url,);
+        Map<String, List<String>> dependency = new HashMap<>();
+        for (JsonNode dependencyNode : node.get("dependency")) {
+            String name = dependencyNode.get("name").asText();
+            List<String> device = new ArrayList<>();
+            for (JsonNode deviceNode : dependencyNode.get("device")) {
+                device.add(deviceNode.asText());
+            }
+            dependency.put(name, device);
+        }
+
+        return new Device(id, brand, model, url, width, height, type, formFactor, platform, port, connectivity
+                , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency);
     }
 }

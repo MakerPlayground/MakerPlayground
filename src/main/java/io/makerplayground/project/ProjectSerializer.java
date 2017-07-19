@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.makerplayground.device.Processor;
 
 import java.io.IOException;
 
@@ -29,31 +28,40 @@ public class ProjectSerializer extends StdSerializer<Project> {
 
         jsonGenerator.writeStringField("projectName", project.getProjectName());
 
-//        jsonGenerator.writeObjectFieldStart("processor");
-//        jsonGenerator.writeStringField("name",project.getProcessor().getName());
-//        jsonGenerator.writeEndObject();
+        jsonGenerator.writeObjectFieldStart("controller");
+        jsonGenerator.writeStringField("platform", project.getController().getPlatform().name());
+        if (project.getController().getController() != null)
+            jsonGenerator.writeStringField("device", project.getController().getController().getId());
+        else
+            jsonGenerator.writeStringField("device", "");
+        jsonGenerator.writeEndObject();
 
         jsonGenerator.writeArrayFieldStart("inputDevice");
         for(ProjectDevice inputDevice : project.getInputDevice()) {
-            mapper.writeValue(jsonGenerator,inputDevice);
+            mapper.writeValue(jsonGenerator, inputDevice);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("outputDevice");
         for(ProjectDevice outputDevice : project.getOutputDevice()) {
-            mapper.writeValue(jsonGenerator,outputDevice);
+            mapper.writeValue(jsonGenerator, outputDevice);
         }
         jsonGenerator.writeEndArray();
 
+        jsonGenerator.writeObjectFieldStart("begin");
+        jsonGenerator.writeNumberField("top", project.getBegin().getTop());
+        jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
+        jsonGenerator.writeEndObject();
+
         jsonGenerator.writeArrayFieldStart("scene");
         for(Scene scene : project.getScene()) {
-            mapper.writeValue(jsonGenerator,scene);
+            mapper.writeValue(jsonGenerator, scene);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("condition");
         for(Condition condition : project.getCondition()) {
-            mapper.writeValue(jsonGenerator,condition);
+            mapper.writeValue(jsonGenerator, condition);
         }
         jsonGenerator.writeEndArray();
 
@@ -67,9 +75,9 @@ public class ProjectSerializer extends StdSerializer<Project> {
                 jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
 
             if (line.getDestination() instanceof Scene)
-                jsonGenerator.writeStringField("destination", ((Scene) line.getSource()).getName());
+                jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
             else if (line.getDestination() instanceof Condition)
-                jsonGenerator.writeStringField("destination", ((Condition) line.getSource()).getName());
+                jsonGenerator.writeStringField("destination", ((Condition) line.getDestination()).getName());
 
             jsonGenerator.writeEndObject();
         }

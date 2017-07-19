@@ -35,20 +35,24 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         jsonGenerator.writeStringField("action", userSetting.getAction().getName());
 
         jsonGenerator.writeArrayFieldStart("valueMap");
-        for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {        //TODO: fix later
+        for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField(v.getKey().getName(), v.getValue());
+            jsonGenerator.writeStringField("name", v.getKey().getName());
+            jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("expression");
         for (Map.Entry<Value, ObservableList<Expression>> e : userSetting.getExpression().entrySet()) {       //TODO: fix later
-            jsonGenerator.writeObjectFieldStart(e.getKey().getName());
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("name", e.getKey().getName());
 
-            jsonGenerator.writeArrayFieldStart(e.getKey().getName());
-            for (Expression expresion : e.getValue()) {
-                jsonGenerator.writeObject(expresion);
+            jsonGenerator.writeArrayFieldStart("expression");
+            //jsonGenerator.writeStartArray();
+            for (Expression expression : e.getValue()) {
+                //jsonGenerator.writeObject(expresion);
+                mapper.writeValue(jsonGenerator, expression);
             }
             jsonGenerator.writeEndArray();
 

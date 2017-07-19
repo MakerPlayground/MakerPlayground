@@ -4,31 +4,31 @@
     "action": [
       {
         "name": "Wait For Press",
+        "funcname": "isPressed",
         "type": "Active",
         "parameter": []
       },
       {
         "name": "Click Count",
+        "funcname": "isMultiPressed",
         "type": "Active",
         "parameter": [
           {
             "name": "Count",
-            "defaultValue": 1.0,
-            "defaultValueUnit": "TIME",
-            "constraint": [
-              {
-                "min": 1.0,
-                "max": 100.0,
-                "unit": "TIME"
-              }
-            ],
-            "dataType": "INTEGER",
-            "controlType": "SPINBOX"
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 100.0,
+              "unit": "TIME"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
           }
         ]
       },
       {
         "name": "Wait For Release",
+        "funcname": "isReleased",
         "type": "Active",
         "parameter": []
       }
@@ -40,53 +40,50 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       },
       {
         "name": "Tap",
+        "funcname": "isTapped",
         "type": "Active",
         "parameter": []
       },
       {
         "name": "Free Fall",
+        "funcname": "isFallen",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Axis X Value",
+        "name": "X",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "METERPERSECSQUARE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "METERPERSECSQUARE"
+        }
       },
       {
-        "name": "Axis Y Value",
+        "name": "Y",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "METERPERSECSQUARE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "METERPERSECSQUARE"
+        }
       },
       {
-        "name": "Axis Z Value",
+        "name": "Z",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "METERPERSECSQUARE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "METERPERSECSQUARE"
+        }
       }
     ]
   },
@@ -95,21 +92,20 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Pressure Value",
+        "name": "Pressure",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 300.0,
-            "max": 1150.0,
-            "unit": "HECTOPASCAL"
-          }
-        ]
+        "constraint": {
+          "min": 300.0,
+          "max": 1150.0,
+          "unit": "HECTOPASCAL"
+        }
       }
     ]
   },
@@ -118,21 +114,20 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Altitude Value",
+        "name": "Altitude",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "METER"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "METER"
+        }
       }
     ]
   },
@@ -141,31 +136,20 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Temperature Value",
+        "name": "Temperature",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "CELSIUS"
-          },
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "FAHRENHEIT"
-          },
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "KELVIN"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "CELSIUS"
+        }
       }
     ]
   },
@@ -174,43 +158,38 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Axis X Value",
+        "name": "X",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "RADIUSPERSEC"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "RADIUSPERSEC"
+        }
       },
       {
-        "name": "Axis Y Value",
+        "name": "Y",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "RADIUSPERSEC"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "RADIUSPERSEC"
+        }
       },
       {
-        "name": "Axis Z Value",
+        "name": "Z",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "RADIUSPERSEC"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "RADIUSPERSEC"
+        }
       }
     ]
   },
@@ -219,21 +198,20 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Humid Value",
+        "name": "Humidity",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 100.0,
-            "unit": "PERCENT"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
       }
     ]
   },
@@ -242,46 +220,20 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
-      },
-      {
-        "name": "Detect Sound",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "Detect Frequency",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Frequency",
-            "defaultValue": 2000.0,
-            "defaultValueUnit": "HERTZ",
-            "constraint": [
-              {
-                "min": 0.0,
-                "max": 4000.0,
-                "unit": "HERTZ"
-              }
-            ],
-            "dataType": "INTEGER",
-            "controlType": "SPINBOX"
-          }
-        ]
       }
     ],
     "value": [
       {
         "name": "Sound Level",
         "dataType": "INTEGER",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "DECIBEL"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "DECIBEL"
+        }
       }
     ]
   },
@@ -290,32 +242,33 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       },
       {
         "name": "Direction",
+        "funcname": "checkDirection",
         "type": "Active",
         "parameter": [
           {
             "name": "Direction",
-            "defaultValue": "North",
-            "defaultValueUnit": "",
+            "value": "North",
             "constraint": [
               "North",
               "South",
               "East",
               "West"
             ],
-            "dataType": "ENUM",
-            "controlType": "DROPDOWN"
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           }
         ]
       }
     ],
     "value": [
       {
-        "name": "Direction",
+        "name": "Heading",
         "dataType": "ENUM",
         "constraint": [
           "North",
@@ -325,37 +278,31 @@
         ]
       },
       {
-        "name": "Axis X Value",
+        "name": "X",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "MICROTESLA"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "MICROTESLA"
+        }
       },
       {
-        "name": "Axis Y Value",
+        "name": "Y",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "MICROTESLA"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "MICROTESLA"
+        }
       },
       {
-        "name": "Axis Z Value",
+        "name": "Z",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 200.0,
-            "unit": "MICROTESLA"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 200.0,
+          "unit": "MICROTESLA"
+        }
       }
     ]
   },
@@ -364,26 +311,20 @@
     "action": [
       {
         "name": "Compare",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "Detect Object",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": [
       {
-        "name": "Distance Value",
+        "name": "Distance",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "CENTIMETER"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "CENTIMETER"
+        }
       }
     ]
   },
@@ -392,6 +333,7 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
@@ -400,13 +342,11 @@
       {
         "name": "Light Level",
         "dataType": "DOUBLE",
-        "constraint": [
-          {
-            "min": 0.1,
-            "max": 40000.0,
-            "unit": "LUX"
-          }
-        ]
+        "constraint": {
+          "min": 0.1,
+          "max": 40000.0,
+          "unit": "LUX"
+        }
       }
     ]
   },
@@ -415,6 +355,7 @@
     "action": [
       {
         "name": "Detect Human",
+        "funcname": "isDetected",
         "type": "Active",
         "parameter": []
       }
@@ -426,6 +367,7 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
@@ -434,35 +376,29 @@
       {
         "name": "Roll",
         "dataType": "INTEGER",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "DEGREE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "DEGREE"
+        }
       },
       {
         "name": "Pitch",
         "dataType": "INTEGER",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "DEGREE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "DEGREE"
+        }
       },
       {
         "name": "Yaw",
         "dataType": "INTEGER",
-        "constraint": [
-          {
-            "min": 0.0,
-            "max": 0.0,
-            "unit": "DEGREE"
-          }
-        ]
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "DEGREE"
+        }
       }
     ]
   },
@@ -471,6 +407,7 @@
     "action": [
       {
         "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }

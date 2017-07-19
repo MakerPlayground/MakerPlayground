@@ -16,11 +16,13 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.util.List;
 
 /**
  *
@@ -42,6 +44,15 @@ public class Scene extends NodeElement {
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
         this.delayUnit = DelayUnit.Second;
+    }
+
+    Scene(double top, double left, double width, double height
+            , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit) {
+        super(top, left, width, height);
+        this.name = new SimpleStringProperty(name);
+        this.setting = FXCollections.observableList(setting);
+        this.delay = new SimpleDoubleProperty(delay);
+        this.delayUnit = delayUnit;
     }
 
     public void addDevice(ProjectDevice device) {

@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
@@ -27,6 +28,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -61,13 +63,19 @@ public class UserSetting {
             for (Parameter param : action.get().getParameter()) {
                 valueMap.put(param, param.getDefaultValue());
             }
-
         });
 
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
             expression.put(v, FXCollections.observableArrayList());
         }
+    }
+
+    UserSetting(ProjectDevice device, Action action, Map<Parameter, Object> valueMap, Map<Value, ObservableList<Expression>> expression) {
+        this.device = device;
+        this.action = new SimpleObjectProperty<>(action);
+        this.valueMap = FXCollections.observableMap(valueMap);
+        this.expression = FXCollections.observableMap(expression);
     }
 
     public ProjectDevice getDevice() {

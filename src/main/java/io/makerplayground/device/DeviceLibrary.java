@@ -28,7 +28,7 @@ import java.util.*;
 public enum DeviceLibrary {
     INSTANCE;
 
-    private List<Processor> processor;
+//    private List<Microcontroller> microcontroller;
     private List<GenericDevice> genericInputDevice;
     private List<GenericDevice> genericOutputDevice;
     private List<Device> actualDevice;
@@ -37,16 +37,16 @@ public enum DeviceLibrary {
     }
 
     public void loadDeviceFromJSON() {
-        List<Processor> temp3;
+//        List<Microcontroller> temp3;
         List<GenericDevice> temp;
         List<Device> temp2;
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/processor.json")
-                    , new TypeReference<List<Processor>>() {});
-            this.processor = Collections.unmodifiableList(temp3);
+//            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/processor.json")
+//                    , new TypeReference<List<Microcontroller>>() {});
+//            this.microcontroller = Collections.unmodifiableList(temp3);
 
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
                     , new TypeReference<List<GenericDevice>>() {});
@@ -63,11 +63,25 @@ public enum DeviceLibrary {
             e.printStackTrace();
         }
 
-        System.out.println(processor);
+        System.out.println(this.actualDevice);
     }
 
-    public List<Processor> getProcessor() {
-        return processor;
+//    public List<Microcontroller> getMicrocontroller() {
+//        return microcontroller;
+//    }
+
+    public GenericDevice getGenericDevice(String name) {
+        for (GenericDevice genericDevice : genericInputDevice) {
+            if (genericDevice.getName().equals(name)) {
+                return genericDevice;
+            }
+        }
+        for (GenericDevice genericDevice : genericOutputDevice) {
+            if (genericDevice.getName().equals(name)) {
+                return genericDevice;
+            }
+        }
+        return null;
     }
 
     public List<GenericDevice> getGenericInputDevice() {
@@ -80,6 +94,15 @@ public enum DeviceLibrary {
 
     public List<Device> getActualDevice() {
         return actualDevice;
+    }
+
+    public Device getActualDevice(String id) {
+        for (Device device : actualDevice) {
+            if (device.getId().equals(id)) {
+                return device;
+            }
+        }
+        return null;
     }
 }
 

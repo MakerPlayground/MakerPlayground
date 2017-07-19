@@ -45,6 +45,7 @@ public interface Constraint {
     boolean test(String s);
 
     boolean isCompatible(Constraint constraint);
+
     Constraint union(Constraint constraint);
 
     /**
@@ -68,6 +69,11 @@ public interface Constraint {
 
         @Override
         public boolean isCompatible(Constraint constraint) { return (constraint == NONE); }
+
+        @Override
+        public String toString() {
+            return "Constraint{NONE}";
+        }
     };
 
     /**
@@ -81,14 +87,14 @@ public interface Constraint {
         return new NumericConstraint(min, max, unit);
     }
 
-    /**
-     * Create a constraint for a numeric value with multiple unit
-     * @param constraintValues list of {@link NumericConstraint.Value} to be used to initialize the constraint object
-     * @return an instance of {@link NumericConstraint}
-     */
-    static Constraint createNumericConstraint(List<NumericConstraint.Value> constraintValues) {
-        return new NumericConstraint(constraintValues);
-    }
+//    /**
+//     * Create a constraint for a numeric value with multiple unit
+//     * @param constraintValues list of {@link NumericConstraint.Value} to be used to initialize the constraint object
+//     * @return an instance of {@link NumericConstraint}
+//     */
+//    static Constraint createNumericConstraint(List<NumericConstraint.Value> constraintValues) {
+//        return new NumericConstraint(constraintValues);
+//    }
 
     /**
      * Create a constrint that match only the specify string
