@@ -10,6 +10,7 @@ public enum Peripheral {
     I2C_1, I2C_2, I2C_3, I2C_4,
     SPI_1, SPI_2, SPI_3, SPI_4,
     UART_1, UART_2, UART_3, UART_4,
+    ANALOG_0, ANALOG_1, ANALOG_2, ANALOG_3, ANALOG_4, ANALOG_5, ANALOG_6,
     POWER;
 
 
