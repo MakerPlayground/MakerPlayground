@@ -27,8 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -100,5 +99,34 @@ public class UserSetting {
 
     public ObservableMap<Value, ObservableList<Expression>> getExpression() {
         return expression;
+    }
+
+    public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
+        Map<ProjectDevice, Set<Value>> result = new HashMap<>();
+
+        for (Map.Entry<Value, ObservableList<Expression>> entry : expression.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                if (!result.containsKey(device))
+                    result.put(device, new HashSet<>());
+                result.get(device).add(entry.getKey());
+            }
+
+            for (Expression e : entry.getValue()) {
+                if (e.getFirstOperand() instanceof  ProjectValue) {
+                    ProjectValue projectValue = (ProjectValue) e.getFirstOperand();
+                    if (!result.containsKey(projectValue.getDevice()))
+                        result.put(projectValue.getDevice(), new HashSet<>());
+                    result.get(projectValue.getDevice()).add(projectValue.getValue());
+                }
+                if (e.getOperator().isBetween() && (e.getSecondOperand() instanceof  ProjectValue)) {
+                    ProjectValue projectValue = (ProjectValue) e.getSecondOperand();
+                    if (!result.containsKey(projectValue.getDevice()))
+                        result.put(projectValue.getDevice(), new HashSet<>());
+                    result.get(projectValue.getDevice()).add(projectValue.getValue());
+                }
+            }
+        }
+
+        return result;
     }
 }
