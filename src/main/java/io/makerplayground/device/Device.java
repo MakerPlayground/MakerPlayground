@@ -19,10 +19,7 @@ package io.makerplayground.device;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.helper.*;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -85,7 +82,7 @@ public class Device {
         this.formFactor = formFactor;
         this.supportedPlatform = supportedPlatform;
         this.port = port;
-        this.connectivity = connectivity;
+        this.connectivity = Collections.unmodifiableList(connectivity);
         this.supportedDevice = supportedDevice;
         this.supportedAction = supportedAction;
         this.supportedValue = supportedValue;

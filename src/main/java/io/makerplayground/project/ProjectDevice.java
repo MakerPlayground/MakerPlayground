@@ -85,6 +85,7 @@ public class ProjectDevice {
     }
 
     public void removeDeviceConnection(Peripheral device) {
+        System.out.println("Remove device connection of device = " + device);
         this.deviceConnection.remove(device);
     }
 

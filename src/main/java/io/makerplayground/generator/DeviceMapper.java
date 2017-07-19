@@ -1,6 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
+import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
@@ -93,12 +94,13 @@ public class DeviceMapper {
             return result;
         }
 
-        List<Peripheral> processorPort = project.getController().getController().getConnectivity();
+        List<Peripheral> processorPort = new ArrayList<>(project.getController().getController().getConnectivity());
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             //connection from this device (key) to the processor (value)
             for (Peripheral p : projectDevice.getDeviceConnection().values()) {
-                processorPort.remove(p);
+                if (p.getConnectionType() != ConnectionType.I2C)
+                    processorPort.remove(p);
             }
         }
 

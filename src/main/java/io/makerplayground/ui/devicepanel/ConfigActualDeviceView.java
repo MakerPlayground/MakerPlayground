@@ -50,6 +50,49 @@ public class ConfigActualDeviceView extends Dialog {
             Label name = new Label(projectDevice.getName());
             devicePic.getChildren().addAll(imageView, name);
 
+            // combobox of selectable devices
+            ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            deviceComboBox.setCellFactory(new Callback<ListView<Device>, ListCell<Device>>() {
+                @Override
+                public ListCell<Device> call(ListView<Device> param) {
+                    return new ListCell<Device>() {
+                        @Override
+                        protected void updateItem(Device item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setText("");
+                            } else {
+                                setText(item.getBrand() + " " + item.getModel());
+                            }
+                        }
+                    };
+                }
+            });
+            deviceComboBox.setButtonCell(new ListCell<Device>() {
+                @Override
+                protected void updateItem(Device item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText("");
+                    } else {
+                        setText(item.getBrand() + " " + item.getModel());
+                    }
+                }
+            });
+//            if (projectDevice.getActualDevice() == null) {
+//                deviceComboBox.getSelectionModel().selectFirst();
+//            } else {
+//                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
+//            }
+            if (projectDevice.getActualDevice() != null) {
+                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
+            }
+            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                viewModel.setDevice(projectDevice, newValue);
+                viewModel.removePeripheral(projectDevice);
+                viewModel.reInitialize();
+            });
+
             // combobox of selectable port
             ComboBox<Peripheral> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatiblePort(projectDevice)));
             portComboBox.setCellFactory(new Callback<ListView<Peripheral>, ListCell<Peripheral>>() {
@@ -92,48 +135,6 @@ public class ConfigActualDeviceView extends Dialog {
             }
             portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 viewModel.setPeripheral(projectDevice, newValue);
-            });
-
-            // combobox of selectable devices
-            ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
-            deviceComboBox.setCellFactory(new Callback<ListView<Device>, ListCell<Device>>() {
-                @Override
-                public ListCell<Device> call(ListView<Device> param) {
-                    return new ListCell<Device>() {
-                        @Override
-                        protected void updateItem(Device item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setText("");
-                            } else {
-                                setText(item.getBrand() + " " + item.getModel());
-                            }
-                        }
-                    };
-                }
-            });
-            deviceComboBox.setButtonCell(new ListCell<Device>() {
-                @Override
-                protected void updateItem(Device item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setText("");
-                    } else {
-                        setText(item.getBrand() + " " + item.getModel());
-                    }
-                }
-            });
-//            if (projectDevice.getActualDevice() == null) {
-//                deviceComboBox.getSelectionModel().selectFirst();
-//            } else {
-//                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
-//            }
-            if (projectDevice.getActualDevice() != null) {
-                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
-            }
-            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                viewModel.setDevice(projectDevice, newValue);
-                viewModel.removePeripheral(projectDevice);
             });
 
             CheckBox checkBox = new CheckBox("Auto");

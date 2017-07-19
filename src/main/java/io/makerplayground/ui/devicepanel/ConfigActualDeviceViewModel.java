@@ -30,7 +30,7 @@ public class ConfigActualDeviceViewModel {
         reInitialize();
     }
 
-    private void reInitialize() {
+    public void reInitialize() {
         Map<ProjectDevice, List<Device>> deviceList = DeviceMapper.getSupportedDeviceList(project);
         compatibleDeviceList.set(deviceList);
 //        for (ProjectDevice projectDevice : deviceList.keySet()) {
@@ -82,7 +82,7 @@ public class ConfigActualDeviceViewModel {
 
     public void setDevice(ProjectDevice projectDevice, Device device) {
         projectDevice.setActualDevice(device);
-        reInitialize();
+        //reInitialize();
     }
 
     public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral) {
@@ -94,7 +94,7 @@ public class ConfigActualDeviceViewModel {
     public void removePeripheral(ProjectDevice projectDevice) {
         // TODO: assume a device only has 1 peripheral
         projectDevice.removeDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0));
-        reInitialize();
+        //reInitialize();
     }
 
     public ObservableList<ProjectDevice> getAllDevice() {
