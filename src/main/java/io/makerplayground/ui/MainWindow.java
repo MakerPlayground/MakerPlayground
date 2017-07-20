@@ -20,15 +20,8 @@ import java.io.IOException;
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
  */
-public class MainWindow extends BorderPane {
-    @FXML
-    private SplitPane mainPane;
-    @FXML
-    private TextField projectNameTextField;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button loadButton;
+public class MainWindow extends SplitPane {
+
     private final Project project;
 
     public MainWindow(Project project) {
@@ -37,7 +30,6 @@ public class MainWindow extends BorderPane {
     }
 
     private void initView() {
-        ObjectMapper mapper = new ObjectMapper();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -48,34 +40,17 @@ public class MainWindow extends BorderPane {
             e.printStackTrace();
         }
 
-        saveButton.setOnAction(event -> {
-            try {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save File");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-                        new FileChooser.ExtensionFilter("All Files", "*.*"));
-                File selectedFile = fileChooser.showSaveDialog(MainWindow.this.getScene().getWindow());
-                if (selectedFile != null) {
-                    mapper.writeValue(selectedFile, project);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-
         RightPanel rightPanel = new RightPanel(project);
 
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
-        mainPane.setDividerPositions(0.8, 0.2);
-        mainPane.getItems().addAll(canvasView, rightPanel);
+        setDividerPositions(0.8, 0.2);
+        getItems().addAll(canvasView, rightPanel);
     }
 
-    public void onLoadPressed(EventHandler<javafx.event.ActionEvent> e) {
-        loadButton.setOnAction(e);
+
+    public Project getProject() {
+        return project;
     }
 }

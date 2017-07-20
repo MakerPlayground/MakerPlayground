@@ -16,6 +16,10 @@ public class GenerateViewModel {
     public GenerateViewModel(Project project) {
         this.project = project;
         this.code = CodeGenerator.generateCode(project);
+
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            System.out.println(projectDevice.getName() + " " + projectDevice.getActualDevice().getId() + " " + projectDevice.getActualDevice().getModel());
+        }
     }
 
     public Project getProject() {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #313644;" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+               <children>
+                  <TextField id="projectNameTextField" fx:id="projectNameTextField" maxWidth="100.0" minWidth="100.0" style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project" />
+                  <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;" />
+                  <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-repeat: no-repeat;" />
+               </children>
+            </HBox>
+            <Button id="tutorialBtn" alignment="CENTER" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" mnemonicParsing="false" text="Tutorial" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+               <padding>
+                  <Insets bottom="2.5" top="2.5" />
+               </padding>
+            </Button>
+         </children>
+      </AnchorPane>
+   </top>
+</fx:root>
