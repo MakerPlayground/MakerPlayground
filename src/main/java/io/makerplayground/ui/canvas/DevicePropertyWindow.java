@@ -486,7 +486,7 @@ public class DevicePropertyWindow extends PopOver {
         }
 
         public ExpressionPropertyEditor(PropertySheet.Item property) {
-            this(property, new ExpressionControl(viewModel.getProjectValue()));
+            this(property, new ExpressionControl(((ValuePropertyItem) property).getV(), viewModel.getProjectValue()));
         }
 
         @Override

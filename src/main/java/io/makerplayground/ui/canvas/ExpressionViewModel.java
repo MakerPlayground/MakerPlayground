@@ -1,11 +1,16 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.device.NumericConstraint;
+import io.makerplayground.device.Value;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -15,6 +20,7 @@ import java.util.List;
 public class ExpressionViewModel {
     private final Expression expression;
     private final List<ProjectValue> availableValue;
+    private final ObservableList<Unit> availableUnit;
 
     private final DoubleProperty firstOperandAsDouble;
     private final DoubleProperty secondOperandAsDouble;
@@ -23,9 +29,10 @@ public class ExpressionViewModel {
     private final ReadOnlyBooleanWrapper literalMode;
     private final ReadOnlyBooleanWrapper betweenMode;
 
-    public ExpressionViewModel(Expression expression, List<ProjectValue> values) {
+    public ExpressionViewModel(Value v, Expression expression, List<ProjectValue> values) {
         this.expression = expression;
         this.availableValue = values;
+        this.availableUnit = FXCollections.observableArrayList(((NumericConstraint) v.getConstraint()).getUnit());
 
         this.firstOperandAsDouble = new SimpleDoubleProperty();
         this.firstOperandAsDouble.addListener((observable, oldValue, newValue) -> expression.setFirstOperand(newValue));
@@ -145,6 +152,10 @@ public class ExpressionViewModel {
 
     public boolean isBetweenMode() {
         return betweenMode.get();
+    }
+
+    public ObservableList<Unit> getAvailableUnit() {
+        return availableUnit;
     }
 
     public ReadOnlyBooleanProperty betweenModeProperty() {
