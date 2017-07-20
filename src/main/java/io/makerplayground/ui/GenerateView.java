@@ -29,7 +29,7 @@ public class GenerateView extends Dialog {
         TextArea code = new TextArea();
         code.setText(viewModel.getCode());
 
-        test.getChildren().add(wiringDiagram);
+        test.getChildren().addAll(wiringDiagram, code);
         scrollPane.setContent(test);
         getDialogPane().setContent(scrollPane);
     }

@@ -8,11 +8,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
@@ -29,6 +35,13 @@ public class ConfigActualDeviceView extends Dialog {
 
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
+        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/ConfigActualDeviceView.css").toExternalForm());
+
+        setTitle("  Configure Device");
+        getDialogPane().setExpanded(true);
+        Stage stage = (Stage) getDialogPane().getScene().getWindow();
+        stage.initStyle(StageStyle.UTILITY);
+
         initView();
         viewModel.compatibleDeviceListProperty().addListener(observable -> initView());
         viewModel.compatiblePortListProperty().addListener(observable -> initView());
@@ -37,21 +50,45 @@ public class ConfigActualDeviceView extends Dialog {
     private void initView() {
         ScrollPane scrollPane = new ScrollPane();
         VBox allDevice = new VBox();
+
+        scrollPane.setPrefHeight(260.0);
+        scrollPane.setPrefWidth(565);
+        allDevice.setMaxHeight(260.0);
+        allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
+        allDevice.setSpacing(20.0);
+        allDevice.setPadding(new Insets(20,30,20,30));
+
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> window.hide());
 
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
             VBox row = new VBox();
             HBox entireDevice = new HBox();
-            VBox devicePic = new VBox();
+            HBox devicePic = new HBox();
 
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             Label name = new Label(projectDevice.getName());
             devicePic.getChildren().addAll(imageView, name);
 
+            devicePic.setSpacing(10.0);
+            devicePic.setAlignment(Pos.CENTER);
+            devicePic.setMinHeight(45.0);
+
+            name.setTextAlignment(TextAlignment.LEFT);
+            name.setAlignment(Pos.CENTER_LEFT);
+
+            imageView.setFitHeight(25.0);
+            imageView.setFitWidth(25.0);
+
+            entireDevice.setSpacing(10.0);
+            entireDevice.setAlignment(Pos.CENTER);
+
+            row.setAlignment(Pos.CENTER);
+
             // combobox of selectable devices
             ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            deviceComboBox.setId("deviceComboBox");
             deviceComboBox.setCellFactory(new Callback<ListView<Device>, ListCell<Device>>() {
                 @Override
                 public ListCell<Device> call(ListView<Device> param) {
@@ -95,6 +132,7 @@ public class ConfigActualDeviceView extends Dialog {
 
             // combobox of selectable port
             ComboBox<Peripheral> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatiblePort(projectDevice)));
+            portComboBox.setId("portComboBox");
             portComboBox.setCellFactory(new Callback<ListView<Peripheral>, ListCell<Peripheral>>() {
                 @Override
                 public ListCell<Peripheral> call(ListView<Peripheral> param) {
