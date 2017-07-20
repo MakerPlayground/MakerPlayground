@@ -142,7 +142,7 @@ public class CanvasView extends AnchorPane {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
             guideLine.setEndX(event.getSceneX());
-            guideLine.setEndY(event.getSceneY());
+            guideLine.setEndY(event.getSceneY()-35.0);
 
             event.consume();
         });
@@ -157,7 +157,7 @@ public class CanvasView extends AnchorPane {
             db.setContent(clipboard);
 
             guideLine.setStartX(event.getSceneX());
-            guideLine.setStartY(event.getSceneY());
+            guideLine.setStartY(event.getSceneY()-32.5);
             guideLine.setEndX(event.getSceneX());
             guideLine.setEndY(event.getSceneY());
             guideLine.setVisible(true);
@@ -174,7 +174,7 @@ public class CanvasView extends AnchorPane {
             }
 
             guideLine.setEndX(event.getSceneX());
-            guideLine.setEndY(event.getSceneY());
+            guideLine.setEndY(event.getSceneY()-32.5);
 
             event.consume();
         });
@@ -213,7 +213,7 @@ public class CanvasView extends AnchorPane {
             db.setContent(clipboard);
 
             guideLine.setStartX(event.getSceneX());
-            guideLine.setStartY(event.getSceneY());
+            guideLine.setStartY(event.getSceneY()-32.5);
             guideLine.setEndX(event.getSceneX());
             guideLine.setEndY(event.getSceneY());
             guideLine.setVisible(true);
@@ -230,7 +230,7 @@ public class CanvasView extends AnchorPane {
             }
 
             guideLine.setEndX(event.getSceneX());
-            guideLine.setEndY(event.getSceneY());
+            guideLine.setEndY(event.getSceneY()-32.5);
 
             event.consume();
         });
@@ -269,7 +269,7 @@ public class CanvasView extends AnchorPane {
             db.setContent(clipboard);
 
             guideLine.setStartX(event.getSceneX());
-            guideLine.setStartY(event.getSceneY());
+            guideLine.setStartY(event.getSceneY()-32.5);
             guideLine.setEndX(event.getSceneX());
             guideLine.setEndY(event.getSceneY());
             guideLine.setVisible(true);

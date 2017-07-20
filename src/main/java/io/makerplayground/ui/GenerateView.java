@@ -1,10 +1,14 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.Diagram;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import io.makerplayground.ui.devicepanel.TableDataList;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Window;
 
 /**
@@ -26,11 +30,34 @@ public class GenerateView extends Dialog {
 
         Diagram wiringDiagram = new Diagram(viewModel.getProject());
 
+        final WebView browser = new WebView();
+        final WebEngine webEngine = browser.getEngine();
+
+        TableView table = new TableView();
+        table.setEditable(false);
+        TableColumn nameColumn = new TableColumn("Name");
+        TableColumn brandColumn = new TableColumn("Brand");
+        TableColumn modelColumn = new TableColumn("Model");
+        TableColumn pinColumn = new TableColumn("Pin");
+        TableColumn urlColumn = new TableColumn("URL");
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("name"));
+        brandColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("brand"));
+        modelColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("model"));
+        pinColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("pin"));
+        urlColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,Hyperlink>("url"));
+
+           //TODO: Set urlColumn on Action ( go to website )
+
+        table.setItems(viewModel.getObservableTableList());
+        table.getColumns().addAll(nameColumn,brandColumn,modelColumn,pinColumn,urlColumn);
         TextArea code = new TextArea();
         code.setText(viewModel.getCode());
 
-        test.getChildren().addAll(wiringDiagram, code);
+        test.getChildren().addAll(wiringDiagram,table, code);
         scrollPane.setContent(test);
         getDialogPane().setContent(scrollPane);
     }
+
+
 }
