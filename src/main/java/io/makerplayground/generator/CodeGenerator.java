@@ -17,7 +17,7 @@ public class CodeGenerator {
     private static final String INDENT = "    ";
     private static final String NEW_LINE = "\n";
 
-    public static void generateCode(Project project) {
+    public static String generateCode(Project project) {
         Begin begin = project.getBegin();
         List<Scene> sceneList = project.getScene();
         List<Condition> conditionList = project.getCondition();
@@ -168,6 +168,7 @@ public class CodeGenerator {
         }
 
         System.out.println(sb);
+        return sb.toString();
     }
 
     private static List<NodeElement> findAdjacentVertices(Project project, NodeElement source) {

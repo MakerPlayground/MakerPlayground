@@ -1,6 +1,7 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.CodeGenerator;
+import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Diagram;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
@@ -47,11 +48,10 @@ public class RightPanel extends AnchorPane {
 
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
-//            Dialog dialog = new Dialog();
-//            DialogPane dialogPane = dialog.getDialogPane();
-//            dialogPane.setContent(new Diagram(project));
-//            dialog.showAndWait();
-            CodeGenerator.generateCode(project);
+            DeviceMapper.autoAssignDevices(project);
+            GenerateViewModel generateViewModel = new GenerateViewModel(project);
+            GenerateView generateView = new GenerateView(generateViewModel);
+            generateView.showAndWait();
         });
         Button uploadBtn = new Button("Upload");
 
