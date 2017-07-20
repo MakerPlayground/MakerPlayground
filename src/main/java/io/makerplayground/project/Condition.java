@@ -17,13 +17,12 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.util.List;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.List;
 
 /**
  *
@@ -32,8 +31,6 @@ import javafx.collections.ObservableList;
 public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
-    private final ObjectProperty<Scene> sourceNode; // TODO: to be remove
-    private final ObjectProperty<Scene> destNode;
 
     private final ObservableList<UserSetting> unmodifiableSetting;
 
@@ -42,20 +39,16 @@ public class Condition extends NodeElement {
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
-        this.sourceNode = new SimpleObjectProperty<>(null);
-        this.destNode = new SimpleObjectProperty<>(null);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
     }
 
     public Condition(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, Scene sourceNode, Scene destNode) {
+            , String name, List<UserSetting> setting) {
         super(top, left, width, height);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
-        this.sourceNode = new SimpleObjectProperty<>(sourceNode);
-        this.destNode = new SimpleObjectProperty<>(destNode);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
     }
@@ -71,22 +64,6 @@ public class Condition extends NodeElement {
     public void setName(String name) {
         this.name.set(name);
     }
-
-    public Scene getSourceNode() {
-        return sourceNode.get();
-    }
-
-//    public ObjectProperty<Scene> sourceNodeProperty() {
-//        return sourceNode;
-//    }
-
-    public Scene getDestNode() {
-        return destNode.get();
-    }
-
-//    public ObjectProperty<Scene> destNodeProperty() {
-//        return destNode;
-//    }
 
     public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device));

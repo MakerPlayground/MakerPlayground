@@ -24,23 +24,13 @@ public class ConditionSerializer extends StdSerializer<Condition> {
         ObjectMapper mapper = new ObjectMapper();
         jsonGenerator.writeStartObject();
 
+        jsonGenerator.writeStringField("name", condition.getName());
+
         jsonGenerator.writeArrayFieldStart("setting");
         for (UserSetting setting : condition.getSetting()) {
             mapper.writeValue(jsonGenerator,setting);
         }
         jsonGenerator.writeEndArray();
-
-        if (condition.getSourceNode() != null) {
-            jsonGenerator.writeStringField("sourceNode", condition.getSourceNode().getName());
-        } else {
-            jsonGenerator.writeStringField("sourceNode", "");
-        }
-
-        if (condition.getDestNode() != null) {
-            jsonGenerator.writeStringField("destNode", condition.getDestNode().getName());
-        } else {
-            jsonGenerator.writeStringField("destNode", "");
-        }
 
         jsonGenerator.writeObjectFieldStart("position");
         jsonGenerator.writeNumberField("top",condition.getTop());

@@ -26,7 +26,6 @@ public class ExpressionSerializer extends StdSerializer<Expression> {
         jsonGenerator.writeObjectField("operator", expression.getOperator());
         if (expression.getFirstOperand() instanceof  ProjectValue) {
             jsonGenerator.writeObjectFieldStart("firstOperand");
-            jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("device", ((ProjectValue) expression.getFirstOperand()).getDevice().getName());
             jsonGenerator.writeObjectField("value", ((ProjectValue) expression.getFirstOperand()).getValue().getName());
             jsonGenerator.writeEndObject();
@@ -35,14 +34,12 @@ public class ExpressionSerializer extends StdSerializer<Expression> {
         }
         if (expression.getSecondOperand() instanceof  ProjectValue) {
             jsonGenerator.writeObjectFieldStart("secondOperand");
-            jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("device", ((ProjectValue) expression.getSecondOperand()).getDevice().getName());
             jsonGenerator.writeObjectField("value", ((ProjectValue) expression.getSecondOperand()).getValue().getName());
             jsonGenerator.writeEndObject();
         } else {
             jsonGenerator.writeNumberField("secondOperand", (double) expression.getSecondOperand());
         }
-        jsonGenerator.writeObjectField("operandType", expression.getOperandType());
 
         jsonGenerator.writeEndObject();
     }

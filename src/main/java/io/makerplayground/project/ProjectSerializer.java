@@ -1,6 +1,5 @@
 package io.makerplayground.project;
 
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -73,6 +72,8 @@ public class ProjectSerializer extends StdSerializer<Project> {
                 jsonGenerator.writeStringField("source", ((Scene) line.getSource()).getName());
             else if (line.getSource() instanceof Condition)
                 jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
+            else if (line.getSource() instanceof Begin)
+                jsonGenerator.writeStringField("source", "begin"); // TODO: hardcode as begin
 
             if (line.getDestination() instanceof Scene)
                 jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
