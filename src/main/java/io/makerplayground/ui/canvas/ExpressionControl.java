@@ -2,6 +2,7 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.Value;
 import io.makerplayground.project.Expression;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
@@ -22,13 +23,13 @@ public class ExpressionControl extends VBox{
 
     private SimpleListProperty<Expression> expressionsList;
 
-    public ExpressionControl(List<ProjectValue> values) {
+    public ExpressionControl(Value v, List<ProjectValue> values) {
         expressionsList = new SimpleListProperty<>(FXCollections.observableArrayList());
 
         setSpacing(2.0);
         setAlignment(Pos.TOP_CENTER);
 
-        DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(expression, values));
+        DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(v, expression, values));
         DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {
             ExpressionView expressionView = new ExpressionView(expressionViewModel);
             expressionView.setOnRemovedBtnPressed(event -> expressionsList.remove(expressionView.getExpressionViewModel().getExpression()));

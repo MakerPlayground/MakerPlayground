@@ -1,12 +1,23 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.Diagram;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import io.makerplayground.ui.devicepanel.TableDataList;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 import javafx.stage.Window;
 
 import java.io.IOException;
@@ -16,6 +27,12 @@ import java.io.IOException;
  */
 public class GenerateView extends Dialog {
     @FXML private TextArea codeTextArea;
+    @FXML private TableView<TableDataList> deviceTable;
+    @FXML private TableColumn<TableDataList,String> nameColumn;
+    @FXML private TableColumn<TableDataList,String> brandColumn;
+    @FXML private TableColumn<TableDataList,String> modelColumn;
+    @FXML private TableColumn<TableDataList,String> pinColumn;
+    @FXML private TableColumn<TableDataList,Hyperlink> urlColumn;
     @FXML private ScrollPane diagramScrollPane;
     @FXML private Tab simulateTab;
     @FXML private Tab codeDeviceTableTab;
@@ -45,19 +62,37 @@ public class GenerateView extends Dialog {
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> window.hide());
         Diagram wiringDiagram = new Diagram(viewModel.getProject());
+
         diagramScrollPane.setContent(wiringDiagram);
         codeTextArea.setText(viewModel.getCode());
-//        ScrollPane scrollPane = new ScrollPane();
-//        VBox test = new VBox();
-//
-//        Diagram wiringDiagram = new Diagram(viewModel.getProject());
-//
+
+        final WebView browser = new WebView();
+        final WebEngine webEngine = browser.getEngine();
+
+//        TableView table = new TableView();
+//        TableColumn nameColumn = new TableColumn("Name");
+//        TableColumn brandColumn = new TableColumn("Brand");
+//        TableColumn modelColumn = new TableColumn("Model");
+//        TableColumn pinColumn = new TableColumn("Pin");
+//        TableColumn urlColumn = new TableColumn("URL");
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("name"));
+        brandColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("brand"));
+        modelColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("model"));
+        pinColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("pin"));
+        urlColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,Hyperlink>("url"));
+
+           //TODO: Set urlColumn on Action ( go to website )
+
+        deviceTable.setItems(viewModel.getObservableTableList());
+        //deviceTable.getColumns().addAll(nameColumn,brandColumn,modelColumn,pinColumn,urlColumn);
 //        TextArea code = new TextArea();
 //        code.setText(viewModel.getCode());
-//        codeTextArea.setText(viewModel.getCode());
-//
-//        test.getChildren().addAll(wiringDiagram, code);
+
+//        test.getChildren().addAll(wiringDiagram,table, code);
 //        scrollPane.setContent(test);
 //        getDialogPane().setContent(scrollPane);
     }
+
+
 }

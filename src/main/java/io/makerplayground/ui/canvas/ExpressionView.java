@@ -57,7 +57,7 @@ public class ExpressionView extends HBox {
         comboBoxTo.managedProperty().bind(comboBoxTo.visibleProperty());
         expressionViewModel.secondOperandAsValueProperty().bind(comboBoxTo.getSelectionModel().selectedItemProperty());
 
-        ComboBox<Unit> unitComboBox = new ComboBox<>(FXCollections.observableArrayList(Unit.values()));
+        ComboBox<Unit> unitComboBox = new ComboBox<>(FXCollections.observableArrayList(expressionViewModel.getAvailableUnit()));
         unitComboBox.getSelectionModel().select(expressionViewModel.getUnit());
         expressionViewModel.unitProperty().bind(unitComboBox.getSelectionModel().selectedItemProperty());
 
