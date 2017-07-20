@@ -17,6 +17,8 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Line;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -42,15 +44,19 @@ public class LineViewModel {
         moveTo.xProperty().bind(line.getSource().destPortXProperty());
         moveTo.yProperty().bind(line.getSource().destPortYProperty());
 
+
         CubicCurveTo cubicCurveTo = new CubicCurveTo();
-        cubicCurveTo.controlX1Property().bind(line.getSource().destPortXProperty().multiply(0.25)
-                .add(line.getDestination().sourcePortXProperty().multiply(0.75)));
+        cubicCurveTo.controlX1Property().bind(Bindings.max(line.getSource().destPortXProperty().multiply(0.25)
+                .add(line.getDestination().sourcePortXProperty().multiply(0.75))
+                , line.getSource().destPortXProperty().add(200.0)));
         cubicCurveTo.controlY1Property().bind(line.getSource().destPortYProperty());
-        cubicCurveTo.controlX2Property().bind(line.getDestination().sourcePortXProperty().multiply(0.25)
-                .add(line.getSource().destPortXProperty().multiply(0.75)));
+        cubicCurveTo.controlX2Property().bind(Bindings.min(line.getDestination().sourcePortXProperty().multiply(0.25)
+                .add(line.getSource().destPortXProperty().multiply(0.75))
+                ,line.getDestination().sourcePortXProperty().subtract(200.0)));
         cubicCurveTo.controlY2Property().bind(line.getDestination().sourcePortYProperty());
         cubicCurveTo.xProperty().bind(line.getDestination().sourcePortXProperty());
         cubicCurveTo.yProperty().bind(line.getDestination().sourcePortYProperty());
+
         this.path = FXCollections.observableArrayList(moveTo, cubicCurveTo);
 
         centerX = new SimpleDoubleProperty();
