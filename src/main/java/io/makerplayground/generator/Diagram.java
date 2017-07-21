@@ -35,8 +35,8 @@ public class Diagram extends Pane {
     private static final double BREADBOARD_PWR_TOP_Y = 28.857;
     private static final double HOLE_SPACE = 14.4;
     private static final double CENTER_SPACE = 43.2;
-    private static final double J1_POS_X = 19.44;
-    private static final double J1_POS_Y = 69.6;
+    private static final double J1_POS_X = 21.841;
+    private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
 
@@ -73,7 +73,7 @@ public class Diagram extends Pane {
             DevicePort topLeftPort = getTopLeftHole(controller);
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - topLeftPort.getX()
                                             , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY());
-        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
             int heightHole = (int) ((getBottomLeftHole(controller).getY() - getTopLeftHole(controller).getY()) / HOLE_SPACE);
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(controller).getX()
@@ -96,7 +96,7 @@ public class Diagram extends Pane {
                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
                 currentRow += calculateNumberOfHoleWithoutLeftWing(device);
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
                 int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE);
                  deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
@@ -111,6 +111,8 @@ public class Diagram extends Pane {
         }
 
         // connect power
+        int numberOfPwrPinUsed = 0;
+        int numberOfGndPinUsed = 0;
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
@@ -119,27 +121,33 @@ public class Diagram extends Pane {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
                         createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                            , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                            , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                          , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                          , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfGndPinUsed++;
                     }
                 }
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
                 DevicePort topLeftPort = getTopLeftHole(device);
                 for (DevicePort port : powerPort) {
                     if (port.getY() != topLeftPort.getY() ) {
                         if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y);
+                            numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            createGndLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                            createGndLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y);
+                            numberOfGndPinUsed++;
                         }
                     }
                     else {
                         if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_PWR_TOP_X, BREADBOARD_PWR_TOP_Y);
+                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_PWR_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_TOP_Y);
+                            numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            createGndLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X, BREADBOARD_GND_TOP_Y);
+                            createGndLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_TOP_Y);
+                            numberOfGndPinUsed++;
                         }
                     }
 
@@ -148,9 +156,11 @@ public class Diagram extends Pane {
             else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
-                        createPowerLine(port.getX(), port.getY(), BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                        createPowerLine(port.getX(), port.getY(), BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y);
+                        numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
-                        createPowerLine(port.getX(), port.getY(), BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                        createPowerLine(port.getX(), port.getY(), BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y);
+                        numberOfGndPinUsed++;
                     }
                 }
             }
