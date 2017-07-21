@@ -80,7 +80,7 @@ public class Sourcecode {
 
         // generate include
         for (GenericDevice genericDevice : project.getAllDeviceTypeUsed()) {
-            sb.append("#include \"MP_").append(genericDevice.getName()).append(".h\"").append(NEW_LINE);
+            sb.append("#include \"MP_").append(genericDevice.getName().replace(" ", "_")).append(".h\"").append(NEW_LINE);
         }
         sb.append(NEW_LINE);
         sb.append("void (*currentScene)(void);").append(NEW_LINE);
@@ -88,8 +88,8 @@ public class Sourcecode {
         // instantiate object(s) for each device
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append("MP_").append(projectDevice.getGenericDevice().getName()).append(" ")
-                    .append(projectDevice.getName()).append("(");
+            sb.append("MP_").append(projectDevice.getGenericDevice().getName().replace(" ", "_")).append(" ")
+                    .append(projectDevice.getName().replace(" ", "_")).append("(");
             List<String> portName = new ArrayList<>();
             for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
                 List<String> tmp = project.getController().getController().getPort(peripheral).stream()
@@ -103,8 +103,9 @@ public class Sourcecode {
         // generate setup function
         sb.append(NEW_LINE);
         sb.append("void setup() {").append(NEW_LINE);
+        sb.append(INDENT).append("Serial.begin(115200);");
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append(INDENT).append(projectDevice.getName()).append(".init();").append(NEW_LINE);
+            sb.append(INDENT).append(projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
         }
         sb.append("}").append(NEW_LINE);
 
@@ -120,7 +121,7 @@ public class Sourcecode {
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() == 1) {
                 Scene s = adjacentScene.get(0);
-                sb.append(INDENT).append("currentScene = ").append(s.getName()).append(";").append(NEW_LINE);
+                sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                 queue.add(s);
             } else {
                 return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
@@ -141,11 +142,11 @@ public class Sourcecode {
 
             // create function header
             sb.append(NEW_LINE);
-            sb.append("void ").append(currentScene.getName()).append("() {").append(NEW_LINE);
+            sb.append("void ").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
-                sb.append(INDENT).append(setting.getDevice().getName()).append(".")
+                sb.append(INDENT).append(setting.getDevice().getName().replace(" ", "_")).append(".")
                         .append(setting.getAction().getFunctionName()).append("(");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
@@ -179,14 +180,14 @@ public class Sourcecode {
                 if (adjacentScene.size() == 1) {
                     Scene s = adjacentScene.get(0);
                     queue.add(s);
-                    sb.append(INDENT).append("currentScene = ").append(s.getName()).append(";").append(NEW_LINE);
+                    sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                 } else {
-                    return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName());
+                    return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
                 }
             } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
                 Error error = processCondition(sb, queue, project, adjacentCondition);
                 if (error != Error.NONE) {
-                    return new Sourcecode(error, currentScene.getName());
+                    return new Sourcecode(error, currentScene.getName().replace(" ", "_"));
                 }
             } else {
                 sb.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
@@ -219,9 +220,9 @@ public class Sourcecode {
         // declare variable and get value from input device(s)
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
-                sb.append(INDENT).append("double ").append(projectDevice.getName()).append("_")
-                        .append(v.getName()).append(" = ").append(projectDevice.getName()).append(".get")
-                        .append(v.getName()).append("();").append(NEW_LINE);
+                sb.append(INDENT).append("double ").append(projectDevice.getName().replace(" ", "_")).append("_")
+                        .append(v.getName().replace(" ", "_")).append(" = ").append(projectDevice.getName().replace(" ", "_")).append(".get")
+                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
         }
 
@@ -231,9 +232,9 @@ public class Sourcecode {
             sb.append(INDENT).append(INDENT).append("if").append("(");
             List<String> conditionList = new ArrayList<>();
             for (UserSetting setting : condition.getSetting()) {
-                if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
+                if ((setting.getAction() != null) && !setting.getAction().getName().replace(" ", "_").equals("Compare")) {
                     StringBuilder action = new StringBuilder();
-                    action.append("(").append(setting.getDevice().getName()).append(".")
+                    action.append("(").append(setting.getDevice().getName().replace(" ", "_")).append(".")
                             .append(setting.getAction().getFunctionName()).append("(");
                     for (Parameter parameter : setting.getAction().getParameter()) {
                         Object value = setting.getValueMap().get(parameter);
@@ -250,13 +251,13 @@ public class Sourcecode {
                         List<String> valueList = new ArrayList<>();
                         for (Expression e : setting.getExpression().get(value)) {
                             if (e.getOperator().isBetween()) {
-                                valueList.add("(" + setting.getDevice().getName() + "_"
+                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
                                         + value.getName() + ' ' + e.getOperator().getCodeValue() + ' '
                                         + df.format(((NumberWithUnit) e.getFirstOperand()).getValue()) + ")");
                             } else {
-                                valueList.add("(" + setting.getDevice().getName() + "_" + value.getName() + " > "
+                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " > "
                                         + df.format(((NumberWithUnit) e.getFirstOperand()).getValue()) + ")"
-                                        + " && " + "(" + setting.getDevice().getName() + "_" + value.getName() + " < "
+                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " < "
                                         + df.format(((NumberWithUnit) e.getSecondOperand()).getValue()) + ")");
                             }
                         }
@@ -272,7 +273,7 @@ public class Sourcecode {
             if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (nextScene.size() == 1) {
                     sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = ")
-                            .append(nextScene.get(0).getName()).append(";").append(NEW_LINE);
+                            .append(nextScene.get(0).getName().replace(" ", "_")).append(";").append(NEW_LINE);
                     sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
                     queue.add(nextScene.get(0));
                 } else {
