@@ -424,5 +424,76 @@
         "constraint": []
       }
     ]
+  },
+  {
+    "name": "Color",
+    "action": [
+      {
+        "name": "Detect Color",
+        "funcname": "isColor",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Color",
+            "value": "Red",
+            "constraint": [
+              "Red",
+              "Green",
+              "Blue",
+              "Cyan",
+              "Magenta",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Heart",
+    "action": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Heartrate",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 40.0,
+          "max": 200.0,
+          "unit": "BPM"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Soil",
+    "action": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Moister",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0.0,
+          "max": 0.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
   }
 ]

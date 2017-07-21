@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.464px" height="141.687px" viewBox="-65.142 -65.765 283.464 141.687"
+	 enable-background="new -65.142 -65.765 283.464 141.687" xml:space="preserve">
+<g id="layer1" transform="translate(0,-971.3597)">
+	<g id="g4758" transform="matrix(0,1,-1,0,1054.566,976.43782)">
+		<path fill="#EC1C24" d="M-11.219,836.244h-54c-3.141,0-5.625,2.484-5.625,5.625v51.213c1.857,1.611,3.094,4.02,3.094,7.225
+			c0,0.357-0.021,0.701-0.051,1.039c2.048,1.094,3.457,3.227,3.457,5.711c0,2.369-1.282,4.424-3.177,5.559
+			c0.171,0.756,0.271,1.566,0.271,2.441c0,3.482-1.465,6.016-3.594,7.617v114.883c6.199,0,11.188,5.051,11.188,11.25
+			s-4.988,11.188-11.188,11.188v54c0,3.141,2.484,5.625,5.625,5.625h54c0,0.031,0.007,0.06,0.009,0.09
+			c0.226-0.055,0.458-0.083,0.688-0.122c1.262-1.757,3.102-2.925,5.139-3.509c1.156-1.749,3.143-2.896,5.414-2.896
+			c2.119,0,3.994,0.999,5.178,2.554c2.691,0.342,5.234,1.636,6.834,3.884h53.176c3.141,0,5.625-2.484,5.625-5.625v-54
+			c-6.199,0-11.188-4.988-11.188-11.188s4.988-11.25,11.188-11.25V918.994c-1.223-1.475-2.004-3.418-2.076-5.832
+			c-2.545-0.869-4.361-3.252-4.361-6.105c0-2.674,1.58-4.965,3.871-5.963c-0.01-0.18-0.027-0.352-0.027-0.537
+			c0-2.906,1.021-5.15,2.594-6.746v-51.941c0-3.141-2.484-5.625-5.625-5.625h-54c0,6.199-4.988,11.188-11.188,11.188
+			S-11.219,842.443-11.219,836.244z"/>
+		<g id="g102" transform="matrix(0,-1.2499976,1.2499976,0,-1259.9704,1062.5138)">
+			<path id="connector3pin" fill="#FFE500" d="M-36.304,994.984v-4.535h4.534v4.535H-36.304z"/>
+			<path id="connector2pin" fill="#FFE500" d="M-31.769,1001.713v4.535h-4.534v-4.535H-31.769z"/>
+			<path id="connector1pin" fill="#FFE500" d="M-36.304,1013.162h4.534v4.534h-4.534V1013.162z"/>
+			<path id="connector0pin" fill="#FFE500" d="M-36.304,1024.519h4.534v4.534h-4.534V1024.519z"/>
+		</g>
+		<text id="tspan11445" transform="matrix(0 -1 1 0 26.687 1100.8274)" fill="#FFFFFF" font-family="'OCRA'" font-size="8">GND</text>
+		<text id="tspan11445-6" transform="matrix(0 -1 1 0 12.3041 1100.8274)" fill="#FFFFFF" font-family="'OCRA'" font-size="8">VCC</text>
+		<text id="tspan11445-1" transform="matrix(0 -1 1 0 -2.0787 1100.8274)" fill="#FFFFFF" font-family="'OCRA'" font-size="8">DIO</text>
+		<text id="tspan11445-7" transform="matrix(0 -1 1 0 -16.4615 1100.8274)" fill="#FFFFFF" font-family="'OCRA'" font-size="8">CLK</text>
+		<rect x="-88.161" y="1037.374" fill="#EC1C24" width="57.98" height="23.344"/>
+		<rect x="-87.796" y="889.009" fill="#EC1C24" width="61.75" height="27.844"/>
+		<rect x="3.344" y="812.15" fill="#EC1C24" width="16.313" height="64.5"/>
+		<rect x="34.221" y="899.335" fill="#EC1C24" width="60.902" height="12.344"/>
+		<rect x="21.224" y="1032.686" fill="#EC1C24" width="74.646" height="24.594"/>
+		<rect x="7.305" y="1086.423" fill="#EC1C24" width="6.813" height="59.578"/>
+	</g>
+	<g id="g4901" transform="matrix(1 0 0 1 26.560003 993.42819)">
+		<circle id="connector0pin-8" fill="none" stroke="#9A916C" stroke-width="0.489" cx="13.825" cy="11.59" r="3.654"/>
+		<circle id="connector1pin-7" fill="none" stroke="#9A916C" stroke-width="0.489" cx="28.226" cy="11.59" r="3.654"/>
+		<circle id="connector2pin-1" fill="none" stroke="#9A916C" stroke-width="0.489" cx="42.626" cy="11.59" r="3.654"/>
+		<circle id="connector3pin-2" fill="none" stroke="#9A916C" stroke-width="0.489" cx="57.026" cy="11.59" r="3.654"/>
+		<circle id="connector4pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="71.427" cy="11.59" r="3.654"/>
+		<circle id="connector5pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="85.827" cy="11.59" r="3.654"/>
+		<circle id="connector7pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="114.626" cy="11.59" r="3.654"/>
+		<circle id="connector6pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="100.226" cy="11.59" r="3.654"/>
+		<circle id="connector8pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="114.626" cy="-46.009" r="3.654"/>
+		<circle id="connector13pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="42.626" cy="-46.009" r="3.654"/>
+		<circle id="connector12pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="57.026" cy="-46.009" r="3.654"/>
+		<circle id="connector11pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="71.427" cy="-46.009" r="3.654"/>
+		<circle id="connector9pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="100.226" cy="-46.009" r="3.654"/>
+		<circle id="connector10pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="85.827" cy="-46.009" r="3.654"/>
+		<circle id="connector14pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="28.226" cy="-46.009" r="3.654"/>
+		<circle id="connector15pin" fill="none" stroke="#9A916C" stroke-width="0.489" cx="13.825" cy="-46.009" r="3.654"/>
+		<polygon id="polygon20" fill="#323232" points="178.931,19.873 -48.03,19.873 -50.03,17.26 -50.03,-53.853 176.7,-53.853 
+			178.931,-51.853 		"/>
+		<polygon id="polygon22" fill="#C7C7C7" points="-7.372,-40.237 -28.94,-40.237 -32.249,-45.216 -30.595,-46.871 -5.71,-46.871 
+			-4.052,-45.216 		"/>
+		<polygon id="polygon24" fill="#C7C7C7" points="-7.372,-18.671 -10.687,-21.986 -7.372,-38.581 -2.392,-43.559 -0.733,-40.237 
+			-4.052,-21.986 		"/>
+		<polygon id="polygon26" fill="#C7C7C7" points="-12.347,7.873 -15.661,4.556 -12.347,-12.029 -7.372,-17.013 -5.71,-13.697 
+			-9.028,4.556 		"/>
+		<polygon id="polygon28" fill="#C7C7C7" points="-38.891,4.556 -17.321,4.556 -14.005,9.529 -15.661,11.189 -40.549,11.189 
+			-42.21,9.525 		"/>
+		<polygon id="polygon30" fill="#C7C7C7" points="-38.891,-17.013 -35.573,-13.697 -38.891,2.892 -43.87,7.873 -45.526,4.556 
+			-42.21,-13.697 		"/>
+		<polygon id="polygon32" fill="#C7C7C7" points="-33.913,-43.559 -30.595,-40.237 -33.913,-23.646 -38.891,-18.671 
+			-40.549,-21.986 -37.229,-40.237 		"/>
+		<polyline id="polyline34" fill="#C7C7C7" points="-37.229,-18.671 -33.913,-21.986 -12.347,-21.986 -9.028,-18.671 
+			-12.347,-15.354 -33.913,-15.354 		"/>
+		<polygon id="polygon38" fill="#C7C7C7" points="50.204,-40.237 28.636,-40.237 25.323,-45.216 26.981,-46.871 51.866,-46.871 
+			53.524,-45.216 		"/>
+		<polygon id="polygon40" fill="#C7C7C7" points="50.204,-18.671 46.89,-21.986 50.204,-38.581 55.185,-43.559 56.845,-40.237 
+			53.524,-21.986 		"/>
+		<polygon id="polygon42" fill="#C7C7C7" points="45.229,7.873 41.915,4.556 45.229,-12.029 50.204,-17.013 51.866,-13.697 
+			48.548,4.556 		"/>
+		<polygon id="polygon44" fill="#C7C7C7" points="18.685,4.556 40.257,4.556 43.569,9.529 41.915,11.189 17.026,11.189 
+			15.366,9.525 		"/>
+		<polygon id="polygon46" fill="#C7C7C7" points="18.685,-17.013 22.003,-13.697 18.685,2.892 13.706,7.873 12.05,4.556 
+			15.366,-13.697 		"/>
+		<polygon id="polygon48" fill="#C7C7C7" points="23.661,-43.559 26.981,-40.237 23.661,-23.646 18.685,-18.671 17.026,-21.986 
+			20.347,-40.237 		"/>
+		<polyline id="polyline50" fill="#C7C7C7" points="20.347,-18.671 23.661,-21.986 45.229,-21.986 48.548,-18.671 45.229,-15.354 
+			23.661,-15.354 		"/>
+		<circle id="circle54" fill="#C7C7C7" cx="61.212" cy="-5.237" r="3.496"/>
+		<circle id="circle56" fill="#C7C7C7" cx="65.13" cy="-31.115" r="3.496"/>
+		<polygon id="polygon60" fill="#C7C7C7" points="107.804,-40.237 86.235,-40.237 82.925,-45.216 84.583,-46.871 109.466,-46.871 
+			111.124,-45.216 		"/>
+		<polygon id="polygon62" fill="#C7C7C7" points="107.804,-18.671 104.489,-21.986 107.804,-38.581 112.782,-43.559 
+			114.442,-40.237 111.124,-21.986 		"/>
+		<polygon id="polygon64" fill="#C7C7C7" points="102.829,7.873 99.513,4.556 102.829,-12.029 107.804,-17.013 109.466,-13.697 
+			106.147,4.556 		"/>
+		<polygon id="polygon66" fill="#C7C7C7" points="76.284,4.556 97.852,4.556 101.171,9.529 99.513,11.189 74.626,11.189 
+			72.966,9.525 		"/>
+		<polygon id="polygon68" fill="#C7C7C7" points="76.284,-17.013 79.601,-13.697 76.284,2.892 71.306,7.873 69.649,4.556 
+			72.966,-13.697 		"/>
+		<polygon id="polygon70" fill="#C7C7C7" points="81.263,-43.559 84.583,-40.237 81.263,-23.646 76.284,-18.671 74.626,-21.986 
+			77.946,-40.237 		"/>
+		<polyline id="polyline72" fill="#C7C7C7" points="77.946,-18.671 81.263,-21.986 102.829,-21.986 106.147,-18.671 
+			102.829,-15.354 81.263,-15.354 		"/>
+		<polygon id="polygon76" fill="#C7C7C7" points="165.554,-40.237 143.985,-40.237 140.675,-45.216 142.333,-46.871 
+			167.216,-46.871 168.874,-45.216 		"/>
+		<polygon id="polygon78" fill="#C7C7C7" points="165.554,-18.671 162.239,-21.986 165.554,-38.581 170.532,-43.559 
+			172.192,-40.237 168.874,-21.986 		"/>
+		<polygon id="polygon80" fill="#C7C7C7" points="160.579,7.873 157.263,4.556 160.579,-12.029 165.554,-17.013 167.216,-13.697 
+			163.897,4.556 		"/>
+		<polygon id="polygon82" fill="#C7C7C7" points="134.034,4.556 155.602,4.556 158.921,9.529 157.263,11.189 132.376,11.189 
+			130.716,9.525 		"/>
+		<polygon id="polygon84" fill="#C7C7C7" points="134.034,-17.013 137.351,-13.697 134.034,2.892 129.056,7.873 127.399,4.556 
+			130.716,-13.697 		"/>
+		<polygon id="polygon86" fill="#C7C7C7" points="139.013,-43.559 142.333,-40.237 139.013,-23.646 134.034,-18.671 
+			132.376,-21.986 135.696,-40.237 		"/>
+		<polyline id="polyline88" fill="#C7C7C7" points="135.696,-18.671 139.013,-21.986 160.579,-21.986 163.897,-18.671 
+			160.579,-15.354 139.013,-15.354 		"/>
+		<polygon id="polygon92" fill="#C7C7C7" points="-50.03,17.26 -48.03,19.873 178.931,19.873 176.931,17.26 		"/>
+		<polygon id="polygon94" fill="#AAAAAA" points="178.931,19.873 178.931,-51.853 176.7,-53.853 176.7,17.26 		"/>
+	</g>
+</g>
+</svg>

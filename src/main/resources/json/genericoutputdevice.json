@@ -249,30 +249,6 @@
     "name": "7 Segment",
     "action": [
       {
-        "name": "Show Number",
-        "funcname": "showNumber",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Value",
-            "value": "",
-            "constraint": [],
-            "datatype": "CUSTOM",
-            "controltype": "CUSTOMSEGMENT"
-          },
-          {
-            "name": "Colon",
-            "value": "TRUE",
-            "constraint": [
-              "TRUE",
-              "FALSE"
-            ],
-            "datatype": "ENUM",
-            "controltype": "CHECKBOX"
-          }
-        ]
-      },
-      {
         "name": "Show Value",
         "funcname": "showValue",
         "type": "Active",
@@ -285,16 +261,6 @@
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Colon",
-            "value": "TRUE",
-            "constraint": [
-              "TRUE",
-              "FALSE"
-            ],
-            "datatype": "ENUM",
-            "controltype": "CHECKBOX"
           }
         ]
       },
@@ -343,6 +309,33 @@
         "funcname": "off",
         "type": "Inactive",
         "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "RGB LED",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Color",
+            "value": "Red",
+            "constraint": [
+              "Red",
+              "Green",
+              "Blue",
+              "Cyan",
+              "Magenta",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
       }
     ],
     "value": []
