@@ -6,10 +6,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.*;
 
 /**
@@ -87,14 +89,22 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append("MP_").append(projectDevice.getGenericDevice().getName()).append(" ")
-                    .append(projectDevice.getName()).append(";").append(NEW_LINE);
+                    .append(projectDevice.getName()).append("(");
+            List<String> portName = new ArrayList<>();
+            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
+                List<String> tmp = project.getController().getController().getPort(peripheral).stream()
+                        .map(DevicePort::getName).collect(Collectors.toList());
+                portName.addAll(tmp);
+            }
+            sb.append(String.join(",", portName));
+            sb.append(")").append(";").append(NEW_LINE);
         }
 
         // generate setup function
         sb.append(NEW_LINE);
         sb.append("void setup() {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append(INDENT).append(projectDevice.getName()).append(".init()").append(NEW_LINE);
+            sb.append(INDENT).append(projectDevice.getName()).append(".init();").append(NEW_LINE);
         }
         sb.append("}").append(NEW_LINE);
 
@@ -106,22 +116,22 @@ public class Sourcecode {
 
         // generate code for begin
         sb.append(NEW_LINE);
-        sb.append("void begin() {").append(NEW_LINE);
+        sb.append("void beginScene() {").append(NEW_LINE);
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() == 1) {
                 Scene s = adjacentScene.get(0);
-                sb.append(INDENT).append("currentSceneFunction = ").append(s.getName()).append(";").append(NEW_LINE);
+                sb.append(INDENT).append("currentScene = ").append(s.getName()).append(";").append(NEW_LINE);
                 queue.add(s);
             } else {
-                return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, "begin");
+                return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
             }
         } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
             Error error = processCondition(sb, queue, project, adjacentCondition);
             if (error != Error.NONE) {
-                return new Sourcecode(error, "begin");
+                return new Sourcecode(error, "beginScene");
             }
         } else {
-            return new Sourcecode(Error.NOT_FOUND_SCENE_OR_CONDITION, "begin");
+            return new Sourcecode(Error.NOT_FOUND_SCENE_OR_CONDITION, "beginScene");
         }
         sb.append("}").append(NEW_LINE);
 
@@ -169,7 +179,7 @@ public class Sourcecode {
                 if (adjacentScene.size() == 1) {
                     Scene s = adjacentScene.get(0);
                     queue.add(s);
-                    sb.append(INDENT).append("currentSceneFunction = ").append(s.getName()).append(";").append(NEW_LINE);
+                    sb.append(INDENT).append("currentScene = ").append(s.getName()).append(";").append(NEW_LINE);
                 } else {
                     return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName());
                 }
@@ -179,7 +189,7 @@ public class Sourcecode {
                     return new Sourcecode(error, currentScene.getName());
                 }
             } else {
-                sb.append(INDENT).append("currentSceneFunction = begin;").append(NEW_LINE);
+                sb.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
             }
 
             // end of scene's function
@@ -261,7 +271,7 @@ public class Sourcecode {
             List<Condition> nextCondition = getCondition(nextVertices);
             if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (nextScene.size() == 1) {
-                    sb.append(INDENT).append(INDENT).append(INDENT).append("currentSceneFunction = ")
+                    sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = ")
                             .append(nextScene.get(0).getName()).append(";").append(NEW_LINE);
                     sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
                     queue.add(nextScene.get(0));
@@ -271,7 +281,7 @@ public class Sourcecode {
             } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
                 return Error.NEST_CONDITION;
             } else {
-                sb.append(INDENT).append(INDENT).append(INDENT).append("currentSceneFunction = begin;").append(NEW_LINE);
+                sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
                 sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
             }
 
