@@ -43,6 +43,7 @@ public class Diagram extends Pane {
     private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
+    public static final int STROKE_WIDTH = 3;
 
     private final Project project;
 
@@ -58,7 +59,7 @@ public class Diagram extends Pane {
         System.out.println("=============DIAGRAM=================");
 
         this.deviceTopLeftPos = new HashMap<>();
-        setPrefSize(1000, 1000);
+        setPrefSize(1000, 1200);
 
         // draw breadboard
         ImageView breadBoard = new ImageView(new Image(getClass().getResourceAsStream("/device/breadboard_large@2x.png")));
@@ -108,6 +109,8 @@ public class Diagram extends Pane {
             } else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
                 lastX = lastX + device.getWidth();
+            } else if (device.getFormFactor() == FormFactor.SHIELD) {
+                deviceTopLeftPos.put(projectDevice, controllerPosition);
             }
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
@@ -164,12 +167,10 @@ public class Diagram extends Pane {
             else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
-                        System.out.println("111111111111111111111111");
                         createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY()
                                 , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
-                        System.out.println("222222222222222222222222");
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(),deviceTopLeftPos.get(projectDevice).getY() + port.getY()
                                 , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfGndPinUsed++;
@@ -412,42 +413,42 @@ public class Diagram extends Pane {
     private void createPowerLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.RED);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 
     private void createGndLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.BLACK);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 
     private void createSdaLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.GREEN);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 
     private void createSclLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.YELLOW);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 
     private void createGpioLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.BLUE);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 
     private void createPWMLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
         line.setStroke(Color.BLUE);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
     }
 

@@ -1696,7 +1696,7 @@
     "model": "PIR Motion Sensor Module HC-SR501",
     "url": "https://www.arduinoall.com/product/29/pir-hc-sr501-%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%84%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B9%84%E0%B8%AB%E0%B8%A7-motion-sensor-module-hc-sr501",
     "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "formfactor": "STANDALONE",
     "platform": [
       "ARDUINO"
     ],
@@ -1714,7 +1714,7 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 99.0,
+        "x": 135.0,
         "y": 229.074
       },
       {
@@ -1728,7 +1728,7 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 117.0,
+        "x": 99.0,
         "y": 229.074
       },
       {
@@ -1742,8 +1742,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 135.0,
-        "y": 369.0
+        "x": 117.0,
+        "y": 229.074
       }
     ],
     "connectivity": [
