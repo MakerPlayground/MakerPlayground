@@ -41,7 +41,21 @@ public class ConfigActualDeviceViewModel {
 //            }
 //        }
 
-        Map<ProjectDevice, List<Peripheral>> portList = DeviceMapper.getDeviceCompatiblePort(project);
+
+        Map<ProjectDevice, List<Peripheral>> portList = new HashMap<>();
+//        for (Map.Entry<ProjectDevice, Map<Peripheral, List<Peripheral>>> entry : DeviceMapper.getDeviceCompatiblePort(project).entrySet()) {
+//            portList.put(entry.getKey(), entry.getValue().get(entry.getKey().getActualDevice().getConnectivity().get(0)));
+//        }
+        Map<ProjectDevice, Map<Peripheral, List<Peripheral>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
+        for (ProjectDevice projectDevice : tmp.keySet()) {
+            Map<Peripheral, List<Peripheral>> possibleConnection = tmp.get(projectDevice);
+            if (projectDevice.getActualDevice() != null) {
+                Peripheral firstPeripheral = projectDevice.getActualDevice().getConnectivity().get(0);
+                portList.put(projectDevice, possibleConnection.get(firstPeripheral));
+            } else {
+                portList.put(projectDevice, new ArrayList<>());
+            }
+        }
         compatiblePortList.set(portList);
 //        for (ProjectDevice projectDevice : portList.keySet()) {
 //            if (compatiblePortList.containsKey(projectDevice)) {

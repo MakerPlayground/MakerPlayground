@@ -26,6 +26,6 @@ public enum Unit {
     //OUTPUT DEVICE
     SECOND,WAV,
     //BASIC
-    PERCENT,NOT_SPECIFIED,HERTZ
+    PERCENT,NOT_SPECIFIED,HERTZ,BPM
     // TODO: add new unit
 }

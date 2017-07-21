@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Ebene_1" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40.192px"
+	 height="183.448px" viewBox="-20.096 0 40.192 183.448" enable-background="new -20.096 0 40.192 183.448" xml:space="preserve">
+<desc  id="desc3437">
+	<referenceFile>sparkfun-sensors_to-92_breadboard.svg</referenceFile>
+</desc>
+<g transform="translate(-0.60392954,61.430663)">
+	<g>
+		<g>
+			<g>
+				<g>
+					<g id="layer2">
+						<path id="path4461" fill="none" stroke="#CC1414" stroke-width="2.4" stroke-opacity="0" d="M-0.317,97.167V-23.052"/>
+						<path id="path4463" fill="none" stroke="#CC1414" stroke-width="2.4" d="M-0.317,97.444L-0.179-23.19"/>
+						<path id="path4465" fill="#9400D3" stroke="#9932CC" stroke-width="2.4054" d="M7.17,97.444L7.032-24.577"/>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+<g transform="translate(1.2964542,61.952013)">
+	<g>
+		<g>
+			<g>
+				<g>
+					<g id="layer1">
+						<ellipse id="path3500" cx="-1.297" cy="-42.601" rx="20.096" ry="19.351"/>
+						<path id="path3544" fill="#FF0000" stroke="#000000" stroke-width="0.64" d="M-1.592-56.798v28.801"/>
+						<path id="path3556" fill="#FFFAFA" stroke="#000000" stroke-width="0.6858" d="M-1.633-56.845
+							c1.395-1.234,3.152-2.049,4.993-2.316c1.844-0.268,3.76,0.016,5.445,0.803c1.469,0.684,2.75,1.74,3.76,3.006
+							s1.748,2.736,2.227,4.283c0.955,3.094,0.869,6.43,0.283,9.614c-0.32,1.732-0.793,3.459-1.645,5
+							c-1.17,2.109-3,3.777-4.938,5.211C5.42-28.969,1.99-27.18-1.633-25.964"/>
+						<path id="path3556-7" fill="#FFFAFA" stroke="#000000" stroke-width="0.6888" d="M-0.96-56.435
+							c-1.446-1.246-3.257-2.064-5.147-2.326s-3.855,0.035-5.586,0.842c-2.896,1.352-5.017,4.08-6.033,7.109
+							c-1.016,3.029-1.004,6.334-0.412,9.473c0.322,1.709,0.819,3.402,1.692,4.906c1.215,2.094,3.097,3.719,5.075,5.113
+							c3.181,2.242,6.705,3.996,10.411,5.182"/>
+						
+							<ellipse id="path3578" fill="#00FF00" stroke="#FFFAFA" stroke-width="1.0183" stroke-linecap="round" stroke-linejoin="round" cx="-1.482" cy="-45.452" rx="4.127" ry="4.022"/>
+						<g transform="translate(-1.9003838,-0.52134991)">
+							<g>
+								<g>
+									<g>
+										<g>
+											<path id="path4453" fill="none" stroke="#000000" stroke-width="2.3344" d="M-7.943,97.305V-26.378"/>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+						<path id="path4459" fill="#CC1414" fill-opacity="0" stroke="#CC1414" stroke-width="2.08" stroke-opacity="0" d="
+							M-2.495,96.368l0.139-119.664l-0.277-0.416"/>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+<path id="connector1pin" fill="none" stroke="#8C8C8C" stroke-width="2.0713" d="M-0.977,183.434l0.098-24.669"/>
+<rect id="connector1terminal" x="-0.932" y="180.01" fill="none" width="0.008" height="0.057"/>
+<path id="connector0pin" fill="none" stroke="#8C8C8C" stroke-width="2.0537" stroke-linejoin="round" d="M-15.453,183.387
+	l0.194-14.271l6.5-6.134v-4.229l0,0l0,0"/>
+<rect id="connector0terminal" x="-15.112" y="180.18" fill="none" width="0.022" height="0.059"/>
+<path id="connector2pin" fill="none" stroke="#8C8C8C" stroke-width="2.052" stroke-linejoin="round" d="M13.305,183.434
+	l-0.195-14.244l-6.502-6.12v-4.221l0,0l0,0"/>
+<rect id="connector2terminal" x="12.906" y="180.01" fill="none" width="0.021" height="0.059"/>
+</svg>

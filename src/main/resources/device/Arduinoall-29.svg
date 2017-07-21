@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="234px" height="229.074px"
+	 viewBox="-54 -110.085 234 229.074" enable-background="new -54 -110.085 234 229.074" xml:space="preserve">
+<g id="layer1" transform="translate(0,-845.35973)">
+</g>
+<g id="layer2" transform="translate(0,-153)">
+</g>
+<g id="layer3" transform="translate(0,-153)">
+</g>
+<g id="layer4" transform="translate(0,-153)">
+</g>
+<g id="layer5" transform="translate(0,-153)">
+</g>
+<g id="layer6" transform="translate(0,-153)">
+	<g id="breadboard">
+		<path id="path3846" fill="none" stroke="#E6C739" stroke-width="6.3" d="M63,214.005v40.5"/>
+		<path id="path3848" fill="none" stroke="#D2382B" stroke-width="6.3" d="M45,214.005v40.5"/>
+		<path id="path3850" fill="none" stroke="#323232" stroke-width="6.3" d="M81,214.005v40.5"/>
+		<path id="path3852" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" stroke-opacity="0.25" d="
+			M41.4,264.396v-36.891"/>
+		<path id="path3854" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" stroke-opacity="0.25" d="
+			M59.4,264.388v-36.883"/>
+		<path id="path3856" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" stroke-opacity="0.25" d="
+			M77.4,264.388v-36.883"/>
+		<rect id="rect3858" x="42.3" y="253.989" opacity="0.95" fill="#CCCCCC" enable-background="new    " width="5.4" height="18"/>
+		<rect id="rect3900" x="60.3" y="253.989" opacity="0.95" fill="#CCCCCC" enable-background="new    " width="5.399" height="18"/>
+		
+			<rect id="rect3902" x="78.301" y="253.989" opacity="0.95" fill="#CCCCCC" enable-background="new    " width="5.398" height="18"/>
+		<rect id="connector1pin" x="41.4" y="264.39" fill="none" width="7.199" height="7.201"/>
+		<rect id="connector2pin" x="59.4" y="264.388" fill="none" width="7.199" height="7.201"/>
+		<rect id="connector3pin" x="77.4" y="264.388" fill="none" width="7.199" height="7.201"/>
+		<path id="rect2999" fill="#2CA02C" d="M-54,52.005v162h234v-162H-54z M-45,125.817c3.977,0,7.188,3.211,7.188,7.188
+			s-3.211,7.188-7.188,7.188s-7.188-3.211-7.188-7.188S-48.977,125.817-45,125.817z M171,125.817c3.977,0,7.188,3.211,7.188,7.188
+			s-3.211,7.188-7.188,7.188s-7.188-3.211-7.188-7.188S167.023,125.817,171,125.817z"/>
+		
+			<rect id="rect3006" x="-27" y="43.005" fill="#DBE3E2" stroke="#000000" stroke-width="0.18" stroke-linecap="round" width="180" height="180"/>
+		
+			<path id="path3826" opacity="0.95" fill="#B7C8BE" stroke="#FFFFFF" stroke-width="13.5" stroke-opacity="0.3913" enable-background="new    " d="
+			M81.236,82.178c13.826,4.96,25.035,15.34,31.041,28.744"/>
+		
+			<radialGradient id="path3780_1_" cx="-47.4448" cy="318.7197" r="90" gradientTransform="matrix(1 0 0 -1 110.4448 451.7246)" gradientUnits="userSpaceOnUse">
+			<stop  offset="0" style="stop-color:#FFFFFF"/>
+			<stop  offset="1" style="stop-color:#C0C0C0;stop-opacity:0.4464"/>
+		</radialGradient>
+		
+			<path id="path3780" opacity="0.95" fill="url(#path3780_1_)" stroke="#000000" stroke-width="0.18" stroke-linecap="round" stroke-opacity="0.4837" enable-background="new    " d="
+			M153,133.005c0,49.706-40.293,90-90,90c-49.706,0-90-40.294-90-90s40.294-90,90-90C112.707,43.005,153,83.299,153,133.005z"/>
+		
+			<path id="path3824" opacity="0.6652" fill="none" stroke="#FFFFFF" stroke-width="22.5" stroke-opacity="0.6685" enable-background="new    " d="
+			M30.331,102.058c3.092-3.265,6.656-6.047,10.573-8.255"/>
+	</g>
+</g>
+</svg>

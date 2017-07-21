@@ -351,8 +351,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 4.366,
-        "y": 90.764
+        "x": 7.2,
+        "y": 93.599
       },
       {
         "name": "3Vo",
@@ -360,8 +360,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 18.766,
-        "y": 90.764
+        "x": 21.6,
+        "y": 93.599
       },
       {
         "name": "GND",
@@ -374,8 +374,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 33.166,
-        "y": 90.764
+        "x": 36.0,
+        "y": 93.599
       },
       {
         "name": "SCK",
@@ -388,8 +388,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 47.566,
-        "y": 90.764
+        "x": 50.4,
+        "y": 93.599
       },
       {
         "name": "SDO",
@@ -397,8 +397,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 61.966,
-        "y": 90.764
+        "x": 64.8,
+        "y": 93.599
       },
       {
         "name": "SDI",
@@ -411,8 +411,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 76.366,
-        "y": 90.764
+        "x": 79.2,
+        "y": 93.599
       },
       {
         "name": "CS",
@@ -420,8 +420,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 90.766,
-        "y": 90.764
+        "x": 93.6,
+        "y": 93.599
       }
     ],
     "connectivity": [
@@ -515,8 +515,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 11.566,
-        "y": 83.564
+        "x": 14.4,
+        "y": 86.401
       },
       {
         "name": "3Vo",
@@ -524,8 +524,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 25.966,
-        "y": 83.564
+        "x": 28.8,
+        "y": 86.401
       },
       {
         "name": "GND",
@@ -538,8 +538,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 40.366,
-        "y": 83.564
+        "x": 43.2,
+        "y": 86.401
       },
       {
         "name": "SCL",
@@ -552,8 +552,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 54.766,
-        "y": 83.564
+        "x": 57.6,
+        "y": 86.401
       },
       {
         "name": "SDA",
@@ -566,8 +566,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 69.166,
-        "y": 83.564
+        "x": 72.0,
+        "y": 86.401
       }
     ],
     "connectivity": [
@@ -909,8 +909,8 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 130.0,
-    "height": 58.0,
+    "width": 59.0,
+    "height": 131.0,
     "port": [
       {
         "name": "GND",
@@ -923,8 +923,8 @@
         ],
         "v_min": 1.9,
         "v_max": 3.6,
-        "x": 7.5,
-        "y": 7.5
+        "x": 7.2,
+        "y": 122.4
       },
       {
         "name": "VDD",
@@ -937,8 +937,8 @@
         ],
         "v_min": 1.9,
         "v_max": 3.6,
-        "x": 7.5,
-        "y": 21.9
+        "x": 21.6,
+        "y": 122.4
       },
       {
         "name": "SDA",
@@ -951,8 +951,8 @@
         ],
         "v_min": 1.9,
         "v_max": 3.6,
-        "x": 7.5,
-        "y": 36.3
+        "x": 36.0,
+        "y": 122.4
       },
       {
         "name": "SCL",
@@ -965,8 +965,8 @@
         ],
         "v_min": 1.9,
         "v_max": 3.6,
-        "x": 7.5,
-        "y": 50.7
+        "x": 50.4,
+        "y": 122.4
       }
     ],
     "connectivity": [
@@ -1539,8 +1539,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.5,
-        "y": 101.0
+        "x": 14.4,
+        "y": 100.799
       },
       {
         "name": "SDA",
@@ -1553,8 +1553,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 28.9,
-        "y": 101.0
+        "x": 28.8,
+        "y": 100.799
       },
       {
         "name": "I2",
@@ -1562,8 +1562,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 43.3,
-        "y": 101.0
+        "x": 43.2,
+        "y": 100.799
       },
       {
         "name": "I1",
@@ -1571,8 +1571,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 57.7,
-        "y": 101.0
+        "x": 57.6,
+        "y": 100.799
       },
       {
         "name": "DRDY",
@@ -1580,8 +1580,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 72.1,
-        "y": 101.0
+        "x": 72.0,
+        "y": 100.799
       },
       {
         "name": "GND",
@@ -1594,8 +1594,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 86.5,
-        "y": 101.0
+        "x": 86.4,
+        "y": 100.799
       },
       {
         "name": "VIN",
@@ -1608,8 +1608,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 100.9,
-        "y": 101.0
+        "x": 100.8,
+        "y": 100.799
       },
       {
         "name": "3V3",
@@ -1617,8 +1617,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 115.3,
-        "y": 101.0
+        "x": 115.2,
+        "y": 100.799
       }
     ],
     "connectivity": [
@@ -1700,8 +1700,8 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 234.0,
-    "height": 391.0,
+    "width": 235.0,
+    "height": 230.0,
     "port": [
       {
         "name": "5V",
@@ -1714,8 +1714,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 98.5,
-        "y": 369.0
+        "x": 99.0,
+        "y": 229.074
       },
       {
         "name": "GND",
@@ -1728,8 +1728,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 135.0,
-        "y": 369.0
+        "x": 117.0,
+        "y": 229.074
       },
       {
         "name": "DO",
@@ -1742,7 +1742,7 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 117.0,
+        "x": 135.0,
         "y": 369.0
       }
     ],
@@ -2045,17 +2045,13 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 48.0,
-    "height": 65.0,
+    "width": 18.0,
+    "height": 25.0,
     "port": [
       {
         "name": "S1A",
         "type": "WIRE",
         "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          },
           {
             "type": "GPIO_1",
             "pintype": "INOUT"
@@ -2063,8 +2059,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 4.5,
-        "y": 65.5
+        "x": 2.984,
+        "y": 0.0
       },
       {
         "name": "S1B",
@@ -2072,22 +2068,17 @@
         "function": [
           {
             "type": "POWER",
-            "pintype": "VCC"
-          },
-          {
-            "type": "GPIO_2",
-            "pintype": "INOUT"
+            "pintype": "GND"
           }
         ],
         "v_min": "",
         "v_max": "",
-        "x": 4.5,
-        "y": 0.5
+        "x": 31.785,
+        "y": 47.489
       }
     ],
     "connectivity": [
-      "GPIO_1",
-      "GPIO_2"
+      "GPIO_1"
     ],
     "compatibility": [
       {
@@ -2266,8 +2257,8 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 110.0,
-    "height": 111.0,
+    "width": 111.0,
+    "height": 129.0,
     "port": [
       {
         "name": "GND",
@@ -2280,8 +2271,8 @@
         ],
         "v_min": "",
         "v_max": "",
-        "x": 0.0,
-        "y": 78.0
+        "x": 9.054,
+        "y": 107.646
       },
       {
         "name": "V+",
@@ -2294,8 +2285,8 @@
         ],
         "v_min": 1.8,
         "v_max": 5.0,
-        "x": 102.5,
-        "y": 111.0
+        "x": 109.966,
+        "y": 107.0
       }
     ],
     "connectivity": [
@@ -2368,8 +2359,8 @@
     "platform": [
       "ARDUINO"
     ],
-    "width": 154.0,
-    "height": 154.0,
+    "width": 116.0,
+    "height": 117.0,
     "port": [
       {
         "name": "LED",
@@ -2380,10 +2371,10 @@
             "pintype": "VCC"
           }
         ],
-        "v_min": 3.5,
+        "v_min": 3.3,
         "v_max": 5.0,
-        "x": 19.25,
-        "y": 142.449
+        "x": 14.401,
+        "y": 106.559
       },
       {
         "name": "INT",
@@ -2391,8 +2382,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 38.5,
-        "y": 142.449
+        "x": 28.801,
+        "y": 106.559
       },
       {
         "name": "SDA",
@@ -2405,8 +2396,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 57.75,
-        "y": 142.449
+        "x": 43.201,
+        "y": 106.559
       },
       {
         "name": "SCL",
@@ -2419,8 +2410,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 77.0,
-        "y": 142.449
+        "x": 57.601,
+        "y": 106.559
       },
       {
         "name": "3V3",
@@ -2428,8 +2419,8 @@
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 96.25,
-        "y": 142.449
+        "x": 72.001,
+        "y": 106.559
       },
       {
         "name": "GND",
@@ -2440,10 +2431,10 @@
             "pintype": "GND"
           }
         ],
-        "v_min": "",
-        "v_max": "",
-        "x": 115.5,
-        "y": 142.449
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 86.401,
+        "y": 106.559
       },
       {
         "name": "VIN",
@@ -2456,14 +2447,501 @@
         ],
         "v_min": 3.5,
         "v_max": 5.0,
-        "x": 134.75,
-        "y": 142.449
+        "x": 100.801,
+        "y": 106.559
       }
     ],
     "connectivity": [
       "I2C_1"
     ],
-    "compatibility": [],
+    "compatibility": [
+      {
+        "name": "Color",
+        "action": [
+          {
+            "name": "Detect Color",
+            "parameter": [
+              {
+                "name": "Color",
+                "constraint": [
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Cyan",
+                  "Magenta",
+                  "Yellow"
+                ]
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinoall-454",
+    "brand": "Arduinoall",
+    "model": "7 Segment 4 Digit Display LED Module Clock",
+    "url": "https://www.arduinoall.com/product/454/7-segment-4-digit-display-led-module-clock-for-arduino-0-36",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 285.0,
+    "height": 142.0,
+    "port": [
+      {
+        "name": "CLK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.648,
+        "y": 51.766
+      },
+      {
+        "name": "DIO",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.648,
+        "y": 65.847
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.648,
+        "y": 80.158
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.648,
+        "y": 94.353
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "7 Segment",
+        "action": [
+          {
+            "name": "Show value",
+            "parameter": []
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinoall-1015",
+    "brand": "Arduinoall",
+    "model": "Active Buzzer DC 1.5V-12V",
+    "url": "https://www.arduinoall.com/product/1015/active-buzzer-dc-1-5v-12v-buzzer",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 158.0,
+    "height": 155.0,
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 1.5,
+        "v_max": 12.0,
+        "x": 85.742,
+        "y": 151.8
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 1.5,
+        "v_max": 12.0,
+        "x": 71.279,
+        "y": 151.8
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Buzzer",
+        "action": [
+          {
+            "name": "Tone",
+            "parameter": [
+              {
+                "name": "Tone Frequency",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 10000.0,
+                  "unit": "HERTZ"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Blink Tone",
+            "parameter": [
+              {
+                "name": "Tone Frequency",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 10000.0,
+                  "unit": "HERTZ"
+                }
+              },
+              {
+                "name": "Time Period",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 60.0,
+                  "unit": "SECOND"
+                }
+              },
+              {
+                "name": "Blink Speed",
+                "constraint": [
+                  "Slow",
+                  "Medium",
+                  "Fast"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Stop",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinoall-687",
+    "brand": "Arduinoall",
+    "model": "Heart Rate Pulse Sensor Amped",
+    "url": "https://www.arduinoall.com/product/687",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 41.0,
+    "height": 185.0,
+    "port": [
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 4.644,
+        "y": 183.435
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 19.168,
+        "y": 183.435
+      },
+      {
+        "name": "S",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 33.401,
+        "y": 183.435
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Heart",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Heartrate",
+            "constraint": {
+              "min": 40.0,
+              "max": 200.0,
+              "unit": "BPM"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinothai-165",
+    "brand": "Arduinothai",
+    "model": "SparkFun Soil Moisture Sensor",
+    "url": "https://www.arduinothai.com/product/165/soil-moisture-sensor",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 130.0,
+    "height": 347.0,
+    "port": [
+      {
+        "name": "SIG",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 43.834,
+        "y": 20.697
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 64.687,
+        "y": 20.697
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 85.536,
+        "y": 20.697
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Soil",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Moister",
+            "constraint": {
+              "min": 0.0,
+              "max": 0.0,
+              "unit": "NOT_SPECIFIED"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ],
+    "dependency": []
+  },
+  {
+    "id": "Arduinoall-332",
+    "brand": "Arduinoall",
+    "model": "RGB LED Module",
+    "url": "https://www.arduinoall.com/product/332/rgb-3-color-full-color-ky-016-led-module-for-arduino-avr-pic",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "width": 86.0,
+    "height": 107.0,
+    "port": [
+      {
+        "name": "R",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 20.743,
+        "y": 90.968
+      },
+      {
+        "name": "G",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 35.144,
+        "y": 90.968
+      },
+      {
+        "name": "B",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 49.544,
+        "y": 90.968
+      },
+      {
+        "name": "-",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 63.944,
+        "y": 90.968
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2",
+      "GPIO_3"
+    ],
+    "compatibility": [
+      {
+        "name": "RGB LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Color",
+                "constraint": [
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Cyan",
+                  "Magenta",
+                  "Yellow"
+                ]
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ],
     "dependency": []
   }
 ]

@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
@@ -10,7 +11,10 @@ import io.makerplayground.project.ProjectDevice;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeLineCap;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +39,8 @@ public class Diagram extends Pane {
     private static final double BREADBOARD_PWR_TOP_Y = 28.857;
     private static final double HOLE_SPACE = 14.4;
     private static final double CENTER_SPACE = 43.2;
-    private static final double J1_POS_X = 19.44;
-    private static final double J1_POS_Y = 69.6;
+    private static final double J1_POS_X = 21.841;
+    private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
 
@@ -73,7 +77,7 @@ public class Diagram extends Pane {
             DevicePort topLeftPort = getTopLeftHole(controller);
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - topLeftPort.getX()
                                             , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY());
-        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
             int heightHole = (int) ((getBottomLeftHole(controller).getY() - getTopLeftHole(controller).getY()) / HOLE_SPACE);
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(controller).getX()
@@ -96,8 +100,8 @@ public class Diagram extends Pane {
                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
                 currentRow += calculateNumberOfHoleWithoutLeftWing(device);
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-                int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE);
+            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
+                int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE) + 1;
                  deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
                 currentRow += calculateNumberOfHoleWithoutLeftWing(device);
@@ -111,6 +115,8 @@ public class Diagram extends Pane {
         }
 
         // connect power
+        int numberOfPwrPinUsed = 0;
+        int numberOfGndPinUsed = 0;
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
@@ -119,10 +125,12 @@ public class Diagram extends Pane {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
                         createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                            , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                            , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                          , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                          , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfGndPinUsed++;
                     }
                 }
             } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
@@ -130,16 +138,24 @@ public class Diagram extends Pane {
                 for (DevicePort port : powerPort) {
                     if (port.getY() != topLeftPort.getY() ) {
                         if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                    , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                            numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            createGndLine(port.getX(), port.getY() + HOLE_SPACE, BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                    , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                            numberOfGndPinUsed++;
                         }
                     }
                     else {
                         if (port.isVcc()) {
-                            createPowerLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_PWR_TOP_X, BREADBOARD_PWR_TOP_Y);
+                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
+                                    , BREADBOARD_PWR_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
+                            numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            createGndLine(port.getX(), port.getY() - HOLE_SPACE, BREADBOARD_GND_TOP_X, BREADBOARD_GND_TOP_Y);
+                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
+                                    , BREADBOARD_GND_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_TOP_Y + BREADBOARD_TOP_MARGIN);
+                            numberOfGndPinUsed++;
                         }
                     }
 
@@ -148,9 +164,15 @@ public class Diagram extends Pane {
             else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
-                        createPowerLine(port.getX(), port.getY(), BREADBOARD_PWR_BOT_X, BREADBOARD_PWR_BOT_Y);
+                        System.out.println("111111111111111111111111");
+                        createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY()
+                                , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
-                        createPowerLine(port.getX(), port.getY(), BREADBOARD_GND_BOT_X, BREADBOARD_GND_BOT_Y);
+                        System.out.println("222222222222222222222222");
+                        createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(),deviceTopLeftPos.get(projectDevice).getY() + port.getY()
+                                , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                        numberOfGndPinUsed++;
                     }
                 }
             }
@@ -163,7 +185,7 @@ public class Diagram extends Pane {
         DevicePort startSDA = controllerI2CPort.stream().filter(DevicePort::isSDA).findFirst().get();
         DevicePort startSCL = controllerI2CPort.stream().filter(DevicePort::isSCL).findFirst().get();
 
-        if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+        if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {  // TODO: not tested yet
             // SDA: top side - go up
             if (startSDA.getY() == getTopLeftHole(controller).getY()) {
                 sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
@@ -207,7 +229,7 @@ public class Diagram extends Pane {
                         sdaStartY = desSDA.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE;
                         sclStartX = desSCL.getX() + deviceTopLeftPos.get(projectDevice).getX();
                         sclStartY = desSCL.getY() + deviceTopLeftPos.get(projectDevice).getY() + HOLE_SPACE;
-                    } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+                    } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
                         DevicePort topLeftPort = getTopLeftHole(device);
 
                         //SDA: top side - go up
@@ -243,35 +265,39 @@ public class Diagram extends Pane {
             Device device = projectDevice.getActualDevice();
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
                 Peripheral destPeripheral = projectDevice.getDeviceConnection().get(sourcePeripheral);
-                if (sourcePeripheral == Peripheral.SPI_1) {
-                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
-                    DevicePort sourceMISO = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
-                    DevicePort sourceSCK = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
-                    DevicePort sourceSS = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSS).findFirst().get();
-
-                    DevicePort desMOSI = controller.getPort(destPeripheral).stream().filter(DevicePort::isMOSI).findFirst().get();
-                    DevicePort desMISO = controller.getPort(destPeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
-                    DevicePort desSCK = controller.getPort(destPeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
-                    DevicePort desSS = controller.getPort(destPeripheral).stream().filter(DevicePort::isSS).findFirst().get();
-
-                    createLine(projectDevice, sourceMOSI, project.getController(), desMOSI);
-                    createLine(projectDevice, sourceMISO, project.getController(), desMISO);
-                    createLine(projectDevice, sourceSCK, project.getController(), desSCK);
-                    createLine(projectDevice, sourceSS, project.getController(), desSS);
-                } else if (sourcePeripheral == Peripheral.UART_1) {
-                    DevicePort sourceRX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isRX).findFirst().get();
-                    DevicePort sourceTX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isTX).findFirst().get();
-
-                    DevicePort desRX = controller.getPort(destPeripheral).stream().filter(DevicePort::isRX).findFirst().get();
-                    DevicePort desTX = controller.getPort(destPeripheral).stream().filter(DevicePort::isTX).findFirst().get();
-
-                    createLine(projectDevice, sourceRX, project.getController(), desRX);
-                    createLine(projectDevice, sourceTX, project.getController(), desTX);
-                } else if (sourcePeripheral == Peripheral.GPIO_1) {
+                if (sourcePeripheral == Peripheral.SPI_1) { // TODO: not tested yet
+//                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
+//                    DevicePort sourceMISO = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
+//                    DevicePort sourceSCK = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
+//                    DevicePort sourceSS = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSS).findFirst().get();
+//
+//                    DevicePort desMOSI = controller.getPort(destPeripheral).stream().filter(DevicePort::isMOSI).findFirst().get();
+//                    DevicePort desMISO = controller.getPort(destPeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
+//                    DevicePort desSCK = controller.getPort(destPeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
+//                    DevicePort desSS = controller.getPort(destPeripheral).stream().filter(DevicePort::isSS).findFirst().get();
+//
+//                    createLine(projectDevice, sourceMOSI, project.getController(), desMOSI);
+//                    createLine(projectDevice, sourceMISO, project.getController(), desMISO);
+//                    createLine(projectDevice, sourceSCK, project.getController(), desSCK);
+//                    createLine(projectDevice, sourceSS, project.getController(), desSS);
+                } else if (sourcePeripheral == Peripheral.UART_1) { // TODO: not tested yet
+//                    DevicePort sourceRX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isRX).findFirst().get();
+//                    DevicePort sourceTX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isTX).findFirst().get();
+//
+//                    DevicePort desRX = controller.getPort(destPeripheral).stream().filter(DevicePort::isRX).findFirst().get();
+//                    DevicePort desTX = controller.getPort(destPeripheral).stream().filter(DevicePort::isTX).findFirst().get();
+//
+//                    createLine(projectDevice, sourceRX, project.getController(), desRX);
+//                    createLine(projectDevice, sourceTX, project.getController(), desTX);
+                } else if (sourcePeripheral.getConnectionType() == ConnectionType.GPIO) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = controller.getPort(destPeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 } else if (sourcePeripheral == Peripheral.PWM_1) {
+                    DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
+                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    createLine(projectDevice, sourcePort, project.getController(), destPort);
+                } else if (sourcePeripheral == Peripheral.ANALOG_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = controller.getPort(destPeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
@@ -289,9 +315,10 @@ public class Diagram extends Pane {
     }
 
     private int calculateNumberOfHoleWithoutLeftWing(Device device) {
+        DevicePort leftPort = device.getPort().stream().min(Comparator.comparingDouble(DevicePort::getX)).get();
         DevicePort rightPort = device.getPort().stream().max(Comparator.comparingDouble(DevicePort::getX)).get();
         int rightPaddingHoldCount = (int) Math.ceil((device.getWidth() - rightPort.getX()) / HOLE_SPACE);
-        return device.getPort().size() + rightPaddingHoldCount;
+        return /*device.getPort().size()*/ (int) ((rightPort.getX() - leftPort.getX()) / HOLE_SPACE) + 1 + rightPaddingHoldCount;
     }
 
     private DevicePort getTopLeftHole(Device device) {
@@ -311,16 +338,27 @@ public class Diagram extends Pane {
 
     private DevicePort getBottomLeftHole(Device device) {
         return device.getPort().stream().min((d1, d2) -> {
-            if (d1.getX() < d2.getX())
+//            if (d1.getX() < d2.getX())
+//                return -1;
+//            else if (d1.getX() == d2.getX()) {
+//                if (d1.getY() > d2.getY())
+//                    return -1;
+//                else
+//                    return 1;
+//            }
+//            else
+//                return 1;
+            if (d1.getY() > d2.getY()) {
                 return -1;
-            else if (d1.getX() == d2.getX()) {
-                if (d1.getY() > d2.getY())
+            } else if (d1.getY() == d2.getY()) {
+                if (d1.getX() < d2.getX())
                     return -1;
                 else
                     return 1;
-            }
-            else
+            } else {
                 return 1;
+            }
+
         }).get();
     }
 
@@ -373,21 +411,43 @@ public class Diagram extends Pane {
 
     private void createPowerLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.RED);
+        line.setStrokeWidth(5);
         this.getChildren().add(line);
     }
 
     private void createGndLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.BLACK);
+        line.setStrokeWidth(5);
         this.getChildren().add(line);
     }
 
     private void createSdaLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.GREEN);
+        line.setStrokeWidth(5);
         this.getChildren().add(line);
     }
 
     private void createSclLine(double x1, double y1, double x2, double y2) {
         Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.YELLOW);
+        line.setStrokeWidth(5);
+        this.getChildren().add(line);
+    }
+
+    private void createGpioLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.BLUE);
+        line.setStrokeWidth(5);
+        this.getChildren().add(line);
+    }
+
+    private void createPWMLine(double x1, double y1, double x2, double y2) {
+        Line line = new Line(x1, y1, x2, y2);
+        line.setStroke(Color.BLUE);
+        line.setStrokeWidth(5);
         this.getChildren().add(line);
     }
 
