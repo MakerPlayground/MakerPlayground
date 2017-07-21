@@ -1,21 +1,20 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.CodeGenerator;
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
+
+import javax.xml.transform.Source;
 
 /**
  * Created by tanyagorn on 7/19/2017.
  */
 public class GenerateViewModel {
     private final Project project;
-    private final String code;
+    private final Sourcecode code;
 
-    public GenerateViewModel(Project project) {
+    public GenerateViewModel(Project project, Sourcecode code) {
         this.project = project;
-        this.code = CodeGenerator.generateCode(project);
+        this.code = code;
     }
 
     public Project getProject() {
@@ -23,6 +22,6 @@ public class GenerateViewModel {
     }
 
     public String getCode() {
-        return code;
+        return code.getCode();
     }
 }
