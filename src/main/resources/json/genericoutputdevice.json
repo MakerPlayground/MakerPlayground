@@ -140,54 +140,19 @@
             },
             "datatype": "INTEGER",
             "controltype": "SPINBOX"
-          }
-        ]
-      },
-      {
-        "name": "Blink Tone",
-        "funcname": "blinkTone",
-        "type": "Active",
-        "parameter": [
+          },
           {
-            "name": "Tone Frequency",
-            "value": 2000.0,
+            "name": "Duration",
+            "value": 2.0,
             "constraint": {
               "min": 0.0,
-              "max": 10000.0,
-              "unit": "HERTZ"
+              "max": 1000.0,
+              "unit": "SECOND"
             },
             "datatype": "INTEGER",
             "controltype": "SPINBOX"
-          },
-          {
-            "name": "Time Period",
-            "value": 1.0,
-            "constraint": {
-              "min": 0.0,
-              "max": 60.0,
-              "unit": "SECOND"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Blink Speed",
-            "value": "Medium",
-            "constraint": [
-              "Slow",
-              "Medium",
-              "Fast"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
           }
         ]
-      },
-      {
-        "name": "Stop",
-        "funcname": "stop",
-        "type": "Inactive",
-        "parameter": []
       }
     ],
     "value": []

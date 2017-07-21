@@ -2633,41 +2633,16 @@
                   "max": 10000.0,
                   "unit": "HERTZ"
                 }
-              }
-            ]
-          },
-          {
-            "name": "Blink Tone",
-            "parameter": [
-              {
-                "name": "Tone Frequency",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 10000.0,
-                  "unit": "HERTZ"
-                }
               },
               {
-                "name": "Time Period",
+                "name": "Duration",
                 "constraint": {
                   "min": 0.0,
-                  "max": 60.0,
+                  "max": 1000.0,
                   "unit": "SECOND"
                 }
-              },
-              {
-                "name": "Blink Speed",
-                "constraint": [
-                  "Slow",
-                  "Medium",
-                  "Fast"
-                ]
               }
             ]
-          },
-          {
-            "name": "Stop",
-            "parameter": []
           }
         ],
         "value": [],
