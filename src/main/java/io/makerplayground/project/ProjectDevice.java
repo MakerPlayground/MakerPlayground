@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Peripheral;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +14,7 @@ import java.util.Map;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 @JsonSerialize (using = ProjectDeviceSerializer.class)
+@JsonDeserialize (using = ProjectDeviceDeserializer.class)
 public class ProjectDevice {
     private String name;
     private final GenericDevice genericDevice;

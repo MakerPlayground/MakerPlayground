@@ -1,8 +1,7 @@
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.CodeGenerator;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.Diagram;
+import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
@@ -10,9 +9,9 @@ import io.makerplayground.ui.devicepanel.DevicePanelView;
 import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -49,9 +48,15 @@ public class RightPanel extends AnchorPane {
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
             DeviceMapper.autoAssignDevices(project);
-            GenerateViewModel generateViewModel = new GenerateViewModel(project);
-            GenerateView generateView = new GenerateView(generateViewModel);
-            generateView.showAndWait();
+            Sourcecode code = Sourcecode.generateCode(project);
+            if (code.getError() != null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, code.getError().getDescription(), ButtonType.OK);
+                alert.showAndWait();
+            } else {
+                GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
+                GenerateView generateView = new GenerateView(generateViewModel);
+                generateView.showAndWait();
+            }
         });
         Button uploadBtn = new Button("Upload");
 

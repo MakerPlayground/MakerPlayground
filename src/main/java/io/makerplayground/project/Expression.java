@@ -16,9 +16,7 @@
 
 package io.makerplayground.project;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
 import javafx.beans.property.ObjectProperty;
@@ -28,28 +26,24 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  */
 @JsonSerialize (using = ExpressionSerializer.class)
-@JsonDeserialize (using = ExpressionDeserializer.class)
 public class Expression {
     private final ObjectProperty<Unit> unit;
     private final ObjectProperty<Operator> operator;
     private final ObjectProperty<Object> firstOperand;
     private final ObjectProperty<Object> secondOperand;
-    private final ObjectProperty<OperandType> operandType;
 
     public Expression() {
         unit = new SimpleObjectProperty<>(Unit.NOT_SPECIFIED);
         operator = new SimpleObjectProperty<>(Operator.GREATER_THAN_LITERAL);
         firstOperand = new SimpleObjectProperty<>(0.0);
         secondOperand = new SimpleObjectProperty<>(0.0);
-        operandType = new SimpleObjectProperty<>();
     }
 
-    Expression(Unit unit, Operator operator, Object firstOperand, Object secondOperand, OperandType operandType) {
+    Expression(Unit unit, Operator operator, Object firstOperand, Object secondOperand/*, OperandType operandType*/) {
         this.unit = new SimpleObjectProperty<>(unit);
         this.operator = new SimpleObjectProperty<>(operator);
         this.firstOperand = new SimpleObjectProperty<>(firstOperand);
         this.secondOperand = new SimpleObjectProperty<>(secondOperand);
-        this.operandType = new SimpleObjectProperty<>(operandType);
     }
 
     public Operator getOperator() {
@@ -88,18 +82,6 @@ public class Expression {
         this.secondOperand.set(secondOperand);
     }
 
-    public OperandType getOperandType() {
-        return operandType.get();
-    }
-
-    public ObjectProperty<OperandType> operandTypeProperty() {
-        return operandType;
-    }
-
-    public void setOperandType(OperandType operandType) {
-        this.operandType.set(operandType);
-    }
-
     public Unit getUnit() {
         return unit.get();
     }
@@ -119,7 +101,7 @@ public class Expression {
                 ", operator=" + operator +
                 ", firstOperand=" + firstOperand +
                 ", secondOperand=" + secondOperand +
-                ", operandType=" + operandType +
+                //", operandType=" + operandType +
                 '}';
     }
 }

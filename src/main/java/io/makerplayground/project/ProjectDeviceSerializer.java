@@ -46,7 +46,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
 
         jsonGenerator.writeArrayFieldStart("dependentDeviceConnection");
-        for (Map.Entry<Peripheral, Peripheral> connection : projectDevice.getDeviceConnection().entrySet()) {
+        for (Map.Entry<Peripheral, Peripheral> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
             jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().name());

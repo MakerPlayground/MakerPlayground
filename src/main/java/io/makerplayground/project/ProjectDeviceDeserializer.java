@@ -39,7 +39,7 @@ public class ProjectDeviceDeserializer extends StdDeserializer<ProjectDevice> {
 
         String actualDeviceId = node.get("actualDevice").asText();
         Device actualDevice = null;
-        if (actualDeviceId.isEmpty()) {
+        if (!actualDeviceId.isEmpty()) {
             actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
         }
 
@@ -52,7 +52,7 @@ public class ProjectDeviceDeserializer extends StdDeserializer<ProjectDevice> {
 
         String dependentDeviceId = node.get("actualDevice").asText();
         Device dependentDevice = null;
-        if (dependentDeviceId.isEmpty()) {
+        if (!dependentDeviceId.isEmpty()) {
             dependentDevice = DeviceLibrary.INSTANCE.getActualDevice(dependentDeviceId);
         }
 

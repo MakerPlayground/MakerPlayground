@@ -28,7 +28,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -271,4 +273,40 @@ public class Project {
     }
 
     public Begin getBegin() { return begin; }
+
+    public Set<GenericDevice> getAllDeviceTypeUsed() {
+        Set<GenericDevice> deviceType = new HashSet<>();
+        for (ProjectDevice projectDevice : getAllDeviceUsed()) {
+            deviceType.add(projectDevice.getGenericDevice());
+        }
+        return deviceType;
+    }
+
+    public Set<ProjectDevice> getAllDeviceUsed() {
+        Set<ProjectDevice> deviceType = new HashSet<>();
+
+        for (Scene s : scene) {
+            for (UserSetting userSetting : s.getSetting()) {
+                deviceType.add(userSetting.getDevice());
+            }
+        }
+
+        for (Condition c : condition) {
+            for (UserSetting userSetting : c.getSetting()) {
+                deviceType.add(userSetting.getDevice());
+                for (ObservableList<Expression> expressionList : userSetting.getExpression().values()) {
+                    for (Expression expression : expressionList) {
+                        if (expression.getOperator().isVariable()) {
+                            deviceType.add(((ProjectValue) expression.getFirstOperand()).getDevice());
+                            if (expression.getOperator().isBetween()) {
+                                deviceType.add(((ProjectValue) expression.getSecondOperand()).getDevice());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return deviceType;
+    }
 }

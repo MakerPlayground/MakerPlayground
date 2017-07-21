@@ -20,19 +20,34 @@ package io.makerplayground.helper;
  * An enum represent an operator ex. >, <, <=, >=, =, etc.
  */
 public enum Operator {
-    GREATER_THAN_LITERAL ("> numeral"), LESS_THAN_LITERAL("< numeral"), GREATER_THAN_OR_EQUAL_LITERAL(">= numeral"), LESS_THAN_OR_EQUAL_LITERAL("<= numeral"), EQUAL_LITERAL("= numeral"),
-    GREATER_THAN_VARIABLE("> variable"), LESS_THAN_VARIABLE("< variable"), GREATER_THAN_OR_EQUAL_VARIABLE(">= variable"), LESS_THAN_OR_EQUAL_VARIABLE("<= variable"), EQUAL_VARIABLE("= variable"),
-    BETWEEN_LITERAL("Between number"), BETWEEN_VARIABLE("Between variable");
+    GREATER_THAN_LITERAL ("> numeral", ">"),
+    LESS_THAN_LITERAL("< numeral", "<"),
+    GREATER_THAN_OR_EQUAL_LITERAL(">= numeral", ">="),
+    LESS_THAN_OR_EQUAL_LITERAL("<= numeral", "<="),
+    EQUAL_LITERAL("= numeral", "=="),
+    GREATER_THAN_VARIABLE("> variable", ">"),
+    LESS_THAN_VARIABLE("< variable", "<"),
+    GREATER_THAN_OR_EQUAL_VARIABLE(">= variable", ">="),
+    LESS_THAN_OR_EQUAL_VARIABLE("<= variable", "<="),
+    EQUAL_VARIABLE("= variable", "=="),
+    BETWEEN_LITERAL("Between number", ""),
+    BETWEEN_VARIABLE("Between variable", "");
 
-    private final String name;
+    private final String displayValue;
+    private final String codeValue;
 
-    Operator(String s){
-        name = s;
+    Operator(String displayValue, String codeValue) {
+        this.displayValue = displayValue;
+        this.codeValue = codeValue;
+    }
+
+    public String getCodeValue() {
+        return codeValue;
     }
 
     @Override
     public String toString() {
-        return this.name;
+        return this.displayValue;
     }
 
     public boolean isLiteral() {

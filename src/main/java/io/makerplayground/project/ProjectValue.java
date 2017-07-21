@@ -1,13 +1,10 @@
 package io.makerplayground.project;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 
 /**
  * Created by USER on 12-Jul-17.
  */
-@JsonDeserialize (using = ProjectValueDeserializer.class)
 public class ProjectValue {
     private final ProjectDevice device;
     private final Value value;

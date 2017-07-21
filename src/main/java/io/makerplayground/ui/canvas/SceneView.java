@@ -95,6 +95,8 @@ public class SceneView extends HBox implements Selectable {
         layoutYProperty().bindBidirectional(sceneViewModel.yProperty());
         enableDrag();
 
+        Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
+
         timeUnitComboBox.getItems().addAll(timeUnit);
         timeUnitComboBox.getSelectionModel().selectFirst();
 
