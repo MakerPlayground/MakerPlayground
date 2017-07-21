@@ -1030,10 +1030,6 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
-            "pintype": "INOUT"
-          },
-          {
             "type": "UART_1",
             "pintype": "UART_RX"
           }
@@ -1047,10 +1043,6 @@
         "name": "1",
         "type": "WIRE",
         "function": [
-          {
-            "type": "GPIO_2",
-            "pintype": "INOUT"
-          },
           {
             "type": "UART_1",
             "pintype": "UART_TX"
@@ -1066,7 +1058,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_3",
+            "type": "GPIO_1",
             "pintype": "INOUT"
           }
         ],
@@ -1079,10 +1071,6 @@
         "name": "3",
         "type": "WIRE",
         "function": [
-          {
-            "type": "GPIO_4",
-            "pintype": "INOUT"
-          },
           {
             "type": "PWM_1",
             "pintype": "INOUT"
@@ -1098,7 +1086,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_5",
+            "type": "GPIO_2",
             "pintype": "INOUT"
           }
         ],
@@ -1111,10 +1099,6 @@
         "name": "5",
         "type": "WIRE",
         "function": [
-          {
-            "type": "GPIO_6",
-            "pintype": "INOUT"
-          },
           {
             "type": "PWM_2",
             "pintype": "INOUT"
@@ -1130,10 +1114,6 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_7",
-            "pintype": "INOUT"
-          },
-          {
             "type": "PWM_3",
             "pintype": "INOUT"
           }
@@ -1148,7 +1128,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_8",
+            "type": "GPIO_3",
             "pintype": "INOUT"
           }
         ],
@@ -1162,7 +1142,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_9",
+            "type": "GPIO_4",
             "pintype": "INOUT"
           }
         ],
@@ -1175,10 +1155,6 @@
         "name": "9",
         "type": "WIRE",
         "function": [
-          {
-            "type": "GPIO_10",
-            "pintype": "INOUT"
-          },
           {
             "type": "PWM_4",
             "pintype": "INOUT"
@@ -1194,16 +1170,8 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_11",
-            "pintype": "INOUT"
-          },
-          {
             "type": "PWM_5",
             "pintype": "INOUT"
-          },
-          {
-            "type": "SPI_1",
-            "pintype": "SPI_SS"
           }
         ],
         "v_min": 5.0,
@@ -1216,16 +1184,8 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_12",
-            "pintype": "INOUT"
-          },
-          {
             "type": "PWM_6",
             "pintype": "INOUT"
-          },
-          {
-            "type": "SPI_2",
-            "pintype": "SPI_MOSI"
           }
         ],
         "v_min": 5.0,
@@ -1238,12 +1198,8 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_13",
+            "type": "GPIO_5",
             "pintype": "INOUT"
-          },
-          {
-            "type": "SPI_3",
-            "pintype": "SPI_MISO"
           }
         ],
         "v_min": 5.0,
@@ -1256,12 +1212,8 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_14",
+            "type": "GPIO_6",
             "pintype": "INOUT"
-          },
-          {
-            "type": "SPI_4",
-            "pintype": "SPI_SCK"
           }
         ],
         "v_min": 5.0,
@@ -1490,22 +1442,15 @@
       "GPIO_4",
       "GPIO_5",
       "GPIO_6",
-      "GPIO_7",
-      "GPIO_8",
-      "GPIO_9",
-      "GPIO_10",
-      "GPIO_11",
-      "GPIO_12",
-      "GPIO_13",
       "UART_1",
       "I2C_1",
-      "SPI_1",
       "PWM_1",
       "PWM_2",
       "PWM_3",
       "PWM_4",
       "PWM_5",
       "PWM_6",
+      "ANALOG_0",
       "ANALOG_1",
       "ANALOG_2",
       "ANALOG_3",
@@ -2911,6 +2856,10 @@
                 ]
               }
             ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
           }
         ],
         "value": [],
