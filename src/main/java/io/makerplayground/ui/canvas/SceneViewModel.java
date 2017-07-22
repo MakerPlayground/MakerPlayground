@@ -58,6 +58,10 @@ public class SceneViewModel {
         return delay;
     }
 
+    public void setDelayUnit(Scene.DelayUnit unit) {
+        scene.setDelayUnit(unit);
+    }
+
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
     }

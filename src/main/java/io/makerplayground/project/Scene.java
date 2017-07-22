@@ -34,7 +34,7 @@ public class Scene extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
     private final SimpleDoubleProperty delay;
-    private final DelayUnit delayUnit;
+    private DelayUnit delayUnit;
 
     Scene() {
         super(20,20,200, 135);
@@ -43,7 +43,7 @@ public class Scene extends NodeElement {
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = DelayUnit.Second;
+        this.delayUnit = DelayUnit.MilliSecond;
     }
 
     Scene(double top, double left, double width, double height
@@ -93,6 +93,10 @@ public class Scene extends NodeElement {
 
     public DelayUnit getDelayUnit() {
         return delayUnit;
+    }
+
+    public void setDelayUnit(DelayUnit delayUnit) {
+        this.delayUnit = delayUnit;
     }
 
     public ObservableList<UserSetting> getSetting() {

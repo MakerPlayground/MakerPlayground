@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.project.Scene;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.binding.Bindings;
@@ -99,6 +100,9 @@ public class SceneView extends HBox implements Selectable {
 
         timeUnitComboBox.getItems().addAll(timeUnit);
         timeUnitComboBox.getSelectionModel().selectFirst();
+        timeUnitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sceneViewModel.setDelayUnit(Scene.DelayUnit.valueOf(newValue));
+        });
 
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());

@@ -103,10 +103,11 @@ public class Sourcecode {
         // generate setup function
         sb.append(NEW_LINE);
         sb.append("void setup() {").append(NEW_LINE);
-        sb.append(INDENT).append("Serial.begin(115200);");
+        sb.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append(INDENT).append(projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
         }
+        sb.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
 
         // generate loop function
