@@ -1,5 +1,7 @@
 package io.makerplayground.ui;
 
+import java.util.ArrayList;
+import java.util.List;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.project.Project;
@@ -7,6 +9,7 @@ import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.devicepanel.DevicePanelView;
 import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -16,6 +19,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 /**
  * Created by Mai.Manju on 12-Jun-17.
@@ -59,6 +63,21 @@ public class RightPanel extends AnchorPane {
             }
         });
         Button uploadBtn = new Button("Upload");
+        uploadBtn.setOnAction((ActionEvent event) -> {
+            Sourcecode sourcecode = Sourcecode.generateCode(project);
+            if (sourcecode.getError() != null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, sourcecode.getError().getDescription(), ButtonType.OK);
+                alert.showAndWait();
+            } else {
+                String code = sourcecode.getCode();
+                List<String> library = project.getAllDeviceTypeUsed().stream()
+                        .map(genericDevice -> "MP_" + genericDevice.getName().replace(" ", "_"))
+                        .collect(Collectors.toList());
+                // TODO: call platform io here
+                System.out.println(code);
+                System.out.println(library);
+            }
+        });
 
         VBox projectButton = new VBox();
         projectButton.setStyle("-fx-background-color : #313644");
