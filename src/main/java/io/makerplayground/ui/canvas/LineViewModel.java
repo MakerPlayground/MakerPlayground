@@ -48,11 +48,11 @@ public class LineViewModel {
         CubicCurveTo cubicCurveTo = new CubicCurveTo();
         cubicCurveTo.controlX1Property().bind(Bindings.max(line.getSource().destPortXProperty().multiply(0.25)
                 .add(line.getDestination().sourcePortXProperty().multiply(0.75))
-                , line.getSource().destPortXProperty().add(200.0)));
+                , line.getSource().destPortXProperty().add(75.0)));
         cubicCurveTo.controlY1Property().bind(line.getSource().destPortYProperty());
         cubicCurveTo.controlX2Property().bind(Bindings.min(line.getDestination().sourcePortXProperty().multiply(0.25)
                 .add(line.getSource().destPortXProperty().multiply(0.75))
-                ,line.getDestination().sourcePortXProperty().subtract(200.0)));
+                ,line.getDestination().sourcePortXProperty().subtract(75.0)));
         cubicCurveTo.controlY2Property().bind(line.getDestination().sourcePortYProperty());
         cubicCurveTo.xProperty().bind(line.getDestination().sourcePortXProperty());
         cubicCurveTo.yProperty().bind(line.getDestination().sourcePortYProperty());

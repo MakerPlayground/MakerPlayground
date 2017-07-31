@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -48,13 +49,13 @@
                   </FlowPane>
                </content>
             </ScrollPane>
-            <HBox id="stateBottomHBox" alignment="CENTER" maxHeight="26.0" minHeight="26.0" spacing="5.0" style="-fx-background-radius: 0 0 5 5;">
+            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="5.0" style="-fx-background-radius: 0 0 5 5;">
                <children>
-                  <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/delayIcon.png" />
-                     </image>
-                  </ImageView>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Delay" wrappingWidth="32.5078125">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Text>
                   <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="25.0" minHeight="20.0" prefWidth="50.0">
                      <HBox.margin>
                         <Insets />
@@ -65,6 +66,12 @@
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
             </HBox>
          </children>
       </VBox>

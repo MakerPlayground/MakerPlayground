@@ -59,6 +59,8 @@ public class ExpressionView extends HBox {
 
         ComboBox<Unit> unitComboBox = new ComboBox<>(FXCollections.observableArrayList(expressionViewModel.getAvailableUnit()));
         unitComboBox.getSelectionModel().select(expressionViewModel.getUnit());
+        unitComboBox.visibleProperty().bind(expressionViewModel.literalModeProperty());
+        unitComboBox.managedProperty().bind(unitComboBox.visibleProperty());
         expressionViewModel.unitProperty().bind(unitComboBox.getSelectionModel().selectedItemProperty());
 
         b = new Button("-");
