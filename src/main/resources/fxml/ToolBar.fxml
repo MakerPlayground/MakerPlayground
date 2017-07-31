@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-
 <fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <top>
       <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #313644;" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
@@ -15,6 +14,7 @@
             <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
                <children>
                   <TextField id="projectNameTextField" fx:id="projectNameTextField" maxWidth="100.0" minWidth="100.0" style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project" />
+                  <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;" />
                   <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;" />
                   <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-repeat: no-repeat;" />
                </children>

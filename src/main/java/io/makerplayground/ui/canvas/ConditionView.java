@@ -73,7 +73,7 @@ public class ConditionView extends VBox implements Selectable {
                     inputDeviceSelector.hide();
                 }
                 InputDeviceSelector inputDeviceSel = new InputDeviceSelector(conditionViewModel);
-                inputDeviceSel.show(addInputButton,-100);
+                inputDeviceSel.show(addInputButton,0);
                 inputDeviceSelector = inputDeviceSel;
             }
         });
