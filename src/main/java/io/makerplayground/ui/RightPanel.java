@@ -61,7 +61,7 @@ public class RightPanel extends AnchorPane {
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
             DeviceMapper.autoAssignDevices(project);
-            Sourcecode code = Sourcecode.generateCode(project);
+            Sourcecode code = Sourcecode.generateCode(project, false);
             if (code.getError() != null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, code.getError().getDescription(), ButtonType.OK);
                 alert.showAndWait();
@@ -73,7 +73,7 @@ public class RightPanel extends AnchorPane {
         });
         Button uploadBtn = new Button("Upload");
         uploadBtn.setOnAction((ActionEvent event) -> {
-            Sourcecode sourcecode = Sourcecode.generateCode(project);
+            Sourcecode sourcecode = Sourcecode.generateCode(project, true);
             List<String> library = null;
             if (sourcecode.getError() != null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, sourcecode.getError().getDescription(), ButtonType.OK);
@@ -125,8 +125,6 @@ public class RightPanel extends AnchorPane {
                 try {
                     fw = new FileWriter(path+"\\upload\\project\\src\\main.cpp");
                     bw = new BufferedWriter(fw);
-                    bw.write("#include <Arduino.h>");
-                    bw.newLine();
                     bw.write(code);
                     bw.close();
                     fw.close();

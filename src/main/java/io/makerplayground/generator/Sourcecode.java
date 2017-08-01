@@ -67,9 +67,10 @@ public class Sourcecode {
     private static final String NEW_LINE = "\n";
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public static Sourcecode generateCode(Project project) {
+    public static Sourcecode generateCode(Project project, boolean cppMode) {
         //Begin begin = project.getBegin();
 
+        StringBuilder headerStringBuilder = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
         Scene currentScene = null;
@@ -80,11 +81,16 @@ public class Sourcecode {
         List<Scene> adjacentScene = getScene(adjacentVertices);
         List<Condition> adjacentCondition = getCondition(adjacentVertices);
 
+        // add #include <Arduino.h> if in cpp mode
+        if (cppMode) {
+            headerStringBuilder.append("#include <Arduino.h>").append(NEW_LINE);
+        }
+
         // generate include
         for (GenericDevice genericDevice : project.getAllDeviceTypeUsed()) {
-            sb.append("#include \"MP_").append(genericDevice.getName().replace(" ", "_")).append(".h\"").append(NEW_LINE);
+            headerStringBuilder.append("#include \"MP_").append(genericDevice.getName().replace(" ", "_")).append(".h\"").append(NEW_LINE);
         }
-        sb.append(NEW_LINE);
+        headerStringBuilder.append(NEW_LINE);
         sb.append("void (*currentScene)(void);").append(NEW_LINE);
 
         // instantiate object(s) for each device
@@ -144,8 +150,10 @@ public class Sourcecode {
         sb.append("}").append(NEW_LINE);
 
         // generate function for each scene
+        List<Scene> sceneList = new ArrayList<>();
         while (!queue.isEmpty()) {
             currentScene = queue.remove();
+            sceneList.add(currentScene);
 
             // create function header
             sb.append(NEW_LINE);
@@ -204,8 +212,15 @@ public class Sourcecode {
             sb.append("}").append(NEW_LINE);
         }
 
-        System.out.println(sb);
-        return new Sourcecode(sb.toString());
+        // generate function declaration for each scene
+        if (cppMode) {
+            for (Scene scene : sceneList) {
+                headerStringBuilder.append("void ").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+            }
+            headerStringBuilder.append(NEW_LINE);
+        }
+
+        return new Sourcecode(headerStringBuilder.append(sb).toString());
     }
 
     private static Error processCondition(StringBuilder sb, Queue<Scene> queue, Project project, List<Condition> adjacentCondition) {
