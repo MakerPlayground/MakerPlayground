@@ -91,7 +91,7 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append("MP_").append(projectDevice.getGenericDevice().getName().replace(" ", "_")).append(" ")
-                    .append(projectDevice.getName().replace(" ", "_")).append("(");
+                    .append(projectDevice.getName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
             for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
                 if (peripheral.getConnectionType() != ConnectionType.I2C) {
@@ -101,9 +101,9 @@ public class Sourcecode {
                 }
             }
             if (!portName.isEmpty()) {
-                sb.append(String.join(",", portName));
+                sb.append("(").append(String.join(",", portName)).append(")");
             }
-            sb.append(")").append(";").append(NEW_LINE);
+            sb.append(";").append(NEW_LINE);
         }
 
         // generate setup function
