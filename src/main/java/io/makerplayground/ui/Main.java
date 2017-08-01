@@ -37,6 +37,8 @@ public class Main extends Application {
     @FXML
     private Button loadButton;
     @FXML
+    private Button newButton;
+    @FXML
     private AnchorPane toolBarPane;
 
     @Override
@@ -58,6 +60,24 @@ public class Main extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        newButton.setOnAction(event -> {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save File");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+                        new FileChooser.ExtensionFilter("All Files", "*.*"));
+                File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+                if (selectedFile != null) {
+                    Project p = new Project();
+                    MainWindow mw = new MainWindow(p);
+                    borderPane.setCenter(mw);
+                    mapper.writeValue(selectedFile, mainWindow.getProject());
+                }
+            } catch (IOException x) {
+                x.printStackTrace();
+            }
+        });
 
         loadButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();

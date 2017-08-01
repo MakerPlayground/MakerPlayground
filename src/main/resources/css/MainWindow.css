@@ -55,3 +55,15 @@
     -fx-background-color: transparent;
     -fx-border-color : transparent;
 }
+#newFileBtn{
+    -fx-background-image: url('new.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}
+#newFileBtn:pressed{
+    -fx-background-image: url('new-toggle.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}

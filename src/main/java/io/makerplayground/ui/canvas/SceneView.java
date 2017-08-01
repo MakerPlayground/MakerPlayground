@@ -114,7 +114,7 @@ public class SceneView extends HBox implements Selectable {
                     outputDeviceSelector.hide();
                 }
                 OutputDeviceSelector outputDeviceSel = new OutputDeviceSelector(sceneViewModel);
-                outputDeviceSel.show(addOutputButton, -100);
+                outputDeviceSel.show(addOutputButton, 0);
                 outputDeviceSelector = outputDeviceSel;
             }
         });

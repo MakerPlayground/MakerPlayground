@@ -68,7 +68,7 @@ public class DevicePropertyWindow extends PopOver {
         row1.setSpacing(10);
 
         HBox row2 = new HBox();
-        Label state = new Label("Scene");
+        Label state = new Label("Action");
 
         // Casting ArrayList to ObservableList
         ObservableList<Action> actionList = FXCollections.observableArrayList(viewModel.getGenericDevice().getAction());
@@ -105,7 +105,6 @@ public class DevicePropertyWindow extends PopOver {
 
         //paramVBox = new VBox();
         propertySheet = new PropertySheet();
-
         propertySheet.setModeSwitcherVisible(false);
         propertySheet.setSearchBoxVisible(false);
         propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {

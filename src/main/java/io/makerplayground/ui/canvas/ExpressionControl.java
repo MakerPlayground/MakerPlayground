@@ -11,6 +11,8 @@ import io.makerplayground.uihelper.NodeConsumer;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -29,6 +31,7 @@ public class ExpressionControl extends VBox{
 
         setSpacing(2.0);
         setAlignment(Pos.TOP_LEFT);
+
 
         DynamicViewModelCreator<Expression, ExpressionViewModel> dynamicViewModelCreator = new DynamicViewModelCreator<>(expressionsList, expression -> new ExpressionViewModel(v, expression, values));
         DynamicViewCreator<VBox, ExpressionViewModel, ExpressionView> dynamicViewCreator = new DynamicViewCreator<>(dynamicViewModelCreator, this, expressionViewModel -> {
@@ -52,9 +55,12 @@ public class ExpressionControl extends VBox{
         });
 
         Button button = new Button("+");
-        button.setOnAction(event -> {
-            Expression e = new Expression(((NumericConstraint) v.getConstraint()).getUnit().iterator().next());
-            expressionsList.add(e);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Expression e = new Expression(((NumericConstraint) v.getConstraint()).getUnit().iterator().next());
+                expressionsList.add(e);
+            }
         });
         getChildren().add(button);
     }

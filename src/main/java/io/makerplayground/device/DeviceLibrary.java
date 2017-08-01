@@ -62,8 +62,6 @@ public enum DeviceLibrary {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        System.out.println(this.actualDevice);
     }
 
 //    public List<Microcontroller> getMicrocontroller() {

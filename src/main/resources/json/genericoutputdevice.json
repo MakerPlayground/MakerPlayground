@@ -70,59 +70,6 @@
     "value": []
   },
   {
-    "name": "LCD",
-    "action": [
-      {
-        "name": "Print",
-        "funcname": "print",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Backlight",
-            "value": "On",
-            "constraint": [
-              "On",
-              "Off"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Print Text",
-            "value": "",
-            "constraint": [],
-            "datatype": "CUSTOM",
-            "controltype": "CUSTOMPRINT"
-          }
-        ]
-      },
-      {
-        "name": "Clear",
-        "funcname": "clear",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Backlight",
-            "value": "On",
-            "constraint": [
-              "On",
-              "Off"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
-        "name": "Off",
-        "funcname": "off",
-        "type": "Inactive",
-        "parameter": []
-      }
-    ],
-    "value": []
-  },
-  {
     "name": "Buzzer",
     "action": [
       {
