@@ -10,6 +10,7 @@ import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
+import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.*;
@@ -23,7 +24,8 @@ public class Sourcecode {
         NONE(""),
         NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
-        NEST_CONDITION("Multiple condition are connected together");
+        NEST_CONDITION("Multiple condition are connected together"),
+        NO_EXPRESSION("Missing expression");
 
         private final String description;
 
@@ -89,15 +91,19 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append("MP_").append(projectDevice.getGenericDevice().getName().replace(" ", "_")).append(" ")
-                    .append(projectDevice.getName().replace(" ", "_")).append("(");
+                    .append(projectDevice.getName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
             for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
-                List<String> tmp = project.getController().getController().getPort(peripheral).stream()
-                        .map(DevicePort::getName).collect(Collectors.toList());
-                portName.addAll(tmp);
+                if (peripheral.getConnectionType() != ConnectionType.I2C) {
+                    List<String> tmp = project.getController().getController().getPort(peripheral).stream()
+                            .map(DevicePort::getName).collect(Collectors.toList());
+                    portName.addAll(tmp);
+                }
             }
-            sb.append(String.join(",", portName));
-            sb.append(")").append(";").append(NEW_LINE);
+            if (!portName.isEmpty()) {
+                sb.append("(").append(String.join(",", portName)).append(")");
+            }
+            sb.append(";").append(NEW_LINE);
         }
 
         // generate setup function
@@ -218,55 +224,69 @@ public class Sourcecode {
             }
         }
 
-        // declare variable and get value from input device(s)
+        // declare variable to store value from input device(s)
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
                 sb.append(INDENT).append("double ").append(projectDevice.getName().replace(" ", "_")).append("_")
+                        .append(v.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+            }
+        }
+
+        // loop to check sensor
+        sb.append(INDENT).append("while (1) {").append(NEW_LINE);
+        // update value from input device(s) to the variable
+        for (ProjectDevice projectDevice : valueUsed.keySet()) {
+            for (Value v : valueUsed.get(projectDevice)) {
+                sb.append(INDENT).append(INDENT).append(projectDevice.getName().replace(" ", "_")).append("_")
                         .append(v.getName().replace(" ", "_")).append(" = ").append(projectDevice.getName().replace(" ", "_")).append(".get")
                         .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
         }
-
         // generate if for each condition
-        sb.append(INDENT).append("while (1) {").append(NEW_LINE);
         for (Condition condition : adjacentCondition) {
-            sb.append(INDENT).append(INDENT).append("if").append("(");
             List<String> conditionList = new ArrayList<>();
             for (UserSetting setting : condition.getSetting()) {
-                if ((setting.getAction() != null) && !setting.getAction().getName().replace(" ", "_").equals("Compare")) {
+                if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
                     StringBuilder action = new StringBuilder();
-                    action.append("(").append(setting.getDevice().getName().replace(" ", "_")).append(".")
+                    action.append(setting.getDevice().getName().replace(" ", "_")).append(".")
                             .append(setting.getAction().getFunctionName()).append("(");
                     for (Parameter parameter : setting.getAction().getParameter()) {
                         Object value = setting.getValueMap().get(parameter);
                         if (value instanceof NumberWithUnit) {
                             action.append(df.format(((NumberWithUnit) value).getValue()));
                         } else if (value instanceof String) {
-                            action.append("\"" + value + "\"");
+                            action.append("\"").append(value).append("\"");
                         }
                     }
-                    action.append("))");
+                    action.append(")");
                     conditionList.add(action.toString());
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
                         List<String> valueList = new ArrayList<>();
                         for (Expression e : setting.getExpression().get(value)) {
                             if (e.getOperator().isBetween()) {
+                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " > "
+                                        + df.format(e.getFirstOperand()) + ")"
+                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " < "
+                                        + df.format(e.getSecondOperand()) + ")");
+                            } else {
                                 valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
                                         + value.getName() + ' ' + e.getOperator().getCodeValue() + ' '
-                                        + df.format(((NumberWithUnit) e.getFirstOperand()).getValue()) + ")");
-                            } else {
-                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " > "
-                                        + df.format(((NumberWithUnit) e.getFirstOperand()).getValue()) + ")"
-                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " < "
-                                        + df.format(((NumberWithUnit) e.getSecondOperand()).getValue()) + ")");
+                                        + df.format(e.getFirstOperand()) + ")");
                             }
                         }
-                        conditionList.add("(" + String.join(" || ", valueList) + ")");
+                        if (!valueList.isEmpty()) {
+                            conditionList.add("(" + String.join(" || ", valueList) + ")");
+                        }
                     }
                 }
             }
-            sb.append(String.join(" && ", conditionList)).append(") {").append(NEW_LINE);
+            if (!conditionList.isEmpty()) {
+                sb.append(INDENT).append(INDENT).append("if").append("(");
+                sb.append(String.join(" && ", conditionList)).append(") {").append(NEW_LINE);
+            } else {
+                return Error.NO_EXPRESSION;
+            }
 
             List<NodeElement> nextVertices = findAdjacentVertices(project, condition);
             List<Scene> nextScene = getScene(nextVertices);
@@ -287,7 +307,7 @@ public class Sourcecode {
                 sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
             }
 
-            sb.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+            sb.append(INDENT).append(INDENT).append("}").append(NEW_LINE); // end of if
         }
         sb.append(INDENT).append("}").append(NEW_LINE); // end of while loop
 
