@@ -17,7 +17,7 @@ public class GenerateViewModel {
 
     public GenerateViewModel(Project project, Sourcecode code) {
         this.project = project;
-        this.code = Sourcecode.generateCode(project);
+        this.code = Sourcecode.generateCode(project, false);
 
         this.observableTableList = FXCollections.observableArrayList();
         for (ProjectDevice projectDevice : project.getAllDevice()) {
