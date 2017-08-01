@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.*;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Operator;
-import io.makerplayground.helper.Platform;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.helper.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -189,9 +186,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             secondOperand = node.get("secondOperand").asDouble();
         }
 
-        //OperandType operandType = OperandType.valueOf(node.get("secondOperand").asText());
+        OperandType operandType = OperandType.valueOf(node.get("operandType").asText());
 
-        return new Expression(unit, operator, firstOperand, secondOperand);
+        return new Expression(unit, operator, firstOperand, secondOperand, operandType);
     }
 
     public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {

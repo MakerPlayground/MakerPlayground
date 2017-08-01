@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
 import io.makerplayground.project.Expression;
 import io.makerplayground.project.ProjectDevice;
@@ -52,7 +53,7 @@ public class ExpressionControl extends VBox{
 
         Button button = new Button("+");
         button.setOnAction(event -> {
-            Expression e = new Expression();
+            Expression e = new Expression(((NumericConstraint) v.getConstraint()).getUnit().iterator().next());
             expressionsList.add(e);
         });
         getChildren().add(button);

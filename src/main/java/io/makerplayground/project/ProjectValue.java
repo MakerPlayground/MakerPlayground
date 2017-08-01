@@ -29,4 +29,9 @@ public class ProjectValue {
                 ", value=" + value +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }

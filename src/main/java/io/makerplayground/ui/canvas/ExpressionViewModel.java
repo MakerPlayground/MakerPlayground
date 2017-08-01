@@ -3,9 +3,9 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.Operator;
+import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
-import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -28,12 +28,14 @@ public class ExpressionViewModel {
     private final ObjectProperty<ProjectValue> secondOperandAsValue;
     private final ReadOnlyBooleanWrapper literalMode;
     private final ReadOnlyBooleanWrapper betweenMode;
+    //private final ObjectProperty<OperandType> operatorType;
 
     public ExpressionViewModel(Value v, Expression expression, List<ProjectValue> values) {
         this.expression = expression;
         this.availableValue = values;
         this.availableUnit = FXCollections.observableArrayList(((NumericConstraint) v.getConstraint()).getUnit());
 
+        //this.operatorType = new SimpleObjectProperty<>(expression.getOperandType());
         this.firstOperandAsDouble = new SimpleDoubleProperty();
         this.firstOperandAsDouble.addListener((observable, oldValue, newValue) -> expression.setFirstOperand(newValue));
         this.secondOperandAsDouble = new SimpleDoubleProperty();
@@ -43,17 +45,18 @@ public class ExpressionViewModel {
         this.secondOperandAsValue = new SimpleObjectProperty<>();
         this.secondOperandAsValue.addListener((observable, oldValue, newValue) -> expression.setSecondOperand(newValue));
         this.literalMode = new ReadOnlyBooleanWrapper();
-        this.literalMode.bind(Bindings.createBooleanBinding(() -> expression.getOperator().isLiteral(), expression.operatorProperty()));
+        this.literalMode.bind(expression.operandTypeProperty().isEqualTo(OperandType.NUMBER));
         this.betweenMode = new ReadOnlyBooleanWrapper();
         this.betweenMode.bind(Bindings.createBooleanBinding(() -> expression.getOperator().isBetween(), expression.operatorProperty()));
 
-        if (expression.getOperator().isLiteral()) {
+
+        if (expression.getOperandType() == OperandType.NUMBER) {
             this.firstOperandAsDouble.set((Double) expression.getFirstOperand());
 
             if (expression.getOperator().isBetween()) {
                 this.secondOperandAsDouble.set((Double) expression.getSecondOperand());
             }
-        } else if (expression.getOperator().isVariable()) {
+        } else if (expression.getOperandType() == OperandType.VARIABLE) {
             this.firstOperandAsValue.set((ProjectValue) expression.getFirstOperand());
 
             if (expression.getOperator().isBetween()) {
@@ -61,15 +64,15 @@ public class ExpressionViewModel {
             }
         }
 
-        expression.operatorProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.isLiteral()) {
+        expression.operandTypeProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == OperandType.NUMBER) {
                 expression.setFirstOperand(firstOperandAsDouble.get());
-                if (newValue.isBetween()) {
+                if (getOperator().isBetween()) {
                     expression.setSecondOperand(secondOperandAsDouble.get());
                 }
-            } else if (newValue.isVariable()) {
+            } else if (newValue == OperandType.VARIABLE) {
                 expression.setFirstOperand(firstOperandAsValue.get());
-                if (newValue.isBetween()) {
+                if (getOperator().isBetween()) {
                     expression.setSecondOperand(secondOperandAsValue.get());
                 }
             }
@@ -160,5 +163,13 @@ public class ExpressionViewModel {
 
     public ReadOnlyBooleanProperty betweenModeProperty() {
         return betweenMode.getReadOnlyProperty();
+    }
+
+    public OperandType getOperandType() {
+        return expression.getOperandType();
+    }
+
+    public ObjectProperty<OperandType> operandTypeProperty() {
+        return expression.operandTypeProperty();
     }
 }

@@ -18,6 +18,7 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.helper.Operator;
+import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Unit;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,19 +32,30 @@ public class Expression {
     private final ObjectProperty<Operator> operator;
     private final ObjectProperty<Object> firstOperand;
     private final ObjectProperty<Object> secondOperand;
+    private final ObjectProperty<OperandType> operandType;
 
-    public Expression() {
-        unit = new SimpleObjectProperty<>(Unit.NOT_SPECIFIED);
-        operator = new SimpleObjectProperty<>(Operator.GREATER_THAN_LITERAL);
+    public Expression(Unit u) {
+        unit = new SimpleObjectProperty<>(u);
+        operator = new SimpleObjectProperty<>(Operator.GREATER_THAN);
         firstOperand = new SimpleObjectProperty<>(0.0);
         secondOperand = new SimpleObjectProperty<>(0.0);
+        operandType = new SimpleObjectProperty<>(OperandType.NUMBER);
     }
 
-    Expression(Unit unit, Operator operator, Object firstOperand, Object secondOperand/*, OperandType operandType*/) {
+    Expression(Unit unit, Operator operator, Object firstOperand, Object secondOperand, OperandType operandType) {
         this.unit = new SimpleObjectProperty<>(unit);
         this.operator = new SimpleObjectProperty<>(operator);
         this.firstOperand = new SimpleObjectProperty<>(firstOperand);
         this.secondOperand = new SimpleObjectProperty<>(secondOperand);
+        this.operandType = new SimpleObjectProperty<>(operandType);
+    }
+
+    public OperandType getOperandType() {
+        return operandType.get();
+    }
+
+    public ObjectProperty<OperandType> operandTypeProperty() {
+        return operandType;
     }
 
     public Operator getOperator() {

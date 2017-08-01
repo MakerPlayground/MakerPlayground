@@ -20,5 +20,5 @@ package io.makerplayground.helper;
  * An enum to represent an operand of a operation
  */
 public enum OperandType {
-    LITERAL, VARIABLE
+    NUMBER, VARIABLE
 }

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
+import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -296,7 +297,7 @@ public class Project {
                 deviceType.add(userSetting.getDevice());
                 for (ObservableList<Expression> expressionList : userSetting.getExpression().values()) {
                     for (Expression expression : expressionList) {
-                        if (expression.getOperator().isVariable()) {
+                        if (expression.getOperandType() == OperandType.VARIABLE) {
                             deviceType.add(((ProjectValue) expression.getFirstOperand()).getDevice());
                             if (expression.getOperator().isBetween()) {
                                 deviceType.add(((ProjectValue) expression.getSecondOperand()).getDevice());

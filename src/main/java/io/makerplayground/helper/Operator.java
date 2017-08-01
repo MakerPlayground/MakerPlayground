@@ -20,18 +20,12 @@ package io.makerplayground.helper;
  * An enum represent an operator ex. >, <, <=, >=, =, etc.
  */
 public enum Operator {
-    GREATER_THAN_LITERAL ("> numeral", ">"),
-    LESS_THAN_LITERAL("< numeral", "<"),
-    GREATER_THAN_OR_EQUAL_LITERAL(">= numeral", ">="),
-    LESS_THAN_OR_EQUAL_LITERAL("<= numeral", "<="),
-    EQUAL_LITERAL("= numeral", "=="),
-    GREATER_THAN_VARIABLE("> variable", ">"),
-    LESS_THAN_VARIABLE("< variable", "<"),
-    GREATER_THAN_OR_EQUAL_VARIABLE(">= variable", ">="),
-    LESS_THAN_OR_EQUAL_VARIABLE("<= variable", "<="),
-    EQUAL_VARIABLE("= variable", "=="),
-    BETWEEN_LITERAL("Between number", ""),
-    BETWEEN_VARIABLE("Between variable", "");
+    GREATER_THAN (">", ">"),
+    LESS_THAN("<", "<"),
+    GREATER_THAN_OR_EQUAL(">=", ">="),
+    LESS_THAN_OR_EQUAL("<=", "<="),
+    EQUAL("=", "=="),
+    BETWEEN("between", "");
 
     private final String displayValue;
     private final String codeValue;
@@ -50,17 +44,7 @@ public enum Operator {
         return this.displayValue;
     }
 
-    public boolean isLiteral() {
-        return (this == GREATER_THAN_LITERAL) || (this == LESS_THAN_LITERAL) || (this == GREATER_THAN_OR_EQUAL_LITERAL)
-                || (this == LESS_THAN_OR_EQUAL_LITERAL) || (this == EQUAL_LITERAL);
-    }
-
-    public boolean isVariable() {
-        return (this == GREATER_THAN_VARIABLE)|| (this ==  LESS_THAN_VARIABLE) || (this ==  GREATER_THAN_OR_EQUAL_VARIABLE)
-                || (this == LESS_THAN_OR_EQUAL_VARIABLE) || (this ==  EQUAL_VARIABLE );
-    }
-
     public boolean isBetween() {
-        return (this == BETWEEN_LITERAL) || (this == BETWEEN_VARIABLE);
+        return this == BETWEEN;
     }
 }
