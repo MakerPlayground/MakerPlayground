@@ -214,6 +214,7 @@ public class Sourcecode {
 
         // generate function declaration for each scene
         if (cppMode) {
+            headerStringBuilder.append("void beginScene();").append(NEW_LINE);
             for (Scene scene : sceneList) {
                 headerStringBuilder.append("void ").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
