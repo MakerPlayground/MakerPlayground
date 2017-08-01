@@ -73,12 +73,15 @@ public class RightPanel extends AnchorPane {
         });
         Button uploadBtn = new Button("Upload");
         uploadBtn.setOnAction((ActionEvent event) -> {
+            DeviceMapper.autoAssignDevices(project);
             Sourcecode sourcecode = Sourcecode.generateCode(project, true);
             List<String> library = null;
             if (sourcecode.getError() != null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, sourcecode.getError().getDescription(), ButtonType.OK);
                 alert.showAndWait();
             } else {
+                // OPEN progress bar
+                
                 String platform = project.getController().getPlatform().getPlatformioId();
                 String code = sourcecode.getCode();
                 library = project.getAllDeviceTypeUsed().stream()
@@ -166,6 +169,8 @@ public class RightPanel extends AnchorPane {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                //CLOSE Progress bar
             }
         });
 

@@ -194,6 +194,15 @@ public class Device {
                 if (!parameterMapActualDevice.containsKey(parameter)) {
                     return false;
                 }
+                if (parameterMapActualDevice.get(parameter) == Constraint.NONE) {
+                    System.out.print("No constraint!!!");
+                }
+
+                Constraint c = theirMap.get(action).get(parameter);
+                if (theirMap.get(action).get(parameter) == Constraint.NONE) {
+                    System.out.print("No constraint!!!");
+                }
+
                 if (!parameterMapActualDevice.get(parameter).isCompatible(theirMap.get(action).get(parameter))) {
                     return false;
                 }
