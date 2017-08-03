@@ -13,12 +13,14 @@ public class ProjectController {
 
     public ProjectController(Platform platform) {
         this.platform = platform;
-        this.controller = DeviceLibrary.INSTANCE.getActualDevice("DEV-13975");
+        //this.controller = DeviceLibrary.INSTANCE.getActualDevice("DEV-13975");
+        this.controller = DeviceLibrary.INSTANCE.getActualDevice("MCU_1");
     }
 
     ProjectController(Platform platform, Device controller) {
         this.platform = platform;
-        this.controller = DeviceLibrary.INSTANCE.getActualDevice("DEV-13975");;
+        //this.controller = DeviceLibrary.INSTANCE.getActualDevice("DEV-13975");;
+        this.controller = DeviceLibrary.INSTANCE.getActualDevice("MCU_1");
     }
 
     public Platform getPlatform() {

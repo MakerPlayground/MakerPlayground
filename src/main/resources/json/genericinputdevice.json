@@ -378,7 +378,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
+          "max": 180.0,
           "unit": "DEGREE"
         }
       },
@@ -387,7 +387,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
+          "max": 180.0,
           "unit": "DEGREE"
         }
       },
@@ -396,7 +396,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
+          "max": 180.0,
           "unit": "DEGREE"
         }
       }

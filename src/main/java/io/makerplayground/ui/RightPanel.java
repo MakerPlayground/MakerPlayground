@@ -87,6 +87,8 @@ public class RightPanel extends AnchorPane {
                 library = project.getAllDeviceTypeUsed().stream()
                         .map(genericDevice -> "MP_" + genericDevice.getName().replace(" ", "_"))
                         .collect(Collectors.toList());
+                library.add("MPU6050");
+                library.add("I2Cdev");
                 // TODO: call platform io here
                 System.out.println(code);
                 System.out.println(library);
@@ -94,15 +96,15 @@ public class RightPanel extends AnchorPane {
                 String path = currentRelativePath.toAbsolutePath().toString();
                 System.out.println("Current relative path is: " + path);
                 try {
-                    FileUtils.deleteDirectory(new File(path + "\\upload\\project"));
-                    FileUtils.forceMkdir(new File(path + "\\upload\\project"));
+                    FileUtils.deleteDirectory(new File(path + File.separator +  "upload" + File.separator +  "project"));
+                    FileUtils.forceMkdir(new File(path + File.separator +  "upload" + File.separator +  "project"));
 
                     currentRelativePath = Paths.get("");
                     path = currentRelativePath.toAbsolutePath().toString();
                     System.out.println("Current relative path is: " + path);
 
                     ProcessBuilder builder = new ProcessBuilder( "pio", "init", "--board", platform);
-                    builder.directory( new File( "upload/project" ).getAbsoluteFile() ); // this is where you set the root folder for the executable to run with
+                    builder.directory( new File( "upload" + File.separator + "project" ).getAbsoluteFile() ); // this is where you set the root folder for the executable to run with
                     builder.redirectErrorStream(true);
                     Process p = builder.start();
                     Scanner s = new Scanner(p.getInputStream());
@@ -118,15 +120,15 @@ public class RightPanel extends AnchorPane {
 
                     //Runtime.getRuntime().exec("pio init --board "+platform);
                     System.out.println(platform);
-                    FileUtils.forceMkdir(new File(path + "\\upload\\project\\src"));
-                    FileUtils.forceMkdir(new File(path + "\\upload\\project\\lib"));
+                    FileUtils.forceMkdir(new File(path + File.separator +  "upload" + File.separator +  "project" + File.separator +  "src"));
+                    FileUtils.forceMkdir(new File(path + File.separator +  "upload" + File.separator +  "project" + File.separator +  "lib"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 FileWriter fw = null;
                 BufferedWriter bw = null;
                 try {
-                    fw = new FileWriter(path+"\\upload\\project\\src\\main.cpp");
+                    fw = new FileWriter(path + File.separator + "upload" + File.separator + "project" + File.separator +  "src" + File.separator + "main.cpp");
                     bw = new BufferedWriter(fw);
                     bw.write(code);
                     bw.close();
@@ -136,14 +138,14 @@ public class RightPanel extends AnchorPane {
                 }
                 for (String x : library) {
                     try {
-                        FileUtils.forceMkdir(new File(path + "\\upload\\project\\lib\\"+x));
+                        FileUtils.forceMkdir(new File(path + File.separator +  "upload" + File.separator +  "project" + File.separator +  "lib" + File.separator + x));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    File sourcecpp = new File(path+"\\lib\\"+x+".cpp");
-                    File destcpp = new File(path+"\\upload\\project\\lib\\"+x+"\\"+x+".cpp");
-                    File sourceh = new File(path+"\\lib\\"+x+".h");
-                    File desth = new File(path+"\\upload\\project\\lib\\"+x+"\\"+x+".h");
+                    File sourcecpp = new File(path + File.separator +  "lib" + File.separator + x +".cpp");
+                    File destcpp = new File(path + File.separator + "upload" + File.separator + "project"+ File.separator + "lib" + File.separator + x + File.separator + x+".cpp");
+                    File sourceh = new File(path + File.separator + "lib" + File.separator + x+".h");
+                    File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x +".h");
                     try {
                         Files.copy(sourcecpp.toPath(),destcpp.toPath());
                         Files.copy(sourceh.toPath(),desth.toPath());
@@ -153,7 +155,7 @@ public class RightPanel extends AnchorPane {
                 }
                 try {
                     ProcessBuilder builder = new ProcessBuilder( "platformio", "run", "--target", "upload");
-                    builder.directory( new File( "upload/project" ).getAbsoluteFile() ); // this is where you set the root folder for the executable to run with
+                    builder.directory( new File( "upload" + File.separator + "project" ).getAbsoluteFile() ); // this is where you set the root folder for the executable to run with
                     builder.redirectErrorStream(true);
                     Process p = builder.start();
                     Scanner s = new Scanner(p.getInputStream());

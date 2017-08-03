@@ -53,21 +53,21 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
         for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
-            //System.out.println(deviceName);
+            System.out.println(deviceName);
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
 
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
-                //System.out.println(actionName);
+                System.out.println(actionName);
                 Action action = genericDevice.getAction(actionName);
-
+                System.out.println(action);
                 Map<Parameter, Constraint> supportedParam = new HashMap<>();
                 for (JsonNode parameterNode : actionNode.get("parameter")) {
                     String parameterName = parameterNode.get("name").asText();
-                    //System.out.println(parameterName);
+                    System.out.println(parameterName);
                     Constraint constraint = mapper.treeToValue(parameterNode.get("constraint"), Constraint.class);
-                    //System.out.println(constraint);
+                    System.out.println(constraint);
                     Parameter parameter = action.getParameter(parameterName);
                     supportedParam.put(parameter, constraint);
                 }

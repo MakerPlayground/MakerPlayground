@@ -1,15 +1,16 @@
 #include <Arduino.h>
 #include "MP_LED.h"
-#include "MP_Button.h"
+
+void beginScene();
+void scene1();
+void scene2();
 
 void (*currentScene)(void);
 
-MP_Button Button1();
-MP_LED LED1();
+MP_LED LED1(3);
 
 void setup() {
     Serial.begin(115200);
-    Button1.init();
     LED1.init();
     currentScene = beginScene;
 }
@@ -24,15 +25,12 @@ void beginScene() {
 
 void scene1() {
     LED1.on(100.00);
-    while (1) {
-        if((Button1.isPressed())) {
-            currentScene = scene2;
-            break;
-        }
-    }
+    delay(2000.00);
+    currentScene = scene2;
 }
 
 void scene2() {
     LED1.off();
+    delay(500.00);
     currentScene = beginScene;
 }

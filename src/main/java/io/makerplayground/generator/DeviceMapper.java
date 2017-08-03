@@ -18,7 +18,6 @@ import java.util.*;
 public class DeviceMapper {
     public static Map<ProjectDevice, List<Device>> getSupportedDeviceList(Project project) {
         List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice();
-
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
@@ -26,9 +25,7 @@ public class DeviceMapper {
         }
 
         for (Scene s : project.getScene()) {
-            System.out.println("In scene = " + s.getName());
             for (UserSetting u : s.getSetting()) {
-                System.out.println("1");
                 ProjectDevice projectDevice = u.getDevice();
                 Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
                 for (Parameter parameter : u.getValueMap().keySet()) {
@@ -146,7 +143,6 @@ public class DeviceMapper {
             //if (projectDevice.getActualDevice() == null) {
                 // Set actual device by selecting first element
                 Map<ProjectDevice, List<Device>> deviceList = getSupportedDeviceList(project);
-                System.out.println("supported device = " + deviceList);
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
 
                 //Map<ProjectDevice, List<Peripheral>> portList = getDeviceCompatiblePort(project);

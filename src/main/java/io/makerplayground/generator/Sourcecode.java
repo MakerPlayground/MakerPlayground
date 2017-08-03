@@ -170,6 +170,9 @@ public class Sourcecode {
                         params.add(df.format(((NumberWithUnit) value).getValue()));
                     } else if (value instanceof String) {
                         params.add("\"" + value + "\"");
+                    } else if (value instanceof ProjectValue) {
+                        params.add(((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
+                                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
                     }
                 }
                 sb.append(String.join(", ", params)).append(");").append(NEW_LINE);

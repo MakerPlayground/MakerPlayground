@@ -1,13 +1,12 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.device.Action;
-import io.makerplayground.device.CategoricalConstraint;
-import io.makerplayground.device.Value;
+import io.makerplayground.device.*;
 import io.makerplayground.helper.ControlType;
-import io.makerplayground.device.Parameter;
+import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.Expression;
+import io.makerplayground.project.ProjectValue;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -113,7 +112,9 @@ public class DevicePropertyWindow extends PopOver {
                 if (item instanceof ParameterPropertyItem) {
                     ParameterPropertyItem param = (ParameterPropertyItem) item;
                     Parameter p = param.getParameter();
-                    if (p.getControlType() == ControlType.SLIDER)
+                    if (p.getDataType() == DataType.VALUE)  // TODO: find a better way to check
+                        return new ValuePropertyEditor(param);
+                    else if (p.getControlType() == ControlType.SLIDER)
                         return new SliderPropertyEditor(param);
                     else if (p.getControlType() == ControlType.TEXTBOX)
                         return new TextBoxPropertyEditor(param);
@@ -454,6 +455,50 @@ public class DevicePropertyWindow extends PopOver {
 
         @Override
         public void setValue(String s) {
+            this.getEditor().setValue(s);
+        }
+    }
+
+    public class ValuePropertyEditor extends AbstractPropertyEditor<ProjectValue, ComboBox<ProjectValue>> {
+        public ValuePropertyEditor(PropertySheet.Item property, ComboBox<ProjectValue> control) {
+            super(property, control);
+            control.setCellFactory(param -> new ListCell<ProjectValue>() {
+                @Override
+                protected void updateItem(ProjectValue item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText("");
+                    } else {
+                        setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+                    }
+                }
+            });
+            control.setButtonCell(new ListCell<ProjectValue>(){
+                @Override
+                protected void updateItem(ProjectValue item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText("");
+                    } else {
+                        setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+                    }
+                }
+            });
+            ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
+            control.setItems(list);
+        }
+
+        public ValuePropertyEditor(PropertySheet.Item property) {
+            this(property, new ComboBox<ProjectValue>());
+        }
+
+        @Override
+        protected ObservableValue<ProjectValue> getObservableValue() {
+            return this.getEditor().valueProperty();
+        }
+
+        @Override
+        public void setValue(ProjectValue s) {
             this.getEditor().setValue(s);
         }
     }

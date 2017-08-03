@@ -117,7 +117,13 @@ public class Project {
             }
         }
 
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (maxCount+1), device);
+        String name;
+        if (device.getName().contains("7"))
+            name = "Seven Seg" + (maxCount+1);
+        else
+            name = device.getName() + (maxCount+1);
+
+        ProjectDevice projectDevice = new ProjectDevice(name, device);
 //        for (Scene scene : diagram.vertexSet()) {
 //            scene.getSetting().add(new UserSetting(projectDevice));
 //        }

@@ -44,7 +44,6 @@ public class ExpressionView extends HBox {
         factory.valueProperty().bindBidirectional(formatter.valueProperty());
 
         ComboBox<ProjectValue> comboBoxFrom = new ComboBox<>(FXCollections.observableList(expressionViewModel.getAvailableValue()));
-
         comboBoxFrom.setCellFactory(new Callback<ListView<ProjectValue>, ListCell<ProjectValue>>() {
             @Override
             public ListCell<ProjectValue> call(ListView<ProjectValue> param) {
@@ -55,7 +54,7 @@ public class ExpressionView extends HBox {
                         if (empty) {
                             setText("");
                         } else {
-                            setText(item.getDevice().getName() + " " + item.getValue().getName());
+                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
                         }
                     }
                 };
@@ -68,7 +67,7 @@ public class ExpressionView extends HBox {
                 if (empty) {
                     setText("");
                 } else {
-                    setText(item.getDevice().getName() + " " + item.getValue().getName());
+                    setText(item.getDevice().getName() + "'s " + item.getValue().getName());
                 }
             }
         });
