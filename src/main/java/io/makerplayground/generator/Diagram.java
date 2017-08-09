@@ -3,6 +3,7 @@ package io.makerplayground.generator;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.DeviceType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
@@ -117,9 +118,27 @@ public class Diagram extends Pane {
             this.getChildren().add(deviceImage);
         }
 
+
+
         // connect power
         int numberOfPwrPinUsed = 0;
         int numberOfGndPinUsed = 0;
+        boolean connectGnd = false;
+
+        // connect the first hole of breadboard to Arduino board
+        for (DevicePort p : controller.getPort()) {
+            if (p.isVcc()) {
+                createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
+                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                numberOfPwrPinUsed++;
+            } else if ((p.isGnd()) && (!connectGnd)) {
+                createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                            BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                numberOfGndPinUsed++;
+                connectGnd = true;
+            }
+        }
+
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);

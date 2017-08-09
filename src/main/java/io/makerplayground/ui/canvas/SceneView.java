@@ -31,15 +31,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.util.Callback;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class SceneView extends HBox implements Selectable {
     @FXML private Arc sourceNode;
     @FXML private Arc desNode;
     @FXML private Button removeSceneBtn;
-    @FXML private ComboBox<String> timeUnitComboBox;
+    @FXML private ComboBox<Scene.DelayUnit> timeUnitComboBox;
     @FXML private Button addOutputButton;
 
     private BooleanProperty select;
@@ -65,7 +64,7 @@ public class SceneView extends HBox implements Selectable {
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
 
-    private final ObservableList<String> timeUnit = FXCollections.observableArrayList("ms", "s");
+    //private final ObservableList<String> timeUnit = FXCollections.observableArrayList("ms", "s");
     private double dragDeltaX;
     private double dragDeltaY;
 
@@ -98,10 +97,55 @@ public class SceneView extends HBox implements Selectable {
 
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
 
-        timeUnitComboBox.getItems().addAll(timeUnit);
+
+        ObservableList<Scene.DelayUnit> data = FXCollections.<Scene.DelayUnit>observableArrayList();
+        for (Scene.DelayUnit d : Scene.DelayUnit.values()) {
+            data.add(d);
+        }
+
+        timeUnitComboBox.getItems().addAll(data);
+
+        timeUnitComboBox.setCellFactory(new Callback<ListView<Scene.DelayUnit>, ListCell<Scene.DelayUnit>>() {
+            @Override
+            public ListCell<Scene.DelayUnit> call(ListView<Scene.DelayUnit> param) {
+                return new ListCell<Scene.DelayUnit>() {
+                    @Override
+                    protected void updateItem(Scene.DelayUnit item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText("");
+                        } else {
+                            if (item == Scene.DelayUnit.MilliSecond) {
+                                setText("ms");
+                            }
+                            if (item == Scene.DelayUnit.Second) {
+                                setText("s");
+                            }
+                        }
+                    }
+                };
+            }
+        });
+        timeUnitComboBox.setButtonCell(new ListCell<Scene.DelayUnit>(){
+            @Override
+            protected void updateItem(Scene.DelayUnit item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText("");
+                } else {
+                    if (item == Scene.DelayUnit.MilliSecond) {
+                        setText("ms");
+                    }
+                    if (item == Scene.DelayUnit.Second) {
+                        setText("s");
+                    }
+                }
+            }
+        });
+
         timeUnitComboBox.getSelectionModel().selectFirst();
         timeUnitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            sceneViewModel.setDelayUnit(Scene.DelayUnit.valueOf(newValue));
+            sceneViewModel.setDelayUnit(newValue);
         });
 
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
