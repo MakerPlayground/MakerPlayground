@@ -1,6 +1,7 @@
 .root{
     -fx-focus-color: transparent;
     -fx-effect: null;
+    -fx-font-size: 12px;
 }
 #statePane{
     -fx-background-color : white;

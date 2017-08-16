@@ -62,12 +62,14 @@
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('AddDevice-toggle.png');
-    -fx-background-size : 20.5px;
+    -fx-background-size : 20px;
     -fx-border-color : transparent;
+    -fx-background-repeat: no-repeat;
 }
 #addBtn:pressed{
     -fx-background-image: url('AddDevice.png');
     -fx-background-size : 20px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-background-repeat: no-repeat;
 }

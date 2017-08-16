@@ -5,6 +5,7 @@ import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectHelper;
+import io.makerplayground.ui.canvas.TutorialView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -39,8 +40,14 @@ public class Main extends Application {
     @FXML
     private Button newButton;
     @FXML
+    private Button tutorialButton;
+    @FXML
     private AnchorPane toolBarPane;
-
+    @FXML
+    public void onTutorialButtonClick(){
+        TutorialView tutorialView = new TutorialView();
+        tutorialView.showAndWait();
+    }
     @Override
     public void start(Stage primaryStage) throws Exception {
         // TODO: show progress indicator while loading if need
