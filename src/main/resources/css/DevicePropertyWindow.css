@@ -2,8 +2,10 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
+    -fx-font-size:12px;
 }
 .property-sheet .scroll-pane .property-pane {
+    -fx-font-size: 12px;
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
@@ -11,6 +13,7 @@
 }
 
 .property-sheet .scroll-pane {
+     -fx-font-size: 12px;
      -fx-background-color: transparent;
      -fx-background-radius: 0;
      -fx-background-insets: 0;
@@ -25,6 +28,7 @@
 }
 
 .label{
+    -fx-font-size: 12px;
     -fx-background-color : transparent;
     -fx-text-fill : #313644;
     -fx-min-width: 90;
@@ -141,13 +145,16 @@
     -fx-border-color : #cccccc;
     -fx-border-radius:3px;
     -fx-background-color: white;
+    -fx-font-size: 12px;
     -fx-background-insets:0;
 }
 .combo-box:showing .list-view,.combo-box:armed .list-view {
+    -fx-font-size: 12px;
     -fx-max-width: 100;
     -fx-min-width: 100;
 }
 .combo-box .list-cell {
+    -fx-font-size: 12px;
     -fx-background-color: white;
     -fx-background-radius:3px;
     -fx-text-fill: #313644;
@@ -155,11 +162,13 @@
     -fx-cell-size: 1.66667em;
 }
 .combo-box-popup .list-view .list-cell:filled:hover{
+    -fx-font-size: 12px;
     -fx-background-color: #5ac2ab;
     -fx-background-radius:0;
     -fx-text-fill: white;
 }
 .combo-box-popup .list-view .list-cell:filled:selected{
+    -fx-font-size: 12px;
     -fx-background-color: derive(#cccccc,40%);
     -fx-background-radius:0;
     -fx-text-fill: black;

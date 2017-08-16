@@ -30,6 +30,7 @@ public class InputDeviceIconSelectorView extends  VBox {
 
         Label name = new Label(projectDevice.getName());
         name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+        name.setStyle("-fx-font-size: 12px;");
         name.setMinWidth(70);
         name.setMaxWidth(70);
         name.setAlignment(Pos.CENTER);

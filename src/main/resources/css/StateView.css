@@ -1,7 +1,7 @@
 .root{
     -fx-focus-color: transparent;
     -fx-effect: null;
-    -fx-font-size: 12px;
+    -fx-font-size:12px;
 }
 #statePane{
     -fx-background-color : white;
@@ -23,8 +23,9 @@
 #stateBottomHBox{
     -fx-background-color : #313644;
 }
-#delayLabel{
+.text{
     -fx-text-fill : white;
+    -fx-font-size:12px;
 }
 .flow-pane{
     -fx-background-color : white;
@@ -79,18 +80,22 @@
 }
 
 #TimeUnitComboBox{
+    -fx-font-size:12px;
     -fx-background-color : #0768de;
     -fx-border-color : #0768de;
 }
 #TimeUnitComboBox .list-cell {
+    -fx-font-size:12px;
     -fx-text-fill: white;
 }
 #TimeUnitComboBox .combo-box-popup .list-cell{
+    -fx-font-size:12px;
     -fx-text-fill: #313644;
     -fx-background-color: white;
 }
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {
+    -fx-font-size:12px;
     -fx-background-color: #5ac2ab;
     -fx-text-fill: white;
 }

@@ -62,6 +62,7 @@ public class SceneViewModel {
         scene.setDelayUnit(unit);
     }
 
+
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
     }
