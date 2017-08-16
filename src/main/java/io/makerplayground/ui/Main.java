@@ -6,6 +6,9 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectHelper;
 import io.makerplayground.ui.canvas.TutorialView;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,9 +16,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -23,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +51,10 @@ public class Main extends Application {
     private Button tutorialButton;
     @FXML
     private AnchorPane toolBarPane;
+
     @FXML
     public void onTutorialButtonClick(){
-        TutorialView tutorialView = new TutorialView();
-        tutorialView.showAndWait();
+
     }
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -58,6 +66,8 @@ public class Main extends Application {
 
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(mainWindow);
+
+        Scene scene = new Scene(borderPane, 800, 600);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(borderPane);
@@ -116,11 +126,36 @@ public class Main extends Application {
             }
         });
 
+        tutorialButton.setOnAction(event -> {
+            TutorialView tutorialView = new TutorialView(scene.getWindow());
+
+            Parent rootPane = scene.getRoot();
+            Effect previousEffect = rootPane.getEffect();
+            //final BoxBlur blur = new BoxBlur(0, 0, 5);
+            final GaussianBlur blur = new GaussianBlur(0);
+            blur.setInput(previousEffect);
+            rootPane.setEffect(blur);
+
+            tutorialView.setOnHidden(t -> rootPane.setEffect(previousEffect));
+
+            // Optional extra: fade the blur and dialog in:
+            //scene.getRoot().setOpacity(0);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(300),
+                    //new KeyValue(blur.widthProperty(), 10),
+                    //new KeyValue(blur.heightProperty(), 10),
+                    new KeyValue(blur.radiusProperty(), 7)
+                    //new KeyValue(scene.getRoot().opacityProperty(), 0.75)
+            ));
+            timeline.play();
+
+            tutorialView.show();
+        });
+
         projectNameTextField.textProperty().bindBidirectional(mainWindow.getProject().projectNameProperty());
 
         primaryStage.setTitle("MakerPlayground");
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));
-        primaryStage.setScene(new Scene(borderPane, 800, 600));
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

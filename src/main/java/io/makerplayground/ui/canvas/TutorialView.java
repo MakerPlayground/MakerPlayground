@@ -2,31 +2,32 @@ package io.makerplayground.ui.canvas;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.makerplayground.ui.Tutorial;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 
-import javax.naming.Binding;
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
-public class TutorialView extends Dialog {
+public class TutorialView extends Stage {
+
+    private AnchorPane rootPane;
     @FXML
     private Label topicLabel;
     @FXML
@@ -40,19 +41,21 @@ public class TutorialView extends Dialog {
     @FXML
     private Button cancelBtn;
 
-    public TutorialView() {
+    public TutorialView(Window owner) {
+        rootPane = new AnchorPane();
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/TutorialView.fxml"));
-        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setRoot(rootPane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
-            initView();
+            initView(owner);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void initView() throws IOException {
+    private void initView(Window owner) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ObservableList<Tutorial> tutorials = FXCollections.observableArrayList();
         List<Tutorial> tutorial = mapper.readValue(getClass().getResourceAsStream("/json/tutorials.json"),
@@ -61,10 +64,8 @@ public class TutorialView extends Dialog {
         System.out.println(tutorial);
 
         setTitle("Tips & Tricks");
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UNDECORATED);
 
-        getDialogPane().getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
+        rootPane.getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
         Tutorial t = i.next();
 
         descriptLabel.setText(t.getDescription());
@@ -108,9 +109,14 @@ public class TutorialView extends Dialog {
         cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Window window = getDialogPane().getScene().getWindow();
-                window.setOnCloseRequest(event -> window.hide());
+                hide();
             }
         });
+
+        initStyle(StageStyle.TRANSPARENT);
+        initModality(Modality.WINDOW_MODAL);
+        initOwner(owner);
+        Scene scene = new Scene(rootPane);
+        setScene(scene);
     }
 }
