@@ -12,6 +12,7 @@
 }
 
 .titled-pane{
+    -fx-font-size: 14px;
     -fx-text-fill : #313644;
     -fx-font-weight: bold;
 }

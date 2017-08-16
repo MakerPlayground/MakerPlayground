@@ -13,6 +13,7 @@
 }
 .titled-pane{
     -fx-focus-color: transparent;
+    -fx-font-size:14px;
     -fx-text-fill : white;
 }
 .titled-pane > .title > .arrow-button .arrow{
@@ -62,12 +63,14 @@
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('AddDevice-toggle.png');
-    -fx-background-size : 20.5px;
+    -fx-background-size : 20px;
+    -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
 }
 #addBtn:pressed{
     -fx-background-image: url('AddDevice.png');
     -fx-background-size : 20px;
     -fx-background-color: transparent;
+    -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
 }

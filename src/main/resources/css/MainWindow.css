@@ -1,9 +1,14 @@
+.root{
+    -fx-font-size:12px;
+}
 .titled-pane > .title{
+    -fx-font-size:12px;
     -fx-background-color : #313644;
     -fx-border-color: #313644;
     -fx-border-width : 2px;
 }
 #projectNameTextField{
+    -fx-font-size:12px;
     -fx-text-fill: white;
     -fx-border-color: transparent;
 }

@@ -23,6 +23,7 @@
     -fx-background-insets: 0, 0, 0;
 }
 #numTextField{
+    -fx-font-size:12px;
     -fx-background-color : white;
     -fx-text-fill : #313644;
     -fx-border-color : #cccccc;
