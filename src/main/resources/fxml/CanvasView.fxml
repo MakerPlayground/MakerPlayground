@@ -13,11 +13,11 @@
             <Pane id="canvasPane" fx:id="canvasPane" style="-fx-background-color: #dbdbdb;" />
          </content>
       </ScrollPane>
-      <Button id="addStateBtn" fx:id="addStateBtn" maxHeight="30.0" maxWidth="135.0" minHeight="30.0" minWidth="135.0" mnemonicParsing="false" text=" Add Scene" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+      <Button id="addStateBtn" fx:id="addStateBtn" maxHeight="30.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" mnemonicParsing="false" text=" Add Scene" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
          <graphic>
             <Text boundsType="VISUAL" fill="#5ac2ab" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold; -fx-font-size: 24px;" text="+ " textOrigin="CENTER" />
          </graphic></Button>
-      <Button id="addConditionBtn" fx:id="addConditionBtn" layoutX="168.0" layoutY="75.0" maxHeight="30.0" maxWidth="135.0" minHeight="30.0" minWidth="135.0" mnemonicParsing="false" text=" Add Condition" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="65.0">
+      <Button id="addConditionBtn" fx:id="addConditionBtn" layoutX="168.0" layoutY="75.0" maxHeight="30.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" mnemonicParsing="false" text=" Add Condition" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="65.0">
          <graphic>
             <Text boundsType="VISUAL" fill="#5ac2ab" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold; -fx-font-size: 24px;" text="+ " textOrigin="CENTER" />
          </graphic></Button>

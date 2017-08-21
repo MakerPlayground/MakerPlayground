@@ -2,66 +2,71 @@
   {
     "topic" : "Step 1",
     "description" : "Click this button to add your devices.",
-    "img" : "/tutorialImages/topic1.png"
+    "img" : "/tutorialImages/topic-01.png"
   },
   {
     "topic" : "Step 2",
     "description" : "Select your input and output devices from the list then click import.",
-    "img" : "/tutorialImages/topic2.png"
+    "img" : "/tutorialImages/topic-02.png"
   },
   {
     "topic" : "Step 3",
     "description" : "You will see that your chosen devices appear in the right panel of the program, they are categorized by input/output types.",
-    "img" : "/tutorialImages/topic3.png"
+    "img" : "/tutorialImages/topic-03.png"
   },
   {
     "topic" : "Step 4",
     "description" : "Click this button to add scene where you will define your project's behavior.",
-    "img" : "/tutorialImages/topic4.png"
+    "img" : "/tutorialImages/topic-04.png"
   },
   {
     "topic" : "Step 5",
     "description" : "You will get scene's box, this scene represents your project's behavior at the moment of time.It consists of many components including scene's name, list of active/inactive devices, and delay- cu after processed the behavior in this scene before going to the next scene.",
-    "img" : "/tutorialImages/topic5.png"
+    "img" : "/tutorialImages/topic-05.png"
   },
   {
     "topic" : "Step 6",
     "description" : "Click plus button in the scene to add output device into that scene, then you can click the device itself to specify its behavior.",
-    "img" : "/tutorialImages/topic6.png"
+    "img" : "/tutorialImages/topic-06.png"
   },
   {
     "topic" : "Step 7",
     "description" : "To connect scenes together, press and hold the right button of the previous scene, you will see that there is a line appear. Then release the button at the left button of the next scene. This will form the connection to create diagram.",
-    "img" : "/tutorialImages/topic7.png"
+    "img" : "/tutorialImages/topic-07.png"
   },
   {
     "topic" : "Step 8",
     "description" : "Remember that the behavior of your project will always start at the begin as the first step.",
-    "img" : "/tutorialImages/topic8.png"
+    "img" : "/tutorialImages/topic-08.png"
   },
   {
     "topic" : "Step 9",
     "description" : "Click this button to add condition where you will define your project's behavior.The condition's box evaluates your project's condition at the moment of time. If the condition is met in all restrictions, the next scene that connected to this condition will be processed.",
-    "img" : "/tutorialImages/topic9.png"
+    "img" : "/tutorialImages/topic-09.png"
   },
   {
     "topic" : "Step 10",
     "description" : "Similarly to scene's box, click plus button in the condition to add input device into that condition, then you can click the device itself to specify its restriction. Connecting diagram is also used the same mathod as connect scenes.",
-    "img" : "/tutorialImages/topic10.png"
+    "img" : "/tutorialImages/topic-10.png"
   },
   {
     "topic" : "Step 11",
     "description" : "To customize actual devices, click Configure Device button so you can choose device's model and brand.",
-    "img" : "/tutorialImages/topic11.png"
+    "img" : "/tutorialImages/topic-11.png"
   },
   {
     "topic" : "Step 12",
     "description" : "Click Generate button to get wiring diagram and source code.",
-    "img" : "/tutorialImages/topic12.png"
+    "img" : "/tutorialImages/topic-12.png"
   },
   {
     "topic" : "Step 13",
     "description" : "Click Upload button after connected microcontroller to your computer, be ready to see your project come to life!",
-    "img" : "/tutorialImages/topic13.png"
+    "img" : "/tutorialImages/topic-13.png"
+  },
+  {
+    "topic" : "Step 13",
+    "description" : "Click Upload button after connected microcontroller to your computer, be ready to see your project come to life!",
+    "img" : "/tutorialImages/topic-14.png"
   }
 ]

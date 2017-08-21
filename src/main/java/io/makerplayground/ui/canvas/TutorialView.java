@@ -68,8 +68,8 @@ public class TutorialView extends Stage {
         rootPane.getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
         Tutorial t = i.next();
 
-        descriptLabel.setText(t.getDescription());
-        topicLabel.setText(t.getTopic());
+//        descriptLabel.setText(t.getDescription());
+//        topicLabel.setText(t.getTopic());
         tipImage.setImage(new Image(getClass().getResourceAsStream(t.getImg())));
         prevBtn.setDisable(true);
         prevBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -77,8 +77,8 @@ public class TutorialView extends Stage {
             public void handle(ActionEvent event) {
                 if(i.hasPrevious()){
                     Tutorial p = i.previous();
-                    topicLabel.setText(p.getTopic());
-                    descriptLabel.setText(p.getDescription());
+//                    topicLabel.setText(p.getTopic());
+//                    descriptLabel.setText(p.getDescription());
                     tipImage.setImage(new Image(getClass().getResourceAsStream(p.getImg())));
                     prevBtn.setDisable(false);
                 }
@@ -95,8 +95,8 @@ public class TutorialView extends Stage {
 
                 if(i.hasNext()){
                     Tutorial n = i.next();
-                    topicLabel.setText(n.getTopic());
-                    descriptLabel.setText(n.getDescription());
+//                    topicLabel.setText(n.getTopic());
+//                    descriptLabel.setText(n.getDescription());
                     tipImage.setImage(new Image(getClass().getResourceAsStream(n.getImg())));
                     nextBtn.setDisable(false);
                 }

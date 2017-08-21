@@ -1,25 +1,33 @@
 .button:pressed{
-    -fx-background-color : transparent;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #5ac2ab;
+    -fx-background-color : #edeef3;
+    -fx-border-color : #edeef3;
+    -fx-text-fill: derive(black,70%);
+    -fx-font-size: 24px;
 }
 .button{
-    -fx-background-color : #5ac2ab;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: white;
+    -fx-background-color : transparent;
+    -fx-border-color : transparent;
+    -fx-text-fill: derive(black,70%);
+    -fx-font-size: 24px;
 }
 .button:disabled{
     -fx-background-color : #edeef3;
     -fx-border-color : #edeef3;
     -fx-text-fill: white;
+    -fx-font-size: 14px;
 }
-.label{
-    -fx-text-fill : #313644;
+#cancelBtn{
+        -fx-background-color : #941B0C;
+        -fx-background-radius: 20px;
+        -fx-text-fill: white;
+        -fx-font-size: 14px;
 }
-#topicLabel{
-    -fx-font-weight : bold;
+#cancelBtn:pressed{
+    -fx-background-color : derive(#941B0C,70%);
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
 }
-
 .scroll-pane > .viewport{
     -fx-background-color : white;
     -fx-border-color : white;
@@ -43,8 +51,8 @@
     -fx-padding:0;
 }
 .scroll-bar .track{
-    -fx-background-color:   #313644;
-    -fx-border-color :   #313644;
+    -fx-background-color:   #edeef3;
+    -fx-border-color :   #edeef3;
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
