@@ -1,6 +1,7 @@
 [
   {
     "name": "LED",
+    "description": "This is LED",
     "action": [
       {
         "name": "On",
@@ -21,46 +22,6 @@
         ]
       },
       {
-        "name": "Blink",
-        "funcname": "blink",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Brightness",
-            "value": 100.0,
-            "constraint": {
-              "min": 0.0,
-              "max": 100.0,
-              "unit": "PERCENT"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SLIDER"
-          },
-          {
-            "name": "Time period",
-            "value": 1.0,
-            "constraint": {
-              "min": 0.0,
-              "max": 60.0,
-              "unit": "SECOND"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Blink speed",
-            "value": "Medium",
-            "constraint": [
-              "Slow",
-              "Medium",
-              "Fast"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
         "name": "Off",
         "funcname": "off",
         "type": "Inactive",
@@ -71,9 +32,10 @@
   },
   {
     "name": "Buzzer",
+    "description": "This is Buzzer",
     "action": [
       {
-        "name": "Tone",
+        "name": "Beep",
         "funcname": "beep",
         "type": "Active",
         "parameter": [
@@ -100,12 +62,31 @@
             "controltype": "SPINBOX"
           }
         ]
+      },
+      {
+        "name": "Play",
+        "funcname": "play",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Tone Frequency",
+            "value": 2000.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "HERTZ"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
       }
     ],
     "value": []
   },
   {
     "name": "Speaker",
+    "description": "This is Speaker",
     "action": [
       {
         "name": "Play",
@@ -159,6 +140,7 @@
   },
   {
     "name": "7 Segment",
+    "description": "This is LED",
     "action": [
       {
         "name": "Show Value",
@@ -168,8 +150,10 @@
           {
             "name": "Value",
             "value": "",
-            "constraint": [],
-            "datatype": "VALUE",
+            "constraint": [
+              "value_list"
+            ],
+            "datatype": "ENUM",
             "controltype": "DROPDOWN"
           }
         ]
@@ -185,6 +169,7 @@
   },
   {
     "name": "DC Motor",
+    "description": "This is LED",
     "action": [
       {
         "name": "On",
@@ -225,6 +210,7 @@
   },
   {
     "name": "RGB LED",
+    "description": "This is LED",
     "action": [
       {
         "name": "On",
@@ -246,6 +232,12 @@
             "controltype": "DROPDOWN"
           }
         ]
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Inactive",
+        "parameter": []
       }
     ],
     "value": []

@@ -11,6 +11,11 @@
     ],
     "width": 128.0,
     "height": 173.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "VCC",
@@ -109,8 +114,7 @@
     "connectivity": [
       "SPI_1"
     ],
-    "compatibility": [],
-    "dependency": []
+    "compatibility": []
   },
   {
     "id": "Adafruit-1063",
@@ -124,6 +128,11 @@
     ],
     "width": 79.2,
     "height": 122.4,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "OUT",
@@ -192,8 +201,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-2130",
@@ -207,6 +215,11 @@
     ],
     "width": 86.4,
     "height": 136.8,
+    "v": 0.0,
+    "i": 0.0,
+    "w": 2.5,
+    "dependency": "",
+    "category": "AMPLIFIER",
     "port": [
       {
         "name": "A+",
@@ -370,55 +383,7 @@
     "connectivity": [
       "PWM_1"
     ],
-    "compatibility": [
-      {
-        "name": "Speaker",
-        "action": [
-          {
-            "name": "Play",
-            "parameter": [
-              {
-                "name": "Name",
-                "constraint": []
-              },
-              {
-                "name": "Repeat",
-                "constraint": [
-                  "1 time",
-                  "Loop"
-                ]
-              },
-              {
-                "name": "Volume",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 100.0,
-                  "unit": "PERCENT"
-                }
-              }
-            ]
-          },
-          {
-            "name": "Pause",
-            "parameter": []
-          },
-          {
-            "name": "Stop",
-            "parameter": []
-          }
-        ],
-        "value": [],
-        "count": 1.0
-      }
-    ],
-    "dependency": [
-      {
-        "name": "Sd Card",
-        "device": [
-          "DEV-13743"
-        ]
-      }
-    ]
+    "compatibility": []
   },
   {
     "id": "Adafruit-2652",
@@ -432,6 +397,11 @@
     ],
     "width": 100.8,
     "height": 108.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "VIN",
@@ -581,8 +551,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-3251",
@@ -596,6 +565,11 @@
     ],
     "width": 86.4,
     "height": 100.8,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "VIN",
@@ -707,8 +681,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-1032",
@@ -722,6 +695,11 @@
     ],
     "width": 173.0,
     "height": 108.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "SCL",
@@ -865,8 +843,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-2023",
@@ -880,6 +857,11 @@
     ],
     "width": 116.0,
     "height": 116.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "VCC",
@@ -989,8 +971,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "SEN-13944",
@@ -1004,6 +985,11 @@
     ],
     "width": 59.0,
     "height": 131.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "GND",
@@ -1102,8 +1088,7 @@
         ],
         "count": 1.0
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "DEV-13975",
@@ -1117,6 +1102,11 @@
     ],
     "width": 531.0,
     "height": 410.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "0",
@@ -1550,8 +1540,7 @@
       "ANALOG_4",
       "ANALOG_5"
     ],
-    "compatibility": [],
-    "dependency": []
+    "compatibility": []
   },
   {
     "id": "Adafruit-1120",
@@ -1565,6 +1554,11 @@
     ],
     "width": 130.0,
     "height": 117.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "SCL",
@@ -1725,8 +1719,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinoall-29",
@@ -1740,6 +1733,11 @@
     ],
     "width": 235.0,
     "height": 230.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "5V",
@@ -1804,8 +1802,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-1438",
@@ -1819,6 +1816,11 @@
     ],
     "width": 454.0,
     "height": 204.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "M1+",
@@ -2070,8 +2072,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-1119",
@@ -2085,6 +2086,11 @@
     ],
     "width": 18.0,
     "height": 25.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "S1A",
@@ -2157,8 +2163,136 @@
         "value": [],
         "count": ""
       }
+    ]
+  },
+  {
+    "id": "Adafruit-292",
+    "brand": "Adafruit",
+    "model": "I2C / SPI character LCD backpack",
+    "url": "https://www.adafruit.com/products/292",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
     ],
-    "dependency": []
+    "width": 284.286,
+    "height": 126.29,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "LAT",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 362.5,
+        "y": 121.5
+      },
+      {
+        "name": "DAT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 382.5,
+        "y": 121.5
+      },
+      {
+        "name": "CLK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 402.5,
+        "y": 121.5
+      },
+      {
+        "name": "5V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 422.5,
+        "y": 121.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 442.5,
+        "y": 121.5
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LCD",
+        "action": [
+          {
+            "name": "Print",
+            "parameter": [
+              {
+                "name": "Backlight",
+                "constraint": [
+                  "On",
+                  "Off"
+                ]
+              },
+              {
+                "name": "Print Text",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Clear",
+            "parameter": [
+              {
+                "name": "Backlight",
+                "constraint": [
+                  "On",
+                  "Off"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
   },
   {
     "id": "COM-09590",
@@ -2172,6 +2306,11 @@
     ],
     "width": 111.0,
     "height": 129.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "GND",
@@ -2259,8 +2398,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Adafruit-1334",
@@ -2274,6 +2412,11 @@
     ],
     "width": 116.0,
     "height": 117.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "LED",
@@ -2391,8 +2534,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinoall-454",
@@ -2406,6 +2548,11 @@
     ],
     "width": 285.0,
     "height": 142.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "CLK",
@@ -2473,13 +2620,8 @@
         "name": "7 Segment",
         "action": [
           {
-            "name": "Show Value",
-            "parameter": [
-              {
-                "name": "Value",
-                "constraint": []
-              }
-            ]
+            "name": "Show value",
+            "parameter": []
           },
           {
             "name": "Off",
@@ -2489,8 +2631,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinoall-1015",
@@ -2504,6 +2645,11 @@
     ],
     "width": 158.0,
     "height": 155.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "VCC",
@@ -2566,8 +2712,7 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinoall-687",
@@ -2581,6 +2726,11 @@
     ],
     "width": 41.0,
     "height": 185.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "GND",
@@ -2649,8 +2799,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinothai-165",
@@ -2664,6 +2813,11 @@
     ],
     "width": 130.0,
     "height": 347.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "SIG",
@@ -2732,8 +2886,7 @@
         ],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
     "id": "Arduinoall-332",
@@ -2747,6 +2900,11 @@
     ],
     "width": 86.0,
     "height": 107.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
     "port": [
       {
         "name": "R",
@@ -2838,604 +2996,86 @@
         "value": [],
         "count": ""
       }
-    ],
-    "dependency": []
+    ]
   },
   {
-    "id": "Arduinoall-034",
-    "brand": "Arduinoall",
-    "model": "GY-521 IMU 3-axis Accelerometer/Gyro Module (MPU6050)",
-    "url": "https://www.arduinoall.com/product/34/gy-521-imu-3-axis-accelerometer-gyro-module-mpu6050",
+    "id": "Adafruit-1891",
+    "brand": "Adafruit",
+    "model": "Thin Plastic Speaker w/Wires - 8 ohm 0.25W",
+    "url": "https://www.adafruit.com/product/1891",
     "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "width": 116.0,
-    "height": 83.0,
-    "port": [
-      {
-        "name": "VCC",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 3.443,
-        "y": 37.679
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 10.643,
-        "y": 37.679
-      },
-      {
-        "name": "SCL",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SCL"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 17.843,
-        "y": 37.679
-      },
-      {
-        "name": "SDA",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 25.043,
-        "y": 37.679
-      },
-      {
-        "name": "XDA",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 32.243,
-        "y": 37.679
-      },
-      {
-        "name": "XCL",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 39.443,
-        "y": 37.679
-      },
-      {
-        "name": "AD0",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 46.643,
-        "y": 37.679
-      },
-      {
-        "name": "INT",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 53.843,
-        "y": 37.679
-      }
-    ],
-    "connectivity": [
-      "I2C_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Orientation",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "Roll",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          },
-          {
-            "name": "Pitch",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          },
-          {
-            "name": "Yaw",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          }
-        ],
-        "count": ""
-      }
-    ],
-    "dependency": []
-  },
-  {
-    "id": "MCU_1",
-    "brand": "Arduino",
-    "model": "Arduino UNO",
-    "url": "https://www.sparkfun.com/products/13975",
-    "type": "CONTROLLER",
     "formfactor": "STANDALONE",
     "platform": [
       "ARDUINO"
     ],
-    "width": 425.0,
-    "height": 303.0,
+    "width": "",
+    "height": "",
+    "v": 0.0,
+    "i": 0.0,
+    "w": 0.25,
+    "dependency": "AMPLIFIER",
+    "category": "SPEAKER",
     "port": [
       {
-        "name": "0",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "UART_1",
-            "pintype": "UART_RX"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 395.56,
-        "y": 14.4
-      },
-      {
-        "name": "1",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "UART_1",
-            "pintype": "UART_TX"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 381.16,
-        "y": 14.4
-      },
-      {
-        "name": "2",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 366.74,
-        "y": 14.4
-      },
-      {
-        "name": "3",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 352.36,
-        "y": 14.4
-      },
-      {
-        "name": "4",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_2",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 337.96,
-        "y": 14.4
-      },
-      {
-        "name": "5",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_2",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 323.56,
-        "y": 14.4
-      },
-      {
-        "name": "6",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_3",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 309.16,
-        "y": 14.4
-      },
-      {
-        "name": "7",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_3",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 294.74,
-        "y": 14.4
-      },
-      {
-        "name": "8",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_4",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 271.6,
-        "y": 14.4
-      },
-      {
-        "name": "9",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_4",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 257.2,
-        "y": 14.4
-      },
-      {
-        "name": "10",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_5",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 242.78,
-        "y": 14.4
-      },
-      {
-        "name": "11",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "PWM_6",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 228.38,
-        "y": 14.4
-      },
-      {
-        "name": "12",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_5",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 214.0,
-        "y": 14.4
-      },
-      {
-        "name": "13",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_6",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 199.6,
-        "y": 14.4
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 185.2,
-        "y": 14.4
-      },
-      {
-        "name": "AREF",
+        "name": "+",
         "type": "WIRE",
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 170.8,
-        "y": 14.4
+        "x": "",
+        "y": ""
       },
       {
-        "name": "SDA",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 156.4,
-        "y": 14.4
-      },
-      {
-        "name": "SCL",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SCL"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 142.0,
-        "y": 14.4
-      },
-      {
-        "name": "A5",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_5",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 395.56,
-        "y": 288.0
-      },
-      {
-        "name": "A4",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_4",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 381.16,
-        "y": 288.0
-      },
-      {
-        "name": "A3",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_3",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 366.76,
-        "y": 288.0
-      },
-      {
-        "name": "A2",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_2",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 352.36,
-        "y": 288.0
-      },
-      {
-        "name": "A1",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 337.96,
-        "y": 288.0
-      },
-      {
-        "name": "A0",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_0",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 323.56,
-        "y": 288.0
-      },
-      {
-        "name": "VIN",
+        "name": "-",
         "type": "WIRE",
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 294.76,
-        "y": 288.0
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 280.36,
-        "y": 288.0
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 265.96,
-        "y": 288.0
-      },
-      {
-        "name": "5V",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 251.56,
-        "y": 288.0
-      },
-      {
-        "name": "3.3V",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 237.16,
-        "y": 288.0
-      },
-      {
-        "name": "RESET",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 222.76,
-        "y": 288.0
-      },
-      {
-        "name": "IOREF",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 208.36,
-        "y": 288.0
+        "x": "",
+        "y": ""
       }
     ],
-    "connectivity": [
-      "GPIO_1",
-      "GPIO_2",
-      "GPIO_3",
-      "GPIO_4",
-      "GPIO_5",
-      "GPIO_6",
-      "UART_1",
-      "I2C_1",
-      "PWM_1",
-      "PWM_2",
-      "PWM_3",
-      "PWM_4",
-      "PWM_5",
-      "PWM_6",
-      "ANALOG_0",
-      "ANALOG_1",
-      "ANALOG_2",
-      "ANALOG_3",
-      "ANALOG_4",
-      "ANALOG_5"
-    ],
-    "compatibility": [],
-    "dependency": []
+    "connectivity": [],
+    "compatibility": [
+      {
+        "name": "Speaker",
+        "action": [
+          {
+            "name": "Play",
+            "parameter": [
+              {
+                "name": "Name",
+                "constraint": []
+              },
+              {
+                "name": "Repeat",
+                "constraint": [
+                  "1 time",
+                  "Loop"
+                ]
+              },
+              {
+                "name": "Volume",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Pause",
+            "parameter": []
+          },
+          {
+            "name": "Stop",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
   }
 ]

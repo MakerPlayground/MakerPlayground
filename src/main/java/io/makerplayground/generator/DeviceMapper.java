@@ -95,8 +95,10 @@ public class DeviceMapper {
             return result;
         }
 
+        // Get every port of the controller
         List<Peripheral> processorPort = new ArrayList<>(project.getController().getController().getConnectivity());
 
+        // remove port that has been used (manually by user)
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             //connection from this device (key) to the processor (value)
             for (Peripheral p : projectDevice.getDeviceConnection().values()) {
