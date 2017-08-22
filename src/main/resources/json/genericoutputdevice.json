@@ -150,10 +150,8 @@
           {
             "name": "Value",
             "value": "",
-            "constraint": [
-              "value_list"
-            ],
-            "datatype": "ENUM",
+            "constraint": [],
+            "datatype": "VALUE",
             "controltype": "DROPDOWN"
           }
         ]

@@ -44,10 +44,6 @@ public enum DeviceLibrary {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-//            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/processor.json")
-//                    , new TypeReference<List<Microcontroller>>() {});
-//            this.microcontroller = Collections.unmodifiableList(temp3);
-
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
                     , new TypeReference<List<GenericDevice>>() {});
             this.genericInputDevice = Collections.unmodifiableList(temp);
