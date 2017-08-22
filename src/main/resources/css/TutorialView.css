@@ -1,7 +1,9 @@
 .button:pressed{
-    -fx-background-color : #edeef3;
-    -fx-border-color : #edeef3;
-    -fx-text-fill: derive(black,70%);
+    -fx-background-color : #cccccc;
+    -fx-background-radius: 30px;
+    -fx-border-radius: 30px;
+    -fx-border-color : #cccccc;
+    -fx-text-fill: white;
     -fx-font-size: 24px;
 }
 .button{
@@ -17,16 +19,17 @@
     -fx-font-size: 14px;
 }
 #cancelBtn{
-        -fx-background-color : #941B0C;
-        -fx-background-radius: 20px;
-        -fx-text-fill: white;
-        -fx-font-size: 14px;
+        -fx-background-color : transparent;
+        -fx-background-image: url('cancelBtn-toggle.png');
+        -fx-background-size: 30px;
+        -fx-background-repeat: no-repeat;
 }
 #cancelBtn:pressed{
-    -fx-background-color : derive(#941B0C,70%);
-    -fx-background-radius: 20px;
-    -fx-text-fill: white;
-    -fx-font-size: 24px;
+    -fx-background-color : transparent;
+    -fx-border-color: transparent;
+    -fx-background-image: url('cancelBtn.png');
+    -fx-background-size: 30px;
+    -fx-background-repeat: no-repeat;
 }
 .scroll-pane > .viewport{
     -fx-background-color : white;
