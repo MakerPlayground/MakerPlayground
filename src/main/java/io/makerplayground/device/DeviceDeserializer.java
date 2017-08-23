@@ -39,6 +39,22 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         String url = node.get("url").asText();
         double width = node.get("width").asDouble();
         double height = node.get("height").asDouble();
+        double v = node.get("v").asDouble();
+        double i = node.get("i").asDouble();
+        double w = node.get("w").asDouble();
+        Device.Dependency dependency;
+        Device.Dependency category;
+
+        if (node.get("dependency").asText().isEmpty())
+            dependency = null;
+        else
+            dependency = Device.Dependency.valueOf(node.get("dependency").asText());
+
+        if (node.get("category").asText().isEmpty())
+            category = null;
+        else
+            category = Device.Dependency.valueOf(node.get("category").asText());
+
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
@@ -89,17 +105,17 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
 
-        Map<String, List<String>> dependency = new HashMap<>();
-        for (JsonNode dependencyNode : node.get("dependency")) {
-            String name = dependencyNode.get("name").asText();
-            List<String> device = new ArrayList<>();
-            for (JsonNode deviceNode : dependencyNode.get("device")) {
-                device.add(deviceNode.asText());
-            }
-            dependency.put(name, device);
-        }
+//        Map<String, List<String>> dependency = new HashMap<>();
+//        for (JsonNode dependencyNode : node.get("dependency")) {
+//            String name = dependencyNode.get("name").asText();
+//            List<String> device = new ArrayList<>();
+//            for (JsonNode deviceNode : dependencyNode.get("device")) {
+//                device.add(deviceNode.asText());
+//            }
+//            dependency.put(name, device);
+//        }
 
         return new Device(id, brand, model, url, width, height, type, formFactor, platform, port, connectivity
-                , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency);
+                , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency, category, v, i ,w);
     }
 }

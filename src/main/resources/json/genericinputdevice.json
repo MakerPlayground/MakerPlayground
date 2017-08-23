@@ -1,6 +1,7 @@
 [
   {
     "name": "Button",
+    "description": "This is button description",
     "action": [
       {
         "name": "Wait For Press",
@@ -37,6 +38,7 @@
   },
   {
     "name": "Accelerometer",
+    "description": "This is Accelerometer description",
     "action": [
       {
         "name": "Compare",
@@ -89,6 +91,7 @@
   },
   {
     "name": "Pressuremeter",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -111,6 +114,7 @@
   },
   {
     "name": "Altimeter",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -133,6 +137,7 @@
   },
   {
     "name": "Temperature",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -155,6 +160,7 @@
   },
   {
     "name": "Gyroscope",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -195,6 +201,7 @@
   },
   {
     "name": "Humidity",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -217,6 +224,7 @@
   },
   {
     "name": "Sound",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -239,6 +247,7 @@
   },
   {
     "name": "Magnetometer",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -308,6 +317,7 @@
   },
   {
     "name": "Distance",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -330,6 +340,7 @@
   },
   {
     "name": "Light",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -352,6 +363,7 @@
   },
   {
     "name": "Presence",
+    "description": "This is button description",
     "action": [
       {
         "name": "Detect Human",
@@ -364,6 +376,7 @@
   },
   {
     "name": "Orientation",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -404,6 +417,7 @@
   },
   {
     "name": "Time",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -427,6 +441,7 @@
   },
   {
     "name": "Color",
+    "description": "This is button description",
     "action": [
       {
         "name": "Detect Color",
@@ -454,6 +469,7 @@
   },
   {
     "name": "Heart",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",
@@ -476,6 +492,7 @@
   },
   {
     "name": "Soil",
+    "description": "This is button description",
     "action": [
       {
         "name": "Compare",

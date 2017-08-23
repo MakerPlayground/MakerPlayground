@@ -28,12 +28,23 @@ import java.util.stream.Collectors;
  */
 @JsonDeserialize(using = DeviceDeserializer.class)
 public class Device {
+
+    enum Dependency {
+        SPEAKER, AMPLIFIER
+    }
+
     private final String id;
     private final String brand;
     private final String model;
     private final String url;
     private final double width;
     private final double height;
+    private final double v;
+    private final double i;
+    private final double w;
+    private final Dependency dependency;
+    private final Dependency category;
+
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -51,7 +62,7 @@ public class Device {
     private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
 
 
-    private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
+    //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
     // or an amplifier for a thermistor
 
     /**
@@ -71,7 +82,11 @@ public class Device {
             , Map<GenericDevice, Integer> supportedDevice
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
-            , Map<String, List<String>> dependency) {
+            , Dependency dependency
+            , Dependency category
+            , double v
+            , double i
+            , double w ) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -87,6 +102,26 @@ public class Device {
         this.supportedAction = supportedAction;
         this.supportedValue = supportedValue;
         this.dependency = dependency;
+        this.v = v;
+        this.i = i;
+        this.w = w;
+        this.category = category;
+    }
+
+    public double getV() {
+        return v;
+    }
+
+    public double getI() {
+        return i;
+    }
+
+    public double getW() {
+        return w;
+    }
+
+    public Dependency getCategory() {
+        return category;
     }
 
     public String getId() {
@@ -170,7 +205,7 @@ public class Device {
         return supportedValue;
     }
 
-    public Map<String, List<String>> getDependency() {
+    public Dependency getDependency() {
         return dependency;
     }
 
@@ -202,6 +237,8 @@ public class Device {
 
         return true;
     }
+
+
 
     @Override
     public String toString() {

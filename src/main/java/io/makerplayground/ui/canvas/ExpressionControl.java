@@ -58,7 +58,7 @@ public class ExpressionControl extends VBox{
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Expression e = new Expression(((NumericConstraint) v.getConstraint()).getUnit().iterator().next());
+                Expression e = new Expression(((NumericConstraint) v.getConstraint()).getUnit());
                 expressionsList.add(e);
             }
         });

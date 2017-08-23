@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class GenericDevice {
     private final String name;
+    private final String description;
     private final List<Action> action;
     private final List<Value> value;
 
@@ -40,8 +41,9 @@ public class GenericDevice {
      *              accel_y and accel_z as it's values
      */
     @JsonCreator
-    GenericDevice(@JsonProperty("name") String name, @JsonProperty("action") List<Action> action, @JsonProperty("value") List<Value> value) {
+    GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("action") List<Action> action, @JsonProperty("value") List<Value> value) {
         this.name = name;
+        this.description = description;
         this.action = Collections.unmodifiableList(action);
         this.value = Collections.unmodifiableList(value);
     }
@@ -69,6 +71,10 @@ public class GenericDevice {
             }
         }
         return null;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     /**
