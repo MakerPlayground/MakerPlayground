@@ -1,7 +1,7 @@
 [
   {
     "name": "LED",
-    "description": "This is LED",
+    "description": "LED lamp",
     "action": [
       {
         "name": "On",
@@ -32,7 +32,7 @@
   },
   {
     "name": "Buzzer",
-    "description": "This is Buzzer",
+    "description": "A kind of speaker that can control frequency of sound",
     "action": [
       {
         "name": "Beep",
@@ -86,7 +86,7 @@
   },
   {
     "name": "Speaker",
-    "description": "This is Speaker",
+    "description": "It can play music and control frequency of sound",
     "action": [
       {
         "name": "Play",
@@ -140,7 +140,7 @@
   },
   {
     "name": "7 Segment",
-    "description": "This is LED",
+    "description": "A screen that can display number and some alphabet",
     "action": [
       {
         "name": "Show Value",
@@ -167,7 +167,7 @@
   },
   {
     "name": "DC Motor",
-    "description": "This is LED",
+    "description": "A motor. It can drive a wheel.",
     "action": [
       {
         "name": "On",
@@ -208,7 +208,7 @@
   },
   {
     "name": "RGB LED",
-    "description": "This is LED",
+    "description": "This is a color LED",
     "action": [
       {
         "name": "On",

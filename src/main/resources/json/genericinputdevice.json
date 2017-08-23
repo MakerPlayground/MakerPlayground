@@ -1,7 +1,7 @@
 [
   {
     "name": "Button",
-    "description": "This is button description",
+    "description": "This is buttons. You can press or release the button to do some action. \nRelated project:\n\tPiano\n\tSwitch to controll devices",
     "action": [
       {
         "name": "Wait For Press",
@@ -38,7 +38,7 @@
   },
   {
     "name": "Accelerometer",
-    "description": "This is Accelerometer description",
+    "description": "Accelerometer is a sensor to measure acceleration.\nYou can use it to detect free fall, acceleration on x,y,z axis. \nRelated project:\n\tFalling object detector",
     "action": [
       {
         "name": "Compare",
@@ -91,7 +91,7 @@
   },
   {
     "name": "Pressuremeter",
-    "description": "This is button description",
+    "description": "Pressuremeter is a sensor to measure pressure. \nRelated project:\n\tAtmosphere detector",
     "action": [
       {
         "name": "Compare",
@@ -114,7 +114,7 @@
   },
   {
     "name": "Altimeter",
-    "description": "This is button description",
+    "description": "Altimeter is a sensor to measure height. \nRelated project:\n\tHeight detector",
     "action": [
       {
         "name": "Compare",
@@ -137,7 +137,7 @@
   },
   {
     "name": "Temperature",
-    "description": "This is button description",
+    "description": "A thermometer. \nRelated project:\n\tSmart fan\n\tHeat detector",
     "action": [
       {
         "name": "Compare",
@@ -160,7 +160,7 @@
   },
   {
     "name": "Gyroscope",
-    "description": "This is button description",
+    "description": "A sensor that measure rotation on x,y,z axis. \nRelated project:\n\t Flip detector",
     "action": [
       {
         "name": "Compare",
@@ -201,7 +201,7 @@
   },
   {
     "name": "Humidity",
-    "description": "This is button description",
+    "description": "A sensor that measure humidity. \nRelated project:\n\tAutomatic water plant",
     "action": [
       {
         "name": "Compare",
@@ -224,7 +224,7 @@
   },
   {
     "name": "Sound",
-    "description": "This is button description",
+    "description": "A sensor that measure level of sound. \nRelated project:\n\tSound detector",
     "action": [
       {
         "name": "Compare",
@@ -247,7 +247,7 @@
   },
   {
     "name": "Magnetometer",
-    "description": "This is button description",
+    "description": "A sensor that measure magnetic. \nRelated project:\n\tMagnet detector\n\tCompass",
     "action": [
       {
         "name": "Compare",
@@ -317,7 +317,7 @@
   },
   {
     "name": "Distance",
-    "description": "This is button description",
+    "description": "A sensor that measure distance. \nRelated project:\n\tWall detector\n\tObject detector",
     "action": [
       {
         "name": "Compare",
@@ -340,7 +340,7 @@
   },
   {
     "name": "Light",
-    "description": "This is button description",
+    "description": "A sensor that measure level of light. \nRelated project:\n\tLight detector\n\tAutomatic lamp",
     "action": [
       {
         "name": "Compare",
@@ -363,7 +363,7 @@
   },
   {
     "name": "Presence",
-    "description": "This is button description",
+    "description": "A sensor that measure movement. \nRelated project:\n\tHuman detector",
     "action": [
       {
         "name": "Detect Human",
@@ -376,7 +376,7 @@
   },
   {
     "name": "Orientation",
-    "description": "This is button description",
+    "description": "A sensor that measure orientation",
     "action": [
       {
         "name": "Compare",
@@ -417,7 +417,7 @@
   },
   {
     "name": "Time",
-    "description": "This is button description",
+    "description": "Check date and time in present. \nRelated project:\n\tClock\n\tTimer",
     "action": [
       {
         "name": "Compare",
@@ -441,7 +441,7 @@
   },
   {
     "name": "Color",
-    "description": "This is button description",
+    "description": "A sensor that detect color. \nRelated project:\n\tColor detector",
     "action": [
       {
         "name": "Detect Color",
@@ -469,7 +469,7 @@
   },
   {
     "name": "Heart",
-    "description": "This is button description",
+    "description": "A hearth beat sensor. \nRelated project:\n\tHearth beat measurement",
     "action": [
       {
         "name": "Compare",
@@ -492,7 +492,7 @@
   },
   {
     "name": "Soil",
-    "description": "This is button description",
+    "description": "A sensor that measure humidity in soil. \nRelated project:\n\tAutomatic water plant",
     "action": [
       {
         "name": "Compare",
