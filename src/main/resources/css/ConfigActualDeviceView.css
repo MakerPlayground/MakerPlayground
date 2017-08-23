@@ -2,6 +2,7 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
+    -fx-font-size:12px;
 }
 
 .label{
@@ -9,16 +10,19 @@
     -fx-text-fill : #313644;
     -fx-max-width: 100;
     -fx-min-width: 100;
+    -fx-font-size:12px;
 }
 #portComboBox{
     -fx-max-width: 75;
     -fx-min-width: 75;
     -fx-min-height: 25;
     -fx-max-height: 25;
+    -fx-font-size:12px;
 }
 #portComboBox:showing .list-view,#portComboBox:armed .list-view{
     -fx-max-width: 75;
     -fx-min-width: 75;
+    -fx-font-size:12px;
 }
 #deviceComboBox{
     -fx-max-width: 200;
@@ -38,6 +42,7 @@
     -fx-border-radius:3px;
     -fx-background-color: white;
     -fx-background-insets:0;
+    -fx-font-size:12px;
 }
 #deviceComboBox:showing .list-view,#deviceComboBox:armed .list-view {
     -fx-max-width: 200;
@@ -49,16 +54,19 @@
     -fx-text-fill: #313644;
     -fx-padding: 3 0 2 7;
     -fx-cell-size: 1.66667em;
+    -fx-font-size:12px;
 }
 .combo-box-popup .list-view .list-cell:filled:hover{
     -fx-background-color: #5ac2ab;
     -fx-background-radius:0;
     -fx-text-fill: white;
+    -fx-font-size:12px;
 }
 .combo-box-popup .list-view .list-cell:filled:selected{
     -fx-background-color: derive(#cccccc,40%);
     -fx-background-radius:0;
     -fx-text-fill: black;
+    -fx-font-size:12px;
 }
 .scroll-pane{
     -fx-padding:0;

@@ -11,18 +11,21 @@
     -fx-border-color : transparent;
     -fx-text-fill: derive(black,70%);
     -fx-font-size: 24px;
+    -fx-cursor: hand;
 }
 .button:disabled{
     -fx-background-color : #edeef3;
     -fx-border-color : #edeef3;
     -fx-text-fill: white;
     -fx-font-size: 14px;
+    -fx-cursor: hand;
 }
 #cancelBtn{
         -fx-background-color : transparent;
         -fx-background-image: url('cancelBtn-toggle.png');
         -fx-background-size: 30px;
         -fx-background-repeat: no-repeat;
+        -fx-cursor: hand;
 }
 #cancelBtn:pressed{
     -fx-background-color : transparent;
@@ -30,6 +33,7 @@
     -fx-background-image: url('cancelBtn.png');
     -fx-background-size: 30px;
     -fx-background-repeat: no-repeat;
+    -fx-cursor: hand;
 }
 .scroll-pane > .viewport{
     -fx-background-color : white;

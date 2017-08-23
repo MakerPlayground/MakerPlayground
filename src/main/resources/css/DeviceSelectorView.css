@@ -67,10 +67,12 @@
     -fx-background-color : #313644;
     -fx-border-color : #313644;
     -fx-text-fill : white;
+    -fx-cursor: hand;
 }
 .button{
     -fx-focus-color: transparent;
     -fx-border-color : #313644;
     -fx-background-color : transparent;
     -fx-text-fill : #313644;
+    -fx-cursor: hand;
 }

@@ -18,7 +18,6 @@
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Button id="addBtn" fx:id="addOutputBtn" alignment="CENTER" layoutY="35.0" maxHeight="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#onAddDeviceClick" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0" />
          </children>
       </AnchorPane>
       <TitledPane fx:id="MicrocontrollerTitle" expanded="false" text="Microcontroller">
@@ -34,7 +33,10 @@
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #4d5666;" vgap="10.0" />
+                  <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #4d5666;" vgap="10.0">
+                     <children>
+                        <Button id="addBtn" fx:id="addOutputBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
+                     </children></FlowPane>
                </content>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -46,7 +48,10 @@
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0" />
+                  <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0">
+                     <children>
+                        <Button id="addBtn" fx:id="addOutputBtn1" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
+                     </children></FlowPane>
                </content>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

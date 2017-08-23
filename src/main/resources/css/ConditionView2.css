@@ -86,9 +86,11 @@
     -fx-background-color: transparent;
     -fx-background-image: url('AddCondition-toggle.png');
     -fx-background-size : 50px;
+    -fx-cursor: hand;
 }
 #addInputButton{
     -fx-background-image: url('AddCondition.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
+    -fx-cursor: hand;
 }

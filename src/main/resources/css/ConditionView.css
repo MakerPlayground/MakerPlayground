@@ -78,9 +78,11 @@
     -fx-background-color: transparent;
     -fx-background-image: url('Add-toggle.png');
     -fx-background-size : 50px;
+    -fx-cursor: hand;
 }
 #addInputButton:pressed{
     -fx-background-image: url('Add.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
+    -fx-cursor: hand;
 }
