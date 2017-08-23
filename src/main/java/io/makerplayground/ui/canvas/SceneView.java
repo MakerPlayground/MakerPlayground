@@ -64,7 +64,6 @@ public class SceneView extends HBox implements Selectable {
     private DevicePropertyWindow devicePropertyWindow;
     private OutputDeviceSelector outputDeviceSelector;
 
-    //private final ObservableList<String> timeUnit = FXCollections.observableArrayList("ms", "s");
     private double dragDeltaX;
     private double dragDeltaY;
 
@@ -185,13 +184,47 @@ public class SceneView extends HBox implements Selectable {
     }
 
     private void enableDrag() {
-        setOnMouseEntered(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(Cursor.HAND);
-            }
-            //setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-        });
-        setOnMousePressed(mouseEvent -> {
+
+        // Register an event filter for a single node and a specific event type
+        statePane.addEventFilter(MouseEvent.MOUSE_ENTERED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.HAND);
+                        }
+                    }
+                });
+
+        statePane.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        setLayoutX(event.getSceneX() + dragDeltaX);
+                        setLayoutY(event.getSceneY() + dragDeltaY);
+                    }
+                });
+
+        statePane.addEventFilter(MouseEvent.MOUSE_RELEASED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        getScene().setCursor(Cursor.HAND);
+                    }
+                });
+
+        statePane.addEventFilter(MouseEvent.MOUSE_EXITED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.DEFAULT);
+                        }
+                    }
+                });
+
+
+        statePane.setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
             //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
@@ -200,21 +233,7 @@ public class SceneView extends HBox implements Selectable {
             select.set(true);
             mouseEvent.consume();
         });
-        setOnMouseDragged(mouseEvent -> {
-            setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
-            setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
-            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-        });
-        setOnMouseReleased(mouseEvent -> {
-            getScene().setCursor(Cursor.HAND);
-            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-        });
-        setOnMouseExited(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(Cursor.DEFAULT);
-            }
-            //setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-        });
+
     }
 
     public SceneViewModel getSceneViewModel() {

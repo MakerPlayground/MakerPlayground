@@ -2,6 +2,7 @@ package io.makerplayground.ui.devicepanel;
 
 
 import io.makerplayground.device.Device;
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
@@ -131,32 +132,32 @@ public class ConfigActualDeviceView extends Dialog {
             });
 
             // combobox of selectable port
-            ComboBox<Peripheral> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatiblePort(projectDevice)));
+            ComboBox<DevicePort> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatiblePort(projectDevice)));
             portComboBox.setId("portComboBox");
-            portComboBox.setCellFactory(new Callback<ListView<Peripheral>, ListCell<Peripheral>>() {
+            portComboBox.setCellFactory(new Callback<ListView<DevicePort>, ListCell<DevicePort>>() {
                 @Override
-                public ListCell<Peripheral> call(ListView<Peripheral> param) {
-                    return new ListCell<Peripheral>() {
+                public ListCell<DevicePort> call(ListView<DevicePort> param) {
+                    return new ListCell<DevicePort>() {
                         @Override
-                        protected void updateItem(Peripheral item, boolean empty) {
+                        protected void updateItem(DevicePort item, boolean empty) {
                             super.updateItem(item, empty);
                             if (empty) {
                                 setText("");
                             } else {
-                                setText(item.toString());
+                                setText(item.getName());
                             }
                         }
                     };
                 }
             });
-            portComboBox.setButtonCell(new ListCell<Peripheral>(){
+            portComboBox.setButtonCell(new ListCell<DevicePort>(){
                 @Override
-                protected void updateItem(Peripheral item, boolean empty) {
+                protected void updateItem(DevicePort item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
                         setText("");
                     } else {
-                        setText(item.toString());
+                        setText(item.getName());
                     }
                 }
             });

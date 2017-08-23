@@ -179,6 +179,14 @@ public class Device {
         return port;
     }
 
+    public DevicePort getPort(String name) {
+        for (DevicePort dp : port) {
+            if (dp.getName().equals(name))
+                return dp;
+        }
+        return null;
+    }
+
     public List<DevicePort> getPort(Peripheral peripheral) {
         return port.stream().filter(new Predicate<DevicePort>() {
             @Override

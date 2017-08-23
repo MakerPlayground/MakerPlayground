@@ -66,7 +66,11 @@ public class RightPanel extends AnchorPane {
 
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
-            DeviceMapper.autoAssignDevices(project);
+            if (!DeviceMapper.autoAssignDevices(project)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Not enought port", ButtonType.OK);
+                alert.showAndWait();
+                return;
+            }
             Sourcecode code = Sourcecode.generateCode(project, false);
             if (code.getError() != null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, code.getError().getDescription(), ButtonType.OK);
@@ -79,7 +83,11 @@ public class RightPanel extends AnchorPane {
         });
         Button uploadBtn = new Button("Upload");
         uploadBtn.setOnAction((ActionEvent event) -> {
-            DeviceMapper.autoAssignDevices(project);
+            if (!DeviceMapper.autoAssignDevices(project)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Not enought port", ButtonType.OK);
+                alert.showAndWait();
+                return;
+            }
             Sourcecode sourcecode = Sourcecode.generateCode(project, true);
 
             if (sourcecode.getError() != null) {

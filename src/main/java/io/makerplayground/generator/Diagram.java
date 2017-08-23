@@ -284,7 +284,7 @@ public class Diagram extends Pane {
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Device device = projectDevice.getActualDevice();
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
-                Peripheral destPeripheral = projectDevice.getDeviceConnection().get(sourcePeripheral);
+
                 if (sourcePeripheral == Peripheral.SPI_1) { // TODO: not tested yet
 //                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
 //                    DevicePort sourceMISO = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
@@ -311,15 +311,15 @@ public class Diagram extends Pane {
 //                    createLine(projectDevice, sourceTX, project.getController(), desTX);
                 } else if (sourcePeripheral.getConnectionType() == ConnectionType.GPIO) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 } else if (sourcePeripheral == Peripheral.PWM_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 } else if (sourcePeripheral == Peripheral.ANALOG_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = controller.getPort(destPeripheral).get(0);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 }
             }

@@ -99,11 +99,16 @@ public class Sourcecode {
             sb.append("MP_").append(projectDevice.getGenericDevice().getName().replace(" ", "_")).append(" ")
                     .append(projectDevice.getName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
-            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
-                if (peripheral.getConnectionType() != ConnectionType.I2C) {
-                    List<String> tmp = project.getController().getController().getPort(peripheral).stream()
-                            .map(DevicePort::getName).collect(Collectors.toList());
-                    portName.addAll(tmp);
+//            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
+//                if (peripheral.getConnectionType() != ConnectionType.I2C) {
+//                    List<String> tmp = project.getController().getController().getPort(peripheral).stream()
+//                            .map(DevicePort::getName).collect(Collectors.toList());
+//                    portName.addAll(tmp);
+//                }
+//            }
+            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
+                if (p.getConnectionType() != ConnectionType.I2C) {
+                    portName.add(projectDevice.getDeviceConnection().get(p).getName());
                 }
             }
             if (!portName.isEmpty()) {

@@ -5,10 +5,9 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
 
-
 <fx:root fx:id="beginHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="95.0" style="-fx-background-color: #313644;" text="Begin" textAlignment="CENTER" textFill="WHITE">
+      <Label fx:id="labelHBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="95.0" style="-fx-background-color: #313644;" text="Begin" textAlignment="CENTER" textFill="WHITE">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
