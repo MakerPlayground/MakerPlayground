@@ -20,11 +20,13 @@
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #5ac2ab;
+    -fx-cursor: hand;
 }
 #tutorialBtn:pressed{
     -fx-background-color : #5ac2ab;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #231f20;
+    -fx-cursor: hand;
 }
 .split-pane{
     -fx-border-width:0;
@@ -41,34 +43,40 @@
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
 #saveBtn:pressed{
     -fx-background-image: url('save-toggle.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
 #loadBtn{
     -fx-background-image: url('load.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
 #loadBtn:pressed{
     -fx-background-image: url('load-toggle.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
 #newFileBtn{
     -fx-background-image: url('new.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
 #newFileBtn:pressed{
     -fx-background-image: url('new-toggle.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }

@@ -59,18 +59,20 @@
     -fx-background-insets: 0 3 0 3;
 }
 
-#addBtn{
+#addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('AddDevice-toggle.png');
-    -fx-background-size : 20px;
+    -fx-background-size : 50px;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }
-#addBtn:pressed{
+#addBtn{
     -fx-background-image: url('AddDevice.png');
-    -fx-background-size : 20px;
+    -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
+    -fx-cursor: hand;
 }

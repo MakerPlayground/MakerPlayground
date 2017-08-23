@@ -3,12 +3,14 @@
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #5ac2ab;
+    -fx-cursor: hand;
 }
 .button:pressed{
     -fx-font-size:12px;
     -fx-background-color : #5ac2ab;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #313644;
+    -fx-cursor: hand;
 }
 #deleteDeviceBtn{
     -fx-font-size:12px;

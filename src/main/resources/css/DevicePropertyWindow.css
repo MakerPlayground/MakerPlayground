@@ -234,6 +234,7 @@
     -fx-background-insets:0;
     -fx-min-height: 25;
     -fx-max-height: 25;
+    -fx-cursor: hand;
 }
 .button:pressed , .button:hover{
     -fx-background-color : #5ac2ab;
@@ -244,5 +245,6 @@
     -fx-background-insets:0;
     -fx-min-height: 25;
     -fx-max-height: 25;
+    -fx-cursor: hand;
 }
 
