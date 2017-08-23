@@ -23,7 +23,7 @@
       </Button>
       <StackPane maxWidth="210.0" minWidth="210.0">
          <children>
-            <ScrollPane fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0" StackPane.alignment="CENTER">
+            <ScrollPane fx:id="scrollPane" fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0" StackPane.alignment="CENTER">
               <content>
                   <HBox id="deviceIconHBox" fx:id="deviceIconHBox" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="55.0" spacing="10.0">
                      <children>

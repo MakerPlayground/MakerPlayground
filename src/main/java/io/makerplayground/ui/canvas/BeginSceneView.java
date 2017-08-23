@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
+import javafx.scene.control.Label;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -17,6 +18,7 @@ import java.io.IOException;
 public class BeginSceneView extends HBox {
     @FXML private HBox beginHBox;
     @FXML private Arc sourceNode;
+    @FXML private Label labelHBox;
 
     private final BeginSceneViewModel beginSceneViewModel;
 
@@ -41,34 +43,57 @@ public class BeginSceneView extends HBox {
     }
 
     private void enableDrag() {
-        setOnMouseEntered(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(Cursor.HAND);
-            }
-            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-        });
-        setOnMousePressed(mouseEvent -> {
+
+        // Register an event filter for a single node and a specific event type
+        labelHBox.addEventFilter(MouseEvent.MOUSE_ENTERED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.HAND);
+                        }
+                        setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+                    }
+                });
+
+        labelHBox.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        setLayoutX(event.getSceneX() + dragDeltaX);
+                        setLayoutY(event.getSceneY() + dragDeltaY);
+                        setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+                    }
+                });
+
+        labelHBox.addEventFilter(MouseEvent.MOUSE_RELEASED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        getScene().setCursor(Cursor.HAND);
+                        setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+                    }
+                });
+
+        labelHBox.addEventFilter(MouseEvent.MOUSE_EXITED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.DEFAULT);
+                        }
+                        setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+                    }
+                });
+
+        labelHBox.setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
             setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
             getScene().setCursor(Cursor.MOVE);
         });
-        setOnMouseDragged(mouseEvent -> {
-            setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
-            setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-        });
-        setOnMouseReleased(mouseEvent -> {
-            getScene().setCursor(Cursor.HAND);
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-        });
-        setOnMouseExited(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(Cursor.DEFAULT);
-            }
-            setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-        });
     }
+
     public void setOnDesPortDragDetected(EventHandler<? super MouseEvent> e) {
         sourceNode.setOnDragDetected(e);
     }

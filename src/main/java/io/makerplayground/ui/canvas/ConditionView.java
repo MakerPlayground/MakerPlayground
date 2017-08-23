@@ -8,7 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -30,6 +32,7 @@ public class ConditionView extends VBox implements Selectable {
     @FXML private HBox deviceIconHBox;
     @FXML private Button removeConditionBtn;
     @FXML private Button addInputButton;
+    @FXML private ScrollPane scrollPane;
 
     private InputDeviceSelector inputDeviceSelector;
     private double dragDeltaX;
@@ -114,30 +117,52 @@ public class ConditionView extends VBox implements Selectable {
     }
 
     private void enableDrag() {
-        setOnMouseEntered(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(javafx.scene.Cursor.HAND);
-            }
-        });
-        setOnMousePressed(mouseEvent -> {
+        // Register an event filter for a single node and a specific event type
+        scrollPane.addEventFilter(MouseEvent.MOUSE_ENTERED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.HAND);
+                        }
+                    }
+                });
+
+        scrollPane.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        setLayoutX(event.getSceneX() + dragDeltaX);
+                        setLayoutY(event.getSceneY() + dragDeltaY);
+                    }
+                });
+
+        scrollPane.addEventFilter(MouseEvent.MOUSE_RELEASED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        getScene().setCursor(Cursor.HAND);
+                    }
+                });
+
+        scrollPane.addEventFilter(MouseEvent.MOUSE_EXITED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if (!event.isPrimaryButtonDown()) {
+                            getScene().setCursor(Cursor.DEFAULT);
+                        }
+                    }
+                });
+
+        scrollPane.setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
-            getScene().setCursor(javafx.scene.Cursor.MOVE);
+            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+            getScene().setCursor(Cursor.MOVE);
 
             select.set(true);
             mouseEvent.consume();
-        });
-        setOnMouseDragged(mouseEvent -> {
-            setLayoutX(mouseEvent.getSceneX() + dragDeltaX);
-            setLayoutY(mouseEvent.getSceneY() + dragDeltaY);
-        });
-        setOnMouseReleased(mouseEvent -> {
-            getScene().setCursor(javafx.scene.Cursor.HAND);
-        });
-        setOnMouseExited(mouseEvent -> {
-            if (!mouseEvent.isPrimaryButtonDown()) {
-                getScene().setCursor(javafx.scene.Cursor.DEFAULT);
-            }
         });
     }
 
