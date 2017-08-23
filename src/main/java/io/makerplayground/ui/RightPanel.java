@@ -44,8 +44,9 @@ public class RightPanel extends AnchorPane {
 
     public RightPanel(Project project){
         this.project = project;
-        File f = new File("src/main/resources/css/RightPanel.css");
-        getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+        //File f = new File("src/main/resources/css/RightPanel.css");
+        //getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+        getStylesheets().add(RightPanel.class.getResource("/css/RightPanel.css").toExternalForm());
         initView();
     }
 

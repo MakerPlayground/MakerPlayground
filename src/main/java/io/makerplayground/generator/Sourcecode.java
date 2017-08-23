@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;

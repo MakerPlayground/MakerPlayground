@@ -1,6 +1,5 @@
 package io.makerplayground.device;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 
