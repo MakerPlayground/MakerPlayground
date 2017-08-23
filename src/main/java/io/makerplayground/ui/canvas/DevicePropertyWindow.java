@@ -509,7 +509,10 @@ public class DevicePropertyWindow extends PopOver {
         }
 
         public SpinBoxPropertyEditor(ParameterPropertyItem property) {
-            this(property, new SpinnerWithUnit());      // TODO: add constraint
+            this(property, new SpinnerWithUnit(((NumericConstraint) property.getParameter().getConstraint()).getMin(),
+                    ((NumericConstraint) property.getParameter().getConstraint()).getMax(),
+                    ((NumberWithUnit) property.getParameter().getDefaultValue()).getValue(),        // TODO: use unit of value?
+                    ((NumericConstraint) property.getParameter().getConstraint()).getUnit()));      // TODO: add constraint
             this.getEditor().setUnit(FXCollections.observableArrayList(property.getParameter().getUnit()));
         }
 

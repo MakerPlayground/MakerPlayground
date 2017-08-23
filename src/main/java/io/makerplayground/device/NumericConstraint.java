@@ -26,6 +26,7 @@ import java.util.*;
  */
 public class NumericConstraint implements Constraint {
     private final Map<Unit, Value> numericValue;    // TODO: edit because a map is not needed to store single constraint
+    private Unit unit;
 
     /**
      * Construct a constraint based on the specify min, max and unit. The constructor should only
@@ -36,6 +37,7 @@ public class NumericConstraint implements Constraint {
      */
     NumericConstraint(double min, double max, Unit unit) {
         Value value = new Value(min, max, unit);
+        this.unit = unit;
         this.numericValue = Collections.singletonMap(unit, value);
     }
 
@@ -45,15 +47,24 @@ public class NumericConstraint implements Constraint {
      * the library from file.
      * @param value list of {@link Value} for initializing new constraint instance
      */
-    NumericConstraint(Collection<Value> value) {
+    private NumericConstraint(Collection<Value> value) {
         this.numericValue = new EnumMap<>(Unit.class);
+        // we only accept 1 pair of value and unit but we maintain this method for
+        // backward compatibility
+        if (value.size() != 1)
+            throw new IllegalStateException("value size must be 1");
         for (Value v : value) {
             this.numericValue.put(v.unit, v);
+            this.unit = v.unit;
         }
     }
 
-    public Collection<Unit> getUnit() {
-        return numericValue.keySet();
+//    public Collection<Unit> getUnit() {
+//        return numericValue.keySet();
+//    }
+
+    public Unit getUnit() {
+        return unit;
     }
 
     @Override
@@ -106,6 +117,14 @@ public class NumericConstraint implements Constraint {
         }
 
         return new NumericConstraint(m.values());
+    }
+
+    public double getMin() {
+        return numericValue.get(unit).min;
+    }
+
+    public double getMax() {
+        return numericValue.get(unit).max;
     }
 
     static class Value {
