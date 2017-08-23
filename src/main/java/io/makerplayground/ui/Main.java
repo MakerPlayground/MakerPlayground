@@ -157,6 +157,10 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
+                ae -> tutorialButton.fire()));
+        timeline.play();
     }
 
     public static void main(String[] args) {

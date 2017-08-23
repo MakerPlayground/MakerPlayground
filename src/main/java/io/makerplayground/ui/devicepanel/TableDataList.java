@@ -24,7 +24,7 @@ public class TableDataList {
         this.brand = projectDevice.getActualDevice().getBrand();
         this.model = projectDevice.getActualDevice().getModel();
         this.id = projectDevice.getActualDevice().getId();
-        this.pin = projectDevice.getDeviceConnection().values().iterator().next().toString();
+        this.pin = projectDevice.getDeviceConnection().values().iterator().next().getName();
         this.url = projectDevice.getActualDevice().getUrl();
     }
 

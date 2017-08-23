@@ -3336,8 +3336,8 @@
             "pintype": "SPI_SCK"
           },
           {
-            "type": "POWER",
-            "pintype": "GND"
+            "type": "GPIO_12",
+            "pintype": "INOUT"
           }
         ],
         "v_min": 5.0,
@@ -3348,7 +3348,12 @@
       {
         "name": "GND",
         "type": "WIRE",
-        "function": [],
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
         "v_min": 5.0,
         "v_max": 5.0,
         "x": 185.2,
@@ -3478,12 +3483,7 @@
       {
         "name": "VIN",
         "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
+        "function": [],
         "v_min": "",
         "v_max": "",
         "x": 294.76,
@@ -3509,7 +3509,7 @@
         "function": [
           {
             "type": "POWER",
-            "pintype": "VCC"
+            "pintype": "GND"
           }
         ],
         "v_min": 5.0,
@@ -3520,7 +3520,12 @@
       {
         "name": "5V",
         "type": "WIRE",
-        "function": [],
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
         "v_min": 5.0,
         "v_max": 5.0,
         "x": 251.56,
@@ -3566,6 +3571,7 @@
       "GPIO_9",
       "GPIO_10",
       "GPIO_11",
+      "GPIO_12",
       "UART_1",
       "I2C_1",
       "SPI_1",
