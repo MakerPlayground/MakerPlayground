@@ -45,12 +45,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
         for (JsonNode inputDeviceNode : node.get("inputDevice")) {
-            inputDevices.add(mapper.treeToValue(inputDeviceNode, ProjectDevice.class));
+            //inputDevices.add(mapper.treeToValue(inputDeviceNode, ProjectDevice.class));
+            inputDevices.add(deserializeProjectDevice(mapper, inputDeviceNode, controller));
         }
 
         ObservableList<ProjectDevice> outputDevices = FXCollections.observableArrayList();
         for (JsonNode outputDeviceNode : node.get("outputDevice")) {
-            outputDevices.add(mapper.treeToValue(outputDeviceNode, ProjectDevice.class));
+            //outputDevices.add(mapper.treeToValue(outputDeviceNode, ProjectDevice.class));
+            outputDevices.add(deserializeProjectDevice(mapper, outputDeviceNode, controller));
         }
 
         Begin begin = new Begin(node.get("begin").get("top").asDouble()
@@ -208,4 +210,40 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new ProjectValue(device, value);
     }
 
+    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, Device controller) {
+        String name = node.get("name").asText();
+        GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
+        boolean autoSelect = node.get("autoselect").asBoolean();
+
+        String actualDeviceId = node.get("actualDevice").asText();
+        Device actualDevice = null;
+        if (!actualDeviceId.isEmpty()) {
+            actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
+        }
+
+        Map<Peripheral, DevicePort> actualDeviceConnection = new HashMap<>();
+        for  (JsonNode connection : node.get("actualDeviceConnection")) {
+            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
+            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
+            DevicePort port = controller.getPort(connection.get("controllerPeripheral").asText());
+            actualDeviceConnection.put(source, port);
+        }
+
+        String dependentDeviceId = node.get("actualDevice").asText();
+        Device dependentDevice = null;
+        if (!dependentDeviceId.isEmpty()) {
+            dependentDevice = DeviceLibrary.INSTANCE.getActualDevice(dependentDeviceId);
+        }
+
+        Map<Peripheral, DevicePort> dependentDeviceConnection = new HashMap<>();
+        for  (JsonNode connection : node.get("dependentDeviceConnection")) {
+            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
+            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
+            DevicePort port = controller.getPort(connection.get("controllerPeripheral").asText());
+            dependentDeviceConnection.put(source, port);
+        }
+
+        return new ProjectDevice(name, genericDevice, autoSelect, actualDevice, actualDeviceConnection
+                , dependentDevice, dependentDeviceConnection);
+    }
 }

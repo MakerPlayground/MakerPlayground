@@ -3,6 +3,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
 
 import java.io.IOException;
@@ -31,10 +32,10 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
 
         jsonGenerator.writeArrayFieldStart("actualDeviceConnection");
-        for (Map.Entry<Peripheral, Peripheral> connection : projectDevice.getDeviceConnection().entrySet()) {
+        for (Map.Entry<Peripheral, DevicePort> connection : projectDevice.getDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().name());
+            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -46,10 +47,10 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
 
         jsonGenerator.writeArrayFieldStart("dependentDeviceConnection");
-        for (Map.Entry<Peripheral, Peripheral> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
+        for (Map.Entry<Peripheral, DevicePort> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().name());
+            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

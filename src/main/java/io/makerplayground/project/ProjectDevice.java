@@ -3,6 +3,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Peripheral;
 
@@ -14,15 +15,14 @@ import java.util.Map;
  * Created by Nuntipat Narkthong on 6/2/2017 AD.
  */
 @JsonSerialize (using = ProjectDeviceSerializer.class)
-@JsonDeserialize (using = ProjectDeviceDeserializer.class)
 public class ProjectDevice {
     private String name;
     private final GenericDevice genericDevice;
     private boolean autoSelectDevice;
     private Device actualDevice;
-    private Map<Peripheral, Peripheral> deviceConnection; // connection from this device (key) to the processor (value)
+    private Map<Peripheral, DevicePort> deviceConnection; // connection from this device (key) to the processor (value)
     private Device dependentDevice;
-    private Map<Peripheral, Peripheral> dependentDeviceConnection; // connection from this device (key) to the processor (value)
+    private Map<Peripheral, DevicePort> dependentDeviceConnection; // connection from this device (key) to the processor (value)
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = name;
@@ -34,7 +34,7 @@ public class ProjectDevice {
         this.dependentDeviceConnection = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, Peripheral> deviceConnection, Device dependentDevice, Map<Peripheral, Peripheral> dependentDeviceConnection) {
+    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, DevicePort> deviceConnection, Device dependentDevice, Map<Peripheral, DevicePort> dependentDeviceConnection) {
         this.name = name;
         this.genericDevice = genericDevice;
         this.autoSelectDevice = autoSelectDevice;
@@ -72,14 +72,14 @@ public class ProjectDevice {
         this.actualDevice = actualDevice;
     }
 
-    public Map<Peripheral, Peripheral> getDeviceConnection() {
+    public Map<Peripheral, DevicePort> getDeviceConnection() {
         return deviceConnection;
     }
 
 //    public void setDeviceConnection(Map<Peripheral, Peripheral> deviceConnection) {
 //        this.deviceConnection = deviceConnection;
 //    }
-    public void setDeviceConnection(Peripheral device, Peripheral processor) {
+    public void setDeviceConnection(Peripheral device, DevicePort processor) {
         this.deviceConnection.put(device, processor);
     }
 
@@ -96,11 +96,11 @@ public class ProjectDevice {
         this.dependentDevice = dependentDevice;
     }
 
-    public Map<Peripheral, Peripheral> getDependentDeviceConnection() {
+    public Map<Peripheral, DevicePort> getDependentDeviceConnection() {
         return dependentDeviceConnection;
     }
 
-    public void setDependentDeviceConnection(Peripheral device, Peripheral processor) {
+    public void setDependentDeviceConnection(Peripheral device, DevicePort processor) {
         this.dependentDeviceConnection.put(device, processor);
     }
 

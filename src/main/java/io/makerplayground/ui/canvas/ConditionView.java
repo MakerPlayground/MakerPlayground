@@ -158,7 +158,6 @@ public class ConditionView extends VBox implements Selectable {
         scrollPane.setOnMousePressed(mouseEvent -> {
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
-            //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
             getScene().setCursor(Cursor.MOVE);
 
             select.set(true);

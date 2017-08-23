@@ -1,6 +1,7 @@
 package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.Device;
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
@@ -21,7 +22,7 @@ public class ConfigActualDeviceViewModel {
 //    private final ObservableMap<ProjectDevice, ObservableList<Device>> compatibleDeviceList;
 //    private final ObservableMap<ProjectDevice, ObservableList<Peripheral>> compatiblePortList;
     private final ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceList;
-    private final ObjectProperty<Map<ProjectDevice, List<Peripheral>>> compatiblePortList;
+    private final ObjectProperty<Map<ProjectDevice, List<DevicePort>>> compatiblePortList;
 
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
@@ -42,13 +43,13 @@ public class ConfigActualDeviceViewModel {
 //        }
 
 
-        Map<ProjectDevice, List<Peripheral>> portList = new HashMap<>();
+        Map<ProjectDevice, List<DevicePort>> portList = new HashMap<>();
 //        for (Map.Entry<ProjectDevice, Map<Peripheral, List<Peripheral>>> entry : DeviceMapper.getDeviceCompatiblePort(project).entrySet()) {
 //            portList.put(entry.getKey(), entry.getValue().get(entry.getKey().getActualDevice().getConnectivity().get(0)));
 //        }
-        Map<ProjectDevice, Map<Peripheral, List<Peripheral>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
+        Map<ProjectDevice, Map<Peripheral, List<DevicePort>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
         for (ProjectDevice projectDevice : tmp.keySet()) {
-            Map<Peripheral, List<Peripheral>> possibleConnection = tmp.get(projectDevice);
+            Map<Peripheral, List<DevicePort>> possibleConnection = tmp.get(projectDevice);
             if (projectDevice.getActualDevice() != null) {
                 Peripheral firstPeripheral = projectDevice.getActualDevice().getConnectivity().get(0);
                 portList.put(projectDevice, possibleConnection.get(firstPeripheral));
@@ -82,7 +83,7 @@ public class ConfigActualDeviceViewModel {
         return compatibleDeviceList.get().get(projectDevice);
     }
 
-    public List<Peripheral> getCompatiblePort(ProjectDevice projectDevice) {
+    public List<DevicePort> getCompatiblePort(ProjectDevice projectDevice) {
         return compatiblePortList.get().get(projectDevice);
     }
 
@@ -90,7 +91,7 @@ public class ConfigActualDeviceViewModel {
         return compatibleDeviceList;
     }
 
-    public ObjectProperty<Map<ProjectDevice, List<Peripheral>>> compatiblePortListProperty() {
+    public ObjectProperty<Map<ProjectDevice, List<DevicePort>>> compatiblePortListProperty() {
         return compatiblePortList;
     }
 
@@ -99,9 +100,9 @@ public class ConfigActualDeviceViewModel {
         //reInitialize();
     }
 
-    public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral) {
+    public void setPeripheral(ProjectDevice projectDevice, DevicePort port) {
         // TODO: assume a device only has 1 peripheral
-        projectDevice.setDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0), peripheral);
+        projectDevice.setDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0), port);
         reInitialize();
     }
 

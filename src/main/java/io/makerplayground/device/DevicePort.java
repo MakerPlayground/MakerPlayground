@@ -51,6 +51,10 @@ public class DevicePort {
         return function;
     }
 
+    public boolean isSupport(Peripheral p) {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPeripheral().getConnectionType() == p.getConnectionType());
+    }
+
     public boolean isVcc() {
         return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.VCC);
     }
