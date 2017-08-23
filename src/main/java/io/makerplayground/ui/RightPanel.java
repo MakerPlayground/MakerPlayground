@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Created by Mai.Manju on 12-Jun-17.
  */
 public class RightPanel extends AnchorPane {
-    private enum UploadResult {OK, CANT_FIND_PIO};
+    private enum UploadResult {OK, CANT_FIND_PIO, CANT_FIND_BOARD};
     private final Project project;
 
     public RightPanel(Project project){
@@ -181,6 +181,8 @@ public class RightPanel extends AnchorPane {
                             s.close();
                             try {
                                 int result = p.waitFor();
+                                if (result == 1)
+                                    return UploadResult.CANT_FIND_BOARD;
                             } catch (InterruptedException e) {
                                 return UploadResult.CANT_FIND_PIO;
                             }
@@ -196,10 +198,15 @@ public class RightPanel extends AnchorPane {
                     if (result == UploadResult.OK) {
                         pb.setProgress(1);
                     }
-                    if (result == UploadResult.CANT_FIND_PIO) {
-                        System.out.println("Can't find PIO");
-                    }
                     dialog.close();
+
+                    if (result == UploadResult.CANT_FIND_BOARD) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Can't find board!!!", ButtonType.OK);
+                        alert.showAndWait();
+                    } else if (result == UploadResult.CANT_FIND_PIO) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Please install platform io!!!", ButtonType.OK);
+                        alert.showAndWait();
+                    }
                 });
 
                 new Thread(uploadTask).start();
