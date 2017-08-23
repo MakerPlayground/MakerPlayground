@@ -22,7 +22,9 @@ import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Unit;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Represent a parameter of an action
@@ -77,7 +79,7 @@ public class Parameter {
     }
 
     public Collection<Unit> getUnit() {
-        return ((NumericConstraint) constraint).getUnit();
+        return Collections.singletonList(((NumericConstraint) constraint).getUnit());  // TODO: add another convertible unit
     }
 
     /**

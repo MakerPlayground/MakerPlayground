@@ -21,19 +21,19 @@ public class SpinnerWithUnit extends HBox {
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
     private final ObservableList<Constraint> constraintList;
 
-    public SpinnerWithUnit() {
-        this(0, Unit.NOT_SPECIFIED);
-    }
+//    public SpinnerWithUnit(double min, double max, double value,) {
+//        this(min, max, value, Unit.NOT_SPECIFIED);
+//    }
 
-    public SpinnerWithUnit(double number, Unit unit) {
-        spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100));
+    public SpinnerWithUnit(double min, double max, double value, Unit unit) {
+        spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max));
         spinner.setEditable(true);
         comboBox = new ComboBox<>();
 
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
-        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(number,unit));
+        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(value,unit));
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
             spinner.getValueFactory().setValue(newValue.getValue());
             comboBox.getSelectionModel().select(newValue.getUnit());
