@@ -141,6 +141,7 @@ public class RightPanel extends AnchorPane {
             gridPane.getChildren().addAll(label, progressBar, progress, detailPane/*, okButton*/);
 
             ButtonType buttonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.setTitle("Upload");
             dialog.getDialogPane().getButtonTypes().add(buttonType);
             dialog.getDialogPane().lookupButton(buttonType).setDisable(true);
             dialog.getDialogPane().setContent(gridPane);
@@ -188,7 +189,7 @@ public class RightPanel extends AnchorPane {
                         Process p = builder.start();
                         Scanner s = new Scanner(p.getInputStream());
                         while (s.hasNextLine()) {
-//                        System.out.println(s.nextLine());
+                            textArea.appendText(s.nextLine() + "\n");
                         }
                         s.close();
                         try {
@@ -241,7 +242,7 @@ public class RightPanel extends AnchorPane {
                         Process p = builder.start();
                         Scanner s = new Scanner(p.getInputStream());
                         while (s.hasNextLine()) {
-                            System.out.println(s.nextLine());
+                            textArea.appendText(s.nextLine() + "\n");
                         }
                         s.close();
                         try {
