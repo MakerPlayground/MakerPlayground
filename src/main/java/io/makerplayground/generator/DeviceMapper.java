@@ -119,7 +119,8 @@ public class DeviceMapper {
                 }
 
                 for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                    if (pDevice.getConnectionType() == ConnectionType.GPIO) {
+                    if ((pDevice.getConnectionType() == ConnectionType.GPIO) || (pDevice.getConnectionType() == ConnectionType.ANALOG)
+                            || (pDevice.getConnectionType() == ConnectionType.PWM)) {
                         for (DevicePort pPort : processorPort) {
                             if (pPort.isSupport(pDevice)) {
                                 possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
