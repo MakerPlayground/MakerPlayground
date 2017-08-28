@@ -221,11 +221,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
         }
 
-        Map<Peripheral, DevicePort> actualDeviceConnection = new HashMap<>();
+        Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
         for  (JsonNode connection : node.get("actualDeviceConnection")) {
             Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
             //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
-            DevicePort port = controller.getPort(connection.get("controllerPeripheral").asText());
+            List<DevicePort> port = new ArrayList<>();
+            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
+                String portName = controllerPeripheral.asText();
+                port.add(controller.getPort(portName));
+            }
             actualDeviceConnection.put(source, port);
         }
 
@@ -235,11 +239,16 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             dependentDevice = DeviceLibrary.INSTANCE.getActualDevice(dependentDeviceId);
         }
 
-        Map<Peripheral, DevicePort> dependentDeviceConnection = new HashMap<>();
-        for  (JsonNode connection : node.get("dependentDeviceConnection")) {
+        Map<Peripheral, List<DevicePort>> dependentDeviceConnection = new HashMap<>();
+        for (JsonNode connection : node.get("dependentDeviceConnection")) {
             Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
             //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
-            DevicePort port = controller.getPort(connection.get("controllerPeripheral").asText());
+            List<DevicePort> port = new ArrayList<>();
+            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
+                String portName = controllerPeripheral.asText();
+                port.add(controller.getPort(portName));
+            }
+            actualDeviceConnection.put(source, port);
             dependentDeviceConnection.put(source, port);
         }
 

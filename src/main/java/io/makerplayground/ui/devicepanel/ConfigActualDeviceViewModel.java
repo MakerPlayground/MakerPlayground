@@ -20,7 +20,7 @@ import java.util.*;
 public class ConfigActualDeviceViewModel {
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceList;
-    private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<DevicePort>>>> compatiblePortList;
+    private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
 
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
@@ -35,7 +35,7 @@ public class ConfigActualDeviceViewModel {
 
         Map<ProjectDevice, List<DevicePort>> portList = new HashMap<>();
 
-        Map<ProjectDevice, Map<Peripheral, List<DevicePort>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
+        Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
 //        for (ProjectDevice projectDevice : tmp.keySet()) {
 //            Map<Peripheral, List<DevicePort>> possibleConnection = tmp.get(projectDevice);
 //            if (projectDevice.getActualDevice() != null) {
@@ -53,7 +53,7 @@ public class ConfigActualDeviceViewModel {
         return compatibleDeviceList.get().get(projectDevice);
     }
 
-    public Map<Peripheral, List<DevicePort>> getCompatiblePort(ProjectDevice projectDevice) {
+    public Map<Peripheral, List<List<DevicePort>>> getCompatiblePort(ProjectDevice projectDevice) {
         return compatiblePortList.get().get(projectDevice);
     }
 
@@ -61,7 +61,7 @@ public class ConfigActualDeviceViewModel {
         return compatibleDeviceList;
     }
 
-    public ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<DevicePort>>>> compatiblePortListProperty() {
+    public ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
         return compatiblePortList;
     }
 
@@ -69,7 +69,7 @@ public class ConfigActualDeviceViewModel {
         projectDevice.setActualDevice(device);
     }
 
-    public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, DevicePort port) {
+    public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
         // TODO: assume a device only has 1 peripheral
         projectDevice.setDeviceConnection(peripheral, port);
         reInitialize();

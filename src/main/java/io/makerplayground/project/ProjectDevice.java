@@ -8,6 +8,7 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Peripheral;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,9 +21,9 @@ public class ProjectDevice {
     private final GenericDevice genericDevice;
     private boolean autoSelectDevice;
     private Device actualDevice;
-    private Map<Peripheral, DevicePort> deviceConnection; // connection from this device (key) to the processor (value)
+    private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
     private Device dependentDevice;
-    private Map<Peripheral, DevicePort> dependentDeviceConnection; // connection from this device (key) to the processor (value)
+    private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = name;
@@ -34,7 +35,7 @@ public class ProjectDevice {
         this.dependentDeviceConnection = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, DevicePort> deviceConnection, Device dependentDevice, Map<Peripheral, DevicePort> dependentDeviceConnection) {
+    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, List<DevicePort>> deviceConnection, Device dependentDevice, Map<Peripheral, List<DevicePort>> dependentDeviceConnection) {
         this.name = name;
         this.genericDevice = genericDevice;
         this.autoSelectDevice = autoSelectDevice;
@@ -72,14 +73,14 @@ public class ProjectDevice {
         this.actualDevice = actualDevice;
     }
 
-    public Map<Peripheral, DevicePort> getDeviceConnection() {
+    public Map<Peripheral, List<DevicePort>> getDeviceConnection() {
         return deviceConnection;
     }
 
 //    public void setDeviceConnection(Map<Peripheral, Peripheral> deviceConnection) {
 //        this.deviceConnection = deviceConnection;
 //    }
-    public void setDeviceConnection(Peripheral device, DevicePort processor) {
+    public void setDeviceConnection(Peripheral device, List<DevicePort> processor) {
         this.deviceConnection.put(device, processor);
     }
 
@@ -96,11 +97,11 @@ public class ProjectDevice {
         this.dependentDevice = dependentDevice;
     }
 
-    public Map<Peripheral, DevicePort> getDependentDeviceConnection() {
+    public Map<Peripheral, List<DevicePort>> getDependentDeviceConnection() {
         return dependentDeviceConnection;
     }
 
-    public void setDependentDeviceConnection(Peripheral device, DevicePort processor) {
+    public void setDependentDeviceConnection(Peripheral device, List<DevicePort> processor) {
         this.dependentDeviceConnection.put(device, processor);
     }
 

@@ -107,7 +107,7 @@ public class Sourcecode {
 //            }
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C) {
-                    portName.add(projectDevice.getDeviceConnection().get(p).getName());
+                    portName.addAll(projectDevice.getDeviceConnection().get(p).stream().map(DevicePort::getName).collect(Collectors.toList()));
                 }
             }
             if (!portName.isEmpty()) {

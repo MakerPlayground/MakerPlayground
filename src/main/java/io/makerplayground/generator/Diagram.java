@@ -311,15 +311,15 @@ public class Diagram extends Pane {
 //                    createLine(projectDevice, sourceTX, project.getController(), desTX);
                 } else if (sourcePeripheral.getConnectionType() == ConnectionType.GPIO) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 } else if (sourcePeripheral == Peripheral.PWM_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 } else if (sourcePeripheral == Peripheral.ANALOG_1) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
-                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral);
+                    DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
                 }
             }

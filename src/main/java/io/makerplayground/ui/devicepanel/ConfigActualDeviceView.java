@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -146,38 +147,39 @@ public class ConfigActualDeviceView extends Dialog {
                 }
             });
 
-            Map<Peripheral, List<DevicePort>> combo = viewModel.getCompatiblePort(projectDevice);
-            List<ComboBox<DevicePort>> listComboBox = new ArrayList<>();
+            Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
+            System.out.println(combo);
+            List<ComboBox<List<DevicePort>>> listComboBox = new ArrayList<>();
 
             // loop for each peripheral
             for (Peripheral p : combo.keySet()) {
-                ComboBox<DevicePort> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
+                ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
                 portComboBox.setId("portComboBox");
 
-                portComboBox.setCellFactory(new Callback<ListView<DevicePort>, ListCell<DevicePort>>() {
+                portComboBox.setCellFactory(new Callback<ListView<List<DevicePort>>, ListCell<List<DevicePort>>>() {
                     @Override
-                    public ListCell<DevicePort> call(ListView<DevicePort> param) {
-                        return new ListCell<DevicePort>() {
+                    public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
+                        return new ListCell<List<DevicePort>>() {
                             @Override
-                            protected void updateItem(DevicePort item, boolean empty) {
+                            protected void updateItem(List<DevicePort> item, boolean empty) {
                                 super.updateItem(item, empty);
                                 if (empty) {
                                     setText("");
                                 } else {
-                                    setText(item.getName());
+                                    setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
                                 }
                             }
                         };
                     }
                 });
-                portComboBox.setButtonCell(new ListCell<DevicePort>(){
+                portComboBox.setButtonCell(new ListCell<List<DevicePort>>(){
                     @Override
-                    protected void updateItem(DevicePort item, boolean empty) {
+                    protected void updateItem(List<DevicePort> item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText("");
                         } else {
-                            setText(item.getName());
+                            setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
                         }
                     }
                 });
@@ -202,7 +204,7 @@ public class ConfigActualDeviceView extends Dialog {
             }
 
             entireDevice.getChildren().addAll(devicePic, checkBox, deviceComboBox);
-            for (ComboBox<DevicePort> d : listComboBox) {
+            for (ComboBox<List<DevicePort>> d : listComboBox) {
                 entireDevice.getChildren().add(d);
             }
             row.getChildren().add(entireDevice);

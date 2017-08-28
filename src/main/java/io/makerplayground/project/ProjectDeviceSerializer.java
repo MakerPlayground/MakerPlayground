@@ -1,12 +1,14 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +21,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 
     @Override
     public void serialize(ProjectDevice projectDevice, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeStringField("name", projectDevice.getName());
@@ -32,10 +35,15 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
 
         jsonGenerator.writeArrayFieldStart("actualDeviceConnection");
-        for (Map.Entry<Peripheral, DevicePort> connection : projectDevice.getDeviceConnection().entrySet()) {
+        for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            jsonGenerator.writeArrayFieldStart("controllerPeripheral");
+            for (DevicePort devicePort : connection.getValue()) {
+                mapper.writeValue(jsonGenerator, devicePort.getName());
+            }
+            jsonGenerator.writeEndArray();
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -47,10 +55,15 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
 
         jsonGenerator.writeArrayFieldStart("dependentDeviceConnection");
-        for (Map.Entry<Peripheral, DevicePort> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
+        for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            jsonGenerator.writeArrayFieldStart("controllerPeripheral");
+            for (DevicePort devicePort : connection.getValue()) {
+                mapper.writeValue(jsonGenerator, devicePort.getName());
+            }
+            jsonGenerator.writeEndArray();
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
