@@ -3362,12 +3362,7 @@
       {
         "name": "AREF",
         "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
+        "function": [],
         "v_min": "",
         "v_max": "",
         "x": 170.8,
@@ -3379,7 +3374,7 @@
         "function": [
           {
             "type": "I2C_1",
-            "pintype": "I2C_SCL"
+            "pintype": "I2C_SDA"
           }
         ],
         "v_min": 5.0,
@@ -3392,8 +3387,8 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_5",
-            "pintype": "INOUT"
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
           }
         ],
         "v_min": 5.0,
@@ -3406,7 +3401,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_4",
+            "type": "ANALOG_5",
             "pintype": "INOUT"
           }
         ],
@@ -3420,7 +3415,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_3",
+            "type": "ANALOG_4",
             "pintype": "INOUT"
           }
         ],
@@ -3434,7 +3429,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_2",
+            "type": "ANALOG_3",
             "pintype": "INOUT"
           }
         ],
@@ -3448,7 +3443,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_1",
+            "type": "ANALOG_2",
             "pintype": "INOUT"
           }
         ],
@@ -3462,7 +3457,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "ANALOG_0",
+            "type": "ANALOG_1",
             "pintype": "INOUT"
           }
         ],
@@ -3474,7 +3469,12 @@
       {
         "name": "A0",
         "type": "WIRE",
-        "function": [],
+        "function": [
+          {
+            "type": "ANALOG_0",
+            "pintype": "INOUT"
+          }
+        ],
         "v_min": 5.0,
         "v_max": 5.0,
         "x": 323.56,

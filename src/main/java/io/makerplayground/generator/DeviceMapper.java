@@ -100,11 +100,6 @@ public class DeviceMapper {
 
         // remove port that has been used (manually by user)
         for (ProjectDevice projectDevice : project.getAllDevice()) {
-            //connection from this device (key) to the processor (value)
-//            for (DevicePort p : projectDevice.getDeviceConnection().values()) {
-//                if (p.getConnectionType() != ConnectionType.I2C)
-//                    processorPort.remove(p);
-//            }
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C)
                     processorPort.remove(projectDevice.getDeviceConnection().get(p));
@@ -153,10 +148,6 @@ public class DeviceMapper {
 
                 //Map<ProjectDevice, List<Peripheral>> portList = getDeviceCompatiblePort(project);
 
-                // Set device connection by selecting the first element of this device's connectivity port to available port of processor
-                //for (Peripheral p : processorPort) {
-                    //if (portList.get(projectDevice).get(0).getConnectionType() == p.getConnectionType()) {
-                        //projectDevice.setDeviceConnection(portList.get(projectDevice).get(0), p);
                 for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
                     Map<ProjectDevice, Map<Peripheral, List<DevicePort>>> portList = getDeviceCompatiblePort(project);
                     if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {

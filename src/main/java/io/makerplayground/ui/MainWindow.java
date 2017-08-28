@@ -49,7 +49,6 @@ public class MainWindow extends SplitPane {
         getItems().addAll(canvasView, rightPanel);
     }
 
-
     public Project getProject() {
         return project;
     }
