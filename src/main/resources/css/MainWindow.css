@@ -21,6 +21,7 @@
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #5ac2ab;
     -fx-cursor: hand;
+    -fx-font-size: 12px;
 }
 #tutorialBtn:pressed{
     -fx-background-color : #5ac2ab;
