@@ -1,0 +1,51 @@
+.scroll-pane{
+    -fx-padding:0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.scroll-pane > .viewport{
+    -fx-background-color : white;
+    -fx-border-color : white;
+}
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 5 0 0;
+}
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 5 0 0;
+}
+.scroll-bar .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .track{
+    -fx-background-color:   #edeef3;
+    -fx-border-color :   #edeef3;
+    -fx-border-radius:2em;
+}
+.scroll-bar .thumb{
+    -fx-background-color: #51af98;
+    -fx-border-radius: 2em;
+    -fx-background-insets: 2 0 0;
+}
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.titled-pane > .title {
+  -fx-background-color: transparent;
+}
+
+.progress-bar .bar {
+    -fx-background-color:
+        -fx-box-border,
+        linear-gradient(to bottom, derive(-fx-accent,95%), derive(-fx-accent,10%)),
+        #51af98; /* this line is the background color of the bar */
+}
