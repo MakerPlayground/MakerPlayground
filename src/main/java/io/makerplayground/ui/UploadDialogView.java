@@ -39,7 +39,10 @@ public class UploadDialogView extends Dialog {
         stage.initStyle(StageStyle.UTILITY);
 
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            if (uploadTask.isDone())
+                window.hide();
+        });
 
         // Auto close if there is no error, otherwise we keep it open to allow user to see error message
         uploadTask.setOnSucceeded(event1 -> {

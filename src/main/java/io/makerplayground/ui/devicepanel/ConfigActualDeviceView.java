@@ -60,13 +60,16 @@ public class ConfigActualDeviceView extends Dialog {
         allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
         allDevice.setSpacing(20.0);
         allDevice.setPadding(new Insets(20,30,20,30));
+        allDevice.setAlignment(Pos.CENTER_LEFT);
 
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> window.hide());
 
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
-            VBox row = new VBox();
+            //VBox row = new VBox();
+            //row.setAlignment(Pos.BASELINE_LEFT);
             HBox entireDevice = new HBox();
+            //entireDevice.setAlignment(Pos.BASELINE_LEFT);
             HBox devicePic = new HBox();
 
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
@@ -85,9 +88,9 @@ public class ConfigActualDeviceView extends Dialog {
             imageView.setFitWidth(25.0);
 
             entireDevice.setSpacing(10.0);
-            entireDevice.setAlignment(Pos.CENTER);
+            entireDevice.setAlignment(Pos.CENTER_LEFT);
 
-            row.setAlignment(Pos.CENTER);
+            //row.setAlignment(Pos.CENTER);
 
             // combobox of selectable devices
             ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
@@ -207,8 +210,9 @@ public class ConfigActualDeviceView extends Dialog {
             for (ComboBox<List<DevicePort>> d : listComboBox) {
                 entireDevice.getChildren().add(d);
             }
-            row.getChildren().add(entireDevice);
-            allDevice.getChildren().add(row);
+            //row.getChildren().add(entireDevice);
+            //allDevice.getChildren().add(row);
+            allDevice.getChildren().add(entireDevice);
         }
 
         scrollPane.setContent(allDevice);

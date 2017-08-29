@@ -87,13 +87,14 @@
 .scroll-bar:vertical .increment-arrow{
     -fx-shape: " ";
     -fx-padding:0;
-    -fx-pref-width: 0;
+    -fx-pref-width: 7;
 }
 .scroll-bar:vertical .decrement-arrow{
     -fx-shape: " ";
     -fx-padding:0;
-    -fx-pref-width: 0;
+    -fx-pref-width: 7;
 }
+
 .scroll-bar:horizontal .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
