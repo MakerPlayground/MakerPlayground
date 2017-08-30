@@ -166,7 +166,36 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
+        sceneView.setOnSrcPortDragDetected(event -> {
+            Dragboard db = CanvasView.this.startDragAndDrop(TransferMode.ANY);
+
+            ClipboardContent clipboard = new ClipboardContent();
+            clipboard.putString("");
+            db.setContent(clipboard);
+
+            guideLine.setStartX(event.getSceneX());
+            guideLine.setStartY(event.getSceneY()-32.5);
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY());
+            guideLine.setVisible(true);
+
+            source = sceneView.getSceneViewModel().getScene();
+
+            event.consume();
+        });
         sceneView.setOnSrcPortDragOver(event -> {
+            System.out.println(event.getSceneX() + " " + event.getSceneY());
+
+            if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY()-32.5);
+
+            event.consume();
+        });
+        sceneView.setOnDesPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
             if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
@@ -185,7 +214,19 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
+        sceneView.setOnDesPortDragEntered(event -> {
+            if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
+                // TODO: add visual feedback
+            }
+
+            event.consume();
+        });
         sceneView.setOnSrcPortDragExited(event -> {
+            // TODO: remove visual feedback
+
+            event.consume();
+        });
+        sceneView.setOnDesPortDragExited(event -> {
             // TODO: remove visual feedback
 
             event.consume();
@@ -198,6 +239,18 @@ public class CanvasView extends AnchorPane {
                 success = true;
             }
             canvasViewModel.connectState(source, sceneView.getSceneViewModel().getScene());
+            event.setDropCompleted(success);
+
+            event.consume();
+        });
+        sceneView.setOnDesPortDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                System.out.println("Connect to => " + db.getString());
+                success = true;
+            }
+            canvasViewModel.connectState(sceneView.getSceneViewModel().getScene(), source);
             event.setDropCompleted(success);
 
             event.consume();

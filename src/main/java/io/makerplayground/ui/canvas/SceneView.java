@@ -66,6 +66,7 @@ public class SceneView extends HBox implements Selectable {
 
     private double dragDeltaX;
     private double dragDeltaY;
+    private boolean isPressed;
 
     public SceneView(SceneViewModel sceneViewModel) {
         this.sceneViewModel = sceneViewModel;
@@ -200,8 +201,10 @@ public class SceneView extends HBox implements Selectable {
                 new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
-                        setLayoutX(event.getSceneX() + dragDeltaX);
-                        setLayoutY(event.getSceneY() + dragDeltaY);
+                        if (isPressed) {
+                            setLayoutX(event.getSceneX() + dragDeltaX);
+                            setLayoutY(event.getSceneY() + dragDeltaY);
+                        }
                     }
                 });
 
@@ -210,6 +213,7 @@ public class SceneView extends HBox implements Selectable {
                     @Override
                     public void handle(MouseEvent event) {
                         getScene().setCursor(Cursor.HAND);
+                        isPressed = false;
                     }
                 });
 
@@ -225,6 +229,7 @@ public class SceneView extends HBox implements Selectable {
 
 
         statePane.setOnMousePressed(mouseEvent -> {
+            isPressed = true;
             dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
             dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
             //setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
@@ -244,20 +249,40 @@ public class SceneView extends HBox implements Selectable {
         desNode.setOnDragDetected(e);
     }
 
+    public void setOnSrcPortDragDetected(EventHandler<? super MouseEvent> e) {
+        sourceNode.setOnDragDetected(e);
+    }
+
     public void setOnSrcPortDragOver(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragOver(e);
+    }
+
+    public void setOnDesPortDragOver(EventHandler<? super DragEvent> e) {
+        desNode.setOnDragOver(e);
     }
 
     public void setOnSrcPortDragEntered(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragEntered(e);
     }
 
+    public void setOnDesPortDragEntered(EventHandler<? super DragEvent> e) {
+        desNode.setOnDragEntered(e);
+    }
+
     public void setOnSrcPortDragExited(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragExited(e);
     }
 
+    public void setOnDesPortDragExited(EventHandler<? super DragEvent> e) {
+        desNode.setOnDragExited(e);
+    }
+
     public void setOnSrcPortDragDropped(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragDropped(e);
+    }
+
+    public void setOnDesPortDragDropped(EventHandler<? super DragEvent> e) {
+        desNode.setOnDragDropped(e);
     }
 
     public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {

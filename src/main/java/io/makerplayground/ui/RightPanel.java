@@ -68,9 +68,15 @@ public class RightPanel extends AnchorPane {
         Button configureBtn = new Button("Configure Device");
 
         configureBtn.setOnAction(event -> {
-            ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
-            ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-            configActualDeviceView.showAndWait();
+            if (project.getAllDevice().size() == 0) {
+                ErrorDialogView errorDialogView = new ErrorDialogView("There is no device yet");
+                errorDialogView.showAndWait();
+            }
+            else {
+                ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
+                ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
+                configActualDeviceView.showAndWait();
+            }
         });
 
         //configureBtn.setOnAction(event -> DeviceMapper.getSupportedDeviceList(project));
