@@ -5,12 +5,16 @@ import io.makerplayground.helper.UploadResult;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -25,6 +29,8 @@ public class UploadDialogView extends Dialog {
     @FXML private ImageView imgView;
     @FXML private TitledPane detailPane;
 
+    private StringProperty logProperty;
+
     public UploadDialogView(UploadTask uploadTask) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/UploadDialogView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
@@ -38,6 +44,14 @@ public class UploadDialogView extends Dialog {
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
 
+//        textArea.textProperty().addListener(new ChangeListener<Object>() {
+//            @Override
+//            public void changed(ObservableValue<?> observable, Object oldValue,
+//                                Object newValue) {
+//                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+//                //use Double.MIN_VALUE to scroll to the top
+//            }
+//        });
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> {
             if (uploadTask.isDone())
@@ -49,14 +63,20 @@ public class UploadDialogView extends Dialog {
             UploadResult result = uploadTask.getValue();
             if (result == UploadResult.OK) {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Success.png")));
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1),
-                        event2 -> getDialogPane().getScene().getWindow().hide()));
-                timeline.play();
+//                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1),
+//                        event2 -> getDialogPane().getScene().getWindow().hide()));
+//                timeline.play();
             } else {
                 //okButton.setDisable(false);
+                progress.setTextFill(Color.RED);
                 detailPane.setExpanded(true);
                 //dialog.getDialogPane().lookupButton(buttonType).setDisable(false);
             }
+        });
+
+        logProperty = new SimpleStringProperty();
+        logProperty.addListener((observable, oldValue, newValue) -> {
+            textArea.appendText(newValue);
         });
     }
 
@@ -69,7 +89,7 @@ public class UploadDialogView extends Dialog {
     }
 
     public StringProperty logProperty() {
-        return textArea.textProperty();
+        return logProperty;
     }
 
 }

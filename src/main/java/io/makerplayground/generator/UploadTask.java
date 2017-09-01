@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.UploadDialogView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
@@ -22,12 +23,10 @@ public class UploadTask extends Task<UploadResult> {
 
     private Project project;
     private StringProperty log;
-    private StringBuilder sb;
 
     public UploadTask(Project project) {
         this.project = project;
         this.log = new SimpleStringProperty();
-        this.sb = new StringBuilder();
     }
 
     @Override
@@ -71,8 +70,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {
@@ -125,8 +123,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {
