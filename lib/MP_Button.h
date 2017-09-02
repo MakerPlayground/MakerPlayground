@@ -1,18 +1,18 @@
-#ifndef MP_GENERICBUTTON_H
-#define MP_GENERICBUTTON_H
+#ifndef MP_BUTTON_H
+#define MP_BUTTON_H
 
 //#include "MP_Button.h"
 #include <Arduino.h>
 
 
 
-class MP_GenericButton //: MP_Button
+class MP_Button //: MP_Button
 {
   public:
-	 MP_GenericButton(uint8_t pin) ;
-	 ~MP_GenericButton() {};
+	 MP_Button(uint8_t pin) ;
+	 ~MP_Button() {};
 
-	  int release()  ;
+	  int isReleased()  ;
 	  int doubleRelease()  ;
 	  void init() ;
 	 
