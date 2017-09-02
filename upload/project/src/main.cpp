@@ -1,22 +1,16 @@
 #include <Arduino.h>
-#include "MP_Temperature.h"
-#include "MP_Button.h"
-#include "MP_LED.h"
+#include "MP_DC_Motor.h"
 
 void beginScene();
 void scene1();
 
 void (*currentScene)(void);
 
-MP_Temperature Temperature1;
-MP_Button Button1(2);
-MP_LED jkkk(3);
+MP_DC_Motor DC_Motor1;
 
 void setup() {
     Serial.begin(115200);
-    Temperature1.init();
-    Button1.init();
-    jkkk.init();
+    DC_Motor1.init();
     currentScene = beginScene;
 }
 
@@ -29,13 +23,6 @@ void beginScene() {
 }
 
 void scene1() {
-    jkkk.on(100.00);
-    double Temperature1_Temperature;
-    while (1) {
-        Temperature1_Temperature = Temperature1.getTemperature();
-        if(((Temperature1_Temperature > 30.00)) && Button1.isReleased()) {
-            currentScene = beginScene;
-            break;
-        }
-    }
+    DC_Motor1.on("Forward", 100.00);
+    currentScene = beginScene;
 }
