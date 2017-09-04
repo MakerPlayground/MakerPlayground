@@ -1,5 +1,5 @@
-#ifndef MP_LED_H
-#define MP_LED_H
+#ifndef MP_RGB_LED_H
+#define MP_RGB_LED_H
 
 //#include "MP_Led.h"
 #include <Arduino.h>
