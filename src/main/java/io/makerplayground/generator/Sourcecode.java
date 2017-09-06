@@ -102,8 +102,8 @@ public class Sourcecode {
         // instantiate object(s) for each device
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append("MP_").append(projectDevice.getGenericDevice().getName().replace(" ", "_")).append(" ")
-                    .append(projectDevice.getName().replace(" ", "_"));
+            sb.append(projectDevice.getActualDevice().getMPLibraryName().replace(" ", "_")).append(" ")
+                    .append(projectDevice.getActualDevice().getSuggestedInstanceName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
 //            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
 //                if (peripheral.getConnectionType() != ConnectionType.I2C) {

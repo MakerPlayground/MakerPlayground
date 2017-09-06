@@ -181,6 +181,19 @@ public class Device {
         return libraryName;
     }
 
+    public String getMPLibraryName() {
+        for (String s : libraryName) {
+            if (s.startsWith("MP_")) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public String getSuggestedInstanceName() {
+        return getMPLibraryName().substring(3);
+    }
+
     public List<DevicePort> getPort() {
         return port;
     }
