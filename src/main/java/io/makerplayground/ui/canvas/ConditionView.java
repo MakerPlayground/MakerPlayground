@@ -173,20 +173,40 @@ public class ConditionView extends VBox implements Selectable {
         destNode.setOnDragDetected(e);
     }
 
+    public void setOnSrcPortDragDetected(EventHandler<? super MouseEvent> e) {
+        sourceNode.setOnDragDetected(e);
+    }
+
     public void setOnSrcPortDragOver(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragOver(e);
+    }
+
+    public void setOnDesPortDragOver(EventHandler<? super DragEvent> e) {
+        destNode.setOnDragOver(e);
     }
 
     public void setOnSrcPortDragEntered(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragEntered(e);
     }
 
+    public void setOnDesPortDragEntered(EventHandler<? super DragEvent> e) {
+        destNode.setOnDragEntered(e);
+    }
+
     public void setOnSrcPortDragExited(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragExited(e);
     }
 
+    public void setOnDesPortDragExited(EventHandler<? super DragEvent> e) {
+        destNode.setOnDragExited(e);
+    }
+
     public void setOnSrcPortDragDropped(EventHandler<? super DragEvent> e) {
         sourceNode.setOnDragDropped(e);
+    }
+
+    public void setOnDesPortDragDropped(EventHandler<? super DragEvent> e) {
+        destNode.setOnDragDropped(e);
     }
 
     public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {

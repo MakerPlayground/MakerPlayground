@@ -38,6 +38,8 @@ public class CanvasView extends AnchorPane {
     private NodeElement source; // TODO: leak model into view
     private NodeElement dest;   // TODO: leak model into view
 
+    private boolean flag = false; // false means left, true means right
+
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
         this.selectionGroup = new SelectionGroup();
@@ -163,6 +165,7 @@ public class CanvasView extends AnchorPane {
             guideLine.setVisible(true);
 
             source = sceneView.getSceneViewModel().getScene();
+            flag = true; // right port
 
             event.consume();
         });
@@ -180,12 +183,16 @@ public class CanvasView extends AnchorPane {
             guideLine.setVisible(true);
 
             source = sceneView.getSceneViewModel().getScene();
+            flag = false; // left port
 
             event.consume();
         });
         sceneView.setOnSrcPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
+            if (flag == false) {
+                return;
+            }
             if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
@@ -198,6 +205,9 @@ public class CanvasView extends AnchorPane {
         sceneView.setOnDesPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
+            if (flag == true) {
+                return;
+            }
             if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
@@ -272,12 +282,36 @@ public class CanvasView extends AnchorPane {
             guideLine.setVisible(true);
 
             source = conditionView.getSceneViewModel().getCondition();
+            flag = true; // right port
 
             event.consume();
         });
+
+        conditionView.setOnSrcPortDragDetected(event -> {
+            Dragboard db = CanvasView.this.startDragAndDrop(TransferMode.ANY);
+
+            ClipboardContent clipboard = new ClipboardContent();
+            clipboard.putString("");
+            db.setContent(clipboard);
+
+            guideLine.setStartX(event.getSceneX());
+            guideLine.setStartY(event.getSceneY()-32.5);
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY());
+            guideLine.setVisible(true);
+
+            source = conditionView.getSceneViewModel().getCondition();
+            flag = false; // left port
+
+            event.consume();
+        });
+
         conditionView.setOnSrcPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
+            if (flag == false) {
+                return;
+            }
             if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
@@ -287,6 +321,23 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
+
+        conditionView.setOnDesPortDragOver(event -> {
+            System.out.println(event.getSceneX() + " " + event.getSceneY());
+
+            if (flag == true) {
+                return;
+            }
+            if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+
+            guideLine.setEndX(event.getSceneX());
+            guideLine.setEndY(event.getSceneY()-32.5);
+
+            event.consume();
+        });
+
         conditionView.setOnSrcPortDragEntered(event -> {
             if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
                 // TODO: add visual feedback
@@ -294,7 +345,20 @@ public class CanvasView extends AnchorPane {
 
             event.consume();
         });
+
+        conditionView.setOnDesPortDragEntered(event -> {
+            if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
+                // TODO: add visual feedback
+            }
+
+            event.consume();
+        });
         conditionView.setOnSrcPortDragExited(event -> {
+            // TODO: remove visual feedback
+
+            event.consume();
+        });
+        conditionView.setOnDesPortDragExited(event -> {
             // TODO: remove visual feedback
 
             event.consume();
@@ -307,6 +371,19 @@ public class CanvasView extends AnchorPane {
                 success = true;
             }
             canvasViewModel.connectState(source, conditionView.getSceneViewModel().getCondition());
+            event.setDropCompleted(success);
+
+            event.consume();
+        });
+
+        conditionView.setOnDesPortDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                System.out.println("Connect to => " + db.getString());
+                success = true;
+            }
+            canvasViewModel.connectState(conditionView.getSceneViewModel().getCondition(), source);
             event.setDropCompleted(success);
 
             event.consume();
@@ -328,9 +405,11 @@ public class CanvasView extends AnchorPane {
             guideLine.setVisible(true);
 
             source = beginSceneView.getBeginSceneViewModel().getBegin();
+            flag = true;
 
             event.consume();
         });
+
 //        beginSceneView.setOnSrcPortDragOver(event -> {
 //            System.out.println(event.getSceneX() + " " + event.getSceneY());
 //
