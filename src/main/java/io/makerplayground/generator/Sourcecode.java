@@ -103,7 +103,7 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append(projectDevice.getActualDevice().getMPLibraryName().replace(" ", "_")).append(" ")
-                    .append(projectDevice.getActualDevice().getSuggestedInstanceName().replace(" ", "_"));
+                    .append(projectDevice.getName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
 //            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
 //                if (peripheral.getConnectionType() != ConnectionType.I2C) {
