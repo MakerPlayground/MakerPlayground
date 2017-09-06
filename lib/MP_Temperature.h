@@ -1,5 +1,5 @@
-#ifndef MP_TMP007_H
-#define MP_TMP007_H
+#ifndef MP_TEMPERATURE_H
+#define MP_TEMPERATURE_H
 
 //#include "MP_Temp.h"
 #include <Wire.h>
@@ -7,13 +7,13 @@
 #include <Arduino.h>
 
 
-class MP_TMP007  //: MP_Temp
+class MP_Temperature  //: MP_Temp
 {
   public:
-	 ~MP_TMP007() {};
+	 ~MP_Temperature() {};
 
 	
-	 double getTemp()  ;
+	 double getTemperature()  ;
 	 void init() ;
 
   private:

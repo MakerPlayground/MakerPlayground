@@ -20,7 +20,7 @@
                   <Image url="@../icons/Upload.png" />
                </image>
             </ImageView>
-            <VBox alignment="CENTER">
+            <VBox alignment="CENTER" spacing="10.0">
                <children>
                   <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" />
                   <Label fx:id="progress" textFill="#51af98">
@@ -32,7 +32,7 @@
             </VBox>
             <TitledPane fx:id="detailPane" animated="false" expanded="false" maxWidth="375.0" text="More details" textFill="#51af98">
                <content>
-                  <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="200.0" />
+                  <TextArea fx:id="textArea" maxWidth="-Infinity" prefHeight="200.0" prefWidth="370.0" wrapText="true" />
                </content>
                <font>
                   <Font size="12.0" />

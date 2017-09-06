@@ -9,6 +9,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 128.0,
     "height": 173.0,
     "v": "",
@@ -126,6 +127,9 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_MAX4466"
+    ],
     "width": 79.2,
     "height": 122.4,
     "v": "",
@@ -212,6 +216,9 @@
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
+    ],
+    "library": [
+      "MP_PAM8302"
     ],
     "width": 86.4,
     "height": 136.8,
@@ -395,6 +402,11 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_BME280",
+      "Adafruit_BME280",
+      "Adafruit_Sensor"
+    ],
     "width": 100.8,
     "height": 108.0,
     "v": "",
@@ -563,6 +575,10 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "Adafruit_Si7021",
+      "MP_Si7021"
+    ],
     "width": 86.4,
     "height": 100.8,
     "v": "",
@@ -692,6 +708,11 @@
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
+    ],
+    "library": [
+      "MP_L3GD20",
+      "Adafruit_Sensor",
+      "Adafruit_L3GD20_U"
     ],
     "width": 173.0,
     "height": 108.0,
@@ -855,6 +876,10 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "Adafruit_TMP007",
+      "MP_TMP007"
+    ],
     "width": 116.0,
     "height": 116.0,
     "v": "",
@@ -983,6 +1008,10 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_LSM9DS1",
+      "SparkFunLSM9DS1"
+    ],
     "width": 59.0,
     "height": 131.0,
     "v": "",
@@ -1100,6 +1129,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 531.0,
     "height": 410.0,
     "v": "",
@@ -1552,6 +1582,11 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "Adafruit_Sensor",
+      "Adafruit_LSM303",
+      "MP_LSM303"
+    ],
     "width": 130.0,
     "height": 117.0,
     "v": "",
@@ -1731,6 +1766,9 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_HC_SR501"
+    ],
     "width": 235.0,
     "height": 230.0,
     "v": "",
@@ -1813,6 +1851,11 @@
     "formfactor": "SHIELD",
     "platform": [
       "ARDUINO"
+    ],
+    "library": [
+      "MP_Adafruit_MotorShield",
+      "Adafruit_MotorShield",
+      "Adafruit_MS_PWMServoDriver"
     ],
     "width": 454.0,
     "height": 204.0,
@@ -2084,6 +2127,9 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_GenericButton"
+    ],
     "width": 18.0,
     "height": 25.0,
     "v": "",
@@ -2175,6 +2221,9 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_LED"
+    ],
     "width": 111.0,
     "height": 129.0,
     "v": "",
@@ -2251,6 +2300,10 @@
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
+    ],
+    "library": [
+      "Adafruit_TCS34725",
+      "MP_TCS34725"
     ],
     "width": 116.0,
     "height": 117.0,
@@ -2388,6 +2441,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 285.0,
     "height": 142.0,
     "v": "",
@@ -2490,6 +2544,9 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [
+      "MP_Buzzer"
+    ],
     "width": 158.0,
     "height": 155.0,
     "v": "",
@@ -2584,6 +2641,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 41.0,
     "height": 185.0,
     "v": "",
@@ -2664,13 +2722,14 @@
   {
     "id": "Arduinothai-165",
     "brand": "Arduinothai",
-    "model": "SparkFun Soil Moisture Sensor",
+    "model": "Soil Moisture Sensor AT02127",
     "url": "https://www.arduinothai.com/product/165/soil-moisture-sensor",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 130.0,
     "height": 347.0,
     "v": "",
@@ -2757,6 +2816,9 @@
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
+    ],
+    "library": [
+      "MP_RGB_LEDGND"
     ],
     "width": 86.0,
     "height": 107.0,
@@ -2868,6 +2930,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": "",
     "height": "",
     "v": 0.0,
@@ -2948,6 +3011,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 116.0,
     "height": 83.0,
     "v": "",
@@ -3101,6 +3165,7 @@
     "platform": [
       "ARDUINO"
     ],
+    "library": [],
     "width": 425.0,
     "height": 303.0,
     "v": "",

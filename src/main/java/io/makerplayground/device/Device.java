@@ -44,7 +44,7 @@ public class Device {
     private final double w;
     private final Dependency dependency;
     private final Dependency category;
-
+    private final List<String> libraryName;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -76,6 +76,7 @@ public class Device {
      * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
+            , List<String> libraryName
             , Set<Platform> supportedPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
@@ -95,6 +96,7 @@ public class Device {
         this.height = height;
         this.deviceType = deviceType;
         this.formFactor = formFactor;
+        this.libraryName = libraryName;
         this.supportedPlatform = supportedPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
@@ -173,6 +175,10 @@ public class Device {
 
     public Set<Platform> getSupportedPlatform() {
         return supportedPlatform;
+    }
+
+    public List<String> getLibraryName() {
+        return libraryName;
     }
 
     public List<DevicePort> getPort() {

@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.UploadDialogView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -22,12 +24,10 @@ public class UploadTask extends Task<UploadResult> {
 
     private Project project;
     private StringProperty log;
-    private StringBuilder sb;
 
     public UploadTask(Project project) {
         this.project = project;
         this.log = new SimpleStringProperty();
-        this.sb = new StringBuilder();
     }
 
     @Override
@@ -49,9 +49,13 @@ public class UploadTask extends Task<UploadResult> {
         List<String> library = null;
         String platform = project.getController().getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
-        library = project.getAllDeviceTypeUsed().stream()
-                .map(genericDevice -> "MP_" + genericDevice.getName().replace(" ", "_"))
-                .collect(Collectors.toList());
+        library = project.getAllDeviceUsed().stream()
+                .map(projectDevice -> projectDevice.getActualDevice().getLibraryName())
+                .flatMap(Collection::stream).collect(Collectors.toList());
+        log.set("List of library used \n");
+        for (String libName : library) {
+            log.set(" - " + libName + "\n");
+        }
         //System.out.println(code);
         //System.out.println(library);
         Path currentRelativePath = Paths.get("");
@@ -71,8 +75,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {
@@ -102,6 +105,10 @@ public class UploadTask extends Task<UploadResult> {
             fw.close();
 
             // copy library files
+            library.add("Adafruit_MotorShield");
+            library.add("Adafruit_MS_PWMServoDriver");
+            library.add("Adafruit_TMP007");
+
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
                 File sourcecpp = new File(path + File.separator + "lib" + File.separator + x + ".cpp");
@@ -125,8 +132,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {
