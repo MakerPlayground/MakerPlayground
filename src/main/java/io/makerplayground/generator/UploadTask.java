@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -48,9 +49,13 @@ public class UploadTask extends Task<UploadResult> {
         List<String> library = null;
         String platform = project.getController().getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
-        library = project.getAllDeviceTypeUsed().stream()
-                .map(genericDevice -> "MP_" + genericDevice.getName().replace(" ", "_"))
-                .collect(Collectors.toList());
+        library = project.getAllDeviceUsed().stream()
+                .map(projectDevice -> projectDevice.getActualDevice().getLibraryName())
+                .flatMap(Collection::stream).collect(Collectors.toList());
+        log.set("List of library used \n");
+        for (String libName : library) {
+            log.set(" - " + libName + "\n");
+        }
         //System.out.println(code);
         //System.out.println(library);
         Path currentRelativePath = Paths.get("");

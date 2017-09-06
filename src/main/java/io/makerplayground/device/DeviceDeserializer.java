@@ -55,6 +55,9 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         else
             category = Device.Dependency.valueOf(node.get("category").asText());
 
+        List<String> libraryName = mapper.readValue(node.get("library").traverse()
+                , new TypeReference<List<String>>() {});
+
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
@@ -115,7 +118,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, formFactor, platform, port, connectivity
+        return new Device(id, brand, model, url, width, height, type, formFactor, libraryName, platform, port, connectivity
                 , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency, category, v, i ,w);
     }
 }
