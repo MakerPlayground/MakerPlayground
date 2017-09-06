@@ -4,6 +4,7 @@ package io.makerplayground.ui.devicepanel;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.SingletonConfigDevice;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,10 +24,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -63,7 +61,20 @@ public class ConfigActualDeviceView extends Dialog {
         allDevice.setAlignment(Pos.CENTER_LEFT);
 
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            System.out.println("DID IT");
+            System.out.println(viewModel.getAllDevice().size());
+            for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
+                if (projectDevice.isAutoSelectDevice())
+                    SingletonConfigDevice.getInstance().setAll("123", "", projectDevice.isAutoSelectDevice(), "");
+                else {
+                    String port = String.join(",", projectDevice.getDeviceConnection().values().stream().flatMap(Collection::stream)
+                            .map(DevicePort::getName).collect(Collectors.toList()));
+                    SingletonConfigDevice.getInstance().setAll("123", projectDevice.getActualDevice().getId(), projectDevice.isAutoSelectDevice(), port);
+                }
+            }
+            window.hide();
+        });
 
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
             //VBox row = new VBox();

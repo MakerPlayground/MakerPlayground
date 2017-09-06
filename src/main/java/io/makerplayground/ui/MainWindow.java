@@ -1,6 +1,8 @@
 package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.makerplayground.helper.Singleton;
+import io.makerplayground.helper.SingletonLaunch;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
@@ -26,6 +28,7 @@ public class MainWindow extends SplitPane {
 
     public MainWindow(Project project) {
         this.project = project;
+        SingletonLaunch.getInstance().launchProgram();
         initView();
     }
 
