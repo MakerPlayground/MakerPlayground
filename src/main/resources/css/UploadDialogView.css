@@ -43,9 +43,24 @@
   -fx-background-color: transparent;
 }
 
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color : #5ac2ab;
+}
+
 .progress-bar .bar {
     -fx-background-color:
         -fx-box-border,
         linear-gradient(to bottom, derive(-fx-accent,95%), derive(-fx-accent,10%)),
         #51af98; /* this line is the background color of the bar */
+}
+
+.progress-bar > .track {
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+    -fx-text-box-border: edeef3;
+    -fx-control-inner-background: edeef3;
+}
+
+.text-area .content {
+    -fx-background-color: #edeef3 ;
+    -fx-text-box-border: transparent;
 }

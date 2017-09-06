@@ -5,7 +5,7 @@
 //#include "MP_DCMotor.h"
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
-#include "utility/Adafruit_MS_PWMServoDriver.h"
+#include "Adafruit_MS_PWMServoDriver.h"
 #include <Arduino.h>
 
 class MP_DC_Motor //: MP_DCMotor

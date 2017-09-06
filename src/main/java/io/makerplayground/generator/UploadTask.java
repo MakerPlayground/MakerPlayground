@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.UploadDialogView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
@@ -22,12 +23,10 @@ public class UploadTask extends Task<UploadResult> {
 
     private Project project;
     private StringProperty log;
-    private StringBuilder sb;
 
     public UploadTask(Project project) {
         this.project = project;
         this.log = new SimpleStringProperty();
-        this.sb = new StringBuilder();
     }
 
     @Override
@@ -71,8 +70,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {
@@ -102,6 +100,10 @@ public class UploadTask extends Task<UploadResult> {
             fw.close();
 
             // copy library files
+            library.add("Adafruit_MotorShield");
+            library.add("Adafruit_MS_PWMServoDriver");
+            library.add("Adafruit_TMP007");
+
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
                 File sourcecpp = new File(path + File.separator + "lib" + File.separator + x + ".cpp");
@@ -125,8 +127,7 @@ public class UploadTask extends Task<UploadResult> {
             Process p = builder.start();
             Scanner s = new Scanner(p.getInputStream());
             while (s.hasNextLine()) {
-                sb.append(s.nextLine()).append("\n");
-                log.set(sb.toString());
+                log.set(s.nextLine() + "\n");
             }
             s.close();
             try {

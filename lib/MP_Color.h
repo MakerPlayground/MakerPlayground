@@ -5,7 +5,6 @@
 //#include "MP_Button.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include "Adafruit_TCS34725.h"
 
 class MP_Color //: MP_Button
 {
@@ -14,10 +13,7 @@ class MP_Color //: MP_Button
 	 ~MP_Color() {};
 	 int isColor(char color[]);
 	  void init() ;
-	 
 
-   private:
-	  Adafruit_TCS34725 tcs ;
 	  
 };
 
