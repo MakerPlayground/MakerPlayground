@@ -1,10 +1,10 @@
 
 
-#include "MP_DC_Motor.h"
+#include "MP_Adafruit_MotorShield.h"
 
  uint8_t direction; 
 
-MP_DC_Motor::MP_DC_Motor()
+MP_Adafruit_MotorShield::MP_Adafruit_MotorShield()
 	
 {
 	myMotor = AFMS.getMotor(1);
@@ -12,14 +12,14 @@ MP_DC_Motor::MP_DC_Motor()
 }
 
 
-void MP_DC_Motor::init() {
+void MP_Adafruit_MotorShield::init() {
 	
 	AFMS.begin();
 	direction = 1;
 
 }
 
-void MP_DC_Motor::on(char dir[], uint8_t speed)   
+void MP_Adafruit_MotorShield::on(char dir[], uint8_t speed)   
 {
 	
 
@@ -38,7 +38,7 @@ void MP_DC_Motor::on(char dir[], uint8_t speed)
 		myMotor->run(BACKWARD);		
 	}
 }
-void MP_DC_Motor::reverse() {
+void MP_Adafruit_MotorShield::reverse() {
 	
 	if (direction == 1)
 	{
@@ -52,12 +52,12 @@ void MP_DC_Motor::reverse() {
 	}
 	
 }
-void MP_DC_Motor::set_speed(uint8_t speed)  
+void MP_Adafruit_MotorShield::set_speed(uint8_t speed)  
 {
 	myMotor->setSpeed(speed);
 
 }
-void MP_DC_Motor::off() {
+void MP_Adafruit_MotorShield::off() {
 	myMotor->setSpeed(0);
 }
 

@@ -1,16 +1,17 @@
-#ifndef MP_Color_H
-#define MP_Color_H
+#ifndef MP_TCS34725_H
+#define MP_TCS34725_H
 #define commonAnode true
 
 //#include "MP_Button.h"
 #include <Arduino.h>
 #include <Wire.h>
+#include "Adafruit_TCS34725.h"
 
-class MP_Color //: MP_Button
+class MP_TCS34725 //: MP_Button
 {
   public:
-	 MP_Color() ;
-	 ~MP_Color() {};
+	 MP_TCS34725() ;
+	 ~MP_TCS34725() {};
 	 int isColor(char color[]);
 	  void init() ;
 

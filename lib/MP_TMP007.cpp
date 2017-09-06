@@ -1,8 +1,8 @@
-#include "MP_Temperature.h"
+#include "MP_TMP007.h"
 
 
 
-void MP_Temperater::init() 
+void MP_TMP007::init() 
 {
 
 	
@@ -15,7 +15,7 @@ void MP_Temperater::init()
 }
 
 
-double MP_Temperater::getTemp() 
+double MP_TMP007::getTemperature() 
 {
 	return tmp007.readObjTempC() ;
 }

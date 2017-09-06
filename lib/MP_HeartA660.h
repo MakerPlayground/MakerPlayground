@@ -1,12 +1,12 @@
-#ifndef MP_Presence_H
-#define MP_Presence_H
+#ifndef MP_HEARTA660_H
+#define MP_HEARTA660_H
 
 #include <Arduino.h>
 
-class MP_Presence //: MP_Led
+class MP_HeartA660 //: MP_Led
 {
   public:
-	MP_Presence(uint8_t pin);
+	MP_HeartA660(uint8_t pin);
 
 	int isDetected();
 	void init();
