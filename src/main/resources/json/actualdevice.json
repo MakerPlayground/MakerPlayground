@@ -562,6 +562,26 @@
           }
         ],
         "count": ""
+      },
+      {
+        "name": "Altimeter",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Altitude",
+            "constraint": {
+              "min": -698.43,
+              "max": 9165.37,
+              "unit": "METER"
+            }
+          }
+        ],
+        "count": ""
       }
     ]
   },
@@ -1584,7 +1604,7 @@
     ],
     "library": [
       "Adafruit_Sensor",
-      "Adafruit_LSM303",
+      "Adafruit_LSM303_U",
       "MP_LSM303"
     ],
     "width": 130.0,
@@ -2641,7 +2661,9 @@
     "platform": [
       "ARDUINO"
     ],
-    "library": [],
+    "library": [
+      "MP_HeartA660"
+    ],
     "width": 41.0,
     "height": 185.0,
     "v": "",
@@ -2701,20 +2723,16 @@
         "name": "Heart",
         "action": [
           {
-            "name": "Compare",
-            "parameter": []
+            "name": "Check Detected",
+            "parameter": [
+              {
+                "name": "isDetected",
+                "constraint": []
+              }
+            ]
           }
         ],
-        "value": [
-          {
-            "name": "Heartrate",
-            "constraint": {
-              "min": 40.0,
-              "max": 200.0,
-              "unit": "BPM"
-            }
-          }
-        ],
+        "value": [],
         "count": ""
       }
     ]

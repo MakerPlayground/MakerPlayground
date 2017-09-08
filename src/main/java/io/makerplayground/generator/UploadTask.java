@@ -104,10 +104,7 @@ public class UploadTask extends Task<UploadResult> {
             bw.close();
             fw.close();
 
-            // copy library files
-            library.add("Adafruit_MotorShield");
-            library.add("Adafruit_MS_PWMServoDriver");
-            library.add("Adafruit_TMP007");
+
 
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));

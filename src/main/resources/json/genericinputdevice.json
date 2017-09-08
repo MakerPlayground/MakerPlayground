@@ -1,7 +1,7 @@
 [
   {
     "name": "Button",
-    "description": "This is buttons. You can press or release the button to do some action. \nRelated project:\n\tPiano\n\tSwitch to controll devices",
+    "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to controll devices",
     "action": [
       {
         "name": "Wait For Press",
@@ -38,7 +38,7 @@
   },
   {
     "name": "Accelerometer",
-    "description": "Accelerometer is a sensor to measure acceleration.\nYou can use it to detect free fall, acceleration on x,y,z axis. \nRelated project:\n\tFalling object detector",
+    "description": "Accelerometer is a sensor to measure acceleration.\\nYou can use it to detect free fall, acceleration on x,y,z axis. \\nRelated project:\\n\\tFalling object detector",
     "action": [
       {
         "name": "Compare",
@@ -61,7 +61,7 @@
     ],
     "value": [
       {
-        "name": "X",
+        "name": "Accel_X",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -70,7 +70,7 @@
         }
       },
       {
-        "name": "Y",
+        "name": "Accel_Y",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -79,7 +79,7 @@
         }
       },
       {
-        "name": "Z",
+        "name": "Accel_Z",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -91,7 +91,7 @@
   },
   {
     "name": "Pressuremeter",
-    "description": "Pressuremeter is a sensor to measure pressure. \nRelated project:\n\tAtmosphere detector",
+    "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector",
     "action": [
       {
         "name": "Compare",
@@ -114,7 +114,7 @@
   },
   {
     "name": "Altimeter",
-    "description": "Altimeter is a sensor to measure height. \nRelated project:\n\tHeight detector",
+    "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector",
     "action": [
       {
         "name": "Compare",
@@ -137,7 +137,7 @@
   },
   {
     "name": "Temperature",
-    "description": "A thermometer. \nRelated project:\n\tSmart fan\n\tHeat detector",
+    "description": "A thermometer. \\nRelated project:\\n\\tSmart fan\\n\\tHeat detector",
     "action": [
       {
         "name": "Compare",
@@ -160,7 +160,7 @@
   },
   {
     "name": "Gyroscope",
-    "description": "A sensor that measure rotation on x,y,z axis. \nRelated project:\n\t Flip detector",
+    "description": "A sensor that measure rotation on x,y,z axis. \\nRelated project:\\n\\t Flip detector",
     "action": [
       {
         "name": "Compare",
@@ -171,7 +171,7 @@
     ],
     "value": [
       {
-        "name": "X",
+        "name": "Gyro_X",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -180,7 +180,7 @@
         }
       },
       {
-        "name": "Y",
+        "name": "Gyro_Y",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -189,7 +189,7 @@
         }
       },
       {
-        "name": "Z",
+        "name": "Gyro_Z",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -201,7 +201,7 @@
   },
   {
     "name": "Humidity",
-    "description": "A sensor that measure humidity. \nRelated project:\n\tAutomatic water plant",
+    "description": "A sensor that measure humidity. \\nRelated project:\\n\\tAutomatic water plant",
     "action": [
       {
         "name": "Compare",
@@ -224,7 +224,7 @@
   },
   {
     "name": "Sound",
-    "description": "A sensor that measure level of sound. \nRelated project:\n\tSound detector",
+    "description": "A sensor that measure level of sound. \\nRelated project:\\n\\tSound detector",
     "action": [
       {
         "name": "Compare",
@@ -247,7 +247,7 @@
   },
   {
     "name": "Magnetometer",
-    "description": "A sensor that measure magnetic. \nRelated project:\n\tMagnet detector\n\tCompass",
+    "description": "A sensor that measure magnetic. \\nRelated project:\\n\\tMagnet detector\\n\\tCompass",
     "action": [
       {
         "name": "Compare",
@@ -267,7 +267,11 @@
               "North",
               "South",
               "East",
-              "West"
+              "West",
+              "NorthEast",
+              "NorthWest",
+              "SouthEast",
+              "SouthWest"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
@@ -277,17 +281,7 @@
     ],
     "value": [
       {
-        "name": "Heading",
-        "dataType": "ENUM",
-        "constraint": [
-          "North",
-          "South",
-          "East",
-          "West"
-        ]
-      },
-      {
-        "name": "X",
+        "name": "Mag_X",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -296,7 +290,7 @@
         }
       },
       {
-        "name": "Y",
+        "name": "Mag_Y",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -305,7 +299,7 @@
         }
       },
       {
-        "name": "Z",
+        "name": "Mag_Z",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -317,7 +311,7 @@
   },
   {
     "name": "Distance",
-    "description": "A sensor that measure distance. \nRelated project:\n\tWall detector\n\tObject detector",
+    "description": "A sensor that measure distance. \\nRelated project:\\n\\tWall detector\\n\\tObject detector",
     "action": [
       {
         "name": "Compare",
@@ -340,7 +334,7 @@
   },
   {
     "name": "Light",
-    "description": "A sensor that measure level of light. \nRelated project:\n\tLight detector\n\tAutomatic lamp",
+    "description": "A sensor that measure level of light. \\nRelated project:\\n\\tLight detector\\n\\tAutomatic lamp",
     "action": [
       {
         "name": "Compare",
@@ -363,7 +357,7 @@
   },
   {
     "name": "Presence",
-    "description": "A sensor that measure movement. \nRelated project:\n\tHuman detector",
+    "description": "A sensor that measure movement. \\nRelated project:\\n\\tHuman detector",
     "action": [
       {
         "name": "Detect Human",
@@ -417,7 +411,7 @@
   },
   {
     "name": "Time",
-    "description": "Check date and time in present. \nRelated project:\n\tClock\n\tTimer",
+    "description": "Check date and time in present. \\nRelated project:\\n\\tClock\\n\\tTimer",
     "action": [
       {
         "name": "Compare",
@@ -441,7 +435,7 @@
   },
   {
     "name": "Color",
-    "description": "A sensor that detect color. \nRelated project:\n\tColor detector",
+    "description": "A sensor that detect color. \\nRelated project:\\n\\tColor detector",
     "action": [
       {
         "name": "Detect Color",
@@ -469,30 +463,20 @@
   },
   {
     "name": "Heart",
-    "description": "A hearth beat sensor. \nRelated project:\n\tHearth beat measurement",
+    "description": "A hearth beat sensor. \\nRelated project:\\n\\tHearth beat measurement",
     "action": [
       {
-        "name": "Compare",
-        "funcname": "",
+        "name": "Check Detected",
+        "funcname": "isDetected",
         "type": "Active",
         "parameter": []
       }
     ],
-    "value": [
-      {
-        "name": "Heartrate",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 40.0,
-          "max": 200.0,
-          "unit": "BPM"
-        }
-      }
-    ]
+    "value": []
   },
   {
     "name": "Soil",
-    "description": "A sensor that measure humidity in soil. \nRelated project:\n\tAutomatic water plant",
+    "description": "A sensor that measure humidity in soil. \\nRelated project:\\n\\tAutomatic water plant",
     "action": [
       {
         "name": "Compare",

@@ -13,7 +13,7 @@ class MP_MAX4466 //: MP_Sound
 	 ~MP_MAX4466() {};
 
 	
-	 double getVol()  ;
+	 double getSound_Level()  ;
 	 void init() ;
 
   private:

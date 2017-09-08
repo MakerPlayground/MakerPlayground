@@ -16,9 +16,9 @@ class MP_L3GD20 //: MP_Gyro
 	
 	 ~MP_L3GD20() {};
 
-	 double getRotateX() ;
-	 double getRotateY() ;
-	 double getRotateZ() ;
+	 double getGyro_X() ;
+	 double getGyro_Y() ;
+	 double getGyro_Z() ;
 	 void init() ;
 	
 

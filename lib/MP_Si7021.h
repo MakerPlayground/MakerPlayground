@@ -12,7 +12,7 @@ class MP_Si7021 //: MP_Humidity
 
 	 ~MP_Si7021() {};
 	 double getHumidity()  ;
-	 double getTemp()  ;
+	 double getTemperature()  ;
 	 void init() ;
 	
 

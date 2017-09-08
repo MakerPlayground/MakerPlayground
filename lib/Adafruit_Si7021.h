@@ -16,7 +16,7 @@
     v1.0  - First release
 */
 /**************************************************************************/
-
+#include <Wire.h>
 #if ARDUINO >= 100
  #include "Arduino.h"
 #else

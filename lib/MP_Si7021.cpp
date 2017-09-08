@@ -13,7 +13,7 @@ void MP_Si7021::init()
 
 }
 
-double MP_Si7021::getTemp() 
+double MP_Si7021::getTemperature() 
 {
 	return sensor.readTemperature() ;
 }

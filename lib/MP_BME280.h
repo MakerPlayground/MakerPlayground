@@ -22,9 +22,9 @@ class MP_BME280 //: MP_Baro
 	 int humidity(char opt[], float treshold, uint8_t unit)  ;
 	 int checkTemp(char opt[], float treshold, uint8_t unit) ;*/
 	 double getPressure() ;
-	 double getAttitude() ;
+	 double getAltitude() ;
 	 double getHumidity() ;
-	 double getTemp();
+	 double getTemperature();
 	 void init() ;
 
   private:

@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_LSM303.h>
+#include <Adafruit_LSM303_U.h>
 
 
 
@@ -14,13 +14,13 @@ class MP_LSM303// : MP_Mag
   public:
 	 
 	 ~MP_LSM303() {};
-	 double getAccelX();
-	 double getAccelY();
-	 double getAccelZ();
-	 int compass(char opt[])  ;
-	 double getMagX();
-	 double getMagY();
-	 double getMagZ();
+	 double getAccel_X();
+	 double getAccel_Y();
+	 double getAccel_Z();
+	 int checkDirection(char opt[])  ;
+	 double getMag_X();
+	 double getMag_Y();
+	 double getMag_Z();
 	 void init() ;
 	
 

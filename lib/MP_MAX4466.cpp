@@ -12,7 +12,7 @@ void MP_MAX4466::init()
 
 }
 
-double MP_MAX4466::getVol() 
+double MP_MAX4466::getSound_Level() 
 { 
 	return 100.0*analogRead(pin)/1024.0;
 }

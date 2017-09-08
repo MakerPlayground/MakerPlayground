@@ -16,7 +16,7 @@ double MP_BME280::getPressure() {
 	return bme.readPressure() / 100.0 ;	
 }
 
-double MP_BME280::getAttitude() {
+double MP_BME280::getAltitude() {
 	return bme.readAltitude(SEALEVELPRESSURE_HPA) ;
 }
 
@@ -24,7 +24,7 @@ double MP_BME280::getHumidity() {
 	return bme.readHumidity() ;
 }
 
-double MP_BME280::getTemp() {
+double MP_BME280::getTemperature() {
 	return bme.readTemperature() ;
 }
 

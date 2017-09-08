@@ -21,21 +21,21 @@ void MP_L3GD20::init()
   }
 }
 
-double MP_L3GD20::getRotateX() 
+double MP_L3GD20::getGyro_X() 
 {
 	
 	gyro.getEvent(&event);
 	return event.gyro.x * PI ;	
 }
 
-double MP_L3GD20::getRotateY() 
+double MP_L3GD20::getGyro_Y() 
 {
 	
 	gyro.getEvent(&event);
 	return event.gyro.y * PI ;	
 }
 
-double MP_L3GD20::getRotateZ() 
+double MP_L3GD20::getGyro_Z() 
 {
 	
 	gyro.getEvent(&event);

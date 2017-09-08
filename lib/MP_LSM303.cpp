@@ -22,26 +22,26 @@ void MP_LSM303::init()
 }
 
 
-double MP_LSM303::getAccelX()
+double MP_LSM303::getAccel_X()
 {
 	lsm.read();
-	return lsm.accelData.x ;	
+	return lsm.accelData.x/100.0 ;	
 }
 
-double MP_LSM303::getAccelY()
+double MP_LSM303::getAccel_Y()
 {
 	lsm.read();
-	return lsm.accelData.y ;	
+	return lsm.accelData.y/100.0 ;	
 }
 
-double MP_LSM303::getAccelZ()
+double MP_LSM303::getAccel_Z()
 {
 	lsm.read();
-	return lsm.accelData.z ;	
+	return lsm.accelData.z/100.0 ;	
 }
 
 
-int MP_LSM303::compass(char opt[]) 
+int MP_LSM303::checkDirection(char opt[]) 
 {
 	
 	
@@ -58,40 +58,40 @@ int MP_LSM303::compass(char opt[])
 		heading = 360 + heading;
 	}
 
-	if (((heading > 0.0f && heading < 0.0f + ERROR )|| (heading > 360.0f - ERROR && heading < 360.0f ) ) && !strcmp(opt, "N"))
+	if (((heading > 0.0f && heading < 0.0f + ERROR )|| (heading > 360.0f - ERROR && heading < 360.0f ) ) && !strcmp(opt, "North"))
 		return 1;
-	else if (heading > 45.0f - ERROR && heading < 45.0f + ERROR && !strcmp(opt, "NE"))
+	else if (heading > 45.0f - ERROR && heading < 45.0f + ERROR && !strcmp(opt, "NorthEast"))
 		return 1;
-	else if (heading > 90.0f - ERROR && heading < 90.0f + ERROR && !strcmp(opt, "E"))
+	else if (heading > 90.0f - ERROR && heading < 90.0f + ERROR && !strcmp(opt, "East"))
 		return 1;
-	else if (heading > 135.0f - ERROR && heading < 135.0f + ERROR && !strcmp(opt, "SE"))
+	else if (heading > 135.0f - ERROR && heading < 135.0f + ERROR && !strcmp(opt, "SouthEast"))
 		return 1;
-	else if (heading > 180.0f - ERROR && heading < 180.0f + ERROR && !strcmp(opt, "S"))
+	else if (heading > 180.0f - ERROR && heading < 180.0f + ERROR && !strcmp(opt, "South"))
 		return 1;
-	else if (heading > 225.0f - ERROR && heading < 225.0f + ERROR && !strcmp(opt, "SW"))
+	else if (heading > 225.0f - ERROR && heading < 225.0f + ERROR && !strcmp(opt, "SouthWest"))
 		return 1;
-	else if (heading > 270.0f - ERROR && heading < 270.0f + ERROR && !strcmp(opt, "W"))
+	else if (heading > 270.0f - ERROR && heading < 270.0f + ERROR && !strcmp(opt, "West"))
 		return 1;
-	else if (heading > 315.0f - ERROR && heading < 315.0f + ERROR && !strcmp(opt, "NW"))
+	else if (heading > 315.0f - ERROR && heading < 315.0f + ERROR && !strcmp(opt, "NorthWest"))
 		return 1;
 	else
 		return 0;
 
 }
 
-double MP_LSM303::getMagX() 
+double MP_LSM303::getMag_X() 
 {
 	lsm.read();
-	return lsm.magData.x ;	
+	return lsm.magData.x/10.0 ;	
 }
 
-double MP_LSM303::getMagY() 
+double MP_LSM303::getMag_Y() 
 {
 	lsm.read();
-	return lsm.magData.y ;	
+	return lsm.magData.y/10.0 ;	
 }
-double MP_LSM303::getMagZ() 
+double MP_LSM303::getMag_Z() 
 {
 	lsm.read();
-	return lsm.magData.z ;	
+	return lsm.magData.z/10.0 ;	
 }
