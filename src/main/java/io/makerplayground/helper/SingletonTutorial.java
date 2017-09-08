@@ -2,6 +2,7 @@ package io.makerplayground.helper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tanyagorn on 9/6/2017.
@@ -12,9 +13,12 @@ public class SingletonTutorial {
     private SingletonTutorial() {}
 
     private int clickCount = 0;
+    private int isClick = 0;
     private int whichPage = 1;
-    private String openTime;
-    private String closeTime;
+    private Date open;
+    private Date close;
+    private long openTime;
+    private long duration;
 
     public static SingletonTutorial getInstance() {
         if (instance == null) {
@@ -29,22 +33,28 @@ public class SingletonTutorial {
     }
 
     public void openTime() {
-        openTime = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println(openTime);
+        open = new Date();
+        openTime = new Date().getTime();
     }
 
     public void closeTime() {
-        closeTime = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println(closeTime);
+        close = new Date();
+        duration = Singleton.getInstance().getDateDiff(open, close, TimeUnit.SECONDS);
+        String command = "insert into Tutorial (App_ID, isClick, Page, OpenTime, Duration) values('Add ID 1'," + isClick + "," + whichPage + "," + openTime + ","
+                + duration + ")";
+        SingletonConnectDB.getInstance().execute(command);
     }
 
     public void increaseWhichPage() {
         whichPage++;
-        System.out.println(whichPage);
     }
 
     public void decreaseWhichPage() {
         whichPage--;
-        System.out.println(whichPage);
+    }
+
+    // 0 means first tutorial, 1 means user click by himself
+    public void setIsClick(int isClick) {
+        this.isClick = isClick;
     }
 }

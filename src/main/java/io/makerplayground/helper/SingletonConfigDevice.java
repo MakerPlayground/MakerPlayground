@@ -13,9 +13,9 @@ public class SingletonConfigDevice {
 
     private String objID;
     private String actualDevice;
-    private boolean isAuto;
+    private int isAuto;
     private String port;
-    private String time;
+    private long time;
 
     public static SingletonConfigDevice getInstance() {
         if (instance == null) {
@@ -28,9 +28,17 @@ public class SingletonConfigDevice {
     public void setAll(String objID, String actualDevice, boolean isAuto, String port) {
         this.objID = objID;
         this.actualDevice = actualDevice;
-        this.isAuto = isAuto;
+        if (isAuto)
+            this.isAuto = 1;
+        else
+            this.isAuto = 0;
         this.port = port;
-        this.time = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println(objID + actualDevice + isAuto + port + time);
+        this.time = new Date().getTime();
+
+        String command = "insert into ConfigDevice (App_ID, ObjectID, RealHW, isAuto, Port, Time) values('Add ID 1','" + objID + "','"
+                + actualDevice + "'," + this.isAuto + ",'" + port + "'," + time + ")";
+        SingletonConnectDB.getInstance().execute(command);
+
+        //System.out.println(objID + actualDevice + isAuto + port + time);
     }
 }

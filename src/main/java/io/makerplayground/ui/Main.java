@@ -35,6 +35,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -62,9 +63,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        SingletonConnectDB.getInstance();
+
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
 
         MainWindow mainWindow = new MainWindow(new Project());
 
@@ -85,6 +88,16 @@ public class Main extends Application {
         // close program
         primaryStage.setOnCloseRequest(event -> {
             SingletonLaunch.getInstance().closeProgram();
+
+            StringWriter stringWrite = new StringWriter();
+            try {
+                mapper.writeValue(stringWrite, mainWindow.getProject());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String s = stringWrite.toString();
+            SingletonGraphJson.getInstance().setAll(s);
+            SingletonConnectDB.getInstance().close();
         });
 
 
@@ -131,6 +144,8 @@ public class Main extends Application {
                         new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
                         new FileChooser.ExtensionFilter("All Files", "*.*"));
                 File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+
+
                 if (selectedFile != null) {
                     mapper.writeValue(selectedFile, mainWindow.getProject());
                 }
@@ -147,6 +162,7 @@ public class Main extends Application {
             else {
                 Singleton.getInstance().setFlagFirstTime(false);
                 SingletonTutorial.getInstance().clickCount();
+                SingletonTutorial.getInstance().setIsClick(1);
                 SingletonTutorial.getInstance().openTime();
             }
 
@@ -184,7 +200,8 @@ public class Main extends Application {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
                 ae -> {
                     Singleton.getInstance().setFlagFirstTime(true);
-                    SingletonFirstTutorial.getInstance().openTime();
+                    SingletonTutorial.getInstance().setIsClick(0);
+                    SingletonTutorial.getInstance().openTime();
                     flag = true;
                     tutorialButton.fire();
                 }));

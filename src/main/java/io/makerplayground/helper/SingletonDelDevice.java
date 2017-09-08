@@ -13,7 +13,7 @@ public class SingletonDelDevice {
 
     private String type;
     private String objID;
-    private String time;
+    private long time;
     private String operation;
 
     public static SingletonDelDevice getInstance() {
@@ -27,7 +27,11 @@ public class SingletonDelDevice {
     public void setAll(String type, String objID) {
         this.type = type;
         this.objID = objID;
-        this.time = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
+        this.time = new Date().getTime();
         this.operation = "REMOVE";
+
+        String command = "insert into AddorDelDevice (App_ID, Action, Object_ID, Type, Time) values('Add ID 1','" + operation + "','"
+                + objID + "','" + type + "'," + time + ")";
+        SingletonConnectDB.getInstance().execute(command);
     }
 }

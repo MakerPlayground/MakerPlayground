@@ -82,7 +82,7 @@ public class TutorialView extends Stage {
             @Override
             public void handle(ActionEvent event) {
                 if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonFirstTutorial.getInstance().decreaseWhichPage();
+                    SingletonTutorial.getInstance().decreaseWhichPage();
                 else
                     SingletonTutorial.getInstance().decreaseWhichPage();
 
@@ -104,7 +104,7 @@ public class TutorialView extends Stage {
             @Override
             public void handle(ActionEvent event) {
                 if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonFirstTutorial.getInstance().increaseWhichPage();
+                    SingletonTutorial.getInstance().increaseWhichPage();
                 else
                     SingletonTutorial.getInstance().increaseWhichPage();
 
@@ -126,7 +126,7 @@ public class TutorialView extends Stage {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonFirstTutorial.getInstance().closeTime();
+                    SingletonTutorial.getInstance().closeTime();
                 else
                     SingletonTutorial.getInstance().closeTime();
 

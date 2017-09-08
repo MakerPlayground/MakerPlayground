@@ -12,7 +12,7 @@ public class SingletonUtilTools {
     private SingletonUtilTools() {}
 
     private String type;
-    private String time;
+    private long time;
 
     public static SingletonUtilTools getInstance() {
         if (instance == null) {
@@ -24,7 +24,11 @@ public class SingletonUtilTools {
 
     public void setAll(String type) {
         this.type = type;
-        this.time = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
+        this.time = new Date().getTime();
+
+        String command = "insert into UtilTools (App_ID, Type, Time) values('Add ID 1','" + type + "',"
+                + time + ")";
+        SingletonConnectDB.getInstance().execute(command);
     }
 
 }

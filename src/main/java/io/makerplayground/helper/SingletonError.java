@@ -12,7 +12,7 @@ public class SingletonError {
     private SingletonError() {}
 
     private String error;
-    private String time;
+    private long time;
 
     public static SingletonError getInstance() {
         if (instance == null) {
@@ -24,7 +24,12 @@ public class SingletonError {
 
     public void setAll(String error) {
         this.error = error;
-        this.time = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println("error = " + error + time);
+        this.time = new Date().getTime();
+
+
+        System.out.println("error = " + error);
+        String command = "insert into Error (App_ID, Time, Message) values('Add ID 1'," + time + ",\""
+                + error + "\")";
+        SingletonConnectDB.getInstance().execute(command);
     }
 }
