@@ -18,6 +18,7 @@ import java.util.List;
  * Created by USER on 07-Jul-17.
  */
 public class ExpressionViewModel {
+    private final Value v;
     private final Expression expression;
     private final List<ProjectValue> availableValue;
     private final ObservableList<Unit> availableUnit;
@@ -31,6 +32,7 @@ public class ExpressionViewModel {
     //private final ObjectProperty<OperandType> operatorType;
 
     public ExpressionViewModel(Value v, Expression expression, List<ProjectValue> values) {
+        this.v = v;
         this.expression = expression;
         this.availableValue = values;
         this.availableUnit = FXCollections.observableArrayList(((NumericConstraint) v.getConstraint()).getUnit());
@@ -171,5 +173,13 @@ public class ExpressionViewModel {
 
     public ObjectProperty<OperandType> operandTypeProperty() {
         return expression.operandTypeProperty();
+    }
+
+    public double getMin() {
+        return ((NumericConstraint) v.getConstraint()).getMin();
+    }
+
+    public double getMax() {
+        return ((NumericConstraint) v.getConstraint()).getMax();
     }
 }

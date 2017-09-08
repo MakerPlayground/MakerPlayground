@@ -295,13 +295,13 @@ public class Sourcecode {
                         List<String> valueList = new ArrayList<>();
                         for (Expression e : setting.getExpression().get(value)) {
                             if (e.getOperator().isBetween()) {
-                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " > "
+                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " > "
                                         + df.format(e.getFirstOperand()) + ")"
-                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName() + " < "
+                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " < "
                                         + df.format(e.getSecondOperand()) + ")");
                             } else {
                                 valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
-                                        + value.getName() + ' ' + e.getOperator().getCodeValue() + ' '
+                                        + value.getName().replace(" ", "_") + ' ' + e.getOperator().getCodeValue() + ' '
                                         + df.format(e.getFirstOperand()) + ")");
                             }
                         }
