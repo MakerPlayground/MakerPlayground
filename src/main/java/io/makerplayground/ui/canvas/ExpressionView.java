@@ -33,7 +33,7 @@ public class ExpressionView extends HBox {
         comboBox.getSelectionModel().select(expressionViewModel.getOperator());
         expressionViewModel.operatorProperty().bind(comboBox.getSelectionModel().selectedItemProperty());
 
-        SpinnerValueFactory<Double> factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, expressionViewModel.getFirstOperandAsDouble());
+        SpinnerValueFactory<Double> factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(expressionViewModel.getMin(), expressionViewModel.getMax(), expressionViewModel.getFirstOperandAsDouble());
         Spinner<Double> spinnerFrom = new Spinner<>(factory);
         spinnerFrom.setEditable(true);
         spinnerFrom.visibleProperty().bind(expressionViewModel.literalModeProperty());
@@ -87,7 +87,7 @@ public class ExpressionView extends HBox {
         l.setMaxWidth(20);
         l.setAlignment(Pos.CENTER);
 
-        SpinnerValueFactory<Double> factory2 = new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, expressionViewModel.getSecondOperandAsDouble());
+        SpinnerValueFactory<Double> factory2 = new SpinnerValueFactory.DoubleSpinnerValueFactory(expressionViewModel.getMin(), expressionViewModel.getMax(), expressionViewModel.getSecondOperandAsDouble());
         Spinner<Double> spinnerTo = new Spinner<>(factory2);
         spinnerTo.setEditable(true);
         spinnerTo.visibleProperty().bind(expressionViewModel.literalModeProperty().and(expressionViewModel.betweenModeProperty()));
