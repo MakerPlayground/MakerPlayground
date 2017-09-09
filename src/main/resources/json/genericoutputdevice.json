@@ -157,6 +157,24 @@
         ]
       },
       {
+        "name": "Show Data",
+        "funcname": "showData",
+        "type": "Inactive",
+        "parameter": [
+          {
+            "name": "Data",
+            "value": 1000.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 9999.0,
+              "unit": "NUMBER"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
         "name": "Off",
         "funcname": "off",
         "type": "Inactive",

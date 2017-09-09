@@ -12,8 +12,9 @@ void MP_MAX4466::init()
 
 }
 
-double MP_MAX4466::getSound_Level() 
+double MP_MAX4466::getSoundLevel() 
 { 
+	Serial.println(100.0*analogRead(pin)/1024.0);
 	return 100.0*analogRead(pin)/1024.0;
 }
 

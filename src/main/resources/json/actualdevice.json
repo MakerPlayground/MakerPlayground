@@ -2461,7 +2461,9 @@
     "platform": [
       "ARDUINO"
     ],
-    "library": [],
+    "library": [
+      "MP_7segI2C.h"
+    ],
     "width": 285.0,
     "height": 142.0,
     "v": "",
@@ -2541,6 +2543,19 @@
               {
                 "name": "Value",
                 "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Show Data",
+            "parameter": [
+              {
+                "name": "Data",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 9999.0,
+                  "unit": "NUMBER"
+                }
               }
             ]
           },
@@ -3671,5 +3686,110 @@
       "ANALOG_5"
     ],
     "compatibility": []
+  },
+  {
+    "id": "Arduinoall-1533",
+    "brand": "Aduinoall",
+    "model": "Ultrasonic Sensor Module HC-SR04P",
+    "url": "https://i.lnwfile.com/_/i/_raw/9u/ew/hl.jpg",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_HC_SR04P"
+    ],
+    "width": 228.0,
+    "height": 129.811,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 91.572,
+        "y": 129.811
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": "",
+        "v_max": "",
+        "x": 134.894,
+        "y": 129.811
+      },
+      {
+        "name": "TRIG",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 105.692,
+        "y": 129.811
+      },
+      {
+        "name": "ECHO",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 120.456,
+        "y": 129.811
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "Distance",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Distance",
+            "constraint": {
+              "min": 0.02,
+              "max": 4.5,
+              "unit": "METER"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
   }
 ]

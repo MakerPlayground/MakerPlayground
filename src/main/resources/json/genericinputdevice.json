@@ -64,7 +64,7 @@
         "name": "Accel_X",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "METERPERSECSQUARE"
         }
@@ -73,7 +73,7 @@
         "name": "Accel_Y",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "METERPERSECSQUARE"
         }
@@ -82,7 +82,7 @@
         "name": "Accel_Z",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "METERPERSECSQUARE"
         }
@@ -105,8 +105,8 @@
         "name": "Pressure",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 300.0,
-          "max": 1150.0,
+          "min": -3000.0,
+          "max": 3000.0,
           "unit": "HECTOPASCAL"
         }
       }
@@ -128,8 +128,8 @@
         "name": "Altitude",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
-          "max": 0.0,
+          "min": -3000.0,
+          "max": 3000.0,
           "unit": "METER"
         }
       }
@@ -151,8 +151,8 @@
         "name": "Temperature",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
-          "max": 0.0,
+          "min": -500.0,
+          "max": 500.0,
           "unit": "CELSIUS"
         }
       }
@@ -174,8 +174,8 @@
         "name": "Gyro_X",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
-          "max": 0.0,
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
       },
@@ -183,8 +183,8 @@
         "name": "Gyro_Y",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
-          "max": 0.0,
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
       },
@@ -192,8 +192,8 @@
         "name": "Gyro_Z",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
-          "max": 0.0,
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
       }
@@ -235,12 +235,12 @@
     ],
     "value": [
       {
-        "name": "Sound Level",
-        "dataType": "INTEGER",
+        "name": "SoundLevel",
+        "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
-          "unit": "DECIBEL"
+          "max": 100.0,
+          "unit": "PERCENT"
         }
       }
     ]
@@ -284,7 +284,7 @@
         "name": "Mag_X",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "MICROTESLA"
         }
@@ -293,7 +293,7 @@
         "name": "Mag_Y",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "MICROTESLA"
         }
@@ -302,7 +302,7 @@
         "name": "Mag_Z",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0,
+          "min": -200.0,
           "max": 200.0,
           "unit": "MICROTESLA"
         }
@@ -326,7 +326,7 @@
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
+          "max": 10000.0,
           "unit": "CENTIMETER"
         }
       }
@@ -385,7 +385,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 180.0,
+          "max": 359.0,
           "unit": "DEGREE"
         }
       },
@@ -394,7 +394,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 180.0,
+          "max": 359.0,
           "unit": "DEGREE"
         }
       },
@@ -403,7 +403,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 180.0,
+          "max": 359.0,
           "unit": "DEGREE"
         }
       }
@@ -491,7 +491,7 @@
         "dataType": "INTEGER",
         "constraint": {
           "min": 0.0,
-          "max": 0.0,
+          "max": 100.0,
           "unit": "NOT_SPECIFIED"
         }
       }
