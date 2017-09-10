@@ -37,7 +37,11 @@ void MP_RGB_LED::on(char color[]) {
         digitalWrite(r, LOW);
         digitalWrite(g, LOW);
         digitalWrite(b, HIGH);
-    }
+    } else if (strcmp(color, "White") == 0) {
+    	digitalWrite(r, LOW);
+        digitalWrite(g, LOW);
+        digitalWrite(b, LOW);
+	}
 }
 
 void MP_RGB_LED::off() {

@@ -265,7 +265,8 @@
               "Blue",
               "Cyan",
               "Magenta",
-              "Yellow"
+              "Yellow",
+              "White"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
