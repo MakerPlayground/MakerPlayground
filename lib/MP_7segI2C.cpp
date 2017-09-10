@@ -1,7 +1,7 @@
 #include "MP_7segI2C.h"
 
 MP_7segI2C::MP_7segI2C(uint8_t sda,uint8_t sck)
-  : display(TM1637Display ( sda,sck))//,sda(sda),sck(sck)
+  : display(TM1637Display ( sck,sda))//,sda(sda),sck(sck)
 {
   
 }
@@ -10,6 +10,7 @@ void MP_7segI2C::init()
 {
 	Serial.begin(112500);
 	brightness = 7;
+
 }
 
 void MP_7segI2C::showValue(double value)
@@ -36,7 +37,8 @@ void MP_7segI2C::setBrightness(char c[])
 
 void MP_7segI2C::off()
 {
-  display.setBrightness(brightness, false);  // Turn off
+	uint8_t data[] = { 0x0, 0x0, 0x0, 0x0 };
+	display.setSegments(data); 
 }
 	
 
