@@ -1,22 +1,23 @@
-#ifndef MP_SolidStateRelay_H
-#define MP_SolidStateRelay_H
+#ifndef MP_7SEGI2C_H
+#define MP_7SEGI2C_H
 
-//#include "MP_Led.h"
 #include <Arduino.h>
+#include "TM1637Display.h"
 
-class MP_SolidStateRelay //: MP_Led
+class MP_7segI2C //: MP_Led
 {
   public:
-	MP_SolidStateRelay(uint8_t pin);
-	~MP_SolidStateRelay() {};
-
-	void on(int a) ;
+	MP_7segI2C(uint8_t sda,uint8_t sck);
+	~MP_7segI2C() {};
+	void showValue(double value);
+	void showData(double data);
+	void setBrightness(char c[]);
 	void off() ;
 	void init() ;
 
-
-  private:
-	uint8_t pin;
+   private:
+   	int brightness;
+   	TM1637Display display;
 
 };
 

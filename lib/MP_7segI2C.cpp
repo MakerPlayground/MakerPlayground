@@ -1,23 +1,46 @@
-#include "MP_SolidStateRelay.h"
+#include "MP_7segI2C.h"
 
-MP_SolidStateRelay::MP_SolidStateRelay(uint8_t pin)
-  : pin(pin)
+MP_7segI2C::MP_7segI2C(uint8_t sda,uint8_t sck)
+  : display(TM1637Display ( sda,sck))//,sda(sda),sck(sck)
 {
   
 }
 
-void MP_SolidStateRelay::init() 
+void MP_7segI2C::init() 
 {
-	pinMode(this->pin, OUTPUT);
+	Serial.begin(112500);
+	brightness = 7;
 }
 
-
-void MP_SolidStateRelay::on(int a) 
+void MP_7segI2C::showValue(double value)
 {
-  digitalWrite(this->pin, LOW);
+   display.setBrightness(brightness, true); // Turn on
+   display.showNumberDec((int)value, false);
+
+
+
+}
+void MP_7segI2C::showData(double data)
+{
+   display.setBrightness(brightness, true); // Turn on
+   display.showNumberDec((int)data, false);
 }
 
-void MP_SolidStateRelay::off() 
+void MP_7segI2C::setBrightness(char c[])
 {
-  digitalWrite(this->pin, HIGH);
+	brightness = (int)c[0]-49;
+	Serial.println(brightness);
+
 }
+	
+
+void MP_7segI2C::off()
+{
+  display.setBrightness(brightness, false);  // Turn off
+}
+	
+
+
+
+
+

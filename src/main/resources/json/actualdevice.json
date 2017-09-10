@@ -1768,7 +1768,11 @@
             "name": "  ",
             "constraint": [
               "East",
-              "West"
+              "West",
+              "NorthEast",
+              "NorthWest",
+              "SouthEast",
+              "SouthWest"
             ]
           }
         ],
@@ -2462,7 +2466,8 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_7segI2C.h"
+      "MP_7segI2C",
+      "TM1637Display"
     ],
     "width": 285.0,
     "height": 142.0,
@@ -2562,6 +2567,24 @@
           {
             "name": "Off",
             "parameter": []
+          },
+          {
+            "name": "Set Brightness",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7"
+                ]
+              }
+            ]
           }
         ],
         "value": [],

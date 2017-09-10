@@ -2,7 +2,7 @@
 #include "MP_HC_SR04P.h"
 
 
-MP_HC_SR04P::MP_HC_SR04P(uint8_t echo ,uint8_t trig )
+MP_HC_SR04P::MP_HC_SR04P(uint8_t trig ,uint8_t echo )
   : trig(trig) , echo(echo)
 {
   
@@ -27,7 +27,7 @@ double MP_HC_SR04P::getDistance() {
 	      digitalWrite(trig, LOW);
 	      cm = pulseIn(echo, HIGH) / 29.0 /2.0 ;
   		}while(cm>3000);
-      return cm/100.0;
+      return cm;
 
 }
 
