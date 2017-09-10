@@ -182,7 +182,7 @@ public class RightPanel extends AnchorPane {
 
                 SingletonUtilTools.getInstance().setAll("FEEDBACK");
 
-                String s = "http://www.makerplayground.io/";
+                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(URI.create(s));

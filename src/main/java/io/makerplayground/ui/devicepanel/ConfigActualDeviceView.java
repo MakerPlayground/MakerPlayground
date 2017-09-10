@@ -249,7 +249,7 @@ public class ConfigActualDeviceView extends Dialog {
 
                 SingletonUtilTools.getInstance().setAll("REQUEST");
 
-                String s = "http://www.makerplayground.io/";
+                String s = "https://goo.gl/forms/12Wsu9WPZPumUPOj2";
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(URI.create(s));
