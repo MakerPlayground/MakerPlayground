@@ -20,9 +20,9 @@
             </Label>
          </children>
       </AnchorPane>
-      <TitledPane fx:id="MicrocontrollerTitle" expanded="false" text="Microcontroller">
+      <TitledPane fx:id="MicrocontrollerTitle" expanded="false" text="Microcontroller (UNO R3)">
          <content>
-            <ScrollPane fitToWidth="true" prefHeight="80.0" prefWidth="200.0">
+            <ScrollPane disable="true" fitToWidth="true" prefHeight="80.0" prefWidth="200.0">
                <content>
                   <FlowPane fx:id="microcontrollerPane" minHeight="80.0" prefHeight="80.0" style="-fx-background-color: #4d5666;" />
                </content>
