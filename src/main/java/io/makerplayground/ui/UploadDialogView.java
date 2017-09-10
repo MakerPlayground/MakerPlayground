@@ -1,6 +1,7 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.UploadTask;
+import io.makerplayground.helper.SingletonError;
 import io.makerplayground.helper.UploadResult;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -70,6 +71,7 @@ public class UploadDialogView extends Dialog {
                 //okButton.setDisable(false);
                 progress.setTextFill(Color.RED);
                 detailPane.setExpanded(true);
+                SingletonError.getInstance().setAll(progress.getText());
                 //dialog.getDialogPane().lookupButton(buttonType).setDisable(false);
             }
         });

@@ -2,6 +2,9 @@ package io.makerplayground.ui.canvas;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.makerplayground.helper.Singleton;
+import io.makerplayground.helper.SingletonFirstTutorial;
+import io.makerplayground.helper.SingletonTutorial;
 import io.makerplayground.ui.Tutorial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +44,8 @@ public class TutorialView extends Stage {
     @FXML
     private Button cancelBtn;
 
+    private int currentPosition = 0;
+
     public TutorialView(Window owner) {
         rootPane = new AnchorPane();
 
@@ -66,49 +71,65 @@ public class TutorialView extends Stage {
         setTitle("Tips & Tricks");
 
         rootPane.getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
-        Tutorial t = i.next();
+
+
 
 //        descriptLabel.setText(t.getDescription());
 //        topicLabel.setText(t.getTopic());
-        tipImage.setImage(new Image(getClass().getResourceAsStream(t.getImg())));
+        tipImage.setImage(new Image(getClass().getResourceAsStream(tutorial.get(currentPosition).getImg())));
         prevBtn.setDisable(true);
         prevBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(i.hasPrevious()){
-                    Tutorial p = i.previous();
-//                    topicLabel.setText(p.getTopic());
-//                    descriptLabel.setText(p.getDescription());
-                    tipImage.setImage(new Image(getClass().getResourceAsStream(p.getImg())));
+                if (Singleton.getInstance().isFlagFirstTime())
+                    SingletonTutorial.getInstance().decreaseWhichPage();
+                else
+                    SingletonTutorial.getInstance().decreaseWhichPage();
+
+                currentPosition--;
+                tipImage.setImage(new Image(getClass().getResourceAsStream(tutorial.get(currentPosition).getImg())));
+                if (currentPosition == 0) {
+                    prevBtn.setDisable(true);
+                } else {
                     prevBtn.setDisable(false);
                 }
-                else if(!i.hasPrevious()){
-                    prevBtn.setDisable(true);
+                if (currentPosition == tutorial.size() - 1) {
+                    nextBtn.setDisable(true);
+                } else {
                     nextBtn.setDisable(false);
                 }
-                if(i.hasNext()) nextBtn.setDisable(false);
             }
         });
         nextBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                if (Singleton.getInstance().isFlagFirstTime())
+                    SingletonTutorial.getInstance().increaseWhichPage();
+                else
+                    SingletonTutorial.getInstance().increaseWhichPage();
 
-                if(i.hasNext()){
-                    Tutorial n = i.next();
-//                    topicLabel.setText(n.getTopic());
-//                    descriptLabel.setText(n.getDescription());
-                    tipImage.setImage(new Image(getClass().getResourceAsStream(n.getImg())));
+                currentPosition++;
+                tipImage.setImage(new Image(getClass().getResourceAsStream(tutorial.get(currentPosition).getImg())));
+                if (currentPosition == 0) {
+                    prevBtn.setDisable(true);
+                } else {
+                    prevBtn.setDisable(false);
+                }
+                if (currentPosition == tutorial.size() - 1) {
+                    nextBtn.setDisable(true);
+                } else {
                     nextBtn.setDisable(false);
                 }
-                else if(!i.hasNext()){
-                    nextBtn.setDisable(true);
-                }
-                if(i.hasPrevious()) prevBtn.setDisable(false);
             }
         });
         cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                if (Singleton.getInstance().isFlagFirstTime())
+                    SingletonTutorial.getInstance().closeTime();
+                else
+                    SingletonTutorial.getInstance().closeTime();
+
                 hide();
             }
         });

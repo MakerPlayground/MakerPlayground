@@ -1,6 +1,8 @@
 package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.helper.SingletonDeviceURL;
+import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -9,6 +11,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +54,18 @@ public class TableDataList {
 
     public Hyperlink getUrl() {
         Hyperlink link = new Hyperlink();
+        link.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                SingletonDeviceURL.getInstance().setAll(url);
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(url));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
         link.setText(url);
         return link;
     }

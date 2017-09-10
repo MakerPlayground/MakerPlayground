@@ -4,29 +4,39 @@ package io.makerplayground.ui.devicepanel;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.SingletonConfigDevice;
+import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -63,7 +73,20 @@ public class ConfigActualDeviceView extends Dialog {
         allDevice.setAlignment(Pos.CENTER_LEFT);
 
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            System.out.println("DID IT");
+            System.out.println(viewModel.getAllDevice().size());
+            for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
+                if (projectDevice.isAutoSelectDevice())
+                    SingletonConfigDevice.getInstance().setAll("123", "", projectDevice.isAutoSelectDevice(), "");
+                else {
+                    String port = String.join(",", projectDevice.getDeviceConnection().values().stream().flatMap(Collection::stream)
+                            .map(DevicePort::getName).collect(Collectors.toList()));
+                    SingletonConfigDevice.getInstance().setAll("123", projectDevice.getActualDevice().getId(), projectDevice.isAutoSelectDevice(), port);
+                }
+            }
+            window.hide();
+        });
 
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
             //VBox row = new VBox();
@@ -215,7 +238,34 @@ public class ConfigActualDeviceView extends Dialog {
             allDevice.getChildren().add(entireDevice);
         }
 
+        VBox vBox = new VBox();
+
+
+        final Hyperlink hpl = new Hyperlink("Request your favorite devices");
+
+        hpl.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+
+                SingletonUtilTools.getInstance().setAll("REQUEST");
+
+                String s = "http://www.makerplayground.io/";
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(s));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
+
+
+        vBox.getChildren().add(hpl);
+        allDevice.getChildren().add(vBox);
+
         scrollPane.setContent(allDevice);
+
+
         getDialogPane().setContent(scrollPane);
     }
 }

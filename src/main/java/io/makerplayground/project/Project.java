@@ -23,6 +23,8 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.OperandType;
 import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.SingletonAddDevice;
+import io.makerplayground.helper.SingletonDelDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -124,11 +126,9 @@ public class Project {
             name = device.getName() + (maxCount+1);
 
         ProjectDevice projectDevice = new ProjectDevice(name, device);
-//        for (Scene scene : diagram.vertexSet()) {
-//            scene.getSetting().add(new UserSetting(projectDevice));
-//        }
 
         outputDevice.add(projectDevice);
+        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
     public boolean removeOutputDevice(ProjectDevice device) {
@@ -136,6 +136,7 @@ public class Project {
             s.removeDevice(device);
         }
 
+        SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
         return outputDevice.remove(device);
     }
 
@@ -168,6 +169,7 @@ public class Project {
         // TODO: Add to condition
 
         inputDevice.add(new ProjectDevice(device.getName() + (maxCount+1), device));
+        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
     public boolean removeInputDevice(ProjectDevice device) {
@@ -175,6 +177,7 @@ public class Project {
             c.removeDevice(device);
         }
 
+        SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
         return inputDevice.remove(device);
     }
 
