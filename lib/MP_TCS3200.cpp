@@ -8,7 +8,7 @@
  
 }
 
-void rgb2hsv(int r,int g,int b,double out[])
+int rgb2hsv(int r,int g,int b,double out[])
 {
  
 
@@ -31,7 +31,7 @@ void rgb2hsv(int r,int g,int b,double out[])
         out[0] = 0; // undefined, maybe nan?
 
 
-        return out;
+        return 0;
     }
     if( max > 0.0 ) { // NOTE: if Max is == 0, this divide would cause a crash
         out[1] = (delta / max);                  // s
@@ -40,7 +40,7 @@ void rgb2hsv(int r,int g,int b,double out[])
         // s = 0, h is undefined
         out[1] = 0.0;
         out[0] = NAN ;                            // its now undefined
-        return out;
+        return 0;
     }
     if( r >= max )                           // > is bogus, just keeps compilor happy
         out[0] = ( g - b ) / delta;        // between yellow & magenta
@@ -57,7 +57,7 @@ void rgb2hsv(int r,int g,int b,double out[])
         out[0] += 360.0;
 
    
-    return out;
+    return 0;
 }
 
 
@@ -117,59 +117,56 @@ hsv[2]/=255;
    Serial.println(hsv[0]) ;
 Serial.println(hsv[1]) ;
       Serial.println(hsv[2]) ;
-Serial.println("-----") ;
+Serial.println("-----"+(hsv[0]>=270 && hsv[0]<330)&&(strcmp(color, "Magenta") == 0)) ;
 
-if(hsv[2]<20)
-{
-  Serial.println("Black") ;
-  return 1;
-}
-else if(hsv[2]>90&&hsv[1]<5)
+ if(hsv[2]>90&&hsv[1]<5&&strcmp(color, "White") == 0)
 {
    Serial.println("White") ;
   return 1;
 }
 
-else if((hsv[0]>=330 || hsv[0]<15))
+ if((hsv[0]>=330 || hsv[0]<15)&&strcmp(color, "Red") == 0)
 {
    Serial.println("Red") ;
   return 1;
 }
-else if((hsv[0]>=15 && hsv[0]<25))
+ if((hsv[0]>=15 && hsv[0]<25)&&strcmp(color, "Orange") == 0)
 {
    Serial.println("Orange") ;
   return 1;
 }
-else if((hsv[0]>=25 && hsv[0]<75)) //30
+ if((hsv[0]>=25 && hsv[0]<75)&&strcmp(color, "Yellow") == 0) //30
 {
    Serial.println("Yellow") ;
   return 1;
 }
-else if((hsv[0]>=75 && hsv[0]<165))//135
+ if((hsv[0]>=75 && hsv[0]<165)&&strcmp(color, "Green") == 0)//135
 {
    Serial.println("Green") ;
   return 1;
 }
-else if((hsv[0]>=165 && hsv[0]<190)) //210
+ if((hsv[0]>=165 && hsv[0]<220)&&strcmp(color, "Cyan") == 0) //210
 {
    Serial.println("Cyan") ;
   return 1;
 }
-else if((hsv[0]>=190 && hsv[0]<235)) //225
+ if((hsv[0]>=220 && hsv[0]<235)&&strcmp(color, "Blue") == 0) //225
 {
    Serial.println("Blue") ;
   return 1;
 }
-else if((hsv[0]>=235 && hsv[0]<270))
+ if((hsv[0]>=235 && hsv[0]<270)&&strcmp(color, "Violet") == 0)
 {
    Serial.println("Violet") ;
   return 1;
 }
-else if((hsv[0]>=270 && hsv[0]<330))
+ if((hsv[0]>=270 && hsv[0]<330)&&strcmp(color, "Magenta") == 0)
 {
    Serial.println("Margenta") ;
   return 1;
 }
+Serial.println("mdkfmiwmgirwmg") ;
+return 0;
 
 
 

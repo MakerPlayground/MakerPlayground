@@ -45,7 +45,7 @@ void MP_RGB_LED::on(char color[]) {
 }
 
 void MP_RGB_LED::off() {
-    digitalWrite(r, LOW);
-    digitalWrite(g, LOW);
-    digitalWrite(b, LOW);
+    digitalWrite(r, HIGH);
+    digitalWrite(g, HIGH);
+    digitalWrite(b, HIGH);
 }
