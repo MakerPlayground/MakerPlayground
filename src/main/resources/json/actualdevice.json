@@ -2874,7 +2874,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_RGB_LEDGND"
+      "MP_RGB_LED"
     ],
     "width": 86.0,
     "height": 107.0,
@@ -3754,8 +3754,8 @@
             "pintype": "GND"
           }
         ],
-        "v_min": "",
-        "v_max": "",
+        "v_min": 3.3,
+        "v_max": 5.0,
         "x": 134.894,
         "y": 129.811
       },
@@ -3811,6 +3811,174 @@
             }
           }
         ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-115",
+    "brand": "Arduinoall",
+    "model": "RGB Color Sensor with IR filter and White LED - TCS34725",
+    "url": "https://www.arduinoall.com/product/155/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%84%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B5-%E0%B8%AD%E0%B9%88%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B5-%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%AA%E0%B8%B5-rgb-colour-sensor-tcs230-tcs3200-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A-arduino-2",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_TCS3200"
+    ],
+    "width": 198.0,
+    "height": 198.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.5,
+        "v_max": 5.0,
+        "x": 9.688,
+        "y": 62.938
+      },
+      {
+        "name": "S1",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 9.688,
+        "y": 81.0
+      },
+      {
+        "name": "S0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 9.688,
+        "y": 99.0
+      },
+      {
+        "name": "LED",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_6",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 9.688,
+        "y": 117.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 9.688,
+        "y": 135.063
+      },
+      {
+        "name": "S3",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_4",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 187.375,
+        "y": 80.813
+      },
+      {
+        "name": "S2",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 187.375,
+        "y": 98.813
+      },
+      {
+        "name": "OUT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_5",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 187.375,
+        "y": 116.813
+      }
+    ],
+    "connectivity": [
+      "GPIO_2",
+      "GPIO_1",
+      "GPIO_6",
+      "GPIO_4",
+      "GPIO_3",
+      "GPIO_5"
+    ],
+    "compatibility": [
+      {
+        "name": "Color",
+        "action": [
+          {
+            "name": "Detect Color",
+            "parameter": [
+              {
+                "name": "Color",
+                "constraint": [
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Cyan",
+                  "Magenta",
+                  "Yellow"
+                ]
+              }
+            ]
+          }
+        ],
+        "value": [],
         "count": ""
       }
     ]
