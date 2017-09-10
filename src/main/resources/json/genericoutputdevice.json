@@ -85,60 +85,6 @@
     "value": []
   },
   {
-    "name": "Speaker",
-    "description": "It can play music and control frequency of sound",
-    "action": [
-      {
-        "name": "Play",
-        "funcname": "play",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Name",
-            "value": "untitled.wav",
-            "constraint": [],
-            "datatype": "STRING",
-            "controltype": "TEXTBOX"
-          },
-          {
-            "name": "Repeat",
-            "value": "Loop",
-            "constraint": [
-              "1 time",
-              "Loop"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Volume",
-            "value": 100.0,
-            "constraint": {
-              "min": 0.0,
-              "max": 100.0,
-              "unit": "PERCENT"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SLIDER"
-          }
-        ]
-      },
-      {
-        "name": "Pause",
-        "funcname": "pause",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "Stop",
-        "funcname": "stop",
-        "type": "Inactive",
-        "parameter": []
-      }
-    ],
-    "value": []
-  },
-  {
     "name": "7 Segment",
     "description": "A screen that can display number and some alphabet",
     "action": [
@@ -265,7 +211,8 @@
               "Blue",
               "Cyan",
               "Magenta",
-              "Yellow"
+              "Yellow",
+              "White"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
