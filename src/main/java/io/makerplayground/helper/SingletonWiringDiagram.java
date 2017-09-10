@@ -32,7 +32,8 @@ public class SingletonWiringDiagram {
     public void setCloseTime() {
         this.closeTime = new Date();
         duration = Singleton.getInstance().getDateDiff(openTime, closeTime, TimeUnit.SECONDS);
-        String command = "insert into WiringDiagram (App_ID, OpenTime, Duration) values('Add ID 1'," + openTimeToDB + ","
+        String command = "insert into WiringDiagram (App_ID, OpenTime, Duration) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "'," + openTimeToDB + ","
                 + duration + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
     }

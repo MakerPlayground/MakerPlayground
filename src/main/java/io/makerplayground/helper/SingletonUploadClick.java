@@ -22,7 +22,8 @@ public class SingletonUploadClick {
 
     public void click() {
         this.time = new Date().getTime();
-        String command = "insert into UploadClick (App_ID, Time) values('Add ID 1'," + time + ")";
+        String command = "insert into UploadClick (App_ID, Time) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "'," + time + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
     }
 }

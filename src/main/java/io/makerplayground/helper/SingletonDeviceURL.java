@@ -24,7 +24,8 @@ public class SingletonDeviceURL {
         this.url = url;
         this.time = new Date().getTime();
 
-        String command = "insert into ClickURL (App_ID, Time, URL) values('Add ID 1'," + time + ",'"
+        String command = "insert into ClickURL (App_ID, Time, URL) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "'," + time + ",'"
                 + url + "')";
         SingletonConnectDB.getINSTANCE().execute(command);
     }

@@ -1,11 +1,10 @@
 package io.makerplayground.helper;
 
 import com.microsoft.sqlserver.jdbc.SQLServerBulkCopy;
+import io.makerplayground.ui.Tutorial;
 
 import java.sql.*;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -19,8 +18,13 @@ public class SingletonConnectDB {
     private Connection sqliteConnection = null;
     private String uuid = "";
     private Executor executor = Executors.newSingleThreadExecutor();
+    private List<String> tableName = new ArrayList<>(Arrays.asList("WiringDiagram", "UtilTools", "UploadClick", "Tutorial",
+                            "Launching", "Graph", "Error",
+                            "ConfigDevice", "EditSceneName" ,"CopyCode", "ClickorDragBeginButton",
+                            "ClickURL", "ChangeDeviceName", "Canvas", "AddorDelDevice"));
 
     private SingletonConnectDB() {
+
         try {
             sqliteConnection = DriverManager.getConnection("jdbc:sqlite::resource:log.db");
 
@@ -46,20 +50,27 @@ public class SingletonConnectDB {
                     public void run() {
                         try {
                             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                            try (Statement stmt = sqliteConnection.createStatement()) {
-                                // Get data from the source table as a ResultSet.
-                                try (ResultSet rsSourceData = stmt.executeQuery(
-                                        "SELECT App_ID, isClick, Page, OpenTime, Duration FROM Tutorial"))
-                                {
-                                    // Open the destination connection.
-                                    try (Connection azureConnection =
-                                                 DriverManager.getConnection(azureConnectionString)) {
-                                        try (SQLServerBulkCopy bulkCopy =
-                                                     new SQLServerBulkCopy(azureConnection)) {
-                                            bulkCopy.setDestinationTableName("Tutorial");
-                                            // Write from the source to the destination.
-                                            bulkCopy.writeToServer(rsSourceData);
+                            // loop through every table
+                            for (String s : tableName) {
+                                try (Statement stmt = sqliteConnection.createStatement()) {
+                                    // Get data from the source table as a ResultSet.
+                                    try (ResultSet rsSourceData = stmt.executeQuery(
+                                            "SELECT * FROM " + s))
+                                    {
+                                        sqliteConnection.createStatement().execute("Delete FROM " + s);
+                                        // Open the destination connection.
+                                        try (Connection azureConnection =
+                                                     DriverManager.getConnection(azureConnectionString)) {
+                                            try (SQLServerBulkCopy bulkCopy =
+                                                         new SQLServerBulkCopy(azureConnection)) {
+                                                bulkCopy.setDestinationTableName(s);
+                                                // Write from the source to the destination.
+                                                bulkCopy.writeToServer(rsSourceData);
+                                            }
                                         }
+                                    }
+                                    catch (Exception e ) {
+                                        e.printStackTrace();
                                     }
                                 }
                             }
@@ -69,7 +80,7 @@ public class SingletonConnectDB {
                     }
                 });
             }
-        }, 60000, 60000);
+        }, 10000, 10000);
     }
 
     public void close() {
@@ -80,6 +91,10 @@ public class SingletonConnectDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public static SingletonConnectDB getINSTANCE() {

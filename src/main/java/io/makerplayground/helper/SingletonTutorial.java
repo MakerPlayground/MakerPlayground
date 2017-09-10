@@ -39,7 +39,8 @@ public class SingletonTutorial {
     public void closeTime() {
         close = new Date();
         duration = Singleton.getInstance().getDateDiff(open, close, TimeUnit.SECONDS);
-        String command = "insert into Tutorial (App_ID, isClick, Page, OpenTime, Duration) values('Add ID 1'," + isClick + "," + whichPage + "," + openTime + ","
+        String command = "insert into Tutorial (App_ID, isClick, Page, OpenTime, Duration) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "'," + isClick + "," + whichPage + "," + openTime + ","
                 + duration + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
     }

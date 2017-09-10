@@ -32,7 +32,8 @@ public class SingletonLaunch {
     public void closeProgram() {
         close = new Date();
         duration = Singleton.getInstance().getDateDiff(open, close, TimeUnit.SECONDS);
-        String command = "insert into Launching (App_ID, OpenTime, Duration) values('Add ID 1'," + openTime + ","
+        String command = "insert into Launching (App_ID, OpenTime, Duration) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "'," + openTime + ","
                 + duration + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
     }

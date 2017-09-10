@@ -34,7 +34,8 @@ public class SingletonConfigDevice {
         this.port = port;
         this.time = new Date().getTime();
 
-        String command = "insert into ConfigDevice (App_ID, ObjectID, RealHW, isAuto, Port, Time) values('Add ID 1','" + objID + "','"
+        String command = "insert into ConfigDevice (App_ID, ObjectID, RealHW, isAuto, Port, Time) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "','" + objID + "','"
                 + actualDevice + "'," + this.isAuto + ",'" + port + "'," + time + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
 

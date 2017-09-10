@@ -26,7 +26,8 @@ public class SingletonGraphJson {
         this.save = s;
         this.time = new Date().getTime();
 
-        String command = "insert into Graph (App_ID, FileID, Time) values('Add ID 1','" + save + "',"
+        String command = "insert into Graph (App_ID, FileID, Time) values('"
+                + SingletonConnectDB.getINSTANCE().getUuid() + "','" + save + "',"
                 + time + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
     }
