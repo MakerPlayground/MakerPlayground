@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -29,6 +28,6 @@ public class SingletonGraphJson {
 
         String command = "insert into Graph (App_ID, FileID, Time) values('Add ID 1','" + save + "',"
                 + time + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 }

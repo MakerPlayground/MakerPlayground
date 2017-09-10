@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -28,7 +27,7 @@ public class SingletonUtilTools {
 
         String command = "insert into UtilTools (App_ID, Type, Time) values('Add ID 1','" + type + "',"
                 + time + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 
 }

@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -30,6 +29,6 @@ public class SingletonError {
         System.out.println("error = " + error);
         String command = "insert into Error (App_ID, Time, Message) values('Add ID 1'," + time + ",\""
                 + error + "\")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 }

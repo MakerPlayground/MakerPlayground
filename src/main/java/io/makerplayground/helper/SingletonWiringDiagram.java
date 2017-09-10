@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +34,7 @@ public class SingletonWiringDiagram {
         duration = Singleton.getInstance().getDateDiff(openTime, closeTime, TimeUnit.SECONDS);
         String command = "insert into WiringDiagram (App_ID, OpenTime, Duration) values('Add ID 1'," + openTimeToDB + ","
                 + duration + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 
 }

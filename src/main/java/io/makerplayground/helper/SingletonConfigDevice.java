@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -37,7 +36,7 @@ public class SingletonConfigDevice {
 
         String command = "insert into ConfigDevice (App_ID, ObjectID, RealHW, isAuto, Port, Time) values('Add ID 1','" + objID + "','"
                 + actualDevice + "'," + this.isAuto + ",'" + port + "'," + time + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
 
         //System.out.println(objID + actualDevice + isAuto + port + time);
     }

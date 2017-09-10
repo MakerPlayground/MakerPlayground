@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -24,6 +23,6 @@ public class SingletonUploadClick {
     public void click() {
         this.time = new Date().getTime();
         String command = "insert into UploadClick (App_ID, Time) values('Add ID 1'," + time + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 }

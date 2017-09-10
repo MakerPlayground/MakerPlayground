@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +41,7 @@ public class SingletonTutorial {
         duration = Singleton.getInstance().getDateDiff(open, close, TimeUnit.SECONDS);
         String command = "insert into Tutorial (App_ID, isClick, Page, OpenTime, Duration) values('Add ID 1'," + isClick + "," + whichPage + "," + openTime + ","
                 + duration + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 
     public void increaseWhichPage() {

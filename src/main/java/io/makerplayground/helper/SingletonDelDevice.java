@@ -1,6 +1,5 @@
 package io.makerplayground.helper;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -32,6 +31,6 @@ public class SingletonDelDevice {
 
         String command = "insert into AddorDelDevice (App_ID, Action, Object_ID, Type, Time) values('Add ID 1','" + operation + "','"
                 + objID + "','" + type + "'," + time + ")";
-        SingletonConnectDB.getInstance().execute(command);
+        SingletonConnectDB.getINSTANCE().execute(command);
     }
 }
