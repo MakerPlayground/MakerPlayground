@@ -333,29 +333,6 @@
     ]
   },
   {
-    "name": "Light",
-    "description": "A sensor that measure level of light. \\nRelated project:\\n\\tLight detector\\n\\tAutomatic lamp",
-    "action": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Light Level",
-        "dataType": "DOUBLE",
-        "constraint": {
-          "min": 0.1,
-          "max": 40000.0,
-          "unit": "LUX"
-        }
-      }
-    ]
-  },
-  {
     "name": "Presence",
     "description": "A sensor that measure movement. \\nRelated project:\\n\\tHuman detector",
     "action": [
@@ -367,71 +344,6 @@
       }
     ],
     "value": []
-  },
-  {
-    "name": "Orientation",
-    "description": "A sensor that measure orientation",
-    "action": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Roll",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 0.0,
-          "max": 359.0,
-          "unit": "DEGREE"
-        }
-      },
-      {
-        "name": "Pitch",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 0.0,
-          "max": 359.0,
-          "unit": "DEGREE"
-        }
-      },
-      {
-        "name": "Yaw",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 0.0,
-          "max": 359.0,
-          "unit": "DEGREE"
-        }
-      }
-    ]
-  },
-  {
-    "name": "Time",
-    "description": "Check date and time in present. \\nRelated project:\\n\\tClock\\n\\tTimer",
-    "action": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Time",
-        "dataType": "CUSTOM",
-        "constraint": []
-      },
-      {
-        "name": "Date",
-        "dataType": "CUSTOM",
-        "constraint": []
-      }
-    ]
   },
   {
     "name": "Color",
@@ -451,7 +363,8 @@
               "Blue",
               "Cyan",
               "Magenta",
-              "Yellow"
+              "Yellow",
+              "White"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
@@ -460,41 +373,5 @@
       }
     ],
     "value": []
-  },
-  {
-    "name": "Heart",
-    "description": "A hearth beat sensor. \\nRelated project:\\n\\tHearth beat measurement",
-    "action": [
-      {
-        "name": "Check Detected",
-        "funcname": "isDetected",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": []
-  },
-  {
-    "name": "Soil",
-    "description": "A sensor that measure humidity in soil. \\nRelated project:\\n\\tAutomatic water plant",
-    "action": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Moister",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 0.0,
-          "max": 100.0,
-          "unit": "NOT_SPECIFIED"
-        }
-      }
-    ]
   }
 ]

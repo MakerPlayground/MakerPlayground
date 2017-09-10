@@ -2690,183 +2690,9 @@
     ]
   },
   {
-    "id": "Arduinoall-687",
-    "brand": "Arduinoall",
-    "model": "Heart Rate Pulse Sensor Amped",
-    "url": "https://www.arduinoall.com/product/687",
-    "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [
-      "MP_HeartA660"
-    ],
-    "width": 41.0,
-    "height": 185.0,
-    "v": "",
-    "i": "",
-    "w": "",
-    "dependency": "",
-    "category": "",
-    "port": [
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 3.0,
-        "v_max": 5.0,
-        "x": 4.644,
-        "y": 183.435
-      },
-      {
-        "name": "VCC",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.0,
-        "v_max": 5.0,
-        "x": 19.168,
-        "y": 183.435
-      },
-      {
-        "name": "S",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 3.0,
-        "v_max": 5.0,
-        "x": 33.401,
-        "y": 183.435
-      }
-    ],
-    "connectivity": [
-      "ANALOG_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Heart",
-        "action": [
-          {
-            "name": "Check Detected",
-            "parameter": [
-              {
-                "name": "isDetected",
-                "constraint": []
-              }
-            ]
-          }
-        ],
-        "value": [],
-        "count": ""
-      }
-    ]
-  },
-  {
-    "id": "Arduinothai-165",
-    "brand": "Arduinothai",
-    "model": "Soil Moisture Sensor AT02127",
-    "url": "https://www.arduinothai.com/product/165/soil-moisture-sensor",
-    "type": "PERIPHERAL",
-    "formfactor": "STANDALONE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [],
-    "width": 130.0,
-    "height": 347.0,
-    "v": "",
-    "i": "",
-    "w": "",
-    "dependency": "",
-    "category": "",
-    "port": [
-      {
-        "name": "SIG",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 43.834,
-        "y": 20.697
-      },
-      {
-        "name": "VCC",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 64.687,
-        "y": 20.697
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 85.536,
-        "y": 20.697
-      }
-    ],
-    "connectivity": [
-      "ANALOG_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Soil",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "Moister",
-            "constraint": {
-              "min": 0.0,
-              "max": 0.0,
-              "unit": "NOT_SPECIFIED"
-            }
-          }
-        ],
-        "count": ""
-      }
-    ]
-  },
-  {
     "id": "Arduinoall-332",
     "brand": "Arduinoall",
-    "model": "RGB LED Module",
+    "model": "RGB LED Module using GND",
     "url": "https://www.arduinoall.com/product/332/rgb-3-color-full-color-ky-016-led-module-for-arduino-avr-pic",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
@@ -2972,241 +2798,6 @@
           }
         ],
         "value": [],
-        "count": ""
-      }
-    ]
-  },
-  {
-    "id": "Adafruit-1891",
-    "brand": "Adafruit",
-    "model": "Thin Plastic Speaker w/Wires - 8 ohm 0.25W",
-    "url": "https://www.adafruit.com/product/1891",
-    "type": "PERIPHERAL",
-    "formfactor": "STANDALONE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [],
-    "width": "",
-    "height": "",
-    "v": 0.0,
-    "i": 0.0,
-    "w": 0.25,
-    "dependency": "AMPLIFIER",
-    "category": "SPEAKER",
-    "port": [
-      {
-        "name": "+",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": "",
-        "y": ""
-      },
-      {
-        "name": "-",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": "",
-        "y": ""
-      }
-    ],
-    "connectivity": [],
-    "compatibility": [
-      {
-        "name": "Speaker",
-        "action": [
-          {
-            "name": "Play",
-            "parameter": [
-              {
-                "name": "Name",
-                "constraint": []
-              },
-              {
-                "name": "Repeat",
-                "constraint": [
-                  "1 time",
-                  "Loop"
-                ]
-              },
-              {
-                "name": "Volume",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 100.0,
-                  "unit": "PERCENT"
-                }
-              }
-            ]
-          },
-          {
-            "name": "Pause",
-            "parameter": []
-          },
-          {
-            "name": "Stop",
-            "parameter": []
-          }
-        ],
-        "value": [],
-        "count": ""
-      }
-    ]
-  },
-  {
-    "id": "Arduinoall-034",
-    "brand": "Arduinoall",
-    "model": "GY-521 IMU 3-axis Accelerometer/Gyro Module (MPU6050)",
-    "url": "https://www.arduinoall.com/product/34/gy-521-imu-3-axis-accelerometer-gyro-module-mpu6050",
-    "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [],
-    "width": 116.0,
-    "height": 83.0,
-    "v": "",
-    "i": "",
-    "w": "",
-    "dependency": "",
-    "category": "",
-    "port": [
-      {
-        "name": "VCC",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 3.443,
-        "y": 37.679
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 10.643,
-        "y": 37.679
-      },
-      {
-        "name": "SCL",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SCL"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 17.843,
-        "y": 37.679
-      },
-      {
-        "name": "SDA",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 25.043,
-        "y": 37.679
-      },
-      {
-        "name": "XDA",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 32.243,
-        "y": 37.679
-      },
-      {
-        "name": "XCL",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 39.443,
-        "y": 37.679
-      },
-      {
-        "name": "AD0",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 46.643,
-        "y": 37.679
-      },
-      {
-        "name": "INT",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 53.843,
-        "y": 37.679
-      }
-    ],
-    "connectivity": [
-      "I2C_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Orientation",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "Roll",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          },
-          {
-            "name": "Pitch",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          },
-          {
-            "name": "Yaw",
-            "constraint": {
-              "min": 0.0,
-              "max": 180.0,
-              "unit": "DEGREE"
-            }
-          }
-        ],
         "count": ""
       }
     ]
@@ -3976,6 +3567,120 @@
                 ]
               }
             ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-967",
+    "brand": "Arduinoall",
+    "model": "RGB LED Module Using 5V",
+    "url": "https://www.arduinoall.com/product/967/rgb-led-10mm-module-%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-led-rgb-3-%E0%B8%AA%E0%B8%B5%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-10mm",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_RGB_LED"
+    ],
+    "width": 86.0,
+    "height": 107.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "R",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 35.144,
+        "y": 90.968
+      },
+      {
+        "name": "G",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 63.944,
+        "y": 90.968
+      },
+      {
+        "name": "B",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 49.544,
+        "y": 90.968
+      },
+      {
+        "name": "V",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 20.743,
+        "y": 90.968
+      }
+    ],
+    "connectivity": [
+      "GPIO_3",
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "RGB LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Color",
+                "constraint": [
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Cyan",
+                  "Magenta",
+                  "Yellow",
+                  "White"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
           }
         ],
         "value": [],
