@@ -12,8 +12,9 @@ class MP_GenericButton //: MP_Button
 	 MP_GenericButton(uint8_t pin) ;
 	 ~MP_GenericButton() {};
 
-	  int release()  ;
-	  int doubleRelease()  ;
+	  int isReleased()  ;
+	  int isMultiPressed(double press)  ;
+	  int isPressed()  ;
 	  void init() ;
 	 
 
