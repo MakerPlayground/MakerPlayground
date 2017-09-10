@@ -43,6 +43,7 @@ public class SingletonTutorial {
                 + SingletonConnectDB.getINSTANCE().getUuid() + "'," + isClick + "," + whichPage + "," + openTime + ","
                 + duration + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
+        whichPage = 1;
     }
 
     public void increaseWhichPage() {
