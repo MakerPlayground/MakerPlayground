@@ -2,7 +2,7 @@
 #include "MP_HC_SR04P.h"
 
 
-MP_HC_SR04P::MP_HC_SR04P(uint8_t trig ,uint8_t echo )
+MP_HC_SR04P::MP_HC_SR04P(uint8_t echo ,uint8_t trig )
   : trig(trig) , echo(echo)
 {
   
