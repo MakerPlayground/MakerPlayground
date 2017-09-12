@@ -119,7 +119,7 @@ Serial.println(hsv[1]) ;
       Serial.println(hsv[2]) ;
 Serial.println("-----"+(hsv[0]>=270 && hsv[0]<330)&&(strcmp(color, "Magenta") == 0)) ;
 
- if(hsv[2]>90&&hsv[1]<5&&strcmp(color, "White") == 0)
+ if(hsv[2]>97&&hsv[1]<5&&strcmp(color, "White") == 0)
 {
    Serial.println("White") ;
   return 1;
