@@ -65,7 +65,7 @@ public class SingletonConnectDB {
                                                          new SQLServerBulkCopy(azureConnection)) {
                                                 bulkCopy.setDestinationTableName(s);
                                                 // Write from the source to the destination.
-                                                bulkCopy.writeToServer(rsSourceData);
+                                                //bulkCopy.writeToServer(rsSourceData);
                                             }
                                         }
                                     }
@@ -106,15 +106,15 @@ public class SingletonConnectDB {
     }
 
     public void execute(String command) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    sqliteConnection.createStatement().execute(command);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        executor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    sqliteConnection.createStatement().execute(command);
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 }
