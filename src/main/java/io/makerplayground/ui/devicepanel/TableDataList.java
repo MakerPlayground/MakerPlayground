@@ -1,6 +1,10 @@
 package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.SingletonDeviceURL;
+import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -9,8 +13,10 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,8 +38,17 @@ public class TableDataList {
         this.brand = projectDevice.getActualDevice().getBrand();
         this.model = projectDevice.getActualDevice().getModel();
         this.id = projectDevice.getActualDevice().getId();
-        this.pin = String.join(",", projectDevice.getDeviceConnection().values().stream().flatMap(Collection::stream)
-                .map(DevicePort::getName).collect(Collectors.toList()));
+        List<String> list = new ArrayList<>();
+        for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+            if (p.getConnectionType() != ConnectionType.I2C) {
+                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                if (port == null) {
+                    throw new IllegalStateException("Port hasn't been selected!!!");
+                }
+                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+            }
+        }
+        this.pin = String.join(",", list);
         this.url = projectDevice.getActualDevice().getUrl();
     }
 
@@ -49,6 +64,18 @@ public class TableDataList {
 
     public Hyperlink getUrl() {
         Hyperlink link = new Hyperlink();
+        link.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                SingletonDeviceURL.getInstance().setAll(url);
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(url));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
         link.setText(url);
         return link;
     }

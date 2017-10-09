@@ -1,0 +1,3 @@
+[submodule "src/main/resources/library/arduino"]
+	path = src/main/resources/library/arduino
+	url = https://github.com/InGarage/MakerPlayGround_Library_Arduino.git

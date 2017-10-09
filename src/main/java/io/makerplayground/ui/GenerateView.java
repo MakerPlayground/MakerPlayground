@@ -2,6 +2,7 @@ package io.makerplayground.ui;
 
 import io.makerplayground.generator.Diagram;
 
+import io.makerplayground.helper.SingletonWiringDiagram;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -60,7 +61,10 @@ public class GenerateView extends Dialog {
 
     private void initView() {
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            SingletonWiringDiagram.getInstance().setCloseTime();
+            window.hide();
+        });
         Diagram wiringDiagram = new Diagram(viewModel.getProject());
 
         diagramScrollPane.setContent(wiringDiagram);

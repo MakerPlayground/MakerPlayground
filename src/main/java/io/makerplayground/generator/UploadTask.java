@@ -2,7 +2,6 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.UploadDialogView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
@@ -104,16 +103,14 @@ public class UploadTask extends Task<UploadResult> {
             bw.close();
             fw.close();
 
-            // copy library files
-            library.add("Adafruit_MotorShield");
-            library.add("Adafruit_MS_PWMServoDriver");
-            library.add("Adafruit_TMP007");
-
+            // copy libraries
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
-                File sourcecpp = new File(path + File.separator + "lib" + File.separator + x + ".cpp");
+                //File sourcecpp = new File(path + File.separator + "lib" + File.separator + x + ".cpp");
+                File sourcecpp = new File(getClass().getResource("/library/arduino/src/" + x + ".cpp").toExternalForm());
                 File destcpp = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".cpp");
-                File sourceh = new File(path + File.separator + "lib" + File.separator + x + ".h");
+                //File sourceh = new File(path + File.separator + "lib" + File.separator + x + ".h");
+                File sourceh = new File(getClass().getResource("/library/arduino/src/" + x + ".h").toExternalForm());
                 File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".h");
                 Files.copy(sourcecpp.toPath(), destcpp.toPath());
                 Files.copy(sourceh.toPath(), desth.toPath());

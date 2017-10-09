@@ -1,6 +1,7 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.Sourcecode;
+import io.makerplayground.helper.SingletonError;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Dialog;
@@ -27,7 +28,11 @@ public class ErrorDialogView extends Dialog{
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
         descriptionLabel.setText(error);
+
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            SingletonError.getInstance().setAll(error);
+            window.hide();
+        });
     }
 }

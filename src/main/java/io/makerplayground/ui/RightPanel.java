@@ -1,8 +1,10 @@
 package io.makerplayground.ui;
 
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +14,9 @@ import java.util.List;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
+import io.makerplayground.helper.SingletonUploadClick;
+import io.makerplayground.helper.SingletonUtilTools;
+import io.makerplayground.helper.SingletonWiringDiagram;
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
@@ -25,10 +30,12 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -79,7 +86,6 @@ public class RightPanel extends AnchorPane {
             }
         });
 
-        //configureBtn.setOnAction(event -> DeviceMapper.getSupportedDeviceList(project));
 
         Button generateBtn = new Button("Generate Project");
         generateBtn.setOnAction(event -> {
@@ -93,6 +99,7 @@ public class RightPanel extends AnchorPane {
                 ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
                 errorDialogView.showAndWait();
             } else {
+                SingletonWiringDiagram.getInstance().setOpenTime();
                 GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
                 GenerateView generateView = new GenerateView(generateViewModel);
                 generateView.showAndWait();
@@ -100,6 +107,7 @@ public class RightPanel extends AnchorPane {
         });
         Button uploadBtn = new Button("Upload");
         uploadBtn.setOnAction(event -> {
+            SingletonUploadClick.getInstance().click();
 //            Dialog dialog = new Dialog();
 //
 //            Label label = new Label("Upload");
@@ -166,10 +174,29 @@ public class RightPanel extends AnchorPane {
             new Thread(uploadTask).start();
         });
 
+        final Hyperlink hpl = new Hyperlink("Feedback");
+
+        hpl.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+
+                SingletonUtilTools.getInstance().setAll("FEEDBACK");
+
+                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(s));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
+
+
         VBox projectButton = new VBox();
         projectButton.setStyle("-fx-background-color : #313644");
         projectButton.setSpacing(2.0);
-        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
+        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn, hpl);
         projectButton.setAlignment(Pos.CENTER);
         projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
 

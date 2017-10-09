@@ -2,7 +2,7 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectHelper;
 import io.makerplayground.ui.canvas.TutorialView;
@@ -10,30 +10,24 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -56,11 +50,16 @@ public class Main extends Application {
     public void onTutorialButtonClick(){
 
     }
+
+    private boolean flag = false; // for the first tutorial tracking
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        SingletonConnectDB.getINSTANCE();
+
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
 
         MainWindow mainWindow = new MainWindow(new Project());
 
@@ -77,6 +76,23 @@ public class Main extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // close program
+        primaryStage.setOnCloseRequest(event -> {
+            SingletonLaunch.getInstance().closeProgram();
+
+            StringWriter stringWrite = new StringWriter();
+            try {
+                mapper.writeValue(stringWrite, mainWindow.getProject());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String s = stringWrite.toString();
+            SingletonGraphJson.getInstance().setAll(s);
+            SingletonConnectDB.getINSTANCE().close();
+        });
+
+
         newButton.setOnAction(event -> {
             try {
                 FileChooser fileChooser = new FileChooser();
@@ -91,6 +107,7 @@ public class Main extends Application {
                     borderPane.setCenter(mw);
                     mapper.writeValue(selectedFile, mainWindow.getProject());
                 }
+                SingletonUtilTools.getInstance().setAll("NEW");
             } catch (IOException x) {
                 x.printStackTrace();
             }
@@ -108,6 +125,7 @@ public class Main extends Application {
                 MainWindow mw = new MainWindow(p);
                 borderPane.setCenter(mw);
             }
+            SingletonUtilTools.getInstance().setAll("LOAD");
         });
 
         saveButton.setOnAction(event -> {
@@ -118,15 +136,28 @@ public class Main extends Application {
                         new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
                         new FileChooser.ExtensionFilter("All Files", "*.*"));
                 File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+
+
                 if (selectedFile != null) {
                     mapper.writeValue(selectedFile, mainWindow.getProject());
                 }
+                SingletonUtilTools.getInstance().setAll("SAVE");
             } catch (IOException x) {
                 x.printStackTrace();
             }
         });
 
         tutorialButton.setOnAction(event -> {
+            if (flag) {
+                flag = false;
+            }
+            else {
+                Singleton.getInstance().setFlagFirstTime(false);
+                SingletonTutorial.getInstance().clickCount();
+                SingletonTutorial.getInstance().setIsClick(1);
+                SingletonTutorial.getInstance().openTime();
+            }
+
             TutorialView tutorialView = new TutorialView(scene.getWindow());
 
             Parent rootPane = scene.getRoot();
@@ -159,7 +190,13 @@ public class Main extends Application {
         primaryStage.show();
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
-                ae -> tutorialButton.fire()));
+                ae -> {
+                    Singleton.getInstance().setFlagFirstTime(true);
+                    SingletonTutorial.getInstance().setIsClick(0);
+                    SingletonTutorial.getInstance().openTime();
+                    flag = true;
+                    tutorialButton.fire();
+                }));
         timeline.play();
     }
 

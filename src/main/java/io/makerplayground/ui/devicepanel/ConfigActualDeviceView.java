@@ -4,29 +4,39 @@ package io.makerplayground.ui.devicepanel;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.SingletonConfigDevice;
+import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -63,7 +73,20 @@ public class ConfigActualDeviceView extends Dialog {
         allDevice.setAlignment(Pos.CENTER_LEFT);
 
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        window.setOnCloseRequest(event -> {
+            System.out.println("DID IT");
+            System.out.println(viewModel.getAllDevice().size());
+            for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
+                if (projectDevice.isAutoSelectDevice())
+                    SingletonConfigDevice.getInstance().setAll("123", "", projectDevice.isAutoSelectDevice(), "");
+                else {
+                    String port = String.join(",", projectDevice.getDeviceConnection().values().stream().flatMap(Collection::stream)
+                            .map(DevicePort::getName).collect(Collectors.toList()));
+                    SingletonConfigDevice.getInstance().setAll("123", projectDevice.getActualDevice().getId(), projectDevice.isAutoSelectDevice(), port);
+                }
+            }
+            window.hide();
+        });
 
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
             //VBox row = new VBox();
@@ -150,72 +173,99 @@ public class ConfigActualDeviceView extends Dialog {
                 }
             });
 
-            Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
-            System.out.println(combo);
-            List<ComboBox<List<DevicePort>>> listComboBox = new ArrayList<>();
-
-            // loop for each peripheral
-            for (Peripheral p : combo.keySet()) {
-                ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
-                portComboBox.setId("portComboBox");
-
-                portComboBox.setCellFactory(new Callback<ListView<List<DevicePort>>, ListCell<List<DevicePort>>>() {
-                    @Override
-                    public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
-                        return new ListCell<List<DevicePort>>() {
-                            @Override
-                            protected void updateItem(List<DevicePort> item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty) {
-                                    setText("");
-                                } else {
-                                    setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
-                                }
-                            }
-                        };
-                    }
-                });
-                portComboBox.setButtonCell(new ListCell<List<DevicePort>>(){
-                    @Override
-                    protected void updateItem(List<DevicePort> item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText("");
-                        } else {
-                            setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
-                        }
-                    }
-                });
-                if (projectDevice.getDeviceConnection().isEmpty()) {
-                    //portComboBox.getSelectionModel().selectFirst();
-                } else {
-                    portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-
-                }
-
-
-                if (!projectDevice.getDeviceConnection().isEmpty()) {
-                    portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-                }
-                portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                    viewModel.setPeripheral(projectDevice, p, newValue);
-                });
-
-                portComboBox.disableProperty().bind(checkBox.selectedProperty());
-
-                listComboBox.add(portComboBox);
-            }
-
             entireDevice.getChildren().addAll(devicePic, checkBox, deviceComboBox);
-            for (ComboBox<List<DevicePort>> d : listComboBox) {
-                entireDevice.getChildren().add(d);
+
+            Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
+
+            // We only show port combobox when the device has been selected
+            Device actualDevice = projectDevice.getActualDevice();
+            if (actualDevice != null) {
+                // loop for each peripheral
+                for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
+                    ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
+                    portComboBox.setId("portComboBox");
+
+                    portComboBox.setCellFactory(new Callback<ListView<List<DevicePort>>, ListCell<List<DevicePort>>>() {
+                        @Override
+                        public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
+                            return new ListCell<List<DevicePort>>() {
+                                @Override
+                                protected void updateItem(List<DevicePort> item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    if (empty) {
+                                        setText("");
+                                    } else {
+                                        setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                                    }
+                                }
+                            };
+                        }
+                    });
+                    portComboBox.setButtonCell(new ListCell<List<DevicePort>>() {
+                        @Override
+                        protected void updateItem(List<DevicePort> item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty) {
+                                setText("");
+                            } else {
+                                setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                            }
+                        }
+                    });
+                    if (projectDevice.getDeviceConnection().isEmpty()) {
+                        //portComboBox.getSelectionModel().selectFirst();
+                    } else {
+                        portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
+
+                    }
+
+
+                    if (!projectDevice.getDeviceConnection().isEmpty()) {
+                        portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
+                    }
+                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                        viewModel.setPeripheral(projectDevice, p, newValue);
+                    });
+
+                    portComboBox.disableProperty().bind(checkBox.selectedProperty());
+
+                    // TODO: check if we can safely get the first element
+                    String portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                    entireDevice.getChildren().addAll(new Label(portName), portComboBox);
+                }
             }
-            //row.getChildren().add(entireDevice);
-            //allDevice.getChildren().add(row);
+
             allDevice.getChildren().add(entireDevice);
         }
 
+        VBox vBox = new VBox();
+
+
+        final Hyperlink hpl = new Hyperlink("Request your favorite devices");
+
+        hpl.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+
+                SingletonUtilTools.getInstance().setAll("REQUEST");
+
+                String s = "https://goo.gl/forms/12Wsu9WPZPumUPOj2";
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(s));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
+
+
+        vBox.getChildren().add(hpl);
+        allDevice.getChildren().add(vBox);
+
         scrollPane.setContent(allDevice);
+
+
         getDialogPane().setContent(scrollPane);
     }
 }

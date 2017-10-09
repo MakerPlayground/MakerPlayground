@@ -112,9 +112,17 @@ public class Sourcecode {
 //                    portName.addAll(tmp);
 //                }
 //            }
-            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
+
+            //List<Peripheral> peripherals = new ArrayList<>(projectDevice.getDeviceConnection().keySet());
+            //peripherals.sort(Comparator.naturalOrder());
+            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
                 if (p.getConnectionType() != ConnectionType.I2C) {
-                    portName.addAll(projectDevice.getDeviceConnection().get(p).stream().map(DevicePort::getName).collect(Collectors.toList()));
+                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                    if (port == null) {
+                        throw new IllegalStateException("Port hasn't been selected!!!");
+                    }
+                    portName.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+                    System.out.println(p + " " + port);
                 }
             }
             if (!portName.isEmpty()) {

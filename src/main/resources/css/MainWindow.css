@@ -12,6 +12,9 @@
     -fx-text-fill: white;
     -fx-border-color: transparent;
 }
+#projectNameTextField .text{
+    -fx-underline:true;
+}
 #projectNameTextField:focus{
     -fx-text-fill: white;
     -fx-border-color: transparent;
