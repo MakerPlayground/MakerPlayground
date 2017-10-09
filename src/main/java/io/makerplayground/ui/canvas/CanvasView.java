@@ -189,23 +189,22 @@ public class CanvasView extends AnchorPane {
         });
         sceneView.setOnSrcPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
-
-            if (flag == false) {
+            if (!flag) {
                 return;
             }
             if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
+                sceneView.setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
 
             guideLine.setEndX(event.getSceneX());
             guideLine.setEndY(event.getSceneY()-32.5);
-
             event.consume();
         });
         sceneView.setOnDesPortDragOver(event -> {
             System.out.println(event.getSceneX() + " " + event.getSceneY());
 
-            if (flag == true) {
+            if (flag) {
                 return;
             }
             if (event.getGestureSource() != sceneView && event.getDragboard().hasString()) {
@@ -233,7 +232,7 @@ public class CanvasView extends AnchorPane {
         });
         sceneView.setOnSrcPortDragExited(event -> {
             // TODO: remove visual feedback
-
+            sceneView.setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
             event.consume();
         });
         sceneView.setOnDesPortDragExited(event -> {
@@ -314,6 +313,7 @@ public class CanvasView extends AnchorPane {
             }
             if (event.getGestureSource() != conditionView && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                conditionView.setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
             }
 
             guideLine.setEndX(event.getSceneX());
@@ -355,7 +355,7 @@ public class CanvasView extends AnchorPane {
         });
         conditionView.setOnSrcPortDragExited(event -> {
             // TODO: remove visual feedback
-
+            conditionView.setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
             event.consume();
         });
         conditionView.setOnDesPortDragExited(event -> {
