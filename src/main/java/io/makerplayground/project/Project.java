@@ -59,6 +59,8 @@ public class Project {
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
 
+    private String filePath;
+
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
         controller = new ProjectController(Platform.ARDUINO);
@@ -68,6 +70,7 @@ public class Project {
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin();
+        filePath = null;
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -76,7 +79,7 @@ public class Project {
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
-    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice, ObservableList<Scene> scene, ObservableList<Condition> condition, ObservableList<Line> line, Begin begin) {
+    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice, ObservableList<Scene> scene, ObservableList<Condition> condition, ObservableList<Line> line, Begin begin, String filePath) {
         this.projectName = new SimpleStringProperty(name);
         this.controller = controller;
         this.inputDevice = inputDevice;
@@ -85,6 +88,7 @@ public class Project {
         this.condition = condition;
         this.line = line;
         this.begin = begin;
+        this.filePath = filePath;
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -318,5 +322,13 @@ public class Project {
         }
 
         return deviceType;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

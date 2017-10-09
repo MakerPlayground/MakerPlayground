@@ -58,6 +58,8 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Begin begin = new Begin(node.get("begin").get("top").asDouble()
                 , node.get("begin").get("left").asDouble());
 
+        String filePath = null;
+
         ObservableList<Scene> scenes = FXCollections.observableArrayList();
         for (JsonNode sceneNode : node.get("scene")) {
             scenes.add(deserializeScene(mapper, sceneNode, outputDevices));
@@ -101,7 +103,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             lines.add(new Line(source, dest));
         }
 
-        return new Project(projectName, projectController, inputDevices, outputDevices, scenes, conditions, lines, begin);
+        return new Project(projectName, projectController, inputDevices, outputDevices, scenes, conditions, lines, begin, filePath);
     }
 
     public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> outputDevice) throws IOException {
