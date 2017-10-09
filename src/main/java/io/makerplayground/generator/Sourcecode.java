@@ -2,11 +2,9 @@ package io.makerplayground.generator;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.ConnectionType;
@@ -147,6 +145,8 @@ public class Sourcecode {
         sb.append(INDENT).append("currentScene();").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
 
+        Set<Scene> visitedScene = new HashSet<>();
+
         // generate code for begin
         sb.append(NEW_LINE);
         sb.append("void beginScene() {").append(NEW_LINE);
@@ -154,12 +154,13 @@ public class Sourcecode {
             if (adjacentScene.size() == 1) {
                 Scene s = adjacentScene.get(0);
                 sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                visitedScene.add(s);
                 queue.add(s);
             } else {
                 return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
             }
         } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-            Error error = processCondition(sb, queue, project, adjacentCondition);
+            Error error = processCondition(sb, queue, visitedScene, project, adjacentCondition);
             if (error != Error.NONE) {
                 return new Sourcecode(error, "beginScene");
             }
@@ -169,10 +170,8 @@ public class Sourcecode {
         sb.append("}").append(NEW_LINE);
 
         // generate function for each scene
-        List<Scene> sceneList = new ArrayList<>();
         while (!queue.isEmpty()) {
             currentScene = queue.remove();
-            sceneList.add(currentScene);
 
             // create function header
             sb.append(NEW_LINE);
@@ -210,19 +209,20 @@ public class Sourcecode {
 
             // update list of adjacent vertices (scenes/conditions)
             adjacentVertices = findAdjacentVertices(project, currentScene);
-            adjacentScene = getScene(adjacentVertices);
+            adjacentScene = getUnvisitedScene(adjacentVertices, visitedScene);
             adjacentCondition = getCondition(adjacentVertices);
 
             if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (adjacentScene.size() == 1) {
                     Scene s = adjacentScene.get(0);
+                    visitedScene.add(s);
                     queue.add(s);
                     sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                 } else {
                     return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
                 }
             } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                Error error = processCondition(sb, queue, project, adjacentCondition);
+                Error error = processCondition(sb, queue, visitedScene, project, adjacentCondition);
                 if (error != Error.NONE) {
                     return new Sourcecode(error, currentScene.getName().replace(" ", "_"));
                 }
@@ -237,7 +237,7 @@ public class Sourcecode {
         // generate function declaration for each scene
         if (cppMode) {
             headerStringBuilder.append("void beginScene();").append(NEW_LINE);
-            for (Scene scene : sceneList) {
+            for (Scene scene : visitedScene) {
                 headerStringBuilder.append("void ").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
             headerStringBuilder.append(NEW_LINE);
@@ -246,7 +246,7 @@ public class Sourcecode {
         return new Sourcecode(headerStringBuilder.append(sb).toString());
     }
 
-    private static Error processCondition(StringBuilder sb, Queue<Scene> queue, Project project, List<Condition> adjacentCondition) {
+    private static Error processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
         // gather every value used by every condition connect to the current scene
         Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
         for (Condition condition : adjacentCondition) {
@@ -331,10 +331,14 @@ public class Sourcecode {
             List<Condition> nextCondition = getCondition(nextVertices);
             if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (nextScene.size() == 1) {
+                    Scene s = nextScene.get(0);
                     sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = ")
-                            .append(nextScene.get(0).getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                            .append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                     sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
-                    queue.add(nextScene.get(0));
+                    if (!visitedScene.contains(s)) {
+                        visitedScene.add(s);
+                        queue.add(s);
+                    }
                 } else {
                     return Error.MULT_DIRECT_CONN_TO_SCENE;
                 }
@@ -359,6 +363,12 @@ public class Sourcecode {
 
     private static List<Scene> getScene(List<NodeElement> nodeElements) {
         return nodeElements.stream().filter(nodeElement -> nodeElement instanceof Scene)
+                .map(nodeElement -> (Scene) nodeElement).collect(Collectors.toList());
+    }
+
+    private static List<Scene> getUnvisitedScene(List<NodeElement> nodeElements, Collection<Scene> visitedScene) {
+        return nodeElements.stream().filter(nodeElement -> nodeElement instanceof Scene)
+                .filter(nodeElement -> !visitedScene.contains(nodeElement))
                 .map(nodeElement -> (Scene) nodeElement).collect(Collectors.toList());
     }
 
