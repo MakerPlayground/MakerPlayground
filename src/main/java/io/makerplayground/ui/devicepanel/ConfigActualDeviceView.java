@@ -3,6 +3,7 @@ package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.SingletonConfigDevice;
 import io.makerplayground.helper.SingletonUtilTools;
@@ -229,8 +230,13 @@ public class ConfigActualDeviceView extends Dialog {
 
                     portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
-                    // TODO: check if we can safely get the first element
-                    String portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                    // TODO: handle other type (UART, SPI, etc.)
+                    String portName;
+                    if (p.getConnectionType() == ConnectionType.I2C) {
+                        portName = "I2C";
+                    } else {
+                        portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                    }
                     entireDevice.getChildren().addAll(new Label(portName), portComboBox);
                 }
             }

@@ -1,1 +1,0 @@
-{"projectName":"Untitled Project","controller":{"platform":"ARDUINO","device":"MCU_1"},"inputDevice":[],"outputDevice":[],"begin":{"top":200.0,"left":20.0},"scene":[],"condition":[],"line":[]}
