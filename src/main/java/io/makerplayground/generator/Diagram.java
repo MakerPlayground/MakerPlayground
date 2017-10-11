@@ -68,7 +68,8 @@ public class Diagram extends Pane {
         breadBoard.setLayoutY(BREADBOARD_TOP_MARGIN);
         getChildren().add(breadBoard);
 
-        int currentRow = 0;
+        // skip first 5 rows (reserved for vertical power+gnd lines)
+        int currentRow = 5;
 
         // draw controller
         double lastY = BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
@@ -118,21 +119,28 @@ public class Diagram extends Pane {
             this.getChildren().add(deviceImage);
         }
 
-
-
         // connect power
         int numberOfPwrPinUsed = 0;
-        int numberOfGndPinUsed = 0;
+        int numberOfGndPinUsed = 1;
         boolean connectGnd = false;
+
+        // connect power to both side of breadboard
+        createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
+                BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_TOP_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_TOP_Y);
+        numberOfPwrPinUsed++;
+        // connect gnd to both side of breadboard (currently unused by any device)
+        createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_TOP_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_TOP_Y);
+        numberOfGndPinUsed++;
 
         // connect the first hole of breadboard to Arduino board
         for (DevicePort p : controller.getPort()) {
             if (p.isVcc()) {
-                createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
+                createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
                                 BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
                 numberOfPwrPinUsed++;
             } else if ((p.isGnd()) && (!connectGnd)) {
-                createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
                             BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
                 numberOfGndPinUsed++;
                 connectGnd = true;
