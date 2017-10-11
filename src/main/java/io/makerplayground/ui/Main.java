@@ -9,7 +9,7 @@ import io.makerplayground.ui.canvas.TutorialView;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Application;
+import javafx.application.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,6 +28,8 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -46,9 +48,10 @@ public class Main extends Application {
     @FXML
     private AnchorPane toolBarPane;
 
+    private Project project;
+
     @FXML
     public void onTutorialButtonClick(){
-
     }
 
     private boolean flag = false; // for the first tutorial tracking
@@ -61,12 +64,13 @@ public class Main extends Application {
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
         final ObjectMapper mapper = new ObjectMapper();
 
-        MainWindow mainWindow = new MainWindow(new Project());
+        project = new Project();
+        MainWindow mainWindow = new MainWindow(project);
 
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(mainWindow);
 
-        Scene scene = new Scene(borderPane, 800, 600);
+        final Scene scene = new Scene(borderPane, 800, 600);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(borderPane);
@@ -76,6 +80,42 @@ public class Main extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Write to azure every 10 minutes
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                try {
+                    File selectedFile;
+                    if (project.getFilePath() != null) {
+                        selectedFile = new File(project.getFilePath());
+                        mapper.writeValue(selectedFile, project);
+                        SingletonUtilTools.getInstance().setAll("SAVE");
+                    }
+//                    } else {
+//                        selectedFile = new File("tmp.mp");
+//                        FileChooser fileChooser = new FileChooser();
+//                        fileChooser.setTitle("Save File");
+//                        fileChooser.getExtensionFilters().addAll(
+//                                new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+//                                new FileChooser.ExtensionFilter("All Files", "*.*"));
+//                        javafx.application.Platform.runLater(() -> {
+//                            File selectedFile = fileChooser.showSaveDialog(scene.getWindow());
+//                            if (selectedFile != null) {
+//                                try {
+//                                    mapper.writeValue(selectedFile, project);
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                SingletonUtilTools.getInstance().setAll("SAVE");
+//                            }
+//                        });
+//                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 10000, 10000);
 
         // close program
         primaryStage.setOnCloseRequest(event -> {
@@ -87,11 +127,12 @@ public class Main extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String s = stringWrite.toString();
-            SingletonGraphJson.getInstance().setAll(s);
+
+            timer.cancel();
+            //String s = stringWrite.toString();
+            //SingletonGraphJson.getInstance().setAll(s);
             SingletonConnectDB.getINSTANCE().close();
         });
-
 
         newButton.setOnAction(event -> {
             try {
@@ -121,8 +162,9 @@ public class Main extends Application {
                     new FileChooser.ExtensionFilter("All Files", "*.*"));
             File selectedFile = fileChooser.showOpenDialog(primaryStage);
             if (selectedFile != null) {
-                Project p = ProjectHelper.loadProject(selectedFile);
-                MainWindow mw = new MainWindow(p);
+                project = ProjectHelper.loadProject(selectedFile);
+                project.setFilePath(selectedFile.getAbsolutePath());
+                MainWindow mw = new MainWindow(project);
                 borderPane.setCenter(mw);
             }
             SingletonUtilTools.getInstance().setAll("LOAD");
@@ -137,9 +179,9 @@ public class Main extends Application {
                         new FileChooser.ExtensionFilter("All Files", "*.*"));
                 File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
 
-
                 if (selectedFile != null) {
                     mapper.writeValue(selectedFile, mainWindow.getProject());
+                    mainWindow.getProject().setFilePath(selectedFile.getAbsolutePath());
                 }
                 SingletonUtilTools.getInstance().setAll("SAVE");
             } catch (IOException x) {
@@ -203,5 +245,4 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

@@ -8,9 +8,14 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.sqlserver.jdbc.SQLServerBulkCopy;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
@@ -42,6 +47,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -49,7 +55,9 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.Scanner;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -108,61 +116,6 @@ public class RightPanel extends AnchorPane {
         Button uploadBtn = new Button("Upload");
         uploadBtn.setOnAction(event -> {
             SingletonUploadClick.getInstance().click();
-//            Dialog dialog = new Dialog();
-//
-//            Label label = new Label("Upload");
-//            GridPane.setRowIndex(label, 0);
-//            GridPane.setColumnIndex(label, 0);
-//
-//            ProgressBar progressBar = new ProgressBar(0);
-//            progressBar.setMaxWidth(Double.MAX_VALUE);
-//            GridPane.setRowIndex(progressBar, 0);
-//            GridPane.setColumnIndex(progressBar, 1);
-//
-//            Label progress = new Label();
-//            GridPane.setRowIndex(progress, 1);
-//            GridPane.setColumnIndex(progress, 1);
-//
-//            TextArea textArea = new TextArea();
-//            textArea.setPrefRowCount(3);
-//            textArea.setEditable(false);
-//
-//            TitledPane detailPane = new TitledPane("More details", textArea);
-//            detailPane.setExpanded(false);
-//            // resize when collapse the dialog according to this post on stackoverflow
-//            // https://stackoverflow.com/questions/36581662/dialog-doesnt-resize-when-titledpane-expanded
-//            detailPane.setAnimated(false);
-//            detailPane.expandedProperty().addListener((obs, oldValue, newValue) -> {
-//                Platform.runLater(() -> {
-//                    detailPane.requestLayout();
-//                    detailPane.getScene().getWindow().sizeToScene();
-//                });
-//            });
-//            GridPane.setRowIndex(detailPane, 2);
-//            GridPane.setColumnIndex(detailPane, 0);
-//            GridPane.setColumnSpan(detailPane, 2);
-//
-////            Button okButton = new Button("Ok");
-////            okButton.setDisable(true);
-////            GridPane.setRowIndex(okButton, 3);
-////            GridPane.setColumnIndex(okButton, 0);
-////            GridPane.setColumnSpan(okButton, 2);
-////            okButton.setOnAction(event1 -> dialog.close());
-//
-//            GridPane gridPane = new GridPane();
-//            gridPane.setPadding(new Insets(20, 20, 0, 20));
-//            gridPane.getStylesheets().add(RightPanel.class.getResource("/css/UploadDialog.css").toExternalForm());
-//            gridPane.setHgap(10);
-//            gridPane.setVgap(0);
-//            gridPane.getChildren().addAll(label, progressBar, progress, detailPane/*, okButton*/);
-//
-//            ButtonType buttonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-//            dialog.setTitle("Upload");
-//            dialog.getDialogPane().getButtonTypes().add(buttonType);
-//            dialog.getDialogPane().lookupButton(buttonType).setDisable(true);
-//            dialog.getDialogPane().setContent(gridPane);
-//            dialog.show();
-
             UploadTask uploadTask = new UploadTask(project);
 
             UploadDialogView uploadDialogView = new UploadDialogView(uploadTask);
