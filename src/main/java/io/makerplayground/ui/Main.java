@@ -53,7 +53,7 @@ public class Main extends Application {
     @FXML
     private AnchorPane toolBarPane;
     @FXML
-    private Hyperlink hpl;
+    private Button hpl;
 
     private Project project;
 
