@@ -8,6 +8,7 @@ import io.makerplayground.helper.Unit;
 import io.makerplayground.project.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 import java.util.List;
@@ -18,21 +19,21 @@ import java.util.List;
 public class SceneDeviceIconViewModel {
 
     private final UserSetting userSetting;
-    private final SimpleStringProperty name;
+    //private final SimpleStringProperty name;
     private final Project project;
 
     public SceneDeviceIconViewModel(UserSetting userSetting, Project project) {
         this.userSetting = userSetting;
-        this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+        //this.name = new SimpleStringProperty(userSetting.getDevice().getName());
         this.project = project;
     }
 
     public String getName() {
-        return name.get();
+        return userSetting.getDevice().getName();
     }
 
-    public SimpleStringProperty nameProperty() {
-        return name;
+    public StringProperty nameProperty() {
+        return userSetting.getDevice().nameProperty();
     }
 
     public String getImageName() {

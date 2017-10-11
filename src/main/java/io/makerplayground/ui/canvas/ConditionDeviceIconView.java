@@ -47,6 +47,11 @@ public class ConditionDeviceIconView extends VBox {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
+
+        nameIconImageView.setOnMouseClicked(e -> {
+            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            devicePropertyWindow.show(ConditionDeviceIconView.this);
+        });
     }
 
     public void setOnRemove(EventHandler<ActionEvent> e) {

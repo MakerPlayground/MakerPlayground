@@ -10,12 +10,13 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.*;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
@@ -38,6 +39,8 @@ public class Main extends Application {
     @FXML
     private TextField projectNameTextField;
     @FXML
+    private Label statusLabel;
+    @FXML
     private Button saveButton;
     @FXML
     private Button loadButton;
@@ -49,6 +52,9 @@ public class Main extends Application {
     private AnchorPane toolBarPane;
 
     private Project project;
+    private BorderPane borderPane;
+    private Timer timer;
+    private ObjectMapper mapper;
 
     @FXML
     public void onTutorialButtonClick(){
@@ -62,12 +68,12 @@ public class Main extends Application {
 
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
-        final ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
 
         project = new Project();
         MainWindow mainWindow = new MainWindow(project);
 
-        BorderPane borderPane = new BorderPane();
+        borderPane = new BorderPane();
         borderPane.setCenter(mainWindow);
 
         final Scene scene = new Scene(borderPane, 800, 600);
@@ -82,7 +88,7 @@ public class Main extends Application {
         }
 
         // Write to azure every 10 minutes
-        final Timer timer = new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 try {
@@ -134,24 +140,41 @@ public class Main extends Application {
             SingletonConnectDB.getINSTANCE().close();
         });
 
-        newButton.setOnAction(event -> {
-            try {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save File");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-                        new FileChooser.ExtensionFilter("All Files", "*.*"));
-                File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
-                if (selectedFile != null) {
-                    Project p = new Project();
-                    MainWindow mw = new MainWindow(p);
-                    borderPane.setCenter(mw);
-                    mapper.writeValue(selectedFile, mainWindow.getProject());
-                }
-                SingletonUtilTools.getInstance().setAll("NEW");
-            } catch (IOException x) {
-                x.printStackTrace();
+//        projectNameTextField.setText(project.getProjectName());
+
+        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
+
+        projectNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == false) {
+                System.out.println("new = " + projectNameTextField.getText());
+                project.setProjectName(projectNameTextField.getText());
+                System.out.println("new2 = " + project.getProjectName());
             }
+        });
+
+        newButton.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Current project is modified");
+            alert.setContentText("Save?");
+            ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+            alert.showAndWait().ifPresent(type -> {
+                System.out.println(type);
+                if (type.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
+                    if (type.getButtonData() == ButtonBar.ButtonData.YES) {
+                        saveProject();
+                    }
+
+                    projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
+                    project = new Project();
+                    projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
+                    MainWindow mw = new MainWindow(project);
+                    borderPane.setCenter(mw);
+                    SingletonUtilTools.getInstance().setAll("NEW");
+                }
+            });
         });
 
         loadButton.setOnAction(event -> {
@@ -162,31 +185,18 @@ public class Main extends Application {
                     new FileChooser.ExtensionFilter("All Files", "*.*"));
             File selectedFile = fileChooser.showOpenDialog(primaryStage);
             if (selectedFile != null) {
+                projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
                 project = ProjectHelper.loadProject(selectedFile);
                 project.setFilePath(selectedFile.getAbsolutePath());
+                projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
                 MainWindow mw = new MainWindow(project);
                 borderPane.setCenter(mw);
             }
             SingletonUtilTools.getInstance().setAll("LOAD");
         });
 
-        saveButton.setOnAction(event -> {
-            try {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save File");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-                        new FileChooser.ExtensionFilter("All Files", "*.*"));
-                File selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
-
-                if (selectedFile != null) {
-                    mapper.writeValue(selectedFile, mainWindow.getProject());
-                    mainWindow.getProject().setFilePath(selectedFile.getAbsolutePath());
-                }
-                SingletonUtilTools.getInstance().setAll("SAVE");
-            } catch (IOException x) {
-                x.printStackTrace();
-            }
+        saveButton.setOnAction((ActionEvent event) -> {
+            saveProject();
         });
 
         tutorialButton.setOnAction(event -> {
@@ -224,7 +234,7 @@ public class Main extends Application {
             tutorialView.show();
         });
 
-        projectNameTextField.textProperty().bindBidirectional(mainWindow.getProject().projectNameProperty());
+        //projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
 
         primaryStage.setTitle("MakerPlayground");
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));
@@ -240,6 +250,40 @@ public class Main extends Application {
                     tutorialButton.fire();
                 }));
         timeline.play();
+    }
+
+    private void saveProject() {
+        statusLabel.setText("Saving...");
+        try {
+            File selectedFile;
+            if (project.getFilePath() == null) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save File");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+                        new FileChooser.ExtensionFilter("All Files", "*.*"));
+                selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+            } else {
+                selectedFile = new File(project.getFilePath());
+            }
+
+            if (selectedFile != null) {
+                mapper.writeValue(selectedFile, project);
+                project.setFilePath(selectedFile.getAbsolutePath());
+                statusLabel.setText("Saved");
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> statusLabel.setText(""));
+                    }
+                }, 3000);
+                SingletonUtilTools.getInstance().setAll("SAVE");
+            } else {
+                statusLabel.setText("");
+            }
+        } catch (IOException x) {
+            x.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

@@ -19,8 +19,8 @@ public class DevicePanelViewModel {
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), DevicePanelIconViewModel::new);
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), DevicePanelIconViewModel::new);
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {

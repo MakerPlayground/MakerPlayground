@@ -6,6 +6,9 @@ import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Peripheral;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import sun.net.idn.StringPrep;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.Map;
  */
 @JsonSerialize (using = ProjectDeviceSerializer.class)
 public class ProjectDevice {
-    private String name;
+    private StringProperty name;
     private final GenericDevice genericDevice;
     private boolean autoSelectDevice;
     private Device actualDevice;
@@ -26,7 +29,7 @@ public class ProjectDevice {
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
         this.autoSelectDevice = true;
         this.actualDevice = null;
@@ -36,7 +39,7 @@ public class ProjectDevice {
     }
 
     ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, List<DevicePort>> deviceConnection, Device dependentDevice, Map<Peripheral, List<DevicePort>> dependentDeviceConnection) {
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
         this.autoSelectDevice = autoSelectDevice;
         this.actualDevice = actualDevice;
@@ -46,11 +49,15 @@ public class ProjectDevice {
     }
 
     public String getName() {
-        return name;
+        return name.get();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
+    }
+
+    public StringProperty nameProperty() {
+        return name;
     }
 
     public GenericDevice getGenericDevice() {

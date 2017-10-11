@@ -1,5 +1,6 @@
 package io.makerplayground.ui.devicepanel;
 
+import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -11,12 +12,14 @@ import javafx.beans.property.StringProperty;
 public class DevicePanelIconViewModel {
 
     private final ProjectDevice device;
-    private final StringProperty name;
+    private final Project project;
+    //private final StringProperty name;
 
-    public DevicePanelIconViewModel(ProjectDevice device) {
+    public DevicePanelIconViewModel(ProjectDevice device, Project project) {
         this.device = device;
-        this.name = new SimpleStringProperty(device.getName());
-        this.name.addListener((observable, oldValue, newValue) -> this.device.setName(newValue));
+        this.project = project;
+        //this.name = new SimpleStringProperty(device.getName());
+        //this.name.addListener((observable, oldValue, newValue) -> this.device.setName(newValue));
     }
 
     public String getDeviceName() {
@@ -24,18 +27,29 @@ public class DevicePanelIconViewModel {
     }
 
     public String getName() {
-        return name.get();
+        return device.getName();
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        device.setName(name);
     }
 
     public StringProperty nameProperty() {
-        return name;
+        return device.nameProperty();
     }
 
     public ProjectDevice getDevice() {
         return device;
+    }
+
+    // Check if current scene's name is duplicated with other scenes
+    // return true when this name cannot be used
+    public boolean isNameDuplicate(String newName) {
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            if (projectDevice.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
