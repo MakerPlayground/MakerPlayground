@@ -102,4 +102,16 @@ public class SceneViewModel {
     public BooleanProperty hasDeviceToAddProperty() {
         return hasDeviceToAdd;
     }
+
+    // Check if current scene's name is duplicated with other scenes
+    // return true when this name cannot be used
+    public boolean isNameDuplicate(String newName) {
+        for (Scene scene : project.getScene()) {
+            System.out.println("name value = " + scene.getName() + " new name = " + newName);
+            if (scene.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

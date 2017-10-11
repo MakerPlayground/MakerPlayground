@@ -149,6 +149,17 @@ public class SceneView extends HBox implements Selectable {
         });
 
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == false) {
+                // Check duplicated scene's name
+                if (sceneViewModel.isNameDuplicate(nameTextField.getText())) {
+                    nameTextField.setText(sceneViewModel.getScene().getName());
+                } else { // write change to model
+                    sceneViewModel.getScene().setName(nameTextField.getText());
+                }
+            }
+        });
+
         Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty(), new NumberStringConverter());
 
         addOutputButton.setOnAction(new EventHandler<ActionEvent>() {

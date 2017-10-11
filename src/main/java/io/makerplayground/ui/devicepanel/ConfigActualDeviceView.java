@@ -183,6 +183,9 @@ public class ConfigActualDeviceView extends Dialog {
             if (actualDevice != null) {
                 // loop for each peripheral
                 for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
+                    if (combo.get(p) == null)
+                        continue;
+
                     ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
                     portComboBox.setId("portComboBox");
 
