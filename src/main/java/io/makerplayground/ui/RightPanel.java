@@ -36,6 +36,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -64,6 +65,7 @@ import java.util.stream.Collectors;
  * Created by Mai.Manju on 12-Jun-17.
  */
 public class RightPanel extends AnchorPane {
+
 
     private final Project project;
 
@@ -127,29 +129,10 @@ public class RightPanel extends AnchorPane {
             new Thread(uploadTask).start();
         });
 
-        final Hyperlink hpl = new Hyperlink("Feedback");
-
-        hpl.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-
-                SingletonUtilTools.getInstance().setAll("FEEDBACK");
-
-                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
-                Desktop desktop = Desktop.getDesktop();
-                try {
-                    desktop.browse(URI.create(s));
-                } catch (IOException ev) {
-                    ev.printStackTrace();
-                }
-            }
-        });
-
-
         VBox projectButton = new VBox();
         projectButton.setStyle("-fx-background-color : #313644");
         projectButton.setSpacing(2.0);
-        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn, hpl);
+        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);
         projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
 

@@ -10,11 +10,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
@@ -25,9 +28,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,6 +52,8 @@ public class Main extends Application {
     private Button tutorialButton;
     @FXML
     private AnchorPane toolBarPane;
+    @FXML
+    private Hyperlink hpl;
 
     private Project project;
 
@@ -240,6 +247,23 @@ public class Main extends Application {
                     tutorialButton.fire();
                 }));
         timeline.play();
+
+        hpl.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+
+                SingletonUtilTools.getInstance().setAll("FEEDBACK");
+
+                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(URI.create(s));
+                } catch (IOException ev) {
+                    ev.printStackTrace();
+                }
+            }
+        });
+
     }
 
     public static void main(String[] args) {
