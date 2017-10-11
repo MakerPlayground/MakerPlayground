@@ -64,13 +64,17 @@ public class ConfigActualDeviceView extends Dialog {
         ScrollPane scrollPane = new ScrollPane();
         VBox allDevice = new VBox();
 
-        scrollPane.setPrefHeight(260.0);
-        scrollPane.setPrefWidth(565);
-        allDevice.setMaxHeight(260.0);
+        scrollPane.setPrefHeight(300.0);
+        scrollPane.setPrefWidth(510);
+        allDevice.setMaxHeight(300.0);
         allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
         allDevice.setSpacing(20.0);
-        allDevice.setPadding(new Insets(20,30,20,30));
-        allDevice.setAlignment(Pos.CENTER_LEFT);
+        allDevice.setPadding(new Insets(30,0,30,30));
+        allDevice.setAlignment(Pos.CENTER);
+
+        Label topicConfigDevice = new Label("Customize your Devices");
+        topicConfigDevice.setId("topicConfigDevice");
+        allDevice.getChildren().add(topicConfigDevice);
 
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> {
@@ -92,6 +96,8 @@ public class ConfigActualDeviceView extends Dialog {
             //VBox row = new VBox();
             //row.setAlignment(Pos.BASELINE_LEFT);
             HBox entireDevice = new HBox();
+            HBox portComboBoxHbox = new HBox();
+            VBox entrieComboBoxDevice = new VBox();
             //entireDevice.setAlignment(Pos.BASELINE_LEFT);
             HBox devicePic = new HBox();
 
@@ -101,17 +107,20 @@ public class ConfigActualDeviceView extends Dialog {
             devicePic.getChildren().addAll(imageView, name);
 
             devicePic.setSpacing(10.0);
-            devicePic.setAlignment(Pos.CENTER);
-            devicePic.setMinHeight(45.0);
+            devicePic.setAlignment(Pos.CENTER_LEFT);
+            devicePic.setMaxHeight(25.0);
 
             name.setTextAlignment(TextAlignment.LEFT);
             name.setAlignment(Pos.CENTER_LEFT);
+            name.setId("nameLabel");
 
             imageView.setFitHeight(25.0);
             imageView.setFitWidth(25.0);
 
             entireDevice.setSpacing(10.0);
-            entireDevice.setAlignment(Pos.CENTER_LEFT);
+            entireDevice.setAlignment(Pos.TOP_LEFT);
+
+            portComboBoxHbox.setSpacing(5.0);
 
             //row.setAlignment(Pos.CENTER);
 
@@ -172,8 +181,8 @@ public class ConfigActualDeviceView extends Dialog {
                     }
                 }
             });
-
-            entireDevice.getChildren().addAll(devicePic, checkBox, deviceComboBox);
+            entrieComboBoxDevice.getChildren().addAll(deviceComboBox);
+            entireDevice.getChildren().addAll(devicePic, checkBox, entrieComboBoxDevice);
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
 
@@ -231,9 +240,12 @@ public class ConfigActualDeviceView extends Dialog {
 
                     // TODO: check if we can safely get the first element
                     String portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
-                    entireDevice.getChildren().addAll(new Label(portName), portComboBox);
+                    portComboBoxHbox.setAlignment(Pos.CENTER_LEFT);
+                    portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                 }
             }
+            entrieComboBoxDevice.getChildren().add(portComboBoxHbox);
+            entrieComboBoxDevice.setSpacing(10.0);
 
             allDevice.getChildren().add(entireDevice);
         }
