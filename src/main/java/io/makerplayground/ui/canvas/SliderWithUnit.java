@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import com.sun.javafx.scene.control.skin.IntegerFieldSkin;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import javafx.beans.property.DoubleProperty;

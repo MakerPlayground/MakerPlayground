@@ -7,7 +7,6 @@ import io.makerplayground.device.Action;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
 import javafx.beans.property.ObjectProperty;
-import jdk.nashorn.internal.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;

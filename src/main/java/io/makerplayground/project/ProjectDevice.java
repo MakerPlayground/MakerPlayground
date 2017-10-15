@@ -8,7 +8,6 @@ import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Peripheral;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import sun.net.idn.StringPrep;
 
 import java.util.HashMap;
 import java.util.List;
