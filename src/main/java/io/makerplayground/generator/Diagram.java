@@ -113,7 +113,7 @@ public class Diagram extends Pane {
                 lastX = lastX + device.getWidth();
             } else if (device.getFormFactor() == FormFactor.SHIELD) {
                 deviceTopLeftPos.put(projectDevice, controllerPosition);
-            }
+            } 
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
             this.getChildren().add(deviceImage);

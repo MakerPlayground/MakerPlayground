@@ -26,6 +26,39 @@ public enum Unit {
     //OUTPUT DEVICE
     SECOND,WAV,NUMBER,
     //BASIC
-    PERCENT,NOT_SPECIFIED,HERTZ,BPM
+    PERCENT,NOT_SPECIFIED,HERTZ,BPM;
     // TODO: add new unit
+
+    @Override
+    public String toString() {
+        final String DEGREE  = "\u00b0";
+        final String MICRO = "\u00B5";
+        final String PERCENT = "\u0025";
+
+        switch (this) {
+            case TIME: return "Time";
+            case METERPERSECSQUARE: return "m/s^2";
+            case HECTOPASCAL: return "hPa";
+            case METER: return "m";
+            case CELSIUS: return DEGREE + "C";
+            case FAHRENHEIT: return DEGREE + "F";
+            case KELVIN: return DEGREE + "K";
+            case RADIUSPERSEC: return "Rad/s";
+            case DEGREEPERSEC: return "degree/s";
+            case DECIBEL: return "dB";
+            case MICROTESLA: return MICRO + "T";
+            case CENTIMETER: return "cm";
+            case LUX: return "lux";
+            case DEGREE: return DEGREE;
+            case SECOND: return "sec";
+            case WAV: return "wav";
+            case NUMBER: return "Number";
+            case PERCENT: return PERCENT;
+            case NOT_SPECIFIED: return "not specified";
+            case HERTZ: return "Hz";
+            case BPM: return "BPM";
+            default: return "...";
+        }
+    }
+
 }
