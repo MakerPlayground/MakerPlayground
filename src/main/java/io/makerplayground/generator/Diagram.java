@@ -13,8 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.*;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -113,7 +112,7 @@ public class Diagram extends Pane {
                 lastX = lastX + device.getWidth();
             } else if (device.getFormFactor() == FormFactor.SHIELD) {
                 deviceTopLeftPos.put(projectDevice, controllerPosition);
-            } 
+            }
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
             this.getChildren().add(deviceImage);
@@ -452,17 +451,59 @@ public class Diagram extends Pane {
     }
 
     private void createSdaLine(double x1, double y1, double x2, double y2) {
-        Line line = new Line(x1, y1, x2, y2);
-        line.setStroke(Color.GREEN);
-        line.setStrokeWidth(STROKE_WIDTH);
-        this.getChildren().add(line);
+        if (y1 == y2) {
+            Path path = new Path();
+
+            MoveTo moveTo = new MoveTo();
+            moveTo.setX(x1);
+            moveTo.setY(y1);
+
+            QuadCurveTo quadTo = new QuadCurveTo();
+            quadTo.setControlX((x1+x2)/2);
+            quadTo.setControlY(y1+40);
+            quadTo.setX(x2);
+            quadTo.setY(y2);
+
+            path.getElements().add(moveTo);
+            path.getElements().add(quadTo);
+
+            path.setStroke(Color.GREEN);
+            path.setStrokeWidth(STROKE_WIDTH);
+            this.getChildren().add(path);
+        } else {
+            Line line = new Line(x1, y1, x2, y2);
+            line.setStroke(Color.GREEN);
+            line.setStrokeWidth(STROKE_WIDTH);
+            this.getChildren().add(line);
+        }
     }
 
     private void createSclLine(double x1, double y1, double x2, double y2) {
-        Line line = new Line(x1, y1, x2, y2);
-        line.setStroke(Color.YELLOW);
-        line.setStrokeWidth(STROKE_WIDTH);
-        this.getChildren().add(line);
+        if (y1 == y2) {
+            Path path = new Path();
+
+            MoveTo moveTo = new MoveTo();
+            moveTo.setX(x1);
+            moveTo.setY(y1);
+
+            QuadCurveTo quadTo = new QuadCurveTo();
+            quadTo.setControlX((x1+x2)/2);
+            quadTo.setControlY(y1+30);
+            quadTo.setX(x2);
+            quadTo.setY(y2);
+
+            path.getElements().add(moveTo);
+            path.getElements().add(quadTo);
+
+            path.setStroke(Color.YELLOW);
+            path.setStrokeWidth(STROKE_WIDTH);
+            this.getChildren().add(path);
+        } else {
+            Line line = new Line(x1, y1, x2, y2);
+            line.setStroke(Color.YELLOW);
+            line.setStrokeWidth(STROKE_WIDTH);
+            this.getChildren().add(line);
+        }
     }
 
     private void createGpioLine(double x1, double y1, double x2, double y2) {
