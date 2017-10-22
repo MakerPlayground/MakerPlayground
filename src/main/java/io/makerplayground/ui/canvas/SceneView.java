@@ -17,7 +17,6 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Scene;
-import io.makerplayground.ui.InteractiveNode;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
@@ -144,13 +143,10 @@ public class SceneView extends InteractiveNode{
         // allow node to be dragged
         makeMovable(statePane);
 
+        // TODO: refactor into InteractiveNode
         // allow node to connect with other node
         outPort.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
             startFullDrag();
-//            System.out.println(event.getX() + " " + event.getY());
-//            System.out.println(getBoundsInLocal());
-//            System.out.println(getBoundsInParent());
-//            System.out.println(outPort.getBoundsInParent());
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
@@ -171,5 +167,9 @@ public class SceneView extends InteractiveNode{
                     , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + (inPort.getBoundsInLocal().getHeight() / 2)));
         });
+    }
+
+    public SceneViewModel getSceneViewModel() {
+        return sceneViewModel;
     }
 }

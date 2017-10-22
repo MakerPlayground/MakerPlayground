@@ -1,7 +1,5 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.canvas.Selectable;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,10 +50,21 @@ public abstract class InteractiveNode extends Group implements Selectable {
             if (!event.isPrimaryButtonDown())
                 return;
 
-            double scale = interactivePane.getScale();
+            double deltaX = ((event.getSceneX() - mouseAnchorX) / interactivePane.getScale());
+            double deltaY = ((event.getSceneY() - mouseAnchorY) / interactivePane.getScale());
 
-            setTranslateX(translateAnchorX + ((event.getSceneX() - mouseAnchorX) / scale));
-            setTranslateY(translateAnchorY + ((event.getSceneY() - mouseAnchorY) / scale));
+            // adjust deltaX/Y if needed, to avoid negative coordinate
+            double newMinX = getBoundsInParent().getMinX() - getTranslateX() + (translateAnchorX + deltaX);
+            double newMinY = getBoundsInParent().getMinY() - getTranslateY() + (translateAnchorY + deltaY);
+            if (newMinX < 0) {
+                deltaX = deltaX - newMinX;
+            }
+            if (newMinY < 0) {
+                deltaY = deltaY - newMinY;
+            }
+
+            setTranslateX(translateAnchorX + deltaX);
+            setTranslateY(translateAnchorY + deltaY);
 
             hasDragged = true;
             event.consume();

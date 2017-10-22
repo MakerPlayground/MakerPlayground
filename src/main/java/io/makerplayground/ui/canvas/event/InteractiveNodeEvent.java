@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas.event;
 
 import io.makerplayground.project.NodeElement;
-import io.makerplayground.ui.InteractiveNode;
+import io.makerplayground.ui.canvas.InteractiveNode;
 import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;

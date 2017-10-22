@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.InteractiveNode;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -42,6 +41,7 @@ public class BeginSceneView extends InteractiveNode {
         translateXProperty().bindBidirectional(beginSceneViewModel.xProperty());
         translateYProperty().bindBidirectional(beginSceneViewModel.yProperty());
 
+        // TODO: refactor into InteractiveNode
         // allow node to connect with other node
         outPort.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
             startFullDrag();

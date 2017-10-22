@@ -34,9 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Represent a project
@@ -60,6 +58,8 @@ public class Project {
     private final ObservableList<Line> unmodifiableLine;
 
     private String filePath;
+    private static final Pattern sceneNameRegex = Pattern.compile("scene\\d+");
+    private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
@@ -102,35 +102,14 @@ public class Project {
     }
 
     public void addOutputDevice(GenericDevice device) {
-        int maxCount = 0;
-        // Find all the same genericDevice's name in outputDevice list
-        // to get count for creating running number
-        List<ProjectDevice> deviceSameType = outputDevice.stream()
-                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
-                .collect(Collectors.toList());
-        for (ProjectDevice d : deviceSameType) {
-            if (d.getName().contains(device.getName())) {
-                // Extract number from string for creating running number
-                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
-                Matcher matcher = lastIntPattern.matcher(d.getName());
-                if (matcher.find()) {
-                    String someNumberStr = matcher.group(1);
-                    int lastNumberInt = Integer.parseInt(someNumberStr);
-                    if (lastNumberInt >= maxCount) {
-                        maxCount = lastNumberInt;
-                    }
-                }
-            }
-        }
-
-        String name;
-        if (device.getName().contains("7"))
-            name = "Seven Seg" + (maxCount+1);
-        else
-            name = device.getName() + (maxCount+1);
-
-        ProjectDevice projectDevice = new ProjectDevice(name, device);
-
+        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        int id = outputDevice.stream()
+                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
+                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
+                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
+                .max()
+                .orElse(0);
+        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         outputDevice.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
@@ -149,30 +128,15 @@ public class Project {
     }
 
     public void addInputDevice(GenericDevice device) {
-        int maxCount = 0;
-        // Find all the same genericDevice's name in outputDevice list
-        // to get count for creating running number
-        List<ProjectDevice> deviceSameType = inputDevice.stream()
-                .filter(d -> d.getGenericDevice().getName().equals(device.getName()))
-                .collect(Collectors.toList());
-        for (ProjectDevice d : deviceSameType) {
-            if (d.getName().contains(device.getName())) {
-                // Extract number from string for creating running number
-                Pattern lastIntPattern = Pattern.compile("[^0-9]+([0-9]+)$");
-                Matcher matcher = lastIntPattern.matcher(d.getName());
-                if (matcher.find()) {
-                    String someNumberStr = matcher.group(1);
-                    int lastNumberInt = Integer.parseInt(someNumberStr);
-                    if (lastNumberInt >= maxCount) {
-                        maxCount = lastNumberInt;
-                    }
-                }
-            }
-        }
-
-        // TODO: Add to condition
-
-        inputDevice.add(new ProjectDevice(device.getName() + (maxCount+1), device));
+        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        int id = inputDevice.stream()
+                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
+                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
+                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
+                .max()
+                .orElse(0);
+        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
+        inputDevice.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
@@ -189,24 +153,19 @@ public class Project {
         return unmodifiableScene;
     }
 
-    public Scene addState() {
+    public void addState() {
+        int id = scene.stream()
+                .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
+                .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
+                .max()
+                .orElse(0);
+
         Scene s = new Scene();
-        // TODO: check for duplicate name
-        s.setName("scene" + (scene.size() + 1));
-
-        // Add every output device to be displayed in new scene
-//        for (ProjectDevice projectDevice: outputDevice) {
-//            s.addDevice(projectDevice);
-//        }
-
-        //diagram.addVertex(s);
+        s.setName("scene" + (id + 1));
         scene.add(s);
-        return s;
     }
 
     public void removeState(Scene s) {
-        // TODO: remove edge connect to that scene
-        //diagram.removeVertex(s);
         scene.remove(s);
         for (int i=line.size()-1; i>=0; i--) {
             Line l = line.get(i);
@@ -216,13 +175,16 @@ public class Project {
         }
     }
 
-    // TODO: add method to manage condition
-    public Condition addCondition() {
+    public void addCondition() {
+        int id = condition.stream()
+                .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
+                .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
+                .max()
+                .orElse(0);
+
         Condition c = new Condition();
-        // TODO: check for duplicate name
-        c.setName("condition" + (condition.size() + 1));
+        c.setName("condition" + (id + 1));
         condition.add(c);
-        return c;
     }
 
     public void removeCondition(Condition c) {
@@ -239,10 +201,12 @@ public class Project {
         return unmodifiableCondition;
     }
 
-    public Line addLine(NodeElement source, NodeElement destination) {
-        Line l = new Line(source, destination);
-        line.add(l);
-        return l;
+    public void addLine(NodeElement source, NodeElement destination) {
+        // do not create new line if there existed a line with identical source and destination
+        if (line.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
+            Line l = new Line(source, destination);
+            line.add(l);
+        }
     }
 
     public void removeLine(Line l) {

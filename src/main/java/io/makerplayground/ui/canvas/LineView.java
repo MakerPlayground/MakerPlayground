@@ -16,7 +16,6 @@
 
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.InteractiveNode;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
@@ -31,8 +30,11 @@ public class LineView extends InteractiveNode {
 
     private static final int REMOVE_BTN_GAP = 5;
 
+    private final LineViewModel viewModel;
+
     public LineView(LineViewModel viewModel, InteractivePane interactivePane) {
         super(interactivePane);
+        this.viewModel = viewModel;
 
         ImageView removeButton = new ImageView(new Image(getClass().getResourceAsStream("/icons/cancelLine.png")));
         removeButton.layoutXProperty().bind(viewModel.centerXProperty().add(REMOVE_BTN_GAP));
@@ -51,5 +53,9 @@ public class LineView extends InteractiveNode {
 
         // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
         setOnMousePressed(Event::consume);
+    }
+
+    public LineViewModel getLineViewModel() {
+        return viewModel;
     }
 }

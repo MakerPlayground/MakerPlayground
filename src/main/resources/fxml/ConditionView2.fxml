@@ -21,7 +21,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <StackPane maxWidth="210.0" minWidth="210.0">
+      <StackPane fx:id="stackPane" maxWidth="210.0" minWidth="210.0">
          <children>
             <ScrollPane fx:id="scrollPane" fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0" StackPane.alignment="CENTER">
               <content>

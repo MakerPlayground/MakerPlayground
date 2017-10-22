@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.InteractiveNode;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -15,23 +14,41 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
+import java.util.List;
+
 public class InteractivePane extends ScrollPane {
     private final Pane content = new Pane();
     private final Group group = new Group();
     private DoubleProperty scale;
 
-    private final SelectionGroup selectionGroup = new SelectionGroup();
+    private final SelectionGroup<InteractiveNode> selectionGroup = new SelectionGroup<>();
 
     private final Line guideLine = new Line();
 
     public InteractivePane() {
         // a pane to add content into
-        content.setStyle("-fx-background-color: red");
-        content.setPrefSize(1000, 1000);
+        content.setStyle("-fx-background-color: #dbdbdb;");
 
         // wrap content in a group to scroll based on visual bounds according to ScrollPane's javadoc
         group.getChildren().add(content);
         setContent(group);
+
+        // resize the content pane when the window is resized (viewport's bound of the ScrollPane changed)
+        viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.getWidth() > content.getPrefWidth()) {
+                content.setPrefWidth(newValue.getWidth());
+            }
+            if (newValue.getHeight() > content.getPrefHeight()) {
+                content.setPrefHeight(newValue.getHeight());
+            }
+        });
+
+        // group's layout bound will be larger when a child of content pane is dragged out of it's area so we keep track
+        // of this bound and enlarge our content pane respectively
+        group.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            content.setPrefSize(newValue.getWidth() / scale.doubleValue()
+                    , newValue.getHeight() / scale.doubleValue());
+        });
 
         scale = new SimpleDoubleProperty(1);
         // when scale value changed, we scale content and move scroll position to maintain center
@@ -53,6 +70,9 @@ public class InteractivePane extends ScrollPane {
         setOnMousePressed(event -> selectionGroup.deselect());
 
         guideLine.setVisible(false);
+        // guideLine is always bring to front when visible so we must make it transparent otherwise it will block
+        // MOUSE_DRAGGED event of the destination port and prevent us from creating connection
+        guideLine.setMouseTransparent(true);
         guideLine.setStrokeWidth(3.25);
         guideLine.setStyle("-fx-stroke: #313644;");
         content.getChildren().add(guideLine);
@@ -110,7 +130,7 @@ public class InteractivePane extends ScrollPane {
     }
 
     // listener attaches to every node to automatically move the scrollbar when it moves out of viewport
-    private final EventHandler<InteractiveNodeEvent> sceneMovedHandler =  (event) -> {
+    private final EventHandler<InteractiveNodeEvent> nodeMovedHandler =  (event) -> {
         double viewportWidth = getViewportBounds().getWidth();
         double viewportHeight = getViewportBounds().getHeight();
         double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
@@ -139,13 +159,14 @@ public class InteractivePane extends ScrollPane {
         // add node to the selection group
         selectionGroup.getSelectable().add(n);
         // auto scroll when child leave current viewport
-        n.addEventHandler(InteractiveNodeEvent.MOVED, sceneMovedHandler);
+        n.addEventHandler(InteractiveNodeEvent.MOVED, nodeMovedHandler);
         // show guide line when connecting the nodes
         n.addEventFilter(InteractiveNodeEvent.CONNECTION_BEGIN, event -> {
             guideLine.setStartX(event.getX());
             guideLine.setStartY(event.getY());
             guideLine.setEndX(event.getX());
             guideLine.setEndY(event.getY());
+            guideLine.toFront();
             guideLine.setVisible(true);
         });
         n.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event -> guideLine.setVisible(false));
@@ -154,7 +175,11 @@ public class InteractivePane extends ScrollPane {
     public void removeChildren(InteractiveNode n) {
         content.getChildren().remove(n);
         selectionGroup.getSelectable().remove(n);
-        n.removeEventHandler(InteractiveNodeEvent.MOVED, sceneMovedHandler);
+        n.removeEventHandler(InteractiveNodeEvent.MOVED, nodeMovedHandler);
+    }
+
+    public List<InteractiveNode> getSelectedNode() {
+        return selectionGroup.getSelected();
     }
 
     public double getScale() {

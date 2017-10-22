@@ -1,12 +1,12 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.NodeElement;
-import io.makerplayground.ui.InteractiveNode;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -107,6 +107,24 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initEvent() {
+        // allow node to be deleted using the delete key
+        setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                for (InteractiveNode interactiveNode : mainPane.getSelectedNode()) {
+                    if (interactiveNode instanceof SceneView) {
+                        canvasViewModel.project.removeState(((SceneView) interactiveNode).getSceneViewModel().getScene());
+                    } else if (interactiveNode instanceof ConditionView) {
+                        canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
+                    } else if (interactiveNode instanceof LineView) {
+                        canvasViewModel.project.removeLine(((LineView) interactiveNode).getLineViewModel().getLine());
+                    } else if (interactiveNode instanceof BeginSceneView) {
+                        // we shouldn't delete begin from the canvas
+                    } else {
+                        throw new IllegalStateException("Found invalid object in the canvas!!!");
+                    }
+                }
+            }
+        });
     }
 
     private void addConnectionEvent(InteractiveNode node) {
