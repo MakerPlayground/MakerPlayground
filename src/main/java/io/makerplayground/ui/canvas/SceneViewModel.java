@@ -7,8 +7,6 @@ import io.makerplayground.project.UserSetting;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
 /**
@@ -16,7 +14,7 @@ import javafx.collections.ObservableList;
  */
 public class SceneViewModel {
     private final Scene scene;
-    private final SimpleStringProperty name;
+    //private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
     private final Project project;
 
@@ -26,7 +24,7 @@ public class SceneViewModel {
 
     public SceneViewModel(Scene scene, Project project) {
         this.scene = scene;
-        this.name = new SimpleStringProperty(scene.getName());
+        //this.name = new SimpleStringProperty(scene.getName());
         this.delay = new SimpleDoubleProperty(scene.getDelay());
         this.delay.addListener((observable, oldValue, newValue) -> scene.setDelay(newValue.doubleValue()));
         this.project = project;
@@ -43,11 +41,17 @@ public class SceneViewModel {
     }
 
     public String getName() {
-        return name.get();
+        return scene.getName();
     }
 
-    public SimpleStringProperty nameProperty() {
-        return name;
+    public StringProperty nameProperty() {
+        return scene.nameProperty();
+    }
+
+    public void setName(String name) {
+        if (!name.isEmpty() && !isNameDuplicate(name)) {
+            scene.setName(name);
+        }
     }
 
     public double getDelay() {
@@ -58,10 +62,17 @@ public class SceneViewModel {
         return delay;
     }
 
+    public Scene.DelayUnit getDelayUnit() {
+        return scene.getDelayUnit();
+    }
+
     public void setDelayUnit(Scene.DelayUnit unit) {
         scene.setDelayUnit(unit);
     }
 
+    public ObjectProperty<Scene.DelayUnit> delayUnitProperty() {
+        return scene.delayUnitProperty();
+    }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
@@ -105,9 +116,9 @@ public class SceneViewModel {
 
     // Check if current scene's name is duplicated with other scenes
     // return true when this name cannot be used
-    public boolean isNameDuplicate(String newName) {
+    private boolean isNameDuplicate(String newName) {
         for (Scene scene : project.getScene()) {
-            System.out.println("name value = " + scene.getName() + " new name = " + newName);
+            //System.out.println("name value = " + scene.getName() + " new name = " + newName);
             if (scene.getName().equals(newName)) {
                 return true;
             }

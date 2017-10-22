@@ -16,7 +16,7 @@
 
 <fx:root alignment="CENTER" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="sourceNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc id="arcNode" fx:id="inPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
       <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../css/StateView.css">
          <children>
             <HBox maxHeight="30.0" minHeight="30.0" style="-fx-background-color: transparent;">
@@ -78,6 +78,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc fx:id="desNode" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="outPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

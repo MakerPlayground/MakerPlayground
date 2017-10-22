@@ -2,7 +2,6 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.*;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
-import io.makerplayground.uihelper.ViewModelFactory;
 
 /**
  *
@@ -23,7 +22,11 @@ public class CanvasViewModel {
         this.beginViewModel = new BeginSceneViewModel(project.getBegin(),project);
     }
 
-    public void connectState(NodeElement nodeElement1, NodeElement nodeElement2) {
+//    public void connectState(NodeElement nodeElement1, NodeElement nodeElement2) {
+//        project.addLine(nodeElement1, nodeElement2);
+//    }
+
+    public void connect(NodeElement nodeElement1, NodeElement nodeElement2) {
         project.addLine(nodeElement1, nodeElement2);
     }
 

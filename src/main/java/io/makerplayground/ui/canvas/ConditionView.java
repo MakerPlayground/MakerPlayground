@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.uihelper.DynamicViewCreator;
-import io.makerplayground.uihelper.NodeConsumer;
+import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -11,12 +11,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
@@ -83,22 +81,17 @@ public class ConditionView extends VBox implements Selectable {
         addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
 
         DynamicViewCreator<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
-                new DynamicViewCreator<>(conditionViewModel.getDynamicViewModelCreator(), deviceIconHBox
-                        , conditionDeviceIconViewModel -> {
-                    ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
-                    conditionDeviceIconView.setOnRemove(event -> conditionViewModel.removeConditionDevice(conditionDeviceIconViewModel.getProjectDevice()));
-                    return conditionDeviceIconView;
-                }, new NodeConsumer<HBox, ConditionDeviceIconView>() {
-                    @Override
-                    public void addNode(HBox parent, ConditionDeviceIconView node) {
-                        parent.getChildren().add(parent.getChildren().size() - 1, node);
-                    }
-
-                    @Override
-                    public void removeNode(HBox parent, ConditionDeviceIconView node) {
-                        parent.getChildren().remove(node);
-                    }
-                });
+                new DynamicViewCreatorBuilder<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
+                    .setParent(deviceIconHBox)
+                    .setModelLoader(conditionViewModel.getDynamicViewModelCreator())
+                    .setViewFactory(conditionDeviceIconViewModel -> {
+                        ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
+                        conditionDeviceIconView.setOnRemove(event -> conditionViewModel.removeConditionDevice(conditionDeviceIconViewModel.getProjectDevice()));
+                        return conditionDeviceIconView;
+                    })
+                    .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
+                    .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                    .createDynamicViewCreator();
     }
 
     @Override

@@ -2,15 +2,12 @@ package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.uihelper.DynamicViewCreator;
-import io.makerplayground.uihelper.NodeConsumer;
-import io.makerplayground.uihelper.ViewFactory;
-import javafx.collections.ObservableList;
+import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -34,18 +31,6 @@ public class DevicePanelView extends VBox {
         result.ifPresent(viewModel::addDevice);
     }
 
-    private final NodeConsumer<FlowPane, DevicePanelIcon> nodeConsumer = new NodeConsumer<FlowPane, DevicePanelIcon>() {
-        @Override
-        public void addNode(FlowPane parent, DevicePanelIcon node) {
-            parent.getChildren().add(node);
-        }
-
-        @Override
-        public void removeNode(FlowPane parent, DevicePanelIcon node) {
-            parent.getChildren().remove(node);
-        }
-    };
-
     public DevicePanelView(DevicePanelViewModel viewModel) {
         this.viewModel = viewModel;
 
@@ -58,26 +43,32 @@ public class DevicePanelView extends VBox {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
-              new DynamicViewCreator<>(viewModel.getInputChildViewModel(), inputPane, new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
-                  @Override
-                  public DevicePanelIcon newInstance(DevicePanelIconViewModel devicePanelIconViewModel) {
-                      DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-                      icon.setOnAction(event -> viewModel.removeInputDevice(devicePanelIconViewModel));
-                      return icon;
-                  }
-              }, nodeConsumer);
+                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
+                    .setParent(inputPane)
+                    .setModelLoader(viewModel.getInputChildViewModel())
+                    .setViewFactory(devicePanelIconViewModel -> {
+                        DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
+                        icon.setOnAction(event -> viewModel.removeInputDevice(devicePanelIconViewModel));
+                        return icon;
+                    })
+                    .setNodeAdder((parent, node) -> parent.getChildren().add(node))
+                    .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                    .createDynamicViewCreator();
 
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
-              new DynamicViewCreator<>(viewModel.getOutputChildViewModel(), outputPane, new ViewFactory<DevicePanelIconViewModel, DevicePanelIcon>() {
-                  @Override
-                  public DevicePanelIcon newInstance(DevicePanelIconViewModel devicePanelIconViewModel) {
-                      DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-                      icon.setOnAction(event -> viewModel.removeOutputDevice(devicePanelIconViewModel));
-                      return icon;
-                  }
-              }, nodeConsumer);
-
+                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
+                    .setParent(outputPane)
+                    .setModelLoader(viewModel.getOutputChildViewModel())
+                    .setViewFactory(devicePanelIconViewModel -> {
+                        DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
+                        icon.setOnAction(event -> viewModel.removeOutputDevice(devicePanelIconViewModel));
+                        return icon;
+                    })
+                    .setNodeAdder((parent, node) -> parent.getChildren().add(node))
+                    .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                    .createDynamicViewCreator();
     }
 
 }

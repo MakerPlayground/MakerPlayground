@@ -44,18 +44,20 @@ public class SceneDeviceIconView extends VBox {
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
-        iconImageView.setOnMouseClicked(e -> {
+        // use mouse release so that it can be coexist with mouse drag
+        // (mouse release will be consumed if it was release after drag)
+        iconImageView.setOnMouseReleased(e -> {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
 
-        nameIconImageView.setOnMouseClicked(e -> {
+        nameIconImageView.setOnMouseReleased(e -> {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }
 
-    public void setOnRemove(EventHandler<ActionEvent> e) {
+    public void setOnRemoved(EventHandler<ActionEvent> e) {
         removeStateDeviceBtn.setOnAction(e);
     }
 }

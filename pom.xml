@@ -110,10 +110,10 @@
                                 <argument>-srcfiles</argument>
                                 <argument>${project.artifactId}-${project.version}.jar</argument>
                                 <argument>-outdir</argument>
-                                <argument>./target</argument>
+                                <argument>${project.build.directory}</argument>
                                 <argument>-outfile</argument>
                                 <argument>${project.artifactId}-app</argument>
-                                <argument>-Bicon=/Users/Folk/IdeaProjects/MakerPlayGround/src/main/resources/icons/${icon.filename}</argument>
+                                <argument>-Bicon=${project.build.sourceDirectory}/../resources/icons/${icon.filename}</argument>
                                 <argument>-v</argument>
                             </arguments>
                         </configuration>
