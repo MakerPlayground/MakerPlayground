@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<fx:root alignment="TOP_RIGHT" style="-fx-background-color: transparent; -fx-effect: dropshadow(gaussian,derive(black,99%), 15.0 , 0.0, 0.0 , 0.0);" stylesheets="@../css/ConditionView2.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT"  stylesheets="@../css/ConditionView2.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
          <graphic>
@@ -42,8 +42,8 @@
                   <Insets left="5.0" />
                </padding>
             </ScrollPane>
-            <Circle id="sourceNode" fx:id="sourceNode" fill="#313644" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_LEFT" />
-            <Circle id="destNode" fx:id="destNode" fill="#313644" layoutX="20.0" layoutY="48.0" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_RIGHT" />
+            <Circle id="sourceNode" fx:id="inPort" fill="#313644" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_LEFT" />
+            <Circle id="destNode" fx:id="outPort" fill="#313644" layoutX="20.0" layoutY="48.0" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_RIGHT" />
          </children>
       </StackPane>
    </children>

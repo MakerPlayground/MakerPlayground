@@ -27,6 +27,7 @@ public class SelectionGroup {
                         }
                         for (Selectable additem : c.getAddedSubList()) {
                             additem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                                // if this node is selected, we deselect other node. if this node is deselect, do nothing.
                                 if (newValue) {
                                     for (Selectable s : selectable) {
                                         if (s != additem)

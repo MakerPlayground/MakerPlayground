@@ -1,6 +1,7 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.canvas.event.SceneEvent;
+import io.makerplayground.ui.InteractiveNode;
+import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -9,12 +10,19 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 
 public class InteractivePane extends ScrollPane {
     private final Pane content = new Pane();
     private final Group group = new Group();
     private DoubleProperty scale;
+
+    private final SelectionGroup selectionGroup = new SelectionGroup();
+
+    private final Line guideLine = new Line();
 
     public InteractivePane() {
         // a pane to add content into
@@ -28,6 +36,10 @@ public class InteractivePane extends ScrollPane {
         scale = new SimpleDoubleProperty(1);
         // when scale value changed, we scale content and move scroll position to maintain center
         scale.addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() == 0 || !Double.isFinite(newValue.doubleValue())) {
+                throw new IllegalStateException("Scale can't be 0, Infinity or NaN!!!");
+            }
+
             Point2D scrollOffset = figureScrollOffset(group, this);
             double oldScaleFactor = content.getScaleX();
 
@@ -36,6 +48,30 @@ public class InteractivePane extends ScrollPane {
 
             repositionScroller(group, this, scale.get() / oldScaleFactor, scrollOffset);
         });
+
+        // deselect when click at blank space in the canvas
+        setOnMousePressed(event -> selectionGroup.deselect());
+
+        guideLine.setVisible(false);
+        guideLine.setStrokeWidth(3.25);
+        guideLine.setStyle("-fx-stroke: #313644;");
+        content.getChildren().add(guideLine);
+
+        addEventHandler(MouseDragEvent.MOUSE_DRAG_OVER, event -> {
+            double viewportWidth = getViewportBounds().getWidth();
+            double viewportHeight = getViewportBounds().getHeight();
+            double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
+            double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+
+            double left = getHvalue() * extraWidth;
+            double top = getVvalue() * extraHeight;
+
+            guideLine.setEndX((left + event.getX()) / scale.get());
+            guideLine.setEndY((top + event.getY()) / scale.get());
+            event.consume();
+        });
+
+        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> guideLine.setVisible(false));
     }
 
     // https://stackoverflow.com/questions/16680295/javafx-correct-scaling/16682180#16682180
@@ -74,7 +110,7 @@ public class InteractivePane extends ScrollPane {
     }
 
     // listener attaches to every node to automatically move the scrollbar when it moves out of viewport
-    private final EventHandler<SceneEvent> sceneMovedHandler =  (event) -> {
+    private final EventHandler<InteractiveNodeEvent> sceneMovedHandler =  (event) -> {
         double viewportWidth = getViewportBounds().getWidth();
         double viewportHeight = getViewportBounds().getHeight();
         double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
@@ -98,15 +134,27 @@ public class InteractivePane extends ScrollPane {
         }
     };
 
-    public void addChildren(Node n) {
+    public void addChildren(InteractiveNode n) {
         content.getChildren().add(n);
+        // add node to the selection group
+        selectionGroup.getSelectable().add(n);
         // auto scroll when child leave current viewport
-        n.addEventHandler(SceneEvent.SCENE_MOVED, sceneMovedHandler);
+        n.addEventHandler(InteractiveNodeEvent.MOVED, sceneMovedHandler);
+        // show guide line when connecting the nodes
+        n.addEventFilter(InteractiveNodeEvent.CONNECTION_BEGIN, event -> {
+            guideLine.setStartX(event.getX());
+            guideLine.setStartY(event.getY());
+            guideLine.setEndX(event.getX());
+            guideLine.setEndY(event.getY());
+            guideLine.setVisible(true);
+        });
+        n.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event -> guideLine.setVisible(false));
     }
 
-    public void removeChildren(Node n) {
+    public void removeChildren(InteractiveNode n) {
         content.getChildren().remove(n);
-        n.removeEventHandler(SceneEvent.SCENE_MOVED, sceneMovedHandler);
+        selectionGroup.getSelectable().remove(n);
+        n.removeEventHandler(InteractiveNodeEvent.MOVED, sceneMovedHandler);
     }
 
     public double getScale() {
