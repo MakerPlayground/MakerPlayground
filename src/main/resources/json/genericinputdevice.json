@@ -373,5 +373,18 @@
       }
     ],
     "value": []
+  },
+  {
+    "name": "Light",
+    "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light",
+    "action": [
+      {
+        "name": "Light detected",
+        "funcname": "isLight",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
   }
 ]

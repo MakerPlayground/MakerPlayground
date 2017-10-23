@@ -3702,5 +3702,175 @@
         "count": ""
       }
     ]
+  },
+  {
+    "id": "Arduinoall-98",
+    "brand": "Arduinoall",
+    "model": "Light Dependent Resistor LDR 5MM Photoresistor",
+    "url": "https://www.arduinoall.com/product/98/light-dependent-resistor-ldr-5mm-photoresistor",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_RGB_LED"
+    ],
+    "width": 132.212,
+    "height": 40.201,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIGNAL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Light",
+        "action": [
+          {
+            "name": "Light detected",
+            "parameter": [
+              {
+                "name": "isLight",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-737",
+    "brand": "Arduinoall",
+    "model": "Fan dC Motor Module L9110 Fan Module for Arduino",
+    "url": "https://www.arduinoall.com/product/737/fan-dc-motor-module-l9110-fan-module-for-arduino",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_Adafruit_MotorShield"
+    ],
+    "width": 235.329,
+    "height": 241.152,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "INB",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 61.67,
+        "y": 128.556
+      },
+      {
+        "name": "INA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 75.983,
+        "y": 128.556
+      }
+    ],
+    "connectivity": [
+      "GPIO_2",
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "DC Motor",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Direction",
+                "constraint": [
+                  "Forward",
+                  "Backward"
+                ]
+              },
+              {
+                "name": "Speed",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
   }
 ]
