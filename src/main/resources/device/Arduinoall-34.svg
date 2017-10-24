@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="svg2993" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="105.362px" height="147.251px" viewBox="-52.104 -73.048 105.362 147.251"
+	 enable-background="new -52.104 -73.048 105.362 147.251" xml:space="preserve">
+<desc>
+	<referenceFile>GY-521.svg</referenceFile>
+</desc>
+<g id="layer2">
+</g>
+<g id="layer4">
+	
+		<rect id="rect4588" x="-50.948" y="-71.892" fill="#0D4079" stroke="#0D4079" stroke-width="2.3119" width="101.677" height="144.197"/>
+</g>
+<g id="layer3">
+	<g transform="scale(0.95915622,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171" transform="matrix(0.9592 0 0 0.9592 -39.0801 -57.7201)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">VCC</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.90792132,1.101417)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-6" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-1" transform="matrix(0.9079 0 0 0.9079 -41.436 -38.0908)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">GND</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(1.0295722,0.97127722)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-8" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-9" transform="matrix(1.0296 0 0 1.0296 -36.1911 -24.4048)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">SCL</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.95915624,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-9" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-5" transform="matrix(0.9592 0 0 0.9592 -38.507 -4.5118)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">SDA</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.95915624,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-4" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-3" transform="matrix(0.9592 0 0 0.9592 -38.7676 13.4734)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">XDA</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.95915624,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-1" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-2" transform="matrix(0.9592 0 0 0.9592 -39.2889 31.458)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">XCL</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.92207337,1.0845124)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-3" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-34" transform="matrix(0.9221 0 0 0.9221 -40.8658 47.2993)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">ADO</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(1.0101299,0.98997168)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-11" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-38" transform="matrix(1.0101 0 0 1.0101 -36.616 71.0087)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">INT</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="matrix(0.01575389,-1.0677178,0.93626387,0.02122698,0,0)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-98" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-6" transform="matrix(1.0678 0 0 1.0678 2.9314 52.3222)" fill="#FFFFFF" font-family="'DroidSans'" font-size="9.3651">ITG/MPU</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="matrix(0.01774889,-0.94770457,1.0548283,0.01884105,0,0)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-98-5" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-6-0" transform="matrix(0.9479 0 0 0.9479 -46.6639 47.7784)" fill="#FFFFFF" font-family="'DroidSans'" font-size="10.5501">MPU-6050</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.95915624,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-0" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-0" transform="matrix(0.9592 0 0 0.9592 5.6074 69.2239)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">X</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g transform="scale(0.95915624,1.042583)">
+		<g>
+			<g>
+				<g>
+					<g id="text4169-0-6" xmlns:xml="http://www.w3.org/XML/1998/namespace">
+						
+							<text id="tspan4171-0-1" transform="matrix(0.9592 0 0 0.9592 19.9072 51.1816)" fill="#FFFFFF" font-family="'BerlinSansFB-Reg'" font-size="10.0001">Y</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+<g transform="translate(0,-977.95274)">
+	<g>
+		<g>
+			<g>
+				<g id="layer1">
+					<g transform="matrix(1.365129,0,0,1.5496059,-17.046623,971.61101)">
+						<g>
+							<g>
+								<g>
+									<path id="path3035" fill="#FFFFFF" stroke="#FFFFFF" d="M46.356-30.481c0,3.65-3.357,6.607-7.5,6.607
+										c-4.141,0-7.5-2.957-7.5-6.607c0-3.649,3.359-6.607,7.5-6.607C42.999-37.088,46.356-34.13,46.356-30.481z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.365129,0,0,1.5496059,-17.031718,1025.8838)">
+						<g>
+							<g>
+								<g>
+									<path id="path3035-1" fill="#FFFFFF" stroke="#FFFFFF" d="M46.368,4.544c0,3.649-3.358,6.607-7.5,6.607
+										c-4.143,0-7.5-2.958-7.5-6.607s3.356-6.607,7.5-6.607C43.01-2.063,46.368,0.895,46.368,4.544z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<rect id="rect3823" x="-12.955" y="967.163" stroke="#000000" stroke-width="1.9463" width="27.963" height="27.963"/>
+					<rect id="rect3823-7" x="-10.774" y="908.981" stroke="#000000" stroke-width="0.9134" width="10.029" height="17.174"/>
+					<rect id="rect3823-7-4" x="-15.863" y="951.751" stroke="#000000" stroke-width="0.4678" width="10.922" height="4.135"/>
+					<rect id="rect3823-7-4-0" x="-15.863" y="943.001" stroke="#000000" stroke-width="0.4678" width="10.922" height="4.135"/>
+					<rect id="rect3823-7-4-9" x="-16.22" y="1014.429" stroke="#000000" stroke-width="0.4678" width="10.922" height="4.137"/>
+					<rect id="rect3823-7-4-4" x="6.637" y="1014.786" stroke="#000000" stroke-width="0.4678" width="10.922" height="4.137"/>
+					
+						<rect id="rect3823-7-4-8" x="6.996" y="1004.786" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.92" height="4.137"/>
+					
+						<rect id="rect3823-7-4-8-8" x="-15.505" y="1004.429" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.921" height="4.137"/>
+					
+						<rect id="rect3823-7-4-8-2" x="7.709" y="951.215" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.922" height="4.135"/>
+					
+						<rect id="rect3823-7-4-8-4" x="8.781" y="942.286" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.922" height="4.137"/>
+					
+						<rect id="rect3823-7-4-8-5" x="-16.577" y="933.001" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.922" height="4.135"/>
+					<g transform="matrix(0.01338993,-0.99991035,0.99991035,0.01338993,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-51" x="-923.089" y="26.248" fill="#705127" stroke="#705127" stroke-width="0.4678" width="10.921" height="4.137"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					
+						<rect id="rect3823-7-7" x="29.321" y="969.79" fill="#F3C33B" stroke="#F3C33B" stroke-width="1.0071" width="9.844" height="21.272"/>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-1.0190541,976.73707)">
+						<g>
+							<g>
+								<g>
+									<path id="connector0pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.629-64.767c0,2.663-1.999,4.821-4.465,4.821
+										c-2.465,0-4.464-2.159-4.464-4.821c0-2.662,1.999-4.821,4.464-4.821C-38.628-69.588-36.629-67.429-36.629-64.767z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					
+						<rect id="rect3823-7-4-8-8-1" x="-15.248" y="1024.222" fill="#E4D493" stroke="#E4D493" stroke-width="0.4391" width="8.479" height="4.693"/>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-0.9948264,986.05213)">
+						<g>
+							<g>
+								<g>
+									<path id="connector1pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.653-55.346c0,2.662-1.998,4.821-4.464,4.821
+										s-4.464-2.159-4.464-4.821c0-2.664,1.998-4.823,4.464-4.823S-36.653-58.01-36.653-55.346z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-1.0694402,995.0821)">
+						<g>
+							<g>
+								<g>
+									<path id="connector2pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.582-46.216c0,2.662-1.999,4.821-4.465,4.821
+										c-2.465,0-4.464-2.159-4.464-4.821s1.999-4.821,4.464-4.821C-38.581-51.037-36.582-48.879-36.582-46.216z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-1.0452125,1004.6471)">
+						<g>
+							<g>
+								<g>
+									<path id="connector3pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.605-36.543c0,2.663-1.999,4.821-4.464,4.821
+										c-2.466,0-4.465-2.159-4.465-4.821c0-2.662,1.999-4.821,4.465-4.821C-38.603-41.364-36.605-39.205-36.605-36.543z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-0.9817472,1013.9096)">
+						<g>
+							<g>
+								<g>
+									<path id="connector4pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.664-27.176c0,2.662-1.999,4.821-4.464,4.821
+										c-2.466,0-4.465-2.159-4.465-4.821c0-2.664,1.999-4.823,4.465-4.823C-38.663-31.999-36.664-29.84-36.664-27.176z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-0.9575195,1023.2246)">
+						<g>
+							<g>
+								<g>
+									<path id="connector5pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.687-17.758c0,2.662-1.999,4.821-4.465,4.821
+										c-2.465,0-4.464-2.159-4.464-4.821c0-2.662,1.999-4.821,4.464-4.821C-38.686-22.579-36.687-20.42-36.687-17.758z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-1.0321333,1032.3796)">
+						<g>
+							<g>
+								<g>
+									<path id="connector6pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.617-8.499c0,2.662-1.999,4.821-4.464,4.821
+										c-2.466,0-4.465-2.159-4.465-4.821s1.999-4.821,4.465-4.821C-38.616-13.32-36.617-11.161-36.617-8.499z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(1.0680374,0,0,0.98892347,-1.0080153,1042.1947)">
+						<g>
+							<g>
+								<g>
+									<path id="connector7pin" stroke="#EFD888" stroke-width="1.5665" d="M-36.641,1.427c0,2.662-1.999,4.821-4.464,4.821
+										c-2.466,0-4.464-2.159-4.464-4.821c0-2.664,1.998-4.823,4.464-4.823C-38.639-3.396-36.641-1.238-36.641,1.427z"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<path id="path4427" fill="#F9F9F9" stroke="#FFFFFF" stroke-width="0.6739" d="M14.726,1025.994l0.027,15.215"/>
+					<path id="path4427-2" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M15.093,1025.525l-3.328,3.15"/>
+					<path id="path4427-2-8" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M14.189,1025.443l3.229,3.254"/>
+					<path id="path4427-6" fill="none" stroke="#FFFFFF" stroke-width="0.6739" d="M4.15,1042.605l-15.215,0.107"/>
+					<path id="path4427-2-0" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M4.621,1042.967l-3.17-3.311"/>
+					<path id="path4427-2-8-2" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M4.699,1042.064l-3.238,3.244"/>
+					<path id="path4427-6-4" fill="none" stroke="#FFFFFF" stroke-width="0.6739" d="M22.088,1033.316l-1.92,1.818l-1.441,0.9
+						l-1.641,0.617l-2.596,0.154l-2.691-0.408l-1.869-0.783l-1.379-0.793l-1.676-1.396"/>
+					<path id="path4427-2-0-8" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M22.416,1032.947l-4.584,0.094"/>
+					<path id="path4427-2-8-2-6" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M21.802,1032.279l0.201,4.578"/>
+					<path id="path4427-6-4-5" fill="none" stroke="#FFFFFF" stroke-width="0.6739" d="M-1.831,1050.119l-1.766-1.967l-0.863-1.467
+						l-0.572-1.654l-0.085-2.6l0.479-2.68l0.834-1.848l0.828-1.355l1.441-1.641"/>
+					<path id="path4427-2-0-8-0" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M-1.47,1050.457l0.027-4.584"/>
+					<path id="path4427-2-8-2-6-9" fill="none" stroke="#FFFFFF" stroke-width="0.6461" d="M-0.786,1049.863l-4.582,0.078"/>
+					
+						<rect id="rect3823-7-4-8-5-3" x="0.375" y="909.094" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.3124" width="8.232" height="2.447"/>
+					
+						<rect id="rect3823-7-4-8-5-3-8" x="13.593" y="909.875" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.01"/>
+					
+						<rect id="rect3823-7-4-8-5-3-9" x="-19.327" y="908.956" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2977" width="7.387" height="2.475"/>
+					
+						<rect id="rect3823-7-4-8-5-3-9-4" x="-19.327" y="916.206" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2977" width="7.387" height="2.475"/>
+					
+						<rect id="rect3823-7-4-8-5-3-9-46" x="-19.452" y="923.081" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2977" width="7.387" height="2.475"/>
+					
+						<rect id="rect3823-7-4-8-5-3-6" x="0.375" y="923.345" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.3124" width="8.232" height="2.447"/>
+					
+						<rect id="rect3823-7-4-8-5-3-8-6" x="13.511" y="924.044" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.008"/>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1" x="-946.736" y="13.167" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.008"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4" x="-946.654" y="27.47" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.01"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-9" x="-955.663" y="12.135" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.01"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-6" x="-955.582" y="26.439" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.01"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-8" x="-937.658" y="-12.344" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.918" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-8" x="-937.578" y="1.959" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-2" x="-947.588" y="-11.426" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.918" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-9" x="-947.509" y="2.878" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-1" x="-956.338" y="-11.423" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.918" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-3" x="-956.26" y="2.881" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-5" x="-1009.068" y="-10.649" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-98" x="-1008.986" y="3.654" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-40" x="-1019.018" y="-11.326" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.921" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-7" x="-1018.936" y="2.978" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.921" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-6" x="-1009.209" y="11.847" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.008"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-36" x="-1009.126" y="26.151" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.918" height="2.008"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-15" x="-1019.245" y="11.569" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.921" height="2.01"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-4" x="-1019.163" y="25.872" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.921" height="2.01"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-20" x="-1029.084" y="-10.252" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.918" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.00749539,-0.99997191,0.99997191,0.00749539,0,0)">
+						<g>
+							<g>
+								<g>
+									
+										<rect id="rect3823-7-4-8-5-3-8-6-1-4-97" x="-1029.024" y="1.582" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.2188" width="4.92" height="2.009"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					
+						<rect id="rect3823-7-4-8-5-3-8-3" x="29.301" y="965.289" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.3841" width="9.848" height="3.092"/>
+					
+						<rect id="rect3823-7-4-8-5-3-8-3-7" x="29.234" y="992.469" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.3841" width="9.848" height="3.092"/>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.884,13.375 -997.413,13.374 -997.412,15.199 -998.885,15.199 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.898,17.153 -997.425,17.153 -997.426,18.977 -998.897,18.978 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-0" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.878,20.434 -997.407,20.435 -997.406,22.259 -998.878,22.258 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-1" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.89,24.214 -997.419,24.213 -997.419,26.038 -998.892,26.038 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-65-5" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.242,26.747 -963.771,26.749 -963.77,28.573 -965.241,28.571 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-7-4" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.254,30.526 -963.783,30.526 -963.783,32.35 -965.256,32.351 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-1" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.31,12.75 -963.837,12.751 -963.838,14.575 -965.309,14.574 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-2" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.322,16.53 -963.851,16.53 -963.85,18.354 -965.321,18.354 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-0-0" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.304,19.811 -963.831,19.81 -963.832,21.635 -965.304,21.635 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-1-0" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-965.316,23.588 -963.843,23.59 -963.845,25.414 -965.316,25.412 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-65-1" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.337,985.345 -7.865,985.343 -7.865,987.167 -9.337,987.167 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-7-46" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.349,989.122 -7.878,989.123 -7.878,990.947 -9.35,990.947 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-07" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.405,971.346 -7.933,971.347 -7.933,973.171 -9.405,973.17 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-17" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.417,975.126 -7.946,975.125 -7.945,976.949 -9.417,976.95 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-0-7" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.398,978.407 -7.927,978.407 -7.927,980.232 -9.398,980.231 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-1-7" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-9.411,982.184 -7.939,982.185 -7.939,984.009 -9.411,984.009 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-65-1-7" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.221,984.268 25.69,984.267 25.692,986.091 24.219,986.093 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-7-46-3" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.207,988.046 25.678,988.047 25.68,989.871 24.207,989.871 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-07-3" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.109,970.316 25.58,970.317 25.58,972.141 24.108,972.14 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-17-5" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.14,974.05 25.611,974.05 25.61,975.875 24.139,975.874 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-0-7-9" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.159,977.33 25.631,977.331 25.63,979.155 24.159,979.155 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.99962259,0.02747125,-0.00718865,0.99997416,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-1-7-9" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										24.146,981.108 25.617,981.109 25.618,982.933 24.145,982.933 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-65" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.816,27.37 -997.345,27.372 -997.344,29.196 -998.817,29.194 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+					<g transform="matrix(0.02275271,-0.99974112,0.99999695,0.00246868,0,0)">
+						<g>
+							<g>
+								<g>
+									<polygon id="rect3823-7-4-8-5-3-8-6-1-4-98-2-6-7" fill="#D9D4C1" stroke="#D9D4C1" stroke-width="0.114" points="
+										-998.83,31.152 -997.357,31.149 -997.359,32.974 -998.83,32.976 									"/>
+								</g>
+							</g>
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

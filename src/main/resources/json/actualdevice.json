@@ -3872,5 +3872,624 @@
         "count": ""
       }
     ]
+  },
+  {
+    "id": "Arduinoall-184",
+    "brand": "Arduinoall",
+    "model": "Soil Moisture Sensor Module",
+    "url": "https://www.arduinoall.com/product/184/soil-moisture-sensor-module",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_BME280"
+    ],
+    "width": 210.63,
+    "height": 388.242,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 192.908,
+        "y": 215.451
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 178.51,
+        "y": 215.451
+      },
+      {
+        "name": "A0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 149.707,
+        "y": 215.451
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-1701",
+    "brand": "Arduinoall",
+    "model": "Infrared Barrier tracking avoidance Obstacle Sensor Module",
+    "url": "https://www.arduinoall.com/product/1701/infrared-barrier-tracking-avoidance-obstacle-sensor-module-%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%81%E0%B8%B5%E0%B8%94%E0%B8%82%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%9F%E0%B8%B2%E0%B9%80%E0%B8%A3%E0%B8%94",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_HC_SR501"
+    ],
+    "width": 41.041,
+    "height": 102.929,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "OUT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.442,
+        "y": 89.597
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 21.81,
+        "y": 89.597
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 29.178,
+        "y": 89.597
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Presence",
+        "action": [
+          {
+            "name": "Detect Human",
+            "parameter": [
+              {
+                "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-1219",
+    "brand": "Arduinoall",
+    "model": "Red  seven segment 4 digits 0.36\" with TM1637 Driver",
+    "url": "https://www.arduinoall.com/product/1219/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B9%81%E0%B8%AA%E0%B8%94%E0%B8%87%E0%B8%84%E0%B9%88%E0%B8%B2%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%80%E0%B8%A5%E0%B8%82-4-%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-0-36-%E0%B8%AA%E0%B8%B5%E0%B9%81%E0%B8%94%E0%B8%87-tm1637-driver",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_7segI2C",
+      "TM1637Display"
+    ],
+    "width": 372.0,
+    "height": 153.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "CLK",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 20.5,
+        "y": 52.5
+      },
+      {
+        "name": "DIO",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 20.5,
+        "y": 66.5
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 20.5,
+        "y": 82.5
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 20.5,
+        "y": 95.5
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "7 Segment",
+        "action": [
+          {
+            "name": "Show Value",
+            "parameter": [
+              {
+                "name": "Value",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Show Data",
+            "parameter": [
+              {
+                "name": "Data",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 9999.0,
+                  "unit": "NUMBER"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          },
+          {
+            "name": "Set Brightness",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": [
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7"
+                ]
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-653",
+    "brand": "Arduinoall",
+    "model": "DHT11 Digital Temperature and Humidity Sensor DHT11\u00a0",
+    "url": "https://www.arduinoall.com/product/653/dht11-digital-temperature-and-humidity-sensor-dht11-%E0%B9%81%E0%B8%9A%E0%B8%9A-pcb-%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%AA%E0%B8%B2%E0%B8%A2%E0%B9%84%E0%B8%9F",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_BME280",
+      "Adafruit_BME280",
+      "Adafruit_Sensor"
+    ],
+    "width": 93.542,
+    "height": 140.332,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 32.403,
+        "y": 140.332
+      },
+      {
+        "name": "OUT",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 46.869,
+        "y": 140.332
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 61.268,
+        "y": 140.332
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": 0.0,
+              "max": 50.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 20.0,
+              "max": 80.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-34",
+    "brand": "Arduinoall",
+    "model": "GY-521 IMU 3-axis Accelerometer/Gyro Module (MPU6050)",
+    "url": "https://www.arduinoall.com/product/34/gy-521-imu-3-axis-accelerometer-gyro-module-mpu6050",
+    "type": "PERIPHERAL",
+    "formfactor": "STANDALONE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "Adafruit_Sensor",
+      "Adafruit_LSM303_U",
+      "MP_LSM303"
+    ],
+    "width": 104.206,
+    "height": 146.095,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 7.783
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 26.413
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 44.473
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 63.604
+      },
+      {
+        "name": "XDA",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 82.128
+      },
+      {
+        "name": "XCL",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 100.758
+      },
+      {
+        "name": "ADO",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 119.069
+      },
+      {
+        "name": "INT",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 7.195,
+        "y": 138.699
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Accelerometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Y",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Z",
+            "constraint": {
+              "min": -156.96,
+              "max": 156.96,
+              "unit": "METERPERSECSQUARE"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Gyroscope",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          },
+          {
+            "name": "Y",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          },
+          {
+            "name": "Z",
+            "constraint": {
+              "min": -2000.0,
+              "max": 2000.0,
+              "unit": "DEGREEPERSEC"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
   }
 ]
