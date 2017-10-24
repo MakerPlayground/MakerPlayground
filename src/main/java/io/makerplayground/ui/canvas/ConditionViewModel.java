@@ -1,9 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.Condition;
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.*;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
@@ -57,4 +54,11 @@ public class ConditionViewModel {
 
     public BooleanProperty hasDeviceToAddProperty() { return hasDeviceToAdd; }
 
+    public boolean hasConnectionFrom(NodeElement other) {
+        return project.hasLine(other, condition);
+    }
+
+    public boolean hasConnectionTo(NodeElement other) {
+        return project.hasLine(condition, other);
+    }
 }

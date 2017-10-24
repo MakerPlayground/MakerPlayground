@@ -156,16 +156,55 @@ public class SceneView extends InteractiveNode{
                     , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + (outPort.getBoundsInLocal().getHeight() / 2)));
         });
-        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> showHighlight(true));
+        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+            // highlight our inPort if mouse is being dragged from other outPort
+            if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
+                showHighlight(true);
+            }
+        });
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
-            showHighlight(false);
-            fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+            // allow drop to our inPort if mouse is being dragged from other outPort
+            if (interactivePane.getSourceNode() != null) {
+                showHighlight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , interactivePane.getSourceNode(), sceneViewModel.getScene()
+                        , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (inPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + (inPort.getBoundsInLocal().getHeight() / 2)));
+            }
+        });
+
+        inPort.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+            startFullDrag();
+            // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
+            // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
+            fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
                     , null, sceneViewModel.getScene()
                     , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                        + (inPort.getBoundsInLocal().getWidth() / 2)
+                    + (inPort.getBoundsInLocal().getWidth() / 2)
                     , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                        + (inPort.getBoundsInLocal().getHeight() / 2)));
+                    + (inPort.getBoundsInLocal().getHeight() / 2)));
+        });
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+            // highlight our outPort if mouse is being dragged from other inPort
+            if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+                showHighlight(true);
+            }
+        });
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            // allow drop to our outPort if mouse is being dragged from other inPort
+            if (interactivePane.getDestNode() != null) {
+                showHighlight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , sceneViewModel.getScene(), interactivePane.getDestNode()
+                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (outPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + (outPort.getBoundsInLocal().getHeight() / 2)));
+            }
         });
     }
 

@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.NodeElement;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
@@ -20,9 +19,6 @@ public class CanvasView extends AnchorPane {
 
     private final CanvasViewModel canvasViewModel;
 
-    private NodeElement sourceNode; // TODO: leak model into view
-    private NodeElement destNode;   // TODO: leak model into view
-
     public CanvasView(CanvasViewModel canvasViewModel) {
         this.canvasViewModel = canvasViewModel;
         initView();
@@ -30,14 +26,18 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initView() {
-        addStateBtn.setText("Add Scene");
+        getStylesheets().add(getClass().getResource("/css/CanvasView.css").toExternalForm());
+
+        addStateBtn.setText("+ Add Scene");
+        addStateBtn.setId("addStateBtn");
         addStateBtn.setOnAction(event -> canvasViewModel.project.addState());
         AnchorPane.setTopAnchor(addStateBtn, 20.0);
         AnchorPane.setRightAnchor(addStateBtn, 20.0);
 
-        addConditionBtn.setText("Add Condition");
+        addConditionBtn.setText("+ Add Condition");
+        addConditionBtn.setId("addConditionBtn");
         addConditionBtn.setOnAction(event -> canvasViewModel.project.addCondition());
-        AnchorPane.setTopAnchor(addConditionBtn, 40.0);
+        AnchorPane.setTopAnchor(addConditionBtn, 65.0);
         AnchorPane.setRightAnchor(addConditionBtn, 20.0);
 
         zoomTextField.setText(String.valueOf(mainPane.getScale()));
@@ -95,7 +95,10 @@ public class CanvasView extends AnchorPane {
                             lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
                             return lineView;
                         })
-                        .setNodeAdder(InteractivePane::addChildren)
+                        .setNodeAdder((parent, node) -> {
+                            parent.addChildren(node);
+                            node.toBack();  // draw line below other elements so that it won't block mouse event on in/out port
+                        })
                         .setNodeRemover(InteractivePane::removeChildren)
                         .createDynamicViewCreator();
 
@@ -128,13 +131,8 @@ public class CanvasView extends AnchorPane {
     }
 
     private void addConnectionEvent(InteractiveNode node) {
-        node.addEventFilter(InteractiveNodeEvent.CONNECTION_BEGIN, event -> {
-            sourceNode = event.getSourceNode();
-        });
-
-        node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event -> {
-            destNode = event.getDestinationNode();
-            canvasViewModel.connect(sourceNode, destNode);
-        });
+        node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
+            canvasViewModel.connect(event.getSourceNode(), event.getDestinationNode())
+        );
     }
 }

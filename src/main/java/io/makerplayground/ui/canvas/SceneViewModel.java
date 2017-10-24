@@ -1,9 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.Scene;
-import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.*;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
@@ -124,5 +121,13 @@ public class SceneViewModel {
             }
         }
         return false;
+    }
+
+    public boolean hasConnectionFrom(NodeElement other) {
+        return project.hasLine(other, scene);
+    }
+
+    public boolean hasConnectionTo(NodeElement other) {
+        return project.hasLine(scene, other);
     }
 }

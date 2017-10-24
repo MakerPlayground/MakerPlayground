@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.project.NodeElement;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -24,6 +25,8 @@ public class InteractivePane extends ScrollPane {
     private final SelectionGroup<InteractiveNode> selectionGroup = new SelectionGroup<>();
 
     private final Line guideLine = new Line();
+    private NodeElement sourceNode; // TODO: leak model into view
+    private NodeElement destNode;   // TODO: leak model into view
 
     public InteractivePane() {
         // a pane to add content into
@@ -168,8 +171,18 @@ public class InteractivePane extends ScrollPane {
             guideLine.setEndY(event.getY());
             guideLine.toFront();
             guideLine.setVisible(true);
+
+            // keep model of node that is being dragged to create connection
+            // this is used by InteractiveNode to fire InteractiveNodeEvent.CONNECTION_DONE
+            sourceNode = event.getSourceNode();
+            destNode = event.getDestinationNode();
         });
-        n.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event -> guideLine.setVisible(false));
+        n.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event -> {
+            guideLine.setVisible(false);
+
+            sourceNode = null;
+            destNode = null;
+        });
     }
 
     public void removeChildren(InteractiveNode n) {
@@ -180,6 +193,14 @@ public class InteractivePane extends ScrollPane {
 
     public List<InteractiveNode> getSelectedNode() {
         return selectionGroup.getSelected();
+    }
+
+    public NodeElement getSourceNode() {
+        return sourceNode;
+    }
+
+    public NodeElement getDestNode() {
+        return destNode;
     }
 
     public double getScale() {
