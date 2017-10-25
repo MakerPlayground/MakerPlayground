@@ -16,6 +16,9 @@ public class CanvasView extends AnchorPane {
     private final Button addStateBtn = new Button();
     private final Button addConditionBtn = new Button();
     private final TextField zoomTextField = new TextField();
+    private final Button zoomInButton = new Button();
+    private final Button zoomOutButton = new Button();
+    private final Button zoomDefaultButton = new Button();
 
     private final CanvasViewModel canvasViewModel;
 
@@ -40,7 +43,32 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setTopAnchor(addConditionBtn, 65.0);
         AnchorPane.setRightAnchor(addConditionBtn, 20.0);
 
+        zoomDefaultButton.setId("zoomDefaultButton");
+        zoomDefaultButton.setMinSize(25,25);
+        zoomDefaultButton.setOnAction(event -> mainPane.setScale(1));
+        AnchorPane.setBottomAnchor(zoomDefaultButton, 20.0);
+        AnchorPane.setRightAnchor(zoomDefaultButton, 125.0);
+
+        zoomInButton.setId("zoomInButton");
+        zoomInButton.setMinSize(25,25);
+        zoomInButton.setOnAction(event -> {
+            if(mainPane.getScale()< 5)
+                mainPane.setScale(mainPane.getScale() + 0.1);
+        });
+        AnchorPane.setBottomAnchor(zoomInButton, 20.0);
+        AnchorPane.setRightAnchor(zoomInButton, 20.0);
+
+        zoomOutButton.setId("zoomOutButton");
+        zoomOutButton.setMinSize(25,25);
+        zoomOutButton.setOnAction(event -> {
+            if(mainPane.getScale()> 0.5)
+                mainPane.setScale(mainPane.getScale() - 0.1);
+        });
+        AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
+        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
+
         zoomTextField.setText(String.valueOf(mainPane.getScale()));
+        zoomTextField.setPrefWidth(40.0);
         zoomTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (!newValue.isEmpty()) {
@@ -54,7 +82,7 @@ public class CanvasView extends AnchorPane {
             }
         });
         AnchorPane.setBottomAnchor(zoomTextField, 20.0);
-        AnchorPane.setRightAnchor(zoomTextField, 20.0);
+        AnchorPane.setRightAnchor(zoomTextField, 50.0);
 
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
@@ -106,7 +134,7 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setRightAnchor(mainPane, 0.0);
         AnchorPane.setBottomAnchor(mainPane, 0.0);
         AnchorPane.setLeftAnchor(mainPane, 0.0);
-        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomTextField);
+        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomTextField, zoomInButton, zoomOutButton, zoomDefaultButton);
     }
 
     private void initEvent() {
