@@ -379,12 +379,81 @@
     "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light",
     "action": [
       {
-        "name": "Light detected",
-        "funcname": "isLight",
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Light",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Water",
+    "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector",
+    "action": [
+      {
+        "name": "Wait sensor is wet",
+        "funcname": "isWet",
         "type": "Active",
         "parameter": []
       }
     ],
     "value": []
+  },
+  {
+    "name": "Alcohol",
+    "description": "A sensor that detect alcohol. \\nRelated project:\\n\\tAlcohol meter",
+    "action": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Alcohol",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
+      }
+    ]
+  },
+  {
+    "name": "LPG",
+    "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas dectetor",
+    "action": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "LPG",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
+      }
+    ]
   }
 ]

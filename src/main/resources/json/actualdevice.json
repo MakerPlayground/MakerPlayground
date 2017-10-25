@@ -3775,16 +3775,20 @@
         "name": "Light",
         "action": [
           {
-            "name": "Light detected",
-            "parameter": [
-              {
-                "name": "isLight",
-                "constraint": []
-              }
-            ]
+            "name": "Compare",
+            "parameter": []
           }
         ],
-        "value": [],
+        "value": [
+          {
+            "name": "Light",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
         "count": ""
       }
     ]
@@ -3920,6 +3924,15 @@
         "v_min": 3.3,
         "v_max": 5.0,
         "x": 178.51,
+        "y": 215.451
+      },
+      {
+        "name": "D0",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 164.109,
         "y": 215.451
       },
       {
@@ -4488,6 +4501,290 @@
             }
           }
         ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-222",
+    "brand": "Arduinoall",
+    "model": "Module MQ-2 FC-22 Smoke Gas Sensor Smoke methane gas liquefied flammable gas sensor module for arduano",
+    "url": "https://www.arduinoall.com/product/222/module-mq-2-fc-22-smoke-gas-sensor-smoke-methane-gas-liquefied-flammable-gas-sensor-module-for-ardua",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_BME280"
+    ],
+    "width": 130.194,
+    "height": 203.991,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 43.398,
+        "y": 190.593
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 57.797,
+        "y": 190.593
+      },
+      {
+        "name": "D0",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 72.196,
+        "y": 190.593
+      },
+      {
+        "name": "A0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 86.593,
+        "y": 190.593
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LPG",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "LPG",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-261",
+    "brand": "Arduinoall",
+    "model": "MQ-3 alcohol sensor Alcohol",
+    "url": "https://www.arduinoall.com/product/261/%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%81%E0%B8%AD%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%AE%E0%B8%AD%E0%B8%A5%E0%B9%8C-mq-3-alcohol-sensor-alcohol",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_BME280"
+    ],
+    "width": 130.194,
+    "height": 203.991,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 43.398,
+        "y": 190.593
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 57.797,
+        "y": 190.593
+      },
+      {
+        "name": "D0",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 72.196,
+        "y": 190.593
+      },
+      {
+        "name": "A0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 86.593,
+        "y": 190.593
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Alcohol",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Alcohol",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduinoall-377",
+    "brand": "Arduinoall",
+    "model": "Rain Raindrop Water Level Sensor Module Height Depth of Detection For Arduino",
+    "url": "https://www.arduinoall.com/product/377/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%9D%E0%B8%99-%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B8%99%E0%B9%89%E0%B8%B3-rain-raindrop-water-level-sensor-module-height-depth-of-detection-for-a-3",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_MAX4466"
+    ],
+    "width": 113.378,
+    "height": 351.498,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 44.417,
+        "y": 341.748
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 58.817,
+        "y": 341.748
+      },
+      {
+        "name": "S",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 73.217,
+        "y": 341.748
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Water",
+        "action": [
+          {
+            "name": "Wait sensor is wet",
+            "parameter": [
+              {
+                "name": "isWet",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
         "count": ""
       }
     ]
