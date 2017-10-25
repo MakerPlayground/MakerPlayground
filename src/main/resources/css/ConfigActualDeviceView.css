@@ -4,29 +4,39 @@
     -fx-text-fill : black;
     -fx-font-size:12px;
 }
-
-.label{
+#topicConfigDevice{
+    -fx-background-color : transparent;
+    -fx-text-fill : #313644;
+    -fx-font-size:14px;
+    -fx-font-weight: bold;
+}
+#nameLabel{
     -fx-background-color : transparent;
     -fx-text-fill : #313644;
     -fx-max-width: 100;
     -fx-min-width: 100;
     -fx-font-size:12px;
 }
+.label{
+    -fx-background-color : transparent;
+    -fx-text-fill : #313644;
+    -fx-font-size:12px;
+}
 #portComboBox{
-    -fx-max-width: 75;
-    -fx-min-width: 75;
+    -fx-max-width: 95;
+    -fx-min-width: 60;
     -fx-min-height: 25;
     -fx-max-height: 25;
     -fx-font-size:12px;
 }
 #portComboBox:showing .list-view,#portComboBox:armed .list-view{
-    -fx-max-width: 75;
-    -fx-min-width: 75;
+    -fx-max-width: 95;
+    -fx-min-width: 60;
     -fx-font-size:12px;
 }
 #deviceComboBox{
-    -fx-max-width: 200;
-    -fx-min-width: 200;
+    -fx-max-width: 230;
+    -fx-min-width: 230;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
@@ -45,8 +55,8 @@
     -fx-font-size:12px;
 }
 #deviceComboBox:showing .list-view,#deviceComboBox:armed .list-view {
-    -fx-max-width: 200;
-    -fx-min-width: 200;
+    -fx-max-width: 230;
+    -fx-min-width: 230;
 }
 .combo-box.list-cell {
     -fx-background-color: white;
@@ -127,6 +137,10 @@
 }
 .scroll-bar {
     -fx-background-color: transparent;
+}
+.check-box{
+    -fx-min-width:25;
+    -fx-min-height:25;
 }
 .check-box .box{
     -fx-border-color: #cccccc;

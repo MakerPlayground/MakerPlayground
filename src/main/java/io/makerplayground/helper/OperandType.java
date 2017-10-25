@@ -20,5 +20,15 @@ package io.makerplayground.helper;
  * An enum to represent an operand of a operation
  */
 public enum OperandType {
-    NUMBER, VARIABLE
+    NUMBER, VARIABLE;
+
+    @Override
+    public String toString() {
+
+        switch (this) {
+            case NUMBER: return "Number";
+            case VARIABLE: return "Variable";
+            default: return "...";
+        }
+    }
 }

@@ -38,7 +38,22 @@ public class DevicePanelIcon extends VBox {
         }
 
         imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getDeviceName() + ".png")));
-        nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
+        //nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
+        nameTextField.setText(viewModel.getDevice().getName());
+
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == false) {
+                // Check duplicated scene's name
+                if (viewModel.isNameDuplicate(nameTextField.getText())) {
+                    nameTextField.setText(viewModel.getDevice().getName());
+                } else { // write change to model
+                    viewModel.getDevice().setName(nameTextField.getText());
+                }
+            }
+        });
+
+
+
     }
 
     public void setOnAction(EventHandler<ActionEvent> event) {

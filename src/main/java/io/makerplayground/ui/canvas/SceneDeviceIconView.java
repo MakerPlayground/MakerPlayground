@@ -48,6 +48,11 @@ public class SceneDeviceIconView extends VBox {
             DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
+
+        nameIconImageView.setOnMouseClicked(e -> {
+            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            devicePropertyWindow.show(SceneDeviceIconView.this);
+        });
     }
 
     public void setOnRemove(EventHandler<ActionEvent> e) {

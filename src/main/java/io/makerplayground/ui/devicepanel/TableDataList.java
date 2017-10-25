@@ -46,6 +46,12 @@ public class TableDataList {
                     throw new IllegalStateException("Port hasn't been selected!!!");
                 }
                 list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+            } else { //i2c and others
+                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                if (port == null) {
+                    throw new IllegalStateException("Port hasn't been selected!!!");
+                }
+                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
             }
         }
         this.pin = String.join(",", list);
