@@ -160,8 +160,11 @@ public class ConfigActualDeviceView extends Dialog {
                 deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
             }
             deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                // remove old selection if existed
+                if (oldValue != null) {
+                    viewModel.removePeripheral(projectDevice);
+                }
                 viewModel.setDevice(projectDevice, newValue);
-                viewModel.removePeripheral(projectDevice);
                 viewModel.reInitialize();
             });
 

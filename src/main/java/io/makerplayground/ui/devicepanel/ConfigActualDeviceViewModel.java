@@ -77,7 +77,10 @@ public class ConfigActualDeviceViewModel {
 
     public void removePeripheral(ProjectDevice projectDevice) {
         // TODO: assume a device only has 1 peripheral
-        projectDevice.removeDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0));
+        //projectDevice.removeDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0));
+        for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+            projectDevice.removeDeviceConnection(p);
+        }
     }
 
     public ObservableList<ProjectDevice> getAllDevice() {

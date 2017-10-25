@@ -150,8 +150,10 @@ public class DeviceMapper {
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
 
-            if (projectDevice.getActualDevice() == null) {
-            //if (projectDevice.getActualDevice() == null) {
+
+            // Assign this device if only user check auto
+            if (projectDevice.isAutoSelectDevice()) {
+                //if (projectDevice.getActualDevice() == null) {
                 // Set actual device by selecting first element
                 Map<ProjectDevice, List<Device>> deviceList = getSupportedDeviceList(project);
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
@@ -170,8 +172,8 @@ public class DeviceMapper {
                     }
                 }
             }
-        }
 
+        }
         return true;
     }
 }
