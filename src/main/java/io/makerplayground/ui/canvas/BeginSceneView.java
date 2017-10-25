@@ -1,11 +1,11 @@
 package io.makerplayground.ui.canvas;
 
-import javafx.event.EventHandler;
+import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.control.Label;
-import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Arc;
@@ -15,110 +15,68 @@ import java.io.IOException;
 /**
  * Created by Mai.Manju on 13-Jul-17.
  */
-public class BeginSceneView extends HBox {
-    @FXML private HBox beginHBox;
-    @FXML private Arc sourceNode;
+public class BeginSceneView extends InteractiveNode {
+    private final HBox beginHBox = new HBox();
+    @FXML private Arc outPort;
     @FXML private Label labelHBox;
 
     private final BeginSceneViewModel beginSceneViewModel;
 
-    private double dragDeltaX;
-    private double dragDeltaY;
-
-    public BeginSceneView(BeginSceneViewModel beginSceneViewModel) {
+    public BeginSceneView(BeginSceneViewModel beginSceneViewModel, InteractivePane interactivePane) {
+        super(interactivePane);
         this.beginSceneViewModel = beginSceneViewModel;
 
+        // initialize view from FXML
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BeginScene.fxml"));
-        fxmlLoader.setRoot(this);
+        fxmlLoader.setRoot(beginHBox);
         fxmlLoader.setController(this);
-
         try {
             fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        layoutXProperty().bindBidirectional(beginSceneViewModel.xProperty());
-        layoutYProperty().bindBidirectional(beginSceneViewModel.yProperty());
-        enableDrag();
-    }
+        getChildren().add(beginHBox);
+        makeMovable(labelHBox);
 
-    private void enableDrag() {
+        // bind begin's location to the model
+        translateXProperty().bindBidirectional(beginSceneViewModel.xProperty());
+        translateYProperty().bindBidirectional(beginSceneViewModel.yProperty());
 
-        // Register an event filter for a single node and a specific event type
-        labelHBox.addEventFilter(MouseEvent.MOUSE_ENTERED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        if (!event.isPrimaryButtonDown()) {
-                            getScene().setCursor(Cursor.HAND);
-                        }
-                        setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-                    }
-                });
-
-        labelHBox.addEventFilter(MouseEvent.MOUSE_DRAGGED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        setLayoutX(event.getSceneX() + dragDeltaX);
-                        setLayoutY(event.getSceneY() + dragDeltaY);
-                        setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-                    }
-                });
-
-        labelHBox.addEventFilter(MouseEvent.MOUSE_RELEASED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        getScene().setCursor(Cursor.HAND);
-                        setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-                    }
-                });
-
-        labelHBox.addEventFilter(MouseEvent.MOUSE_EXITED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        if (!event.isPrimaryButtonDown()) {
-                            getScene().setCursor(Cursor.DEFAULT);
-                        }
-                        setStyle("-fx-effect: dropshadow(gaussian,derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-                    }
-                });
-
-        labelHBox.setOnMousePressed(mouseEvent -> {
-            dragDeltaX = getLayoutX() - mouseEvent.getSceneX();
-            dragDeltaY = getLayoutY() - mouseEvent.getSceneY();
-            setStyle("-fx-effect: dropshadow(gaussian,#5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
-            getScene().setCursor(Cursor.MOVE);
+        // TODO: refactor into InteractiveNode
+        // allow node to connect with other node
+        outPort.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+            startFullDrag();
+            // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
+            // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
+            fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
+                    , beginSceneViewModel.getBegin(), null
+                    , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                    + (outPort.getBoundsInLocal().getWidth() / 2)
+                    , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                    + (outPort.getBoundsInLocal().getHeight() / 2)));
         });
-    }
 
-    public void setOnDesPortDragDetected(EventHandler<? super MouseEvent> e) {
-        sourceNode.setOnDragDetected(e);
-    }
-//
-//    public void setOnSrcPortDragOver(EventHandler<? super DragEvent> e) {
-//        sourceNode.setOnDragOver(e);
-//    }
-//
-//    public void setOnSrcPortDragEntered(EventHandler<? super DragEvent> e) {
-//        sourceNode.setOnDragEntered(e);
-//    }
-//
-//    public void setOnSrcPortDragExited(EventHandler<? super DragEvent> e) {
-//        sourceNode.setOnDragExited(e);
-//    }
-//
-//    public void setOnSrcPortDragDropped(EventHandler<? super DragEvent> e) {
-//        sourceNode.setOnDragDropped(e);
-//    }
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            // allow drop to our outPort if mouse is being dragged from other inPort
+            if (interactivePane.getDestNode() != null) {
+                showHighlight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , beginSceneViewModel.getBegin(), interactivePane.getDestNode()
+                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (outPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + (outPort.getBoundsInLocal().getHeight() / 2)));
+            }
+        });
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+            // highlight our outPort if mouse is being dragged from other inPort
+            if (interactivePane.getDestNode() != null && !beginSceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+                showHighlight(true);
+            }
+        });
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
 
-    public void setOnDesPortDragDone(EventHandler<? super DragEvent> e) {
-        sourceNode.setOnDragDone(e);
-    }
-
-    public BeginSceneViewModel getBeginSceneViewModel() {
-        return beginSceneViewModel;
+        // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
+        setOnMousePressed(Event::consume);
     }
 }

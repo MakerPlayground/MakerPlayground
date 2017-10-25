@@ -17,15 +17,17 @@ public class DynamicViewCreator<T extends Parent, U,  V extends Node> {
     private final DynamicViewModelCreator<?, U> modelLoader;
     private final T parent;
     private final ViewFactory<U, V> viewFactory;
-    private final NodeConsumer<T, V> nodeConsumer;
+    private final NodeAdder<T, V> adder;
+    private final NodeRemover<T, V> remover;
 
     private final Map<U, V> nodeMap;
 
-    public DynamicViewCreator(DynamicViewModelCreator<?, U> modelLoader, T parent, ViewFactory<U, V> viewFactory, NodeConsumer<T, V> nodeConsumer) {
+    public DynamicViewCreator(DynamicViewModelCreator<?, U> modelLoader, T parent, ViewFactory<U, V> viewFactory, NodeAdder<T, V> adder, NodeRemover<T, V> remover) {
         this.modelLoader = modelLoader;
         this.parent = parent;
         this.viewFactory = viewFactory;
-        this.nodeConsumer = nodeConsumer;
+        this.adder = adder;
+        this.remover = remover;
 
         this.nodeMap = new HashMap<>();
 
@@ -46,11 +48,11 @@ public class DynamicViewCreator<T extends Parent, U,  V extends Node> {
     private void addNode(U controller) {
         V node = viewFactory.newInstance(controller);
         nodeMap.put(controller, node);
-        nodeConsumer.addNode(parent, node);
+        adder.addNode(parent, node);
     }
 
     private void removeNode(U controller) {
         V node = nodeMap.remove(controller);
-        nodeConsumer.removeNode(parent, node);
+        remover.removeNode(parent, node);
     }
 }

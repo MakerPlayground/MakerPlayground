@@ -1,6 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Begin;
+import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Project;
 import javafx.beans.property.DoubleProperty;
 
@@ -20,6 +21,7 @@ public class BeginSceneViewModel {
     public Begin getBegin() {
         return begin;
     }
+
     public double getX() {
         return begin.getLeft();
     }
@@ -34,5 +36,9 @@ public class BeginSceneViewModel {
 
     public DoubleProperty yProperty() {
         return begin.topProperty();
+    }
+
+    public boolean hasConnectionTo(NodeElement other) {
+        return project.hasLine(begin, other);
     }
 }

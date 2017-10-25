@@ -4,12 +4,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by Mai.Manju on 13-Jul-17.
  */
-public class SelectionGroup {
-    private Selectable selectingSelectable;
-    private final ObservableList<Selectable> selectable;
+public class SelectionGroup<T extends Selectable> {
+    //private Selectable selectingSelectable;
+    private final ObservableList<T> selectable;
 
     public SelectionGroup() {
         selectable = FXCollections.observableArrayList();
@@ -27,6 +30,7 @@ public class SelectionGroup {
                         }
                         for (Selectable additem : c.getAddedSubList()) {
                             additem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                                // if this node is selected, we deselect other node. if this node is deselect, do nothing.
                                 if (newValue) {
                                     for (Selectable s : selectable) {
                                         if (s != additem)
@@ -41,9 +45,12 @@ public class SelectionGroup {
         });
     }
 
-
-    public ObservableList<Selectable> getSelectable() {
+    public ObservableList<T> getSelectable() {
         return selectable;
+    }
+
+    public List<T> getSelected() {
+        return selectable.stream().filter(Selectable::isSelected).collect(Collectors.toList());
     }
 
     public void deselect() {

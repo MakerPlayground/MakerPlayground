@@ -16,12 +16,12 @@
 
 package io.makerplayground.project;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.util.List;
 
 /**
@@ -29,12 +29,23 @@ import java.util.List;
  */
 @JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
-    public enum DelayUnit {MilliSecond, Second}
+    public enum DelayUnit {
+        MilliSecond, Second;
+
+        @Override
+        public String toString() {
+            switch(this) {
+                case MilliSecond: return "ms";
+                case Second: return "s";
+                default: throw new IllegalArgumentException();
+            }
+        }
+    }
 
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
-    private final SimpleDoubleProperty delay;
-    private DelayUnit delayUnit;
+    private final DoubleProperty delay;
+    private final ObjectProperty<DelayUnit> delayUnit;
 
     Scene() {
         super(20,20,200, 135);
@@ -43,7 +54,7 @@ public class Scene extends NodeElement {
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = DelayUnit.MilliSecond;
+        this.delayUnit = new SimpleObjectProperty<>(DelayUnit.MilliSecond);
     }
 
     Scene(double top, double left, double width, double height
@@ -52,7 +63,7 @@ public class Scene extends NodeElement {
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
         this.delay = new SimpleDoubleProperty(delay);
-        this.delayUnit = delayUnit;
+        this.delayUnit = new SimpleObjectProperty<>(delayUnit);
     }
 
     public void addDevice(ProjectDevice device) {
@@ -83,7 +94,7 @@ public class Scene extends NodeElement {
         return delay.get();
     }
 
-    public SimpleDoubleProperty delayProperty() {
+    public DoubleProperty delayProperty() {
         return delay;
     }
 
@@ -92,11 +103,15 @@ public class Scene extends NodeElement {
     }
 
     public DelayUnit getDelayUnit() {
+        return delayUnit.get();
+    }
+
+    public ObjectProperty<DelayUnit> delayUnitProperty() {
         return delayUnit;
     }
 
     public void setDelayUnit(DelayUnit delayUnit) {
-        this.delayUnit = delayUnit;
+        this.delayUnit.set(delayUnit);
     }
 
     public ObservableList<UserSetting> getSetting() {
