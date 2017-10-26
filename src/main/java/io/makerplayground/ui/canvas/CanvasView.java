@@ -67,20 +67,25 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
         AnchorPane.setRightAnchor(zoomOutButton, 95.0);
 
-        zoomTextField.setText(String.valueOf(mainPane.getScale()));
+        zoomTextField.setText(String.valueOf((int) (mainPane.getScale() * 100)) + "%");
         zoomTextField.setPrefWidth(40.0);
         zoomTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 if (!newValue.isEmpty()) {
-                    double scale = Double.parseDouble(newValue);
+                    if (newValue.endsWith("%")) {
+                        newValue = newValue.substring(0, newValue.indexOf("%"));
+                    }
+                    int scale = Integer.parseInt(newValue);
                     if (scale > 0) {
-                        mainPane.setScale(scale);
+                        mainPane.setScale(scale / 100.0);
                     }
                 }
             } catch (NumberFormatException e) {
                 zoomTextField.setText(oldValue);
             }
         });
+        mainPane.scaleProperty().addListener((observable, oldValue, newValue) ->
+                zoomTextField.setText(String.valueOf((int) (newValue.doubleValue() * 100)) + "%"));
         AnchorPane.setBottomAnchor(zoomTextField, 20.0);
         AnchorPane.setRightAnchor(zoomTextField, 50.0);
 
