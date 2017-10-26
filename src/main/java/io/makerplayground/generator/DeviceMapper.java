@@ -11,7 +11,6 @@ import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Created by tanyagorn on 7/11/2017.
@@ -109,34 +108,30 @@ public class DeviceMapper {
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             Map<Peripheral, List<List<DevicePort>>> possibleDevice = new HashMap<>();
-            if (projectDevice.getActualDevice() != null) { // calculate possible only if actual device is selected
-                for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                    possibleDevice.put(pDevice, new ArrayList<>());
-                }
-                // bring current selection back to the possible list
-                for (Map.Entry<Peripheral, List<DevicePort>> connectivity : projectDevice.getDeviceConnection().entrySet()) {
-                    possibleDevice.get(connectivity.getKey()).add(connectivity.getValue());
-                }
+            for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
+                possibleDevice.put(pDevice, new ArrayList<>());
+            }
 
-                for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                    if ((pDevice.getConnectionType() == ConnectionType.GPIO) || (pDevice.getConnectionType() == ConnectionType.ANALOG)
-                            || (pDevice.getConnectionType() == ConnectionType.PWM)) {
-                        for (DevicePort pPort : processorPort) {
-                            if (pPort.isSupport(pDevice)) {
-                                possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
-                            }
+            // bring current selection back to the possible list
+            for (Map.Entry<Peripheral, List<DevicePort>> connectivity : projectDevice.getDeviceConnection().entrySet()) {
+                possibleDevice.get(connectivity.getKey()).add(connectivity.getValue());
+            }
+
+            for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
+                if ((pDevice.getConnectionType() == ConnectionType.GPIO) || (pDevice.getConnectionType() == ConnectionType.ANALOG)
+                        || (pDevice.getConnectionType() == ConnectionType.PWM)) {
+                    for (DevicePort pPort : processorPort) {
+                        if (pPort.isSupport(pDevice)) {
+                            possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
                         }
-                    } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
-                        DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
-                        DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
-                        possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
-                    } else {
-                        throw new IllegalStateException("We don't support this type of device!!!");
                     }
+                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
+                    DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
+                    DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
+                    possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
+                } else {
+                    throw new IllegalStateException("We don't support this type of device!!!");
                 }
-                // case auto assign device
-            } else {
-                System.out.println("Skip : " + projectDevice.getName());
             }
 
             result.put(projectDevice, possibleDevice);
@@ -146,20 +141,19 @@ public class DeviceMapper {
     }
 
     public static boolean autoAssignDevices(Project project) {
-        //List<Peripheral> processorPort = new ArrayList<>(project.getController().getController().getConnectivity());
-
         for (ProjectDevice projectDevice : project.getAllDevice()) {
-
-
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
-                //if (projectDevice.getActualDevice() == null) {
                 // Set actual device by selecting first element
                 Map<ProjectDevice, List<Device>> deviceList = getSupportedDeviceList(project);
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
+            }
+        }
 
-                //Map<ProjectDevice, List<Peripheral>> portList = getDeviceCompatiblePort(project);
-
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            // Assign this device if only user check auto
+            if (projectDevice.isAutoSelectDevice()) {
+                // Set port to the first compatible port
                 for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
                     Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList = getDeviceCompatiblePort(project);
                     if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
@@ -172,8 +166,8 @@ public class DeviceMapper {
                     }
                 }
             }
-
         }
+
         return true;
     }
 }

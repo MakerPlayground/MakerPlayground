@@ -1,65 +1,26 @@
 package io.makerplayground.ui;
 
-import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.sqlserver.jdbc.SQLServerBulkCopy;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
 import io.makerplayground.helper.SingletonUploadClick;
-import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.helper.SingletonWiringDiagram;
-import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.devicepanel.DevicePanelView;
 import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 /**
  * Created by Mai.Manju on 12-Jun-17.
@@ -88,8 +49,12 @@ public class RightPanel extends AnchorPane {
             if (project.getAllDevice().size() == 0) {
                 ErrorDialogView errorDialogView = new ErrorDialogView("There is no device yet");
                 errorDialogView.showAndWait();
-            }
-            else {
+            } else {
+                if (!DeviceMapper.autoAssignDevices(project)) {
+                    ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
+                    errorDialogView.showAndWait();
+                    return;
+                }
                 ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
                 ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
                 configActualDeviceView.showAndWait();

@@ -4,9 +4,9 @@ import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -15,7 +15,7 @@ public class CanvasView extends AnchorPane {
     private final InteractivePane mainPane = new InteractivePane();
     private final Button addStateBtn = new Button();
     private final Button addConditionBtn = new Button();
-    private final TextField zoomTextField = new TextField();
+//    private final TextField zoomTextField = new TextField();
     private final Button zoomInButton = new Button();
     private final Button zoomOutButton = new Button();
     private final Button zoomDefaultButton = new Button();
@@ -46,8 +46,8 @@ public class CanvasView extends AnchorPane {
         zoomDefaultButton.setId("zoomDefaultButton");
         zoomDefaultButton.setMinSize(25,25);
         zoomDefaultButton.setOnAction(event -> mainPane.setScale(1));
-        AnchorPane.setBottomAnchor(zoomDefaultButton, 20.0);
-        AnchorPane.setRightAnchor(zoomDefaultButton, 125.0);
+//        AnchorPane.setBottomAnchor(zoomDefaultButton, 20.0);
+//        AnchorPane.setRightAnchor(zoomDefaultButton, 125.0);
 
         zoomInButton.setId("zoomInButton");
         zoomInButton.setMinSize(25,25);
@@ -55,8 +55,8 @@ public class CanvasView extends AnchorPane {
             if(mainPane.getScale()< 5)
                 mainPane.setScale(mainPane.getScale() + 0.1);
         });
-        AnchorPane.setBottomAnchor(zoomInButton, 20.0);
-        AnchorPane.setRightAnchor(zoomInButton, 20.0);
+//        AnchorPane.setBottomAnchor(zoomInButton, 20.0);
+//        AnchorPane.setRightAnchor(zoomInButton, 20.0);
 
         zoomOutButton.setId("zoomOutButton");
         zoomOutButton.setMinSize(25,25);
@@ -64,30 +64,35 @@ public class CanvasView extends AnchorPane {
             if(mainPane.getScale()> 0.5)
                 mainPane.setScale(mainPane.getScale() - 0.1);
         });
-        AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
-        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
+//        AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
+//        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
 
-        zoomTextField.setText(String.valueOf((int) (mainPane.getScale() * 100)) + "%");
-        zoomTextField.setPrefWidth(40.0);
-        zoomTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                if (!newValue.isEmpty()) {
-                    if (newValue.endsWith("%")) {
-                        newValue = newValue.substring(0, newValue.indexOf("%"));
-                    }
-                    int scale = Integer.parseInt(newValue);
-                    if (scale > 0) {
-                        mainPane.setScale(scale / 100.0);
-                    }
-                }
-            } catch (NumberFormatException e) {
-                zoomTextField.setText(oldValue);
-            }
-        });
-        mainPane.scaleProperty().addListener((observable, oldValue, newValue) ->
-                zoomTextField.setText(String.valueOf((int) (newValue.doubleValue() * 100)) + "%"));
-        AnchorPane.setBottomAnchor(zoomTextField, 20.0);
-        AnchorPane.setRightAnchor(zoomTextField, 50.0);
+        VBox zoomControl = new VBox(5);
+        zoomControl.getChildren().addAll(zoomDefaultButton, zoomInButton, zoomOutButton);
+        AnchorPane.setRightAnchor(zoomControl, 20.0);
+        AnchorPane.setBottomAnchor(zoomControl, 20.0);
+
+//        zoomTextField.setText(String.valueOf((int) (mainPane.getScale() * 100)) + "%");
+//        zoomTextField.setPrefWidth(40.0);
+//        zoomTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+//            try {
+//                if (!newValue.isEmpty()) {
+//                    if (newValue.endsWith("%")) {
+//                        newValue = newValue.substring(0, newValue.indexOf("%"));
+//                    }
+//                    int scale = Integer.parseInt(newValue);
+//                    if (scale > 0) {
+//                        mainPane.setScale(scale / 100.0);
+//                    }
+//                }
+//            } catch (NumberFormatException e) {
+//                zoomTextField.setText(oldValue);
+//            }
+//        });
+//        mainPane.scaleProperty().addListener((observable, oldValue, newValue) ->
+//                zoomTextField.setText(String.valueOf((int) (newValue.doubleValue() * 100)) + "%"));
+//        AnchorPane.setBottomAnchor(zoomTextField, 20.0);
+//        AnchorPane.setRightAnchor(zoomTextField, 50.0);
 
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
@@ -139,7 +144,7 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setRightAnchor(mainPane, 0.0);
         AnchorPane.setBottomAnchor(mainPane, 0.0);
         AnchorPane.setLeftAnchor(mainPane, 0.0);
-        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomTextField, zoomInButton, zoomOutButton, zoomDefaultButton);
+        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomControl);
     }
 
     private void initEvent() {
