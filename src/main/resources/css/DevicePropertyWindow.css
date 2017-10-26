@@ -26,7 +26,10 @@
      -fx-background-insets: 0;
      -fx-padding: 0;
 }
-
+#toLabel{
+    -fx-font-size: 12px;
+    -fx-min-width: 20;
+}
 .label{
     -fx-font-size: 12px;
     -fx-background-color : transparent;
@@ -131,7 +134,7 @@
 }
 .combo-box{
     -fx-max-width: 100;
-    -fx-min-width: 100;
+    -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }

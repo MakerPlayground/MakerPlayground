@@ -52,6 +52,7 @@
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
      -fx-cursor: hand;
+     -fx-min-width: 130;
  }
  #addStateBtn:pressed{
      -fx-border-color : #5ac2ab;
@@ -61,6 +62,7 @@
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
      -fx-cursor: hand;
+     -fx-min-width: 130;
  }
  #addConditionBtn{
      -fx-focus-color: transparent;
@@ -71,6 +73,7 @@
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
      -fx-cursor: hand;
+     -fx-min-width: 130;
  }
  #addConditionBtn:pressed{
      -fx-border-color : #5ac2ab;
@@ -79,5 +82,45 @@
      -fx-font-size : 14px;
      -fx-text-fill : #5ac2ab;
      -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+     -fx-cursor: hand;
+     -fx-min-width: 130;
+ }
+#zoomInButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('zoomInBtn-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+}
+#zoomInButton{
+    -fx-background-image: url('zoomInBtn.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+#zoomOutButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('zoomOutBtn-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+}
+#zoomOutButton{
+    -fx-background-image: url('zoomOutBtn.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+#zoomDefaultButton:pressed{
+     -fx-focus-color: transparent;
+     -fx-background-color: transparent;
+     -fx-background-image: url('zoomDefaultBtn-toggle.png');
+     -fx-background-size : 25px;
+     -fx-cursor: hand;
+ }
+#zoomDefaultButton{
+     -fx-background-image: url('zoomDefaultBtn.png');
+     -fx-background-size : 25px;
+     -fx-background-color: transparent;
      -fx-cursor: hand;
  }
