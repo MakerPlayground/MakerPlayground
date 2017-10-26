@@ -70,11 +70,9 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
             if (dialogButton == importButtonType) {
                 Map<GenericDevice, Integer> deviceToBeAdded = new HashMap<>();
                 for (ControlAddDevicePane d : outputDevice) {
-                    System.out.println("Added output: " + d.getGenericDevice().getName() + " " + d.getCount());
                     deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
                 }
                 for (ControlAddDevicePane d : inputDevice) {
-                    System.out.println("Added input: " + d.getGenericDevice().getName() + " " + d.getCount());
                     deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
                 }
                 return deviceToBeAdded;

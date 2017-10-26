@@ -3,7 +3,6 @@ package io.makerplayground.ui.canvas;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.helper.Singleton;
-import io.makerplayground.helper.SingletonFirstTutorial;
 import io.makerplayground.helper.SingletonTutorial;
 import io.makerplayground.ui.Tutorial;
 import javafx.collections.FXCollections;
@@ -14,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -66,10 +64,8 @@ public class TutorialView extends Stage {
         List<Tutorial> tutorial = mapper.readValue(getClass().getResourceAsStream("/json/tutorials.json"),
                 new TypeReference<List<Tutorial>>() {});
         ListIterator<Tutorial> i = tutorial.listIterator();
-        System.out.println(tutorial);
 
         setTitle("Tips & Tricks");
-
         rootPane.getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
 
 

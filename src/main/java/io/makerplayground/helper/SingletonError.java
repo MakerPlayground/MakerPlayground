@@ -26,7 +26,7 @@ public class SingletonError {
         this.time = new Date().getTime();
 
 
-        System.out.println("error = " + error);
+        //System.out.println("error = " + error);
         String command = "insert into Error (App_ID, Time, Message) values('"
                 + SingletonConnectDB.getINSTANCE().getUuid() + "'," + time + ",\""
                 + error + "\")";

@@ -25,21 +25,21 @@ public class SingletonFirstTutorial {
 
     public void openTime() {
         openTime = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println("first " + openTime);
+        //System.out.println("first " + openTime);
     }
 
     public void closeTime() {
         closeTime = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss").format(new Date());
-        System.out.println("close " + closeTime);
+        //System.out.println("close " + closeTime);
     }
 
     public void increaseWhichPage() {
         whichPage++;
-        System.out.println(whichPage);
+        //System.out.println(whichPage);
     }
 
     public void decreaseWhichPage() {
         whichPage--;
-        System.out.println(whichPage);
+        //System.out.println(whichPage);
     }
 }

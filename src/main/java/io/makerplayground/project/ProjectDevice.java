@@ -1,6 +1,5 @@
 package io.makerplayground.project;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
@@ -91,7 +90,6 @@ public class ProjectDevice {
     }
 
     public void removeDeviceConnection(Peripheral device) {
-        System.out.println("Remove device connection of device = " + device);
         this.deviceConnection.remove(device);
     }
 

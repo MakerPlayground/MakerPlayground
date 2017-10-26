@@ -11,7 +11,6 @@ import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,8 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -36,8 +33,9 @@ import javafx.util.Callback;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -79,8 +77,6 @@ public class ConfigActualDeviceView extends Dialog {
 
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> {
-            System.out.println("DID IT");
-            System.out.println(viewModel.getAllDevice().size());
             for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
                 if (projectDevice.isAutoSelectDevice())
                     SingletonConfigDevice.getInstance().setAll("123", "", projectDevice.isAutoSelectDevice(), "");

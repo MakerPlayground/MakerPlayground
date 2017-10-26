@@ -3,7 +3,6 @@ package io.makerplayground.generator;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.DeviceType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
@@ -13,7 +12,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.QuadCurveTo;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -56,8 +58,6 @@ public class Diagram extends Pane {
     }
 
     private void initDiagram() {
-        System.out.println("=============DIAGRAM=================");
-
         this.deviceTopLeftPos = new HashMap<>();
         setPrefSize(1000, 1200);
 

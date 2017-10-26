@@ -66,7 +66,7 @@ public class UploadTask extends Task<UploadResult> {
 
             currentRelativePath = Paths.get("");
             path = currentRelativePath.toAbsolutePath().toString();
-            System.out.println("Current relative path is: " + path);
+            //System.out.println("Current relative path is: " + path);
 
             ProcessBuilder builder = new ProcessBuilder("pio", "init", "--board", platform);
             builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with

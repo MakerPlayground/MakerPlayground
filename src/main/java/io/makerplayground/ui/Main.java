@@ -148,15 +148,12 @@ public class Main extends Application {
             SingletonConnectDB.getINSTANCE().close();
         });
 
-//        projectNameTextField.setText(project.getProjectName());
-
-        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-
+        projectNameTextField.setText(project.getProjectName());
         projectNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == false) {
-                System.out.println("new = " + projectNameTextField.getText());
+            if (!newValue) {
                 project.setProjectName(projectNameTextField.getText());
-                System.out.println("new2 = " + project.getProjectName());
+            } else {
+                projectNameTextField.setText(project.getProjectName());
             }
         });
 
@@ -169,7 +166,6 @@ public class Main extends Application {
             ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
             alert.showAndWait().ifPresent(type -> {
-                System.out.println(type);
                 if (type.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
                     if (type.getButtonData() == ButtonBar.ButtonData.YES) {
                         saveProject();

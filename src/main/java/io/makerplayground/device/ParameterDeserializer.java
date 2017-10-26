@@ -72,8 +72,10 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 defaultValue = new NumberWithUnit(node.get("value").asInt()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));
                 break;
+            case VALUE: // TODO: prove we don't have to do anything
+                break;
             default:
-                System.out.println("Format error!!!");
+                throw(new IllegalStateException("Format error!!!"));
         }
 
         return new Parameter(name, defaultValue, constraint, dataType, controlType);

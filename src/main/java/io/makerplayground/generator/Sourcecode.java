@@ -1,9 +1,5 @@
 package io.makerplayground.generator;
 
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
@@ -11,6 +7,10 @@ import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.*;
+
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -120,7 +120,6 @@ public class Sourcecode {
                         throw new IllegalStateException("Port hasn't been selected!!!");
                     }
                     portName.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
-                    System.out.println(p + " " + port);
                 }
             }
             if (!portName.isEmpty()) {
