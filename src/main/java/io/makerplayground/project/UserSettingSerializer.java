@@ -43,22 +43,23 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("expression");
-        for (Map.Entry<Value, ObservableList<Expression>> e : userSetting.getExpression().entrySet()) {       //TODO: fix later
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("name", e.getKey().getName());
-
-            jsonGenerator.writeArrayFieldStart("expression");
-            //jsonGenerator.writeStartArray();
-            for (Expression expression : e.getValue()) {
-                //jsonGenerator.writeObject(expresion);
-                mapper.writeValue(jsonGenerator, expression);
-            }
-            jsonGenerator.writeEndArray();
-
-            jsonGenerator.writeEndObject();
-        }
-        jsonGenerator.writeEndArray();
+        // TODO: Remove for new device property window
+//        jsonGenerator.writeArrayFieldStart("expression");
+//        for (Map.Entry<Value, ObservableList<Expression>> e : userSetting.getExpression().entrySet()) {       //TODO: fix later
+//            jsonGenerator.writeStartObject();
+//            jsonGenerator.writeStringField("name", e.getKey().getName());
+//
+//            jsonGenerator.writeArrayFieldStart("expression");
+//            //jsonGenerator.writeStartArray();
+//            for (Expression expression : e.getValue()) {
+//                //jsonGenerator.writeObject(expresion);
+//                mapper.writeValue(jsonGenerator, expression);
+//            }
+//            jsonGenerator.writeEndArray();
+//
+//            jsonGenerator.writeEndObject();
+//        }
+//        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeEndObject();
     }

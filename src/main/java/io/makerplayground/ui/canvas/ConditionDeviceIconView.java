@@ -9,8 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-
 
 import java.io.IOException;
 
@@ -44,12 +42,12 @@ public class ConditionDeviceIconView extends VBox {
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
         iconImageView.setOnMouseClicked(e -> {
-            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            ConditionDevicePropertyWindow devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
 
         nameIconImageView.setOnMouseClicked(e -> {
-            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            ConditionDevicePropertyWindow devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }

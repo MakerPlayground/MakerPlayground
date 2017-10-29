@@ -276,16 +276,7 @@ public class Project {
         for (Condition c : condition) {
             for (UserSetting userSetting : c.getSetting()) {
                 deviceType.add(userSetting.getDevice());
-                for (ObservableList<Expression> expressionList : userSetting.getExpression().values()) {
-                    for (Expression expression : expressionList) {
-                        if (expression.getOperandType() == OperandType.VARIABLE) {
-                            deviceType.add(((ProjectValue) expression.getFirstOperand()).getDevice());
-                            if (expression.getOperator().isBetween()) {
-                                deviceType.add(((ProjectValue) expression.getSecondOperand()).getDevice());
-                            }
-                        }
-                    }
-                }
+                deviceType.addAll(userSetting.getAllValueUsed().keySet());
             }
         }
 

@@ -300,18 +300,19 @@ public class Sourcecode {
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
                         List<String> valueList = new ArrayList<>();
-                        for (Expression e : setting.getExpression().get(value)) {
-                            if (e.getOperator().isBetween()) {
-                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " > "
-                                        + df.format(e.getFirstOperand()) + ")"
-                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " < "
-                                        + df.format(e.getSecondOperand()) + ")");
-                            } else {
-                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
-                                        + value.getName().replace(" ", "_") + ' ' + e.getOperator().getCodeValue() + ' '
-                                        + df.format(e.getFirstOperand()) + ")");
-                            }
-                        }
+                        // TODO: Remove for new device property window
+//                        for (Expression e : setting.getExpression().get(value)) {
+//                            if (e.getOperator().isBetween()) {
+//                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " > "
+//                                        + df.format(e.getFirstOperand()) + ")"
+//                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " < "
+//                                        + df.format(e.getSecondOperand()) + ")");
+//                            } else {
+//                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
+//                                        + value.getName().replace(" ", "_") + ' ' + e.getOperator().getCodeValue() + ' '
+//                                        + df.format(e.getFirstOperand()) + ")");
+//                            }
+//                        }
                         if (!valueList.isEmpty()) {
                             conditionList.add("(" + String.join(" || ", valueList) + ")");
                         }

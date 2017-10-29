@@ -1,9 +1,8 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.*;
-import io.makerplayground.helper.ControlType;
-import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.project.expression.SimpleExpression;
 import io.makerplayground.project.ProjectValue;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -14,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -23,34 +23,28 @@ import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.AbstractPropertyEditor;
 import org.controlsfx.property.editor.PropertyEditor;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by tanyagorn on 6/20/2017.
  */
-public class DevicePropertyWindow extends PopOver {
+public class ConditionDevicePropertyWindow extends PopOver {
     private final SceneDeviceIconViewModel viewModel;
-//    private final ObservableList<Unit> unitList;
-    private PropertySheet propertySheet;
 
-    public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
+    // Create a grid pane as a main layout for this property sheet
+    private final GridPane propertyPane = new GridPane();
+
+    private Label conditionLabel;
+    private ComboBox<Action> conditionComboBox;
+
+    public ConditionDevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
-        setDetachable(false);
         initView();
     }
 
-//    public DevicePropertyWindow(ConditionDeviceIconViewModel conditionViewModel) {
-//        this.conditionViewModel = conditionViewModel;
-//        initView();
-//    }
-
     private void initView() {
-
-        VBox vbox = new VBox();
-        vbox.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
-        HBox row1 = new HBox();
-
-
+        // Create title layout
         Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
@@ -58,20 +52,22 @@ public class DevicePropertyWindow extends PopOver {
 
         Label customName = new Label(viewModel.getName());
         customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
-        row1.getChildren().addAll(imageView, customName);
-        row1.setAlignment(Pos.CENTER_LEFT);
-        row1.setSpacing(10);
 
-        HBox row2 = new HBox();
-        Label state = new Label("Action");
+        HBox titleHBox = new HBox();
+        titleHBox.getChildren().addAll(imageView, customName);
+        titleHBox.setAlignment(Pos.CENTER_LEFT);
+        titleHBox.setSpacing(10);
 
-        // Casting ArrayList to ObservableList
-        ObservableList<Action> actionList = FXCollections.observableArrayList(viewModel.getGenericDevice().getAction());
-        ComboBox<Action> comboBox = new ComboBox<>(actionList);
-        comboBox.setCellFactory(new Callback<ListView<Action>, ListCell<Action>>() {
+        // Create ComboBox for user to select a condition
+        conditionLabel = new Label("Condition");
+        GridPane.setRowIndex(conditionLabel, 0);
+        GridPane.setColumnIndex(conditionLabel, 0);
+
+        conditionComboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getAction()));
+        conditionComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Action> call(ListView<Action> param) {
-                return new ListCell<Action>() {
+                return new ListCell<>() {
                     @Override
                     protected void updateItem(Action item, boolean empty) {
                         super.updateItem(item, empty);
@@ -84,7 +80,7 @@ public class DevicePropertyWindow extends PopOver {
                 };
             }
         });
-        comboBox.setButtonCell(new ListCell<Action>(){
+        conditionComboBox.setButtonCell(new ListCell<>(){
             @Override
             protected void updateItem(Action item, boolean empty) {
                 super.updateItem(item, empty);
@@ -95,64 +91,41 @@ public class DevicePropertyWindow extends PopOver {
                 }
             }
         });
-        comboBox.getSelectionModel().select(viewModel.getAction());
-        viewModel.actionProperty().bind(comboBox.getSelectionModel().selectedItemProperty());
+        conditionComboBox.getSelectionModel().select(viewModel.getAction());
+        // bind action selected to the view model
+        viewModel.actionProperty().bind(conditionComboBox.getSelectionModel().selectedItemProperty());
+        GridPane.setRowIndex(conditionComboBox, 0);
+        GridPane.setColumnIndex(conditionComboBox, 1);
 
-        //paramVBox = new VBox();
-        propertySheet = new PropertySheet();
-        propertySheet.setModeSwitcherVisible(false);
-        propertySheet.setSearchBoxVisible(false);
-        propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {
-            @Override
-            public PropertyEditor<?> call(PropertySheet.Item item) {
-                if (item instanceof ParameterPropertyItem) {
-                    ParameterPropertyItem param = (ParameterPropertyItem) item;
-                    Parameter p = param.getParameter();
-                    if (p.getDataType() == DataType.VALUE)  // TODO: find a better way to check
-                        return new ValuePropertyEditor(param);
-                    else if (p.getControlType() == ControlType.SLIDER)
-                        return new SliderPropertyEditor(param);
-                    else if (p.getControlType() == ControlType.TEXTBOX)
-                        return new TextBoxPropertyEditor(param);
-                    else if (p.getControlType() == ControlType.DROPDOWN)
-                        return new DropDownPropertyEditor(param);
-                    else if (p.getControlType() == ControlType.SPINBOX)
-                        return new SpinBoxPropertyEditor(param);
-                    else
-                        throw new IllegalStateException("Found unsupported type!!!");
-//                } else if (item instanceof ValuePropertyItem) {
-//                    return new ExpressionPropertyEditor(item);
-                } else {
-                    return null;
-                }
+        propertyPane.setVgap(5);
+        propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
-            }
-        });
-        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> {
-            redrawProperty();
-        });
-
+        // add listener to update property sheet when the condition selected has changed
+        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> redrawProperty());
         redrawProperty();
 
-        row2.getChildren().addAll(state, comboBox);
-        row2.setAlignment(Pos.CENTER_LEFT);
-        row2.setSpacing(5.0);
+        // arrange title and property sheet
+        VBox mainPane = new VBox();
+        mainPane.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
+        mainPane.getChildren().addAll(titleHBox, propertyPane);
+        mainPane.setSpacing(5.0);
+        mainPane.setPadding(new Insets(20, 20, 20, 20));
 
-        vbox.getChildren().addAll(row1, row2, propertySheet);
-        vbox.setSpacing(5.0);
-        vbox.setPadding(new Insets(20, 20, 20, 20));
-        setContentNode(vbox);
+        setDetachable(false);
+        setContentNode(mainPane);
     }
 
     private void redrawProperty() {
-        //paramVBox.getChildren().clear();
-        propertySheet.getItems().clear();
+        propertyPane.getChildren().clear();
+        propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
-        for (Parameter p : viewModel.getAction().getParameter()) {
-            propertySheet.getItems().add(new ParameterPropertyItem(p));
-            //HBox customRow = new HBox();
-            //Label name = new Label(p.getName());
-            //customRow.getChildren().add(name);
+        List<Parameter> params = viewModel.getAction().getParameter();
+        for (int i=0; i<params.size(); i++) {
+            Parameter p = params.get(i);
+
+            Label name = new Label(p.getName());
+            GridPane.setRowIndex(name, i+1);
+            GridPane.setColumnIndex(name, 0);
 
 //            if (p.getControlType() == ControlType.SLIDER) {
 //                Slider slider = new Slider();
@@ -263,17 +236,25 @@ public class DevicePropertyWindow extends PopOver {
 //            paramVBox.getChildren().add(customRow);
         }
 
-//        if (viewModel.getAction().getName().equals("Compare")) {    // TODO: fragile
-//            for (Value v : viewModel.getValue()) {
-//                propertySheet.getItems().add(new ValuePropertyItem(v));
-////            HBox customRow = new HBox();
-////            Label name = new Label(v.getName());
-////            ObservableList<expression> e = viewModel.getExpression(v);
-////            ExpressionControl expression = new ExpressionControl(e, viewModel.getProjectValue());
-////            customRow.getChildren().addAll(name, expression);
-////            paramVBox.getChildren().add(customRow);
-//            }
-//        }
+        if (viewModel.getAction().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
+            List<Value> values = viewModel.getValue();
+            for (int i=0; i<values.size(); i++) {
+                Value value = values.get(i);
+
+                Label label = new Label(value.getName());
+                GridPane.setRowIndex(label, i+1);
+                GridPane.setColumnIndex(label, 0);
+
+                if (viewModel.getExpression(value) instanceof SimpleExpression) {
+                    SimpleExpressionControl expressionControl = new SimpleExpressionControl((SimpleExpression) viewModel.getExpression(value), value);
+                    GridPane.setRowIndex(expressionControl, i+1);
+                    GridPane.setColumnIndex(expressionControl, 1);
+                    propertyPane.getChildren().addAll(label, expressionControl);
+                } else {
+                    throw new IllegalStateException("");    // TODO: add support soon
+                }
+            }
+        }
     }
 
     public class ParameterPropertyItem implements PropertySheet.Item {

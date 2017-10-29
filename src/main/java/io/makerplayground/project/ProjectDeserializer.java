@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.*;
+import io.makerplayground.project.expression.Expression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -169,7 +170,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             }
         }
 
-        return new UserSetting(projectDevice, action, valueMap, expressionMap);
+        // TODO: Remove for new device property window
+//        return new UserSetting(projectDevice, action, valueMap, expressionMap);
+        return null;
     }
 
     public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {
@@ -192,7 +195,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         OperandType operandType = OperandType.valueOf(node.get("operandType").asText());
 
-        return new Expression(unit, operator, firstOperand, secondOperand, operandType);
+        // TODO: Remove for new device property window
+//        return new Expression(unit, operator, firstOperand, secondOperand, operandType);
+        return null;
     }
 
     public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {

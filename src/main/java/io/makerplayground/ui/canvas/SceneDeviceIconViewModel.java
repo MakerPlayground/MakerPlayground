@@ -4,12 +4,10 @@ import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
-import io.makerplayground.helper.Unit;
 import io.makerplayground.project.*;
+import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -69,11 +67,11 @@ public class SceneDeviceIconViewModel {
         return userSetting.getValueMap().replace(p, o);
     }
 
-    public ObservableList<Expression> getExpression(Value v) {
+    public Expression getExpression(Value v) {
         return userSetting.getExpression().get(v);
     }
 
-    public void setExpression(Value v, ObservableList<Expression> expressions) {
+    public void setExpression(Value v, Expression expressions) {
         userSetting.getExpression().replace(v, expressions);
     }
 

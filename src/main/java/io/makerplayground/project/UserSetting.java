@@ -16,15 +16,15 @@
 
 package io.makerplayground.project;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
+import io.makerplayground.project.expression.Expression;
+import io.makerplayground.project.expression.SimpleExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.util.*;
@@ -37,13 +37,12 @@ public class UserSetting {
     private final ProjectDevice device;
     private final ObjectProperty<Action> action;
     private final ObservableMap<Parameter, Object> valueMap;
-    private final ObservableMap<Value, ObservableList<Expression>> expression;
+    private final ObservableMap<Value, Expression> expression;
 
     UserSetting(ProjectDevice device) {
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();
-
         this.expression = FXCollections.observableHashMap();
 
         // Initialize the map with default action and it's parameters
@@ -66,11 +65,11 @@ public class UserSetting {
 
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
-            expression.put(v, FXCollections.observableArrayList());
+            expression.put(v, new SimpleExpression(device, v));
         }
     }
 
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Object> valueMap, Map<Value, ObservableList<Expression>> expression) {
+    UserSetting(ProjectDevice device, Action action, Map<Parameter, Object> valueMap, Map<Value, Expression> expression) {
         this.device = device;
         this.action = new SimpleObjectProperty<>(action);
         this.valueMap = FXCollections.observableMap(valueMap);
@@ -97,35 +96,31 @@ public class UserSetting {
         return valueMap;
     }
 
-    public ObservableMap<Value, ObservableList<Expression>> getExpression() {
+    public ObservableMap<Value, Expression> getExpression() {
         return expression;
     }
 
     public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
-        for (Map.Entry<Value, ObservableList<Expression>> entry : expression.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                if (!result.containsKey(device))
-                    result.put(device, new HashSet<>());
-                result.get(device).add(entry.getKey());
-            }
-
-            for (Expression e : entry.getValue()) {
-                if (e.getFirstOperand() instanceof  ProjectValue) {
-                    ProjectValue projectValue = (ProjectValue) e.getFirstOperand();
-                    if (!result.containsKey(projectValue.getDevice()))
-                        result.put(projectValue.getDevice(), new HashSet<>());
-                    result.get(projectValue.getDevice()).add(projectValue.getValue());
-                }
-                if (e.getOperator().isBetween() && (e.getSecondOperand() instanceof  ProjectValue)) {
-                    ProjectValue projectValue = (ProjectValue) e.getSecondOperand();
-                    if (!result.containsKey(projectValue.getDevice()))
-                        result.put(projectValue.getDevice(), new HashSet<>());
-                    result.get(projectValue.getDevice()).add(projectValue.getValue());
+        // TODO: edit comment
+        // assume that each expression contain reference to itself
+        for (Expression exp : expression.values()) {
+            Set<ProjectValue> valueUsed = exp.getValueUsed();
+            for (ProjectValue pv : valueUsed) {
+                if (result.containsKey(pv.getDevice())) {
+                    result.get(pv.getDevice()).add(pv.getValue());
+                } else {
+                    result.put(pv.getDevice(), new HashSet<>(Collections.singletonList(pv.getValue())));
                 }
             }
         }
+
+//        Map<ProjectDevice, Set<Value>> tmp = expression.values().stream()
+//                .map(Expression::getValueUsed)
+//                .flatMap(Collection::stream)
+//                .collect(Collectors.groupingBy(ProjectValue::getDevice,
+//                        Collectors.mapping(ProjectValue::getValue, Collectors.toSet())));
 
         return result;
     }
