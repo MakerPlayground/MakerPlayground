@@ -100,10 +100,7 @@ public class Diagram extends Pane {
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                 DevicePort topLeftPort = getTopLeftHole(device);
-                // Need to calculate for left wing of this device
-                if (deviceCount != 0)
-                    currentRow += calculateNumberOfHoleWithCurrentDeviceLeftWing(topLeftPort);
-
+                currentRow += calculateNumberOfHoleWithCurrentDeviceLeftWing(topLeftPort);
                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
 
