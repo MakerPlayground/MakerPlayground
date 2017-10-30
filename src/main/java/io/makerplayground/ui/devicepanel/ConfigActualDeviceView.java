@@ -63,12 +63,12 @@ public class ConfigActualDeviceView extends Dialog {
         ScrollPane scrollPane = new ScrollPane();
         VBox allDevice = new VBox();
 
-        scrollPane.setPrefHeight(300.0);
-        scrollPane.setPrefWidth(510);
-        allDevice.setMaxHeight(300.0);
+        scrollPane.setPrefHeight(350.0);
+        scrollPane.setPrefWidth(600);
+        allDevice.setMaxHeight(350.0);
         allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
         allDevice.setSpacing(20.0);
-        allDevice.setPadding(new Insets(30,0,30,30));
+        allDevice.setPadding(new Insets(30,30,30,30));
         allDevice.setAlignment(Pos.CENTER);
 
         Label topicConfigDevice = new Label("Customize your Devices");

@@ -35,8 +35,8 @@
     -fx-font-size:12px;
 }
 #deviceComboBox{
-    -fx-max-width: 230;
-    -fx-min-width: 230;
+    -fx-max-width: 320;
+    -fx-min-width: 320;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
@@ -55,8 +55,8 @@
     -fx-font-size:12px;
 }
 #deviceComboBox:showing .list-view,#deviceComboBox:armed .list-view {
-    -fx-max-width: 230;
-    -fx-min-width: 230;
+    -fx-max-width: 320;
+    -fx-min-width: 320;
 }
 .combo-box.list-cell {
     -fx-background-color: white;

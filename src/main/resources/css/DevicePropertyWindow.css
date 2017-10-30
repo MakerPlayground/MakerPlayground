@@ -63,12 +63,14 @@
     -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
     -fx-background-color: white;
     -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
     -fx-border-color : #cccccc;
     -fx-border-width: 1px;
     -fx-border-radius: 3;
     -fx-background-inset : 0 0 0;
-    -fx-pref-width: 40;
-    -fx-max-width: 40;
+    -fx-max-width: 50;
+    -fx-min-width: 40;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
@@ -76,12 +78,14 @@
     -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
     -fx-background-color: white;
     -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
     -fx-focus-color: transparent;
     -fx-border-color : #cccccc;
     -fx-border-width: 1px;
     -fx-border-radius: 3;
-    -fx-pref-width: 40;
-    -fx-max-width: 40;
+    -fx-max-width: 50;
+    -fx-min-width: 40;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
