@@ -106,11 +106,11 @@ public class UploadTask extends Task<UploadResult> {
             // copy libraries
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
-                //File sourcecpp = new File(path + File.separator + "lib" + File.separator + x + ".cpp");
-                File sourcecpp = new File(getClass().getResource("/library/arduino/src/" + x + ".cpp").toExternalForm());
+                File sourcecpp = new File(path + File.separator +"src"+File.separator+"main"+File.separator+"resources"+File.separator+"library"+File.separator+"arduino"+File.separator+"src"+File.separator+ x + ".cpp");
+                //File sourcecpp = new File(getClass().getResource("/library/arduino/src/" + x + ".cpp").toExternalForm());
                 File destcpp = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".cpp");
-                //File sourceh = new File(path + File.separator + "lib" + File.separator + x + ".h");
-                File sourceh = new File(getClass().getResource("/library/arduino/src/" + x + ".h").toExternalForm());
+                File sourceh = new File(path + File.separator +"src"+File.separator+"main"+File.separator+"resources"+File.separator+"library"+File.separator+"arduino"+File.separator+"src"+File.separator+ x + ".h");
+                //File sourceh = new File(getClass().getResource("/library/arduino/src/" + x + ".h").toExternalForm());
                 File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".h");
                 Files.copy(sourcecpp.toPath(), destcpp.toPath());
                 Files.copy(sourceh.toPath(), desth.toPath());
