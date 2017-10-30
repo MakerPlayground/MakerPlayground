@@ -2154,8 +2154,8 @@
     "library": [
       "MP_GenericButton"
     ],
-    "width": 59.335,
-    "height": 33.108,
+    "width": 119.0,
+    "height": 82.0,
     "v": "",
     "i": "",
     "w": "",
@@ -3888,7 +3888,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_BME280"
+      "MP_Soil"
     ],
     "width": 210.63,
     "height": 388.242,
@@ -4323,8 +4323,8 @@
     ],
     "library": [
       "Adafruit_Sensor",
-      "Adafruit_LSM303_U",
-      "MP_LSM303"
+      "MPU6050",
+      "MP_MPU6050"
     ],
     "width": 104.206,
     "height": 146.095,
@@ -4714,7 +4714,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_MAX4466"
+      "MP_Waterlvl"
     ],
     "width": 113.378,
     "height": 351.498,
