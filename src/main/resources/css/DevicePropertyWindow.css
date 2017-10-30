@@ -37,8 +37,8 @@
     -fx-min-width: 90;
 }
 .slider{
-    -fx-min-width: 60;
-    -fx-max-width: 60;
+    -fx-min-width: 85;
+    -fx-max-width: 85;
 }
 .slider> .track {
     -fx-background-color: #edeef3;
@@ -94,7 +94,9 @@
     -fx-border-radius : 3;
     -fx-background-color: white;
     -fx-background-radius: 3;
-    -fx-min-width: 60;
+    -fx-max-width: 85;
+    -fx-pref-width:50;
+    -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
@@ -103,7 +105,8 @@
     -fx-border-radius : 3;
     -fx-background-color: white;
     -fx-background-radius: 3;
-    -fx-min-width: 60;
+    -fx-max-width: 85;
+    -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
@@ -137,7 +140,7 @@
     -fx-background-color: derive(black,30%);
 }
 .combo-box{
-    -fx-max-width: 100;
+    -fx-max-width: 125;
     -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
@@ -157,8 +160,7 @@
 }
 .combo-box:showing .list-view,.combo-box:armed .list-view {
     -fx-font-size: 12px;
-    -fx-max-width: 100;
-    -fx-min-width: 100;
+    -fx-max-width: 125;
 }
 .combo-box .list-cell {
     -fx-font-size: 12px;
