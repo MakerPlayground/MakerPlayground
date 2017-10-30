@@ -67,6 +67,9 @@ public class SimpleExpressionControl extends HBox {
 
         setSpacing(5);
         getChildren().addAll(lowTextField, rangeSlider, highTextField);
+
+        // disable this control if the expression is disabled
+        disableProperty().bind(expression.enableProperty().not());
     }
 
     private void updateExpression() {

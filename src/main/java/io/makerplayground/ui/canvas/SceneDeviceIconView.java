@@ -47,12 +47,12 @@ public class SceneDeviceIconView extends VBox {
         // use mouse release so that it can be coexist with mouse drag
         // (mouse release will be consumed if it was release after drag)
         iconImageView.setOnMouseReleased(e -> {
-            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            SceneDevicePropertyWindow devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
 
         nameIconImageView.setOnMouseReleased(e -> {
-            DevicePropertyWindow devicePropertyWindow = new DevicePropertyWindow(viewModel);
+            SceneDevicePropertyWindow devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }

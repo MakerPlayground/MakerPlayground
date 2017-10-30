@@ -114,6 +114,7 @@
                                 <argument>-outfile</argument>
                                 <argument>${project.artifactId}-app</argument>
                                 <argument>-Bicon=${project.build.sourceDirectory}/../resources/icons/${icon.filename}</argument>
+                                <argument>-BjvmOptions=--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED</argument>
                                 <argument>-v</argument>
                             </arguments>
                         </configuration>

@@ -106,6 +106,10 @@ public class UserSetting {
         // TODO: edit comment
         // assume that each expression contain reference to itself
         for (Expression exp : expression.values()) {
+            // skip if this expression is disabled
+            if (!exp.isEnable()) {
+                continue;
+            }
             Set<ProjectValue> valueUsed = exp.getValueUsed();
             for (ProjectValue pv : valueUsed) {
                 if (result.containsKey(pv.getDevice())) {

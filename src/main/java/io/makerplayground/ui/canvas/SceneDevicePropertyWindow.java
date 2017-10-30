@@ -28,18 +28,18 @@ import java.util.Optional;
 /**
  * Created by tanyagorn on 6/20/2017.
  */
-public class DevicePropertyWindow extends PopOver {
+public class SceneDevicePropertyWindow extends PopOver {
     private final SceneDeviceIconViewModel viewModel;
 //    private final ObservableList<Unit> unitList;
     private PropertySheet propertySheet;
 
-    public DevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
+    public SceneDevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
         setDetachable(false);
         initView();
     }
 
-//    public DevicePropertyWindow(ConditionDeviceIconViewModel conditionViewModel) {
+//    public SceneDevicePropertyWindow(ConditionDeviceIconViewModel conditionViewModel) {
 //        this.conditionViewModel = conditionViewModel;
 //        initView();
 //    }

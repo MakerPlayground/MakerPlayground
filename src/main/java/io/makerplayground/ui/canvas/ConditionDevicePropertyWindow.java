@@ -2,8 +2,9 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.project.expression.SimpleExpression;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.expression.Expression;
+import io.makerplayground.project.expression.SimpleExpression;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -240,20 +241,27 @@ public class ConditionDevicePropertyWindow extends PopOver {
             List<Value> values = viewModel.getValue();
             for (int i=0; i<values.size(); i++) {
                 Value value = values.get(i);
-
-                Label label = new Label(value.getName());
-                GridPane.setRowIndex(label, i+1);
-                GridPane.setColumnIndex(label, 0);
-
-                if (viewModel.getExpression(value) instanceof SimpleExpression) {
-                    SimpleExpressionControl expressionControl = new SimpleExpressionControl((SimpleExpression) viewModel.getExpression(value), value);
-                    GridPane.setRowIndex(expressionControl, i+1);
-                    GridPane.setColumnIndex(expressionControl, 1);
-                    propertyPane.getChildren().addAll(label, expressionControl);
-                } else {
-                    throw new IllegalStateException("");    // TODO: add support soon
-                }
+                createExpressionControl(i, value);
             }
+        }
+    }
+
+    private void createExpressionControl(int i, Value value) {
+        Expression expression = viewModel.getExpression(value);
+
+        CheckBox enableCheckbox = new CheckBox(value.getName());
+        enableCheckbox.selectedProperty().bindBidirectional(expression.enableProperty());
+        GridPane.setRowIndex(enableCheckbox, i+1);
+        GridPane.setColumnIndex(enableCheckbox, 0);
+        propertyPane.getChildren().add(enableCheckbox);
+
+        if (expression instanceof SimpleExpression) {
+            SimpleExpressionControl expressionControl = new SimpleExpressionControl((SimpleExpression) expression, value);
+            GridPane.setRowIndex(expressionControl, i+1);
+            GridPane.setColumnIndex(expressionControl, 1);
+            propertyPane.getChildren().add(expressionControl);
+        } else {
+            throw new IllegalStateException("");    // TODO: add support soon
         }
     }
 

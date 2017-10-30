@@ -7,6 +7,7 @@ import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.*;
+import io.makerplayground.project.expression.*;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -299,23 +300,32 @@ public class Sourcecode {
                     conditionList.add(action.toString());
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
-                        List<String> valueList = new ArrayList<>();
-                        // TODO: Remove for new device property window
-//                        for (Expression e : setting.getExpression().get(value)) {
-//                            if (e.getOperator().isBetween()) {
-//                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " > "
-//                                        + df.format(e.getFirstOperand()) + ")"
-//                                        + " && " + "(" + setting.getDevice().getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_") + " < "
-//                                        + df.format(e.getSecondOperand()) + ")");
-//                            } else {
-//                                valueList.add("(" + setting.getDevice().getName().replace(" ", "_") + "_"
-//                                        + value.getName().replace(" ", "_") + ' ' + e.getOperator().getCodeValue() + ' '
-//                                        + df.format(e.getFirstOperand()) + ")");
-//                            }
-//                        }
-                        if (!valueList.isEmpty()) {
-                            conditionList.add("(" + String.join(" || ", valueList) + ")");
+                        Expression expression = setting.getExpression().get(value);
+                        // skip if it is disable
+                        if (!expression.isEnable()) {
+                            continue;
                         }
+                        conditionList.add("(" + expression.getTerms().stream().map(term -> {
+                            if (term instanceof NumberWithUnitTerm) {
+                                return String.valueOf(((NumberWithUnitTerm) term).getValue().getValue());
+                            } else if (term instanceof StringTerm) {
+                                return ((StringTerm) term).getValue();
+                            } else if (term instanceof OperatorTerm) {
+                                ChipOperator chipOperator = ((OperatorTerm) term).getValue();
+                                if (chipOperator == ChipOperator.AND) {
+                                    return " && ";
+                                } else if (chipOperator == ChipOperator.OR) {
+                                    return " || ";
+                                } else {
+                                    return " " + chipOperator.toString() + " ";
+                                }
+                            } else if (term instanceof ValueTerm) {
+                                return setting.getDevice().getName().replace(" ", "_") + "_"
+                                        + value.getName().replace(" ", "_");
+                            } else {
+                                throw new IllegalStateException("Unknown term is found " + term);
+                            }
+                        }).collect(Collectors.joining()) + ")");
                     }
                 }
             }
