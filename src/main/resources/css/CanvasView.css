@@ -91,12 +91,14 @@
     -fx-background-image: url('zoomInBtn-toggle.png');
     -fx-background-size : 25px;
     -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
 }
 #zoomInButton{
     -fx-background-image: url('zoomInBtn.png');
     -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
 }
 #zoomOutButton:pressed{
     -fx-focus-color: transparent;
@@ -104,12 +106,14 @@
     -fx-background-image: url('zoomOutBtn-toggle.png');
     -fx-background-size : 25px;
     -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
 }
 #zoomOutButton{
     -fx-background-image: url('zoomOutBtn.png');
     -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
 }
 #zoomDefaultButton:pressed{
      -fx-focus-color: transparent;
@@ -117,10 +121,12 @@
      -fx-background-image: url('zoomDefaultBtn-toggle.png');
      -fx-background-size : 25px;
      -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
  }
 #zoomDefaultButton{
      -fx-background-image: url('zoomDefaultBtn.png');
      -fx-background-size : 25px;
      -fx-background-color: transparent;
      -fx-cursor: hand;
+     -fx-background-repeat: no-repeat;
  }
