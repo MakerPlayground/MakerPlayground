@@ -220,7 +220,7 @@ public class Diagram extends Pane {
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                     || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                                 createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
-                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
+                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX() + HOLE_SPACE, BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
                             } else {
                                 createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
                                         , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);

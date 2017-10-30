@@ -137,7 +137,7 @@ public class ExpressionView extends HBox {
         unitComboBox.managedProperty().bind(unitComboBox.visibleProperty());
         expressionViewModel.unitProperty().bind(unitComboBox.getSelectionModel().selectedItemProperty());
 
-        b = new Button("-");
+        b = new Button("X");
 
         getChildren().addAll(comboBox, comboBoxType, spinnerFrom, comboBoxFrom, l, spinnerTo, comboBoxTo, unitComboBox, b);
     }

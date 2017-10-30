@@ -67,8 +67,8 @@ public class CanvasView extends AnchorPane {
 //        AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
 //        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
 
-        VBox zoomControl = new VBox(5);
-        zoomControl.getChildren().addAll(zoomDefaultButton, zoomInButton, zoomOutButton);
+        VBox zoomControl = new VBox();
+        zoomControl.getChildren().addAll( zoomInButton, zoomDefaultButton,zoomOutButton);
         AnchorPane.setRightAnchor(zoomControl, 20.0);
         AnchorPane.setBottomAnchor(zoomControl, 20.0);
 
