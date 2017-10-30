@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -251,6 +252,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
 
         CheckBox enableCheckbox = new CheckBox(value.getName());
         enableCheckbox.selectedProperty().bindBidirectional(expression.enableProperty());
+        GridPane.setValignment(enableCheckbox, VPos.TOP);
         GridPane.setRowIndex(enableCheckbox, i+1);
         GridPane.setColumnIndex(enableCheckbox, 0);
         propertyPane.getChildren().add(enableCheckbox);
