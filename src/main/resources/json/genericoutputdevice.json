@@ -35,8 +35,8 @@
     "description": "A kind of speaker that can control frequency of sound",
     "action": [
       {
-        "name": "Beep",
-        "funcname": "beep",
+        "name": "Play",
+        "funcname": "play",
         "type": "Active",
         "parameter": [
           {
@@ -64,8 +64,8 @@
         ]
       },
       {
-        "name": "Play",
-        "funcname": "play",
+        "name": "Beep",
+        "funcname": "beep",
         "type": "Active",
         "parameter": [
           {

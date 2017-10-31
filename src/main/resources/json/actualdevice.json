@@ -2182,7 +2182,7 @@
         "function": [
           {
             "type": "POWER",
-            "pintype": "VCC"
+            "pintype": "GND"
           }
         ],
         "v_min": 5.0,
@@ -2191,12 +2191,12 @@
         "y": 0.002
       },
       {
-        "name": "GND",
+        "name": "VCC",
         "type": "WIRE",
         "function": [
           {
             "type": "POWER",
-            "pintype": "GND"
+            "pintype": "VCC"
           }
         ],
         "v_min": 5.0,
@@ -2218,19 +2218,6 @@
               {
                 "name": "isPressed",
                 "constraint": []
-              }
-            ]
-          },
-          {
-            "name": "Click Count",
-            "parameter": [
-              {
-                "name": "isMultiPressed",
-                "constraint": {
-                  "min": 1.0,
-                  "max": 100.0,
-                  "unit": "TIME"
-                }
               }
             ]
           },
@@ -2472,7 +2459,7 @@
   {
     "id": "Arduinoall-454",
     "brand": "Arduinoall",
-    "model": "7 Segment 4 Digit Display LED Module Clock",
+    "model": "4 digit display LED module clock for Arduino 0.36\"",
     "url": "https://www.arduinoall.com/product/454/7-segment-4-digit-display-led-module-clock-for-arduino-0-36",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",
@@ -2664,7 +2651,7 @@
         "name": "Buzzer",
         "action": [
           {
-            "name": "Beep",
+            "name": "Play",
             "parameter": [
               {
                 "name": "Tone Frequency",
@@ -2685,7 +2672,7 @@
             ]
           },
           {
-            "name": "Play",
+            "name": "Beep",
             "parameter": [
               {
                 "name": "Tone Frequency",
@@ -2706,7 +2693,7 @@
   {
     "id": "Arduinoall-332",
     "brand": "Arduinoall",
-    "model": "RGB LED Module using GND",
+    "model": "RGB LED Module Common Cathode",
     "url": "https://www.arduinoall.com/product/332/rgb-3-color-full-color-ky-016-led-module-for-arduino-avr-pic",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
@@ -2714,7 +2701,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_RGB_LED"
+      "MP_RGB_LED_CC"
     ],
     "width": 86.0,
     "height": 107.0,
@@ -3592,7 +3579,7 @@
   {
     "id": "Arduinoall-967",
     "brand": "Arduinoall",
-    "model": "RGB LED Module Using 5V",
+    "model": "RGB LED Module Common Anode",
     "url": "https://www.arduinoall.com/product/967/rgb-led-10mm-module-%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-led-rgb-3-%E0%B8%AA%E0%B8%B5%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-10mm",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
@@ -3600,7 +3587,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_RGB_LED"
+      "MP_RGB_LED_CA"
     ],
     "width": 86.0,
     "height": 107.0,
@@ -3796,7 +3783,7 @@
   {
     "id": "Arduinoall-737",
     "brand": "Arduinoall",
-    "model": "Fan dC Motor Module L9110 Fan Module for Arduino",
+    "model": "Fan DC Motor Module L9110 Fan Module for Arduino",
     "url": "https://www.arduinoall.com/product/737/fan-dc-motor-module-l9110-fan-module-for-arduino",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",
@@ -3804,7 +3791,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_Adafruit_MotorShield"
+      "MP_Arduinoall_Fan"
     ],
     "width": 235.329,
     "height": 241.152,
@@ -3815,25 +3802,11 @@
     "category": "",
     "port": [
       {
-        "name": "INB",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "GPIO_2",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 61.67,
-        "y": 128.556
-      },
-      {
         "name": "INA",
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
+            "type": "PWM_1",
             "pintype": "INOUT"
           }
         ],
@@ -3841,11 +3814,25 @@
         "v_max": 5.0,
         "x": 75.983,
         "y": 128.556
+      },
+      {
+        "name": "INB",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "PWM_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 61.67,
+        "y": 128.556
       }
     ],
     "connectivity": [
-      "GPIO_2",
-      "GPIO_1"
+      "PWM_1",
+      "PWM_2"
     ],
     "compatibility": [
       {
@@ -4065,7 +4052,7 @@
   {
     "id": "Arduinoall-1219",
     "brand": "Arduinoall",
-    "model": "Red  seven segment 4 digits 0.36\" with TM1637 Driver",
+    "model": "4 digit display LED module with dots for Arduino 0.36\"",
     "url": "https://www.arduinoall.com/product/1219/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B9%81%E0%B8%AA%E0%B8%94%E0%B8%87%E0%B8%84%E0%B9%88%E0%B8%B2%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%80%E0%B8%A5%E0%B8%82-4-%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-0-36-%E0%B8%AA%E0%B8%B5%E0%B9%81%E0%B8%94%E0%B8%87-tm1637-driver",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",

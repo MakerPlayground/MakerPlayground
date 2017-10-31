@@ -10,24 +10,6 @@
         "parameter": []
       },
       {
-        "name": "Click Count",
-        "funcname": "isMultiPressed",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Count",
-            "value": 1.0,
-            "constraint": {
-              "min": 1.0,
-              "max": 100.0,
-              "unit": "TIME"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          }
-        ]
-      },
-      {
         "name": "Wait For Release",
         "funcname": "isReleased",
         "type": "Active",
