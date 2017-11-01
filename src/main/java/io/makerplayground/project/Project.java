@@ -22,8 +22,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
-import io.makerplayground.helper.*;
-import io.makerplayground.project.expression.Expression;
+import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.SingletonAddDevice;
+import io.makerplayground.helper.SingletonDelDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -269,6 +271,7 @@ public class Project {
         for (Scene s : scene) {
             for (UserSetting userSetting : s.getSetting()) {
                 deviceType.add(userSetting.getDevice());
+                deviceType.addAll(userSetting.getAllValueUsed().keySet());
             }
         }
 

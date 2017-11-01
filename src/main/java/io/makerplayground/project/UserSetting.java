@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Action;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
+import io.makerplayground.helper.DataType;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.SimpleExpression;
 import javafx.beans.property.ObjectProperty;
@@ -103,6 +104,21 @@ public class UserSetting {
     public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
+        // list value use in parameters ex. show value of 7-Segment / LCD
+        for (Parameter parameter : valueMap.keySet()) {
+            if (parameter.getDataType() != DataType.VALUE) {
+                continue;
+            }
+
+            ProjectValue projectValue = (ProjectValue) valueMap.get(parameter);
+            ProjectDevice projectDevice = projectValue.getDevice();
+            if (result.containsKey(projectDevice)) {
+                result.get(projectDevice).add(projectValue.getValue());
+            } else {
+                result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+            }
+        }
+
         // TODO: edit comment
         // assume that each expression contain reference to itself
         for (Expression exp : expression.values()) {
@@ -119,12 +135,6 @@ public class UserSetting {
                 }
             }
         }
-
-//        Map<ProjectDevice, Set<Value>> tmp = expression.values().stream()
-//                .map(Expression::getValueUsed)
-//                .flatMap(Collection::stream)
-//                .collect(Collectors.groupingBy(ProjectValue::getDevice,
-//                        Collectors.mapping(ProjectValue::getValue, Collectors.toSet())));
 
         return result;
     }

@@ -11,7 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -106,14 +106,15 @@ public class UploadTask extends Task<UploadResult> {
             // copy libraries
             for (String x : library) {
                 FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
-                File sourcecpp = new File(path + File.separator +"src"+File.separator+"main"+File.separator+"resources"+File.separator+"library"+File.separator+"arduino"+File.separator+"src"+File.separator+ x + ".cpp");
-                //File sourcecpp = new File(getClass().getResource("/library/arduino/src/" + x + ".cpp").toExternalForm());
+
+                URL sourcecpp = getClass().getResource("/library/arduino/src/" + x + ".cpp");
                 File destcpp = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".cpp");
-                File sourceh = new File(path + File.separator +"src"+File.separator+"main"+File.separator+"resources"+File.separator+"library"+File.separator+"arduino"+File.separator+"src"+File.separator+ x + ".h");
-                //File sourceh = new File(getClass().getResource("/library/arduino/src/" + x + ".h").toExternalForm());
+
+                URL sourceh = getClass().getResource("/library/arduino/src/" + x + ".h");
                 File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".h");
-                Files.copy(sourcecpp.toPath(), destcpp.toPath());
-                Files.copy(sourceh.toPath(), desth.toPath());
+
+                FileUtils.copyURLToFile(sourcecpp, destcpp);
+                FileUtils.copyURLToFile(sourceh, desth);
             }
         } catch (IOException e) {
             updateMessage("Error: Missing some libraries");

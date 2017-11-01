@@ -4311,7 +4311,8 @@
     "library": [
       "Adafruit_Sensor",
       "MPU6050",
-      "MP_MPU6050"
+      "MP_MPU6050",
+      "I2Cdev"
     ],
     "width": 104.206,
     "height": 146.095,
@@ -4486,6 +4487,36 @@
               "max": 2000.0,
               "unit": "DEGREEPERSEC"
             }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Magnetometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Heading",
+            "constraint": [
+              "North",
+              "South"
+            ]
+          },
+          {
+            "name": "  ",
+            "constraint": [
+              "East",
+              "West",
+              "NorthEast",
+              "NorthWest",
+              "SouthEast",
+              "SouthWest"
+            ]
           }
         ],
         "count": ""
