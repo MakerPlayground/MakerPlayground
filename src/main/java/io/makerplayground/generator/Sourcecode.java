@@ -189,7 +189,7 @@ public class Sourcecode {
                     } else if (value instanceof String) {
                         params.add("\"" + value + "\"");
                     } else if (value instanceof ProjectValue) {
-                        params.add(((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
+                        params.add("_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
                                 + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
                     }
                 }
@@ -286,7 +286,7 @@ public class Sourcecode {
             for (UserSetting setting : condition.getSetting()) {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
                     StringBuilder action = new StringBuilder();
-                    action.append(setting.getDevice().getName().replace(" ", "_")).append(".")
+                    action.append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
                             .append(setting.getAction().getFunctionName()).append("(");
                     for (Parameter parameter : setting.getAction().getParameter()) {
                         Object value = setting.getValueMap().get(parameter);
@@ -320,7 +320,7 @@ public class Sourcecode {
                                     return " " + chipOperator.toString() + " ";
                                 }
                             } else if (term instanceof ValueTerm) {
-                                return setting.getDevice().getName().replace(" ", "_") + "_"
+                                return "_" + setting.getDevice().getName().replace(" ", "_") + "_"
                                         + value.getName().replace(" ", "_");
                             } else {
                                 throw new IllegalStateException("Unknown term is found " + term);
