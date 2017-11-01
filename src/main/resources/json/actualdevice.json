@@ -3701,7 +3701,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_RGB_LED"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 132.212,
     "height": 40.201,
@@ -3768,7 +3768,7 @@
         ],
         "value": [
           {
-            "name": "Light",
+            "name": "MP_OneAnalogReadToPercent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,
@@ -4197,9 +4197,8 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_BME280",
-      "Adafruit_BME280",
-      "Adafruit_Sensor"
+      "MP_DHT11",
+      "DHT"
     ],
     "width": 93.542,
     "height": 140.332,
@@ -4490,36 +4489,6 @@
           }
         ],
         "count": ""
-      },
-      {
-        "name": "Magnetometer",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "Heading",
-            "constraint": [
-              "North",
-              "South"
-            ]
-          },
-          {
-            "name": "  ",
-            "constraint": [
-              "East",
-              "West",
-              "NorthEast",
-              "NorthWest",
-              "SouthEast",
-              "SouthWest"
-            ]
-          }
-        ],
-        "count": ""
       }
     ]
   },
@@ -4534,7 +4503,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_BME280"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 130.194,
     "height": 203.991,
@@ -4610,7 +4579,7 @@
         ],
         "value": [
           {
-            "name": "LPG",
+            "name": "Percent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,
@@ -4633,7 +4602,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_BME280"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 130.194,
     "height": 203.991,
@@ -4709,7 +4678,7 @@
         ],
         "value": [
           {
-            "name": "Alcohol",
+            "name": "Percent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,

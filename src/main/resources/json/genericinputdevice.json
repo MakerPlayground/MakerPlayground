@@ -405,7 +405,7 @@
     ],
     "value": [
       {
-        "name": "Alcohol",
+        "name": "Percent",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -428,7 +428,7 @@
     ],
     "value": [
       {
-        "name": "LPG",
+        "name": "Percent",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
