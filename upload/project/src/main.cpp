@@ -2,7 +2,6 @@
 #include "MP_OneAnalogReadToPercent.h"
 
 void beginScene();
-void scene1();
 
 void (*currentScene)(void);
 
@@ -19,16 +18,12 @@ void loop() {
 }
 
 void beginScene() {
-    double _Light1_Light;
+    double _Light1_Percent;
     while (1) {
-        _Light1_Light = _Light1.getLight();
-        if((Light1_Light < 75.0 && Light1_Light > 25.0)) {
-            currentScene = scene1;
+        _Light1_Percent = _Light1.getPercent();
+        if((_Light1_Percent < 75.0 && _Light1_Percent > 25.0)) {
+            currentScene = beginScene;
             break;
         }
     }
-}
-
-void scene1() {
-    currentScene = beginScene;
 }

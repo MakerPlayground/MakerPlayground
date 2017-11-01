@@ -3768,7 +3768,7 @@
         ],
         "value": [
           {
-            "name": "MP_OneAnalogReadToPercent",
+            "name": "Percent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,

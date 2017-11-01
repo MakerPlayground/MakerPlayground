@@ -369,7 +369,7 @@
     ],
     "value": [
       {
-        "name": "Light",
+        "name": "Percent",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
