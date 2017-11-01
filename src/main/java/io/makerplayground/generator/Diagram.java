@@ -17,10 +17,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tanyagorn on 7/17/2017.
@@ -46,6 +43,9 @@ public class Diagram extends Pane {
 
     private static final double CONTROLLER_Y_MARGIN = 30;
     public static final int STROKE_WIDTH = 3;
+
+    private final List<Color> colorSet = new ArrayList<Color>(Arrays.asList(Color.BLUE, Color.HOTPINK,
+            Color.ORANGE, Color.GRAY, Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN));
 
     private final Project project;
 
@@ -95,7 +95,7 @@ public class Diagram extends Pane {
         // draw other device
         double lastX = BREADBOARD_LEFT_MARGIN;
         int deviceCount = 0;
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
@@ -151,7 +151,7 @@ public class Diagram extends Pane {
         }
 
         // connect power for other devices
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
 
@@ -295,7 +295,7 @@ public class Diagram extends Pane {
             sclStartY = startSCL.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
         }
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
@@ -342,7 +342,7 @@ public class Diagram extends Pane {
 
 
         // connect SPI, UART, PWM
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
 
@@ -498,7 +498,12 @@ public class Diagram extends Pane {
             endY = controllerPosition.getY() + destPort.getY();
         }
 
-        createPowerLine(startX, startY, endX, endY);
+        int random = (int )(Math.random() * colorSet.size());
+
+        Line line = new Line(startX, startY, endX, endY);
+        line.setStroke(colorSet.get(random));
+        line.setStrokeWidth(STROKE_WIDTH);
+        this.getChildren().add(line);
     }
 
     private void createPowerLine(double x1, double y1, double x2, double y2) {
