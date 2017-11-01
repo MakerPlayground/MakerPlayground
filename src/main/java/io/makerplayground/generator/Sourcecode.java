@@ -102,7 +102,7 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append(projectDevice.getActualDevice().getMPLibraryName().replace(" ", "_")).append(" ")
-                    .append(projectDevice.getName().replace(" ", "_"));
+                    .append("_" + projectDevice.getName().replace(" ", "_"));
             List<String> portName = new ArrayList<>();
 //            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
 //                if (peripheral.getConnectionType() != ConnectionType.I2C) {
@@ -134,7 +134,7 @@ public class Sourcecode {
         sb.append("void setup() {").append(NEW_LINE);
         sb.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append(INDENT).append(projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
+            sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
         }
         sb.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
@@ -179,7 +179,7 @@ public class Sourcecode {
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
-                sb.append(INDENT).append(setting.getDevice().getName().replace(" ", "_")).append(".")
+                sb.append(INDENT).append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
                         .append(setting.getAction().getFunctionName()).append("(");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
@@ -265,7 +265,7 @@ public class Sourcecode {
         // declare variable to store value from input device(s)
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
-                sb.append(INDENT).append("double ").append(projectDevice.getName().replace(" ", "_")).append("_")
+                sb.append(INDENT).append("double ").append("_" + projectDevice.getName().replace(" ", "_")).append("_")
                         .append(v.getName().replace(" ", "_")).append(";").append(NEW_LINE);
             }
         }
@@ -275,8 +275,8 @@ public class Sourcecode {
         // update value from input device(s) to the variable
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
-                sb.append(INDENT).append(INDENT).append(projectDevice.getName().replace(" ", "_")).append("_")
-                        .append(v.getName().replace(" ", "_")).append(" = ").append(projectDevice.getName().replace(" ", "_")).append(".get")
+                sb.append(INDENT).append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append("_")
+                        .append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
                         .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
         }

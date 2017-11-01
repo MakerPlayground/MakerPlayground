@@ -99,7 +99,10 @@ public class SceneDevicePropertyWindow extends PopOver {
         propertyPane.getChildren().addAll(actionLabel, actionComboBox);
 
         // add listener to update property sheet when the condition selected has changed
-        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> redrawProperty());
+        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> {
+            redrawProperty();
+
+        });
         redrawProperty();
 
         // arrange title and property sheet
@@ -108,6 +111,7 @@ public class SceneDevicePropertyWindow extends PopOver {
         mainPane.getChildren().addAll(titleHBox, propertyPane);
         mainPane.setSpacing(5.0);
         mainPane.setPadding(new Insets(20, 20, 20, 20));
+
 
         setDetachable(false);
         setContentNode(mainPane);

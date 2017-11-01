@@ -1,11 +1,13 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.device.Value;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
 import io.makerplayground.helper.SingletonUploadClick;
 import io.makerplayground.helper.SingletonWiringDiagram;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.devicepanel.DevicePanelView;
@@ -66,6 +68,13 @@ public class RightPanel extends AnchorPane {
         generateBtn.setOnAction(event -> {
             if (!DeviceMapper.autoAssignDevices(project)) {
                 ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
+                errorDialogView.showAndWait();
+                return;
+            }
+            String errorMsg = project.getValueError();
+            // found invalid value
+            if (errorMsg != null) {
+                ErrorDialogView errorDialogView = new ErrorDialogView(errorMsg);
                 errorDialogView.showAndWait();
                 return;
             }
@@ -141,6 +150,5 @@ public class RightPanel extends AnchorPane {
             return dialogStage;
         }
     }
-
 
 }

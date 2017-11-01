@@ -69,6 +69,7 @@ public class GenerateView extends Dialog {
 
         diagramScrollPane.setContent(wiringDiagram);
         codeTextArea.setText(viewModel.getCode());
+        codeTextArea.setEditable(false);
 
         final WebView browser = new WebView();
         final WebEngine webEngine = browser.getEngine();

@@ -20,11 +20,10 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
-import io.makerplayground.helper.OperandType;
-import io.makerplayground.helper.Platform;
-import io.makerplayground.helper.SingletonAddDevice;
-import io.makerplayground.helper.SingletonDelDevice;
+import io.makerplayground.helper.*;
+import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -289,5 +288,35 @@ public class Project {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getValueError() {
+        for (Scene s : scene) {
+            for (UserSetting userSetting : s.getSetting()) {
+                for (Parameter parameter : userSetting.getValueMap().keySet()) {
+                    if (parameter.getDataType() == DataType.VALUE) {
+                        ProjectValue projectValue = (ProjectValue) userSetting.getValueMap().get(parameter);
+                        if (projectValue == null) {
+                            return "Invalid value of " + userSetting.getDevice().getName() + "\nin scene " + s.getName();
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Condition c : condition) {
+            for (UserSetting userSetting : c.getSetting()) {
+                for (Parameter parameter : userSetting.getValueMap().keySet()) {
+                    if (parameter.getDataType() == DataType.VALUE) {
+                        ProjectValue projectValue = (ProjectValue) userSetting.getValueMap().get(parameter);
+                        if (projectValue == null) {
+                            return "Invalid value of " + userSetting.getDevice().getName() + "\nin condition " + c.getName();
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
