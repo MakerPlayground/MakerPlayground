@@ -115,8 +115,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
     }
 
     private void redrawProperty() {
-        propertyPane.getChildren().clear();
-        propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
+        propertyPane.getChildren().retainAll(conditionLabel, conditionComboBox);
 
         List<Parameter> params = viewModel.getAction().getParameter();
         for (int i=0; i<params.size(); i++) {
@@ -130,6 +129,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
             if (p.getDataType() == DataType.VALUE) {
                 ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
+                comboBox.setValue((ProjectValue) viewModel.getParameterValue(p));
                 comboBox.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(ProjectValue item, boolean empty) {
@@ -153,6 +153,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
                     }
                 });
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
                 SliderWithUnit sliderWithUnit = new SliderWithUnit();
                 sliderWithUnit.setUnit(FXCollections.observableArrayList(p.getUnit()));

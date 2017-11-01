@@ -114,8 +114,7 @@ public class SceneDevicePropertyWindow extends PopOver {
     }
 
     private void redrawProperty() {
-        propertyPane.getChildren().clear();
-        propertyPane.getChildren().addAll(actionLabel, actionComboBox);
+        propertyPane.getChildren().retainAll(actionLabel, actionComboBox);
 
         List<Parameter> params = viewModel.getAction().getParameter();
         for (int i=0; i<params.size(); i++) {

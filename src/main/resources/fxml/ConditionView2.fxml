@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<fx:root alignment="TOP_RIGHT"  stylesheets="@../css/ConditionView2.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" stylesheets="@../css/ConditionView2.css" type="VBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
          <graphic>
@@ -24,8 +24,11 @@
       <StackPane fx:id="stackPane" maxWidth="210.0" minWidth="210.0">
          <children>
             <ScrollPane fx:id="scrollPane" fitToHeight="true" maxHeight="75.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="190.0" StackPane.alignment="CENTER">
-              <content>
-                  <HBox id="deviceIconHBox" fx:id="deviceIconHBox" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="55.0" spacing="10.0">
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <content>
+                  <HBox id="deviceIconHBox" fx:id="deviceIconHBox" prefHeight="75.0" prefWidth="190.0" spacing="10">
                      <children>
                         <Button id="addInputButton" fx:id="addInputButton" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="50.0" minHeight="50.0" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0">
                            <HBox.margin>
@@ -33,14 +36,8 @@
                            </HBox.margin>
                         </Button>
                      </children>
-                     <padding>
-                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
-                     </padding>
                   </HBox>
-              </content>
-               <padding>
-                  <Insets left="5.0" />
-               </padding>
+               </content>
             </ScrollPane>
             <Circle id="sourceNode" fx:id="inPort" fill="#313644" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_LEFT" />
             <Circle id="destNode" fx:id="outPort" fill="#313644" layoutX="20.0" layoutY="48.0" radius="7.0" stroke="WHITE" strokeWidth="5.0" StackPane.alignment="CENTER_RIGHT" />

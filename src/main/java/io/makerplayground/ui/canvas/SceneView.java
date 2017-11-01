@@ -28,6 +28,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
@@ -50,7 +51,7 @@ public class SceneView extends InteractiveNode{
     @FXML private TextField delayTextField;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
-    @FXML private Button removeSceneBtn;
+    @FXML private ImageView removeSceneBtn;
     @FXML private ComboBox<Scene.DelayUnit> timeUnitComboBox;
     @FXML private Button addOutputButton;
 
@@ -137,11 +138,12 @@ public class SceneView extends InteractiveNode{
         });
 
         // remove scene when press the remove button
-        removeSceneBtn.setOnAction(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
+        removeSceneBtn.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
                 , null, null, 0, 0)));
 
         // allow node to be dragged
         makeMovable(statePane);
+        makeMovable(activeIconFlowPane);
 
         // TODO: refactor into InteractiveNode
         // allow node to connect with other node

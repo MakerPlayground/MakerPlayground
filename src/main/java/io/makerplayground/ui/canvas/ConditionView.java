@@ -77,8 +77,9 @@ public class ConditionView extends InteractiveNode {
     }
 
     private void initEvent() {
-        // allow the condition to move by dragging the scrollPane
+        // allow node to be dragged
         makeMovable(scrollPane);
+        makeMovable(deviceIconHBox);
 
         // show device selector dialog to add device to this condition
         addInputButton.setOnAction(e -> {

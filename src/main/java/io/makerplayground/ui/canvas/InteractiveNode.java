@@ -35,7 +35,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
     protected void makeMovable(Node n) {
         // allow node to be dragged
-        n.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        n.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             // allow dragging only when the left button is pressed
             if (!event.isPrimaryButtonDown())
                 return;
@@ -45,7 +45,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
             translateAnchorX = getTranslateX();
             translateAnchorY = getTranslateY();
         });
-        n.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+        n.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
             // allow dragging only when the left button is pressed
             if (!event.isPrimaryButtonDown())
                 return;
@@ -72,7 +72,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.MOVED, null, null
                     , getBoundsInParent().getMinX(), getBoundsInParent().getMinY()));
         });
-        n.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+        n.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             if (hasDragged) {
                 // we consume this event so that the property window will not be opened if we happened to be dragging
                 // this node and release our mouse
