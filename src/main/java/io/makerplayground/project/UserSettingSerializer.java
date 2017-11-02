@@ -47,7 +47,11 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", entry.getKey().getName());
             jsonGenerator.writeBooleanField("enable", entry.getValue().isEnable());
-
+            if (entry.getValue() instanceof SimpleExpression) {
+                jsonGenerator.writeStringField("type", "simple");
+            } else {
+                throw new IllegalStateException("Unknown expression type");
+            }
             jsonGenerator.writeArrayFieldStart("expression");
             for (Term term : entry.getValue().getTerms()) {
                 jsonGenerator.writeStartObject();
@@ -61,7 +65,7 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
                 } else if (term instanceof StringTerm) {
                     jsonGenerator.writeStringField("value", ((StringTerm) term).getValue());
                 } else if (term instanceof OperatorTerm) {
-                    jsonGenerator.writeStringField("value", ((OperatorTerm) term).getValue().toString());
+                    jsonGenerator.writeStringField("value", ((OperatorTerm) term).getValue().name());
                 } else if (term instanceof ValueTerm) {
                     jsonGenerator.writeObjectFieldStart("value");
                     jsonGenerator.writeStringField("name", ((ValueTerm) term).getValue().getDevice().getName());

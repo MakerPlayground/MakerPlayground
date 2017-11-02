@@ -27,11 +27,20 @@ public class SimpleExpressionControl extends HBox {
 
         rangeSlider.setMin(constraint.getMin());
         rangeSlider.setMax(constraint.getMax());
+        System.out.println("elow: " + expression.getLowValue());
         rangeSlider.setLowValue(expression.getLowValue());
+        System.out.println("rl: " + rangeSlider.getLowValue());
+        System.out.println("ehigh: " + expression.getHighValue());
         rangeSlider.setHighValue(expression.getHighValue());
-        rangeSlider.setShowTickMarks(true);
-        rangeSlider.setShowTickLabels(true);
-        rangeSlider.setBlockIncrement(1);
+        System.out.println("rh: " + rangeSlider.getHighValue());
+
+        System.out.println("cmin: " + constraint.getMin());
+        System.out.println("cmax: " + constraint.getMax());
+        System.out.println("vof: " + String.valueOf(2910.8027839055135));
+        //rangeSlider.setShowTickMarks(true);
+        //rangeSlider.setShowTickLabels(true);
+        //rangeSlider.setBlockIncrement(1);
+        System.out.println("string: " + String.valueOf(rangeSlider.getLowValue()));
         rangeSlider.lowValueProperty().addListener((observable, oldValue, newValue) -> {
             lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
             updateExpression();
