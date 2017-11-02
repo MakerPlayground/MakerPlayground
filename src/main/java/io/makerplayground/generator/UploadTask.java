@@ -2,8 +2,9 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
 
@@ -21,12 +22,12 @@ import java.util.stream.Collectors;
 
 public class UploadTask extends Task<UploadResult> {
 
-    private Project project;
-    private StringProperty log;
+    private final Project project;
+    private final ReadOnlyStringWrapper log;
 
     public UploadTask(Project project) {
         this.project = project;
-        this.log = new SimpleStringProperty();
+        this.log = new ReadOnlyStringWrapper();
     }
 
     @Override
@@ -45,48 +46,50 @@ public class UploadTask extends Task<UploadResult> {
 
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
-        List<String> library = null;
         String platform = project.getController().getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
-        library = project.getAllDeviceUsed().stream()
+        List<String> library = project.getAllDeviceUsed().stream()
                 .map(projectDevice -> projectDevice.getActualDevice().getLibraryName())
                 .flatMap(Collection::stream).collect(Collectors.toList());
-        log.set("List of library used \n");
+        Platform.runLater(() -> log.set("List of library used \n"));
         for (String libName : library) {
-            log.set(" - " + libName + "\n");
+            Platform.runLater(() -> log.set(" - " + libName + "\n"));
         }
-        //System.out.println(code);
-        //System.out.println(library);
+
         Path currentRelativePath = Paths.get("");
         String path = currentRelativePath.toAbsolutePath().toString();
-        //System.out.println("Current relative path is: " + path);
         try {
             FileUtils.deleteDirectory(new File(path + File.separator + "upload" + File.separator + "project"));
             FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project"));
-
-            currentRelativePath = Paths.get("");
-            path = currentRelativePath.toAbsolutePath().toString();
-            //System.out.println("Current relative path is: " + path);
 
             ProcessBuilder builder = new ProcessBuilder("pio", "init", "--board", platform);
             builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
-            Scanner s = new Scanner(p.getInputStream());
-            while (s.hasNextLine()) {
-                log.set(s.nextLine() + "\n");
+            try (Scanner s = new Scanner(p.getInputStream())) {
+                while (s.hasNextLine()) {
+                    if (isCancelled()) {
+                        updateMessage("Canceling upload...");
+                        p.destroy();
+                        break;
+                    }
+                    String line = s.nextLine();
+                    Platform.runLater(() -> log.set(line + "\n"));
+                }
             }
-            s.close();
-            try {
-                int result = p.waitFor();
-            } catch (InterruptedException e) {
+            if (p.waitFor() != 0) {
+                updateMessage("Error: pio init failed");
                 return UploadResult.UNKNOWN_ERROR;
             }
-
-            //Runtime.getRuntime().exec("pio init --board "+platform);
-            //System.out.println(platform);
+        } catch (InterruptedException e) {
+            if (isCancelled()) {
+                updateMessage("Upload has been canceled");
+                return UploadResult.USER_CANCEL;
+            }
+            updateMessage("Unknown error has occurred. Please try again.");
+            return UploadResult.UNKNOWN_ERROR;
         } catch (IOException e) {
-            updateMessage("Error: Can't find platformio");
+            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
 
@@ -113,12 +116,12 @@ public class UploadTask extends Task<UploadResult> {
                 URL sourceh = getClass().getResource("/library/arduino/src/" + x + ".h");
                 File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".h");
 
-                FileUtils.copyURLToFile(sourcecpp, destcpp);
-                FileUtils.copyURLToFile(sourceh, desth);
+                FileUtils.copyURLToFile(sourcecpp, destcpp, 1, 1);
+                FileUtils.copyURLToFile(sourceh, desth, 1, 1);
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             updateMessage("Error: Missing some libraries");
-            return UploadResult.UNKNOWN_ERROR;
+            return UploadResult.CANT_FIND_LIBRARY;
         }
 
         updateProgress(0.75, 1);
@@ -128,21 +131,31 @@ public class UploadTask extends Task<UploadResult> {
             builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
-            Scanner s = new Scanner(p.getInputStream());
-            while (s.hasNextLine()) {
-                log.set(s.nextLine() + "\n");
-            }
-            s.close();
-            try {
-                int result = p.waitFor();
-                if (result == 1) {
-                    updateMessage("Error: Can't find board. Please check connection.");
-                    return UploadResult.CANT_FIND_BOARD;
+            try (Scanner s = new Scanner(p.getInputStream())) {
+                while (s.hasNextLine()) {
+                    if (isCancelled()) {
+                        updateMessage("Canceling upload...");
+                        p.destroy();
+                        break;
+                    }
+                    String line = s.nextLine();
+                    Platform.runLater(() -> log.set(line + "\n"));
                 }
-            } catch (InterruptedException e) {
-                return UploadResult.UNKNOWN_ERROR;
             }
+            int result = p.waitFor();
+            if (result != 0) {
+                updateMessage("Error: Can't find board. Please check connection.");
+                return UploadResult.CANT_FIND_BOARD;
+            }
+        } catch (InterruptedException e) {
+            if (isCancelled()) {
+                updateMessage("Upload has been canceled");
+                return UploadResult.USER_CANCEL;
+            }
+            updateMessage("Unknown error has occurred. Please try again.");
+            return UploadResult.UNKNOWN_ERROR;
         } catch (IOException e) {
+            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
 
@@ -152,11 +165,7 @@ public class UploadTask extends Task<UploadResult> {
         return UploadResult.OK;
     }
 
-    public String getLog() {
-        return log.get();
-    }
-
-    public StringProperty logProperty() {
-        return log;
+    public ReadOnlyStringProperty logProperty() {
+        return log.getReadOnlyProperty();
     }
 }

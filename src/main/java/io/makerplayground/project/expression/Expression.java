@@ -38,4 +38,8 @@ public class Expression {
     public void setEnable(boolean enable) {
         this.enable.set(enable);
     }
+
+    public boolean isValid() {
+        return !terms.isEmpty();
+    }
 }

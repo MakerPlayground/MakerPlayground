@@ -32,7 +32,7 @@
             </VBox>
             <TitledPane fx:id="detailPane" animated="false" expanded="false" maxWidth="375.0" text="More details" textFill="#51af98">
                <content>
-                  <TextArea fx:id="textArea" maxWidth="-Infinity" prefHeight="200.0" prefWidth="370.0" wrapText="true" />
+                  <TextArea fx:id="textArea" maxWidth="-Infinity" prefHeight="200.0" prefWidth="370.0" wrapText="true" editable="false" />
                </content>
                <font>
                   <Font size="12.0" />

@@ -20,6 +20,7 @@ public class Sourcecode {
 
     public enum Error {
         NONE(""),
+        MISSING_PARAMS("Missing required parameter in some scene/conditions"),
         NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
         NEST_CONDITION("Multiple condition are connected together"),
@@ -67,6 +68,9 @@ public class Sourcecode {
 
     public static Sourcecode generateCode(Project project, boolean cppMode) {
         //Begin begin = project.getBegin();
+        if (!checkDeviceParameter(project)) {
+            return new Sourcecode(Error.MISSING_PARAMS, "-");   // TODO: add location
+        }
 
         StringBuilder headerStringBuilder = new StringBuilder();
         StringBuilder sb = new StringBuilder();
@@ -364,6 +368,15 @@ public class Sourcecode {
         sb.append(INDENT).append("}").append(NEW_LINE); // end of while loop
 
         return Error.NONE;
+    }
+
+    private static boolean checkDeviceParameter(Project project) {
+        return project.getScene().stream().flatMap(scene -> scene.getSetting().stream())
+                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
+                .allMatch(o -> (o != null) && (!(o instanceof Expression) || ((Expression) o).isValid()))
+                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
+                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
+                .allMatch(o -> (o != null) && (!(o instanceof Expression) || ((Expression) o).isValid()));
     }
 
     private static List<NodeElement> findAdjacentVertices(Project project, NodeElement source) {

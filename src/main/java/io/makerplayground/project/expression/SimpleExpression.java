@@ -44,4 +44,9 @@ public class SimpleExpression extends Expression {
         getTerms().set(6, new NumberWithUnitTerm(new NumberWithUnit(getLowValue(), u)));
         getTerms().set(2, new NumberWithUnitTerm(new NumberWithUnit(getHighValue(), u)));
     }
+
+    @Override
+    public boolean isValid() {
+        return true;    // simple expression is always valid
+    }
 }
