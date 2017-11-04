@@ -4443,7 +4443,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
+            "type": "ANALOG_1",
             "pintype": "INOUT"
           }
         ],
@@ -4454,20 +4454,19 @@
       }
     ],
     "connectivity": [
-      "GPIO_1"
+      "ANALOG_1"
     ],
     "compatibility": [
       {
         "name": "Water",
         "action": [
           {
-            "name": "Wait sensor is wet",
-            "parameter": [
-              {
-                "name": "isWet",
-                "constraint": []
-              }
-            ]
+            "name": "Detect Water",
+            "parameter": []
+          },
+          {
+            "name": "No Water",
+            "parameter": []
           }
         ],
         "value": [],

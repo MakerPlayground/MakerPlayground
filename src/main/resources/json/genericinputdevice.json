@@ -393,8 +393,14 @@
     "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector",
     "action": [
       {
-        "name": "Wait sensor is wet",
+        "name": "Detect Water",
         "funcname": "isWet",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "No Water",
+        "funcname": "isDry",
         "type": "Active",
         "parameter": []
       }
