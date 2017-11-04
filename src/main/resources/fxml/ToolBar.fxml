@@ -13,7 +13,7 @@
          <children>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
                <children>
-                  <TextField id="projectNameTextField" fx:id="projectNameTextField" maxWidth="130.0" style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project" />
+                  <TextField id="projectNameTextField" fx:id="projectNameTextField" maxWidth="130.0" style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project" visible="false" managed="false"/>
                   <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;" />
                   <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;" />
                   <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-repeat: no-repeat;" />

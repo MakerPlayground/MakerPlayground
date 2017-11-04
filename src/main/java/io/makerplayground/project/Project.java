@@ -56,7 +56,7 @@ public class Project {
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
 
-    private String filePath;
+    private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("scene\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
@@ -69,7 +69,7 @@ public class Project {
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin();
-        filePath = null;
+        filePath = new SimpleStringProperty("");
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -87,7 +87,7 @@ public class Project {
         this.condition = condition;
         this.line = line;
         this.begin = begin;
-        this.filePath = filePath;
+        this.filePath = new SimpleStringProperty(filePath);
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -284,10 +284,14 @@ public class Project {
     }
 
     public String getFilePath() {
+        return filePath.get();
+    }
+
+    public StringProperty filePathProperty() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
-        this.filePath = filePath;
+        this.filePath.set(filePath);
     }
 }

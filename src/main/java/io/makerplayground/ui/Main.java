@@ -96,57 +96,38 @@ public class Main extends Application {
         }
 
         // Write to azure every 10 minutes
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                try {
-                    File selectedFile;
-                    if (project.getFilePath() != null) {
-                        selectedFile = new File(project.getFilePath());
-                        mapper.writeValue(selectedFile, project);
-                        SingletonUtilTools.getInstance().setAll("SAVE");
-                    }
-//                    } else {
-//                        selectedFile = new File("tmp.mp");
-//                        FileChooser fileChooser = new FileChooser();
-//                        fileChooser.setTitle("Save File");
-//                        fileChooser.getExtensionFilters().addAll(
-//                                new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-//                                new FileChooser.ExtensionFilter("All Files", "*.*"));
-//                        javafx.application.Platform.runLater(() -> {
-//                            File selectedFile = fileChooser.showSaveDialog(scene.getWindow());
-//                            if (selectedFile != null) {
-//                                try {
-//                                    mapper.writeValue(selectedFile, project);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                SingletonUtilTools.getInstance().setAll("SAVE");
-//                            }
-//                        });
+//        timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            public void run() {
+//                try {
+//                    File selectedFile;
+//                    if (project.getFilePath() != null) {
+//                        selectedFile = new File(project.getFilePath());
+//                        mapper.writeValue(selectedFile, project);
+//                        SingletonUtilTools.getInstance().setAll("SAVE");
 //                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 10000, 10000);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, 10000, 10000);
 
         // close program
-        primaryStage.setOnCloseRequest(event -> {
-            SingletonLaunch.getInstance().closeProgram();
-
-            StringWriter stringWrite = new StringWriter();
-            try {
-                mapper.writeValue(stringWrite, mainWindow.getProject());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            timer.cancel();
-            //String s = stringWrite.toString();
-            //SingletonGraphJson.getInstance().setAll(s);
-            SingletonConnectDB.getINSTANCE().close();
-        });
+//        primaryStage.setOnCloseRequest(event -> {
+//            SingletonLaunch.getInstance().closeProgram();
+//
+//            StringWriter stringWrite = new StringWriter();
+//            try {
+//                mapper.writeValue(stringWrite, mainWindow.getProject());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            timer.cancel();
+//            //String s = stringWrite.toString();
+//            //SingletonGraphJson.getInstance().setAll(s);
+//            SingletonConnectDB.getINSTANCE().close();
+//        });
 
         projectNameTextField.setText(project.getProjectName());
         projectNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -238,9 +219,18 @@ public class Main extends Application {
             tutorialView.show();
         });
 
-        //projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-
-        primaryStage.setTitle("MakerPlayground");
+        project.filePathProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                primaryStage.setTitle("MakerPlayground - Untitled Project");
+            } else {
+                primaryStage.setTitle("MakerPlayground - " + project.getFilePath());
+            }
+        });
+        if (project.getFilePath().isEmpty()) {
+            primaryStage.setTitle("MakerPlayground - Untitled Project");
+        } else {
+            primaryStage.setTitle("MakerPlayground - " + project.getFilePath());
+        }
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -277,7 +267,7 @@ public class Main extends Application {
         statusLabel.setText("Saving...");
         try {
             File selectedFile;
-            if (project.getFilePath() == null) {
+            if (project.getFilePath().isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Save File");
                 fileChooser.getExtensionFilters().addAll(
