@@ -2148,10 +2148,10 @@
     ]
   },
   {
-    "id": "Arduinoall-454",
-    "brand": "Arduinoall",
+    "id": "Arduitronics-220",
+    "brand": "Arduitronics",
     "model": "4 digit display LED module clock for Arduino 0.36\"",
-    "url": "https://www.arduinoall.com/product/454/7-segment-4-digit-display-led-module-clock-for-arduino-0-36",
+    "url": "https://www.arduitronics.com/product/220/seven-segment-4-digit-clock-display-0-36-inches-catalex",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",
     "platform": [
@@ -2180,8 +2180,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 51.766
+        "x": 321.0,
+        "y": 53.3
       },
       {
         "name": "DIO",
@@ -2194,8 +2194,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 65.847
+        "x": 321.0,
+        "y": 67.8
       },
       {
         "name": "VCC",
@@ -2208,8 +2208,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 80.158
+        "x": 321.0,
+        "y": 82.3
       },
       {
         "name": "GND",
@@ -2222,8 +2222,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 94.353
+        "x": 321.0,
+        "y": 96.8
       }
     ],
     "connectivity": [
