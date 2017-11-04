@@ -3459,7 +3459,7 @@
         ],
         "value": [
           {
-            "name": "MP_OneAnalogReadToPercent",
+            "name": "Percent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,
@@ -3994,7 +3994,7 @@
     "model": "GY-521 IMU 3-axis Accelerometer/Gyro Module (MPU6050)",
     "url": "https://www.arduinoall.com/product/34/gy-521-imu-3-axis-accelerometer-gyro-module-mpu6050",
     "type": "PERIPHERAL",
-    "formfactor": "STANDALONE",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
     ],
@@ -4004,8 +4004,8 @@
       "MP_MPU6050",
       "I2Cdev"
     ],
-    "width": 104.206,
-    "height": 146.095,
+    "width": 141.733,
+    "height": 113.387,
     "v": "",
     "i": "",
     "w": "",
@@ -4023,8 +4023,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 7.783
+        "x": 21.866,
+        "y": 105.526
       },
       {
         "name": "GND",
@@ -4037,8 +4037,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 26.413
+        "x": 36.866,
+        "y": 105.526
       },
       {
         "name": "SCL",
@@ -4051,8 +4051,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 44.473
+        "x": 50.866,
+        "y": 105.526
       },
       {
         "name": "SDA",
@@ -4065,8 +4065,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 63.604
+        "x": 64.891,
+        "y": 105.526
       },
       {
         "name": "XDA",
@@ -4074,8 +4074,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 82.128
+        "x": 79.866,
+        "y": 105.526
       },
       {
         "name": "XCL",
@@ -4083,8 +4083,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 100.758
+        "x": 94.866,
+        "y": 105.526
       },
       {
         "name": "ADO",
@@ -4092,8 +4092,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 119.069
+        "x": 108.866,
+        "y": 105.526
       },
       {
         "name": "INT",
@@ -4101,8 +4101,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 138.699
+        "x": 123.866,
+        "y": 105.526
       }
     ],
     "connectivity": [
