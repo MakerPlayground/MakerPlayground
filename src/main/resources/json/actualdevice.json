@@ -4487,7 +4487,7 @@
     ],
     "library": [
       "MP_DHT12",
-      "DHT"
+      "dht_dplasa"
     ],
     "width": 72.0,
     "height": 72.0,
