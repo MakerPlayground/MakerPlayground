@@ -4121,32 +4121,32 @@
           {
             "name": "X",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Y",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Z",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
-            "name": "AVG",
+            "name": "Magnitude",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": 0.0,
+              "max": 60.0,
               "unit": "METERPERSECSQUARE"
             }
           }

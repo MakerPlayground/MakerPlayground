@@ -46,8 +46,8 @@
         "name": "Accel_X",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       },
@@ -55,8 +55,8 @@
         "name": "Accel_Y",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       },
@@ -64,8 +64,17 @@
         "name": "Accel_Z",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
+          "unit": "METERPERSECSQUARE"
+        }
+      },
+      {
+        "name": "Accel_Magnitude",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       }
