@@ -46,8 +46,8 @@
         "name": "Accel_X",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       },
@@ -55,8 +55,8 @@
         "name": "Accel_Y",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       },
@@ -64,8 +64,17 @@
         "name": "Accel_Z",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0,
-          "max": 200.0,
+          "min": -100.0,
+          "max": 100.0,
+          "unit": "METERPERSECSQUARE"
+        }
+      },
+      {
+        "name": "Accel_Magnitude",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       }
@@ -323,6 +332,12 @@
         "funcname": "isDetected",
         "type": "Active",
         "parameter": []
+      },
+      {
+        "name": "No Human",
+        "funcname": "isNotDetected",
+        "type": "Active",
+        "parameter": []
       }
     ],
     "value": []
@@ -369,7 +384,7 @@
     ],
     "value": [
       {
-        "name": "Light",
+        "name": "Percent",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
@@ -384,8 +399,14 @@
     "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector",
     "action": [
       {
-        "name": "Wait sensor is wet",
+        "name": "Detect Water",
         "funcname": "isWet",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "No Water",
+        "funcname": "isDry",
         "type": "Active",
         "parameter": []
       }

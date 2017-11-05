@@ -3,6 +3,9 @@
 *.iml
 target/
 
+# Generated project
+upload/
+
 # Compiled class file
 *.class
 

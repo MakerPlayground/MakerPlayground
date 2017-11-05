@@ -1019,127 +1019,6 @@
     ]
   },
   {
-    "id": "SEN-13944",
-    "brand": "Sparkfun",
-    "model": "SparkFun 9DoF Sensor Stick",
-    "url": "https://www.sparkfun.com/products/13944",
-    "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [
-      "MP_LSM9DS1",
-      "SparkFunLSM9DS1"
-    ],
-    "width": 59.0,
-    "height": 131.0,
-    "v": "",
-    "i": "",
-    "w": "",
-    "dependency": "",
-    "category": "",
-    "port": [
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 1.9,
-        "v_max": 3.6,
-        "x": 7.2,
-        "y": 122.4
-      },
-      {
-        "name": "VDD",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 1.9,
-        "v_max": 3.6,
-        "x": 21.6,
-        "y": 122.4
-      },
-      {
-        "name": "SDA",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
-        "v_min": 1.9,
-        "v_max": 3.6,
-        "x": 36.0,
-        "y": 122.4
-      },
-      {
-        "name": "SCL",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SCL"
-          }
-        ],
-        "v_min": 1.9,
-        "v_max": 3.6,
-        "x": 50.4,
-        "y": 122.4
-      }
-    ],
-    "connectivity": [
-      "I2C_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Accelerometer",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "X",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          },
-          {
-            "name": "Y",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          },
-          {
-            "name": "Z",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          }
-        ],
-        "count": 1.0
-      }
-    ]
-  },
-  {
     "id": "DEV-13975",
     "brand": "Sparkfun",
     "model": "SparkFun RedBoard",
@@ -1593,194 +1472,6 @@
     "compatibility": []
   },
   {
-    "id": "Adafruit-1120",
-    "brand": "Adafruit",
-    "model": "Triple-axis Accelerometer+Magnetometer (Compass) Board - LSM303",
-    "url": "https://www.adafruit.com/product/1120",
-    "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
-    "platform": [
-      "ARDUINO"
-    ],
-    "library": [
-      "Adafruit_Sensor",
-      "Adafruit_LSM303_U",
-      "MP_LSM303"
-    ],
-    "width": 130.0,
-    "height": 117.0,
-    "v": "",
-    "i": "",
-    "w": "",
-    "dependency": "",
-    "category": "",
-    "port": [
-      {
-        "name": "SCL",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SCL"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 14.4,
-        "y": 100.799
-      },
-      {
-        "name": "SDA",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "I2C_1",
-            "pintype": "I2C_SDA"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 28.8,
-        "y": 100.799
-      },
-      {
-        "name": "I2",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 43.2,
-        "y": 100.799
-      },
-      {
-        "name": "I1",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 57.6,
-        "y": 100.799
-      },
-      {
-        "name": "DRDY",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 72.0,
-        "y": 100.799
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": "",
-        "v_max": "",
-        "x": 86.4,
-        "y": 100.799
-      },
-      {
-        "name": "VIN",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 5.0,
-        "x": 100.8,
-        "y": 100.799
-      },
-      {
-        "name": "3V3",
-        "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 115.2,
-        "y": 100.799
-      }
-    ],
-    "connectivity": [
-      "I2C_1"
-    ],
-    "compatibility": [
-      {
-        "name": "Accelerometer",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "X",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          },
-          {
-            "name": "Y",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          },
-          {
-            "name": "Z",
-            "constraint": {
-              "min": -156.96,
-              "max": 156.96,
-              "unit": "METERPERSECSQUARE"
-            }
-          }
-        ],
-        "count": ""
-      },
-      {
-        "name": "Magnetometer",
-        "action": [
-          {
-            "name": "Compare",
-            "parameter": []
-          }
-        ],
-        "value": [
-          {
-            "name": "Heading",
-            "constraint": [
-              "North",
-              "South"
-            ]
-          },
-          {
-            "name": "  ",
-            "constraint": [
-              "East",
-              "West",
-              "NorthEast",
-              "NorthWest",
-              "SouthEast",
-              "SouthWest"
-            ]
-          }
-        ],
-        "count": ""
-      }
-    ]
-  },
-  {
     "id": "Arduinoall-29",
     "brand": "Arduinoall",
     "model": "PIR Motion Sensor Module HC-SR501",
@@ -1856,6 +1547,15 @@
             "parameter": [
               {
                 "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "No Human",
+            "parameter": [
+              {
+                "name": "isNotDetected",
                 "constraint": []
               }
             ]
@@ -2457,10 +2157,10 @@
     ]
   },
   {
-    "id": "Arduinoall-454",
-    "brand": "Arduinoall",
+    "id": "Arduitronics-220",
+    "brand": "Arduitronics",
     "model": "4 digit display LED module clock for Arduino 0.36\"",
-    "url": "https://www.arduinoall.com/product/454/7-segment-4-digit-display-led-module-clock-for-arduino-0-36",
+    "url": "https://www.arduitronics.com/product/220/seven-segment-4-digit-clock-display-0-36-inches-catalex",
     "type": "PERIPHERAL",
     "formfactor": "STANDALONE",
     "platform": [
@@ -2489,8 +2189,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 51.766
+        "x": 321.0,
+        "y": 53.3
       },
       {
         "name": "DIO",
@@ -2503,8 +2203,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 65.847
+        "x": 321.0,
+        "y": 67.8
       },
       {
         "name": "VCC",
@@ -2517,8 +2217,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 80.158
+        "x": 321.0,
+        "y": 82.3
       },
       {
         "name": "GND",
@@ -2531,8 +2231,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.648,
-        "y": 94.353
+        "x": 321.0,
+        "y": 96.8
       }
     ],
     "connectivity": [
@@ -3768,7 +3468,7 @@
         ],
         "value": [
           {
-            "name": "MP_OneAnalogReadToPercent",
+            "name": "Percent",
             "constraint": {
               "min": 0.0,
               "max": 100.0,
@@ -3827,6 +3527,29 @@
         "v_min": 5.0,
         "v_max": 5.0,
         "x": 61.67,
+        "y": 128.556
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 90.296,
+        "y": 128.556
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 104.609,
         "y": 128.556
       }
     ],
@@ -3969,15 +3692,15 @@
     "model": "Infrared Barrier tracking avoidance Obstacle Sensor Module",
     "url": "https://www.arduinoall.com/product/1701/infrared-barrier-tracking-avoidance-obstacle-sensor-module-%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%81%E0%B8%B5%E0%B8%94%E0%B8%82%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%9F%E0%B8%B2%E0%B9%80%E0%B8%A3%E0%B8%94",
     "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "formfactor": "STANDALONE",
     "platform": [
       "ARDUINO"
     ],
     "library": [
-      "MP_HC_SR501"
+      "MP_Infrared_Barrier"
     ],
-    "width": 41.041,
-    "height": 102.929,
+    "width": 205.0,
+    "height": 80.0,
     "v": "",
     "i": "",
     "w": "",
@@ -3995,8 +3718,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.442,
-        "y": 89.597
+        "x": 194.0,
+        "y": 54.4
       },
       {
         "name": "GND",
@@ -4009,8 +3732,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 21.81,
-        "y": 89.597
+        "x": 194.0,
+        "y": 40.0
       },
       {
         "name": "VCC",
@@ -4023,8 +3746,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 29.178,
-        "y": 89.597
+        "x": 194.0,
+        "y": 25.6
       }
     ],
     "connectivity": [
@@ -4039,6 +3762,15 @@
             "parameter": [
               {
                 "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "No Human",
+            "parameter": [
+              {
+                "name": "isNotDetected",
                 "constraint": []
               }
             ]
@@ -4303,7 +4035,7 @@
     "model": "GY-521 IMU 3-axis Accelerometer/Gyro Module (MPU6050)",
     "url": "https://www.arduinoall.com/product/34/gy-521-imu-3-axis-accelerometer-gyro-module-mpu6050",
     "type": "PERIPHERAL",
-    "formfactor": "STANDALONE",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
     "platform": [
       "ARDUINO"
     ],
@@ -4313,8 +4045,8 @@
       "MP_MPU6050",
       "I2Cdev"
     ],
-    "width": 104.206,
-    "height": 146.095,
+    "width": 141.733,
+    "height": 113.387,
     "v": "",
     "i": "",
     "w": "",
@@ -4332,8 +4064,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 7.783
+        "x": 21.866,
+        "y": 105.526
       },
       {
         "name": "GND",
@@ -4346,8 +4078,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 26.413
+        "x": 36.866,
+        "y": 105.526
       },
       {
         "name": "SCL",
@@ -4360,8 +4092,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 44.473
+        "x": 50.866,
+        "y": 105.526
       },
       {
         "name": "SDA",
@@ -4374,8 +4106,8 @@
         ],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 63.604
+        "x": 64.891,
+        "y": 105.526
       },
       {
         "name": "XDA",
@@ -4383,8 +4115,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 82.128
+        "x": 79.866,
+        "y": 105.526
       },
       {
         "name": "XCL",
@@ -4392,8 +4124,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 100.758
+        "x": 94.866,
+        "y": 105.526
       },
       {
         "name": "ADO",
@@ -4401,8 +4133,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 119.069
+        "x": 108.866,
+        "y": 105.526
       },
       {
         "name": "INT",
@@ -4410,8 +4142,8 @@
         "function": [],
         "v_min": 3.0,
         "v_max": 5.0,
-        "x": 7.195,
-        "y": 138.699
+        "x": 123.866,
+        "y": 105.526
       }
     ],
     "connectivity": [
@@ -4430,24 +4162,32 @@
           {
             "name": "X",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Y",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
               "unit": "METERPERSECSQUARE"
             }
           },
           {
             "name": "Z",
             "constraint": {
-              "min": -156.96,
-              "max": 156.96,
+              "min": -35.0,
+              "max": 35.0,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Magnitude",
+            "constraint": {
+              "min": 0.0,
+              "max": 60.0,
               "unit": "METERPERSECSQUARE"
             }
           }
@@ -4744,7 +4484,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
+            "type": "ANALOG_1",
             "pintype": "INOUT"
           }
         ],
@@ -4755,23 +4495,147 @@
       }
     ],
     "connectivity": [
-      "GPIO_1"
+      "ANALOG_1"
     ],
     "compatibility": [
       {
         "name": "Water",
         "action": [
           {
-            "name": "Wait sensor is wet",
-            "parameter": [
-              {
-                "name": "isWet",
-                "constraint": []
-              }
-            ]
+            "name": "Detect Water",
+            "parameter": []
+          },
+          {
+            "name": "No Water",
+            "parameter": []
           }
         ],
         "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Arduitronics-1705",
+    "brand": "Arduitronics",
+    "model": "DHT12 Humidity Temperature Sensor Module",
+    "url": "https://www.arduitronics.com/product/1705/dht12-humidity-temperature-sensor-module-free-cable-i2c-interface",
+    "type": "PERIPHERAL",
+    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_DHT12",
+      "dht_dplasa"
+    ],
+    "width": 72.0,
+    "height": 72.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VIN",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 14.5,
+        "y": 69.0
+      },
+      {
+        "name": "SDA",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 28.9,
+        "y": 69.0
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 43.3,
+        "y": 69.0
+      },
+      {
+        "name": "SCL",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 57.7,
+        "y": 69.0
+      }
+    ],
+    "connectivity": [
+      "I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": 0.0,
+              "max": 50.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 20.0,
+              "max": 80.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
         "count": ""
       }
     ]

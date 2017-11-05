@@ -157,7 +157,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         for (JsonNode parameterNode : node.get("valueMap")) {
             Parameter parameter = action.getParameter(parameterNode.get("name").asText());
             Object object = null;
-            if (parameterNode.get("value").isObject()) {
+            if (parameterNode.get("value").has("name") && parameterNode.get("value").has("value")) {
+                object = deserializeProjectValue(mapper, parameterNode.get("value"), inputDevice, outputDevice);
+            } else if (parameterNode.get("value").isObject()) {
                 object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnit.class);
             } else {
                 object = parameterNode.get("value").asText();
@@ -167,16 +169,48 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         Map<Value, Expression> expressionMap = new HashMap<>();
         for (JsonNode valueNode : node.get("expression")) {
+            System.out.println(valueNode);
             Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText());
             boolean enable = valueNode.get("enable").asBoolean();
+            String type = valueNode.get("type").asText();
 
-            Expression expression = deserializeExpression(mapper, node.get("expression"), inputDevice, outputDevice);
-            expression.setEnable(enable);
+            Expression expression;
+            if (type.equals("simple")) {
+                expression = deserializeSimpleExpression(mapper, valueNode.get("expression"), projectDevice, value);
+                expression.setEnable(enable);
+            } else {
+                throw new IllegalStateException("Unknown expression type");
+            }
 
             expressionMap.put(value, expression);
         }
 
         return new UserSetting(projectDevice, action, valueMap, expressionMap);
+    }
+
+    public Expression deserializeSimpleExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) throws IOException, JsonProcessingException {
+        SimpleExpression simpleExpression = new SimpleExpression(device, value);
+        if (node.get(0).get("type").asText().equals(ChipType.VALUE.name())
+            && node.get(1).get("type").asText().equals(ChipType.OPERATOR.name())
+                && node.get(1).get("value").asText().equals(ChipOperator.LESS_THAN.name())
+                && node.get(2).get("type").asText().equals(ChipType.NUMBER.name())
+                && node.get(3).get("type").asText().equals(ChipType.OPERATOR.name())
+                && node.get(3).get("value").asText().equals(ChipOperator.AND.name())
+                && node.get(4).get("type").asText().equals(ChipType.VALUE.name())
+                && node.get(5).get("type").asText().equals(ChipType.OPERATOR.name())
+                && node.get(5).get("value").asText().equals(ChipOperator.GREATER_THAN.name())
+                && node.get(6).get("type").asText().equals(ChipType.NUMBER.name())) {
+            System.out.println(node);
+            System.out.println(node.get(2));
+            System.out.println(node.get(6));
+            System.out.println(node.get(2).get("value").get("value").asDouble());
+            System.out.println(node.get(6).get("value").get("value").asDouble());
+            simpleExpression.setHighValue(node.get(2).get("value").get("value").asDouble());
+            simpleExpression.setLowValue(node.get(6).get("value").get("value").asDouble());
+        } else {
+            throw new IllegalStateException("Simple expression parsing fail");
+        }
+        return simpleExpression;
     }
 
     public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
@@ -208,7 +242,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {
-        String deviceName = node.get("device").asText();
+        String deviceName = node.get("name").asText();
         ProjectDevice device = null;
         for (ProjectDevice projectDevice : inputDevice) {
             if (deviceName.equals(projectDevice.getName()))

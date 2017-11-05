@@ -42,10 +42,10 @@ public class Diagram extends Pane {
     private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
-    public static final int STROKE_WIDTH = 3;
+    private static final int STROKE_WIDTH = 3;
 
-    private final List<Color> colorSet = new ArrayList<Color>(Arrays.asList(Color.BLUE, Color.HOTPINK,
-            Color.ORANGE, Color.GRAY, Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN));
+    private static final List<Color> colorSet = Arrays.asList(Color.BLUE, Color.HOTPINK, Color.ORANGE, Color.GRAY
+            , Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN);
 
     private final Project project;
 
@@ -376,11 +376,11 @@ public class Diagram extends Pane {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
-                } else if (sourcePeripheral == Peripheral.PWM_1) {
+                } else if (sourcePeripheral.getConnectionType() == ConnectionType.PWM) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
-                } else if (sourcePeripheral == Peripheral.ANALOG_1) {
+                } else if (sourcePeripheral.getConnectionType() == ConnectionType.ANALOG) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
@@ -500,7 +500,7 @@ public class Diagram extends Pane {
             endY = controllerPosition.getY() + destPort.getY();
         }
 
-        int random = (int )(Math.random() * colorSet.size());
+        int random = (int) (Math.random() * colorSet.size());
 
         Line line = new Line(startX, startY, endX, endY);
         line.setStroke(colorSet.get(random));

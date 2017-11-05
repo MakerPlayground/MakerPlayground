@@ -25,10 +25,10 @@ public class SimpleExpressionControl extends HBox {
     private void initView() {
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
 
-        rangeSlider.setMin(constraint.getMin());
         rangeSlider.setMax(constraint.getMax());
-        rangeSlider.setLowValue(expression.getLowValue());
+        rangeSlider.setMin(constraint.getMin());
         rangeSlider.setHighValue(expression.getHighValue());
+        rangeSlider.setLowValue(expression.getLowValue());
         rangeSlider.setShowTickMarks(true);
         rangeSlider.setShowTickLabels(true);
         rangeSlider.setBlockIncrement(1);

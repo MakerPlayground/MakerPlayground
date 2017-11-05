@@ -20,9 +20,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
-import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.SingletonAddDevice;
 import io.makerplayground.helper.SingletonDelDevice;
@@ -58,7 +56,7 @@ public class Project {
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
 
-    private String filePath;
+    private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("scene\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
@@ -71,7 +69,7 @@ public class Project {
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin();
-        filePath = null;
+        filePath = new SimpleStringProperty("");
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -89,7 +87,7 @@ public class Project {
         this.condition = condition;
         this.line = line;
         this.begin = begin;
-        this.filePath = filePath;
+        this.filePath = new SimpleStringProperty(filePath);
 
         unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
         unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
@@ -286,40 +284,14 @@ public class Project {
     }
 
     public String getFilePath() {
+        return filePath.get();
+    }
+
+    public StringProperty filePathProperty() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getValueError() {
-        for (Scene s : scene) {
-            for (UserSetting userSetting : s.getSetting()) {
-                for (Parameter parameter : userSetting.getValueMap().keySet()) {
-                    if (parameter.getDataType() == DataType.VALUE) {
-                        ProjectValue projectValue = (ProjectValue) userSetting.getValueMap().get(parameter);
-                        if (projectValue == null) {
-                            return "Invalid value of " + userSetting.getDevice().getName() + "\nin scene " + s.getName();
-                        }
-                    }
-                }
-            }
-        }
-
-        for (Condition c : condition) {
-            for (UserSetting userSetting : c.getSetting()) {
-                for (Parameter parameter : userSetting.getValueMap().keySet()) {
-                    if (parameter.getDataType() == DataType.VALUE) {
-                        ProjectValue projectValue = (ProjectValue) userSetting.getValueMap().get(parameter);
-                        if (projectValue == null) {
-                            return "Invalid value of " + userSetting.getDevice().getName() + "\nin condition " + c.getName();
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
+        this.filePath.set(filePath);
     }
 }
