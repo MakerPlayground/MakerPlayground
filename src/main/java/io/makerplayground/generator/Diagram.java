@@ -374,11 +374,11 @@ public class Diagram extends Pane {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
-                } else if (sourcePeripheral == Peripheral.PWM_1) {
+                } else if (sourcePeripheral.getConnectionType() == ConnectionType.PWM) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);
-                } else if (sourcePeripheral == Peripheral.ANALOG_1) {
+                } else if (sourcePeripheral.getConnectionType() == ConnectionType.ANALOG) {
                     DevicePort sourcePort = device.getPort(sourcePeripheral).get(0);
                     DevicePort destPort = projectDevice.getDeviceConnection().get(sourcePeripheral).get(0);
                     createLine(projectDevice, sourcePort, project.getController(), destPort);

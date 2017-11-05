@@ -3528,6 +3528,29 @@
         "v_max": 5.0,
         "x": 61.67,
         "y": 128.556
+      },
+      {
+        "name": "VCC",
+        "type": "WIRE",
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 90.296,
+        "y": 128.556
+      },
+      {
+        "name": "GND",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 104.609,
+        "y": 128.556
       }
     ],
     "connectivity": [
