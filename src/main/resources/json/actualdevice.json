@@ -1550,6 +1550,15 @@
                 "constraint": []
               }
             ]
+          },
+          {
+            "name": "No Human",
+            "parameter": [
+              {
+                "name": "isNotDetected",
+                "constraint": []
+              }
+            ]
           }
         ],
         "value": [],
@@ -3660,15 +3669,15 @@
     "model": "Infrared Barrier tracking avoidance Obstacle Sensor Module",
     "url": "https://www.arduinoall.com/product/1701/infrared-barrier-tracking-avoidance-obstacle-sensor-module-%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%81%E0%B8%B5%E0%B8%94%E0%B8%82%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B8%9F%E0%B8%B2%E0%B9%80%E0%B8%A3%E0%B8%94",
     "type": "PERIPHERAL",
-    "formfactor": "BREAKOUT_BOARD_ONESIDE",
+    "formfactor": "STANDALONE",
     "platform": [
       "ARDUINO"
     ],
     "library": [
-      "MP_HC_SR501"
+      "MP_Infrared_Barrier"
     ],
-    "width": 41.041,
-    "height": 102.929,
+    "width": 205.0,
+    "height": 80.0,
     "v": "",
     "i": "",
     "w": "",
@@ -3686,8 +3695,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 14.442,
-        "y": 89.597
+        "x": 194.0,
+        "y": 54.4
       },
       {
         "name": "GND",
@@ -3700,8 +3709,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 21.81,
-        "y": 89.597
+        "x": 194.0,
+        "y": 40.0
       },
       {
         "name": "VCC",
@@ -3714,8 +3723,8 @@
         ],
         "v_min": 3.3,
         "v_max": 5.0,
-        "x": 29.178,
-        "y": 89.597
+        "x": 194.0,
+        "y": 25.6
       }
     ],
     "connectivity": [
@@ -3730,6 +3739,15 @@
             "parameter": [
               {
                 "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "No Human",
+            "parameter": [
+              {
+                "name": "isNotDetected",
                 "constraint": []
               }
             ]

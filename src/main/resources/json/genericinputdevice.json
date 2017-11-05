@@ -332,6 +332,12 @@
         "funcname": "isDetected",
         "type": "Active",
         "parameter": []
+      },
+      {
+        "name": "No Human",
+        "funcname": "isNotDetected",
+        "type": "Active",
+        "parameter": []
       }
     ],
     "value": []
