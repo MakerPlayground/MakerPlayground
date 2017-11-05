@@ -173,11 +173,9 @@ public class Diagram extends Pane {
                         int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                         if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                 || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
-                            System.out.println("1");
                             createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
                                     , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         } else {
-                            System.out.println("2");
                             createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
                                     , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         }

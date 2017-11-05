@@ -55,11 +55,6 @@ public enum DeviceLibrary {
             temp2 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
                     , new TypeReference<List<Device>>() {});
             this.actualDevice = Collections.unmodifiableList(temp2);
-
-            for (Device d : actualDevice) {
-                if (d.getId().equals("Arduinoall-653"))
-                    System.out.println(d);
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

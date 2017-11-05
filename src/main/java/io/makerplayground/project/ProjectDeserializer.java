@@ -169,7 +169,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         Map<Value, Expression> expressionMap = new HashMap<>();
         for (JsonNode valueNode : node.get("expression")) {
-            System.out.println(valueNode);
             Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText());
             boolean enable = valueNode.get("enable").asBoolean();
             String type = valueNode.get("type").asText();
@@ -200,11 +199,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 && node.get(5).get("type").asText().equals(ChipType.OPERATOR.name())
                 && node.get(5).get("value").asText().equals(ChipOperator.GREATER_THAN.name())
                 && node.get(6).get("type").asText().equals(ChipType.NUMBER.name())) {
-            System.out.println(node);
-            System.out.println(node.get(2));
-            System.out.println(node.get(6));
-            System.out.println(node.get(2).get("value").get("value").asDouble());
-            System.out.println(node.get(6).get("value").get("value").asDouble());
             simpleExpression.setHighValue(node.get(2).get("value").get("value").asDouble());
             simpleExpression.setLowValue(node.get(6).get("value").get("value").asDouble());
         } else {
