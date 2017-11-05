@@ -6,7 +6,7 @@
 
     <groupId>io.makerplayground</groupId>
     <artifactId>io.makerplayground.frontend</artifactId>
-    <version>0.1b</version>
+    <version>0.1.0-beta1</version>
 
     <profiles>
         <profile>
@@ -103,6 +103,8 @@
                                 <argument>-deploy</argument>
                                 <argument>-native</argument>
                                 <argument>image</argument> <!-- or 'installer' -->
+                                <argument>-name</argument>
+                                <argument>MakerPlayground</argument>
                                 <argument>-appclass</argument>
                                 <argument>io.makerplayground.ui.Main</argument>
                                 <argument>-srcdir</argument>

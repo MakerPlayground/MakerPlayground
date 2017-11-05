@@ -2811,124 +2811,30 @@
         "y": 14.4
       },
       {
-        "name": "A5",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_5",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 395.56,
-        "y": 288.0
-      },
-      {
-        "name": "A4",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_4",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 381.16,
-        "y": 288.0
-      },
-      {
-        "name": "A3",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_3",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 366.76,
-        "y": 288.0
-      },
-      {
-        "name": "A2",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_2",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 352.36,
-        "y": 288.0
-      },
-      {
-        "name": "A1",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_1",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 337.96,
-        "y": 288.0
-      },
-      {
-        "name": "A0",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "ANALOG_0",
-            "pintype": "INOUT"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 323.56,
-        "y": 288.0
-      },
-      {
-        "name": "VIN",
+        "name": "IOREF",
         "type": "WIRE",
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 294.76,
+        "x": 208.36,
         "y": 288.0
       },
       {
-        "name": "GND",
+        "name": "RESET",
         "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 280.36,
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 222.76,
         "y": 288.0
       },
       {
-        "name": "GND",
+        "name": "3.3V",
         "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 5.0,
-        "v_max": 5.0,
-        "x": 265.96,
+        "function": [],
+        "v_min": "",
+        "v_max": "",
+        "x": 237.16,
         "y": 288.0
       },
       {
@@ -2946,30 +2852,114 @@
         "y": 288.0
       },
       {
-        "name": "3.3V",
+        "name": "GND",
         "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 237.16,
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 265.96,
         "y": 288.0
       },
       {
-        "name": "RESET",
+        "name": "GND",
         "type": "WIRE",
-        "function": [],
-        "v_min": "",
-        "v_max": "",
-        "x": 222.76,
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 280.36,
         "y": 288.0
       },
       {
-        "name": "IOREF",
+        "name": "VIN",
         "type": "WIRE",
         "function": [],
         "v_min": "",
         "v_max": "",
-        "x": 208.36,
+        "x": 294.76,
+        "y": 288.0
+      },
+      {
+        "name": "A0",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_0",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 323.56,
+        "y": 288.0
+      },
+      {
+        "name": "A1",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 337.96,
+        "y": 288.0
+      },
+      {
+        "name": "A2",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 352.36,
+        "y": 288.0
+      },
+      {
+        "name": "A3",
+        "type": "WIRE",
+        "function": [
+          {
+            "type": "ANALOG_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 366.76,
+        "y": 288.0
+      },
+      {
+        "name": "A4",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 381.16,
+        "y": 288.0
+      },
+      {
+        "name": "A5",
+        "type": "WIRE",
+        "function": [],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 395.56,
         "y": 288.0
       }
     ],
@@ -2995,11 +2985,10 @@
       "PWM_4",
       "PWM_5",
       "PWM_6",
+      "ANALOG_0",
       "ANALOG_1",
       "ANALOG_2",
-      "ANALOG_3",
-      "ANALOG_4",
-      "ANALOG_5"
+      "ANALOG_3"
     ],
     "compatibility": []
   },
