@@ -2167,7 +2167,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_7segI2C",
+      "MP_7segI2C_Colon",
       "TM1637Display"
     ],
     "width": 285.0,
