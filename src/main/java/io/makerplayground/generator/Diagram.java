@@ -159,7 +159,7 @@ public class Diagram extends Pane {
                 for (DevicePort port : powerPort) {
                     double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
                     if (port.isVcc()) {
-                        int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN ))/HOLE_SPACE);
+                        int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN ))/HOLE_SPACE);
                         if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                 || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                             createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
@@ -170,12 +170,14 @@ public class Diagram extends Pane {
                         }
                         numberOfPwrPinUsed++;
                     } else if (port.isGnd()) {
-                        int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
+                        int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                         if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                 || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
+                            System.out.println("1");
                             createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
                                     , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         } else {
+                            System.out.println("2");
                             createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
                                     , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         }
@@ -187,7 +189,7 @@ public class Diagram extends Pane {
                 for (DevicePort port : powerPort) {
                     if (port.getY() != topLeftPort.getY() ) {
                         if (port.isVcc()) {
-                            int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
+                            int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                     || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                                 createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
@@ -199,7 +201,7 @@ public class Diagram extends Pane {
 
                             numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
+                            int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                     || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                                 createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
@@ -213,7 +215,7 @@ public class Diagram extends Pane {
                     }
                     else {
                         if (port.isVcc()) {
-                            int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
+                            int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                     || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                                 createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
@@ -226,7 +228,7 @@ public class Diagram extends Pane {
 //                                    , BREADBOARD_PWR_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
                             numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
-                            int holePosition = (int)Math.ceil(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
+                            int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
                                     || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
                                 createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
