@@ -96,7 +96,7 @@ public class Main extends Application {
         }
 
         // Write to azure every 10 minutes
-//        timer = new Timer();
+        timer = new Timer();
 //        timer.scheduleAtFixedRate(new TimerTask() {
 //            public void run() {
 //                try {
@@ -150,6 +150,8 @@ public class Main extends Application {
                 if (type.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
                     if (type.getButtonData() == ButtonBar.ButtonData.YES) {
                         saveProject();
+                        project.setFilePath("");
+                        System.out.println(project.getFilePath());
                     }
 
                     projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
@@ -220,6 +222,8 @@ public class Main extends Application {
         });
 
         project.filePathProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("old Value : " + oldValue);
+            System.out.println("new : " +newValue);
             if (newValue.isEmpty()) {
                 primaryStage.setTitle("MakerPlayground - Untitled Project");
             } else {
@@ -265,6 +269,7 @@ public class Main extends Application {
 
     private void saveProject() {
         statusLabel.setText("Saving...");
+        System.out.println("saveeeeefaasdasdasd");
         try {
             File selectedFile;
             if (project.getFilePath().isEmpty()) {
@@ -274,13 +279,20 @@ public class Main extends Application {
                         new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
                         new FileChooser.ExtensionFilter("All Files", "*.*"));
                 selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+                System.out.println("selectFile : " + selectedFile);
             } else {
                 selectedFile = new File(project.getFilePath());
             }
 
             if (selectedFile != null) {
                 mapper.writeValue(selectedFile, project);
+                System.out.println("file before: " + project.getFilePath());
+                System.out.println("1");
+                System.out.println("selectFile.AbsolutePath " + selectedFile.getAbsolutePath()
+                );
                 project.setFilePath(selectedFile.getAbsolutePath());
+                System.out.println("2");
+                System.out.println("file : " + project.getFilePath());
                 statusLabel.setText("Saved");
                 timer.schedule(new TimerTask() {
                     @Override
