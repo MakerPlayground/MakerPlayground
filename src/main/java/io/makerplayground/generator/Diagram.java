@@ -46,6 +46,8 @@ public class Diagram extends Pane {
 
     private static final List<Color> colorSet = Arrays.asList(Color.BLUE, Color.HOTPINK, Color.ORANGE, Color.GRAY
             , Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN);
+    private static List<Integer> powerUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
+    private static List<Integer> groundUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
 
     private final Project project;
 
@@ -58,6 +60,8 @@ public class Diagram extends Pane {
     }
 
     private void initDiagram() {
+        powerUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
+        groundUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
         this.deviceTopLeftPos = new HashMap<>();
         setPrefSize(1000, 1200);
 
@@ -160,26 +164,18 @@ public class Diagram extends Pane {
                     double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
                     if (port.isVcc()) {
                         int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN ))/HOLE_SPACE);
-                        if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
-                                || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
-                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
-                                    , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
-                        } else {
-                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
-                                    , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
-                        }
+                        int availablePosition = getAvailablePowerPort(holePosition);
+                        createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
+                                ,BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfPwrPinUsed++;
+                        powerUsed.add(availablePosition);
                     } else if (port.isGnd()) {
                         int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
-                        if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
-                                || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
-                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
-                                    , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
-                        } else {
-                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
-                                    , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
-                        }
+                        int availablePosition = getAvailableGndPort(holePosition);
+                        createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
+                                    , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfGndPinUsed++;
+                        groundUsed.add(availablePosition);
                     }
                 }
             } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
@@ -188,30 +184,21 @@ public class Diagram extends Pane {
                     if (port.getY() != topLeftPort.getY() ) {
                         if (port.isVcc()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
-                            if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
-                                    || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
-                                createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
-                            } else {
-                                createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
-                            }
-
+                            int availablePosition = getAvailablePowerPort(holePosition);
+                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                        , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                             numberOfPwrPinUsed++;
+                            powerUsed.add(availablePosition);
                         } else if (port.isGnd()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
-                            if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
-                                    || (holePosition == 29) || (holePosition == 35) || (holePosition == 41) || (holePosition == 47) || (holePosition == 53)) {
-                                createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX() - HOLE_SPACE, BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
-                            } else {
-                                createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
-                            }
+                            int availablePosition = getAvailableGndPort(holePosition);
+                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
+                                        , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                             numberOfGndPinUsed++;
+                            groundUsed.add(availablePosition);
                         }
                     }
-                    else {
+                    else { // connect to upper part of bread board
                         if (port.isVcc()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
@@ -222,8 +209,6 @@ public class Diagram extends Pane {
                                 createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
                                         , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
                             }
-//                            createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
-//                                    , BREADBOARD_PWR_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_TOP_Y + BREADBOARD_TOP_MARGIN);
                             numberOfPwrPinUsed++;
                         } else if (port.isGnd()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
@@ -235,9 +220,8 @@ public class Diagram extends Pane {
                                 createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
                                         , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_TOP_Y + BREADBOARD_TOP_MARGIN);
                             }
-//                            createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() - HOLE_SPACE
-//                                    , BREADBOARD_GND_TOP_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_TOP_Y + BREADBOARD_TOP_MARGIN);
                             numberOfGndPinUsed++;
+
                         }
                     }
 
@@ -246,18 +230,22 @@ public class Diagram extends Pane {
             else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
+                        int holePosition = getAvailablePowerPort();
                         createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY()
-                                , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                    , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfPwrPinUsed++;
+                        powerUsed.add(holePosition);
                     } else if (port.isGnd()) {
+                        int holePosition = getAvailableGndPort();
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(),deviceTopLeftPos.get(projectDevice).getY() + port.getY()
-                                , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                    , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfGndPinUsed++;
+                        groundUsed.add(holePosition);
                     }
                 }
             }
-        }
 
+        }
 
         // connect i2c
         double sdaStartX = 0, sdaStartY = 0;
@@ -385,6 +373,56 @@ public class Diagram extends Pane {
                 }
             }
         }
+    }
+
+    private int getAvailablePowerPort() {
+        for (int i = 3; i < 60; i++) {
+            if (!powerUsed.contains(i))
+                return i;
+        }
+        return 0;
+    }
+
+    private int getAvailablePowerPort(int pos) {
+        if (!powerUsed.contains(pos))
+            return pos;
+
+        int min = pos;
+        int max = pos;
+        while ((min > 3) && (min < 60) && (max > 3) && (max < 60)) {
+            min = min - 1;
+            if (!powerUsed.contains(min))
+                return min;
+            max = max + 1;
+            if (!powerUsed.contains(max))
+                return max;
+        }
+        return 0;
+    }
+
+    private int getAvailableGndPort() {
+        for (int i = 3; i < 60; i++) {
+            if (!groundUsed.contains(i))
+                return i;
+        }
+        return 0;
+    }
+
+    private int getAvailableGndPort(int pos) {
+        if (!groundUsed.contains(pos))
+            return pos;
+
+        int min = pos;
+        int max = pos;
+        while ((min > 3) && (min < 60) && (max > 3) && (max < 60)) {
+            min = min - 1;
+            if (!groundUsed.contains(min))
+                return min;
+            max = max + 1;
+            if (!groundUsed.contains(max))
+                return max;
+        }
+        return 0;
     }
 
     private int calculateNumberOfHole(Device device) {
