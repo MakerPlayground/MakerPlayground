@@ -121,10 +121,10 @@ public class TutorialView extends Stage {
         cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonTutorial.getInstance().closeTime();
-                else
-                    SingletonTutorial.getInstance().closeTime();
+//                if (Singleton.getInstance().isFlagFirstTime())
+//                    SingletonTutorial.getInstance().closeTime();
+//                else
+//                    SingletonTutorial.getInstance().closeTime();
 
                 hide();
             }

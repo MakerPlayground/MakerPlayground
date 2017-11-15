@@ -31,6 +31,7 @@ public class ProjectHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        p.setFilePath(f.getAbsolutePath());
         return p;
     }
 

@@ -20,7 +20,7 @@
                   <Label fx:id="statusLabel" style="-fx-text-fill: white;"/>
                </children>
             </HBox>
-            <Button id="tutorialBtn" fx:id="tutorialButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onTutorialButtonClick" prefHeight="25.0" prefWidth="100.0" text="Tutorials" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0" />
+            <Button id="tutorialBtn" fx:id="tutorialButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Tutorials" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0" />
             <Button id="feedback" fx:id="hpl" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" style="-fx-border-color: #5ac2ab; -fx-background-color: none;" text="Feedback" textAlignment="CENTER" textFill="#5ac2ab" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
          </children>
       </AnchorPane>
