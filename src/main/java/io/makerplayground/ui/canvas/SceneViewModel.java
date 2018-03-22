@@ -6,6 +6,11 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Created by tanyagorn on 6/26/2017.
  */
@@ -29,9 +34,14 @@ public class SceneViewModel {
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
-        this.project.getOutputDevice().addListener((InvalidationListener) observable -> {
+        // TODO: find a better way (now since only actuator and connectivity can be in the scene so we track these two)
+        this.project.getActuator().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
+        this.project.getConnectivity().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
+        });
+        // when we remove something from the scene
         this.scene.getSetting().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
@@ -91,7 +101,7 @@ public class SceneViewModel {
         return scene.topProperty();
     }
 
-    public ObservableList<ProjectDevice> getProjectOutputDevice() {
+    public List<ProjectDevice> getProjectOutputDevice() {
         return project.getOutputDevice();
     }
 

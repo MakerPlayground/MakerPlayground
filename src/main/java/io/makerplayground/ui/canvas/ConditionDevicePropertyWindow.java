@@ -62,7 +62,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setRowIndex(conditionLabel, 0);
         GridPane.setColumnIndex(conditionLabel, 0);
 
-        conditionComboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getAction()));
+        conditionComboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getCondition()));
         conditionComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Action> call(ListView<Action> param) {

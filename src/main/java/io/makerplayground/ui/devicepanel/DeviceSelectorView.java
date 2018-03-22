@@ -24,16 +24,20 @@ import java.util.Map;
  */
 public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
     @FXML private DialogPane deviceSelectorPane;
-    @FXML private FlowPane mcuPane;
+    //@FXML private FlowPane mcuPane;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane inputPane;
-    //private final DeviceSelectorViewModel viewModel;\
+    @FXML private FlowPane connectivityPane;
+
     private ObservableList<ControlAddDevicePane> outputDevice;
     private ObservableList<ControlAddDevicePane> inputDevice;
+    private ObservableList<ControlAddDevicePane> connectivityDevice;
 
     public DeviceSelectorView() {
         this.inputDevice = FXCollections.observableArrayList();
         this.outputDevice = FXCollections.observableArrayList();
+        this.connectivityDevice = FXCollections.observableArrayList();
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DeviceSelectorView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
@@ -63,6 +67,11 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
             inputPane.getChildren().add(controlDevicePane);
             this.inputDevice.add(controlDevicePane);
         }
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericConnectivityDevice()) {
+            ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
+            connectivityPane.getChildren().add(controlDevicePane);
+            this.connectivityDevice.add(controlDevicePane);
+        }
         ButtonType importButtonType = new ButtonType("Import", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(importButtonType, ButtonType.CANCEL);
 
@@ -73,6 +82,9 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
                     deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
                 }
                 for (ControlAddDevicePane d : inputDevice) {
+                    deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
+                }
+                for (ControlAddDevicePane d : connectivityDevice) {
                     deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
                 }
                 return deviceToBeAdded;

@@ -16,11 +16,13 @@ public class DevicePanelViewModel {
     private final Project project;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> inputChildViewModel;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> outputChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> connectivityChildViewModel;
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getInputDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getOutputDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getSensor(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getActuator(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.connectivityChildViewModel = new DynamicViewModelCreator<>(project.getConnectivity(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
@@ -31,24 +33,38 @@ public class DevicePanelViewModel {
         return outputChildViewModel;
     }
 
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getConnectivityChildViewModel() {
+        return connectivityChildViewModel;
+    }
+
     public boolean removeOutputDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeOutputDevice(deviceToBeRemoved);
+        return project.removeActuator(deviceToBeRemoved);
     }
+
     public boolean removeInputDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeInputDevice(deviceToBeRemoved);
+        return project.removeSensor(deviceToBeRemoved);
+    }
+
+    public boolean removeConnectivityDevice(DevicePanelIconViewModel device) {
+        ProjectDevice deviceToBeRemoved = device.getDevice();
+        return project.removeConnectivity(deviceToBeRemoved);
     }
 
     public void addDevice(Map<GenericDevice, Integer> device) {
         for (GenericDevice genericDevice : device.keySet()) {
             if (DeviceLibrary.INSTANCE.getGenericInputDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addInputDevice(genericDevice);
+                    project.addSensor(genericDevice);
                 }
             } else if (DeviceLibrary.INSTANCE.getGenericOutputDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addOutputDevice(genericDevice);
+                    project.addActuator(genericDevice);
+                }
+            } else if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(genericDevice)) {
+                for (int i = 0; i < device.get(genericDevice); i++) {
+                    project.addConnectivity(genericDevice);
                 }
             } else {
                 throw new IllegalStateException("We are in great danger!!!");

@@ -50,13 +50,13 @@ public class ProjectHelper {
 
 //        GenericDevice speaker = null;
 //        GenericDevice led = null;
-//        for (GenericDevice d : DeviceLibrary.INSTANCE.getOutputDevice()) {
+//        for (GenericDevice d : DeviceLibrary.INSTANCE.getActuator()) {
 //            if (d.getName().equals("led"))
 //                led = d;
 //            if (d.getName().equals("speaker"))
 //                speaker = d;
 //
-//            dummyProject.addOutputDevice(d);
+//            dummyProject.addActuator(d);
 //        }
 
 //        Scene s1 = dummyProject.addState();

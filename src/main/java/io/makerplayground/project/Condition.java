@@ -66,7 +66,7 @@ public class Condition extends NodeElement {
     }
 
     public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device));
+        setting.add(new UserSetting(device, false));
     }
 
     public void removeDevice(ProjectDevice device) {

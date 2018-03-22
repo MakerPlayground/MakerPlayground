@@ -42,7 +42,7 @@ public class DeviceSelectorViewModel {
     public void importDeviceToProject() {
 //        for (Map.Entry<GenericDevice, Integer> entry : inputDeviceMap.entrySet()) {
 //            for (int i=0; i<entry.getValue(); i++) {
-//                project.addInputDevice(entry.getKey());
+//                project.addSensor(entry.getKey());
 //            }
 //        }
 //

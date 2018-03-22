@@ -59,6 +59,7 @@ public class Device {
     private final Map<GenericDevice, Integer> supportedDevice;                                  // generic device(s) supported and number of instance available
     //private final Map<GenericDevice, Action> supportedAction;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
+    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition;  // action support for each generic device
     private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
 
 
@@ -82,6 +83,7 @@ public class Device {
             , List<Peripheral> connectivity
             , Map<GenericDevice, Integer> supportedDevice
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
+            , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
             , Dependency dependency
             , Dependency category
@@ -102,6 +104,7 @@ public class Device {
         this.connectivity = Collections.unmodifiableList(connectivity);
         this.supportedDevice = supportedDevice;
         this.supportedAction = supportedAction;
+        this.supportedCondition = supportedCondition;
         this.supportedValue = supportedValue;
         this.dependency = dependency;
         this.v = v;

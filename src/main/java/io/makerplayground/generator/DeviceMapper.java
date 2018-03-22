@@ -140,12 +140,19 @@ public class DeviceMapper {
         return result;
     }
 
-    public static boolean autoAssignDevices(Project project) {
+    public enum DeviceMapperResult {
+        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE
+    }
+
+    public static DeviceMapperResult autoAssignDevices(Project project) {
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set actual device by selecting first element
                 Map<ProjectDevice, List<Device>> deviceList = getSupportedDeviceList(project);
+                if (deviceList.get(projectDevice).isEmpty()) {
+                    return DeviceMapperResult.NO_SUPPORT_DEVICE;
+                }
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
             }
         }
@@ -161,13 +168,13 @@ public class DeviceMapper {
                         if (!port.isEmpty()) {
                             projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
                         } else {
-                            return false;
+                            return DeviceMapperResult.NOT_ENOUGH_PORT;
                         }
                     }
                 }
             }
         }
 
-        return true;
+        return DeviceMapperResult.OK;
     }
 }

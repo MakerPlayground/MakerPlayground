@@ -29,11 +29,10 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represent a project
@@ -43,15 +42,17 @@ import java.util.regex.Pattern;
 public class Project {
     private StringProperty projectName;
     private final ProjectController controller;
-    private final ObservableList<ProjectDevice> inputDevice;
-    private final ObservableList<ProjectDevice> outputDevice;
+    private final ObservableList<ProjectDevice> sensor;
+    private final ObservableList<ProjectDevice> actuator;
+    private final ObservableList<ProjectDevice> connectivity;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
     private final Begin begin;
 
-    private final ObservableList<ProjectDevice> unmodifiableInputDevice;
-    private final ObservableList<ProjectDevice> unmodifiableOutputDevice;
+    private final ObservableList<ProjectDevice> unmodifiableSensor;
+    private final ObservableList<ProjectDevice> unmodifiableActuator;
+    private final ObservableList<ProjectDevice> unmodifiableConnectivity;
     private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
@@ -63,89 +64,133 @@ public class Project {
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
         controller = new ProjectController(Platform.ARDUINO);
-        outputDevice = FXCollections.observableArrayList();
-        inputDevice = FXCollections.observableArrayList();
+        actuator = FXCollections.observableArrayList();
+        sensor = FXCollections.observableArrayList();
+        connectivity = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin();
         filePath = new SimpleStringProperty("");
 
-        unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
-        unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
+        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
+        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
+        unmodifiableConnectivity = FXCollections.unmodifiableObservableList(connectivity);
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
-    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice, ObservableList<Scene> scene, ObservableList<Condition> condition, ObservableList<Line> line, Begin begin, String filePath) {
+    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> sensor, ObservableList<ProjectDevice> actuator
+            , ObservableList<ProjectDevice> connectivity, ObservableList<Scene> scene, ObservableList<Condition> condition
+            , ObservableList<Line> line, Begin begin, String filePath) {
         this.projectName = new SimpleStringProperty(name);
         this.controller = controller;
-        this.inputDevice = inputDevice;
-        this.outputDevice = outputDevice;
+        this.sensor = sensor;
+        this.actuator = actuator;
+        this.connectivity = connectivity;
         this.scene = scene;
         this.condition = condition;
         this.line = line;
         this.begin = begin;
         this.filePath = new SimpleStringProperty(filePath);
 
-        unmodifiableOutputDevice = FXCollections.unmodifiableObservableList(outputDevice);
-        unmodifiableInputDevice = FXCollections.unmodifiableObservableList(inputDevice);
+        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
+        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
+        unmodifiableConnectivity = FXCollections.unmodifiableObservableList(connectivity);
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
-    public ObservableList<ProjectDevice> getOutputDevice() {
-        return unmodifiableOutputDevice;
+    public ObservableList<ProjectDevice> getActuator() {
+        return unmodifiableActuator;
     }
 
-    public void addOutputDevice(GenericDevice device) {
+    public void addActuator(GenericDevice device) {
         Pattern p = Pattern.compile(device.getName()+"\\d+");
-        int id = outputDevice.stream()
+        int id = actuator.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
-        outputDevice.add(projectDevice);
+        actuator.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
-    public boolean removeOutputDevice(ProjectDevice device) {
+    public boolean removeActuator(ProjectDevice device) {
         for (Scene s : scene) {
             s.removeDevice(device);
         }
 
         SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
-        return outputDevice.remove(device);
+        return actuator.remove(device);
     }
 
-    public ObservableList<ProjectDevice> getInputDevice() {
-        return unmodifiableInputDevice;
+    public ObservableList<ProjectDevice> getSensor() {
+        return unmodifiableSensor;
     }
 
-    public void addInputDevice(GenericDevice device) {
+    public void addSensor(GenericDevice device) {
         Pattern p = Pattern.compile(device.getName()+"\\d+");
-        int id = inputDevice.stream()
+        int id = sensor.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
-        inputDevice.add(projectDevice);
+        sensor.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
-    public boolean removeInputDevice(ProjectDevice device) {
+    public boolean removeSensor(ProjectDevice device) {
         for (Condition c : condition) {
             c.removeDevice(device);
         }
 
         SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
-        return inputDevice.remove(device);
+        return sensor.remove(device);
+    }
+
+    public ObservableList<ProjectDevice> getConnectivity() {
+        return unmodifiableConnectivity;
+    }
+
+    public void addConnectivity(GenericDevice device) {
+        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        int id = connectivity.stream()
+                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
+                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
+                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
+                .max()
+                .orElse(0);
+        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
+        connectivity.add(projectDevice);
+        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
+    }
+
+    public boolean removeConnectivity(ProjectDevice device) {
+        for (Scene s : scene) {
+            s.removeDevice(device);
+        }
+        for (Condition c : condition) {
+            c.removeDevice(device);
+        }
+
+        return connectivity.remove(device);
+    }
+
+    public List<ProjectDevice> getInputDevice() {
+        return Stream.concat(sensor.stream(), connectivity.filtered(device -> !device.getGenericDevice().getCondition().isEmpty()).stream())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    public List<ProjectDevice> getOutputDevice() {
+        return Stream.concat(actuator.stream(), connectivity.filtered(device -> !device.getGenericDevice().getAction().isEmpty()).stream())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public ObservableList<Scene> getScene() {
@@ -234,7 +279,12 @@ public class Project {
 
     public List<ProjectValue> getAvailableValue() {
         List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : inputDevice) {
+        for (ProjectDevice projectDevice : sensor) {
+            for (Value v : projectDevice.getGenericDevice().getValue()) {
+                value.add(new ProjectValue(projectDevice, v));
+            }
+        }
+        for (ProjectDevice projectDevice : connectivity) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 value.add(new ProjectValue(projectDevice, v));
             }
@@ -246,11 +296,9 @@ public class Project {
         return controller;
     }
 
-    public ObservableList<ProjectDevice> getAllDevice() {
-        ObservableList<ProjectDevice> allDevice = FXCollections.observableArrayList();
-        allDevice.addAll(inputDevice);
-        allDevice.addAll(outputDevice);
-        return allDevice;
+    public List<ProjectDevice> getAllDevice() {
+        return Stream.concat(Stream.concat(sensor.stream(), actuator.stream()), connectivity.stream())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public Begin getBegin() { return begin; }

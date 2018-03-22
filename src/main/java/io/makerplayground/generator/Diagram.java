@@ -119,7 +119,10 @@ public class Diagram extends Pane {
                 lastX = lastX + device.getWidth();
             } else if (device.getFormFactor() == FormFactor.SHIELD) {
                 deviceTopLeftPos.put(projectDevice, controllerPosition);
-            }
+            } else if (device.getFormFactor() == FormFactor.GROVE) {
+                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
+                lastX = lastX + device.getWidth();
+            }   // TODO: add new form factor here
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
             this.getChildren().add(deviceImage);
@@ -197,8 +200,7 @@ public class Diagram extends Pane {
                             numberOfGndPinUsed++;
                             groundUsed.add(availablePosition);
                         }
-                    }
-                    else { // connect to upper part of bread board
+                    } else { // connect to upper part of bread board
                         if (port.isVcc()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             if ((holePosition == 5) || (holePosition == 11) || (holePosition == 17) || (holePosition == 23)
@@ -226,8 +228,7 @@ public class Diagram extends Pane {
                     }
 
                 }
-            }
-            else if (device.getFormFactor() == FormFactor.STANDALONE) {
+            } else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
                         int holePosition = getAvailablePowerPort();
@@ -329,10 +330,15 @@ public class Diagram extends Pane {
         }
 
 
-        // connect SPI, UART, PWM
+        // connect SPI, UART, PWM, GPIO, ...
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
+                // TODO: add description for grove device
+                // skip if this is a grove device
+                if (device.getFormFactor() == FormFactor.GROVE) {
+                    break;
+                }
 
                 if (sourcePeripheral == Peripheral.SPI_1) { // TODO: not tested yet
 //                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
@@ -495,6 +501,7 @@ public class Diagram extends Pane {
     private void createLine(ProjectDevice source, DevicePort sourcePort, ProjectController dest, DevicePort destPort) {
         double startX = 0, startY = 0;
         double endX = 0, endY = 0;
+
         if (source.getActualDevice().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
             startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
@@ -510,8 +517,7 @@ public class Diagram extends Pane {
                 startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
                 startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
             }
-        }
-        else if (source.getActualDevice().getFormFactor() == FormFactor.STANDALONE) {
+        } else if (source.getActualDevice().getFormFactor() == FormFactor.STANDALONE) {
             startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
             startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY();
         }

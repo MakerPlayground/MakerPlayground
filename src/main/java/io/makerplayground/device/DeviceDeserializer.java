@@ -69,6 +69,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 
         Map<GenericDevice, Integer> supportedDevice = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
+        Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition = new HashMap<>();
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
         for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
@@ -78,6 +79,9 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
                 Action action = genericDevice.getAction(actionName);
+                if (action == null) {
+                    continue;
+                }
                 Map<Parameter, Constraint> supportedParam = new HashMap<>();
                 for (JsonNode parameterNode : actionNode.get("parameter")) {
                     String parameterName = parameterNode.get("name").asText();
@@ -88,6 +92,24 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 supportedAction.put(action, supportedParam);
             }
             supportedDeviceaction.put(genericDevice, supportedAction);
+
+            Map<Action, Map<Parameter, Constraint>> supportedCondition = new HashMap<>();
+            for (JsonNode actionNode : deviceNode.get("action")) {  // the node name hasn't been changed
+                String actionName = actionNode.get("name").asText();
+                Action condition = genericDevice.getCondition(actionName);
+                if (condition == null) {
+                    continue;
+                }
+                Map<Parameter, Constraint> supportedParam = new HashMap<>();
+                for (JsonNode parameterNode : actionNode.get("parameter")) {
+                    String parameterName = parameterNode.get("name").asText();
+                    Constraint constraint = mapper.treeToValue(parameterNode.get("constraint"), Constraint.class);
+                    Parameter parameter = condition.getParameter(parameterName);
+                    supportedParam.put(parameter, constraint);
+                }
+                supportedCondition.put(condition, supportedParam);
+            }
+            supportedDeviceCondition.put(genericDevice, supportedCondition);
 
             Map<Value, Constraint> supportedValue = new HashMap<>();
             for (JsonNode valueNode : deviceNode.get("value")) {
@@ -114,6 +136,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //        }
 
         return new Device(id, brand, model, url, width, height, type, formFactor, libraryName, platform, port, connectivity
-                , supportedDevice, supportedDeviceaction, supportedDeviceValue, dependency, category, v, i ,w);
+                , supportedDevice, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue, dependency, category, v, i ,w);
     }
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <header>
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
@@ -17,7 +17,7 @@
          <children>
             <VBox alignment="TOP_CENTER" minWidth="550.0" style="-fx-background-color: white;" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <TitledPane collapsible="false" text="Input">
+                  <TitledPane collapsible="false" text="Sensor">
                      <content>
                         <ScrollPane fitToWidth="true" prefHeight="115.0">
                            <content>
@@ -30,11 +30,24 @@
                         </ScrollPane>
                      </content>
                   </TitledPane>
-                  <TitledPane collapsible="false" text="Output">
+                  <TitledPane collapsible="false" text="Actuator">
                      <content>
                         <ScrollPane fitToWidth="true" prefHeight="115.0">
                            <content>
                               <FlowPane fx:id="outputPane" hgap="10.0" vgap="10.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                 </padding>
+                              </FlowPane>
+                           </content>
+                        </ScrollPane>
+                     </content>
+                  </TitledPane>
+                  <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Connectivity">
+                     <content>
+                        <ScrollPane fitToWidth="true" prefHeight="115.0">
+                           <content>
+                              <FlowPane fx:id="connectivityPane" hgap="10.0" vgap="10.0">
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>

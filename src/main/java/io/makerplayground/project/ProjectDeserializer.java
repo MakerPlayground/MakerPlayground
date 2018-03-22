@@ -107,7 +107,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             lines.add(new Line(source, dest));
         }
 
-        return new Project(projectName, projectController, inputDevices, outputDevices, scenes, conditions, lines, begin, filePath);
+        return new Project(projectName, projectController, inputDevices, outputDevices, null, scenes, conditions, lines, begin, filePath);
     }
 
     public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException {

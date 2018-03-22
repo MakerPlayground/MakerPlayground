@@ -2,7 +2,8 @@
   {
     "name": "Button",
     "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to controll devices",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Wait For Press",
         "funcname": "isPressed",
@@ -21,7 +22,8 @@
   {
     "name": "Accelerometer",
     "description": "Accelerometer is a sensor to measure acceleration.\\nYou can use it to detect free fall, acceleration on x,y,z axis. \\nRelated project:\\n\\tFalling object detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -83,7 +85,8 @@
   {
     "name": "Pressuremeter",
     "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -106,7 +109,8 @@
   {
     "name": "Altimeter",
     "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -129,7 +133,8 @@
   {
     "name": "Temperature",
     "description": "A thermometer. \\nRelated project:\\n\\tSmart fan\\n\\tHeat detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -152,7 +157,8 @@
   {
     "name": "Gyroscope",
     "description": "A sensor that measure rotation on x,y,z axis. \\nRelated project:\\n\\t Flip detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -193,7 +199,8 @@
   {
     "name": "Humidity",
     "description": "A sensor that measure humidity. \\nRelated project:\\n\\tAutomatic water plant",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -216,7 +223,8 @@
   {
     "name": "Sound",
     "description": "A sensor that measure level of sound. \\nRelated project:\\n\\tSound detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -239,7 +247,8 @@
   {
     "name": "Magnetometer",
     "description": "A sensor that measure magnetic. \\nRelated project:\\n\\tMagnet detector\\n\\tCompass",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -303,7 +312,8 @@
   {
     "name": "Distance",
     "description": "A sensor that measure distance. \\nRelated project:\\n\\tWall detector\\n\\tObject detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -326,7 +336,8 @@
   {
     "name": "Presence",
     "description": "A sensor that measure movement. \\nRelated project:\\n\\tHuman detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Detect Human",
         "funcname": "isDetected",
@@ -345,7 +356,8 @@
   {
     "name": "Color",
     "description": "A sensor that detect color. \\nRelated project:\\n\\tColor detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Detect Color",
         "funcname": "isColor",
@@ -374,7 +386,8 @@
   {
     "name": "Light",
     "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -397,7 +410,8 @@
   {
     "name": "Water",
     "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Detect Water",
         "funcname": "isWet",
@@ -416,7 +430,8 @@
   {
     "name": "Alcohol",
     "description": "A sensor that detect alcohol. \\nRelated project:\\n\\tAlcohol meter",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",
@@ -439,7 +454,8 @@
   {
     "name": "LPG",
     "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas dectetor",
-    "action": [
+    "action": [],
+    "condition": [
       {
         "name": "Compare",
         "funcname": "",

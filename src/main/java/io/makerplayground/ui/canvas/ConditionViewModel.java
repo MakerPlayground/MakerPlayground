@@ -6,6 +6,11 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Created by USER on 05-Jul-17.
  */
@@ -23,13 +28,18 @@ public class ConditionViewModel {
 
          this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
 
-         hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
-         this.project.getInputDevice().addListener((InvalidationListener) observable -> {
-             hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-         });
-         this.condition.getSetting().addListener((InvalidationListener) observable -> {
-             hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-         });
+        hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
+        // TODO: find a better way (now since only sensor and connectivity can be in the condition so we track these two)
+        this.project.getSensor().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
+        });
+        this.project.getConnectivity().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
+        });
+        // when we remove something from the condition
+        this.condition.getSetting().addListener((InvalidationListener) observable -> {
+            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
+        });
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
@@ -44,7 +54,9 @@ public class ConditionViewModel {
 
     public DoubleProperty yProperty() { return condition.topProperty(); }
 
-    public ObservableList<ProjectDevice> getProjectInputDevice() { return project.getInputDevice(); }
+    public List<ProjectDevice> getProjectInputDevice() {
+        return project.getInputDevice();
+    }
 
     public Condition getCondition() { return condition; }
 

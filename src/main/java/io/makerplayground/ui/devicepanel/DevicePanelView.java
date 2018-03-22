@@ -23,6 +23,7 @@ public class DevicePanelView extends VBox {
     @FXML private VBox devicePanel;
     @FXML private FlowPane inputPane;
     @FXML private FlowPane outputPane;
+    @FXML private FlowPane connectivityPane;
     @FXML private FlowPane microcontrollerPane;
 
     @FXML public void onAddDeviceClick() {
@@ -69,6 +70,19 @@ public class DevicePanelView extends VBox {
                     .setNodeAdder((parent, node) -> parent.getChildren().add(node))
                     .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                     .createDynamicViewCreator();
+
+        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> connectivityViewCreator =
+                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
+                        .setParent(connectivityPane)
+                        .setModelLoader(viewModel.getConnectivityChildViewModel())
+                        .setViewFactory(devicePanelIconViewModel -> {
+                            DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
+                            icon.setOnAction(event -> viewModel.removeConnectivityDevice(devicePanelIconViewModel));
+                            return icon;
+                        })
+                        .setNodeAdder((parent, node) -> parent.getChildren().add(node))
+                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                        .createDynamicViewCreator();
     }
 
 }

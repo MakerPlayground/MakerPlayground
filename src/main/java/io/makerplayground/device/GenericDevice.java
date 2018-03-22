@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represent a generic device ex. led, motor, temp sensor, etc.
@@ -29,6 +30,7 @@ public class GenericDevice {
     private final String name;
     private final String description;
     private final List<Action> action;
+    private final List<Action> condition;
     private final List<Value> value;
 
     /**
@@ -41,10 +43,12 @@ public class GenericDevice {
      *              accel_y and accel_z as it's values
      */
     @JsonCreator
-    GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("action") List<Action> action, @JsonProperty("value") List<Value> value) {
+    GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("action") List<Action> action
+            , @JsonProperty("condition") List<Action> condition, @JsonProperty("value") List<Value> value) {
         this.name = name;
         this.description = description;
         this.action = Collections.unmodifiableList(action);
+        this.condition = Collections.unmodifiableList(condition);
         this.value = Collections.unmodifiableList(value);
     }
 
@@ -65,6 +69,19 @@ public class GenericDevice {
     }
 
     public Action getAction(String name) {
+        for (Action a : action) {
+            if (a.getName().equals(name)) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    public List<Action> getCondition() {
+        return condition;
+    }
+
+    public Action getCondition(String name) {
         for (Action a : action) {
             if (a.getName().equals(name)) {
                 return a;

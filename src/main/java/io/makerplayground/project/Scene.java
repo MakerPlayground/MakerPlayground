@@ -67,7 +67,7 @@ public class Scene extends NodeElement {
     }
 
     public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device));
+        setting.add(new UserSetting(device, true));
     }
 
     public void removeDevice(ProjectDevice device) {

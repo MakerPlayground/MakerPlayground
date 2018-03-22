@@ -31,6 +31,7 @@ public enum DeviceLibrary {
 //    private List<Microcontroller> microcontroller;
     private List<GenericDevice> genericInputDevice;
     private List<GenericDevice> genericOutputDevice;
+    private List<GenericDevice> genericConnectivityDevice;
     private List<Device> actualDevice;
 
     DeviceLibrary() {
@@ -51,6 +52,10 @@ public enum DeviceLibrary {
             temp = mapper.readValue(getClass().getResourceAsStream("/json/genericoutputdevice.json")
                     , new TypeReference<List<GenericDevice>>() {});
             this.genericOutputDevice = Collections.unmodifiableList(temp);
+
+            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericconnectivitydevice.json")
+                    , new TypeReference<List<GenericDevice>>() {});
+            this.genericConnectivityDevice = Collections.unmodifiableList(temp);
 
             temp2 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
                     , new TypeReference<List<Device>>() {});
@@ -75,6 +80,11 @@ public enum DeviceLibrary {
                 return genericDevice;
             }
         }
+        for (GenericDevice genericDevice : genericConnectivityDevice) {
+            if (genericDevice.getName().equals(name)) {
+                return genericDevice;
+            }
+        }
         return null;
     }
 
@@ -84,6 +94,10 @@ public enum DeviceLibrary {
 
     public List<GenericDevice> getGenericOutputDevice() {
         return genericOutputDevice;
+    }
+
+    public List<GenericDevice> getGenericConnectivityDevice() {
+        return genericConnectivityDevice;
     }
 
     public List<Device> getActualDevice() {

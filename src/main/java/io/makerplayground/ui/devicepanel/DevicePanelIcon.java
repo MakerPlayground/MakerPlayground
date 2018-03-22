@@ -42,7 +42,7 @@ public class DevicePanelIcon extends VBox {
         nameTextField.setText(viewModel.getDevice().getName());
 
         nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == false) {
+            if (!newValue) {
                 // Check duplicated scene's name
                 if (viewModel.isNameDuplicate(nameTextField.getText())) {
                     nameTextField.setText(viewModel.getDevice().getName());
@@ -51,9 +51,6 @@ public class DevicePanelIcon extends VBox {
                 }
             }
         });
-
-
-
     }
 
     public void setOnAction(EventHandler<ActionEvent> event) {

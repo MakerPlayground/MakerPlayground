@@ -17,9 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.Action;
-import io.makerplayground.device.Parameter;
-import io.makerplayground.device.Value;
+import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.SimpleExpression;
@@ -40,14 +38,19 @@ public class UserSetting {
     private final ObservableMap<Parameter, Object> valueMap;
     private final ObservableMap<Value, Expression> expression;
 
-    UserSetting(ProjectDevice device) {
+    UserSetting(ProjectDevice device, boolean scene) {  // TODO: Remove boolean field!!!
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();
         this.expression = FXCollections.observableHashMap();
 
         // Initialize the map with default action and it's parameters
-        List<Action> actionList = device.getGenericDevice().getAction();
+        List<Action> actionList;
+        if (scene) {
+            actionList = device.getGenericDevice().getAction();
+        } else {
+            actionList = device.getGenericDevice().getCondition();
+        }
         if (!actionList.isEmpty()) {
             Action action = actionList.get(0);
             this.action.set(action);

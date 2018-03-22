@@ -83,7 +83,7 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    public ObservableList<ProjectDevice> getAllDevice() {
+    public List<ProjectDevice> getAllDevice() {
         return project.getAllDevice();
     }
 }

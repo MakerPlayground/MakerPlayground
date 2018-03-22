@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.ErrorDialogView;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -34,10 +35,18 @@ public class UploadTask extends Task<UploadResult> {
     protected UploadResult call() throws Exception {
         updateProgress(0, 1);
         updateMessage("Checking project");
-        if (!DeviceMapper.autoAssignDevices(project)) {
+
+        DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
+        if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
             updateMessage("Error: not enough port available");
             return UploadResult.NOT_ENOUGH_PORT;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+            updateMessage("Error: can't find support device");
+            return UploadResult.NO_SUPPORT_DEVICE;
+        } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
+            throw new IllegalStateException("Found unknown error!!!");
         }
+
         Sourcecode sourcecode = Sourcecode.generateCode(project, true);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root id="devicePanelPane" fx:id="devicePanel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" stylesheets="@../css/DevicePanelView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="devicePanelPane" fx:id="devicePanel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" stylesheets="@../css/DevicePanelView.css" type="VBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane style="-fx-background-color: #313644;">
          <children>
@@ -20,7 +20,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <TitledPane fx:id="MicrocontrollerTitle" expanded="false" text="Microcontroller (UNO R3)">
+      <TitledPane expanded="false" text="Microcontroller">
          <content>
             <ScrollPane disable="true" fitToWidth="true" prefHeight="80.0" prefWidth="200.0">
                <content>
@@ -29,13 +29,13 @@
             </ScrollPane>
          </content>
       </TitledPane>
-      <TitledPane fx:id="sensorTitle" text="Input">
+      <TitledPane text="Sensor">
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
                   <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #4d5666;" vgap="10.0">
                      <children>
-                        <Button id="addBtn" fx:id="addOutputBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
+                        <Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
                      </children></FlowPane>
                </content>
                <padding>
@@ -44,14 +44,30 @@
             </ScrollPane>
          </content>
       </TitledPane>
-      <TitledPane fx:id="outputTitle" text="Output">
+      <TitledPane text="Actuator">
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
                   <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0">
                      <children>
-                        <Button id="addBtn" fx:id="addOutputBtn1" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
+                        <Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
                      </children></FlowPane>
+               </content>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </ScrollPane>
+         </content>
+      </TitledPane>
+      <TitledPane layoutX="10.0" layoutY="298.0" text="Connectivity">
+         <content>
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <FlowPane id="outputPane" fx:id="connectivityPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0">
+                     <children>
+                        <Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />
+                     </children>
+                  </FlowPane>
                </content>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
