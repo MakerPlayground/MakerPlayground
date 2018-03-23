@@ -165,7 +165,7 @@ public class Sourcecode {
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // TODO: BAD CODE (add update function for actuator and sensor to adjust read frequency)
             if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(projectDevice.getGenericDevice())) {
-                sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update();").append(NEW_LINE);
+                sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
             }
         }
         //sb.append(INDENT).append("currentScene();").append(NEW_LINE);
