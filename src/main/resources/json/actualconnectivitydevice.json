@@ -12,7 +12,7 @@
     "library": [
       "MP_Blynk_ESP8266",
       "Blynk",
-      "BlynkESP8266"
+      "BlynkESP8266_Lib"
     ],
     "width": 72.0,
     "height": 72.0,

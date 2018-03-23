@@ -9,6 +9,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
 
+import javax.swing.plaf.FileChooserUI;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -117,16 +118,28 @@ public class UploadTask extends Task<UploadResult> {
 
             // copy libraries
             for (String x : library) {
-                FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
+                URL sourceHeaderFile = getClass().getResource("/library/arduino/src/" + x + ".h");
+                URL sourceFolder = getClass().getResource("/library/arduino/src/" + x);
+                // if the library is a single .c/.h file copy the file to the src directory
+                if (sourceHeaderFile != null) {
+                    File destHeaderFile = new File(path + File.separator + "upload" + File.separator + "project"
+                            + File.separator + "src" + File.separator + x + ".h");
+                    FileUtils.copyURLToFile(sourceHeaderFile, destHeaderFile, 1, 1);
 
-                URL sourcecpp = getClass().getResource("/library/arduino/src/" + x + ".cpp");
-                File destcpp = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".cpp");
-
-                URL sourceh = getClass().getResource("/library/arduino/src/" + x + ".h");
-                File desth = new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x + File.separator + x + ".h");
-
-                FileUtils.copyURLToFile(sourcecpp, destcpp, 1, 1);
-                FileUtils.copyURLToFile(sourceh, desth, 1, 1);
+                    URL srcCppFile = getClass().getResource("/library/arduino/src/" + x + ".cpp");
+                    // some library only have a header file so we ignore the cpp file
+                    if (srcCppFile != null) {
+                        File destCppFile = new File(path + File.separator + "upload" + File.separator + "project"
+                                + File.separator + "src" + File.separator + x + ".cpp");
+                        FileUtils.copyURLToFile(srcCppFile, destCppFile, 1, 1);
+                    }
+                } else if (sourceFolder != null) {  // if the library comes as a folder, copy the whole directory to the lib directory
+                    FileUtils.copyDirectory(new File(sourceFolder.toURI())
+                            , new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
+                } else {
+                    updateMessage("Error: Missing some libraries");
+                    return UploadResult.CANT_FIND_LIBRARY;
+                }
             }
         } catch (IOException | NullPointerException e) {
             updateMessage("Error: Missing some libraries");
