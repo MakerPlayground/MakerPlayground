@@ -153,12 +153,6 @@ public class Sourcecode {
         sb.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
 
-        // generate loop function
-        sb.append(NEW_LINE);
-        sb.append("void loop() {").append(NEW_LINE);
-        sb.append(INDENT).append("currentScene();").append(NEW_LINE);
-        sb.append("}").append(NEW_LINE);
-
         // generate update function
         sb.append(NEW_LINE);
         sb.append("void update() {").append(NEW_LINE);
@@ -168,7 +162,13 @@ public class Sourcecode {
                 sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
             }
         }
-        //sb.append(INDENT).append("currentScene();").append(NEW_LINE);
+        sb.append("}").append(NEW_LINE);
+
+        // generate loop function
+        sb.append(NEW_LINE);
+        sb.append("void loop() {").append(NEW_LINE);
+        sb.append(INDENT).append("update();").append(NEW_LINE);
+        sb.append(INDENT).append("currentScene();").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
 
         Set<Scene> visitedScene = new HashSet<>();
@@ -316,18 +316,18 @@ public class Sourcecode {
             List<String> conditionList = new ArrayList<>();
             for (UserSetting setting : condition.getSetting()) {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
-                    StringBuilder action = new StringBuilder();
-                    action.append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
-                            .append(setting.getAction().getFunctionName()).append("(");
+                    List<String> parameterList = new ArrayList<>();
                     for (Parameter parameter : setting.getAction().getParameter()) {
                         Object value = setting.getValueMap().get(parameter);
                         if (value instanceof NumberWithUnit) {
-                            action.append(df.format(((NumberWithUnit) value).getValue()));
+                            parameterList.add(df.format(((NumberWithUnit) value).getValue()));
                         } else if (value instanceof String) {
-                            action.append("\"").append(value).append("\"");
+                            parameterList.add("\"" + value + "\"");
                         }
                     }
-                    action.append(")");
+                    StringBuilder action = new StringBuilder();
+                    action.append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
+                            .append(setting.getAction().getFunctionName()).append("(").append(String.join(",", parameterList)).append(")");
                     conditionList.add(action.toString());
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
