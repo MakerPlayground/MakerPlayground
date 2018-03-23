@@ -4642,8 +4642,8 @@
     "library": [
       "MP_LED"
     ],
-    "width": 111.0,
-    "height": 129.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -4737,8 +4737,8 @@
       "MP_7segI2C_Colon",
       "TM1637Display"
     ],
-    "width": 372.0,
-    "height": 153.0,
+    "width": 266.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -4873,8 +4873,8 @@
     "library": [
       "MP_OneAnalogReadToPercent"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -4963,8 +4963,8 @@
     "library": [
       "MP_GROVE_Temperature"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5053,8 +5053,8 @@
     "library": [
       "MP_OneAnalogReadToPercent"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5143,8 +5143,8 @@
     "library": [
       "MP_GROVE_Sound"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5233,8 +5233,8 @@
     "library": [
       "MP_GROVE_Buzzer"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5314,8 +5314,8 @@
     "library": [
       "MP_GROVE_Button"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5409,8 +5409,8 @@
     "library": [
       "MP_Relay_Module"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5494,8 +5494,8 @@
     "library": [
       "MP_GROVE_PIR"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5591,8 +5591,8 @@
       "Adafruit_ADXL345_U",
       "Adafruit_Sensor"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5720,8 +5720,8 @@
       "MP_DHT11",
       "DHT"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",
@@ -5830,8 +5830,8 @@
     "library": [
       "MP_GROVE_Ultrasonic_Ranger"
     ],
-    "width": 50.0,
-    "height": 50.0,
+    "width": 128.0,
+    "height": 148.0,
     "v": "",
     "i": "",
     "w": "",

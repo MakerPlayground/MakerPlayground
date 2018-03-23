@@ -16,8 +16,12 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by tanyagorn on 7/17/2017.
@@ -42,6 +46,9 @@ public class Diagram extends Pane {
     private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
+    private static final double GROVE_FONT_SIZE = 30;
+    private static final double GROVE_Y_MARGIN = 30;
+    private static final double GROVE_X_MARGIN = 20;
     private static final int STROKE_WIDTH = 3;
 
     private static final List<Color> colorSet = Arrays.asList(Color.BLUE, Color.HOTPINK, Color.ORANGE, Color.GRAY
@@ -63,21 +70,30 @@ public class Diagram extends Pane {
         powerUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
         groundUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
         this.deviceTopLeftPos = new HashMap<>();
-        setPrefSize(1000, 1200);
+        setPrefSize(1000, 4000);
 
+        int currentRow = 0;
+        double lastY = 0;
         // draw breadboard
-        ImageView breadBoard = new ImageView(new Image(getClass().getResourceAsStream("/device/breadboard_large@2x.png")));
-        breadBoard.setLayoutX(BREADBOARD_LEFT_MARGIN);
-        breadBoard.setLayoutY(BREADBOARD_TOP_MARGIN);
-        getChildren().add(breadBoard);
+        if(useBreadboard()) {
+            ImageView breadBoard = new ImageView(new Image(getClass().getResourceAsStream("/device/breadboard_large@2x.png")));
+            breadBoard.setLayoutX(BREADBOARD_LEFT_MARGIN);
+            breadBoard.setLayoutY(BREADBOARD_TOP_MARGIN);
+            getChildren().add(breadBoard);
 
-        // skip first 5 rows (reserved for vertical power+gnd lines)
-        int currentRow = 5;
+            // skip first 5 rows (reserved for vertical power+gnd lines)
+            currentRow = 5;
+            lastY += BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT;
+        }
 
         // draw controller
-        double lastY = BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
+        lastY += CONTROLLER_Y_MARGIN;
         Device controller = project.getController().getController();
-        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + controller.getId() + ".png")));
+        String controllerFilename = "/device/" + controller.getId() + ".png";
+        if(useGrove()) {
+            controllerFilename = "/device/Seeed-103030000.png";
+        }
+        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream(controllerFilename)));
         if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
             DevicePort topLeftPort = getTopLeftHole(controller);
@@ -96,9 +112,10 @@ public class Diagram extends Pane {
         controllerImage.setLayoutY(controllerPosition.getY());
         this.getChildren().add(controllerImage);
 
-        // draw other device
+        // draw other device excepts grove
         double lastX = BREADBOARD_LEFT_MARGIN;
         int deviceCount = 0;
+        int maxHeight = 0;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
@@ -117,47 +134,94 @@ public class Diagram extends Pane {
             } else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
                 lastX = lastX + device.getWidth();
+                maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
             } else if (device.getFormFactor() == FormFactor.SHIELD) {
                 deviceTopLeftPos.put(projectDevice, controllerPosition);
+                maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
             } else if (device.getFormFactor() == FormFactor.GROVE) {
-                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
-                lastX = lastX + device.getWidth();
-            }   // TODO: add new form factor here
+                continue;
+            }  // TODO: add new form factor here
             deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
             deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
             this.getChildren().add(deviceImage);
             deviceCount++;
         }
+        lastY += (maxHeight + CONTROLLER_Y_MARGIN);
 
-        // connect power
+        // draw grove devices
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            lastX = BREADBOARD_LEFT_MARGIN;
+            Device device = projectDevice.getActualDevice();
+            ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
+            Text text = new Text();
+            text.setFont(Font.font(GROVE_FONT_SIZE));
+            if (device.getFormFactor() == FormFactor.GROVE) {
+                lastY += GROVE_Y_MARGIN;
+                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY));
+                lastX = lastX + device.getWidth() + GROVE_X_MARGIN;
+                for(Peripheral p : device.getConnectivity()) {
+                    ConnectionType conn = p.getConnectionType();
+                    String str = "connects to ";
+                    if(conn == ConnectionType.ANALOG) {
+                        List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
+                        Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
+                        str += selectedPort.get();
+                    } else if (conn == ConnectionType.GPIO) {
+                        List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
+                        Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
+                        str += ("D" + selectedPort.get());
+                    }
+                    else if (conn == ConnectionType.I2C) {
+                        str += "I2C";
+                    }
+                    text.setText(str);
+                    text.setLayoutX(lastX);
+                    text.setLayoutY(lastY + device.getHeight() / 2);
+                }
+                lastY = lastY + device.getHeight();
+            } else {
+                continue;
+            }
+            deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
+            deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
+
+            this.getChildren().add(deviceImage);
+            this.getChildren().add(text);
+            deviceCount++;
+        }
+
         int numberOfPwrPinUsed = 0;
         int numberOfGndPinUsed = 1;
-        boolean connectGnd = false;
 
-        // connect power to both side of breadboard
-        createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
-                BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_TOP_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_TOP_Y);
-        numberOfPwrPinUsed++;
-        // connect gnd to both side of breadboard (currently unused by any device)
-        createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
-                BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_TOP_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_TOP_Y);
-        numberOfGndPinUsed++;
+        if(useBreadboard()) {
+            // connect power
+            boolean connectGnd = false;
 
-        // connect the first hole of breadboard to Arduino board
-        for (DevicePort p : controller.getPort()) {
-            if (p.isVcc()) {
-                createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
-                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
-                numberOfPwrPinUsed++;
-            } else if ((p.isGnd()) && (!connectGnd)) {
-                createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+            // connect power to both side of breadboard
+            createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
+                    BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_TOP_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_TOP_Y);
+            numberOfPwrPinUsed++;
+            // connect gnd to both side of breadboard (currently unused by any device)
+            createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                    BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_TOP_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_TOP_Y);
+            numberOfGndPinUsed++;
+
+            // connect the first hole of breadboard to Arduino board
+            for (DevicePort p : controller.getPort()) {
+                if (p.isVcc()) {
+                    createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
                             BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
-                numberOfGndPinUsed++;
-                connectGnd = true;
+                    numberOfPwrPinUsed++;
+                } else if ((p.isGnd()) && (!connectGnd)) {
+                    createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                            BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                    numberOfGndPinUsed++;
+                    connectGnd = true;
+                }
             }
         }
 
-        // connect power for other devices
+        // connect power for other devices excepts grove
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
@@ -176,7 +240,7 @@ public class Diagram extends Pane {
                         int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                         int availablePosition = getAvailableGndPort(holePosition);
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + calculatedYPadding
-                                    , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfGndPinUsed++;
                         groundUsed.add(availablePosition);
                     }
@@ -189,14 +253,14 @@ public class Diagram extends Pane {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             int availablePosition = getAvailablePowerPort(holePosition);
                             createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                    , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                             numberOfPwrPinUsed++;
                             powerUsed.add(availablePosition);
                         } else if (port.isGnd()) {
                             int holePosition = (int)Math.round(((deviceTopLeftPos.get(projectDevice).getX() + port.getX()) - (BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN))/HOLE_SPACE);
                             int availablePosition = getAvailableGndPort(holePosition);
                             createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY() + HOLE_SPACE
-                                        , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                    , BREADBOARD_LEFT_MARGIN + J1_POS_X + (HOLE_SPACE*2) + (availablePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                             numberOfGndPinUsed++;
                             groundUsed.add(availablePosition);
                         }
@@ -223,32 +287,29 @@ public class Diagram extends Pane {
                                         , deviceTopLeftPos.get(projectDevice).getX() + port.getX(), BREADBOARD_GND_TOP_Y + BREADBOARD_TOP_MARGIN);
                             }
                             numberOfGndPinUsed++;
-
                         }
                     }
-
                 }
             } else if (device.getFormFactor() == FormFactor.STANDALONE) {
                 for (DevicePort port : powerPort) {
                     if (port.isVcc()) {
                         int holePosition = getAvailablePowerPort();
                         createPowerLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(), deviceTopLeftPos.get(projectDevice).getY() + port.getY()
-                                    , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                , BREADBOARD_PWR_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_PWR_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfPwrPinUsed++;
                         powerUsed.add(holePosition);
                     } else if (port.isGnd()) {
                         int holePosition = getAvailableGndPort();
                         createGndLine(deviceTopLeftPos.get(projectDevice).getX() + port.getX(),deviceTopLeftPos.get(projectDevice).getY() + port.getY()
-                                    , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
+                                , BREADBOARD_GND_BOT_X + BREADBOARD_LEFT_MARGIN + (holePosition * HOLE_SPACE), BREADBOARD_GND_BOT_Y + BREADBOARD_TOP_MARGIN);
                         numberOfGndPinUsed++;
                         groundUsed.add(holePosition);
                     }
                 }
             }
-
         }
 
-        // connect i2c
+        // connect i2c on breadboard
         double sdaStartX = 0, sdaStartY = 0;
         double sclStartX = 0, sclStartY = 0;
         List<DevicePort> controllerI2CPort = controller.getPort(Peripheral.I2C_1);  // TODO: assume that we have only 1 I2C
@@ -277,7 +338,8 @@ public class Diagram extends Pane {
             }
         } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             //TODO: Implement this
-        } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
+        }
+        else if (controller.getFormFactor() == FormFactor.STANDALONE) {
             sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
             sdaStartY = startSDA.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
             sclStartX = startSCL.getX() + BREADBOARD_LEFT_MARGIN;
@@ -288,7 +350,7 @@ public class Diagram extends Pane {
             Device device = projectDevice.getActualDevice();
             double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
-                if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlikely
+                if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlike
                     DevicePort desSDA = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSDA).findFirst().get();
                     DevicePort desSCL = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCL).findFirst().get();
 
@@ -379,6 +441,30 @@ public class Diagram extends Pane {
                 }
             }
         }
+
+        setPrefSize(lastX + 500, lastY + 500);
+    }
+
+    private boolean useBreadboard() {
+        List<FormFactor> formFactors = List.of(FormFactor.BREAKOUT_BOARD_ONESIDE,
+                                                FormFactor.BREAKOUT_BOARD_TWOSIDE,
+                                                FormFactor.BREADBOARD_CUSTOM);
+        for(ProjectDevice device : project.getAllDeviceUsed()) {
+            FormFactor f = device.getActualDevice().getFormFactor();
+            if(formFactors.contains(f)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean useGrove() {
+        for(ProjectDevice device : project.getAllDeviceUsed()) {
+            if(device.getActualDevice().getFormFactor() == FormFactor.GROVE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int getAvailablePowerPort() {
