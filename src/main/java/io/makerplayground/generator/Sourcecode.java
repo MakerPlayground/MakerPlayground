@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.Parameter;
+import io.makerplayground.device.Property;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
@@ -21,6 +22,7 @@ public class Sourcecode {
     public enum Error {
         NONE(""),
         MISSING_PARAMS("Missing required parameter in some scene/conditions"),
+        MISSING_PROPERTY("Missing required device's property"),
         NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
         NEST_CONDITION("Multiple condition are connected together"),
@@ -72,6 +74,10 @@ public class Sourcecode {
             return new Sourcecode(Error.MISSING_PARAMS, "-");   // TODO: add location
         }
 
+        if (!checkDeviceProperty(project)) {
+            return new Sourcecode(Error.MISSING_PROPERTY, "-");   // TODO: add location
+        }
+
         StringBuilder headerStringBuilder = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
@@ -107,28 +113,31 @@ public class Sourcecode {
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             sb.append(projectDevice.getActualDevice().getMPLibraryName().replace(" ", "_")).append(" ")
                     .append("_" + projectDevice.getName().replace(" ", "_"));
-            List<String> portName = new ArrayList<>();
-//            for (Peripheral peripheral : projectDevice.getDeviceConnection().values()) {
-//                if (peripheral.getConnectionType() != ConnectionType.I2C) {
-//                    List<String> tmp = project.getController().getController().getPort(peripheral).stream()
-//                            .map(DevicePort::getName).collect(Collectors.toList());
-//                    portName.addAll(tmp);
-//                }
-//            }
 
-            //List<Peripheral> peripherals = new ArrayList<>(projectDevice.getDeviceConnection().keySet());
-            //peripherals.sort(Comparator.naturalOrder());
+            List<String> args = new ArrayList<>();
+
+            // port
             for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
                 if (p.getConnectionType() != ConnectionType.I2C) {
                     List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
                     if (port == null) {
                         throw new IllegalStateException("Port hasn't been selected!!!");
                     }
-                    portName.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+                    args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                 }
             }
-            if (!portName.isEmpty()) {
-                sb.append("(").append(String.join(",", portName)).append(")");
+
+            // property for the generic device
+            for (Property p : projectDevice.getGenericDevice().getProperty()) {
+                String value = projectDevice.getPropertyValue(p);
+                if (value == null) {
+                    throw new IllegalStateException("Property hasn't been set");
+                }
+                args.add(value);
+            }
+
+            if (!args.isEmpty()) {
+                sb.append("(").append(String.join(",", args)).append(")");
             }
             sb.append(";").append(NEW_LINE);
         }
@@ -377,6 +386,22 @@ public class Sourcecode {
                 && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
                 .flatMap(userSetting -> userSetting.getValueMap().values().stream())
                 .allMatch(o -> (o != null) && (!(o instanceof Expression) || ((Expression) o).isValid()));
+    }
+
+    private static boolean checkDeviceProperty(Project project) {
+        for (ProjectDevice device : project.getAllDeviceUsed()) {
+            // check only device that has a property
+            if (!device.getGenericDevice().getProperty().isEmpty()) {
+                for (Property p : device.getGenericDevice().getProperty()) {
+                    String value = device.getPropertyValue(p);
+                    // TODO: allow property to be optional
+                    if (value == null || value.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private static List<NodeElement> findAdjacentVertices(Project project, NodeElement source) {

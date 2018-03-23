@@ -1,24 +1,20 @@
 package io.makerplayground.ui.devicepanel;
 
-
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.SingletonConfigDevice;
-import io.makerplayground.helper.SingletonUtilTools;
+import io.makerplayground.device.Property;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -30,14 +26,10 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 
 /**
  * Created by tanyagorn on 7/11/2017.
@@ -164,7 +156,7 @@ public class ConfigActualDeviceView extends Dialog {
                 viewModel.reInitialize();
             });
 
-            CheckBox checkBox = new CheckBox("Auto");
+            CheckBox checkBox = new CheckBox("Auto Select");
             checkBox.setSelected(projectDevice.isAutoSelectDevice());
             deviceComboBox.setDisable(projectDevice.isAutoSelectDevice());
             //portComboBox.setDisable(projectDevice.isAutoSelectDevice());
@@ -255,33 +247,51 @@ public class ConfigActualDeviceView extends Dialog {
             entrieComboBoxDevice.getChildren().add(portComboBoxHbox);
             entrieComboBoxDevice.setSpacing(10.0);
 
+            // property
+            if (!projectDevice.getGenericDevice().getProperty().isEmpty()) {
+                VBox combinePropertyVBox = new VBox();
+                for (Property p : projectDevice.getGenericDevice().getProperty()) {
+                    HBox propertyHBox = new HBox();
+                    propertyHBox.getChildren().add(new Label(p.getName()));
+                    if (p.getType() == DataType.STRING) {
+                        TextField textField = new TextField(projectDevice.getPropertyValue(p));
+                        textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
+                        propertyHBox.getChildren().add(textField);
+                    } else {    // TODO: add support for new property type
+                        throw new IllegalStateException("Found unknown property type");
+                    }
+                    combinePropertyVBox.getChildren().add(propertyHBox);
+                }
+                entrieComboBoxDevice.getChildren().add(combinePropertyVBox);
+            }
+
             allDevice.getChildren().add(entireDevice);
         }
 
-        VBox vBox = new VBox();
-
-
-        final Hyperlink hpl = new Hyperlink("Request your favorite devices");
-
-        hpl.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-
-                SingletonUtilTools.getInstance().setAll("REQUEST");
-
-                String s = "https://goo.gl/forms/12Wsu9WPZPumUPOj2";
-                Desktop desktop = Desktop.getDesktop();
-                try {
-                    desktop.browse(URI.create(s));
-                } catch (IOException ev) {
-                    ev.printStackTrace();
-                }
-            }
-        });
-
-
-        vBox.getChildren().add(hpl);
-        allDevice.getChildren().add(vBox);
+//        VBox vBox = new VBox();
+//
+//
+//        final Hyperlink hpl = new Hyperlink("Request your favorite devices");
+//
+//        hpl.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent e) {
+//
+//                SingletonUtilTools.getInstance().setAll("REQUEST");
+//
+//                String s = "https://goo.gl/forms/12Wsu9WPZPumUPOj2";
+//                Desktop desktop = Desktop.getDesktop();
+//                try {
+//                    desktop.browse(URI.create(s));
+//                } catch (IOException ev) {
+//                    ev.printStackTrace();
+//                }
+//            }
+//        });
+//
+//
+//        vBox.getChildren().add(hpl);
+//        allDevice.getChildren().add(vBox);
 
         scrollPane.setContent(allDevice);
 

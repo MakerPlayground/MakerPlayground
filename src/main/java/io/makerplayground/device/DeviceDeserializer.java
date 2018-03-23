@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.makerplayground.helper.DeviceType;
-import io.makerplayground.helper.FormFactor;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 
 import java.io.IOException;
 import java.util.*;

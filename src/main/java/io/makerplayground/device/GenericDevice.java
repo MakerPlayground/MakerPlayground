@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represent a generic device ex. led, motor, temp sensor, etc.
@@ -32,6 +31,7 @@ public class GenericDevice {
     private final List<Action> action;
     private final List<Action> condition;
     private final List<Value> value;
+    private final List<Property> property;
 
     /**
      * Construct a new generic device. The constructor should only be invoked by the DeviceLibrary
@@ -44,12 +44,13 @@ public class GenericDevice {
      */
     @JsonCreator
     GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("action") List<Action> action
-            , @JsonProperty("condition") List<Action> condition, @JsonProperty("value") List<Value> value) {
+            , @JsonProperty("condition") List<Action> condition, @JsonProperty("value") List<Value> value, @JsonProperty("property") List<Property> property) {
         this.name = name;
         this.description = description;
         this.action = Collections.unmodifiableList(action);
         this.condition = Collections.unmodifiableList(condition);
         this.value = Collections.unmodifiableList(value);
+        this.property = Collections.unmodifiableList(property);
     }
 
     /**
@@ -111,12 +112,28 @@ public class GenericDevice {
         return null;
     }
 
+    public List<Property> getProperty() {
+        return property;
+    }
+
+    public Property getProperty(String name) {
+        for (Property p : property) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "GenericDevice{" +
                 "name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 ", action=" + action +
+                ", condition=" + condition +
                 ", value=" + value +
+                ", property=" + property +
                 '}';
     }
 }

@@ -183,6 +183,20 @@
           "unit": "NOT_SPECIFIED"
         }
       }
+    ],
+    "property": [
+      {
+        "name": "auth",
+        "type": "STRING"
+      },
+      {
+        "name": "ssid",
+        "type": "STRING"
+      },
+      {
+        "name": "pass",
+        "type": "STRING"
+      }
     ]
   }
 ]

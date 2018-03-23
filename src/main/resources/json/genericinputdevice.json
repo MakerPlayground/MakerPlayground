@@ -1,7 +1,7 @@
 [
   {
     "name": "Button",
-    "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to controll devices",
+    "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to control devices",
     "action": [],
     "condition": [
       {
@@ -17,7 +17,8 @@
         "parameter": []
       }
     ],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "Accelerometer",
@@ -80,7 +81,8 @@
           "unit": "METERPERSECSQUARE"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Pressuremeter",
@@ -104,7 +106,8 @@
           "unit": "HECTOPASCAL"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Altimeter",
@@ -128,7 +131,8 @@
           "unit": "METER"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Temperature",
@@ -152,7 +156,8 @@
           "unit": "CELSIUS"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Gyroscope",
@@ -194,7 +199,8 @@
           "unit": "RADIUSPERSEC"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Humidity",
@@ -218,7 +224,8 @@
           "unit": "PERCENT"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Sound",
@@ -242,7 +249,8 @@
           "unit": "PERCENT"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Magnetometer",
@@ -307,7 +315,8 @@
           "unit": "MICROTESLA"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Distance",
@@ -331,7 +340,8 @@
           "unit": "CENTIMETER"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Presence",
@@ -351,7 +361,8 @@
         "parameter": []
       }
     ],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "Color",
@@ -381,7 +392,8 @@
         ]
       }
     ],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "Light",
@@ -405,7 +417,8 @@
           "unit": "PERCENT"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "Water",
@@ -425,7 +438,8 @@
         "parameter": []
       }
     ],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "Alcohol",
@@ -449,7 +463,8 @@
           "unit": "PERCENT"
         }
       }
-    ]
+    ],
+    "property": []
   },
   {
     "name": "LPG",
@@ -473,6 +488,32 @@
           "unit": "PERCENT"
         }
       }
-    ]
+    ],
+    "property": []
+  },
+  {
+    "name": "POT",
+    "description": "This is potentiometer. You can turn to adjust and make some action.\\nRelated project:\\n\\tHelp many projects in selecting action and/or adjusting the sensor value",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Percent",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
+      }
+    ],
+    "property": []
   }
 ]

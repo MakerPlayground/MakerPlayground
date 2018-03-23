@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -40,7 +42,7 @@ public enum DeviceLibrary {
     public void loadDeviceFromJSON() {
 //        List<Microcontroller> temp3;
         List<GenericDevice> temp;
-        List<Device> temp2;
+        List<Device> temp2, temp3;
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -59,7 +61,10 @@ public enum DeviceLibrary {
 
             temp2 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
                     , new TypeReference<List<Device>>() {});
-            this.actualDevice = Collections.unmodifiableList(temp2);
+            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/actualconnectivitydevice.json")
+                    , new TypeReference<List<Device>>() {});
+            this.actualDevice = Stream.concat(temp2.stream(), temp3.stream())
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
         } catch (IOException e) {
             e.printStackTrace();
         }

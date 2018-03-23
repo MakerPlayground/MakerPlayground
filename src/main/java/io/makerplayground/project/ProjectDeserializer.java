@@ -294,7 +294,10 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             dependentDeviceConnection.put(source, port);
         }
 
+        Map<Property, String> property = new HashMap<>();
+        System.err.println("Don't forget to fix project loading!!!");
+
         return new ProjectDevice(name, genericDevice, autoSelect, actualDevice, actualDeviceConnection
-                , dependentDevice, dependentDeviceConnection);
+                , dependentDevice, dependentDeviceConnection, property);
     }
 }

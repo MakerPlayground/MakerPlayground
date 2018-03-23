@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.Property;
 import io.makerplayground.helper.Peripheral;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -25,6 +26,7 @@ public class ProjectDevice {
     private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
     private Device dependentDevice;
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
+    private Map<Property, String> propertyValue;  // property needed by the actual device
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = new SimpleStringProperty(name);
@@ -34,9 +36,12 @@ public class ProjectDevice {
         this.deviceConnection = new HashMap<>();
         this.dependentDevice = null;
         this.dependentDeviceConnection = new HashMap<>();
+        this.propertyValue = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral, List<DevicePort>> deviceConnection, Device dependentDevice, Map<Peripheral, List<DevicePort>> dependentDeviceConnection) {
+    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral
+            , List<DevicePort>> deviceConnection, Device dependentDevice, Map<Peripheral
+            , List<DevicePort>> dependentDeviceConnection, Map<Property, String> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
         this.autoSelectDevice = autoSelectDevice;
@@ -44,6 +49,7 @@ public class ProjectDevice {
         this.deviceConnection = deviceConnection;
         this.dependentDevice = dependentDevice;
         this.dependentDeviceConnection = dependentDeviceConnection;
+        this.propertyValue = propertyValue;
     }
 
     public String getName() {
@@ -107,6 +113,14 @@ public class ProjectDevice {
 
     public void setDependentDeviceConnection(Peripheral device, List<DevicePort> processor) {
         this.dependentDeviceConnection.put(device, processor);
+    }
+
+    public String getPropertyValue(Property p) {
+        return propertyValue.get(p);
+    }
+
+    public void setPropertyValue(Property p, String value) {
+        propertyValue.put(p, value);
     }
 
 //    public void setDependentDeviceConnection(Map<Peripheral, Peripheral> dependentDeviceConnection) {

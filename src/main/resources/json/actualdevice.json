@@ -1844,7 +1844,7 @@
   {
     "id": "Adafruit-1119",
     "brand": "Adafruit",
-    "model": "Tactile Switch Buttons",
+    "model": "Tactile Switch Button",
     "url": "https://www.adafruit.com/product/1119",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD_TWOSIDE",
@@ -4630,22 +4630,20 @@
     ]
   },
   {
-    "id": "SeeedStudio-113020010",
+    "id": "Grove-104030007",
     "brand": "SeeedStudio",
-    "model": "Grove - Uart Wifi",
-    "url": "https://www.seeedstudio.com/s/Grove-Uart-Wifi-p-2495.html",
+    "model": "Grove LED Socket Kit (Red, Green, White)",
+    "url": "https://www.seeedstudio.com/Grove-Green-LED-p-1144.html",
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
       "ARDUINO"
     ],
     "library": [
-      "MP_Blynk_ESP8266",
-      "Blynk",
-      "BlynkESP8266"
+      "MP_LED"
     ],
-    "width": 72.0,
-    "height": 72.0,
+    "width": 111.0,
+    "height": 129.0,
     "v": "",
     "i": "",
     "w": "",
@@ -4653,36 +4651,8 @@
     "category": "",
     "port": [
       {
-        "name": "VIN",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "VCC"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 3.3,
-        "x": 14.5,
-        "y": 69.0
-      },
-      {
-        "name": "GND",
-        "type": "WIRE",
-        "function": [
-          {
-            "type": "POWER",
-            "pintype": "GND"
-          }
-        ],
-        "v_min": 3.3,
-        "v_max": 3.3,
-        "x": 28.9,
-        "y": 69.0
-      },
-      {
-        "name": "RX",
-        "type": "WIRE",
+        "name": "SIG",
+        "type": "GROVE",
         "function": [
           {
             "type": "GPIO_1",
@@ -4690,13 +4660,108 @@
           }
         ],
         "v_min": 3.3,
-        "v_max": 3.3,
-        "x": 43.3,
-        "y": 69.0
+        "v_max": 5.0,
+        "x": 31.785,
+        "y": 42.489
       },
       {
-        "name": "TX",
-        "type": "WIRE",
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 2.984,
+        "y": 0.002
+      },
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 117.42,
+        "y": 60.299
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-104030003",
+    "brand": "SeeedStudio",
+    "model": "Grove - 4-Digit Display",
+    "url": "https://www.seeedstudio.com/Grove-4-Digit-Display-p-1198.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_7segI2C_Colon",
+      "TM1637Display"
+    ],
+    "width": 372.0,
+    "height": 153.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "CLK",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 53.3
+      },
+      {
+        "name": "DIO",
+        "type": "GROVE",
         "function": [
           {
             "type": "GPIO_2",
@@ -4704,9 +4769,37 @@
           }
         ],
         "v_min": 3.3,
-        "v_max": 3.3,
-        "x": 57.7,
-        "y": 69.0
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 67.8
+      },
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 82.3
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 96.8
       }
     ],
     "connectivity": [
@@ -4715,24 +4808,11 @@
     ],
     "compatibility": [
       {
-        "name": "Blynk",
+        "name": "7 Segment",
         "action": [
           {
-            "name": "Push value",
+            "name": "Show Value",
             "parameter": [
-              {
-                "name": "Virtual Pin",
-                "constraint": [
-                  "0",
-                  "1",
-                  "2",
-                  "3",
-                  "4",
-                  "5",
-                  "6",
-                  "7"
-                ]
-              },
               {
                 "name": "Value",
                 "constraint": []
@@ -4740,36 +4820,27 @@
             ]
           },
           {
-            "name": "Push data",
+            "name": "Show Data",
             "parameter": [
-              {
-                "name": "Virtual Pin",
-                "constraint": [
-                  "0",
-                  "1",
-                  "2",
-                  "3",
-                  "4",
-                  "5",
-                  "6",
-                  "7"
-                ]
-              },
               {
                 "name": "Data",
                 "constraint": {
-                  "min": -32768.0,
-                  "max": 32767.0,
+                  "min": 0.0,
+                  "max": 9999.0,
                   "unit": "NUMBER"
                 }
               }
             ]
           },
           {
-            "name": "Check value",
+            "name": "Off",
+            "parameter": []
+          },
+          {
+            "name": "Set Brightness",
             "parameter": [
               {
-                "name": "Virtual Pin",
+                "name": "Brightness",
                 "constraint": [
                   "0",
                   "1",
@@ -4780,17 +4851,86 @@
                   "6",
                   "7"
                 ]
-              },
-              {
-                "name": "Data",
-                "constraint": {
-                  "min": -32768.0,
-                  "max": 32767.0,
-                  "unit": "NUMBER"
-                }
               }
             ]
-          },
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020017",
+    "brand": "SeeedStudio",
+    "model": "Grove - Rotary Angle Sensor",
+    "url": "https://www.seeedstudio.com/Grove-Rotary-Angle-Sensor-p-770.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_OneAnalogReadToPercent"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "POT",
+        "action": [
           {
             "name": "Compare",
             "parameter": []
@@ -4798,67 +4938,975 @@
         ],
         "value": [
           {
-            "name": "VirtualPin0",
+            "name": "Percent",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020015",
+    "brand": "SeeedStudio",
+    "model": "Grove - Temperature Sensor",
+    "url": "https://www.seeedstudio.com/Grove-Temperature-Sensor-p-774.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_GROVE_Temperature"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": -40.0,
+              "max": 125.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020132",
+    "brand": "SeeedStudio",
+    "model": "Grove - Light Sensor",
+    "url": "https://www.seeedstudio.com/Grove-Light-Sensor-v1.2-p-2727.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_OneAnalogReadToPercent"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Light",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Percent",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020023",
+    "brand": "SeeedStudio",
+    "model": "Grove - Sound Sensor",
+    "url": "https://www.seeedstudio.com/Grove-Sound-Sensor-p-752.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_OneAnalogReadToPercent"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Sound",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "SoundLevel",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-107020000",
+    "brand": "SeeedStudio",
+    "model": "Grove - Buzzer",
+    "url": "https://www.seeedstudio.com/Grove-Buzzer-p-768.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_GROVE_Buzzer"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Buzzer",
+        "action": [
+          {
+            "name": "Beep",
+            "parameter": [
+              {
+                "name": "Tone Frequency",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 10000.0,
+                  "unit": "HERTZ"
+                }
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020003",
+    "brand": "SeeedStudio",
+    "model": "Grove - Button",
+    "url": "https://www.seeedstudio.com/Grove-Button-p-766.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_GenericButton"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 31.785,
+        "y": 42.489
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 2.984,
+        "y": 0.002
+      },
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 117.42,
+        "y": 60.299
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Button",
+        "action": [
+          {
+            "name": "Wait For Press",
+            "parameter": [
+              {
+                "name": "isPressed",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Wait For Release",
+            "parameter": [
+              {
+                "name": "isReleased",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-103020005",
+    "brand": "SeeedStudio",
+    "model": "Grove - Relay",
+    "url": "https://www.seeedstudio.com/Grove-Relay-p-769.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_Relay_Module"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Relay Module",
+        "action": [
+          {
+            "name": "On",
+            "parameter": []
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020020",
+    "brand": "SeeedStudio",
+    "model": "Grove - PIR Motion Sensor",
+    "url": "https://www.seeedstudio.com/Grove-PIR-Motion-Sensor%EF%BC%88BISS0001%EF%BC%89-p-802.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_GROVE_PIR"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 31.785,
+        "y": 42.489
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 2.984,
+        "y": 0.002
+      },
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 117.42,
+        "y": 60.299
+      }
+    ],
+    "connectivity": [
+      "GPIO_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Presence",
+        "action": [
+          {
+            "name": "Detect Human",
+            "parameter": [
+              {
+                "name": "isDetected",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "No Human",
+            "parameter": [
+              {
+                "name": "isNotDetected",
+                "constraint": []
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020054",
+    "brand": "SeeedStudio",
+    "model": "Grove - 3-Axis Digital Accelerometer(\u00b116g)",
+    "url": "http://wiki.seeed.cc/Grove-3-Axis_Digital_Accelerometer-16g/",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_GROVE_ADXL345",
+      "Adafruit_ADXL345_U"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "CLK",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 53.3
+      },
+      {
+        "name": "DIO",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "GPIO_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 67.8
+      },
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 82.3
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.0,
+        "v_max": 5.0,
+        "x": 321.0,
+        "y": 96.8
+      }
+    ],
+    "connectivity": [
+      "GPIO_1",
+      "GPIO_2"
+    ],
+    "compatibility": [
+      {
+        "name": "Accelerometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "X",
+            "constraint": {
+              "min": -16.0,
+              "max": 16.0,
+              "unit": "METERPERSECSQUARE"
             }
           },
           {
-            "name": "VirtualPin1",
+            "name": "Y",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": -16.0,
+              "max": 16.0,
+              "unit": "METERPERSECSQUARE"
             }
           },
           {
-            "name": "VirtualPin2",
+            "name": "Z",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": -16.0,
+              "max": 16.0,
+              "unit": "METERPERSECSQUARE"
             }
           },
           {
-            "name": "VirtualPin3",
+            "name": "Magnitude",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": 0.0,
+              "max": 60.0,
+              "unit": "METERPERSECSQUARE"
             }
-          },
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020011",
+    "brand": "SeeedStudio",
+    "model": "Grove - Temperature & Humidity Sensor ?DHT11?",
+    "url": "https://www.seeedstudio.com/Grove-Temperature-%26amp%3B-Humidity-Sensor-%EF%BC%88DHT11%EF%BC%89-p-745.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [
+      "MP_DHT11",
+      "DHT"
+    ],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
           {
-            "name": "VirtualPin4",
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": 0.0,
+              "max": 50.0,
+              "unit": "CELSIUS"
             }
-          },
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
           {
-            "name": "VirtualPin5",
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": 20.0,
+              "max": 80.0,
+              "unit": "PERCENT"
             }
-          },
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "Grove-101020010",
+    "brand": "SeeedStudio",
+    "model": "Grove - Ultrasonic Ranger",
+    "url": "https://www.seeedstudio.com/Grove-Ultrasonic-Ranger-p-960.html",
+    "type": "PERIPHERAL",
+    "formfactor": "GROVE",
+    "platform": [
+      "ARDUINO"
+    ],
+    "library": [],
+    "width": 50.0,
+    "height": 50.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "VCC",
+        "type": "GROVE",
+        "function": [
           {
-            "name": "VirtualPin6",
-            "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
-            }
-          },
+            "type": "POWER",
+            "pintype": "VCC"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 1.531,
+        "y": 19.764
+      },
+      {
+        "name": "SIG",
+        "type": "GROVE",
+        "function": [
           {
-            "name": "VirtualPin7",
+            "type": "ANALOG_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 45.2,
+        "y": 31.9095
+      },
+      {
+        "name": "GND",
+        "type": "GROVE",
+        "function": [
+          {
+            "type": "POWER",
+            "pintype": "GND"
+          }
+        ],
+        "v_min": 3.3,
+        "v_max": 5.0,
+        "x": 132.212,
+        "y": 22.0465
+      }
+    ],
+    "connectivity": [
+      "ANALOG_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Distance",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Distance",
             "constraint": {
-              "min": -32768.0,
-              "max": 32767.0,
-              "unit": "NOT_SPECIFIED"
+              "min": 0.02,
+              "max": 4.5,
+              "unit": "METER"
             }
           }
         ],

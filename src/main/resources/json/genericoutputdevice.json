@@ -29,7 +29,8 @@
       }
     ],
     "condition": [],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "Buzzer",
@@ -84,7 +85,8 @@
       }
     ],
     "condition": [],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "7 Segment",
@@ -153,7 +155,8 @@
       }
     ],
     "condition": [],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "DC Motor",
@@ -195,7 +198,8 @@
       }
     ],
     "condition": [],
-    "value": []
+    "value": [],
+    "property": []
   },
   {
     "name": "RGB LED",
@@ -231,6 +235,28 @@
       }
     ],
     "condition": [],
-    "value": []
+    "value": [],
+    "property": []
+  },
+  {
+    "name": "Relay Module",
+    "description": "This is a relay module. It can act as a digital switch for high voltage.",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": [],
+    "property": []
   }
 ]

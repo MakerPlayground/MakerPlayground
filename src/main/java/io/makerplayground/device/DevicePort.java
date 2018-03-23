@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  */
 public class DevicePort {
     enum Type {
-        WIRE    // TODO: add groove and other pin type
+        WIRE, GROVE    // TODO: add groove and other pin type
     }
 
     private String name;
