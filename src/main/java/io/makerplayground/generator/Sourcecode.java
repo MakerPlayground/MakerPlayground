@@ -133,7 +133,7 @@ public class Sourcecode {
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");
                 }
-                args.add(value);
+                args.add("\"" + value + "\"");
             }
 
             if (!args.isEmpty()) {
