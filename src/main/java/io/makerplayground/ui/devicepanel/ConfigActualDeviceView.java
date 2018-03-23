@@ -17,6 +17,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -86,7 +87,7 @@ public class ConfigActualDeviceView extends Dialog {
             //row.setAlignment(Pos.BASELINE_LEFT);
             HBox entireDevice = new HBox();
             HBox portComboBoxHbox = new HBox();
-            VBox entrieComboBoxDevice = new VBox();
+            VBox entireComboBoxDevice = new VBox();
             //entireDevice.setAlignment(Pos.BASELINE_LEFT);
             HBox devicePic = new HBox();
 
@@ -173,8 +174,8 @@ public class ConfigActualDeviceView extends Dialog {
                     }
                 }
             });
-            entrieComboBoxDevice.getChildren().addAll(deviceComboBox);
-            entireDevice.getChildren().addAll(devicePic, checkBox, entrieComboBoxDevice);
+            entireComboBoxDevice.getChildren().addAll(deviceComboBox);
+            entireDevice.getChildren().addAll(devicePic, checkBox, entireComboBoxDevice);
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
 
@@ -244,27 +245,36 @@ public class ConfigActualDeviceView extends Dialog {
                     portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                 }
             }
-            entrieComboBoxDevice.getChildren().add(portComboBoxHbox);
-            entrieComboBoxDevice.setSpacing(10.0);
+            entireComboBoxDevice.getChildren().add(portComboBoxHbox);
+            entireComboBoxDevice.setSpacing(10.0);
 
             // property
             if (!projectDevice.getGenericDevice().getProperty().isEmpty()) {
-                VBox combinePropertyVBox = new VBox();
-                for (Property p : projectDevice.getGenericDevice().getProperty()) {
-                    HBox propertyHBox = new HBox();
-                    propertyHBox.setSpacing(5.0);
-                    propertyHBox.getChildren().add(new Label(p.getName()));
+                GridPane propertyGridPane = new GridPane();
+                propertyGridPane.setHgap(10);
+                propertyGridPane.setVgap(10);
+
+                List<Property> propertyList = projectDevice.getGenericDevice().getProperty();
+                for (int i=0; i<propertyList.size(); i++) {
+                    Property p = propertyList.get(i);
+
+                    Label propertyLabel = new Label(p.getName());
+                    GridPane.setRowIndex(propertyLabel, i);
+                    GridPane.setColumnIndex(propertyLabel, 0);
+                    propertyGridPane.getChildren().add(propertyLabel);
+
                     if (p.getType() == DataType.STRING) {
                         TextField textField = new TextField(projectDevice.getPropertyValue(p));
                         textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
-                        propertyHBox.getChildren().add(textField);
+                        GridPane.setRowIndex(textField, i);
+                        GridPane.setColumnIndex(textField, 1);
+                        propertyGridPane.getChildren().add(textField);
                     } else {    // TODO: add support for new property type
                         throw new IllegalStateException("Found unknown property type");
                     }
-                    combinePropertyVBox.getChildren().add(propertyHBox);
                 }
-                combinePropertyVBox.setSpacing(10.0);
-                entrieComboBoxDevice.getChildren().add(combinePropertyVBox);
+
+                entireComboBoxDevice.getChildren().add(propertyGridPane);
             }
 
             allDevice.getChildren().add(entireDevice);

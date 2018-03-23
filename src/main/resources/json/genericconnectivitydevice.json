@@ -186,15 +186,15 @@
     ],
     "property": [
       {
-        "name": "auth",
+        "name": "Blynk Auth Key",
         "type": "STRING"
       },
       {
-        "name": "ssid",
+        "name": "Wifi's SSID",
         "type": "STRING"
       },
       {
-        "name": "pass",
+        "name": "Wifi's Password",
         "type": "STRING"
       }
     ]
