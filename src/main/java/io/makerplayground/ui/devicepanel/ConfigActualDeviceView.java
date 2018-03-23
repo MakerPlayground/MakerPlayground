@@ -252,6 +252,7 @@ public class ConfigActualDeviceView extends Dialog {
                 VBox combinePropertyVBox = new VBox();
                 for (Property p : projectDevice.getGenericDevice().getProperty()) {
                     HBox propertyHBox = new HBox();
+                    propertyHBox.setSpacing(5.0);
                     propertyHBox.getChildren().add(new Label(p.getName()));
                     if (p.getType() == DataType.STRING) {
                         TextField textField = new TextField(projectDevice.getPropertyValue(p));
@@ -262,6 +263,7 @@ public class ConfigActualDeviceView extends Dialog {
                     }
                     combinePropertyVBox.getChildren().add(propertyHBox);
                 }
+                combinePropertyVBox.setSpacing(10.0);
                 entrieComboBoxDevice.getChildren().add(combinePropertyVBox);
             }
 
