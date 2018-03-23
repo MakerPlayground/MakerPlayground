@@ -1,9 +1,6 @@
 package io.makerplayground.generator;
 
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.Parameter;
-import io.makerplayground.device.Property;
-import io.makerplayground.device.Value;
+import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
@@ -142,6 +139,10 @@ public class Sourcecode {
             sb.append(";").append(NEW_LINE);
         }
 
+        // local variable needed
+        sb.append(NEW_LINE);
+        sb.append("unsigned long endTime = 0;").append(NEW_LINE);
+
         // generate setup function
         sb.append(NEW_LINE);
         sb.append("void setup() {").append(NEW_LINE);
@@ -156,6 +157,18 @@ public class Sourcecode {
         sb.append(NEW_LINE);
         sb.append("void loop() {").append(NEW_LINE);
         sb.append(INDENT).append("currentScene();").append(NEW_LINE);
+        sb.append("}").append(NEW_LINE);
+
+        // generate update function
+        sb.append(NEW_LINE);
+        sb.append("void update() {").append(NEW_LINE);
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            // TODO: BAD CODE (add update function for actuator and sensor to adjust read frequency)
+            if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(projectDevice.getGenericDevice())) {
+                sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update();").append(NEW_LINE);
+            }
+        }
+        //sb.append(INDENT).append("currentScene();").append(NEW_LINE);
         sb.append("}").append(NEW_LINE);
 
         Set<Scene> visitedScene = new HashSet<>();
@@ -211,13 +224,16 @@ public class Sourcecode {
 
             // delay
             if (currentScene.getDelay() != 0) {
+                int delayDuration = 0;  // in ms
                 if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
-                    sb.append(INDENT).append("delay(").append(df.format(currentScene.getDelay() * 1000))
-                            .append(");").append(NEW_LINE);
+                    delayDuration = (int) (currentScene.getDelay() * 1000);
                 } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
-                    sb.append(INDENT).append("delay(").append(df.format(currentScene.getDelay())).append(");")
-                            .append(NEW_LINE);
+                    delayDuration = (int) currentScene.getDelay();
                 }
+                sb.append(INDENT).append("endTime = millis() + ").append(delayDuration).append(";").append(NEW_LINE);
+                sb.append(INDENT).append("while (millis() < endTime) {").append(NEW_LINE);
+                sb.append(INDENT).append(INDENT).append("update();").append(NEW_LINE);
+                sb.append(INDENT).append("}").append(NEW_LINE);
             }
 
             // update list of adjacent vertices (scenes/conditions)
@@ -285,6 +301,8 @@ public class Sourcecode {
 
         // loop to check sensor
         sb.append(INDENT).append("while (1) {").append(NEW_LINE);
+        // call the update function
+        sb.append(INDENT).append(INDENT).append("update();").append(NEW_LINE);
         // update value from input device(s) to the variable
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
