@@ -2304,7 +2304,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_Buzzer"
+      "MP_Piezo"
     ],
     "width": 158.0,
     "height": 155.0,
@@ -2348,7 +2348,7 @@
     ],
     "compatibility": [
       {
-        "name": "Buzzer",
+        "name": "Piezo",
         "action": [
           {
             "name": "Play",
@@ -5141,7 +5141,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_OneAnalogReadToPercent"
+      "MP_GROVE_Sound"
     ],
     "width": 50.0,
     "height": 50.0,
@@ -5293,16 +5293,7 @@
         "action": [
           {
             "name": "Beep",
-            "parameter": [
-              {
-                "name": "Tone Frequency",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 10000.0,
-                  "unit": "HERTZ"
-                }
-              }
-            ]
+            "parameter": []
           }
         ],
         "value": [],
@@ -5321,7 +5312,7 @@
       "ARDUINO"
     ],
     "library": [
-      "MP_GenericButton"
+      "MP_GROVE_Button"
     ],
     "width": 50.0,
     "height": 50.0,
@@ -5597,7 +5588,8 @@
     ],
     "library": [
       "MP_GROVE_ADXL345",
-      "Adafruit_ADXL345_U"
+      "Adafruit_ADXL345_U",
+      "Adafruit_Sensor"
     ],
     "width": 50.0,
     "height": 50.0,
@@ -5608,12 +5600,12 @@
     "category": "",
     "port": [
       {
-        "name": "CLK",
+        "name": "SDA",
         "type": "GROVE",
         "function": [
           {
-            "type": "GPIO_1",
-            "pintype": "INOUT"
+            "type": "I2C_1",
+            "pintype": "I2C_SDA"
           }
         ],
         "v_min": 3.0,
@@ -5622,12 +5614,12 @@
         "y": 53.3
       },
       {
-        "name": "DIO",
+        "name": "SCL",
         "type": "GROVE",
         "function": [
           {
-            "type": "GPIO_2",
-            "pintype": "INOUT"
+            "type": "I2C_1",
+            "pintype": "I2C_SCL"
           }
         ],
         "v_min": 3.0,
@@ -5665,8 +5657,7 @@
       }
     ],
     "connectivity": [
-      "GPIO_1",
-      "GPIO_2"
+      "I2C_1"
     ],
     "compatibility": [
       {
@@ -5718,7 +5709,7 @@
   {
     "id": "Grove-101020011",
     "brand": "SeeedStudio",
-    "model": "Grove - Temperature & Humidity Sensor ?DHT11?",
+    "model": "Grove - Temperature & Humidity Sensor (DHT11)",
     "url": "https://www.seeedstudio.com/Grove-Temperature-%26amp%3B-Humidity-Sensor-%EF%BC%88DHT11%EF%BC%89-p-745.html",
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
@@ -5836,7 +5827,9 @@
     "platform": [
       "ARDUINO"
     ],
-    "library": [],
+    "library": [
+      "MP_GROVE_Ultrasonic_Ranger"
+    ],
     "width": 50.0,
     "height": 50.0,
     "v": "",
@@ -5904,9 +5897,9 @@
           {
             "name": "Distance",
             "constraint": {
-              "min": 0.02,
-              "max": 4.5,
-              "unit": "METER"
+              "min": 3.0,
+              "max": 350.0,
+              "unit": "CENTIMETER"
             }
           }
         ],

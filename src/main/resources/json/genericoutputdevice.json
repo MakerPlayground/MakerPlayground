@@ -37,6 +37,21 @@
     "description": "A kind of speaker that can control frequency of sound",
     "action": [
       {
+        "name": "Beep",
+        "funcname": "beep",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": [],
+    "property": []
+  },
+  {
+    "name": "Piezo",
+    "description": "A kind of speaker that can control frequency of sound",
+    "action": [
+      {
         "name": "Play",
         "funcname": "play",
         "type": "Active",

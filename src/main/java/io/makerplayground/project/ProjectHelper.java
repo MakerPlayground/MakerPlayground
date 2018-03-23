@@ -45,6 +45,7 @@ public class ProjectHelper {
      * @return a dummy project used while developing
      * @deprecated
      */
+    @Deprecated
     public static Project loadDummyProject() {
         Project dummyProject = new Project();
 
