@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Created by USER on 14-Jul-17.
@@ -59,6 +60,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             outputDevices.add(deserializeProjectDevice(mapper, outputDeviceNode, controller));
         }
 
+        ObservableList<ProjectDevice> connectivityDevices = FXCollections.observableArrayList();
+        for (JsonNode connectivityDeviceNode : node.get("connectivityDevice")) {
+            connectivityDevices.add(deserializeProjectDevice(mapper, connectivityDeviceNode, controller));
+        }
+
         Begin begin = new Begin(node.get("begin").get("top").asDouble()
                 , node.get("begin").get("left").asDouble());
 
@@ -66,12 +72,12 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ObservableList<Scene> scenes = FXCollections.observableArrayList();
         for (JsonNode sceneNode : node.get("scene")) {
-            scenes.add(deserializeScene(mapper, sceneNode, inputDevices, outputDevices));
+            scenes.add(deserializeScene(mapper, sceneNode, inputDevices,  outputDevices, connectivityDevices));
         }
 
         ObservableList<Condition> conditions = FXCollections.observableArrayList();
         for(JsonNode conditionNode : node.get("condition")) {
-            conditions.add(deserializeCondition(mapper, conditionNode, inputDevices, outputDevices));
+            conditions.add(deserializeCondition(mapper, conditionNode, inputDevices, outputDevices, connectivityDevices));
         }
 
         ObservableList<Line> lines = FXCollections.observableArrayList();
@@ -107,17 +113,18 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             lines.add(new Line(source, dest));
         }
 
-        return new Project(projectName, projectController, inputDevices, outputDevices, null, scenes, conditions, lines, begin, filePath);
+        return new Project(projectName, projectController, inputDevices, outputDevices, connectivityDevices, scenes, conditions, lines, begin, filePath);
     }
 
-    public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException {
+    public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
         for (JsonNode sceneSettingNode : node.get("setting")) {
-            ProjectDevice projectDevice = outputDevice.stream().filter(projectDevice1 ->
+            ProjectDevice projectDevice = Stream.concat(outputDevice.stream(), connectivityDevices.stream()).filter(projectDevice1 ->
                     projectDevice1.getName().equals(sceneSettingNode.get("device").asText())).findFirst().get();
-            setting.add(deserializeUserSetting(mapper, sceneSettingNode, projectDevice, inputDevice, outputDevice));
+            setting.add(deserializeUserSetting(mapper, sceneSettingNode, projectDevice, inputDevice, outputDevice, connectivityDevices));
         }
 
         double delay = node.get("delay").asDouble();
@@ -131,14 +138,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new Scene(top, left, width, height, name, setting, delay, delayUnit);
     }
 
-    public Condition deserializeCondition(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException {
+    public Condition deserializeCondition(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
         for (JsonNode conditionSettingNode : node.get("setting")) {
-            ProjectDevice projectDevice = inputDevice.stream().filter(projectDevice1 ->
+            ProjectDevice projectDevice = Stream.concat(inputDevice.stream(), connectivityDevices.stream()).filter(projectDevice1 ->
                     projectDevice1.getName().equals(conditionSettingNode.get("device").asText())).findFirst().get();
-            setting.add(deserializeUserSetting(mapper, conditionSettingNode, projectDevice, inputDevice, outputDevice));
+            setting.add(deserializeUserSetting(mapper, conditionSettingNode, projectDevice, inputDevice, outputDevice, connectivityDevices));
         }
 
         double top = node.get("position").get("top").asDouble();
@@ -150,15 +158,20 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
-            , ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException {
+            , ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice
+            , ObservableList<ProjectDevice> connectivityDevices) throws IOException {
         Action action = projectDevice.getGenericDevice().getAction(node.get("action").asText());
+        // TODO: find a better way
+        if (action == null) {
+            action = projectDevice.getGenericDevice().getCondition(node.get("action").asText());
+        }
 
         Map<Parameter, Object> valueMap = new HashMap<>();
         for (JsonNode parameterNode : node.get("valueMap")) {
             Parameter parameter = action.getParameter(parameterNode.get("name").asText());
             Object object = null;
             if (parameterNode.get("value").has("name") && parameterNode.get("value").has("value")) {
-                object = deserializeProjectValue(mapper, parameterNode.get("value"), inputDevice, outputDevice);
+                object = deserializeProjectValue(mapper, parameterNode.get("value"), inputDevice, outputDevice, connectivityDevices);
             } else if (parameterNode.get("value").isObject()) {
                 object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnit.class);
             } else {
@@ -208,7 +221,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
         Expression expression = new Expression();
 
         for (JsonNode termNode : node) {
@@ -223,7 +236,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             } else if (type == ChipType.OPERATOR) {
                 term = new OperatorTerm(ChipOperator.valueOf(termNode.get("value").asText()));
             } else if (type == ChipType.VALUE) {
-                ProjectValue pv = deserializeProjectValue(mapper, termNode.get("value"), inputDevice, outputDevice);
+                ProjectValue pv = deserializeProjectValue(mapper, termNode.get("value"), inputDevice, outputDevice, connectivityDevices);
                 term = new ValueTerm(pv);
             } else {
                 throw new IllegalStateException("Found unknown term " + type);
@@ -235,7 +248,8 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return expression;
     }
 
-    public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice) throws IOException, JsonProcessingException {
+    public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
         String deviceName = node.get("name").asText();
         ProjectDevice device = null;
         for (ProjectDevice projectDevice : inputDevice) {
@@ -243,6 +257,10 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 device = projectDevice;
         }
         for (ProjectDevice projectDevice : outputDevice) {
+            if (deviceName.equals(projectDevice.getName()))
+                device = projectDevice;
+        }
+        for (ProjectDevice projectDevice : connectivityDevices) {
             if (deviceName.equals(projectDevice.getName()))
                 device = projectDevice;
         }
@@ -295,7 +313,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
 
         Map<Property, String> property = new HashMap<>();
-        System.err.println("Don't forget to fix project loading!!!");
+        for (JsonNode propertyNode : node.get("property")) {
+            String propertyName = propertyNode.get("name").asText();
+            Property p = genericDevice.getProperty(propertyName);
+            property.put(p, propertyNode.get("value").asText());
+        }
 
         return new ProjectDevice(name, genericDevice, autoSelect, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);

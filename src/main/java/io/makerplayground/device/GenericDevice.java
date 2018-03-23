@@ -83,7 +83,7 @@ public class GenericDevice {
     }
 
     public Action getCondition(String name) {
-        for (Action a : action) {
+        for (Action a : condition) {
             if (a.getName().equals(name)) {
                 return a;
             }

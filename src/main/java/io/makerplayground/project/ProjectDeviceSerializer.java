@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.device.Property;
 import io.makerplayground.helper.Peripheral;
 
 import java.io.IOException;
@@ -68,6 +69,15 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         }
         jsonGenerator.writeEndArray();
 
+        jsonGenerator.writeArrayFieldStart("property");
+        for (Property property : projectDevice.getGenericDevice().getProperty()) {
+            String value = projectDevice.getPropertyValue(property);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("name", property.getName());
+            jsonGenerator.writeStringField("value", value);
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeEndObject();
     }
