@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 147.6 81" style="enable-background:new 0 0 147.6 81;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#274A88;}
+	.st1{fill:#FFE500;}
+	.st2{fill:#FFFFFF;}
+	.st3{font-family:'ArialMT';}
+	.st4{font-size:4px;}
+	.st5{fill:none;stroke:#9A916C;stroke-width:0.489;}
+	.st6{fill:#323232;}
+	.st7{fill:#EF1818;}
+	.st8{fill:#C7C7C7;}
+	.st9{fill:#AAAAAA;}
+</style>
+<g id="layer1" transform="translate(0,-971.3597)">
+	<g id="g4758" transform="matrix(0,1,-1,0,1054.566,976.43782)">
+		<path id="rect2992" class="st0" d="M2.8,907.1c-1.6,0-2.8,1.2-2.8,2.8v27c-3.1,0-5.6,2.5-5.6,5.6s2.5,5.6,5.6,5.6v12.1v14.9v5.6
+			v11.3v15.7c3.1,0,5.6,2.5,5.6,5.6c0,3.1-2.5,5.6-5.6,5.6v27c0,1.6,1.2,2.8,2.8,2.8h27c0,3.1,2.5,5.6,5.6,5.6s5.6-2.5,5.6-5.6h27
+			c1.6,0,2.8-1.2,2.8-2.8v-27c-3.1,0-5.6-2.5-5.6-5.6c0-3.1,2.5-5.6,5.6-5.6v-12.1v-14.9v-5.6v-18.4v-8.6c3.1,0,5.6-2.5,5.6-5.6
+			s-2.5-5.6-5.6-5.6v-27c0-1.6-1.2-2.8-2.8-2.8H41c0,3.1-2.5,5.6-5.6,5.6c-3.1,0-5.6-2.5-5.6-5.6H2.8z M0,939.3
+			c1.8,0,3.3,1.5,3.3,3.3s-1.5,3.3-3.3,3.3s-3.3-1.5-3.3-3.3S-1.8,939.3,0,939.3z M70.8,939.3c1.8,0,3.3,1.5,3.3,3.3
+			s-1.5,3.3-3.3,3.3c-1.8,0-3.2-1.5-3.2-3.3S69,939.3,70.8,939.3z M35.4,1045.6c1.8,0,3.3,1.4,3.3,3.2s-1.5,3.3-3.3,3.3
+			s-3.3-1.5-3.3-3.3S33.6,1045.6,35.4,1045.6z"/>
+		<g id="g102" transform="matrix(0,-1.2499976,1.2499976,0,-1259.9704,1062.5138)">
+			<path id="connector3pin" class="st1" d="M15.7,1029.8v-2.3h2.3v2.3H15.7z"/>
+			<path id="connector2pin" class="st1" d="M17.9,1033.2v2.3h-2.3v-2.3H17.9z"/>
+			<path id="connector1pin" class="st1" d="M15.7,1038.9h2.3v2.3h-2.3V1038.9z"/>
+			<path id="connector0pin" class="st1" d="M15.7,1044.6h2.3v2.3h-2.3V1044.6z"/>
+		</g>
+		<text id="tspan11445" transform="matrix(0 -1 1 0 48.7656 1039.4005)" class="st2 st3 st4">GND</text>
+		<text id="tspan11445-6" transform="matrix(0 -1 1 0 41.5742 1039.4005)" class="st2 st3 st4">VCC</text>
+		<text id="tspan11445-1" transform="matrix(0 -1 1 0 34.3833 1039.4005)" class="st2 st3 st4">DIO</text>
+		<text id="tspan11445-7" transform="matrix(0 -1 1 0 27.1924 1039.4005)" class="st2 st3 st4">CLK</text>
+		<text id="tspan11445-74" transform="matrix(0 -1 1 0 62.939 1000.424)" class="st2 st3 st4">Grove - 4 Digit Display</text>
+	</g>
+	<g id="g4901" transform="matrix(1 0 0 1 26.560003 993.42819)">
+		<circle id="connector0pin-8" class="st5" cx="31.9" cy="32.7" r="1.8"/>
+		<circle id="connector1pin-7" class="st5" cx="39.1" cy="32.7" r="1.8"/>
+		<circle id="connector2pin-1" class="st5" cx="46.3" cy="32.7" r="1.8"/>
+		<circle id="connector3pin-2" class="st5" cx="53.5" cy="32.7" r="1.8"/>
+		<circle id="connector4pin" class="st5" cx="60.7" cy="32.7" r="1.8"/>
+		<circle id="connector5pin" class="st5" cx="67.9" cy="32.7" r="1.8"/>
+		<circle id="connector7pin" class="st5" cx="82.3" cy="32.7" r="1.8"/>
+		<circle id="connector6pin" class="st5" cx="75.1" cy="32.7" r="1.8"/>
+		<circle id="connector8pin" class="st5" cx="82.3" cy="3.9" r="1.8"/>
+		<circle id="connector13pin" class="st5" cx="46.3" cy="3.9" r="1.8"/>
+		<circle id="connector12pin" class="st5" cx="53.5" cy="3.9" r="1.8"/>
+		<circle id="connector11pin" class="st5" cx="60.7" cy="3.9" r="1.8"/>
+		<circle id="connector9pin" class="st5" cx="75.1" cy="3.9" r="1.8"/>
+		<circle id="connector10pin" class="st5" cx="67.9" cy="3.9" r="1.8"/>
+		<circle id="connector14pin" class="st5" cx="39.1" cy="3.9" r="1.8"/>
+		<circle id="connector15pin" class="st5" cx="31.9" cy="3.9" r="1.8"/>
+		<polygon id="polygon20" class="st6" points="114.5,36.9 1,36.9 0,35.6 0,0 113.4,0 114.5,1 		"/>
+		<polygon id="polygon22" class="st7" points="21.3,6.8 10.5,6.8 8.9,4.3 9.7,3.5 22.2,3.5 23,4.3 		"/>
+		<polygon id="polygon24" class="st8" points="21.3,17.6 19.7,15.9 21.3,7.6 23.8,5.1 24.6,6.8 23,15.9 		"/>
+		<polygon id="polygon26" class="st8" points="18.8,30.9 17.2,29.2 18.8,20.9 21.3,18.4 22.2,20.1 20.5,29.2 		"/>
+		<polygon id="polygon28" class="st7" points="5.6,29.2 16.4,29.2 18,31.7 17.2,32.5 4.7,32.5 3.9,31.7 		"/>
+		<polygon id="polygon30" class="st7" points="5.6,18.4 7.2,20.1 5.6,28.4 3.1,30.9 2.3,29.2 3.9,20.1 		"/>
+		<polygon id="polygon32" class="st7" points="8.1,5.1 9.7,6.8 8.1,15.1 5.6,17.6 4.7,15.9 6.4,6.8 		"/>
+		<polyline id="polyline34" class="st8" points="6.4,17.6 8.1,15.9 18.8,15.9 20.5,17.6 18.8,19.3 8.1,19.3 		"/>
+		<polygon id="polygon38" class="st7" points="50.1,6.8 39.3,6.8 37.7,4.3 38.5,3.5 50.9,3.5 51.8,4.3 		"/>
+		<polygon id="polygon40" class="st7" points="50.1,17.6 48.5,15.9 50.1,7.6 52.6,5.1 53.4,6.8 51.8,15.9 		"/>
+		<polygon id="polygon42" class="st7" points="47.6,30.9 46,29.2 47.6,20.9 50.1,18.4 50.9,20.1 49.3,29.2 		"/>
+		<polygon id="polygon44" class="st7" points="34.4,29.2 45.1,29.2 46.8,31.7 46,32.5 33.5,32.5 32.7,31.7 		"/>
+		<polygon id="polygon46" class="st7" points="34.4,18.4 36,20.1 34.4,28.4 31.9,30.9 31,29.2 32.7,20.1 		"/>
+		<polygon id="polygon48" class="st7" points="36.8,5.1 38.5,6.8 36.8,15.1 34.4,17.6 33.5,15.9 35.2,6.8 		"/>
+		<polyline id="polyline50" class="st8" points="35.2,17.6 36.8,15.9 47.6,15.9 49.3,17.6 47.6,19.3 36.8,19.3 		"/>
+		<circle id="circle54" class="st8" cx="55.6" cy="24.3" r="1.7"/>
+		<circle id="circle56" class="st8" cx="57.6" cy="11.4" r="1.7"/>
+		<polygon id="polygon60" class="st7" points="78.9,6.8 68.1,6.8 66.5,4.3 67.3,3.5 79.7,3.5 80.6,4.3 		"/>
+		<polygon id="polygon62" class="st8" points="78.9,17.6 77.3,15.9 78.9,7.6 81.4,5.1 82.2,6.8 80.6,15.9 		"/>
+		<polygon id="polygon64" class="st8" points="76.4,30.9 74.8,29.2 76.4,20.9 78.9,18.4 79.7,20.1 78.1,29.2 		"/>
+		<polygon id="polygon66" class="st7" points="63.2,29.2 73.9,29.2 75.6,31.7 74.8,32.5 62.3,32.5 61.5,31.7 		"/>
+		<polygon id="polygon68" class="st7" points="63.2,18.4 64.8,20.1 63.2,28.4 60.7,30.9 59.8,29.2 61.5,20.1 		"/>
+		<polygon id="polygon70" class="st7" points="65.6,5.1 67.3,6.8 65.6,15.1 63.2,17.6 62.3,15.9 64,6.8 		"/>
+		<polyline id="polyline72" class="st8" points="64,17.6 65.6,15.9 76.4,15.9 78.1,17.6 76.4,19.3 65.6,19.3 		"/>
+		<polygon id="polygon76" class="st7" points="107.8,6.8 97,6.8 95.4,4.3 96.2,3.5 108.6,3.5 109.5,4.3 		"/>
+		<polygon id="polygon78" class="st7" points="107.8,17.6 106.1,15.9 107.8,7.6 110.3,5.1 111.1,6.8 109.5,15.9 		"/>
+		<polygon id="polygon80" class="st7" points="105.3,30.9 103.6,29.2 105.3,20.9 107.8,18.4 108.6,20.1 107,29.2 		"/>
+		<polygon id="polygon82" class="st7" points="92,29.2 102.8,29.2 104.5,31.7 103.6,32.5 91.2,32.5 90.4,31.7 		"/>
+		<polygon id="polygon84" class="st7" points="92,18.4 93.7,20.1 92,28.4 89.5,30.9 88.7,29.2 90.4,20.1 		"/>
+		<polygon id="polygon86" class="st7" points="94.5,5.1 96.2,6.8 94.5,15.1 92,17.6 91.2,15.9 92.9,6.8 		"/>
+		<polyline id="polyline88" class="st8" points="92.9,17.6 94.5,15.9 105.3,15.9 107,17.6 105.3,19.3 94.5,19.3 		"/>
+		<polygon id="polygon92" class="st8" points="0,35.6 1,36.9 114.5,36.9 113.5,35.6 		"/>
+		<polygon id="polygon94" class="st9" points="114.5,36.9 114.5,1 113.4,0 113.4,35.6 		"/>
+	</g>
+</g>
+</svg>
