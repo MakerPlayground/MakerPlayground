@@ -5260,7 +5260,7 @@
         "type": "GROVE",
         "function": [
           {
-            "type": "ANALOG_1",
+            "type": "GPIO_1",
             "pintype": "INOUT"
           }
         ],
@@ -5285,7 +5285,7 @@
       }
     ],
     "connectivity": [
-      "ANALOG_1"
+      "GPIO_1"
     ],
     "compatibility": [
       {
