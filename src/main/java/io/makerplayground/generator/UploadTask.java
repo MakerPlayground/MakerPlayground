@@ -8,12 +8,10 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.swing.plaf.FileChooserUI;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class UploadTask extends Task<UploadResult> {
 
@@ -119,7 +119,8 @@ public class UploadTask extends Task<UploadResult> {
             // copy libraries
             for (String x : library) {
                 URL sourceHeaderFile = getClass().getResource("/library/arduino/src/" + x + ".h");
-                URL sourceFolder = getClass().getResource("/library/arduino/src/" + x);
+                URL sourceZipFile = getClass().getResource("/library/arduino/src/" + x + ".zip");
+//                URL sourceFolder = getClass().getResource("/library/arduino/src/" + x);
                 // if the library is a single .c/.h file copy the file to the src directory
                 if (sourceHeaderFile != null) {
                     File destHeaderFile = new File(path + File.separator + "upload" + File.separator + "project"
@@ -133,9 +134,47 @@ public class UploadTask extends Task<UploadResult> {
                                 + File.separator + "src" + File.separator + x + ".cpp");
                         FileUtils.copyURLToFile(srcCppFile, destCppFile, 1, 1);
                     }
-                } else if (sourceFolder != null) {  // if the library comes as a folder, copy the whole directory to the lib directory
-                    FileUtils.copyDirectory(new File(sourceFolder.toURI())
-                            , new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
+                } else if (sourceZipFile != null) {  // if the library comes as a zip, copy the whole zip and extract to the lib directory
+                    String destinationPath = path + File.separator + "upload" + File.separator + "project" + File.separator + "lib";
+                    InputStream is = getClass().getResourceAsStream("/library/arduino/src/" + x + ".zip");
+                    ZipInputStream zis = new ZipInputStream(is);
+                    ZipEntry entry;
+                    while ((entry = zis.getNextEntry()) != null) {
+
+                        // Create a file on HDD in the destinationPath directory
+                        // destinationPath is a "root" folder, where you want to extract your ZIP file
+                        File entryFile = new File(destinationPath, entry.getName());
+                        if (entry.isDirectory()) {
+
+                            if (!entryFile.exists()) {
+                                entryFile.mkdirs();
+                            }
+
+                        } else {
+
+                            // Make sure all folders exists (they should, but the safer, the better ;-))
+                            if (entryFile.getParentFile() != null && !entryFile.getParentFile().exists()) {
+                                entryFile.getParentFile().mkdirs();
+                            }
+
+                            // Create file on disk...
+                            if (!entryFile.exists()) {
+                                entryFile.createNewFile();
+                            }
+
+                            // and rewrite data from stream
+                            OutputStream os = null;
+                            try {
+                                os = new FileOutputStream(entryFile);
+                                IOUtils.copy(zis, os);
+                            } finally {
+                                IOUtils.closeQuietly(os);
+                            }
+                        }
+                    }
+                    IOUtils.closeQuietly(zis);
+//                    FileUtils.copyDirectory(new File(sourceFolder.toURI())
+//                            , new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
                 } else {
                     updateMessage("Error: Missing some libraries");
                     return UploadResult.CANT_FIND_LIBRARY;
