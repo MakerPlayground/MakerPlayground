@@ -117,6 +117,7 @@ public class Main extends Application {
                     if (type.getButtonData() == ButtonBar.ButtonData.YES) {
                         saveProject();
                     }
+                    System.exit(0);
                 }
             });
         });
