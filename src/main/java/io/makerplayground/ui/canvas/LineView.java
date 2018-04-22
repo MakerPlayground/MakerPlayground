@@ -28,7 +28,7 @@ import javafx.scene.shape.Path;
  */
 public class LineView extends InteractiveNode {
 
-    private static final int REMOVE_BTN_GAP = 5;
+    private static final int REMOVE_BTN_GAP = 20;
 
     private final LineViewModel viewModel;
 
@@ -36,9 +36,12 @@ public class LineView extends InteractiveNode {
         super(interactivePane);
         this.viewModel = viewModel;
 
-        ImageView removeButton = new ImageView(new Image(getClass().getResourceAsStream("/icons/cancelLine.png")));
-        removeButton.layoutXProperty().bind(viewModel.centerXProperty().add(REMOVE_BTN_GAP));
-        removeButton.layoutYProperty().bind(viewModel.centerYProperty().add(REMOVE_BTN_GAP));
+        Image removeButtonImage = new Image(getClass().getResourceAsStream("/icons/cancelLine.png"));
+        ImageView removeButton = new ImageView(removeButtonImage);
+        removeButton.layoutXProperty().bind(viewModel.centerXProperty().subtract(removeButtonImage.getWidth()/2)
+                .add(viewModel.centerUnitTangentXProperty().multiply(REMOVE_BTN_GAP)));
+        removeButton.layoutYProperty().bind(viewModel.centerYProperty().subtract(removeButtonImage.getHeight()/2)
+                .add(viewModel.centerUnitTangentYProperty().multiply(REMOVE_BTN_GAP)));
         removeButton.visibleProperty().bind(selectedProperty());
         // remove line when press the remove button
         removeButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null

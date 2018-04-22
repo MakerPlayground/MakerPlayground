@@ -17,10 +17,8 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Line;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.*;
@@ -29,11 +27,18 @@ import javafx.scene.shape.*;
  *
  */
 public class LineViewModel {
+    private static final int STRAIGHT_LINE_THRESHOLD = 2;
+    private static final int LOOP_THRESHOLD = 150;
+    private static final int LOOP_HEIGHT = 120;
+    private static final int MIN_ARC_THRESHOLD = 75;
+
     private final Line line;
     private final ObservableList<PathElement> path;
 
-    private final DoubleProperty centerX;
-    private final DoubleProperty centerY;
+    private final ReadOnlyDoubleWrapper centerX;
+    private final ReadOnlyDoubleWrapper centerY;
+    private final ReadOnlyDoubleWrapper centerUnitTangentX;
+    private final ReadOnlyDoubleWrapper centerUnitTangentY;
 
     private final MoveTo moveTo;
     private final LineTo lineTo;
@@ -41,39 +46,27 @@ public class LineViewModel {
 
     public LineViewModel(Line line) {
         this.line = line;
+        this.line.getSource().destPortXProperty().addListener(observable -> updateLine());
+        this.line.getSource().destPortYProperty().addListener(observable -> updateLine());
+        this.line.getDestination().sourcePortXProperty().addListener(observable -> updateLine());
+        this.line.getDestination().sourcePortYProperty().addListener(observable -> updateLine());
 
         moveTo = new MoveTo();
         moveTo.xProperty().bind(line.getSource().destPortXProperty());
         moveTo.yProperty().bind(line.getSource().destPortYProperty());
 
-        cubicCurveTo1 = new CubicCurveTo();
         lineTo = new LineTo();
+        cubicCurveTo1 = new CubicCurveTo();
         cubicCurveTo2 = new CubicCurveTo();
 
-        line.getSource().destPortXProperty().addListener(observable -> updateLine());
-        line.getSource().destPortYProperty().addListener(observable -> updateLine());
-        line.getDestination().sourcePortXProperty().addListener(observable -> updateLine());
-        line.getDestination().sourcePortYProperty().addListener(observable -> updateLine());
+        centerX = new ReadOnlyDoubleWrapper();
+        centerY = new ReadOnlyDoubleWrapper();
+        centerUnitTangentX = new ReadOnlyDoubleWrapper();
+        centerUnitTangentY = new ReadOnlyDoubleWrapper();
 
-        this.path = FXCollections.observableArrayList(moveTo, cubicCurveTo1, lineTo, cubicCurveTo2);
+        this.path = FXCollections.unmodifiableObservableList(FXCollections.observableArrayList(moveTo, cubicCurveTo1, lineTo, cubicCurveTo2));
         updateLine();
-
-        centerX = new SimpleDoubleProperty();
-//        centerX.bind((moveTo.xProperty().multiply(0.125))
-//                .add(cubicCurveTo1.controlX1Property().multiply(0.375))
-//                .add(cubicCurveTo1.controlX2Property().multiply(0.375))
-//                .add(cubicCurveTo1.xProperty().multiply(0.125)));
-        centerY = new SimpleDoubleProperty();
-//        centerY.bind((moveTo.yProperty().multiply(0.125))
-//                .add(cubicCurveTo1.controlY1Property().multiply(0.375))
-//                .add(cubicCurveTo1.controlY2Property().multiply(0.375))
-//                .add(cubicCurveTo1.yProperty().multiply(0.125)));
     }
-
-    private static final int STRAIGHT_LINE_THRESHOLD = 2;
-    private static final int LOOP_THRESHOLD = 150;
-    private static final int LOOP_HEIGHT = 120;
-    private static final int MIN_ARC_THRESHOLD = 75;
 
     private void updateLine() {
         double sx = line.getSource().getDestPortX();
@@ -82,6 +75,9 @@ public class LineViewModel {
         double ey = line.getDestination().getSourcePortY();
         double mx = sx + (ex-sx) / 2;
         double my = sy + (ey-sy) / 2;
+
+        centerX.set(mx);
+        centerY.set(my);
 
         if (ex >= sx) {
             if (Math.abs(sy - ey) <= STRAIGHT_LINE_THRESHOLD) {
@@ -103,6 +99,9 @@ public class LineViewModel {
                 cubicCurveTo2.setControlY2(ey);
                 cubicCurveTo2.setX(ex);
                 cubicCurveTo2.setY(ey);
+
+                centerUnitTangentX.set(0);
+                centerUnitTangentY.set(-1);
             } else {
                 // unused
                 cubicCurveTo1.setControlX1(sx);
@@ -122,10 +121,19 @@ public class LineViewModel {
                 cubicCurveTo2.setControlY2(ey);
                 cubicCurveTo2.setX(ex);
                 cubicCurveTo2.setY(ey);
+
+                if (sy >= ey) {
+                    centerUnitTangentX.set(-1);
+                    centerUnitTangentY.set(0);
+                } else {
+                    centerUnitTangentX.set(1);
+                    centerUnitTangentY.set(0);
+                }
             }
         } else {
             if (Math.abs(sy - ey) <= LOOP_THRESHOLD) {
                 double cy = Math.min(sy, ey) - LOOP_HEIGHT;
+                centerY.set(cy);
 
                 cubicCurveTo1.setControlX1(sx + MIN_ARC_THRESHOLD);
                 cubicCurveTo1.setControlY1(sy);
@@ -143,15 +151,19 @@ public class LineViewModel {
                 cubicCurveTo2.setControlY2(ey);
                 cubicCurveTo2.setX(ex);
                 cubicCurveTo2.setY(ey);
+
+                centerUnitTangentX.set(0);
+                centerUnitTangentY.set(-1);
             } else {
                 cubicCurveTo1.setControlX1(sx + MIN_ARC_THRESHOLD);
                 cubicCurveTo1.setControlY1(sy);
                 cubicCurveTo1.setControlX2(sx + MIN_ARC_THRESHOLD);
                 cubicCurveTo1.setControlY2(my);
-                cubicCurveTo1.setX(ex + 3*(sx-ex)/4);
+                cubicCurveTo1.setX(mx);
                 cubicCurveTo1.setY(my);
 
-                lineTo.setX(ex + (sx-ex)/4);
+                // unused
+                lineTo.setX(mx);
                 lineTo.setY(my);
 
                 cubicCurveTo2.setControlX1(ex - MIN_ARC_THRESHOLD);
@@ -160,6 +172,9 @@ public class LineViewModel {
                 cubicCurveTo2.setControlY2(ey);
                 cubicCurveTo2.setX(ex);
                 cubicCurveTo2.setY(ey);
+
+                centerUnitTangentX.set(0);
+                centerUnitTangentY.set(-1);
             }
         }
     }
@@ -176,15 +191,31 @@ public class LineViewModel {
         return centerX.get();
     }
 
-    public DoubleProperty centerXProperty() {
-        return centerX;
+    public ReadOnlyDoubleProperty centerXProperty() {
+        return centerX.getReadOnlyProperty();
     }
 
     public double getCenterY() {
         return centerY.get();
     }
 
-    public DoubleProperty centerYProperty() {
-        return centerY;
+    public ReadOnlyDoubleProperty centerYProperty() {
+        return centerY.getReadOnlyProperty();
+    }
+
+    public double getCenterUnitTangentX() {
+        return centerUnitTangentX.get();
+    }
+
+    public ReadOnlyDoubleProperty centerUnitTangentXProperty() {
+        return centerUnitTangentX.getReadOnlyProperty();
+    }
+
+    public double getCenterUnitTangentY() {
+        return centerUnitTangentY.get();
+    }
+
+    public ReadOnlyDoubleProperty centerUnitTangentYProperty() {
+        return centerUnitTangentY.getReadOnlyProperty();
     }
 }
