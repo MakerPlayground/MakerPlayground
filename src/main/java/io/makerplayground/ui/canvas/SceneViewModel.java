@@ -140,4 +140,8 @@ public class SceneViewModel {
     public boolean hasConnectionTo(NodeElement other) {
         return project.hasLine(scene, other);
     }
+
+    public boolean isError() {
+        return scene.isError();
+    }
 }

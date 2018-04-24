@@ -117,6 +117,9 @@ public class SceneView extends InteractiveNode{
 
         // show add output device button when there are devices left to be added
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
+
+        // this is need to indicate error for empty condition
+        showHilight(false);
     }
 
     private void initEvent() {
@@ -161,14 +164,14 @@ public class SceneView extends InteractiveNode{
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our inPort if mouse is being dragged from other outPort
             if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
-                showHighlight(true);
+                showHilight(true);
             }
         });
-        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
             if (interactivePane.getSourceNode() != null) {
-                showHighlight(false);
+                showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , interactivePane.getSourceNode(), sceneViewModel.getScene()
                         , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
@@ -192,14 +195,14 @@ public class SceneView extends InteractiveNode{
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
-                showHighlight(true);
+                showHilight(true);
             }
         });
-        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null) {
-                showHighlight(false);
+                showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , sceneViewModel.getScene(), interactivePane.getDestNode()
                         , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
@@ -212,5 +215,15 @@ public class SceneView extends InteractiveNode{
 
     public SceneViewModel getSceneViewModel() {
         return sceneViewModel;
+    }
+
+    @Override
+    protected void showHilight(boolean b) {
+        super.showHilight(b);
+        if (sceneViewModel.isError()) {
+            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");
+        } else {
+            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
+        }
     }
 }

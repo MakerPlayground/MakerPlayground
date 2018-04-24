@@ -59,7 +59,7 @@ public class BeginSceneView extends InteractiveNode {
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null) {
-                showHighlight(false);
+                showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , beginSceneViewModel.getBegin(), interactivePane.getDestNode()
                         , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
@@ -71,10 +71,10 @@ public class BeginSceneView extends InteractiveNode {
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null && !beginSceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
-                showHighlight(true);
+                showHilight(true);
             }
         });
-        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
 
         // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
         setOnMousePressed(Event::consume);

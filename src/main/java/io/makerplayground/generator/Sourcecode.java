@@ -18,12 +18,12 @@ public class Sourcecode {
 
     public enum Error {
         NONE(""),
-        MISSING_PARAMS("Missing required parameter in some scene/conditions"),
+        SCENE_ERROR("Missing required parameter in some scenes"),
         MISSING_PROPERTY("Missing required device's property"),
         NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
         NEST_CONDITION("Multiple condition are connected together"),
-        NO_EXPRESSION("Missing expression");
+        CONDITION_ERROR("Missing required parameter in some conditions");
 
         private final String description;
 
@@ -67,8 +67,12 @@ public class Sourcecode {
 
     public static Sourcecode generateCode(Project project, boolean cppMode) {
         //Begin begin = project.getBegin();
-        if (!checkDeviceParameter(project)) {
-            return new Sourcecode(Error.MISSING_PARAMS, "-");   // TODO: add location
+        if (!checkScene(project)) {
+            return new Sourcecode(Error.SCENE_ERROR, "-");   // TODO: add location
+        }
+
+        if (!checkCondition(project)) {
+            return new Sourcecode(Error.CONDITION_ERROR, "-");
         }
 
         if (!checkDeviceProperty(project)) {
@@ -364,7 +368,7 @@ public class Sourcecode {
                 sb.append(INDENT).append(INDENT).append("if").append("(");
                 sb.append(String.join(" && ", conditionList)).append(") {").append(NEW_LINE);
             } else {
-                return Error.NO_EXPRESSION;
+                return Error.CONDITION_ERROR;
             }
 
             List<NodeElement> nextVertices = findAdjacentVertices(project, condition);
@@ -397,13 +401,31 @@ public class Sourcecode {
         return Error.NONE;
     }
 
-    private static boolean checkDeviceParameter(Project project) {
+    private static boolean checkScene(Project project) {
         return project.getScene().stream().flatMap(scene -> scene.getSetting().stream())
                 .flatMap(userSetting -> userSetting.getValueMap().values().stream())
-                .allMatch(o -> (o != null) && (!(o instanceof Expression) || ((Expression) o).isValid()))
+                .allMatch(o -> (o != null));
+    }
+
+    private static boolean checkCondition(Project project) {
+        return  // every condition must contain at least one device
+                project.getCondition().stream().map(Condition::getSetting).noneMatch(List::isEmpty)
+                // When the action has some parameters (it is not 'compare'), it's value must not be null
+                // otherwise we assume that it is compare
                 && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
-                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
-                .allMatch(o -> (o != null) && (!(o instanceof Expression) || ((Expression) o).isValid()));
+                .map(UserSetting::getValueMap)
+                .filter(valueMap -> !valueMap.isEmpty())
+                .flatMap(valueMap -> valueMap.values().stream())
+                .noneMatch(Objects::isNull)
+                // every expression must be valid
+                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
+                .flatMap(userSetting -> userSetting.getExpression().values().stream())
+                .allMatch(Expression::isValid)
+                // at least one expression must be enable
+                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
+                .map(userSetting -> userSetting.getExpression().values())
+                .filter(expressions -> !expressions.isEmpty())
+                .allMatch(expression -> expression.stream().anyMatch(Expression::isEnable));
     }
 
     private static boolean checkDeviceProperty(Project project) {

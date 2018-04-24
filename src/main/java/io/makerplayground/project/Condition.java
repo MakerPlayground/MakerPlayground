@@ -17,12 +17,15 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -79,5 +82,23 @@ public class Condition extends NodeElement {
 
     public ObservableList<UserSetting> getSetting() {
         return unmodifiableSetting;
+    }
+
+    public boolean isError() {
+        return setting.isEmpty()
+                // When the action has some parameters (it is not 'compare'), it's value must not be null
+                // otherwise we assume that it is compare
+                || (setting.stream().map(UserSetting::getValueMap)
+                .filter(valueMap -> !valueMap.isEmpty())
+                .flatMap(valueMap -> valueMap.values().stream())
+                .anyMatch(Objects::isNull))
+                // every expression must be valid
+                || !(setting.stream().flatMap(userSetting -> userSetting.getExpression().values().stream())
+                .allMatch(Expression::isValid))
+                // at least one expression must be enable
+                || !(setting.stream().filter(userSetting -> userSetting.getValueMap().isEmpty())
+                .map(userSetting -> userSetting.getExpression().values())
+                .filter(expressions -> !expressions.isEmpty())
+                .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
     }
 }

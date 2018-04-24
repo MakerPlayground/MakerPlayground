@@ -117,4 +117,10 @@ public class Scene extends NodeElement {
     public ObservableList<UserSetting> getSetting() {
         return setting;
     }
+
+    public boolean isError() {
+        return setting.stream()
+                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
+                .anyMatch(o -> (o == null));
+    }
 }
