@@ -257,6 +257,10 @@ public class Project {
         line.remove(l);
     }
 
+    public boolean hasLineFrom(NodeElement source) {
+        return line.stream().anyMatch(line1 -> line1.getSource() == source);
+    }
+
     public boolean hasLine(NodeElement source, NodeElement destination) {
         return line.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
     }

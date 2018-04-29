@@ -1,9 +1,11 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Begin;
+import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Project;
 import javafx.beans.property.DoubleProperty;
+import javafx.collections.ListChangeListener;
 
 /**
  * Created by Mai.Manju on 13-Jul-17.
@@ -40,5 +42,11 @@ public class BeginSceneViewModel {
 
     public boolean hasConnectionTo(NodeElement other) {
         return project.hasLine(begin, other);
+    }
+
+    public boolean isError() {
+        return false;
+        // TODO: begin node doesn't get update when other disconnect it
+        //return !project.hasLineFrom(begin);
     }
 }

@@ -168,12 +168,7 @@ public class ConditionView extends InteractiveNode {
     }
 
     @Override
-    protected void showHilight(boolean b) {
-        super.showHilight(b);
-        if (conditionViewModel.isError()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");
-        } else {
-            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
-        }
+    protected boolean isError() {
+        return conditionViewModel.isError();
     }
 }

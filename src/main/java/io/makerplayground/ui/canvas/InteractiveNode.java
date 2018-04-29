@@ -80,9 +80,15 @@ public abstract class InteractiveNode extends Group implements Selectable {
         });
     }
 
+    /**
+     * Show green hilight when node is selected otherwise hilight in red if error is found in the node
+     * @param b true to show green hilight otherwise the node will be hilighted in red/black according to {@link this.isError}
+     */
     protected void showHilight(boolean b) {
         if (b) {
             setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+        } else if (isError()) {
+            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");
         } else {
             setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         }
@@ -102,5 +108,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
     public void setSelected(boolean b) {
         select.set(b);
     }
+
+    protected abstract boolean isError();
 }
 

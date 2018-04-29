@@ -78,5 +78,13 @@ public class BeginSceneView extends InteractiveNode {
 
         // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
         setOnMousePressed(Event::consume);
+
+        // this is need to indicate error for non connected begin node
+        showHilight(false);
+    }
+
+    @Override
+    protected boolean isError() {
+        return beginSceneViewModel.isError();
     }
 }
