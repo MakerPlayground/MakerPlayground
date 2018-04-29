@@ -61,4 +61,9 @@ public class LineView extends InteractiveNode {
     public LineViewModel getLineViewModel() {
         return viewModel;
     }
+
+    @Override
+    protected boolean isError() {
+        return false;
+    }
 }

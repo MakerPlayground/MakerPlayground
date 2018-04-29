@@ -21,8 +21,6 @@ public abstract class InteractiveNode extends Group implements Selectable {
     public InteractiveNode(InteractivePane interactivePane) {
         this.interactivePane = interactivePane;
 
-        showHighlight(false);
-
         // allow this node to be selected
         addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             select.set(true);
@@ -30,7 +28,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
         });
 
         // show/hide hi-light when this scene is selected/deselected
-        select.addListener((observable, oldValue, newValue) -> showHighlight(newValue));
+        select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
     }
 
     protected void makeMovable(Node n) {
@@ -82,9 +80,15 @@ public abstract class InteractiveNode extends Group implements Selectable {
         });
     }
 
-    protected void showHighlight(boolean b) {
+    /**
+     * Show green hilight when node is selected otherwise hilight in red if error is found in the node
+     * @param b true to show green hilight otherwise the node will be hilighted in red/black according to {@link this.isError}
+     */
+    protected void showHilight(boolean b) {
         if (b) {
             setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
+        } else if (isError()) {
+            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");
         } else {
             setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");
         }
@@ -104,5 +108,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
     public void setSelected(boolean b) {
         select.set(b);
     }
+
+    protected abstract boolean isError();
 }
 

@@ -74,6 +74,9 @@ public class ConditionView extends InteractiveNode {
 
         // show remove button when select
         removeConditionBtn.visibleProperty().bind(selectedProperty());
+
+        // this is need to indicate error for empty condition
+        showHilight(false);
     }
 
     private void initEvent() {
@@ -111,14 +114,14 @@ public class ConditionView extends InteractiveNode {
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our inPort if mouse is being dragged from other outPort
             if (interactivePane.getSourceNode() != null && !conditionViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
-                showHighlight(true);
+                showHilight(true);
             }
         });
-        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
             if (interactivePane.getSourceNode() != null) {
-                showHighlight(false);
+                showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , interactivePane.getSourceNode(), conditionViewModel.getCondition()
                         , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
@@ -142,14 +145,14 @@ public class ConditionView extends InteractiveNode {
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null && !conditionViewModel.hasConnectionTo(interactivePane.getDestNode())) {
-                showHighlight(true);
+                showHilight(true);
             }
         });
-        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHighlight(false));
+        outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null) {
-                showHighlight(false);
+                showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , conditionViewModel.getCondition(), interactivePane.getDestNode()
                         , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
@@ -162,5 +165,10 @@ public class ConditionView extends InteractiveNode {
 
     public ConditionViewModel getConditionViewModel() {
         return conditionViewModel;
+    }
+
+    @Override
+    protected boolean isError() {
+        return conditionViewModel.isError();
     }
 }

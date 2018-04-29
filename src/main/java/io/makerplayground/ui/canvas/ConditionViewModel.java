@@ -73,4 +73,8 @@ public class ConditionViewModel {
     public boolean hasConnectionTo(NodeElement other) {
         return project.hasLine(condition, other);
     }
+
+    public boolean isError() {
+        return condition.isError();
+    }
 }
