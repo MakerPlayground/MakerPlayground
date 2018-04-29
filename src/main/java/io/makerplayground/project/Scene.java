@@ -54,7 +54,7 @@ public class Scene extends NodeElement {
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = new SimpleObjectProperty<>(DelayUnit.MilliSecond);
+        this.delayUnit = new SimpleObjectProperty<>(DelayUnit.Second);
     }
 
     Scene(double top, double left, double width, double height
