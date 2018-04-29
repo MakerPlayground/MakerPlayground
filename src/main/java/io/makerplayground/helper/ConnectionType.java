@@ -14,5 +14,11 @@ public enum ConnectionType {
     I2C,
     SPI,
     UART,
+    MP_INT_UART,
+    MP_DIGITAL_SINGLE,
+    MP_DIGITAL_DUAL,
+    MP_ANALOG_SINGLE,
+    MP_ANALOG_DUAL,
+    MP_I2C,
     POWER
 }

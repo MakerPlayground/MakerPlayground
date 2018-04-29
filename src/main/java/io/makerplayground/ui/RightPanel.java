@@ -50,18 +50,21 @@ public class RightPanel extends AnchorPane {
                 ErrorDialogView errorDialogView = new ErrorDialogView("There is no device yet");
                 errorDialogView.showAndWait();
             } else {
-                DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-                if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-                    ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
-                    errorDialogView.showAndWait();
-                    return;
-                } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-                    ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
-                    errorDialogView.showAndWait();
-                    return;
-                } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
-                    throw new IllegalStateException("Found unknown error!!!");
-                }
+//                DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
+//                if (project.getController() == null) {
+//
+//                } else
+//                if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+//                    ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
+//                    errorDialogView.showAndWait();
+//                    return;
+//                } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+//                    ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
+//                    errorDialogView.showAndWait();
+//                    return;
+//                } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
+//                    throw new IllegalStateException("Found unknown error!!!");
+//                }
 
                 ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
                 ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);

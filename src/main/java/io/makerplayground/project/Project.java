@@ -19,15 +19,16 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.SingletonAddDevice;
 import io.makerplayground.helper.SingletonDelDevice;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.shape.Rectangle;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -41,7 +42,8 @@ import java.util.stream.Stream;
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     private StringProperty projectName;
-    private final ProjectController controller;
+    private ReadOnlyObjectWrapper<Platform> platform;
+    private ObjectProperty<Device> controller;
     private final ObservableList<ProjectDevice> sensor;
     private final ObservableList<ProjectDevice> actuator;
     private final ObservableList<ProjectDevice> connectivity;
@@ -63,7 +65,8 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        controller = new ProjectController(Platform.ARDUINO);
+        platform = new ReadOnlyObjectWrapper<>(Platform.ARDUINO);
+        controller = new SimpleObjectProperty<>();
         actuator = FXCollections.observableArrayList();
         sensor = FXCollections.observableArrayList();
         connectivity = FXCollections.observableArrayList();
@@ -81,11 +84,12 @@ public class Project {
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
-    public Project(String name, ProjectController controller, ObservableList<ProjectDevice> sensor, ObservableList<ProjectDevice> actuator
+    public Project(String name, Device controller, Platform platform, ObservableList<ProjectDevice> sensor, ObservableList<ProjectDevice> actuator
             , ObservableList<ProjectDevice> connectivity, ObservableList<Scene> scene, ObservableList<Condition> condition
             , ObservableList<Line> line, Begin begin, String filePath) {
         this.projectName = new SimpleStringProperty(name);
-        this.controller = controller;
+        this.controller = new SimpleObjectProperty<>(controller);
+        this.platform = new ReadOnlyObjectWrapper<>(platform);
         this.sensor = sensor;
         this.actuator = actuator;
         this.connectivity = connectivity;
@@ -118,6 +122,20 @@ public class Project {
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         actuator.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
+    }
+
+    public Platform getPlatform() {
+        return platform.get();
+    }
+
+    public ReadOnlyObjectProperty<Platform> platformProperty() {
+        return platform.getReadOnlyProperty();
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform.set(platform);
+        // controller must be cleared every time platform has changed
+        setController(null);
     }
 
     public boolean removeActuator(ProjectDevice device) {
@@ -296,8 +314,22 @@ public class Project {
         return value;
     }
 
-    public ProjectController getController() {
-        return controller;
+    public Device getController() {
+        return controller.get();
+    }
+
+//    public ObjectProperty<Device> controllerProperty() {
+//        return controller;
+//    }
+
+    public void setController(Device controller) {
+        this.controller.set(controller);
+        // remove all port and actual device assignment when the controller is changed
+        for (ProjectDevice projectDevice : getAllDevice()) {
+            projectDevice.removeAllDeviceConnection();
+            projectDevice.setActualDevice(null);
+            projectDevice.setAutoSelectDevice(true);
+        }
     }
 
     public List<ProjectDevice> getAllDevice() {

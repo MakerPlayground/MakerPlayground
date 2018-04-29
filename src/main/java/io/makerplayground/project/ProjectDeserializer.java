@@ -46,7 +46,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
                     device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
         }
-        ProjectController projectController = new ProjectController(platform, controller);
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
         for (JsonNode inputDeviceNode : node.get("inputDevice")) {
@@ -113,7 +112,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             lines.add(new Line(source, dest));
         }
 
-        return new Project(projectName, projectController, inputDevices, outputDevices, connectivityDevices, scenes, conditions, lines, begin, filePath);
+        return new Project(projectName, controller, platform, inputDevices, outputDevices, connectivityDevices, scenes, conditions, lines, begin, filePath);
     }
 
     public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice

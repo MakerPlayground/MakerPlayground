@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by tanyagorn on 6/20/2017.
@@ -42,7 +43,12 @@ public class ControlAddDevicePane extends VBox {
             throw new RuntimeException(exception);
         }
 
-        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + genericDevice.getName() + ".png")));
+        InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons/" + genericDevice.getName() + ".png");
+        if (imageStream == null) {
+            throw new IllegalStateException("Missing icon of " + genericDevice.getName());
+        }
+
+        imageView.setImage(new Image(imageStream));
         nameLabel.setText(genericDevice.getName());
 
         Tooltip.install(imageView,  new Tooltip(genericDevice.getDescription()));

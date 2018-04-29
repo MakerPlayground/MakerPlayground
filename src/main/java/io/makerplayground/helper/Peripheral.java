@@ -53,6 +53,33 @@ public enum Peripheral {
     ANALOG_5(ConnectionType.ANALOG),
     ANALOG_6(ConnectionType.ANALOG),
 
+    MP_INT_UART_1(ConnectionType.MP_INT_UART),
+
+    MP_DIGITAL_SINGLE_1(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_DIGITAL_SINGLE_2(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_DIGITAL_SINGLE_3(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_DIGITAL_SINGLE_4(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_DIGITAL_SINGLE_5(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_DIGITAL_SINGLE_6(ConnectionType.MP_DIGITAL_SINGLE),
+
+    MP_DIGITAL_DUAL_1(ConnectionType.MP_DIGITAL_DUAL),
+    MP_DIGITAL_DUAL_2(ConnectionType.MP_DIGITAL_DUAL),
+    MP_DIGITAL_DUAL_3(ConnectionType.MP_DIGITAL_DUAL),
+    MP_DIGITAL_DUAL_4(ConnectionType.MP_DIGITAL_DUAL),
+    MP_DIGITAL_DUAL_5(ConnectionType.MP_DIGITAL_DUAL),
+    MP_DIGITAL_DUAL_6(ConnectionType.MP_DIGITAL_DUAL),
+
+    MP_ANALOG_SINGLE_1(ConnectionType.MP_ANALOG_SINGLE),
+    MP_ANALOG_SINGLE_2(ConnectionType.MP_ANALOG_SINGLE),
+
+    MP_ANALOG_DUAL_1(ConnectionType.MP_ANALOG_DUAL),
+    MP_ANALOG_DUAL_2(ConnectionType.MP_ANALOG_DUAL),
+
+    MP_I2C_1(ConnectionType.MP_I2C),
+    MP_I2C_2(ConnectionType.MP_I2C),
+    MP_I2C_3(ConnectionType.MP_I2C),
+    MP_I2C_4(ConnectionType.MP_I2C),
+
     POWER(ConnectionType.POWER);
 
     private ConnectionType connectionType;

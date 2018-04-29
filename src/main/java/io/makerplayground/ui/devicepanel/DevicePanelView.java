@@ -1,10 +1,14 @@
 package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
@@ -43,6 +47,19 @@ public class DevicePanelView extends VBox {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
+        }
+
+        // initialize platform panel
+        ToggleGroup platformToggleGroup = new ToggleGroup();
+        for (Platform platform : Platform.values()) {
+            RadioButton radioButton  = new RadioButton(platform.getDisplayName());
+            radioButton.setUserData(platform);
+            radioButton.setToggleGroup(platformToggleGroup);
+            radioButton.setOnAction(event -> viewModel.selectedPlatformProperty().set(platform));
+            if (platform == viewModel.selectedPlatformProperty().get()) {
+                radioButton.setSelected(true);
+            }
+            microcontrollerPane.getChildren().add(radioButton);
         }
 
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =

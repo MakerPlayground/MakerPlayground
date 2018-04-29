@@ -4637,7 +4637,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_LED"
@@ -4731,7 +4731,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_7segI2C_Colon",
@@ -4868,7 +4868,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_OneAnalogReadToPercent"
@@ -4958,7 +4958,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_Temperature"
@@ -5048,7 +5048,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_OneAnalogReadToPercent"
@@ -5138,7 +5138,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_Sound"
@@ -5228,7 +5228,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_Buzzer"
@@ -5309,7 +5309,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_Button"
@@ -5404,7 +5404,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_Relay_Module"
@@ -5489,7 +5489,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_PIR"
@@ -5584,7 +5584,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_ADXL345",
@@ -5714,7 +5714,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_DHT11",
@@ -5825,7 +5825,7 @@
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
     "platform": [
-      "ARDUINO"
+      "GROVE_ARDUINO"
     ],
     "library": [
       "MP_GROVE_Ultrasonic_Ranger"
@@ -5903,6 +5903,1248 @@
             }
           }
         ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0000",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - BaseBoard",
+    "url": "http://www.makerplayground.io/library/MP-0000",
+    "type": "CONTROLLER",
+    "formfactor": "MP_CONTROLLER",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [],
+    "width": 425.0,
+    "height": 303.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Internal",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_INT_UART_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D1",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D2",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_2",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D3",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_3",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D4",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_4",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_4",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D5/A1",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_5",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_5",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_ANALOG_SINGLE_1",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_ANALOG_DUAL_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "D6/A2",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_6",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_DIGITAL_DUAL_6",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_ANALOG_SINGLE_2",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_ANALOG_DUAL_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "I2C1",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "I2C2",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_2",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "I2C3",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_3",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "name": "I2C4",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_4",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_INT_UART_1",
+      "MP_DIGITAL_SINGLE_1",
+      "MP_DIGITAL_SINGLE_2",
+      "MP_DIGITAL_SINGLE_3",
+      "MP_DIGITAL_SINGLE_4",
+      "MP_DIGITAL_SINGLE_5",
+      "MP_DIGITAL_SINGLE_6",
+      "MP_DIGITAL_DUAL_1",
+      "MP_DIGITAL_DUAL_2",
+      "MP_DIGITAL_DUAL_3",
+      "MP_DIGITAL_DUAL_4",
+      "MP_DIGITAL_DUAL_5",
+      "MP_DIGITAL_DUAL_6",
+      "MP_ANALOG_SINGLE_1",
+      "MP_ANALOG_SINGLE_2",
+      "MP_ANALOG_DUAL_1",
+      "MP_ANALOG_DUAL_2",
+      "MP_I2C_1",
+      "MP_I2C_2",
+      "MP_I2C_3",
+      "MP_I2C_4"
+    ],
+    "compatibility": []
+  },
+  {
+    "id": "MP-0001",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - LED",
+    "url": "http://www.makerplayground.io/library/MP-0001",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0001"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0002",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - RGB LED",
+    "url": "http://www.makerplayground.io/library/MP-0002",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0002"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_DUAL_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_DUAL_1"
+    ],
+    "compatibility": [
+      {
+        "name": "RGB LED",
+        "action": [
+          {
+            "name": "On",
+            "parameter": [
+              {
+                "name": "Color",
+                "constraint": [
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Cyan",
+                  "Magenta",
+                  "Yellow",
+                  "White"
+                ]
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0003",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Buzzer",
+    "url": "http://www.makerplayground.io/library/MP-0003",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0003"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Piezo",
+        "action": [
+          {
+            "name": "Play",
+            "parameter": [
+              {
+                "name": "Tone Frequency",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 10000.0,
+                  "unit": "HERTZ"
+                }
+              },
+              {
+                "name": "Duration",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 1000.0,
+                  "unit": "SECOND"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Beep",
+            "parameter": [
+              {
+                "name": "Tone Frequency",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 10000.0,
+                  "unit": "HERTZ"
+                }
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0004",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Load Driver",
+    "url": "http://www.makerplayground.io/library/MP-0004",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0004"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Load Driver",
+        "action": [
+          {
+            "name": "On",
+            "parameter": []
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0005",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Light Sensor",
+    "url": "http://www.makerplayground.io/library/MP-0005",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0005"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_ANALOG_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_ANALOG_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Light",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Percent",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0006",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Button",
+    "url": "http://www.makerplayground.io/library/MP-0006",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0006"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Button",
+        "action": [
+          {
+            "name": "Wait For Press",
+            "parameter": []
+          },
+          {
+            "name": "Wait For Release",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0007",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Trimpot",
+    "url": "http://www.makerplayground.io/library/MP-0007",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0007"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_ANALOG_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_ANALOG_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "POT",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Percent",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0008",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Accelerometer/Gyroscope",
+    "url": "http://www.makerplayground.io/library/MP-0008",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0008"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Accelerometer",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Accel_X",
+            "constraint": {
+              "min": -100.0,
+              "max": 100.0,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Accel_Y",
+            "constraint": {
+              "min": -100.0,
+              "max": 100.0,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Accel_Z",
+            "constraint": {
+              "min": -100.0,
+              "max": 100.0,
+              "unit": "METERPERSECSQUARE"
+            }
+          },
+          {
+            "name": "Accel_Magnitude",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "METERPERSECSQUARE"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Gyroscope",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Gyro_X",
+            "constraint": {
+              "min": -200.0,
+              "max": 200.0,
+              "unit": "RADIUSPERSEC"
+            }
+          },
+          {
+            "name": "Gyro_Y",
+            "constraint": {
+              "min": -200.0,
+              "max": 200.0,
+              "unit": "RADIUSPERSEC"
+            }
+          },
+          {
+            "name": "Gyro_Z",
+            "constraint": {
+              "min": -200.0,
+              "max": 200.0,
+              "unit": "RADIUSPERSEC"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0009",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Temperature/Humidity",
+    "url": "http://www.makerplayground.io/library/MP-0009",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0009"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Temperature",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Temperature",
+            "constraint": {
+              "min": -500.0,
+              "max": 500.0,
+              "unit": "CELSIUS"
+            }
+          }
+        ],
+        "count": ""
+      },
+      {
+        "name": "Humidity",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Humidity",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0010",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Distance/Gesture",
+    "url": "http://www.makerplayground.io/library/MP-0010",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0010"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_I2C_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_I2C_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Distance",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      },
+      {
+        "name": "Gesture",
+        "action": [
+          {
+            "name": "Detect Swipe",
+            "parameter": [
+              {
+                "name": "Gesture",
+                "constraint": [
+                  "Left",
+                  "Right",
+                  "Up",
+                  "Down"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "No Hand",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0011",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Microphone",
+    "url": "http://www.makerplayground.io/library/MP-0011",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0011"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_ANALOG_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_ANALOG_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Sound",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "SoundLevel",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0012",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - 7 Segment",
+    "url": "http://www.makerplayground.io/library/MP-0012",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0012"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_DUAL_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_DUAL_1"
+    ],
+    "compatibility": [
+      {
+        "name": "7 Segment",
+        "action": [
+          {
+            "name": "Show Value",
+            "parameter": [
+              {
+                "name": "Value",
+                "constraint": []
+              }
+            ]
+          },
+          {
+            "name": "Show Data",
+            "parameter": [
+              {
+                "name": "Data",
+                "constraint": {
+                  "min": -999.0,
+                  "max": 9999.0,
+                  "unit": "NUMBER"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Set Brightness",
+            "parameter": [
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0013",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Relay",
+    "url": "http://www.makerplayground.io/library/MP-0013",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0013"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_DIGITAL_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_DIGITAL_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Relay Module",
+        "action": [
+          {
+            "name": "On",
+            "parameter": []
+          },
+          {
+            "name": "Off",
+            "parameter": []
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
+  },
+  {
+    "id": "MP-0014",
+    "brand": "MakerPlayground",
+    "model": "Maker Playground - Soil-Moisture Sensor",
+    "url": "http://www.makerplayground.io/library/MP-0014",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_0014"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_ANALOG_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_ANALOG_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Soil Moisture",
+        "action": [
+          {
+            "name": "In dry soil",
+            "parameter": []
+          },
+          {
+            "name": "In humid soil",
+            "parameter": []
+          },
+          {
+            "name": "In water",
+            "parameter": []
+          }
+        ],
+        "value": [],
         "count": ""
       }
     ]

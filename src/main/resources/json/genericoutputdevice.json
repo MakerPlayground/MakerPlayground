@@ -140,12 +140,6 @@
         ]
       },
       {
-        "name": "Off",
-        "funcname": "off",
-        "type": "Inactive",
-        "parameter": []
-      },
-      {
         "name": "Set Brightness",
         "funcname": "setBrightness",
         "type": "Inactive",
@@ -167,6 +161,12 @@
             "controltype": "DROPDOWN"
           }
         ]
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Inactive",
+        "parameter": []
       }
     ],
     "condition": [],
@@ -256,6 +256,27 @@
   {
     "name": "Relay Module",
     "description": "This is a relay module. It can act as a digital switch for high voltage.",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": [],
+    "property": []
+  },
+  {
+    "name": "Load Driver",
+    "description": "This is a load driver. It can act as a digital switch for high voltage.",
     "action": [
       {
         "name": "On",

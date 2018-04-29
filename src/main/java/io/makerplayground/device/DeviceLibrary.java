@@ -18,6 +18,7 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.makerplayground.helper.Platform;
 
 import java.io.IOException;
 import java.util.*;
@@ -107,6 +108,11 @@ public enum DeviceLibrary {
 
     public List<Device> getActualDevice() {
         return actualDevice;
+    }
+
+    public List<Device> getActualDevice(Platform platform) {
+        return actualDevice.stream().filter(device -> device.getSupportedPlatform().contains(platform))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public Device getActualDevice(String id) {

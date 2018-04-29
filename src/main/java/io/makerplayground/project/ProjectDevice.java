@@ -99,21 +99,25 @@ public class ProjectDevice {
         this.deviceConnection.remove(device);
     }
 
+    public void removeAllDeviceConnection() {
+        this.deviceConnection.clear();
+    }
+
     public Device getDependentDevice() {
         return dependentDevice;
     }
 
-    public void setDependentDevice(Device dependentDevice) {
-        this.dependentDevice = dependentDevice;
-    }
+//    public void setDependentDevice(Device dependentDevice) {
+//        this.dependentDevice = dependentDevice;
+//    }
 
     public Map<Peripheral, List<DevicePort>> getDependentDeviceConnection() {
         return dependentDeviceConnection;
     }
 
-    public void setDependentDeviceConnection(Peripheral device, List<DevicePort> processor) {
-        this.dependentDeviceConnection.put(device, processor);
-    }
+//    public void setDependentDeviceConnection(Peripheral device, List<DevicePort> processor) {
+//        this.dependentDeviceConnection.put(device, processor);
+//    }
 
     public String getPropertyValue(Property p) {
         return propertyValue.get(p);

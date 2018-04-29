@@ -88,7 +88,7 @@ public class Diagram extends Pane {
 
         // draw controller
         lastY += CONTROLLER_Y_MARGIN;
-        Device controller = project.getController().getController();
+        Device controller = project.getController();
         String controllerFilename = "/device/" + controller.getId() + ".png";
         if(useGrove()) {
             controllerFilename = "/device/Seeed-103030000.png";
@@ -584,7 +584,7 @@ public class Diagram extends Pane {
         }).get();
     }
 
-    private void createLine(ProjectDevice source, DevicePort sourcePort, ProjectController dest, DevicePort destPort) {
+    private void createLine(ProjectDevice source, DevicePort sourcePort, Device dest, DevicePort destPort) {
         double startX = 0, startY = 0;
         double endX = 0, endY = 0;
 
@@ -608,11 +608,11 @@ public class Diagram extends Pane {
             startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY();
         }
 
-        if (dest.getController().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+        if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             endX = controllerPosition.getX()  + destPort.getX();
             endY = controllerPosition.getY() + destPort.getY() + HOLE_SPACE;
-        } else if (dest.getController().getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-            DevicePort desTopLeftPort = getTopLeftHole(dest.getController());
+        } else if (dest.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            DevicePort desTopLeftPort = getTopLeftHole(dest);
 
             //top side - go up
             if (destPort.getY() == desTopLeftPort.getY()) {
@@ -623,7 +623,7 @@ public class Diagram extends Pane {
                 endX = controllerPosition.getX() + destPort.getX();
                 endY = controllerPosition.getY() + destPort.getY() + HOLE_SPACE;
             }
-        } else if (dest.getController().getFormFactor() == FormFactor.STANDALONE) {
+        } else if (dest.getFormFactor() == FormFactor.STANDALONE) {
             endX = controllerPosition.getX() + destPort.getX();
             endY = controllerPosition.getY() + destPort.getY();
         }

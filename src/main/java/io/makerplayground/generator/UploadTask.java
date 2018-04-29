@@ -56,7 +56,7 @@ public class UploadTask extends Task<UploadResult> {
 
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
-        String platform = project.getController().getPlatform().getPlatformioId();
+        String platform = project.getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
         List<String> library = project.getAllDeviceUsed().stream()
                 .map(projectDevice -> projectDevice.getActualDevice().getLibraryName())

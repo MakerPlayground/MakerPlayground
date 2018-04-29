@@ -1,10 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
@@ -17,7 +14,6 @@ import java.util.*;
  */
 public class DeviceMapper {
     public static Map<ProjectDevice, List<Device>> getSupportedDeviceList(Project project) {
-        List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice();
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
@@ -69,6 +65,7 @@ public class DeviceMapper {
 //        }
         
         // Get the list of compatible device
+        List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform());
         Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
         for (ProjectDevice device : tempMap.keySet()) {
             selectableDevice.put(device, new ArrayList<>());
@@ -85,8 +82,7 @@ public class DeviceMapper {
     public static Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> getDeviceCompatiblePort(Project project) {
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> result = new HashMap<>();
 
-        if (project.getController().getController() == null)
-        {
+        if (project.getController() == null) {
             for (ProjectDevice projectDevice : project.getAllDevice()) {
                 result.put(projectDevice, new HashMap<>());
                 for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
@@ -96,13 +92,27 @@ public class DeviceMapper {
         }
 
         // Get every port of the controller
-        List<DevicePort> processorPort = new ArrayList<>(project.getController().getController().getPort());
+        List<DevicePort> processorPort = new ArrayList<>(project.getController().getPort());
 
         // remove port that has been used (manually by user)
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
-                if (p.getConnectionType() != ConnectionType.I2C)
+                if (p.getConnectionType() != ConnectionType.I2C) {
                     processorPort.removeAll(projectDevice.getDeviceConnection().get(p));
+                }
+                // SPECIAL CASE 1: if both pin of D2 is used, D3 can't be used
+                if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
+                    if (p == Peripheral.MP_DIGITAL_DUAL_1) {
+                        for (DevicePort controllerPort : projectDevice.getDeviceConnection().get(p)) {
+                            for (DevicePort.DevicePortFunction function : controllerPort.getFunction()) {
+                                if (function.getPeripheral() == Peripheral.MP_DIGITAL_DUAL_2) {
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_DIGITAL_SINGLE_3));
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_DIGITAL_DUAL_3));
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -118,19 +128,36 @@ public class DeviceMapper {
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                if ((pDevice.getConnectionType() == ConnectionType.GPIO) || (pDevice.getConnectionType() == ConnectionType.ANALOG)
-                        || (pDevice.getConnectionType() == ConnectionType.PWM)) {
+                if (pDevice.getConnectionType() == ConnectionType.I2C) {
+                    DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
+                    DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
+                    possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
+                } else {
                     for (DevicePort pPort : processorPort) {
                         if (pPort.isSupport(pDevice)) {
                             possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
                         }
                     }
-                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
-                    DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
-                    DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
-                    possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
-                } else {
-                    throw new IllegalStateException("We don't support this type of device!!!");
+                }
+            }
+
+            // SPECIAL CASE 2: try not to connect device using 2 pins to D2 as it will block D3
+            if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
+                for (Peripheral peripheral : possibleDevice.keySet()) {
+                    if (peripheral == Peripheral.MP_DIGITAL_DUAL_1) {
+                        List<List<DevicePort>> port = possibleDevice.get(peripheral);
+                        for (int i = port.size() - 1; i >= 0; i--) {
+                            boolean needSwap = false;
+                            for (DevicePort.DevicePortFunction function : port.get(i).get(0).getFunction()) {
+                                if (function.getPeripheral() == Peripheral.MP_DIGITAL_DUAL_2) {
+                                    needSwap = true;
+                                }
+                            }
+                            if (needSwap) {
+                                port.add(port.remove(i));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -157,7 +184,24 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDevice());
+
+        // SPECIAL CASE 3: connect MP_DIGITAL_DUAL first
+        if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
+            deviceList.sort((o1, o2) -> {
+                boolean b1 = o1.getActualDevice().getConnectivity().contains(Peripheral.MP_DIGITAL_DUAL_1);
+                boolean b2 = o2.getActualDevice().getConnectivity().contains(Peripheral.MP_DIGITAL_DUAL_1);
+                if (b1 == b2) {
+                    return 0;
+                } else if (b1) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            });
+        }
+
+        for (ProjectDevice projectDevice : deviceList) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set port to the first compatible port

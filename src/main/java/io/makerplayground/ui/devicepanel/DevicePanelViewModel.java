@@ -2,9 +2,12 @@ package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDevice;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Map;
 
@@ -14,12 +17,18 @@ import java.util.Map;
  */
 public class DevicePanelViewModel {
     private final Project project;
+    private final ObjectProperty<Platform> platformProperty;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> inputChildViewModel;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> outputChildViewModel;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> connectivityChildViewModel;
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
+        this.platformProperty = new SimpleObjectProperty<>(project.getPlatform());
+        // update ourselves when project's platform has been changed else where
+        this.project.platformProperty().addListener((observable, oldValue, newValue) -> platformProperty.set(newValue));
+        // write back to project when view changed
+        this.platformProperty.addListener((observable, oldValue, newValue) -> project.setPlatform(newValue));
         this.inputChildViewModel = new DynamicViewModelCreator<>(project.getSensor(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
         this.outputChildViewModel = new DynamicViewModelCreator<>(project.getActuator(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
         this.connectivityChildViewModel = new DynamicViewModelCreator<>(project.getConnectivity(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
@@ -72,4 +81,7 @@ public class DevicePanelViewModel {
         }
     }
 
+    public ObjectProperty<Platform> selectedPlatformProperty() {
+        return platformProperty;
+    }
 }

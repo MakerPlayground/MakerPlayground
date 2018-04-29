@@ -3,6 +3,7 @@ package io.makerplayground.ui.devicepanel;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.Property;
+import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.value.ChangeListener;
@@ -48,16 +49,17 @@ public class ConfigActualDeviceView extends Dialog {
         stage.initStyle(StageStyle.UTILITY);
 
         initView();
-        viewModel.compatibleDeviceListProperty().addListener(observable -> initView());
-        viewModel.compatiblePortListProperty().addListener(observable -> initView());
+//        viewModel.compatibleDeviceListProperty().addListener(observable -> initView());
+//        viewModel.compatiblePortListProperty().addListener(observable -> initView());
+        viewModel.setCallback(this::initView);
     }
 
     private void initView() {
         ScrollPane scrollPane = new ScrollPane();
-        VBox allDevice = new VBox();
-
         scrollPane.setPrefHeight(350.0);
         scrollPane.setPrefWidth(600);
+
+        VBox allDevice = new VBox();
         allDevice.setMaxHeight(350.0);
         allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
         allDevice.setSpacing(20.0);
@@ -69,19 +71,92 @@ public class ConfigActualDeviceView extends Dialog {
         allDevice.getChildren().add(topicConfigDevice);
 
         Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> {
-            for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
-                if (projectDevice.isAutoSelectDevice())
-                    SingletonConfigDevice.getInstance().setAll("123", "", projectDevice.isAutoSelectDevice(), "");
-                else {
-                    String port = String.join(",", projectDevice.getDeviceConnection().values().stream().flatMap(Collection::stream)
-                            .map(DevicePort::getName).collect(Collectors.toList()));
-                    SingletonConfigDevice.getInstance().setAll("123", projectDevice.getActualDevice().getId(), projectDevice.isAutoSelectDevice(), port);
+        window.setOnCloseRequest(event -> window.hide());
+
+        initControllerControl(allDevice);
+
+        DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
+        if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+            allDevice.getChildren().add(new Label("Not enough port"));
+//            ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
+//            errorDialogView.showAndWait();
+//            return;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+            allDevice.getChildren().add(new Label("Can't find any support device"));
+//            ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
+//            errorDialogView.showAndWait();
+//            return;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK) {
+            initDeviceControl(allDevice);
+        } else {
+            throw new IllegalStateException("Found unknown error!!!");
+        }
+
+        scrollPane.setContent(allDevice);
+        getDialogPane().setContent(scrollPane);
+    }
+
+    private void initControllerControl(VBox allDevice) {
+        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
+        controllerImage.setFitHeight(25.0);
+        controllerImage.setFitWidth(25.0);
+
+        Label controllerName = new Label("Controller");
+        controllerName.setTextAlignment(TextAlignment.LEFT);
+        controllerName.setAlignment(Pos.CENTER_LEFT);
+        controllerName.setId("nameLabel");
+
+        ComboBox<Device> controllerComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleControllerDevice()));
+        controllerComboBox.setId("deviceComboBox");
+        controllerComboBox.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Device> call(ListView<Device> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Device item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText("");
+                        } else {
+                            setText(item.getBrand() + " " + item.getModel());
+                        }
+                    }
+                };
+            }
+        });
+        controllerComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Device item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText("");
+                } else {
+                    setText(item.getBrand() + " " + item.getModel());
                 }
             }
-            window.hide();
+        });
+        if (viewModel.getSelectedController() != null) {
+            controllerComboBox.getSelectionModel().select(viewModel.getSelectedController());
+        }
+        controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            viewModel.setController(newValue);
         });
 
+        HBox controllerPicture = new HBox();
+        controllerPicture.setSpacing(10.0);
+        controllerPicture.setAlignment(Pos.CENTER_LEFT);
+        controllerPicture.setMaxHeight(25.0);
+        controllerPicture.getChildren().addAll(controllerImage, controllerName);
+
+        HBox entireControllerDevice = new HBox();
+        entireControllerDevice.setSpacing(10.0);
+        entireControllerDevice.setAlignment(Pos.TOP_LEFT);
+        entireControllerDevice.getChildren().addAll(controllerPicture, controllerComboBox);
+
+        allDevice.getChildren().add(entireControllerDevice);
+    }
+
+    private void initDeviceControl(VBox allDevice) {
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
             //VBox row = new VBox();
             //row.setAlignment(Pos.BASELINE_LEFT);
@@ -154,7 +229,6 @@ public class ConfigActualDeviceView extends Dialog {
                     viewModel.removePeripheral(projectDevice);
                 }
                 viewModel.setDevice(projectDevice, newValue);
-                viewModel.reInitialize();
             });
 
             CheckBox checkBox = new CheckBox("Auto Select");
@@ -279,35 +353,5 @@ public class ConfigActualDeviceView extends Dialog {
 
             allDevice.getChildren().add(entireDevice);
         }
-
-//        VBox vBox = new VBox();
-//
-//
-//        final Hyperlink hpl = new Hyperlink("Request your favorite devices");
-//
-//        hpl.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent e) {
-//
-//                SingletonUtilTools.getInstance().setAll("REQUEST");
-//
-//                String s = "https://goo.gl/forms/12Wsu9WPZPumUPOj2";
-//                Desktop desktop = Desktop.getDesktop();
-//                try {
-//                    desktop.browse(URI.create(s));
-//                } catch (IOException ev) {
-//                    ev.printStackTrace();
-//                }
-//            }
-//        });
-//
-//
-//        vBox.getChildren().add(hpl);
-//        allDevice.getChildren().add(vBox);
-
-        scrollPane.setContent(allDevice);
-
-
-        getDialogPane().setContent(scrollPane);
     }
 }
