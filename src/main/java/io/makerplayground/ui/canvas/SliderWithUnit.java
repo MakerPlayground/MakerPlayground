@@ -28,25 +28,20 @@ public class SliderWithUnit extends HBox {
     private final Slider slider;
     private final ComboBox<Unit> comboBox;
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
-    private final ObservableList<Constraint> constraintList;
 
-    public SliderWithUnit() {
-        this(0, Unit.NOT_SPECIFIED);
-    }
-
-    public SliderWithUnit(double number , Unit unit) {
+    public SliderWithUnit(double min, double max, ObservableList<Unit> unit, NumberWithUnit initialValie) {
+        slider = new Slider(min, max, initialValie.getValue());
         text = new Text();
-        slider = new Slider();
-        comboBox = new ComboBox<>();
-        constraintList = FXCollections.observableArrayList();
-        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(number,unit));
+        text.textProperty().bind(slider.valueProperty().asString("%.2f"));
+        comboBox = new ComboBox<>(unit);
+        comboBox.getSelectionModel().select(initialValie.getUnit());
+        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(initialValie.getValue(), initialValie.getUnit()));
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
             slider.setValue(newValue.getValue());
             comboBox.getSelectionModel().select(newValue.getUnit());
         });
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(newValue.doubleValue(), numberWithUnit.get().getUnit()));
-            text.textProperty().bind(slider.valueProperty().asString("%.2f"));
         });
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));
@@ -62,18 +57,6 @@ public class SliderWithUnit extends HBox {
 
     public ObjectProperty<NumberWithUnit> valueProperty() {
         return numberWithUnit;
-    }
-
-    public void setValue(NumberWithUnit numberWithUnit) {
-        this.numberWithUnit.set(numberWithUnit);
-    }
-
-    public void setUnit(ObservableList<Unit> unitList) {
-        comboBox.setItems(unitList);
-    }
-
-    public ObservableList<Constraint> getSliderConstraint() {
-        return constraintList;
     }
 
     public static class Constraint {

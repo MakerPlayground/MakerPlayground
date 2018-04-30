@@ -78,6 +78,14 @@ public class Parameter {
         return constraint;
     }
 
+    public double getMinimumValue() {
+        return ((NumericConstraint) constraint).getMin();
+    }
+
+    public double getMaximumValue() {
+        return ((NumericConstraint) constraint).getMax();
+    }
+
     public Collection<Unit> getUnit() {
         return Collections.singletonList(((NumericConstraint) constraint).getUnit());  // TODO: add another convertible unit
     }

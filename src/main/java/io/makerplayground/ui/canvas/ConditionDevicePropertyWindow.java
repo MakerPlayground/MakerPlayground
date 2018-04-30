@@ -155,9 +155,9 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                SliderWithUnit sliderWithUnit = new SliderWithUnit();
-                sliderWithUnit.setUnit(FXCollections.observableArrayList(p.getUnit()));
-                sliderWithUnit.setValue((NumberWithUnit) viewModel.getParameterValue(p));
+                NumberWithUnit number = (NumberWithUnit) viewModel.getParameterValue(p);
+                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
+                        , FXCollections.observableArrayList(p.getUnit()), number);
                 sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = sliderWithUnit;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
