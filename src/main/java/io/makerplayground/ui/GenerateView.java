@@ -2,10 +2,13 @@ package io.makerplayground.ui;
 
 import io.makerplayground.generator.Diagram;
 
+import io.makerplayground.generator.MPDiagram;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.SingletonWiringDiagram;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -65,7 +68,16 @@ public class GenerateView extends Dialog {
             SingletonWiringDiagram.getInstance().setCloseTime();
             window.hide();
         });
-        Diagram wiringDiagram = new Diagram(viewModel.getProject());
+
+        Pane wiringDiagram;
+        Platform platform = viewModel.getProject().getPlatform();
+        if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO) {
+            wiringDiagram = new Diagram(viewModel.getProject());
+        } else if (platform == Platform.MP_ARDUINO) {
+            wiringDiagram = new MPDiagram(viewModel.getProject());
+        } else {
+            throw new IllegalStateException("Found unsupported platform(" + platform + ")");
+        }
 
         diagramScrollPane.setContent(wiringDiagram);
         codeTextArea.setText(viewModel.getCode());

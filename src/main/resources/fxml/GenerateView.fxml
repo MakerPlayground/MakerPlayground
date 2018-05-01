@@ -11,20 +11,20 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root minHeight="600.0" prefHeight="600.0" prefWidth="1200.0" stylesheets="@../css/GenerateView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/GenerateView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <content>
-      <TabPane minHeight="600.0" prefHeight="600.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="800.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab fx:id="simulateTab" text="Simulate">
+          <Tab fx:id="simulateTab" text="Connection Diagram">
                <content>
                   <AnchorPane>
                      <children>
-                        <ScrollPane fx:id="diagramScrollPane" maxHeight="470.0" maxWidth="820.0" prefHeight="470.0" prefWidth="820.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+                        <ScrollPane fx:id="diagramScrollPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
                </content>
           </Tab>
-          <Tab fx:id="codeDeviceTableTab" text=" Code and DeviceTable">
+          <Tab fx:id="codeDeviceTableTab" text="Sourcecode and Device list">
                <content>
                   <HBox spacing="20.0">
                      <children>
@@ -49,9 +49,6 @@
                </content>
           </Tab>
         </tabs>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
       </TabPane>
    </content>
 </fx:root>

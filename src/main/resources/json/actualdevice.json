@@ -2416,7 +2416,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
+            "type": "PWM_1",
             "pintype": "INOUT"
           }
         ],
@@ -2430,7 +2430,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_2",
+            "type": "PWM_2",
             "pintype": "INOUT"
           }
         ],
@@ -2444,7 +2444,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_3",
+            "type": "PWM_3",
             "pintype": "INOUT"
           }
         ],
@@ -2469,9 +2469,9 @@
       }
     ],
     "connectivity": [
-      "GPIO_1",
-      "GPIO_2",
-      "GPIO_3"
+      "PWM_1",
+      "PWM_2",
+      "PWM_3"
     ],
     "compatibility": [
       {
@@ -2481,16 +2481,36 @@
             "name": "On",
             "parameter": [
               {
-                "name": "Color",
-                "constraint": [
-                  "Red",
-                  "Green",
-                  "Blue",
-                  "Cyan",
-                  "Magenta",
-                  "Yellow",
-                  "White"
-                ]
+                "name": "Red",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Green",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Blue",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "NOT_SPECIFIED"
+                }
               }
             ]
           },
@@ -3291,7 +3311,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_3",
+            "type": "PWM_3",
             "pintype": "INOUT"
           }
         ],
@@ -3305,7 +3325,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_1",
+            "type": "PWM_1",
             "pintype": "INOUT"
           }
         ],
@@ -3319,7 +3339,7 @@
         "type": "WIRE",
         "function": [
           {
-            "type": "GPIO_2",
+            "type": "PWM_2",
             "pintype": "INOUT"
           }
         ],
@@ -3344,9 +3364,9 @@
       }
     ],
     "connectivity": [
-      "GPIO_3",
-      "GPIO_1",
-      "GPIO_2"
+      "PWM_3",
+      "PWM_1",
+      "PWM_2"
     ],
     "compatibility": [
       {
@@ -3356,16 +3376,36 @@
             "name": "On",
             "parameter": [
               {
-                "name": "Color",
-                "constraint": [
-                  "Red",
-                  "Green",
-                  "Blue",
-                  "Cyan",
-                  "Magenta",
-                  "Yellow",
-                  "White"
-                ]
+                "name": "Red",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Green",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Blue",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "NOT_SPECIFIED"
+                }
               }
             ]
           },
@@ -5910,7 +5950,7 @@
   {
     "id": "MP-0000",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - BaseBoard",
+    "model": "BaseBoard",
     "url": "http://www.makerplayground.io/library/MP-0000",
     "type": "CONTROLLER",
     "formfactor": "MP_CONTROLLER",
@@ -6149,7 +6189,7 @@
   {
     "id": "MP-0001",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - LED",
+    "model": "LED",
     "url": "http://www.makerplayground.io/library/MP-0001",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6157,7 +6197,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0001"
+      "MP_LED"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6215,7 +6255,7 @@
   {
     "id": "MP-0002",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - RGB LED",
+    "model": "RGB LED",
     "url": "http://www.makerplayground.io/library/MP-0002",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6223,7 +6263,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0002"
+      "MP_SK9822"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6259,18 +6299,42 @@
             "name": "On",
             "parameter": [
               {
-                "name": "Color",
-                "constraint": [
-                  "Red",
-                  "Green",
-                  "Blue",
-                  "Cyan",
-                  "Magenta",
-                  "Yellow",
-                  "White"
-                ]
+                "name": "Red",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Green",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Blue",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 255.0,
+                  "unit": "NOT_SPECIFIED"
+                }
+              },
+              {
+                "name": "Brightness",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "NOT_SPECIFIED"
+                }
               }
             ]
+          },
+          {
+            "name": "Off",
+            "parameter": []
           }
         ],
         "value": [],
