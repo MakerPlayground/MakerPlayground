@@ -247,7 +247,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_Blynk_ESP8266",
+      "MP_Blynk_ESP8266_Serial1",
       "Blynk",
       "BlynkESP8266_Lib"
     ],

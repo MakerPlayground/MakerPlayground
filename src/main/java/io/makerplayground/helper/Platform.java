@@ -6,7 +6,7 @@ package io.makerplayground.helper;
 public enum Platform {
     ARDUINO("uno", "Arduino"), //, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
     GROVE_ARDUINO("uno", "Grove for Arduino"),
-    MP_ARDUINO("atmega328pb", "Maker Playground's Kit");
+    MP_ARDUINO("elektor_uno_r4", "Maker Playground's Kit");
 
     private String platformioId;
     private String displayName;

@@ -102,12 +102,14 @@ public class DeviceMapper {
                 }
                 // SPECIAL CASE 1: if both pin of D2 is used, D3 can't be used
                 if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
-                    if (p == Peripheral.MP_DIGITAL_DUAL_1) {
+                    if ((p == Peripheral.MP_GPIO_DUAL_1) || (p == Peripheral.MP_PWM_DUAL_1)) {
                         for (DevicePort controllerPort : projectDevice.getDeviceConnection().get(p)) {
                             for (DevicePort.DevicePortFunction function : controllerPort.getFunction()) {
-                                if (function.getPeripheral() == Peripheral.MP_DIGITAL_DUAL_2) {
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_DIGITAL_SINGLE_3));
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_DIGITAL_DUAL_3));
+                                if ((function.getPeripheral() == Peripheral.MP_GPIO_DUAL_2) || (function.getPeripheral() == Peripheral.MP_PWM_DUAL_2)) {
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_GPIO_SINGLE_3));
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_GPIO_DUAL_3));
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_PWM_SINGLE_3));
+                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_PWM_DUAL_3));
                                 }
                             }
                         }
@@ -144,12 +146,12 @@ public class DeviceMapper {
             // SPECIAL CASE 2: try not to connect device using 2 pins to D2 as it will block D3
             if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
                 for (Peripheral peripheral : possibleDevice.keySet()) {
-                    if (peripheral == Peripheral.MP_DIGITAL_DUAL_1) {
+                    if ((peripheral == Peripheral.MP_GPIO_DUAL_1) || (peripheral == Peripheral.MP_PWM_DUAL_1)) {
                         List<List<DevicePort>> port = possibleDevice.get(peripheral);
                         for (int i = port.size() - 1; i >= 0; i--) {
                             boolean needSwap = false;
                             for (DevicePort.DevicePortFunction function : port.get(i).get(0).getFunction()) {
-                                if (function.getPeripheral() == Peripheral.MP_DIGITAL_DUAL_2) {
+                                if ((function.getPeripheral() == Peripheral.MP_GPIO_DUAL_2) || (function.getPeripheral() == Peripheral.MP_PWM_DUAL_2)) {
                                     needSwap = true;
                                 }
                             }
@@ -186,11 +188,13 @@ public class DeviceMapper {
 
         List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDevice());
 
-        // SPECIAL CASE 3: connect MP_DIGITAL_DUAL first
+        // SPECIAL CASE 3: connect MP_*_DUAL first
         if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
             deviceList.sort((o1, o2) -> {
-                boolean b1 = o1.getActualDevice().getConnectivity().contains(Peripheral.MP_DIGITAL_DUAL_1);
-                boolean b2 = o2.getActualDevice().getConnectivity().contains(Peripheral.MP_DIGITAL_DUAL_1);
+                boolean b1 = o1.getActualDevice().getConnectivity().contains(Peripheral.MP_GPIO_DUAL_1)
+                        || o1.getActualDevice().getConnectivity().contains(Peripheral.MP_PWM_DUAL_1);
+                boolean b2 = o2.getActualDevice().getConnectivity().contains(Peripheral.MP_GPIO_DUAL_1)
+                        || o2.getActualDevice().getConnectivity().contains(Peripheral.MP_PWM_DUAL_1);
                 if (b1 == b2) {
                     return 0;
                 } else if (b1) {

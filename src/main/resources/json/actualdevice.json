@@ -5985,11 +5985,19 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_PWM_SINGLE_1",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_1",
+            "type": "MP_PWM_DUAL_1",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_SINGLE_1",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_DUAL_1",
             "pintype": "INOUT"
           }
         ],
@@ -6003,11 +6011,19 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_2",
+            "type": "MP_PWM_SINGLE_2",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_2",
+            "type": "MP_PWM_DUAL_2",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_SINGLE_2",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_DUAL_2",
             "pintype": "INOUT"
           }
         ],
@@ -6021,11 +6037,19 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_3",
+            "type": "MP_PWM_SINGLE_3",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_3",
+            "type": "MP_PWM_DUAL_3",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_SINGLE_3",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_DUAL_3",
             "pintype": "INOUT"
           }
         ],
@@ -6039,11 +6063,19 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_4",
+            "type": "MP_PWM_SINGLE_4",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_4",
+            "type": "MP_PWM_DUAL_4",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_SINGLE_4",
+            "pintype": "INOUT"
+          },
+          {
+            "type": "MP_GPIO_DUAL_4",
             "pintype": "INOUT"
           }
         ],
@@ -6057,11 +6089,11 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_5",
+            "type": "MP_GPIO_SINGLE_5",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_5",
+            "type": "MP_GPIO_DUAL_5",
             "pintype": "INOUT"
           },
           {
@@ -6083,11 +6115,11 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_6",
+            "type": "MP_GPIO_SINGLE_6",
             "pintype": "INOUT"
           },
           {
-            "type": "MP_DIGITAL_DUAL_6",
+            "type": "MP_GPIO_DUAL_6",
             "pintype": "INOUT"
           },
           {
@@ -6163,18 +6195,18 @@
     ],
     "connectivity": [
       "MP_INT_UART_1",
-      "MP_DIGITAL_SINGLE_1",
-      "MP_DIGITAL_SINGLE_2",
-      "MP_DIGITAL_SINGLE_3",
-      "MP_DIGITAL_SINGLE_4",
-      "MP_DIGITAL_SINGLE_5",
-      "MP_DIGITAL_SINGLE_6",
-      "MP_DIGITAL_DUAL_1",
-      "MP_DIGITAL_DUAL_2",
-      "MP_DIGITAL_DUAL_3",
-      "MP_DIGITAL_DUAL_4",
-      "MP_DIGITAL_DUAL_5",
-      "MP_DIGITAL_DUAL_6",
+      "MP_PWM_SINGLE_1",
+      "MP_PWM_SINGLE_2",
+      "MP_PWM_SINGLE_3",
+      "MP_PWM_SINGLE_4",
+      "MP_PWM_DUAL_1",
+      "MP_PWM_DUAL_2",
+      "MP_PWM_DUAL_3",
+      "MP_PWM_DUAL_4",
+      "MP_GPIO_SINGLE_5",
+      "MP_GPIO_SINGLE_6",
+      "MP_GPIO_DUAL_5",
+      "MP_GPIO_DUAL_6",
       "MP_ANALOG_SINGLE_1",
       "MP_ANALOG_SINGLE_2",
       "MP_ANALOG_DUAL_1",
@@ -6212,7 +6244,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_PWM_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -6223,7 +6255,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_SINGLE_1"
+      "MP_PWM_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -6278,7 +6310,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_DUAL_1",
+            "type": "MP_GPIO_DUAL_1",
             "pintype": "INOUT"
           }
         ],
@@ -6289,7 +6321,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_DUAL_1"
+      "MP_GPIO_DUAL_1"
     ],
     "compatibility": [
       {
@@ -6345,7 +6377,7 @@
   {
     "id": "MP-0003",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Buzzer",
+    "model": "Buzzer",
     "url": "http://www.makerplayground.io/library/MP-0003",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6353,7 +6385,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0003"
+      "MP_Piezo"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6368,7 +6400,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_PWM_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -6379,7 +6411,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_SINGLE_1"
+      "MP_PWM_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -6428,7 +6460,7 @@
   {
     "id": "MP-0004",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Load Driver",
+    "model": "Load Driver",
     "url": "http://www.makerplayground.io/library/MP-0004",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6436,7 +6468,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0004"
+      "MP_GenericSinglePinDigitalDevice"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6451,7 +6483,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_PWM_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -6462,7 +6494,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_SINGLE_1"
+      "MP_PWM_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -6485,7 +6517,7 @@
   {
     "id": "MP-0005",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Light Sensor",
+    "model": "Light Sensor",
     "url": "http://www.makerplayground.io/library/MP-0005",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6493,7 +6525,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0005"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6547,7 +6579,7 @@
   {
     "id": "MP-0006",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Button",
+    "model": "Button",
     "url": "http://www.makerplayground.io/library/MP-0006",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6555,7 +6587,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0006"
+      "MP_GenericButton"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6570,7 +6602,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_GPIO_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -6581,7 +6613,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_SINGLE_1"
+      "MP_GPIO_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -6604,7 +6636,7 @@
   {
     "id": "MP-0007",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Trimpot",
+    "model": "Trimpot",
     "url": "http://www.makerplayground.io/library/MP-0007",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6612,7 +6644,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0007"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6666,7 +6698,7 @@
   {
     "id": "MP-0008",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Accelerometer/Gyroscope",
+    "model": "Accelerometer/Gyroscope",
     "url": "http://www.makerplayground.io/library/MP-0008",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6674,7 +6706,9 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0008"
+      "MP_LSM6DS3",
+      "SparkFunLSM6DS3",
+      "Wire"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6788,7 +6822,7 @@
   {
     "id": "MP-0009",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Temperature/Humidity",
+    "model": "Temperature/Humidity",
     "url": "http://www.makerplayground.io/library/MP-0009",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6796,7 +6830,9 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0009"
+      "MP_SHT",
+      "SHTSensor",
+      "Wire"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6870,7 +6906,7 @@
   {
     "id": "MP-0010",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Distance/Gesture",
+    "model": "Distance/Gesture",
     "url": "http://www.makerplayground.io/library/MP-0010",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6878,7 +6914,9 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0010"
+      "MP_APDS9960",
+      "SparkFun_APDS9960",
+      "Wire"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -6948,7 +6986,7 @@
   {
     "id": "MP-0011",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Microphone",
+    "model": "Microphone",
     "url": "http://www.makerplayground.io/library/MP-0011",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -6956,7 +6994,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0011"
+      "MP_OneAnalogReadToPercent"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -7010,7 +7048,7 @@
   {
     "id": "MP-0012",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - 7 Segment",
+    "model": "7-Segment Display",
     "url": "http://www.makerplayground.io/library/MP-0012",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -7018,7 +7056,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0012"
+      "MP_MakerPlayground7Seg"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -7033,7 +7071,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_DUAL_1",
+            "type": "MP_GPIO_DUAL_1",
             "pintype": "INOUT"
           }
         ],
@@ -7044,7 +7082,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_DUAL_1"
+      "MP_GPIO_DUAL_1"
     ],
     "compatibility": [
       {
@@ -7073,19 +7111,6 @@
             ]
           },
           {
-            "name": "Set Brightness",
-            "parameter": [
-              {
-                "name": "Brightness",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 100.0,
-                  "unit": "PERCENT"
-                }
-              }
-            ]
-          },
-          {
             "name": "Off",
             "parameter": []
           }
@@ -7098,7 +7123,7 @@
   {
     "id": "MP-0013",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Relay",
+    "model": "Relay",
     "url": "http://www.makerplayground.io/library/MP-0013",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -7106,7 +7131,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0013"
+      "MP_GenericSinglePinDigitalDevice"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -7121,7 +7146,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_DIGITAL_SINGLE_1",
+            "type": "MP_GPIO_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -7132,7 +7157,7 @@
       }
     ],
     "connectivity": [
-      "MP_DIGITAL_SINGLE_1"
+      "MP_GPIO_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -7155,7 +7180,7 @@
   {
     "id": "MP-0014",
     "brand": "MakerPlayground",
-    "model": "Maker Playground - Soil-Moisture Sensor",
+    "model": "Soil-Moisture Sensor",
     "url": "http://www.makerplayground.io/library/MP-0014",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
@@ -7163,7 +7188,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_0014"
+      "MP_SoilWithEnable"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -7196,19 +7221,20 @@
         "name": "Soil Moisture",
         "action": [
           {
-            "name": "In dry soil",
-            "parameter": []
-          },
-          {
-            "name": "In humid soil",
-            "parameter": []
-          },
-          {
-            "name": "In water",
+            "name": "Compare",
             "parameter": []
           }
         ],
-        "value": [],
+        "value": [
+          {
+            "name": "Percent",
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            }
+          }
+        ],
         "count": ""
       }
     ]

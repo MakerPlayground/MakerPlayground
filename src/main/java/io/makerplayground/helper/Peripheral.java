@@ -55,19 +55,29 @@ public enum Peripheral {
 
     MP_INT_UART_1(ConnectionType.MP_INT_UART),
 
-    MP_DIGITAL_SINGLE_1(ConnectionType.MP_DIGITAL_SINGLE),
-    MP_DIGITAL_SINGLE_2(ConnectionType.MP_DIGITAL_SINGLE),
-    MP_DIGITAL_SINGLE_3(ConnectionType.MP_DIGITAL_SINGLE),
-    MP_DIGITAL_SINGLE_4(ConnectionType.MP_DIGITAL_SINGLE),
-    MP_DIGITAL_SINGLE_5(ConnectionType.MP_DIGITAL_SINGLE),
-    MP_DIGITAL_SINGLE_6(ConnectionType.MP_DIGITAL_SINGLE),
+    MP_GPIO_SINGLE_1(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_2(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_3(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_4(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_5(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_6(ConnectionType.MP_GPIO_SINGLE),
 
-    MP_DIGITAL_DUAL_1(ConnectionType.MP_DIGITAL_DUAL),
-    MP_DIGITAL_DUAL_2(ConnectionType.MP_DIGITAL_DUAL),
-    MP_DIGITAL_DUAL_3(ConnectionType.MP_DIGITAL_DUAL),
-    MP_DIGITAL_DUAL_4(ConnectionType.MP_DIGITAL_DUAL),
-    MP_DIGITAL_DUAL_5(ConnectionType.MP_DIGITAL_DUAL),
-    MP_DIGITAL_DUAL_6(ConnectionType.MP_DIGITAL_DUAL),
+    MP_GPIO_DUAL_1(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_2(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_3(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_4(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_5(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_6(ConnectionType.MP_GPIO_DUAL),
+
+    MP_PWM_SINGLE_1(ConnectionType.MP_PWM_SINGLE),
+    MP_PWM_SINGLE_2(ConnectionType.MP_PWM_SINGLE),
+    MP_PWM_SINGLE_3(ConnectionType.MP_PWM_SINGLE),
+    MP_PWM_SINGLE_4(ConnectionType.MP_PWM_SINGLE),
+
+    MP_PWM_DUAL_1(ConnectionType.MP_PWM_DUAL),
+    MP_PWM_DUAL_2(ConnectionType.MP_PWM_DUAL),
+    MP_PWM_DUAL_3(ConnectionType.MP_PWM_DUAL),
+    MP_PWM_DUAL_4(ConnectionType.MP_PWM_DUAL),
 
     MP_ANALOG_SINGLE_1(ConnectionType.MP_ANALOG_SINGLE),
     MP_ANALOG_SINGLE_2(ConnectionType.MP_ANALOG_SINGLE),
@@ -92,4 +102,23 @@ public enum Peripheral {
         return connectionType;
     }
 
+    public boolean isMPDual() {
+       switch (this) {
+           case MP_GPIO_DUAL_1:
+           case MP_GPIO_DUAL_2:
+           case MP_GPIO_DUAL_3:
+           case MP_GPIO_DUAL_4:
+           case MP_GPIO_DUAL_5:
+           case MP_GPIO_DUAL_6:
+           case MP_PWM_DUAL_1:
+           case MP_PWM_DUAL_2:
+           case MP_PWM_DUAL_3:
+           case MP_PWM_DUAL_4:
+           case MP_ANALOG_DUAL_1:
+           case MP_ANALOG_DUAL_2:
+               return true;
+           default:
+               return false;
+       }
+    }
 }

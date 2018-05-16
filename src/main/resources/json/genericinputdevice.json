@@ -522,7 +522,7 @@
     "action": [],
     "condition": [
       {
-        "name": "Detect Swipe",
+        "name": "Detect Gesture",
         "funcname": "isGestureDetected",
         "type": "Active",
         "parameter": [
@@ -541,7 +541,7 @@
         ]
       },
       {
-        "name": "No Hand",
+        "name": "No Gesture",
         "funcname": "isGestureNotDetected",
         "type": "Active",
         "parameter": []
@@ -556,25 +556,23 @@
     "action": [],
     "condition": [
       {
-        "name": "In dry soil",
-        "funcname": "isInDry",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "In humid soil",
-        "funcname": "isInHumid",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "In water",
-        "funcname": "isInWater",
+        "name": "Compare",
+        "funcname": "",
         "type": "Active",
         "parameter": []
       }
     ],
-    "value": [],
+    "value": [
+      {
+        "name": "Percent",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
+        }
+      }
+    ],
     "property": []
   }
 ]

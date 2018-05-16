@@ -59,6 +59,7 @@ public class DevicePanelView extends VBox {
             if (platform == viewModel.selectedPlatformProperty().get()) {
                 radioButton.setSelected(true);
             }
+            microcontrollerPane.setVgap(10);
             microcontrollerPane.getChildren().add(radioButton);
         }
 

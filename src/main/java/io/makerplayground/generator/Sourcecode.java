@@ -4,6 +4,7 @@ import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 
@@ -64,6 +65,19 @@ public class Sourcecode {
     private static final String INDENT = "    ";
     private static final String NEW_LINE = "\n";
     private static final DecimalFormat df = new DecimalFormat("0.00");
+    private static final Map<String, List<String>> MP_PORT_MAP = Map.ofEntries(
+            Map.entry("D1", List.of("3", "4")),
+            Map.entry("D2", List.of("5", "6")),
+            Map.entry("D3", List.of("6", "7")),
+            Map.entry("D4", List.of("9", "10")),
+            Map.entry("D5/A1", List.of("A0", "A1")),
+            Map.entry("D6/A2", List.of("A2", "A3")),
+            Map.entry("I2C1", Collections.<String>emptyList()),
+            Map.entry("I2C2", Collections.<String>emptyList()),
+            Map.entry("I2C3", Collections.<String>emptyList()),
+            Map.entry("I2C4", Collections.<String>emptyList()),
+            Map.entry("Internal", Collections.<String>emptyList())
+    );
 
     public static Sourcecode generateCode(Project project, boolean cppMode) {
         //Begin begin = project.getBegin();
@@ -119,12 +133,27 @@ public class Sourcecode {
 
             // port
             for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                if (p.getConnectionType() != ConnectionType.I2C) {
+                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
                     List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
                     if (port == null) {
                         throw new IllegalStateException("Port hasn't been selected!!!");
                     }
-                    args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+                    // SPECIAL CASE
+                    if (project.getPlatform() == Platform.MP_ARDUINO) {
+                        if (port.size() != 1) {
+                            throw new IllegalStateException();
+                        }
+                        List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
+                        if (!portName.isEmpty()) {
+                            if (p.isMPDual()) {
+                                args.addAll(portName);
+                            } else {
+                                args.add(portName.get(0));
+                            }
+                        }
+                    } else {
+                        args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+                    }
                 }
             }
 

@@ -65,39 +65,42 @@ public class MPDiagram extends Pane {
             String controllerPortName = controllerPort.get(0).getName();
 
             // draw wire
-            InputStream wireImageStream = getClass().getResourceAsStream("/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png");
-            if (wireImageStream == null) {
-                throw new IllegalStateException("Image not found");
+            if (!controllerPortName.equals("Internal")) {
+                InputStream wireImageStream = getClass().getResourceAsStream("/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png");
+                if (wireImageStream == null) {
+                    throw new IllegalStateException("Image not found");
+                }
+                ImageView wireImageView = new ImageView(new Image(wireImageStream));
+                wireImageView.setLayoutX(WIRE_POSITION.get(controllerPortName).getX());
+                wireImageView.setLayoutY(WIRE_POSITION.get(controllerPortName).getY());
+
+                getChildren().add(wireImageView);
+
+
+                // draw device
+                Point2D devicePosition = DEVICE_POSITION.get(controllerPortName);
+
+                InputStream deviceImageStream = getClass().getResourceAsStream("/device/" + projectDevice.getActualDevice().getId() + ".png");
+                if (deviceImageStream == null) {
+                    throw new IllegalStateException("Image not found");
+                }
+                Image deviceImage = new Image(deviceImageStream);
+                ImageView deviceImageView = new ImageView(deviceImage);
+                if (LEFT_PORT_NAME.contains(controllerPortName)) {
+                    deviceImageView.setRotate(90);
+                    deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2)
+                            - deviceImage.getHeight());
+                } else if (RIGHT_PORT_NAME.contains(controllerPortName)) {
+                    deviceImageView.setRotate(-90);
+                    deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
+                } else {
+                    throw new IllegalStateException("Invalid port");
+                }
+                deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
+                        - deviceImage.getWidth() / 2.0);
+
+                getChildren().addAll(deviceImageView);
             }
-            ImageView wireImageView = new ImageView(new Image(wireImageStream));
-            wireImageView.setLayoutX(WIRE_POSITION.get(controllerPortName).getX());
-            wireImageView.setLayoutY(WIRE_POSITION.get(controllerPortName).getY());
-
-            getChildren().add(wireImageView);
-
-            // draw device
-            Point2D devicePosition = DEVICE_POSITION.get(controllerPortName);
-
-            InputStream deviceImageStream = getClass().getResourceAsStream("/device/" + projectDevice.getActualDevice().getId() + ".png");
-            if (deviceImageStream == null) {
-                throw new IllegalStateException("Image not found");
-            }
-            Image deviceImage = new Image(deviceImageStream);
-            ImageView deviceImageView = new ImageView(deviceImage);
-            if (LEFT_PORT_NAME.contains(controllerPortName)) {
-                deviceImageView.setRotate(90);
-                deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2)
-                    - deviceImage.getHeight());
-            } else if (RIGHT_PORT_NAME.contains(controllerPortName)) {
-                deviceImageView.setRotate(-90);
-                deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
-            } else {
-                throw new IllegalStateException("Invalid port");
-            }
-            deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
-                    - deviceImage.getWidth() / 2.0);
-
-            getChildren().addAll(deviceImageView);
         }
 
         // draw controller

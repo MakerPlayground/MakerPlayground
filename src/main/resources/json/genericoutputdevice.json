@@ -140,29 +140,6 @@
         ]
       },
       {
-        "name": "Set Brightness",
-        "funcname": "setBrightness",
-        "type": "Inactive",
-        "parameter": [
-          {
-            "name": "Brightness",
-            "value": "7",
-            "constraint": [
-              "0",
-              "1",
-              "2",
-              "3",
-              "4",
-              "5",
-              "6",
-              "7"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
         "name": "Off",
         "funcname": "off",
         "type": "Inactive",
@@ -210,6 +187,33 @@
         "funcname": "off",
         "type": "Inactive",
         "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": [],
+    "property": []
+  },
+  {
+    "name": "Servo",
+    "description": "A motor that can control direction",
+    "action": [
+      {
+        "name": "Move To",
+        "funcname": "moveto",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Degree",
+            "value": 90.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 180.0,
+              "unit": "DEGREE"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
       }
     ],
     "condition": [],
