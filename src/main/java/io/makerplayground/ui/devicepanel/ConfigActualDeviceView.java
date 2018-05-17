@@ -42,26 +42,22 @@ public class ConfigActualDeviceView extends Dialog {
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
         getDialogPane().getStylesheets().add(this.getClass().getResource("/css/ConfigActualDeviceView.css").toExternalForm());
+        getDialogPane().setMaxHeight(500);
 
-        setTitle("  Configure Device");
-        getDialogPane().setExpanded(true);
+        setTitle("Configure Device");
+//        setResizable(true);
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
 
         initView();
-//        viewModel.compatibleDeviceListProperty().addListener(observable -> initView());
-//        viewModel.compatiblePortListProperty().addListener(observable -> initView());
         viewModel.setCallback(this::initView);
     }
 
     private void initView() {
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setPrefHeight(350.0);
-        scrollPane.setPrefWidth(600);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         VBox allDevice = new VBox();
-        allDevice.setMaxHeight(350.0);
-        allDevice.setMaxWidth(Region.USE_COMPUTED_SIZE);
         allDevice.setSpacing(20.0);
         allDevice.setPadding(new Insets(30,30,30,30));
         allDevice.setAlignment(Pos.CENTER);
@@ -76,16 +72,12 @@ public class ConfigActualDeviceView extends Dialog {
         initControllerControl(allDevice);
 
         DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
-        if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-            allDevice.getChildren().add(new Label("Not enough port"));
-//            ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
-//            errorDialogView.showAndWait();
-//            return;
+        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+            allDevice.getChildren().add(new Label("Controller hasn't been selected"));
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+            allDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            allDevice.getChildren().add(new Label("Can't find any support device"));
-//            ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
-//            errorDialogView.showAndWait();
-//            return;
+            allDevice.getChildren().add(new Label("Can't find any supported device"));
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK) {
             initDeviceControl(allDevice);
         } else {
@@ -94,6 +86,7 @@ public class ConfigActualDeviceView extends Dialog {
 
         scrollPane.setContent(allDevice);
         getDialogPane().setContent(scrollPane);
+        getDialogPane().getScene().getWindow().sizeToScene();
     }
 
     private void initControllerControl(VBox allDevice) {

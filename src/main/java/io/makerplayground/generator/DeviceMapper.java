@@ -170,10 +170,14 @@ public class DeviceMapper {
     }
 
     public enum DeviceMapperResult {
-        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE
+        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {
+        if (project.getController() == null) {
+            return DeviceMapperResult.NO_MCU_SELECTED;
+        }
+
         for (ProjectDevice projectDevice : project.getAllDevice()) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
