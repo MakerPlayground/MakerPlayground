@@ -108,15 +108,20 @@ public class Main extends Application {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Current project is modified");
             alert.setContentText("Save?");
-            ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+            alert.getButtonTypes().setAll(new ButtonType("Yes", ButtonBar.ButtonData.YES)
+                    , new ButtonType("No", ButtonBar.ButtonData.NO)
+                    , new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
             alert.showAndWait().ifPresent(type -> {
-                if (type.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
-                    if (type.getButtonData() == ButtonBar.ButtonData.YES) {
-                        saveProject();
-                    }
+                if (type.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                    event.consume();
+                } else if (type.getButtonData() == ButtonBar.ButtonData.YES) {
+                    saveProject();
+                    primaryStage.close();
+                    Platform.exit();
+                    System.exit(0);
+                } else {
+                    primaryStage.close();
+                    Platform.exit();
                     System.exit(0);
                 }
             });
