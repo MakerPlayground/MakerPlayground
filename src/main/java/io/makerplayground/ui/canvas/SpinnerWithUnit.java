@@ -25,10 +25,13 @@ public class SpinnerWithUnit extends HBox {
 //        this(min, max, value, Unit.NOT_SPECIFIED);
 //    }
 
-    public SpinnerWithUnit(double min, double max, double value, Unit unit) {
+    public SpinnerWithUnit(double min, double max, double value, Unit unit, ObservableList<Unit> unitList) {
         spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max));
         spinner.setEditable(true);
-        comboBox = new ComboBox<>();
+        spinner.getValueFactory().setValue(value);
+
+        comboBox = new ComboBox<>(unitList);
+        comboBox.getSelectionModel().select(unit);
 
         setSpacing(2);
         setAlignment(Pos.CENTER);

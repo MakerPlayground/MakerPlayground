@@ -173,11 +173,11 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
+                NumberWithUnit defaultValue = (NumberWithUnit) viewModel.getParameterValue(p);
                 SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
-                        , ((NumberWithUnit) p.getDefaultValue()).getValue()  // TODO: use unit of value?
-                        , constraint.getUnit());
-                spinner.setUnit(FXCollections.observableArrayList(p.getUnit()));
-                spinner.setValue((NumberWithUnit) viewModel.getParameterValue(p));
+                        , defaultValue.getValue()
+                        , defaultValue.getUnit()
+                        , FXCollections.observableArrayList(p.getUnit()));
                 spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = spinner;
             } else {

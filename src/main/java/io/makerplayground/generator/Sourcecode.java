@@ -1,10 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 
@@ -332,6 +329,11 @@ public class Sourcecode {
             }
         }
 
+        // get current time if there is a time condition in the adjacent condition block
+        if (adjacentCondition.stream().anyMatch(condition -> condition.getTimeCondition().isPresent())) {
+            sb.append(INDENT).append("startTime = millis();").append(NEW_LINE);
+        }
+
         // loop to check sensor
         sb.append(INDENT).append("while (1) {").append(NEW_LINE);
         // call the update function
@@ -347,6 +349,13 @@ public class Sourcecode {
         // generate if for each condition
         for (Condition condition : adjacentCondition) {
             List<String> conditionList = new ArrayList<>();
+            condition.getTimeCondition().ifPresent(timeCondition -> {
+                double duration = timeCondition.getDuration();
+                if (timeCondition.getUnit() == TimeUnit.Second) {
+                    duration *= 1000;
+                }
+                conditionList.add("(millis() - startTime > " + duration + ")");
+            });
             for (UserSetting setting : condition.getSetting()) {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
                     List<String> parameterList = new ArrayList<>();
@@ -438,7 +447,8 @@ public class Sourcecode {
 
     private static boolean checkCondition(Project project) {
         return  // every condition must contain at least one device
-                project.getCondition().stream().map(Condition::getSetting).noneMatch(List::isEmpty)
+                project.getCondition().stream().noneMatch(condition -> condition.getSetting().isEmpty()
+                        && !condition.getTimeCondition().isPresent())
                 // When the action has some parameters (it is not 'compare'), it's value must not be null
                 // otherwise we assume that it is compare
                 && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())

@@ -3,6 +3,7 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -31,6 +32,7 @@ public class ConditionView extends InteractiveNode {
 
     private final ConditionViewModel conditionViewModel;
     private InputDeviceSelector inputDeviceSelector = null;
+    private TimeConditionIconView timeConditionIconView = null;
 
     public ConditionView(ConditionViewModel conditionViewModel, InteractivePane interactivePane) {
         super(interactivePane);
@@ -51,6 +53,22 @@ public class ConditionView extends InteractiveNode {
         }
         getChildren().add(root);
 
+        // create time configuration icons
+        conditionViewModel.getCondition().getTimeCondition().ifPresent(timeCondition -> {
+            timeConditionIconView = new TimeConditionIconView(timeCondition);
+            timeConditionIconView.setOnRemove(event -> conditionViewModel.getCondition().removeTimeCondition());
+            deviceIconHBox.getChildren().add(deviceIconHBox.getChildren().size() - 1, timeConditionIconView);
+        });
+        conditionViewModel.getCondition().timeConditionProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                deviceIconHBox.getChildren().remove(timeConditionIconView);
+            } else {
+                timeConditionIconView = new TimeConditionIconView(conditionViewModel.getCondition().getTimeCondition().get());
+                timeConditionIconView.setOnRemove(event -> conditionViewModel.getCondition().removeTimeCondition());
+                deviceIconHBox.getChildren().add(deviceIconHBox.getChildren().size() - 1, timeConditionIconView);
+            }
+        });
+
         // dynamically create device configuration icons
         DynamicViewCreator<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreatorBuilder<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
@@ -69,8 +87,9 @@ public class ConditionView extends InteractiveNode {
         translateXProperty().bindBidirectional(conditionViewModel.xProperty());
         translateYProperty().bindBidirectional(conditionViewModel.yProperty());
 
-        // show add output device button when there are devices left to be added
-        addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
+        // show add output device button when there are devices left to be added or time condition hasn't been set
+        addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty()
+                .or(conditionViewModel.getCondition().timeConditionProperty().isNull()));
 
         // show remove button when select
         removeConditionBtn.visibleProperty().bind(selectedProperty());

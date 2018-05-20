@@ -39,6 +39,15 @@ public class ConditionSerializer extends StdSerializer<Condition> {
         jsonGenerator.writeNumberField("height",condition.getHeight());
         jsonGenerator.writeEndObject();
 
+        if (condition.getTimeCondition().isPresent()) {
+            TimeCondition timeCondition = condition.getTimeCondition().get();
+            jsonGenerator.writeObjectFieldStart("time_condition");
+            jsonGenerator.writeNumberField("duration", timeCondition.getDuration());
+            jsonGenerator.writeStringField("unit", timeCondition.getUnit().name());
+            jsonGenerator.writeStringField("type", timeCondition.getType().name());
+            jsonGenerator.writeEndObject();
+        }
+
         jsonGenerator.writeEndObject();
     }
 }

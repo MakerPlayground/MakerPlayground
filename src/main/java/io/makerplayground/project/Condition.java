@@ -18,14 +18,16 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.project.expression.Expression;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
@@ -34,6 +36,7 @@ import java.util.Objects;
 public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
+    private ObjectProperty<TimeCondition> timeCondition;
 
     private final ObservableList<UserSetting> unmodifiableSetting;
 
@@ -42,16 +45,18 @@ public class Condition extends NodeElement {
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
+        this.timeCondition = new SimpleObjectProperty<>();
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
     }
 
     public Condition(double top, double left, double width, double height
-            , String name, List<UserSetting> setting) {
+            , String name, List<UserSetting> setting, TimeCondition timeCondition) {
         super(top, left, width, height);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
+        this.timeCondition = new SimpleObjectProperty<>(timeCondition);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
     }
@@ -85,7 +90,7 @@ public class Condition extends NodeElement {
     }
 
     public boolean isError() {
-        return setting.isEmpty()
+        return (setting.isEmpty() && timeCondition.get() == null)
                 // When the action has some parameters (it is not 'compare'), it's value must not be null
                 // otherwise we assume that it is compare
                 || (setting.stream().map(UserSetting::getValueMap)
@@ -100,5 +105,24 @@ public class Condition extends NodeElement {
                 .map(userSetting -> userSetting.getExpression().values())
                 .filter(expressions -> !expressions.isEmpty())
                 .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
+    }
+
+    public Optional<TimeCondition> getTimeCondition() {
+        return Optional.ofNullable(timeCondition.get());
+    }
+
+    public ObjectProperty<TimeCondition> timeConditionProperty() {
+        return timeCondition;
+    }
+
+    public void setTimeCondition(TimeCondition condition) {
+        if (timeCondition.get() != null) {
+            throw new IllegalStateException("Time condition is already existed!!!");
+        }
+        timeCondition.set(condition);
+    }
+
+    public void removeTimeCondition() {
+        timeCondition.set(null);
     }
 }

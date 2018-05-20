@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.*;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.expression.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -153,7 +150,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         double width = node.get("position").get("width").asDouble();
         double height = node.get("position").get("height").asDouble();
 
-        return new Condition(top, left, width, height, name, setting);
+        TimeCondition timeCondition = null;
+        if (node.has("time_condition")) {
+            double duration = node.get("time_condition").get("duration").asDouble();
+            TimeUnit unit = TimeUnit.valueOf(node.get("time_condition").get("unit").asText());
+            TimeConditionType type = TimeConditionType.valueOf(node.get("time_condition").get("type").asText());
+            timeCondition = new TimeCondition(duration, unit, type);
+        }
+
+        return new Condition(top, left, width, height, name, setting, timeCondition);
     }
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
