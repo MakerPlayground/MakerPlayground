@@ -48,11 +48,9 @@ public class SceneView extends InteractiveNode{
     @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
     @FXML private TextField nameTextField;
-    @FXML private TextField delayTextField;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
     @FXML private ImageView removeSceneBtn;
-    @FXML private ComboBox<Scene.DelayUnit> timeUnitComboBox;
     @FXML private Button addOutputButton;
 
     private static final ObservableList<Scene.DelayUnit> delayUnitList =
@@ -95,25 +93,12 @@ public class SceneView extends InteractiveNode{
                         .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                         .createDynamicViewCreator();
 
-        // initialize delay's unit combobox
-        timeUnitComboBox.getItems().addAll(delayUnitList);
-        timeUnitComboBox.getSelectionModel().selectFirst();
-
         // bind scene's name to the model
         nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
 
         // bind scene's location to the model
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
         translateYProperty().bindBidirectional(sceneViewModel.yProperty());
-
-        // bind delay amount to the model
-        Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty()
-                , new NumberStringConverter());
-
-        // bind delay unit (bindBidirectional is not available)
-        // TODO: combobox won't change if unit is changed elsewhere
-        timeUnitComboBox.getSelectionModel().select(sceneViewModel.getDelayUnit());
-        sceneViewModel.delayUnitProperty().bind(timeUnitComboBox.getSelectionModel().selectedItemProperty());
 
         // show add output device button when there are devices left to be added
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());

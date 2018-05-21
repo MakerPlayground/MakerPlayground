@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -13,14 +12,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Arc id="arcNode" fx:id="inPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 5 5 5 5; -fx-background-color: #313644;" stylesheets="@../css/StateView.css">
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" stylesheets="@../css/StateView.css">
          <children>
-            <AnchorPane maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200" style="-fx-background-color: transparent;">
+            <AnchorPane id="toppane" maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200">
                <children>
                   <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: transparent;" AnchorPane.leftAnchor="5.0">
                      <font>
@@ -46,33 +44,6 @@
                   </FlowPane>
                </content>
             </ScrollPane>
-            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="5.0" style="-fx-background-radius: 0 0 5 5;">
-               <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Delay" wrappingWidth="32.5078125">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                  </Text>
-                  <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" prefWidth="50.0">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </TextField>
-                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" maxHeight="20.0" maxWidth="61.0" minHeight="24.0" prefHeight="20.0" promptText="sec" style="-fx-border-color: transparent; -fx-background-color: transparent;" />
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-            </HBox>
          </children>
       </VBox>
       <Arc fx:id="outPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />

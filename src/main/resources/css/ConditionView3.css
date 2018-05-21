@@ -3,13 +3,12 @@
     -fx-effect: null;
     -fx-font-size:12px;
 }
-#statePane{
-    -fx-background-color : white;
-    -fx-background-radius: 10 10 10 10;
+#conditionPane{
+    -fx-background-color : transparent;
 }
-#toppane{
-    -fx-background-radius: 10 10 0 0;
-    -fx-background-color: #313644;
+#contentPane{
+    -fx-background-color : white;
+    -fx-background-radius : 10;
 }
 #nameStateTextField{
     -fx-background-color : #313644;
@@ -32,12 +31,12 @@
     -fx-text-fill : white;
     -fx-font-size:12px;
 }
-#activeIconFlowPane{
+#deviceIconFlowPane{
     -fx-background-color : transparent;
+    -fx-background-radius : 10;
     -fx-border-color : null;
 }
 .scroll-pane{
-    -fx-background-color: transparent;
      -fx-focus-color: transparent;
      -fx-background-insets: 0;
      -fx-padding: 0;
@@ -49,7 +48,8 @@
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport{
-    -fx-background-color: transparent;
+    -fx-background-color : transparent;
+    -fx-background-radius : 10;
     -fx-border-color : transparent;
 }
 
