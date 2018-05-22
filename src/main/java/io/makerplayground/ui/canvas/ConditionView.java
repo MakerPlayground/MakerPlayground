@@ -9,9 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
@@ -21,13 +23,13 @@ import java.io.IOException;
  */
 public class ConditionView extends InteractiveNode {
     private VBox root = new VBox();
-    @FXML private Circle inPort;
-    @FXML private Circle outPort;
-    @FXML private HBox deviceIconHBox;
+    @FXML private Arc inPort;
+    @FXML private Arc outPort;
+    @FXML private FlowPane deviceIconFlowPane;
     @FXML private Button removeConditionBtn;
     @FXML private Button addInputButton;
     @FXML private ScrollPane scrollPane;
-    @FXML private StackPane stackPane;
+    @FXML private HBox conditionPane;
 
     private final ConditionViewModel conditionViewModel;
     private InputDeviceSelector inputDeviceSelector = null;
@@ -41,7 +43,7 @@ public class ConditionView extends InteractiveNode {
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView2.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView3.fxml"));
         fxmlLoader.setRoot(root);
         fxmlLoader.setController(this);
         try {
@@ -52,9 +54,9 @@ public class ConditionView extends InteractiveNode {
         getChildren().add(root);
 
         // dynamically create device configuration icons
-        DynamicViewCreator<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
-                new DynamicViewCreatorBuilder<HBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
-                        .setParent(deviceIconHBox)
+        DynamicViewCreator<FlowPane, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
+                new DynamicViewCreatorBuilder<FlowPane, SceneDeviceIconViewModel, ConditionDeviceIconView>()
+                        .setParent(deviceIconFlowPane)
                         .setModelLoader(conditionViewModel.getDynamicViewModelCreator())
                         .setViewFactory(conditionDeviceIconViewModel -> {
                             ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
@@ -82,7 +84,7 @@ public class ConditionView extends InteractiveNode {
     private void initEvent() {
         // allow node to be dragged
         makeMovable(scrollPane);
-        makeMovable(deviceIconHBox);
+        makeMovable(deviceIconFlowPane);
 
         // show device selector dialog to add device to this condition
         addInputButton.setOnAction(e -> {
@@ -108,7 +110,7 @@ public class ConditionView extends InteractiveNode {
                     , conditionViewModel.getCondition(), null
                     , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                     + (outPort.getBoundsInLocal().getWidth() / 2)
-                    , getBoundsInParent().getMinY() + (stackPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                    , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                     + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
         });
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
@@ -126,7 +128,7 @@ public class ConditionView extends InteractiveNode {
                         , interactivePane.getSourceNode(), conditionViewModel.getCondition()
                         , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                         + (inPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (stackPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
             }
         });
@@ -139,7 +141,7 @@ public class ConditionView extends InteractiveNode {
                     , null, conditionViewModel.getCondition()
                     , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                     + (inPort.getBoundsInLocal().getWidth() / 2)
-                    , getBoundsInParent().getMinY() + (stackPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                    , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                     + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
         });
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
@@ -157,7 +159,7 @@ public class ConditionView extends InteractiveNode {
                         , conditionViewModel.getCondition(), interactivePane.getDestNode()
                         , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                         + (outPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (stackPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
             }
         });

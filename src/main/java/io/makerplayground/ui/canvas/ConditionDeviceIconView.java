@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class ConditionDeviceIconView extends VBox {
 
     private final SceneDeviceIconViewModel viewModel;
+    private static ConditionDevicePropertyWindow devicePropertyWindow;
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
@@ -37,17 +39,25 @@ public class ConditionDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
-        //action.setText(viewModel.getAction().getName());
-        //viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
-        iconImageView.setOnMouseClicked(e -> {
-            ConditionDevicePropertyWindow devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+        setOnMouseClicked(e -> {
+            if (devicePropertyWindow != null) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            }
+            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
 
-        nameIconImageView.setOnMouseClicked(e -> {
-            ConditionDevicePropertyWindow devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+        setOnMouseEntered(e -> {
+            if (devicePropertyWindow != null) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            }
+            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }
