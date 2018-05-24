@@ -11,6 +11,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 
 import java.io.IOException;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class DevicePanelView extends VBox {
             if (platform == viewModel.selectedPlatformProperty().get()) {
                 radioButton.setSelected(true);
             }
+            radioButton.setTextFill(Paint.valueOf("#FFFFFF"));
             microcontrollerPane.setVgap(10);
             microcontrollerPane.getChildren().add(radioButton);
         }

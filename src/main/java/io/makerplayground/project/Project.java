@@ -65,7 +65,7 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        platform = new ReadOnlyObjectWrapper<>(Platform.ARDUINO);
+        platform = new ReadOnlyObjectWrapper<>(Platform.MP_ARDUINO);
         controller = new SimpleObjectProperty<>();
         actuator = FXCollections.observableArrayList();
         sensor = FXCollections.observableArrayList();
