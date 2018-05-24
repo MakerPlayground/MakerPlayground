@@ -71,9 +71,7 @@ public class ConfigActualDeviceViewModel {
     }
 
     public List<Device> getCompatibleControllerDevice() {
-        return DeviceLibrary.INSTANCE.getActualDevice().stream()
-                .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER) && (device.getSupportedPlatform().contains(project.getPlatform())))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return DeviceMapper.getSupportedController(project);
     }
 
     public void setController(Device device) {

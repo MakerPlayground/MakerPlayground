@@ -8,6 +8,7 @@ import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by tanyagorn on 7/11/2017.
@@ -169,13 +170,26 @@ public class DeviceMapper {
         return result;
     }
 
+    public static List<Device> getSupportedController(Project project) {
+        return DeviceLibrary.INSTANCE.getActualDevice().stream()
+                .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
+                        && (device.getSupportedPlatform().contains(project.getPlatform())))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
     public enum DeviceMapperResult {
         OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {
+        // Auto select a controller if it hasn't been selected. If there aren't any supported MCU for the current platform, return error
         if (project.getController() == null) {
-            return DeviceMapperResult.NO_MCU_SELECTED;
+            List<Device> supportController = getSupportedController(project);
+            if (supportController.isEmpty()) {
+                return DeviceMapperResult.NO_MCU_SELECTED;
+            } else {
+                project.setController(supportController.get(0));
+            }
         }
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
