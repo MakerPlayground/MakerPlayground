@@ -34,5 +34,8 @@ public class OutputDeviceSelector extends PopOver {
                 flowPane.getChildren().remove(outputIconView);
             });
         });
+
+        setDetachable(false);
+        setArrowLocation(ArrowLocation.TOP_LEFT);
     }
 }

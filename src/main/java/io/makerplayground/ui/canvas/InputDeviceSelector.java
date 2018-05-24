@@ -35,6 +35,8 @@ public class InputDeviceSelector extends PopOver {
             });
         });
 
+        setDetachable(false);
+        setArrowLocation(ArrowLocation.TOP_LEFT);
     }
 
 }
