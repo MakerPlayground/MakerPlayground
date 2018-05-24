@@ -33,7 +33,7 @@ public class UploadTask extends Task<UploadResult> {
     }
 
     @Override
-    protected UploadResult call() throws Exception {
+    protected UploadResult call() {
         updateProgress(0, 1);
         updateMessage("Checking project");
 
@@ -44,8 +44,12 @@ public class UploadTask extends Task<UploadResult> {
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
             updateMessage("Error: can't find support device");
             return UploadResult.NO_SUPPORT_DEVICE;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+            updateMessage("Error: please select a mcu");
+            return UploadResult.NO_MCU_SELECTED;
         } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
-            throw new IllegalStateException("Found unknown error!!!");
+            updateMessage("Error: found unknown error");
+            return UploadResult.UNKNOWN_ERROR;
         }
 
         Sourcecode sourcecode = Sourcecode.generateCode(project, true);
