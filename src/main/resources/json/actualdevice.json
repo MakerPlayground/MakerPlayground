@@ -6994,7 +6994,7 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_OneAnalogReadToPercent"
+      "MP_OneAnalogReadToSoundLevel"
     ],
     "width": 0.0,
     "height": 0.0,
