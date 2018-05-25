@@ -2348,7 +2348,7 @@
     ],
     "compatibility": [
       {
-        "name": "Piezo",
+        "name": "Buzzer",
         "action": [
           {
             "name": "Play",
@@ -2373,16 +2373,7 @@
           },
           {
             "name": "Beep",
-            "parameter": [
-              {
-                "name": "Tone Frequency",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 10000.0,
-                  "unit": "HERTZ"
-                }
-              }
-            ]
+            "parameter": []
           }
         ],
         "value": [],
@@ -6415,10 +6406,10 @@
     ],
     "compatibility": [
       {
-        "name": "Piezo",
+        "name": "Buzzer",
         "action": [
           {
-            "name": "Play",
+            "name": "Play Tone",
             "parameter": [
               {
                 "name": "Tone Frequency",
@@ -6440,16 +6431,7 @@
           },
           {
             "name": "Beep",
-            "parameter": [
-              {
-                "name": "Tone Frequency",
-                "constraint": {
-                  "min": 0.0,
-                  "max": 10000.0,
-                  "unit": "HERTZ"
-                }
-              }
-            ]
+            "parameter": []
           }
         ],
         "value": [],
