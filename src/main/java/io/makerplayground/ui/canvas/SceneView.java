@@ -117,6 +117,7 @@ public class SceneView extends InteractiveNode{
 
         // show add output device button when there are devices left to be added
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
+        addOutputButton.managedProperty().bind(addOutputButton.visibleProperty());
 
         // this is need to indicate error for empty condition
         showHilight(false);

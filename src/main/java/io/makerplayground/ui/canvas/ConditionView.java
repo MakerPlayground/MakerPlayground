@@ -73,6 +73,7 @@ public class ConditionView extends InteractiveNode {
 
         // show add output device button when there are devices left to be added
         addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
+        addInputButton.managedProperty().bind(addInputButton.visibleProperty());
 
         // show remove button when select
         removeConditionBtn.visibleProperty().bind(selectedProperty());
