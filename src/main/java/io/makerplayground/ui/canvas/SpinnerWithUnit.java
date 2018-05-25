@@ -44,7 +44,11 @@ public class SpinnerWithUnit extends HBox {
         constraintList = FXCollections.observableArrayList();
 
         spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            numberWithUnit.set(new NumberWithUnit(newValue, numberWithUnit.get().getUnit()));
+            if (newValue == null) {
+                numberWithUnit.set(new NumberWithUnit(oldValue, numberWithUnit.get().getUnit()));
+            } else {
+                numberWithUnit.set(new NumberWithUnit(newValue, numberWithUnit.get().getUnit()));
+            }
         });
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));

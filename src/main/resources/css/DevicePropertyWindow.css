@@ -94,8 +94,8 @@
     -fx-border-radius : 3;
     -fx-background-color: white;
     -fx-background-radius: 3;
-    -fx-max-width: 85;
-    -fx-pref-width:50;
+    -fx-max-width: 70;
+    -fx-pref-width:70;
     -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
@@ -105,10 +105,10 @@
     -fx-border-radius : 3;
     -fx-background-color: white;
     -fx-background-radius: 3;
-    -fx-max-width: 85;
+    /*-fx-max-width: 85;
     -fx-min-width: 50;
     -fx-min-height: 25;
-    -fx-max-height: 25;
+    -fx-max-height: 25;*/
 }
 .spinner > .text-field{
     -fx-padding:0;
