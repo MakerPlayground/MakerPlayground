@@ -38,7 +38,7 @@ public class Condition extends NodeElement {
     private final ObservableList<UserSetting> unmodifiableSetting;
 
     Condition() {
-        super(20,20,200, 115);
+        super(20,20,135, 100);
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();

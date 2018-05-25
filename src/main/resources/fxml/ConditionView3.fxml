@@ -26,9 +26,9 @@
             <Arc id="arcNode" fx:id="inPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
             <HBox id="contentPane" stylesheets="@../css/ConditionView3.css">
                <children>
-                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="60.0" prefWidth="135.0" style="-fx-background-color: transparent;">
                      <content>
-                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="15.0" maxHeight="75.0" prefHeight="75.0" prefWidth="200.0" vgap="7.5">
+                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="15.0" maxHeight="60.0" prefHeight="60.0" prefWidth="135.0" vgap="7.5">
                            <padding>
                               <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                            </padding>
