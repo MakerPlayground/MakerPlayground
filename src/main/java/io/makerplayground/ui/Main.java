@@ -25,6 +25,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
@@ -36,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -105,26 +108,19 @@ public class Main extends Application {
 
         // close program
         primaryStage.setOnCloseRequest(event -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Current project is modified");
-            alert.setContentText("Save?");
-            alert.getButtonTypes().setAll(new ButtonType("Yes", ButtonBar.ButtonData.YES)
-                    , new ButtonType("No", ButtonBar.ButtonData.NO)
-                    , new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
-            alert.showAndWait().ifPresent(type -> {
-                if (type.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+            if (project.hasUnsavedModification()) {
+                ButtonType retVal = showConfirmationDialog();
+                if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
                     event.consume();
-                } else if (type.getButtonData() == ButtonBar.ButtonData.YES) {
+                    return;
+                } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
                     saveProject();
-                    primaryStage.close();
-                    Platform.exit();
-                    System.exit(0);
-                } else {
-                    primaryStage.close();
-                    Platform.exit();
-                    System.exit(0);
                 }
-            });
+            }
+
+            primaryStage.close();
+            Platform.exit();
+            System.exit(0);
         });
 
         projectNameTextField.setText(project.getProjectName());
@@ -136,56 +132,20 @@ public class Main extends Application {
             }
         });
 
-        newButton.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Current project is modified");
-            alert.setContentText("Save?");
-            ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-            alert.showAndWait().ifPresent(type -> {
-                if (type.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE) {
-                    if (type.getButtonData() == ButtonBar.ButtonData.YES) {
-                        saveProject();
-                    }
-
-                    projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
-                    project.filePathProperty().removeListener(projectPathListener);
-                    project = new Project();
-                    project.filePathProperty().addListener(projectPathListener);
-                    projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-                    MainWindow mw = new MainWindow(project);
-                    borderPane.setCenter(mw);
-                    updatePathTextField(primaryStage);
-//                    SingletonUtilTools.getInstance().setAll("NEW");
-                }
-            });
-        });
-
-        loadButton.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open File");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-                    new FileChooser.ExtensionFilter("All Files", "*.*"));
-            File selectedFile = fileChooser.showOpenDialog(primaryStage);
-            if (selectedFile != null) {
-                projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
-                project.filePathProperty().removeListener(projectPathListener);
-                project = ProjectHelper.loadProject(selectedFile);
-                project.filePathProperty().addListener(projectPathListener);
-                projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-                MainWindow mw = new MainWindow(project);
-                borderPane.setCenter(mw);
-                updatePathTextField(primaryStage);
+        // setup keyboard shortcut for new, save and load
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isShortcutDown() && event.getCode() == KeyCode.O) {
+                loadProject(primaryStage);
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.N) {
+                newProject(primaryStage);
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.S) {
+                saveProject();
             }
-//            SingletonUtilTools.getInstance().setAll("LOAD");
         });
 
-        saveButton.setOnAction((ActionEvent event) -> {
-            saveProject();
-        });
+        newButton.setOnAction(event -> newProject(primaryStage));
+        loadButton.setOnAction(event -> loadProject(primaryStage));
+        saveButton.setOnAction(event -> saveProject());
 
         tutorialButton.setOnAction(event -> {
             if (flag) {
@@ -259,6 +219,64 @@ public class Main extends Application {
             primaryStage.setTitle("MakerPlayground - Untitled Project");
         } else {
             primaryStage.setTitle("MakerPlayground - " + project.getFilePath());
+        }
+    }
+
+    private ButtonType showConfirmationDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Current project is modified");
+        alert.setContentText("Save?");
+        alert.getButtonTypes().setAll(new ButtonType("Yes", ButtonBar.ButtonData.YES)
+                , new ButtonType("No", ButtonBar.ButtonData.NO)
+                , new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
+        return alert.showAndWait().get();
+    }
+
+    private void newProject(Stage primaryStage) {
+        if (project.hasUnsavedModification()) {
+            ButtonType retVal = showConfirmationDialog();
+            if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                return;
+            } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
+                saveProject();
+            }
+        }
+
+        projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
+        project.filePathProperty().removeListener(projectPathListener);
+        project = new Project();
+        project.filePathProperty().addListener(projectPathListener);
+        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
+        MainWindow mw = new MainWindow(project);
+        borderPane.setCenter(mw);
+        updatePathTextField(primaryStage);
+    }
+
+    private void loadProject(Stage primaryStage) {
+        if (project.hasUnsavedModification()) {
+            ButtonType retVal = showConfirmationDialog();
+            if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                return;
+            } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
+                saveProject();
+            }
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+        if (selectedFile != null) {
+            projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
+            project.filePathProperty().removeListener(projectPathListener);
+            project = ProjectHelper.loadProject(selectedFile);
+            project.filePathProperty().addListener(projectPathListener);
+            projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
+            MainWindow mw = new MainWindow(project);
+            borderPane.setCenter(mw);
+            updatePathTextField(primaryStage);
         }
     }
 

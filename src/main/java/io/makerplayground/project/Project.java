@@ -17,6 +17,8 @@
 package io.makerplayground.project;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.Device;
@@ -28,8 +30,10 @@ import io.makerplayground.helper.SingletonDelDevice;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.shape.Rectangle;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -377,5 +381,32 @@ public class Project {
 
     public void setFilePath(String filePath) {
         this.filePath.set(filePath);
+    }
+
+    public boolean hasUnsavedModification() {
+        if (getFilePath().isEmpty()) {
+            // A hack way to check for project modification in case that it hasn't been saved
+            return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null
+                    && sensor.isEmpty() && actuator.isEmpty() && connectivity.isEmpty()
+                    && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
+                    && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
+        } else {
+            ObjectMapper mapper = new ObjectMapper();
+            String newContent;
+            try {
+                newContent = mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                return true;
+            }
+
+            String oldContent;
+            try {
+                oldContent = new String(Files.readAllBytes(new File(getFilePath()).toPath()));
+            } catch (IOException e) {
+                return true;
+            }
+
+            return !oldContent.equals(newContent);
+        }
     }
 }
