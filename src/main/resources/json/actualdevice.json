@@ -7238,5 +7238,67 @@
         "count": ""
       }
     ]
+  },
+  {
+    "id": "MP-0016",
+    "brand": "MakerPlayground",
+    "model": "Servo Motor",
+    "url": "http://www.makerplayground.io/library/MP-0015",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_Servo"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_GPIO_SINGLE_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_GPIO_SINGLE_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Servo",
+        "action": [
+          {
+            "name": "Move To",
+            "parameter": [
+              {
+                "name": "Degree",
+                "constraint": {
+                  "min": 0.0,
+                  "max": 180.0,
+                  "unit": "DEGREE"
+                }
+              }
+            ]
+          }
+        ],
+        "value": [],
+        "count": ""
+      }
+    ]
   }
 ]
