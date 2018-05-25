@@ -431,30 +431,11 @@ public class Sourcecode {
     }
 
     private static boolean checkScene(Project project) {
-        return project.getScene().stream().flatMap(scene -> scene.getSetting().stream())
-                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
-                .allMatch(o -> (o != null));
+        return project.getScene().stream().noneMatch(Scene::isError);
     }
 
     private static boolean checkCondition(Project project) {
-        return  // every condition must contain at least one device
-                project.getCondition().stream().map(Condition::getSetting).noneMatch(List::isEmpty)
-                // When the action has some parameters (it is not 'compare'), it's value must not be null
-                // otherwise we assume that it is compare
-                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
-                .map(UserSetting::getValueMap)
-                .filter(valueMap -> !valueMap.isEmpty())
-                .flatMap(valueMap -> valueMap.values().stream())
-                .noneMatch(Objects::isNull)
-                // every expression must be valid
-                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
-                .flatMap(userSetting -> userSetting.getExpression().values().stream())
-                .allMatch(Expression::isValid)
-                // at least one expression must be enable
-                && project.getCondition().stream().flatMap(condition -> condition.getSetting().stream())
-                .map(userSetting -> userSetting.getExpression().values())
-                .filter(expressions -> !expressions.isEmpty())
-                .allMatch(expression -> expression.stream().anyMatch(Expression::isEnable));
+        return project.getCondition().stream().noneMatch(Condition::isError);
     }
 
     private static boolean checkDeviceProperty(Project project) {
