@@ -186,15 +186,12 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
-                ae -> {
-//                    Singleton.getInstance().setFlagFirstTime(true);
-//                    SingletonTutorial.getInstance().setIsClick(0);
-//                    SingletonTutorial.getInstance().openTime();
-                    flag = true;
-                    tutorialButton.fire();
-                }));
-        timeline.play();
+//        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
+//                ae -> {
+//                    flag = true;
+//                    tutorialButton.fire();
+//                }));
+//        timeline.play();
 
         hpl.setOnAction(new EventHandler<ActionEvent>() {
             @Override
