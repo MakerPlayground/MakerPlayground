@@ -9,6 +9,7 @@
     -fx-background-color : #3b424f;
     -fx-border-color: #3b424f transparent transparent #5ac2ab;
     -fx-border-width : 5px;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 .titled-pane{
@@ -20,8 +21,23 @@
     -fx-background-color : #5ac2ab;
 }
 .titled-pane > *.content{
-    -fx-background-color : transparent;
+    -fx-background-color : #4d5666;
     -fx-box-border : transparent;
+}
+
+.radio-button {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill : white;
+}
+
+.radio-button .radio {
+    -fx-background-color: #3b424f;
+}
+
+.radio-button .radio .dot {
+    -fx-mark-color: #51af98;
+    -fx-mark-highlight-color: #51af98;
 }
 
 .scroll-pane {

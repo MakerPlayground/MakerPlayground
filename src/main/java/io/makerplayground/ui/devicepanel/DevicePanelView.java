@@ -51,6 +51,8 @@ public class DevicePanelView extends VBox {
         }
 
         // initialize platform panel
+        VBox platformVBox = new VBox();
+        platformVBox.setSpacing(10);
         ToggleGroup platformToggleGroup = new ToggleGroup();
         for (Platform platform : Platform.values()) {
             RadioButton radioButton  = new RadioButton(platform.getDisplayName());
@@ -60,10 +62,9 @@ public class DevicePanelView extends VBox {
             if (platform == viewModel.selectedPlatformProperty().get()) {
                 radioButton.setSelected(true);
             }
-            radioButton.setTextFill(Paint.valueOf("#FFFFFF"));
-            microcontrollerPane.setVgap(10);
-            microcontrollerPane.getChildren().add(radioButton);
+            platformVBox.getChildren().add(radioButton);
         }
+        microcontrollerPane.getChildren().add(platformVBox);
 
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
                 new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
