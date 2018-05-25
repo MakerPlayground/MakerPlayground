@@ -29,13 +29,17 @@ public class SliderWithUnit extends HBox {
     private final ComboBox<Unit> comboBox;
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
 
-    public SliderWithUnit(double min, double max, ObservableList<Unit> unit, NumberWithUnit initialValie) {
-        slider = new Slider(min, max, initialValie.getValue());
+    public SliderWithUnit(double min, double max, ObservableList<Unit> unit, NumberWithUnit initialValue) {
+        slider = new Slider(min, max, initialValue.getValue());
         text = new Text();
         text.textProperty().bind(slider.valueProperty().asString("%.2f"));
         comboBox = new ComboBox<>(unit);
-        comboBox.getSelectionModel().select(initialValie.getUnit());
-        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(initialValie.getValue(), initialValie.getUnit()));
+        comboBox.getSelectionModel().select(initialValue.getUnit());
+        if (initialValue.getUnit() == Unit.NOT_SPECIFIED) {
+            comboBox.setVisible(false);
+            comboBox.setManaged(false);
+        }
+        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(initialValue.getValue(), initialValue.getUnit()));
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
             slider.setValue(newValue.getValue());
             comboBox.getSelectionModel().select(newValue.getUnit());

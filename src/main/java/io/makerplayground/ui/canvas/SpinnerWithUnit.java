@@ -32,6 +32,10 @@ public class SpinnerWithUnit extends HBox {
 
         comboBox = new ComboBox<>(unitList);
         comboBox.getSelectionModel().select(unit);
+        if (unit == Unit.NOT_SPECIFIED) {
+            comboBox.setVisible(false);
+            comboBox.setManaged(false);
+        }
 
         setSpacing(2);
         setAlignment(Pos.CENTER);
