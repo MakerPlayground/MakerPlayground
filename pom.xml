@@ -124,6 +124,29 @@
                 </executions>
             </plugin>
 
+            <!--<plugin>-->
+                <!--<artifactId>maven-resources-plugin</artifactId>-->
+                <!--<version>3.1.0</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>copy-python</id>-->
+                        <!--&lt;!&ndash; here the phase you need &ndash;&gt;-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>copy-resources</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<outputDirectory>${project.build.directory}/MakerPlayground/python-2.7.13</outputDirectory>-->
+                            <!--<resources>-->
+                                <!--<resource>-->
+                                    <!--<directory>python-2.7.13</directory>-->
+                                <!--</resource>-->
+                            <!--</resources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+
         </plugins>
     </build>
 
@@ -172,6 +195,11 @@
             <!--<groupId>org.codehaus.mojo</groupId>-->
             <!--<artifactId>exec-maven-plugin</artifactId>-->
             <!--<version>1.6.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-resources-plugin</artifactId>-->
+            <!--<version>3.1.0</version>-->
         <!--</dependency>-->
     </dependencies>
 

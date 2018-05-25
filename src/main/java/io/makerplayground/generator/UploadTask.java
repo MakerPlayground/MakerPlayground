@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -58,6 +59,14 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.CANT_GENERATE_CODE;
         }
 
+        // check platformio installation
+        Optional<String> pythonPath = checkPlatformio();
+        if (!pythonPath.isPresent()) {
+            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
+            return UploadResult.CANT_FIND_PIO;
+        }
+        System.out.println("Using python at " + pythonPath.get());
+
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
         String platform = project.getPlatform().getPlatformioId();
@@ -76,7 +85,7 @@ public class UploadTask extends Task<UploadResult> {
             FileUtils.deleteDirectory(new File(path + File.separator + "upload" + File.separator + "project"));
             FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project"));
 
-            ProcessBuilder builder = new ProcessBuilder("pio", "init", "--board", platform);
+            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init", "--board", platform);
             builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
@@ -192,7 +201,7 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0.75, 1);
         updateMessage("Uploading to board");
         try {
-            ProcessBuilder builder = new ProcessBuilder("platformio", "run", "--target", "upload");
+            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "upload");
             builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
@@ -232,5 +241,36 @@ public class UploadTask extends Task<UploadResult> {
 
     public ReadOnlyStringProperty logProperty() {
         return log.getReadOnlyProperty();
+    }
+
+    /**
+     * // check whether platformio has been install in this system
+     * @return
+     */
+    private Optional<String> checkPlatformio() {
+        List<String> path = List.of("./python-2.7.13/python"    // integrated python for windows version
+                                    , "python"                  // python in user's system path
+                                    , "/usr/bin/python");       // internal python of macOS and Linux which is used by platformio installation script
+
+        for (String s : path) {
+            try {
+                Process p = new ProcessBuilder(s, "-m", "platformio").redirectErrorStream(true).start();
+                // read from an input stream to prevent the child process from stalling
+                try (BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                    String readLine;
+                    while ((readLine = processOutputReader.readLine()) != null) {
+//                        System.out.println(readLine);
+                    }
+                }
+                p.waitFor();
+                if (p.exitValue() == 0) {
+                    return Optional.of(s);
+                }
+            } catch (IOException | InterruptedException e) {
+                // do nothing as we expected the code to throw exception
+            }
+        }
+
+        return Optional.empty();
     }
 }
