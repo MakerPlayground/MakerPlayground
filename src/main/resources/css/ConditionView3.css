@@ -36,18 +36,8 @@
     -fx-background-radius : 10;
     -fx-border-color : null;
 }
-.scroll-pane{
-     -fx-focus-color: transparent;
-     -fx-background-insets: 0;
-     -fx-padding: 0;
-}
-.scroll-pane:focused {
-    -fx-background-insets: 0;
-}
-.scroll-pane .corner {
-    -fx-background-insets: 0;
-}
-.scroll-pane > .viewport{
+
+#scrollPane > .viewport{
     -fx-background-color : transparent;
     -fx-background-radius : 10;
     -fx-border-color : transparent;
