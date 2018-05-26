@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MPDiagram extends Pane {
-    private static final Point2D BASEBOARD_CENTER_POSITION = new Point2D(500, 352);
+    private static final Point2D BASEBOARD_CENTER_POSITION = new Point2D(500, 400);
     private static final Map<String, Point2D> WIRE_POSITION = Map.of(
             "D1", new Point2D(248, 433),
             "D2", new Point2D(248, 380),
@@ -82,7 +82,7 @@ public class MPDiagram extends Pane {
 
                 InputStream deviceImageStream = getClass().getResourceAsStream("/device/" + projectDevice.getActualDevice().getId() + ".png");
                 if (deviceImageStream == null) {
-                    throw new IllegalStateException("Image not found");
+                    throw new IllegalStateException("Image not found : " + "/device/" + projectDevice.getActualDevice().getId() + ".png");
                 }
                 Image deviceImage = new Image(deviceImageStream);
                 ImageView deviceImageView = new ImageView(deviceImage);
