@@ -43,8 +43,8 @@ public class DevicePanelIcon extends VBox {
 
         nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                // Check duplicated scene's name
-                if (viewModel.isNameDuplicate(nameTextField.getText())) {
+                // Do not allow device's name to be duplicated or empty
+                if (nameTextField.getText().isEmpty() || viewModel.isNameDuplicate(nameTextField.getText())) {
                     nameTextField.setText(viewModel.getDevice().getName());
                 } else { // write change to model
                     viewModel.getDevice().setName(nameTextField.getText());
