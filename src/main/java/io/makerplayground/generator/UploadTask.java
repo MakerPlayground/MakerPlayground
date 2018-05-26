@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -65,7 +66,7 @@ public class UploadTask extends Task<UploadResult> {
             updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
-        System.out.println("Using python at " + pythonPath.get());
+        Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
 
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
@@ -244,11 +245,11 @@ public class UploadTask extends Task<UploadResult> {
     }
 
     /**
-     * // check whether platformio has been install in this system
-     * @return
+     * check whether platformio has been install in this system
+     * @return path to valid python or Optional.empty()
      */
     private Optional<String> checkPlatformio() {
-        List<String> path = List.of("./python-2.7.13/python"    // integrated python for windows version
+        List<String> path = List.of("python-2.7.13/python"      // integrated python for windows version
                                     , "python"                  // python in user's system path
                                     , "/usr/bin/python");       // internal python of macOS and Linux which is used by platformio installation script
 
@@ -262,8 +263,7 @@ public class UploadTask extends Task<UploadResult> {
 //                        System.out.println(readLine);
                     }
                 }
-                p.waitFor();
-                if (p.exitValue() == 0) {
+                if (p.waitFor(5, TimeUnit.SECONDS) && (p.exitValue() == 0)) {
                     return Optional.of(s);
                 }
             } catch (IOException | InterruptedException e) {
