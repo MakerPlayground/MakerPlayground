@@ -28,7 +28,8 @@ import javafx.scene.shape.*;
  */
 public class LineViewModel {
     private static final int STRAIGHT_LINE_THRESHOLD = 2;
-    private static final int LOOP_THRESHOLD = 150;
+    private static final int LOOP_X_THRESHOLD = 200;
+    private static final int LOOP_Y_THRESHOLD = 150;
     private static final int LOOP_HEIGHT = 120;
     private static final int MIN_ARC_THRESHOLD = 75;
 
@@ -131,7 +132,7 @@ public class LineViewModel {
                 }
             }
         } else {
-            if (Math.abs(sy - ey) <= LOOP_THRESHOLD) {
+            if (Math.abs(sy - ey) <= LOOP_Y_THRESHOLD && (sx - ex >= LOOP_X_THRESHOLD)) {
                 double cy = Math.min(sy, ey) - LOOP_HEIGHT;
                 centerY.set(cy);
 
