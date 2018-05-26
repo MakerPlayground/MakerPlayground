@@ -2253,14 +2253,14 @@
             ]
           },
           {
-            "name": "Show Data",
+            "name": "Show Number",
             "parameter": [
               {
                 "name": "Data",
                 "constraint": {
-                  "min": 0.0,
+                  "min": -999.0,
                   "max": 9999.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]
@@ -2351,13 +2351,13 @@
         "name": "Buzzer",
         "action": [
           {
-            "name": "Play",
+            "name": "Play Tone",
             "parameter": [
               {
                 "name": "Tone Frequency",
                 "constraint": {
                   "min": 0.0,
-                  "max": 10000.0,
+                  "max": 20000.0,
                   "unit": "HERTZ"
                 }
               },
@@ -3898,14 +3898,14 @@
             ]
           },
           {
-            "name": "Show Data",
+            "name": "Show Number",
             "parameter": [
               {
                 "name": "Data",
                 "constraint": {
-                  "min": 0.0,
+                  "min": -999.0,
                   "max": 9999.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]
@@ -3941,7 +3941,7 @@
   {
     "id": "Arduinoall-653",
     "brand": "Arduinoall",
-    "model": "DHT11 Digital Temperature and Humidity Sensor DHT11\u00a0",
+    "model": "DHT11 Digital Temperature and Humidity Sensor DHT11",
     "url": "https://www.arduinoall.com/product/653/dht11-digital-temperature-and-humidity-sensor-dht11-%E0%B9%81%E0%B8%9A%E0%B8%9A-pcb-%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%AA%E0%B8%B2%E0%B8%A2%E0%B9%84%E0%B8%9F",
     "type": "PERIPHERAL",
     "formfactor": "BREAKOUT_BOARD_ONESIDE",
@@ -4851,14 +4851,14 @@
             ]
           },
           {
-            "name": "Show Data",
+            "name": "Show Number",
             "parameter": [
               {
                 "name": "Data",
                 "constraint": {
-                  "min": 0.0,
+                  "min": -999.0,
                   "max": 9999.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]
@@ -5610,7 +5610,7 @@
   {
     "id": "Grove-101020054",
     "brand": "SeeedStudio",
-    "model": "Grove - 3-Axis Digital Accelerometer(\u00b116g)",
+    "model": "Grove - 3-Axis Digital Accelerometer(+-16g)",
     "url": "http://wiki.seeed.cc/Grove-3-Axis_Digital_Accelerometer-16g/",
     "type": "PERIPHERAL",
     "formfactor": "GROVE",
@@ -6415,7 +6415,7 @@
                 "name": "Tone Frequency",
                 "constraint": {
                   "min": 0.0,
-                  "max": 10000.0,
+                  "max": 20000.0,
                   "unit": "HERTZ"
                 }
               },
@@ -7080,14 +7080,14 @@
             ]
           },
           {
-            "name": "Show Data",
+            "name": "Show Number",
             "parameter": [
               {
                 "name": "Data",
                 "constraint": {
                   "min": -999.0,
                   "max": 9999.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]
@@ -7225,7 +7225,7 @@
     "id": "MP-0016",
     "brand": "MakerPlayground",
     "model": "Servo Motor",
-    "url": "http://www.makerplayground.io/library/MP-0015",
+    "url": "http://www.makerplayground.io/library/MP-0016",
     "type": "PERIPHERAL",
     "formfactor": "MP_DEVICE",
     "platform": [

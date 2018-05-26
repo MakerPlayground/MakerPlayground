@@ -52,7 +52,7 @@
             "value": 2000.0,
             "constraint": {
               "min": 0.0,
-              "max": 10000.0,
+              "max": 20000.0,
               "unit": "HERTZ"
             },
             "datatype": "INTEGER",
@@ -95,7 +95,7 @@
         ]
       },
       {
-        "name": "Show Data",
+        "name": "Show Number",
         "funcname": "showData",
         "type": "Inactive",
         "parameter": [
@@ -103,9 +103,9 @@
             "name": "Data",
             "value": 1000.0,
             "constraint": {
-              "min": 0.0,
+              "min": -999.0,
               "max": 9999.0,
-              "unit": "NUMBER"
+              "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
             "controltype": "SPINBOX"
