@@ -106,9 +106,17 @@ public class SceneView extends InteractiveNode{
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
         translateYProperty().bindBidirectional(sceneViewModel.yProperty());
 
-        // bind delay amount to the model
-        Bindings.bindBidirectional(delayTextField.textProperty(), sceneViewModel.delayProperty()
-                , new NumberStringConverter());
+        // bind delay amount to the model (revert to old value if new value is invalid)
+        delayTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                sceneViewModel.setDelay(0);
+            } else if (newValue.matches("\\d+\\.?\\d*")) {
+                double delay = Double.parseDouble(newValue);
+                sceneViewModel.setDelay(delay);
+            } else {
+                delayTextField.setText(String.valueOf(oldValue));
+            }
+        });
 
         // bind delay unit (bindBidirectional is not available)
         // TODO: combobox won't change if unit is changed elsewhere
@@ -121,6 +129,9 @@ public class SceneView extends InteractiveNode{
 
         // this is need to indicate error for empty condition
         showHilight(false);
+
+        // update hilight when error property of the condition is changed
+        sceneViewModel.getScene().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
     }
 
     private void initEvent() {

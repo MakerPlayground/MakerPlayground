@@ -18,8 +18,7 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.project.expression.Expression;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -34,6 +33,7 @@ import java.util.Objects;
 public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
+    private final ReadOnlyBooleanWrapper error;
 
     private final ObservableList<UserSetting> unmodifiableSetting;
 
@@ -42,6 +42,7 @@ public class Condition extends NodeElement {
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
+        this.error = new ReadOnlyBooleanWrapper(checkError());
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
     }
@@ -52,6 +53,7 @@ public class Condition extends NodeElement {
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
+        this.error = new ReadOnlyBooleanWrapper(checkError());
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
     }
@@ -70,6 +72,7 @@ public class Condition extends NodeElement {
 
     public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device, false));
+        invalidate();
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -78,13 +81,14 @@ public class Condition extends NodeElement {
                 setting.remove(i);
             }
         }
+        invalidate();
     }
 
     public ObservableList<UserSetting> getSetting() {
         return unmodifiableSetting;
     }
 
-    public boolean isError() {
+    private boolean checkError() {
         return setting.isEmpty()
                 // When the action has some parameters (it is not 'compare'), it's value must not be null
                 // otherwise we assume that it is compare
@@ -100,5 +104,19 @@ public class Condition extends NodeElement {
                 .map(userSetting -> userSetting.getExpression().values())
                 .filter(expressions -> !expressions.isEmpty())
                 .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
+    }
+
+    public boolean isError() {
+        return error.get();
+    }
+
+    public ReadOnlyBooleanProperty errorProperty() {
+        return error.getReadOnlyProperty();
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        error.set(checkError());
     }
 }

@@ -80,6 +80,9 @@ public class ConditionView extends InteractiveNode {
 
         // this is need to indicate error for empty condition
         showHilight(false);
+
+        // update hilight when error property of the condition is changed
+        conditionViewModel.getCondition().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
     }
 
     private void initEvent() {

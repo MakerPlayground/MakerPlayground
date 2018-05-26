@@ -46,6 +46,7 @@ public class Scene extends NodeElement {
     private final ObservableList<UserSetting> setting;
     private final DoubleProperty delay;
     private final ObjectProperty<DelayUnit> delayUnit;
+    private final ReadOnlyBooleanWrapper error;
 
     Scene() {
         super(20,20,200, 135);
@@ -55,6 +56,7 @@ public class Scene extends NodeElement {
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
         this.delayUnit = new SimpleObjectProperty<>(DelayUnit.Second);
+        this.error = new ReadOnlyBooleanWrapper(checkError());
     }
 
     Scene(double top, double left, double width, double height
@@ -64,10 +66,12 @@ public class Scene extends NodeElement {
         this.setting = FXCollections.observableList(setting);
         this.delay = new SimpleDoubleProperty(delay);
         this.delayUnit = new SimpleObjectProperty<>(delayUnit);
+        this.error = new ReadOnlyBooleanWrapper(checkError());
     }
 
     public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device, true));
+        invalidate();
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -76,6 +80,7 @@ public class Scene extends NodeElement {
                 setting.remove(i);
             }
         }
+        invalidate();
     }
 
     public String getName() {
@@ -88,6 +93,7 @@ public class Scene extends NodeElement {
 
     public void setName(String name) {
         this.name.set(name);
+        invalidate();
     }
 
     public double getDelay() {
@@ -118,9 +124,24 @@ public class Scene extends NodeElement {
         return setting;
     }
 
-    public boolean isError() {
-        return setting.stream()
+    private boolean checkError() {
+        return name.get().isEmpty()
+                || setting.stream()
                 .flatMap(userSetting -> userSetting.getValueMap().values().stream())
                 .anyMatch(o -> (o == null));
+    }
+
+    public boolean isError() {
+        return error.get();
+    }
+
+    public ReadOnlyBooleanProperty errorProperty() {
+        return error.getReadOnlyProperty();
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        error.set(checkError());
     }
 }

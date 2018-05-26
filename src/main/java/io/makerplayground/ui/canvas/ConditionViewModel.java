@@ -26,7 +26,7 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
+         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
         // TODO: find a better way (now since only sensor and connectivity can be in the condition so we track these two)

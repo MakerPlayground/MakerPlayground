@@ -48,6 +48,7 @@ public class ConditionDeviceIconView extends VBox {
             }
             devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
 
@@ -58,6 +59,7 @@ public class ConditionDeviceIconView extends VBox {
             }
             devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }

@@ -134,4 +134,8 @@ public class NodeElement {
     public ReadOnlyDoubleProperty destPortYProperty() {
         return destPortY.getReadOnlyProperty();
     }
+
+    public void invalidate() {
+
+    }
 }

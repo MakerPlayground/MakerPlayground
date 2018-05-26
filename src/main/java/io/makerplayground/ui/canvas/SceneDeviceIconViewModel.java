@@ -19,10 +19,12 @@ public class SceneDeviceIconViewModel {
     private final UserSetting userSetting;
     //private final SimpleStringProperty name;
     private final Project project;
+    private final NodeElement nodeElement;
 
-    public SceneDeviceIconViewModel(UserSetting userSetting, Project project) {
+    public SceneDeviceIconViewModel(UserSetting userSetting, NodeElement nodeElement, Project project) {
         this.userSetting = userSetting;
         //this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+        this.nodeElement = nodeElement;
         this.project = project;
     }
 
@@ -83,6 +85,7 @@ public class SceneDeviceIconViewModel {
         return project.getAvailableValue();
     }
 
-
-
+    public NodeElement getNodeElement() {
+        return nodeElement;
+    }
 }

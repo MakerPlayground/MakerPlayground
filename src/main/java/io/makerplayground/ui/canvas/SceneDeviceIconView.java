@@ -55,6 +55,7 @@ public class SceneDeviceIconView extends VBox {
             }
             devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
 
@@ -65,6 +66,7 @@ public class SceneDeviceIconView extends VBox {
             }
             devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }

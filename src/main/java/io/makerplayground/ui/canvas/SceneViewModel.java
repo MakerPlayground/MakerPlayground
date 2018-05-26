@@ -31,7 +31,7 @@ public class SceneViewModel {
         this.delay.addListener((observable, oldValue, newValue) -> scene.setDelay(newValue.doubleValue()));
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, project));
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
         // TODO: find a better way (now since only actuator and connectivity can be in the scene so we track these two)
@@ -63,6 +63,10 @@ public class SceneViewModel {
 
     public double getDelay() {
         return delay.get();
+    }
+
+    public void setDelay(double delay) {
+        this.delay.set(delay);
     }
 
     public SimpleDoubleProperty delayProperty() {
