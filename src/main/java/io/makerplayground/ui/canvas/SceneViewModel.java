@@ -51,13 +51,16 @@ public class SceneViewModel {
         return scene.getName();
     }
 
-    public StringProperty nameProperty() {
-        return scene.nameProperty();
-    }
+//    public StringProperty nameProperty() {
+//        return scene.nameProperty();
+//    }
 
-    public void setName(String name) {
-        if (!name.isEmpty() && !isNameDuplicate(name)) {
+    public boolean setName(String name) {
+        if (!isNameDuplicate(name)) {
             scene.setName(name);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -127,10 +130,10 @@ public class SceneViewModel {
 
     // Check if current scene's name is duplicated with other scenes
     // return true when this name cannot be used
-    private boolean isNameDuplicate(String newName) {
+    public boolean isNameDuplicate(String newName) {
         for (Scene scene : project.getScene()) {
             //System.out.println("name value = " + scene.getName() + " new name = " + newName);
-            if (scene.getName().equals(newName)) {
+            if ((this.scene != scene) && scene.getName().equals(newName)) {
                 return true;
             }
         }

@@ -100,13 +100,25 @@ public class SceneView extends InteractiveNode{
         timeUnitComboBox.getSelectionModel().selectFirst();
 
         // bind scene's name to the model
-        nameTextField.textProperty().bindBidirectional(sceneViewModel.nameProperty());
+        nameTextField.setText(sceneViewModel.getName());
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (sceneViewModel.isNameDuplicate(newValue)) {
+                nameTextField.setText(oldValue);
+            } else {
+                sceneViewModel.setName(newValue);
+            }
+        });
 
         // bind scene's location to the model
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
         translateYProperty().bindBidirectional(sceneViewModel.yProperty());
 
         // bind delay amount to the model (revert to old value if new value is invalid)
+        if (sceneViewModel.getDelay() == 0) {
+            delayTextField.setText("0");
+        } else {
+            delayTextField.setText(String.valueOf(sceneViewModel.getDelay()));
+        }
         delayTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
                 sceneViewModel.setDelay(0);
