@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.controlsfx.control.PopOver;
 
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class SceneDeviceIconView extends VBox {
 
     private final SceneDeviceIconViewModel viewModel;
+    private static SceneDevicePropertyWindow devicePropertyWindow;
 
     @FXML private Text nameIconImageView;
     @FXML private ImageView iconImageView;
@@ -46,13 +48,23 @@ public class SceneDeviceIconView extends VBox {
 
         // use mouse release so that it can be coexist with mouse drag
         // (mouse release will be consumed if it was release after drag)
-        iconImageView.setOnMouseReleased(e -> {
-            SceneDevicePropertyWindow devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+        setOnMouseReleased(e -> {
+            if (devicePropertyWindow != null) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            }
+            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
 
-        nameIconImageView.setOnMouseReleased(e -> {
-            SceneDevicePropertyWindow devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+        setOnMouseEntered(e -> {
+            if (devicePropertyWindow != null) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            }
+            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }

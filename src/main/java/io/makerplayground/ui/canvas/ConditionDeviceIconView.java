@@ -41,13 +41,13 @@ public class ConditionDeviceIconView extends VBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
-        setOnMouseClicked(e -> {
+        setOnMouseReleased(e -> {
             if (devicePropertyWindow != null) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
             devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
-            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
 
@@ -57,7 +57,7 @@ public class ConditionDeviceIconView extends VBox {
                 devicePropertyWindow = null;
             }
             devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
-            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }
