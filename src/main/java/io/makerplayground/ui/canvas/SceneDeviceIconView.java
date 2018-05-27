@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -22,9 +23,9 @@ public class SceneDeviceIconView extends VBox {
     private final SceneDeviceIconViewModel viewModel;
     private static SceneDevicePropertyWindow devicePropertyWindow;
 
-    @FXML private Text nameIconImageView;
+    @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
-    @FXML private Text action;
+    @FXML private Label action;
     @FXML private Button removeStateDeviceBtn;
 
 

@@ -49,7 +49,7 @@ public class Scene extends NodeElement {
     private final ReadOnlyBooleanWrapper error;
 
     Scene() {
-        super(20,20,200, 135);
+        super(20,20,200, 130);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed
