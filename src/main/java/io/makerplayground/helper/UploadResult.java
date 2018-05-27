@@ -10,5 +10,6 @@ public enum UploadResult {
     UNKNOWN_ERROR,
     CANT_FIND_BOARD,
     CANT_FIND_LIBRARY,
-    USER_CANCEL
+    USER_CANCEL,
+    NO_PERMISSION;
 }

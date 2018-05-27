@@ -102,9 +102,9 @@
                             <arguments>
                                 <argument>-deploy</argument>
                                 <argument>-native</argument>
-                                <argument>image</argument> <!-- or 'installer' -->
+                                <argument>installer</argument> <!-- or 'installer' -->
                                 <argument>-name</argument>
-                                <argument>MakerPlayground</argument>
+                                <argument>Maker Playground</argument>
                                 <argument>-appclass</argument>
                                 <argument>io.makerplayground.ui.Main</argument>
                                 <argument>-srcdir</argument>

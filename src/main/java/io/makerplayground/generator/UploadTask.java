@@ -80,14 +80,14 @@ public class UploadTask extends Task<UploadResult> {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
         }
 
-        Path currentRelativePath = Paths.get("");
-        String path = currentRelativePath.toAbsolutePath().toString();
+        String projectPath = System.getProperty("user.home") + File.separator + ".makerplayground" + File.separator + "upload";
+        Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
-            FileUtils.deleteDirectory(new File(path + File.separator + "upload" + File.separator + "project"));
-            FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project"));
+            FileUtils.deleteDirectory(new File(projectPath));
+            FileUtils.forceMkdir(new File(projectPath));
 
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init", "--board", platform);
-            builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
+            builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -113,18 +113,18 @@ public class UploadTask extends Task<UploadResult> {
             updateMessage("Unknown error has occurred. Please try again.");
             return UploadResult.UNKNOWN_ERROR;
         } catch (IOException e) {
-            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
-            return UploadResult.CANT_FIND_PIO;
+            updateMessage("Error: can't create project directory (permission denied)");
+            return UploadResult.NO_PERMISSION;
         }
 
         updateProgress(0.5, 1);
         updateMessage("Generate source files and libraries");
         try {
-            FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "src"));
-            FileUtils.forceMkdir(new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib"));
+            FileUtils.forceMkdir(new File(projectPath + File.separator + "src"));
+            FileUtils.forceMkdir(new File(projectPath + File.separator + "lib"));
 
             // generate source file
-            FileWriter fw = new FileWriter(path + File.separator + "upload" + File.separator + "project" + File.separator + "src" + File.separator + "main.cpp");
+            FileWriter fw = new FileWriter(projectPath + File.separator + "src" + File.separator + "main.cpp");
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(code);
             bw.close();
@@ -137,19 +137,17 @@ public class UploadTask extends Task<UploadResult> {
 //                URL sourceFolder = getClass().getResource("/library/arduino/src/" + x);
                 // if the library is a single .c/.h file copy the file to the src directory
                 if (sourceHeaderFile != null) {
-                    File destHeaderFile = new File(path + File.separator + "upload" + File.separator + "project"
-                            + File.separator + "src" + File.separator + x + ".h");
+                    File destHeaderFile = new File(projectPath + File.separator + "src" + File.separator + x + ".h");
                     FileUtils.copyURLToFile(sourceHeaderFile, destHeaderFile, 1, 1);
 
                     URL srcCppFile = getClass().getResource("/library/arduino/src/" + x + ".cpp");
                     // some library only have a header file so we ignore the cpp file
                     if (srcCppFile != null) {
-                        File destCppFile = new File(path + File.separator + "upload" + File.separator + "project"
-                                + File.separator + "src" + File.separator + x + ".cpp");
+                        File destCppFile = new File(projectPath + File.separator + "src" + File.separator + x + ".cpp");
                         FileUtils.copyURLToFile(srcCppFile, destCppFile, 1, 1);
                     }
                 } else if (sourceZipFile != null) {  // if the library comes as a zip, copy the whole zip and extract to the lib directory
-                    String destinationPath = path + File.separator + "upload" + File.separator + "project" + File.separator + "lib";
+                    String destinationPath = projectPath + File.separator + "lib";
                     InputStream is = getClass().getResourceAsStream("/library/arduino/src/" + x + ".zip");
                     ZipInputStream zis = new ZipInputStream(is);
                     ZipEntry entry;
@@ -203,7 +201,7 @@ public class UploadTask extends Task<UploadResult> {
         updateMessage("Uploading to board");
         try {
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "upload");
-            builder.directory(new File("upload" + File.separator + "project").getAbsoluteFile()); // this is where you set the root folder for the executable to run with
+            builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -230,8 +228,8 @@ public class UploadTask extends Task<UploadResult> {
             updateMessage("Unknown error has occurred. Please try again.");
             return UploadResult.UNKNOWN_ERROR;
         } catch (IOException e) {
-            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
-            return UploadResult.CANT_FIND_PIO;
+            updateMessage("Error: can't find project directory (permission denied)");
+            return UploadResult.NO_PERMISSION;
         }
 
         updateProgress(1, 1);
