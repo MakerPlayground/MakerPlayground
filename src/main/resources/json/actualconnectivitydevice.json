@@ -108,7 +108,7 @@
                 "constraint": {
                   "min": -32768.0,
                   "max": 32767.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]
@@ -302,7 +302,7 @@
                 "constraint": {
                   "min": -32768.0,
                   "max": 32767.0,
-                  "unit": "NUMBER"
+                  "unit": "NOT_SPECIFIED"
                 }
               }
             ]

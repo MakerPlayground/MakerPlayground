@@ -100,7 +100,7 @@
         "type": "Inactive",
         "parameter": [
           {
-            "name": "Data",
+            "name": "Number",
             "value": 1000.0,
             "constraint": {
               "min": -999.0,

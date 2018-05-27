@@ -2256,7 +2256,7 @@
             "name": "Show Number",
             "parameter": [
               {
-                "name": "Data",
+                "name": "Number",
                 "constraint": {
                   "min": -999.0,
                   "max": 9999.0,
@@ -3901,7 +3901,7 @@
             "name": "Show Number",
             "parameter": [
               {
-                "name": "Data",
+                "name": "Number",
                 "constraint": {
                   "min": -999.0,
                   "max": 9999.0,
@@ -4854,7 +4854,7 @@
             "name": "Show Number",
             "parameter": [
               {
-                "name": "Data",
+                "name": "Number",
                 "constraint": {
                   "min": -999.0,
                   "max": 9999.0,
@@ -6937,31 +6937,6 @@
         ],
         "value": [],
         "count": ""
-      },
-      {
-        "name": "Gesture",
-        "action": [
-          {
-            "name": "Detect Swipe",
-            "parameter": [
-              {
-                "name": "Gesture",
-                "constraint": [
-                  "Left",
-                  "Right",
-                  "Up",
-                  "Down"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "No Hand",
-            "parameter": []
-          }
-        ],
-        "value": [],
-        "count": ""
       }
     ]
   },
@@ -7083,7 +7058,7 @@
             "name": "Show Number",
             "parameter": [
               {
-                "name": "Data",
+                "name": "Number",
                 "constraint": {
                   "min": -999.0,
                   "max": 9999.0,

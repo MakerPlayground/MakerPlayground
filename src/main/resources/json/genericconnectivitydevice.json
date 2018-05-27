@@ -60,7 +60,7 @@
             "constraint": {
               "min": -32768,
               "max": 32767,
-              "unit": "NUMBER"
+              "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
             "controltype": "SPINBOX"

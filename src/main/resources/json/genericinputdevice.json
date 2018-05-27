@@ -517,40 +517,6 @@
     "property": []
   },
   {
-    "name": "Gesture",
-    "description": "A sensor that detect the hand. \\nRelated project:\\n\\tHand command\\n\\tHand switch",
-    "action": [],
-    "condition": [
-      {
-        "name": "Detect Gesture",
-        "funcname": "isGestureDetected",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Gesture",
-            "value": "Left",
-            "constraint": [
-              "Left",
-              "Right",
-              "Up",
-              "Down"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
-        "name": "No Gesture",
-        "funcname": "isGestureNotDetected",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [],
-    "property": []
-  },
-  {
     "name": "Soil Moisture",
     "description": "This is Moisture Sensor. It can detect the moisture of soil or decide whether there is water around the sensor",
     "action": [],
