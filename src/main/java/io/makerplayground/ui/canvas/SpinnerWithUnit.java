@@ -38,7 +38,6 @@ public class SpinnerWithUnit extends HBox {
         }
 
         setSpacing(2);
-        setAlignment(Pos.CENTER);
 
         numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(value,unit));
         numberWithUnit.addListener((observable, oldValue, newValue) -> {

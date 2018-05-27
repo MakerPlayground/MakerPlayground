@@ -94,7 +94,7 @@
     -fx-border-radius : 3;
     -fx-background-color: white;
     -fx-background-radius: 3;
-    -fx-max-width: 70;
+    /*-fx-max-width: 70;*/
     -fx-pref-width:70;
     -fx-min-width: 50;
     -fx-min-height: 25;
@@ -140,7 +140,7 @@
     -fx-background-color: derive(black,30%);
 }
 .combo-box{
-    -fx-max-width: 125;
+    /*-fx-max-width: 125;*/
     -fx-min-width: 50;
     -fx-min-height: 25;
     -fx-max-height: 25;
@@ -160,7 +160,7 @@
 }
 .combo-box:showing .list-view,.combo-box:armed .list-view {
     -fx-font-size: 12px;
-    -fx-max-width: 125;
+    /*-fx-max-width: 125;*/
 }
 .combo-box .list-cell {
     -fx-font-size: 12px;

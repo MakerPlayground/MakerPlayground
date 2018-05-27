@@ -9,6 +9,7 @@ import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.SimpleExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -184,6 +185,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 throw new IllegalStateException("Found unknown control type " + p);
             }
 
+            GridPane.setHalignment(control, HPos.LEFT);
             GridPane.setRowIndex(control, i+1);
             GridPane.setColumnIndex(control, 1);
             propertyPane.getChildren().addAll(name, control);
