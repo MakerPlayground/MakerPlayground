@@ -44,13 +44,13 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setRightAnchor(addConditionBtn, 20.0);
 
         zoomDefaultButton.setId("zoomDefaultButton");
-        zoomDefaultButton.setMinSize(25,25);
+        zoomDefaultButton.setPrefSize(25,25);
         zoomDefaultButton.setOnAction(event -> mainPane.setScale(1));
 //        AnchorPane.setBottomAnchor(zoomDefaultButton, 20.0);
 //        AnchorPane.setRightAnchor(zoomDefaultButton, 125.0);
 
         zoomInButton.setId("zoomInButton");
-        zoomInButton.setMinSize(25,25);
+        zoomInButton.setPrefSize(25,25);
         zoomInButton.setOnAction(event -> {
             if(mainPane.getScale()< 5)
                 mainPane.setScale(mainPane.getScale() + 0.1);
@@ -59,7 +59,7 @@ public class CanvasView extends AnchorPane {
 //        AnchorPane.setRightAnchor(zoomInButton, 20.0);
 
         zoomOutButton.setId("zoomOutButton");
-        zoomOutButton.setMinSize(25,25);
+        zoomOutButton.setPrefSize(25,25);
         zoomOutButton.setOnAction(event -> {
             if(mainPane.getScale()> 0.5)
                 mainPane.setScale(mainPane.getScale() - 0.1);
@@ -68,7 +68,8 @@ public class CanvasView extends AnchorPane {
 //        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
 
         VBox zoomControl = new VBox();
-        zoomControl.getChildren().addAll( zoomInButton, zoomDefaultButton,zoomOutButton);
+        zoomControl.setSpacing(0);
+        zoomControl.getChildren().addAll(zoomInButton, zoomDefaultButton,zoomOutButton);
         AnchorPane.setRightAnchor(zoomControl, 20.0);
         AnchorPane.setBottomAnchor(zoomControl, 20.0);
 

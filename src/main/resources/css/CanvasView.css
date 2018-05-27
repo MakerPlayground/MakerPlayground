@@ -99,6 +99,7 @@
     -fx-background-color: transparent;
     -fx-cursor: hand;
      -fx-background-repeat: no-repeat;
+     -fx-padding: 0px;
 }
 #zoomOutButton:pressed{
     -fx-focus-color: transparent;
@@ -114,6 +115,7 @@
     -fx-background-color: transparent;
     -fx-cursor: hand;
      -fx-background-repeat: no-repeat;
+     -fx-padding: 0px;
 }
 #zoomDefaultButton:pressed{
      -fx-focus-color: transparent;
@@ -129,4 +131,5 @@
      -fx-background-color: transparent;
      -fx-cursor: hand;
      -fx-background-repeat: no-repeat;
+     -fx-padding: 0px;
  }
