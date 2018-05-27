@@ -6,7 +6,7 @@
 
     <groupId>io.makerplayground</groupId>
     <artifactId>io.makerplayground.frontend</artifactId>
-    <version>0.1.0-beta1</version>
+    <version>0.2</version>
 
     <profiles>
         <profile>
@@ -105,6 +105,8 @@
                                 <argument>installer</argument> <!-- or 'installer' -->
                                 <argument>-name</argument>
                                 <argument>Maker Playground</argument>
+                                <argument>-title</argument>
+                                <argument>Maker Playground</argument>
                                 <argument>-appclass</argument>
                                 <argument>io.makerplayground.ui.Main</argument>
                                 <argument>-srcdir</argument>
@@ -115,6 +117,7 @@
                                 <argument>${project.build.directory}</argument>
                                 <argument>-outfile</argument>
                                 <argument>${project.artifactId}-app</argument>
+                                <argument>-BappVersion=${project.version}</argument>
                                 <argument>-Bicon=${project.build.sourceDirectory}/../resources/icons/${icon.filename}</argument>
                                 <argument>-BjvmOptions=--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED</argument>
                                 <argument>-v</argument>

@@ -97,9 +97,9 @@ public class Main extends Application {
 
         projectPathListener = (observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                primaryStage.setTitle("MakerPlayground - Untitled Project");
+                primaryStage.setTitle("Maker Playground 0.2 - Untitled Project");
             } else {
-                primaryStage.setTitle("MakerPlayground - " + project.getFilePath());
+                primaryStage.setTitle("Maker Playground 0.2 - " + project.getFilePath());
             }
         };
 
@@ -213,9 +213,9 @@ public class Main extends Application {
 
     private void updatePathTextField(Stage primaryStage) {
         if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle("MakerPlayground - Untitled Project");
+            primaryStage.setTitle("Maker Playground 0.2 - Untitled Project");
         } else {
-            primaryStage.setTitle("MakerPlayground - " + project.getFilePath());
+            primaryStage.setTitle("Maker Playground 0.2 - " + project.getFilePath());
         }
     }
 
