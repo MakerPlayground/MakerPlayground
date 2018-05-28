@@ -36,7 +36,7 @@ public class GenerateView extends Dialog {
     @FXML private TableColumn<TableDataList,String> brandColumn;
     @FXML private TableColumn<TableDataList,String> modelColumn;
     @FXML private TableColumn<TableDataList,String> pinColumn;
-    @FXML private TableColumn<TableDataList,Hyperlink> urlColumn;
+//    @FXML private TableColumn<TableDataList,Hyperlink> urlColumn;
     @FXML private ScrollPane diagramScrollPane;
     @FXML private Tab simulateTab;
     @FXML private Tab codeDeviceTableTab;
@@ -97,7 +97,7 @@ public class GenerateView extends Dialog {
         brandColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("brand"));
         modelColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("model"));
         pinColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,String>("pin"));
-        urlColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,Hyperlink>("url"));
+//        urlColumn.setCellValueFactory(new PropertyValueFactory<TableDataList,Hyperlink>("url"));
 
            //TODO: Set urlColumn on Action ( go to website )
 
