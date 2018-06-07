@@ -2,32 +2,25 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.ErrorDialogView;
+import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
-import javax.swing.plaf.FileChooserUI;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class UploadTask extends Task<UploadResult> {
 
     private final Project project;
     private final ReadOnlyStringWrapper log;
+
+    private final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
 
     public UploadTask(Project project) {
         this.project = project;
@@ -39,6 +32,7 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0, 1);
         updateMessage("Checking project");
 
+        /* Device Mapping */
         DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
         if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
             updateMessage("Error: not enough port available");
@@ -54,20 +48,31 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.UNKNOWN_ERROR;
         }
 
+        /* Code Generating */
         Sourcecode sourcecode = Sourcecode.generateCode(project, true);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;
         }
 
-        // check platformio installation
+        updateProgress(0.15, 1);
+
+        /* check platformio installation */
         Optional<String> pythonPath = checkPlatformio();
         if (!pythonPath.isPresent()) {
-            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
-            return UploadResult.CANT_FIND_PIO;
+            updateMessage("Installing Python");
+            Platform.runLater(() -> log.set("extracting python"));
+            extractPythonFromJar();
+            Platform.runLater(() -> log.set("successfully extract python"));
+            pythonPath = checkPlatformio();
+            if (!pythonPath.isPresent()) {
+                updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
+                return UploadResult.CANT_FIND_PIO;
+            }
         }
-        Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
+        pythonPath.ifPresent(s -> Platform.runLater(() -> log.set("Using python at " + s + "\n")));
 
+        /* Library List Preparing */
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
         String platform = project.getPlatform().getPlatformioId();
@@ -80,7 +85,10 @@ public class UploadTask extends Task<UploadResult> {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
         }
 
-        String projectPath = System.getProperty("user.home") + File.separator + ".makerplayground" + File.separator + "upload";
+        /* Source Files Preparing */
+        updateProgress(0.3, 1);
+        updateMessage("Preparing platformio project");
+        String projectPath = MP_WORKSPACE + File.separator + "upload";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
@@ -132,9 +140,9 @@ public class UploadTask extends Task<UploadResult> {
 
             // copy libraries
             for (String x : library) {
+                String zipFilePath = "/library/arduino/src/" + x + ".zip";
                 URL sourceHeaderFile = getClass().getResource("/library/arduino/src/" + x + ".h");
-                URL sourceZipFile = getClass().getResource("/library/arduino/src/" + x + ".zip");
-//                URL sourceFolder = getClass().getResource("/library/arduino/src/" + x);
+                URL sourceZipFile = getClass().getResource(zipFilePath);
                 // if the library is a single .c/.h file copy the file to the src directory
                 if (sourceHeaderFile != null) {
                     File destHeaderFile = new File(projectPath + File.separator + "src" + File.separator + x + ".h");
@@ -148,45 +156,7 @@ public class UploadTask extends Task<UploadResult> {
                     }
                 } else if (sourceZipFile != null) {  // if the library comes as a zip, copy the whole zip and extract to the lib directory
                     String destinationPath = projectPath + File.separator + "lib";
-                    InputStream is = getClass().getResourceAsStream("/library/arduino/src/" + x + ".zip");
-                    ZipInputStream zis = new ZipInputStream(is);
-                    ZipEntry entry;
-                    while ((entry = zis.getNextEntry()) != null) {
-
-                        // Create a file on HDD in the destinationPath directory
-                        // destinationPath is a "root" folder, where you want to extract your ZIP file
-                        File entryFile = new File(destinationPath, entry.getName());
-                        if (entry.isDirectory()) {
-
-                            if (!entryFile.exists()) {
-                                entryFile.mkdirs();
-                            }
-
-                        } else {
-
-                            // Make sure all folders exists (they should, but the safer, the better ;-))
-                            if (entryFile.getParentFile() != null && !entryFile.getParentFile().exists()) {
-                                entryFile.getParentFile().mkdirs();
-                            }
-
-                            // Create file on disk...
-                            if (!entryFile.exists()) {
-                                entryFile.createNewFile();
-                            }
-
-                            // and rewrite data from stream
-                            OutputStream os = null;
-                            try {
-                                os = new FileOutputStream(entryFile);
-                                IOUtils.copy(zis, os);
-                            } finally {
-                                IOUtils.closeQuietly(os);
-                            }
-                        }
-                    }
-                    IOUtils.closeQuietly(zis);
-//                    FileUtils.copyDirectory(new File(sourceFolder.toURI())
-//                            , new File(path + File.separator + "upload" + File.separator + "project" + File.separator + "lib" + File.separator + x));
+                    ZipResourceExtractor.extract(getClass(), zipFilePath, destinationPath);
                 } else {
                     updateMessage("Error: Missing some libraries");
                     return UploadResult.CANT_FIND_LIBRARY;
@@ -238,6 +208,12 @@ public class UploadTask extends Task<UploadResult> {
         return UploadResult.OK;
     }
 
+    private void extractPythonFromJar() {
+        String zipFilePath = "/python/python-2.7.13.zip";
+        String destinationPath = MP_WORKSPACE;
+        ZipResourceExtractor.extract(getClass(), zipFilePath, destinationPath);
+    }
+
     public ReadOnlyStringProperty logProperty() {
         return log.getReadOnlyProperty();
     }
@@ -247,7 +223,7 @@ public class UploadTask extends Task<UploadResult> {
      * @return path to valid python or Optional.empty()
      */
     private Optional<String> checkPlatformio() {
-        List<String> path = List.of("python-2.7.13/python"      // integrated python for windows version
+        List<String> path = List.of(MP_WORKSPACE + File.separator + "python-2.7.13" + File.separator + "python"      // integrated python for windows version
                                     , "python"                  // python in user's system path
                                     , "/usr/bin/python");       // internal python of macOS and Linux which is used by platformio installation script
 
