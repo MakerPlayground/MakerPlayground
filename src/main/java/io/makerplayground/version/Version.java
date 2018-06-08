@@ -31,7 +31,10 @@ public class Version {
     private Date release_date;
 
     public static boolean isCurrentVersion() {
-        return version_obj != null && CURRENT_VERSION.equals(version_obj.version);
+        if (version_obj == null) {
+            return true;
+        }
+        return CURRENT_VERSION.equals(version_obj.version);
     }
 
     private static Version getInstance() {

@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -58,19 +59,18 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0.15, 1);
 
         /* check platformio installation */
-        Optional<String> pythonPath = checkPlatformio();
-        if (!pythonPath.isPresent()) {
+        if (OSInfo.OS.WINDOWS == OSInfo.getOs() && !checkPlatformio().isPresent()) {
             updateMessage("Installing Python");
             Platform.runLater(() -> log.set("extracting python"));
             extractPythonFromJar();
             Platform.runLater(() -> log.set("successfully extract python"));
-            pythonPath = checkPlatformio();
-            if (!pythonPath.isPresent()) {
-                updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
-                return UploadResult.CANT_FIND_PIO;
-            }
         }
-        pythonPath.ifPresent(s -> Platform.runLater(() -> log.set("Using python at " + s + "\n")));
+        Optional<String> pythonPath = checkPlatformio();
+        if (!pythonPath.isPresent()) {
+            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
+            return UploadResult.CANT_FIND_PIO;
+        }
+        Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
 
         /* Library List Preparing */
         updateProgress(0.25, 1);

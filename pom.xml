@@ -103,8 +103,10 @@
                                 <argument>-deploy</argument>
                                 <argument>-native</argument>
                                 <argument>installer</argument> <!-- or 'installer' -->
+                                <argument>-vendor</argument>
+                                <argument>InGarage Assistive Technology CO. LTD.</argument>
                                 <argument>-name</argument>
-                                <argument>Maker Playground</argument>
+                                <argument>MakerPlayground</argument>
                                 <argument>-title</argument>
                                 <argument>Maker Playground</argument>
                                 <argument>-appclass</argument>
@@ -120,6 +122,8 @@
                                 <argument>-BappVersion=${project.version}</argument>
                                 <argument>-Bicon=${project.build.sourceDirectory}/../resources/icons/${icon.filename}</argument>
                                 <argument>-BjvmOptions=--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED</argument>
+                                <argument>-BinstalldirChooser=true</argument>
+                                <argument>-BsystemWide=true</argument>
                                 <argument>-v</argument>
                             </arguments>
                         </configuration>
