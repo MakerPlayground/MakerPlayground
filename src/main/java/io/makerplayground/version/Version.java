@@ -9,8 +9,8 @@ import java.net.URL;
 import java.util.Date;
 
 public class Version {
-    public static final String CURRENT_BUILD_NAME = "Maker Playground v0.2";
-    public static final String CURRENT_VERSION = "0.2";
+    public static final String CURRENT_BUILD_NAME = "Maker Playground v0.2.1";
+    public static final String CURRENT_VERSION = "0.2.1";
     private static URL newest_version_URL;
     static {
         try {

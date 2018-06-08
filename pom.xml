@@ -6,7 +6,7 @@
 
     <groupId>io.makerplayground</groupId>
     <artifactId>io.makerplayground.frontend</artifactId>
-    <version>0.2</version>
+    <version>0.2.1</version>
 
     <profiles>
         <profile>
