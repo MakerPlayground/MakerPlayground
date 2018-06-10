@@ -13,7 +13,7 @@
    <children>
       <AnchorPane style="-fx-background-color: #313644;">
          <children>
-            <Label id="deviceTitle" maxHeight="35.0" maxWidth="70.0" minHeight="35.0" prefHeight="35.0" prefWidth="70.0" text="Devices">
+            <Label id="deviceTitle" maxHeight="35.0" maxWidth="100.0" minHeight="35.0" prefHeight="35.0" prefWidth="100.0" text="Devices">
                <padding>
                   <Insets left="10.0" />
                </padding>
