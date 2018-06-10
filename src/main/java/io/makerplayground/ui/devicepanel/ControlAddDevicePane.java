@@ -51,7 +51,10 @@ public class ControlAddDevicePane extends VBox {
         imageView.setImage(new Image(imageStream));
         nameLabel.setText(genericDevice.getName());
 
-        Tooltip.install(imageView,  new Tooltip(genericDevice.getDescription()));
+        String text = genericDevice.getDescription();
+        text = text.replaceAll("\\\\n", "\r\n");
+        text = text.replaceAll("\\\\t", "\t");
+        Tooltip.install(imageView, new Tooltip(text));
 
         numberTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {

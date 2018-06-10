@@ -70,13 +70,6 @@
  }
  #addConditionBtn:pressed{
      -fx-border-color : #5ac2ab;
-     -fx-background-color : #313644;
-     -fx-background-insets:0;
-     -fx-font-size : 14px;
-     -fx-text-fill : #5ac2ab;
-     -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
-     -fx-cursor: hand;
-     -fx-min-width: 150;
  }
 #zoomInButton:pressed{
     -fx-focus-color: transparent;
