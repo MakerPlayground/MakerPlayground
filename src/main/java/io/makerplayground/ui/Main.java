@@ -79,12 +79,12 @@ public class Main extends Application {
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
         project = new Project();
-        MainWindow mainWindow = new MainWindow(project);
+        newMain mainWindow = new newMain(project);
 
         borderPane = new BorderPane();
         borderPane.setCenter(mainWindow);
 
-        final Scene scene = new Scene(borderPane, 800, 600);
+        final Scene scene = new Scene(borderPane, 1280, 720);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(borderPane);

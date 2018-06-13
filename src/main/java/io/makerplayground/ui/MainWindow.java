@@ -30,7 +30,6 @@ import java.util.TimerTask;
 public class MainWindow extends SplitPane {
 
     private final Project project;
-
     public MainWindow(Project project) {
         this.project = project;
         SingletonLaunch.getInstance().launchProgram();
@@ -48,13 +47,13 @@ public class MainWindow extends SplitPane {
             e.printStackTrace();
         }
 
-        RightPanel rightPanel = new RightPanel(project);
+        //RightPanel rightPanel = new RightPanel(project);
 
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
-        setDividerPositions(0.8, 0.2);
-        getItems().addAll(canvasView, rightPanel);
+       // setDividerPositions(0.8, 0.2);
+        getItems().addAll(canvasView);
     }
 
     public Project getProject() {

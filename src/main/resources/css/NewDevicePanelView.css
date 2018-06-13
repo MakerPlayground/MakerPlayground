@@ -1,0 +1,76 @@
+
+
+.titled-pane > .title{
+    -fx-background-color : #231F20;
+    -fx-border-color: #231F20 transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.titled-pane{
+    -fx-focus-color: transparent;
+    -fx-font-size:14px;
+    -fx-text-fill : white;
+}
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color : #5AC1AA;
+}
+.titled-pane > *.content{
+    -fx-background-color : #272B35;
+    -fx-box-border : transparent;
+}
+
+.titled-pane> .title :pressed ,.titled-pane> .title :hover{
+
+}
+
+.radio-button {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill : white;
+}
+
+.radio-button .radio {
+    -fx-background-color: #D1D3D4;
+}
+
+.radio-button .radio .dot {
+    -fx-mark-color: #3C9691;
+    -fx-mark-highlight-color: #3C9691;
+}
+
+/*.scroll-pane {
+    -fx-background-color:transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color:#12062C;
+}
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 2em;
+    -fx-padding:0 10 0 0;
+}
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 10;
+    -fx-padding:0 10 0 0;
+}
+.scroll-bar .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .track{
+    -fx-background-color:   #12062C;
+    -fx-border-color :   #12062C;
+    -fx-border-radius:2em;
+}
+.scroll-bar .thumb{
+    -fx-background-color: #51af98;
+    -fx-border-radius: 0em;
+    -fx-background-insets: 0 3 0 3;
+}*/
+

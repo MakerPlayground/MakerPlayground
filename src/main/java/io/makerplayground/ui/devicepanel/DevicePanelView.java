@@ -31,11 +31,11 @@ public class DevicePanelView extends VBox {
     @FXML private FlowPane connectivityPane;
     @FXML private FlowPane microcontrollerPane;
 
-    @FXML public void onAddDeviceClick() {
+    /*@FXML public void onAddDeviceClick() {
         DeviceSelectorView deviceSelectorView = new DeviceSelectorView();
         Optional<Map<GenericDevice, Integer>> result = deviceSelectorView.showAndWait();
         result.ifPresent(viewModel::addDevice);
-    }
+    }*/
 
     public DevicePanelView(DevicePanelViewModel viewModel) {
         this.viewModel = viewModel;

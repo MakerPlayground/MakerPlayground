@@ -3,13 +3,14 @@
 }
 .titled-pane > .title{
     -fx-font-size:12px;
-    -fx-background-color : #313644;
-    -fx-border-color: #313644;
+    -fx-background-color : #020609;
+    -fx-border-color: #020609;
     -fx-border-width : 2px;
 }
+
 #projectNameTextField{
     -fx-font-size:12px;
-    -fx-text-fill: white;
+    -fx-text-fill:#FFFFFF;
     -fx-border-color: transparent;
 }
 #projectNameTextField .text{
@@ -79,6 +80,20 @@
 }
 #newFileBtn:pressed{
     -fx-background-image: url('new-toggle.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+#saveAsBtn{
+    -fx-background-image: url('saveas.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+#saveAsBtn:pressed{
+    -fx-background-image: url('saveas-toggle.png');
     -fx-background-size : 15px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;

@@ -40,7 +40,7 @@ public class RightPanel extends AnchorPane {
 
     private void initView() {
         setStyle("-fx-background-color : #4d5666");
-        setMaxWidth(330.0);
+        //setMaxWidth(50.0);
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
         Button configureBtn = new Button("Configure Device");

@@ -6,12 +6,13 @@ import io.makerplayground.project.Project;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.scene.Node;
 
 /**
  *
  * Created by Nuntipat Narkthong on 6/7/2017 AD.
  */
-public class DeviceSelectorViewModel {
+public class DeviceSelectorViewModel extends Node {
     private final Project project;
     private final ObservableMap<GenericDevice, SimpleIntegerProperty> inputDeviceMap;
     private final ObservableMap<GenericDevice, SimpleIntegerProperty> outputDeviceMap;
@@ -38,7 +39,6 @@ public class DeviceSelectorViewModel {
         return FXCollections.unmodifiableObservableMap(outputDeviceMap);
     }
 
-
     public void importDeviceToProject() {
 //        for (Map.Entry<GenericDevice, Integer> entry : inputDeviceMap.entrySet()) {
 //            for (int i=0; i<entry.getValue(); i++) {
@@ -54,4 +54,5 @@ public class DeviceSelectorViewModel {
 
         // TODO: clear the map value to 0
     }
+
 }
