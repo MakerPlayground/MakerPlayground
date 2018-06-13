@@ -167,7 +167,7 @@ public class Sourcecode {
             }
 
             if (!args.isEmpty()) {
-                sb.append("(").append(String.join(",", args)).append(")");
+                sb.append("(").append(String.join(",", args)).append(",F(\""+ projectDevice.getName().replace(" ", "_")).append("\"))");
             }
             sb.append(";").append(NEW_LINE);
         }

@@ -409,4 +409,12 @@ public class Project {
             return !oldContent.equals(newContent);
         }
     }
+
+    public Set<String> getAllDeviceName(){
+        Set<String> deviceName = new HashSet<>();
+        for (ProjectDevice projectDevice : this.getAllDeviceUsed()){
+            deviceName.add(projectDevice.getName());
+        }
+        return deviceName;
+    }
 }
