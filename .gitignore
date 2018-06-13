@@ -23,6 +23,7 @@ upload/
 *.war
 *.ear
 *.zip
+!src/main/resources/python/python-2.7.13.zip
 *.tar.gz
 *.rar
 

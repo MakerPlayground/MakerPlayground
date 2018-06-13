@@ -2,18 +2,22 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.helper.*;
+import io.makerplayground.helper.Singleton;
+import io.makerplayground.helper.SingletonConnectDB;
+import io.makerplayground.helper.SingletonTutorial;
+import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectHelper;
 import io.makerplayground.ui.canvas.TutorialView;
+import io.makerplayground.version.Version;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.*;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,13 +36,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+import org.controlsfx.control.action.Action;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
-import java.util.Optional;
+import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -97,9 +102,9 @@ public class Main extends Application {
 
         projectPathListener = (observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                primaryStage.setTitle("Maker Playground 0.2 - Untitled Project");
+                primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - Untitled Project");
             } else {
-                primaryStage.setTitle("Maker Playground 0.2 - " + project.getFilePath());
+                primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - " + project.getFilePath());
             }
         };
 
@@ -186,12 +191,22 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-//        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000),
-//                ae -> {
-//                    flag = true;
-//                    tutorialButton.fire();
-//                }));
-//        timeline.play();
+        if(!Version.isCurrentVersion()) {
+            Action navigate = new Action("Download", actionEvent -> {
+                try {
+                    Desktop.getDesktop().browse(new URI(Version.getDownload_url()));
+                } catch (IOException | URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            });
+            Notifications.create()
+                    .title("New version is available")
+                    .text("Update now?")
+                    .owner(mainWindow.getCanvasView())
+                    .action(navigate)
+                    .hideAfter(Duration.seconds(10))
+                    .show();
+        }
 
         hpl.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -213,9 +228,9 @@ public class Main extends Application {
 
     private void updatePathTextField(Stage primaryStage) {
         if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle("Maker Playground 0.2 - Untitled Project");
+            primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - Untitled Project");
         } else {
-            primaryStage.setTitle("Maker Playground 0.2 - " + project.getFilePath());
+            primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - " + project.getFilePath());
         }
     }
 

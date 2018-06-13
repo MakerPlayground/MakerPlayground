@@ -336,7 +336,7 @@
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
-          "max": 10000.0,
+          "max": 200.0,
           "unit": "CENTIMETER"
         }
       }
