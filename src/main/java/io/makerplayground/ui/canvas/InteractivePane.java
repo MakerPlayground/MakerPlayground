@@ -191,8 +191,8 @@ public class InteractivePane extends ScrollPane {
         n.removeEventHandler(InteractiveNodeEvent.MOVED, nodeMovedHandler);
     }
 
-    public List<InteractiveNode> getSelectedNode() {
-        return selectionGroup.getSelected();
+    public SelectionGroup<InteractiveNode> getSelectionGroup() {
+        return selectionGroup;
     }
 
     public NodeElement getSourceNode() {

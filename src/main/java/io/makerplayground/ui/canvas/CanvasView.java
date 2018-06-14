@@ -149,10 +149,9 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initEvent() {
-        // allow node to be deleted using the delete key
         setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.DELETE) {
-                for (InteractiveNode interactiveNode : mainPane.getSelectedNode()) {
+            if (event.getCode() == KeyCode.DELETE) {    // allow node to be deleted using the delete key
+                for (InteractiveNode interactiveNode : mainPane.getSelectionGroup().getSelected()) {
                     if (interactiveNode instanceof SceneView) {
                         canvasViewModel.project.removeState(((SceneView) interactiveNode).getSceneViewModel().getScene());
                     } else if (interactiveNode instanceof ConditionView) {
@@ -165,6 +164,13 @@ public class CanvasView extends AnchorPane {
                         throw new IllegalStateException("Found invalid object in the canvas!!!");
                     }
                 }
+            } else if (event.getCode() == KeyCode.SHIFT) {  // enable multiple selection when the shift key is pressed
+                mainPane.getSelectionGroup().setMultipleSelection(true);
+            }
+        });
+        setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.SHIFT) {     // disable multiple selection when the shift key is released
+                mainPane.getSelectionGroup().setMultipleSelection(false);
             }
         });
     }
