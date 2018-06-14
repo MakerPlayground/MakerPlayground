@@ -231,6 +231,15 @@ public class Project {
         scene.add(s);
     }
 
+    public void addState(Scene s) {
+        int id = scene.stream()
+                .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
+                .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
+                .max()
+                .orElse(0);
+        scene.add(new Scene(s, "scene" + (id + 1)));
+    }
+
     public void removeState(Scene s) {
         scene.remove(s);
         for (int i=line.size()-1; i>=0; i--) {
@@ -251,6 +260,15 @@ public class Project {
         Condition c = new Condition();
         c.setName("condition" + (id + 1));
         condition.add(c);
+    }
+
+    public void addCondition(Condition c) {
+        int id = condition.stream()
+                .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
+                .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
+                .max()
+                .orElse(0);
+        condition.add(new Condition(c, "condition" + (id + 1)));
     }
 
     public void removeCondition(Condition c) {

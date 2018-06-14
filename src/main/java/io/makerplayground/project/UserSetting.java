@@ -19,6 +19,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.SimpleExpression;
 import javafx.beans.property.ObjectProperty;
@@ -78,6 +79,33 @@ public class UserSetting {
         this.action = new SimpleObjectProperty<>(action);
         this.valueMap = FXCollections.observableMap(valueMap);
         this.expression = FXCollections.observableMap(expression);
+    }
+
+    UserSetting(UserSetting u) {
+        this.device = u.getDevice();
+        this.action = new SimpleObjectProperty<>(u.getAction());
+        this.valueMap = FXCollections.observableHashMap();
+        for (Parameter p : u.getValueMap().keySet()) {
+            Object o = u.getValueMap().get(p);
+            // NumberWithUnit, String and ProjectValue are immutable so we are safe to reuse the instance without the need to perform deep copy
+            if (o instanceof NumberWithUnit || o instanceof String || o instanceof ProjectValue) {
+                this.valueMap.put(p, o);
+            } else { // new type add later may not be immutable so we throw exception
+                throw new IllegalStateException("Found unknown parameter type!!!");
+            }
+        }
+        this.expression = FXCollections.observableHashMap();
+        for (Value v : u.getExpression().keySet()) {
+            this.expression.put(v, Expression.newInstance(u.getExpression().get(v)));
+        }
+
+        // Reset value of the valueMap every time that the action is changed
+        this.action.addListener((observable, oldValue, newValue) -> {
+            valueMap.clear();
+            for (Parameter param : action.get().getParameter()) {
+                valueMap.put(param, param.getDefaultValue());
+            }
+        });
     }
 
     public ProjectDevice getDevice() {

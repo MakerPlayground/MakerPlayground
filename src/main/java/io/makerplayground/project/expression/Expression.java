@@ -13,6 +13,22 @@ public class Expression {
     private final ObservableList<Term> terms = FXCollections.observableArrayList();
     private final BooleanProperty enable = new SimpleBooleanProperty(false);
 
+    public Expression() {
+    }
+
+    protected Expression(Expression e) {
+        terms.addAll(e.terms);  // Term is immutable
+        enable.set(e.isEnable());
+    }
+
+    public static Expression newInstance(Expression e) {
+        if (e instanceof SimpleExpression) {
+            return new SimpleExpression((SimpleExpression) e);
+        } else {
+            return new Expression(e);
+        }
+    }
+
     public ObservableList<Term> getTerms() {
         return terms;
     }

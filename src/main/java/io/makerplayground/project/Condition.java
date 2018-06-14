@@ -58,6 +58,19 @@ public class Condition extends NodeElement {
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
     }
 
+    public Condition(Condition c, String name) {
+        super(c.getTop(), c.getLeft(), c.getWidth(), c.getHeight());
+
+        this.name = new SimpleStringProperty(name);
+        this.setting = FXCollections.observableArrayList();
+        for (UserSetting u : c.setting) {
+            this.setting.add(new UserSetting(u));
+        }
+        this.error = new ReadOnlyBooleanWrapper(checkError());
+
+        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
+    }
+
     public String getName() {
         return name.get();
     }

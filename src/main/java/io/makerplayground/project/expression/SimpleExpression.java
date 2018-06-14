@@ -20,6 +20,10 @@ public class SimpleExpression extends Expression {
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())));
     }
 
+    protected SimpleExpression(SimpleExpression s) {
+        super(s);
+    }
+
     public double getLowValue() {
         return ((NumberWithUnit) getTerms().get(6).getValue()).getValue();
     }

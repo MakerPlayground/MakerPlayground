@@ -8,6 +8,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  */
@@ -19,6 +22,8 @@ public class CanvasView extends AnchorPane {
     private final Button zoomInButton = new Button();
     private final Button zoomOutButton = new Button();
     private final Button zoomDefaultButton = new Button();
+
+    private final List<InteractiveNode> clipboard = new ArrayList<>();
 
     private final CanvasViewModel canvasViewModel;
 
@@ -166,6 +171,23 @@ public class CanvasView extends AnchorPane {
                 }
             } else if (event.getCode() == KeyCode.SHIFT) {  // enable multiple selection when the shift key is pressed
                 mainPane.getSelectionGroup().setMultipleSelection(true);
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.C) {
+                clipboard.clear();
+                clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.V) {
+                for (InteractiveNode interactiveNode : clipboard) {
+                    if (interactiveNode instanceof SceneView) {
+                        canvasViewModel.project.addState(((SceneView) interactiveNode).getSceneViewModel().getScene());
+                    } else if (interactiveNode instanceof ConditionView) {
+                        canvasViewModel.project.addCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
+                    } else if (interactiveNode instanceof LineView) {
+                        // ignore line
+                    } else if (interactiveNode instanceof BeginSceneView) {
+                        // ignore begin
+                    } else {
+                        throw new IllegalStateException("Found invalid object in the canvas!!!");
+                    }
+                }
             }
         });
         setOnKeyReleased(event -> {
