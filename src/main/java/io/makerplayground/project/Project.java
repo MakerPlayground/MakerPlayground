@@ -27,6 +27,7 @@ import io.makerplayground.device.Value;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.SingletonAddDevice;
 import io.makerplayground.helper.SingletonDelDevice;
+import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -416,5 +417,17 @@ public class Project {
             deviceName.add(projectDevice.getName());
         }
         return deviceName;
+    }
+
+    public static Project loadProject(File f) {
+        ObjectMapper mapper = new ObjectMapper();
+        Project p = null;
+        try {
+            p = mapper.readValue(f, Project.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        p.setFilePath(f.getAbsolutePath());
+        return p;
     }
 }

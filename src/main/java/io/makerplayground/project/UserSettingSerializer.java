@@ -37,7 +37,11 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", v.getKey().getName());
-            jsonGenerator.writeObjectField("value", v.getValue());
+            if (v.getValue() instanceof Expression) {
+                throw new IllegalStateException("Implementation not done");
+            } else {
+                jsonGenerator.writeObjectField("value", v.getValue());
+            }
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -47,7 +51,7 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", entry.getKey().getName());
             jsonGenerator.writeBooleanField("enable", entry.getValue().isEnable());
-            if (entry.getValue() instanceof SimpleExpression) {
+            if (entry.getValue() instanceof NumberInRangeExpression) {
                 jsonGenerator.writeStringField("type", "simple");
             } else {
                 throw new IllegalStateException("Unknown expression type");

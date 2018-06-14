@@ -7,9 +7,9 @@ import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 
-public class SimpleExpression extends Expression {
+public class NumberInRangeExpression extends Expression {
 
-    public SimpleExpression(ProjectDevice device, Value value) {
+    public NumberInRangeExpression(ProjectDevice device, Value value) {
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
         getTerms().addAll(new ValueTerm(new ProjectValue(device, value))
                 , new OperatorTerm(ChipOperator.LESS_THAN)
