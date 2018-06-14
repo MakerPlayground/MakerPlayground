@@ -293,7 +293,7 @@ public class Main extends Application {
                 canLoad = true;
             }
             if (!canLoad){
-                /* TODO: tell user that we don't support loading the ancient version */
+                (new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK)).showAndWait();
                 return;
             }
             else {

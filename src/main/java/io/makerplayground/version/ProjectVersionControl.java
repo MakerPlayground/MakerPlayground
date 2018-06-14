@@ -25,11 +25,16 @@ public class ProjectVersionControl {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode node = mapper.readTree(selectedFile);
-            return node.get("projectVersion").asText("0.2");
+            if (node.has("projectVersion")) {
+                return node.get("projectVersion").asText("0.2");
+            }
+            else {
+                return "0.2";
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
+        return "";
     }
 
     public static void convertToCurrentVersion(File selectedFile) {
