@@ -195,22 +195,28 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        if(!Version.isCurrentVersion()) {
-            Action navigate = new Action("Download", actionEvent -> {
-                try {
-                    Desktop.getDesktop().browse(new URI(Version.getDownload_url()));
-                } catch (IOException | URISyntaxException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            Version.getLatestVersionInfo().ifPresent(version -> {
+                if (!version.getVersionString().equals(Version.CURRENT_VERSION)) {
+                    Platform.runLater(() -> {
+                        Action navigate = new Action("Download", actionEvent -> {
+                            try {
+                                Desktop.getDesktop().browse(new URI(version.getDownloadURL()));
+                            } catch (IOException | URISyntaxException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        Notifications.create()
+                                .title(version.getBuildName() + " has been released")
+                                .text("Update now?")
+                                .owner(mainWindow.getCanvasView())
+                                .action(navigate)
+                                .hideAfter(Duration.seconds(10))
+                                .show();
+                    });
                 }
             });
-            Notifications.create()
-                    .title("New version is available")
-                    .text("Update now?")
-                    .owner(mainWindow.getCanvasView())
-                    .action(navigate)
-                    .hideAfter(Duration.seconds(10))
-                    .show();
-        }
+        }).start();
 
         hpl.setOnAction(new EventHandler<ActionEvent>() {
             @Override
