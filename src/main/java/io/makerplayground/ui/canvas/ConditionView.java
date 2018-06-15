@@ -101,7 +101,7 @@ public class ConditionView extends InteractiveNode {
         });
 
         // remove condition when press the remove button
-        removeConditionBtn.setOnAction(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
+        removeConditionBtn.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
                 , null, null, 0, 0)));
 
         // TODO: refactor into InteractiveNode
