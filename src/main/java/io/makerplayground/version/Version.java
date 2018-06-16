@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.Optional;
 
 public class Version {
-    public static final String CURRENT_BUILD_NAME = "Maker Playground v0.2.1";
-    public static final String CURRENT_VERSION = "0.2.1";
+    public static final String CURRENT_BUILD_NAME = "Maker Playground v0.2.2";
+    public static final String CURRENT_VERSION = "0.2.2";
 
     private static final String URL = "http://mprepo.azurewebsites.net/current_version"; // or "http://mprepo.azurewebsites.net/devtest/current_version"
 
