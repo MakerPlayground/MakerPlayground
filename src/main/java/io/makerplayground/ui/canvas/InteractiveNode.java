@@ -23,8 +23,9 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
         // allow this node to be selected
         addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            select.set(!select.get());
-            //event.consume();
+            if (event.isPrimaryButtonDown()) {
+                select.set(!select.get());
+            }
         });
 
         // show/hide hi-light when this scene is selected/deselected

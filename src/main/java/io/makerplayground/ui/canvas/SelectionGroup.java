@@ -1,13 +1,12 @@
 package io.makerplayground.ui.canvas;
 
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import javafx.collections.transformation.FilteredList;
 
 /**
  * Created by Mai.Manju on 13-Jul-17.
@@ -15,10 +14,11 @@ import java.util.stream.Collectors;
 public class SelectionGroup<T extends Selectable> {
     //private Selectable selectingSelectable;
     private final ObservableList<T> selectable;
+    private final FilteredList<T> selected;
     private final BooleanProperty multipleSelection;
 
     public SelectionGroup() {
-        selectable = FXCollections.observableArrayList();
+        selectable = FXCollections.observableArrayList(param -> new Observable[] {param.selectedProperty()});
         selectable.addListener(new ListChangeListener<Selectable>() {
             @Override
             public void onChanged(Change<? extends Selectable> c) {
@@ -47,14 +47,15 @@ public class SelectionGroup<T extends Selectable> {
             }
         });
         multipleSelection = new SimpleBooleanProperty(false);
+        selected = new FilteredList<>(selectable, Selectable::isSelected);
     }
 
     public ObservableList<T> getSelectable() {
         return selectable;
     }
 
-    public List<T> getSelected() {
-        return selectable.stream().filter(Selectable::isSelected).collect(Collectors.toList());
+    public ObservableList<T> getSelected() {
+        return selected;
     }
 
     public boolean isMultipleSelection() {
