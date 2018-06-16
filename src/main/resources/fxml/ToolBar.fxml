@@ -18,6 +18,9 @@
                   <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
                      <tooltip><Tooltip text="new" /></tooltip>
                   </Button>
+                  <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-repeat: no-repeat;">
+                     <tooltip><Tooltip text="open" /></tooltip>
+                  </Button>
                   <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
                      <tooltip><Tooltip text="save" /></tooltip>
                   </Button>
@@ -25,9 +28,6 @@
                      <tooltip>
                         <Tooltip text="save as" />
                      </tooltip>
-                  </Button>
-                  <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" style="-fx-background-repeat: no-repeat;">
-                     <tooltip><Tooltip text="open" /></tooltip>
                   </Button>
                   <Label fx:id="statusLabel" style="-fx-text-fill: white;" />
                </children>
