@@ -167,7 +167,11 @@ public class Sourcecode {
             }
 
             if (!args.isEmpty()) {
-                sb.append("(").append(String.join(",", args)).append(",F(\""+ projectDevice.getName().replace(" ", "_")).append("\"))");
+                sb.append("(").append(String.join(",", args))
+                .append(",\""+ projectDevice.getName().replace(" ", "_")).append("\")");
+            }
+            else {
+                sb.append("(\""+ projectDevice.getName().replace(" ", "_")).append("\")");
             }
             sb.append(";").append(NEW_LINE);
         }
@@ -340,8 +344,9 @@ public class Sourcecode {
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
                 sb.append(INDENT).append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append("_")
-                        .append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
-                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+                .append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
+                        //.append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
+                .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
         }
         // generate if for each condition

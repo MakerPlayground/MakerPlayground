@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LogItems {
-    enum LogLevel {VERBOSE,INFO,DEBUG,WARNING,ERROR}
+    enum LogLevel {VERBOSE,DEBUG,INFO,WARNING,ERROR}
 
     private final LogLevel level;
     private final String tag;

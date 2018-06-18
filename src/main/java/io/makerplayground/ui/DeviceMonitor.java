@@ -72,6 +72,11 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         Label tagLabel = new Label("Device Tag");
         levelLabel.setMinWidth(30);
         tagLabel.setMinWidth(70);
+
+        CheckBox onStatus = new CheckBox("On");
+        onStatus.setSelected(true);
+
+
         checkTagComboBox = new CheckComboBox<>(FXCollections.observableArrayList(new ArrayList<>()));
         levelComboBox = new ComboBox<>(FXCollections.observableArrayList(LogItems.LogLevel.values()));
         checkTagComboBox.getCheckModel().checkAll();
@@ -102,6 +107,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         gridPane.add(tagLabel,19,2);
         gridPane.add(checkTagComboBox,24,2);
         gridPane.add(deviceMonitorTable,2,6,30,30);
+        gridPane.add(onStatus,4,47);
 
         this.getDialogPane().setMinSize(100,100);
         this.getDialogPane().setContent(gridPane);
@@ -119,7 +125,10 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
                     String s = null;
                     while (!serialThread.isInterrupted() && (s = bufferedReader.readLine()) != null) {  //get raw data and convert to format data
                         getFormatLog(s).ifPresent(logItems -> Platform.runLater(() -> {
-                            logData.add(logItems);
+                            if (onStatus.isSelected()) {
+                                logData.add(logItems);
+                                deviceMonitorTable.scrollTo(logItems);
+                            }
                             if(!checkTagComboBox.getItems().contains(logItems.getTag())){       // use tag from flash memory of serial port to generate device tag box
                                 List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
                                 checkTagComboBox.getItems().add(logItems.getTag());
@@ -175,7 +184,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
                 );
             }
-            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.INFO)){
+            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.DEBUG)){
                 return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
                         && (logItems.getLevel().equals(LogItems.LogLevel.INFO)
                         || logItems.getLevel().equals(LogItems.LogLevel.DEBUG)
@@ -183,9 +192,9 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
                         || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
                 );
             }
-            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.DEBUG)) {
+            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.INFO)) {
                 return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && (logItems.getLevel().equals(LogItems.LogLevel.DEBUG)
+                        && (logItems.getLevel().equals(LogItems.LogLevel.INFO)
                         || logItems.getLevel().equals(LogItems.LogLevel.WARNING)
                         || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
                 );
