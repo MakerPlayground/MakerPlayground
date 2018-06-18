@@ -3,20 +3,20 @@ package io.makerplayground.ui.canvas;
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.SimpleExpression;
+import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.RangeSlider;
 
 public class SimpleExpressionControl extends HBox {
-    private final SimpleExpression expression;
+    private final NumberInRangeExpression expression;
     private final Value value;
 
     private final RangeSlider rangeSlider = new RangeSlider();
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
 
-    public SimpleExpressionControl(SimpleExpression expression, Value value) {
+    public SimpleExpressionControl(NumberInRangeExpression expression, Value value) {
         this.expression = expression;
         this.value = value;
         initView();

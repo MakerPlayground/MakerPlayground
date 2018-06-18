@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.SimpleExpression;
+import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -69,7 +69,7 @@ public class UserSetting {
 
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
-            expression.put(v, new SimpleExpression(device, v));
+            expression.put(v, new NumberInRangeExpression(device, v));
         }
     }
 

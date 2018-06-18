@@ -12,6 +12,7 @@ import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.version.ProjectVersionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -200,7 +201,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public Expression deserializeSimpleExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) throws IOException, JsonProcessingException {
-        SimpleExpression simpleExpression = new SimpleExpression(device, value);
+        NumberInRangeExpression simpleExpression = new NumberInRangeExpression(device, value);
         if (node.get(0).get("type").asText().equals(ChipType.VALUE.name())
             && node.get(1).get("type").asText().equals(ChipType.OPERATOR.name())
                 && node.get(1).get("value").asText().equals(ChipOperator.LESS_THAN.name())

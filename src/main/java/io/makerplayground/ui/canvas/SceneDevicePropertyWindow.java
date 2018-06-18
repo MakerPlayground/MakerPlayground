@@ -6,7 +6,7 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.SimpleExpression;
+import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -206,8 +206,8 @@ public class SceneDevicePropertyWindow extends PopOver {
         GridPane.setColumnIndex(enableCheckbox, 0);
         propertyPane.getChildren().add(enableCheckbox);
 
-        if (expression instanceof SimpleExpression) {
-            SimpleExpressionControl expressionControl = new SimpleExpressionControl((SimpleExpression) expression, value);
+        if (expression instanceof NumberInRangeExpression) {
+            SimpleExpressionControl expressionControl = new SimpleExpressionControl((NumberInRangeExpression) expression, value);
             GridPane.setRowIndex(expressionControl, i+1);
             GridPane.setColumnIndex(expressionControl, 1);
             propertyPane.getChildren().add(expressionControl);

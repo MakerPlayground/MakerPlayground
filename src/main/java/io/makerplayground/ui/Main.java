@@ -7,9 +7,9 @@ import io.makerplayground.helper.SingletonConnectDB;
 import io.makerplayground.helper.SingletonTutorial;
 import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectHelper;
 import io.makerplayground.ui.canvas.TutorialView;
-import io.makerplayground.version.Version;
+import io.makerplayground.version.ProjectVersionControl;
+import io.makerplayground.version.SoftwareVersionControl;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -102,9 +102,9 @@ public class Main extends Application {
 
         projectPathListener = (observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - Untitled Project");
+                primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - Untitled Project");
             } else {
-                primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - " + project.getFilePath());
+                primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - " + project.getFilePath());
             }
         };
 
@@ -191,10 +191,10 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        if(!Version.isCurrentVersion()) {
+        if(!SoftwareVersionControl.isCurrentVersion()) {
             Action navigate = new Action("Download", actionEvent -> {
                 try {
-                    Desktop.getDesktop().browse(new URI(Version.getDownload_url()));
+                    Desktop.getDesktop().browse(new URI(SoftwareVersionControl.getDownload_url()));
                 } catch (IOException | URISyntaxException e) {
                     e.printStackTrace();
                 }
@@ -228,9 +228,9 @@ public class Main extends Application {
 
     private void updatePathTextField(Stage primaryStage) {
         if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - Untitled Project");
+            primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - Untitled Project");
         } else {
-            primaryStage.setTitle(Version.CURRENT_BUILD_NAME + " - " + project.getFilePath());
+            primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - " + project.getFilePath());
         }
     }
 
@@ -281,14 +281,32 @@ public class Main extends Application {
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
         if (selectedFile != null) {
-            projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
-            project.filePathProperty().removeListener(projectPathListener);
-            project = ProjectHelper.loadProject(selectedFile);
-            project.filePathProperty().addListener(projectPathListener);
-            projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-            MainWindow mw = new MainWindow(project);
-            borderPane.setCenter(mw);
-            updatePathTextField(primaryStage);
+//            read projectVersion from selectedFile
+            boolean canLoad = false;
+            String projectVersion = ProjectVersionControl.readProjectVersion(selectedFile);
+            if (ProjectVersionControl.CURRENT_VERSION.equals(projectVersion)) {
+                canLoad = true;
+            }
+            else if (ProjectVersionControl.isConvertibleToCurrentVersion(projectVersion)) {
+                /* TODO: ask user to convert file */
+                ProjectVersionControl.convertToCurrentVersion(selectedFile);
+                canLoad = true;
+            }
+            if (!canLoad){
+                (new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK)).showAndWait();
+                return;
+            }
+            else {
+                projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
+                project.filePathProperty().removeListener(projectPathListener);
+                project = Project.loadProject(selectedFile);
+                project.filePathProperty().addListener(projectPathListener);
+                projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
+                MainWindow mw = new MainWindow(project);
+                borderPane.setCenter(mw);
+                updatePathTextField(primaryStage);
+            }
+
         }
     }
 

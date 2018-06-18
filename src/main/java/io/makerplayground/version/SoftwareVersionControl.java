@@ -8,7 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-public class Version {
+public class SoftwareVersionControl {
     public static final String CURRENT_BUILD_NAME = "Maker Playground v0.2.1";
     public static final String CURRENT_VERSION = "0.2.1";
     private static URL newest_version_URL;
@@ -23,7 +23,7 @@ public class Version {
     }
 
     @JsonIgnore
-    private static Version version_obj;
+    private static SoftwareVersionControl version_obj;
 
     private String build_name;
     private String version;
@@ -37,11 +37,11 @@ public class Version {
         return CURRENT_VERSION.equals(version_obj.version);
     }
 
-    private static Version getInstance() {
+    private static SoftwareVersionControl getInstance() {
         try {
             if(version_obj == null) {
                 ObjectMapper mapper = new ObjectMapper();
-                version_obj = mapper.readValue(newest_version_URL, Version.class);
+                version_obj = mapper.readValue(newest_version_URL, SoftwareVersionControl.class);
                 return version_obj;
             }
         } catch (IOException e) {
@@ -64,7 +64,7 @@ public class Version {
 
     public static String getDownload_url() {
         if (version_obj == null) {
-            return version_obj.download_url;
+            return null;
         }
         return version_obj.download_url;
     }

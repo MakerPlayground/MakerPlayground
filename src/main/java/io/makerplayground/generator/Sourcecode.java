@@ -254,6 +254,8 @@ public class Sourcecode {
                     } else if (value instanceof ProjectValue) {
                         params.add("_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
                                 + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
+                    } else if (value instanceof Expression) {
+                        throw new IllegalStateException("Implement needed (expression)");
                     }
                 }
                 sb.append(String.join(", ", params)).append(");").append(NEW_LINE);
