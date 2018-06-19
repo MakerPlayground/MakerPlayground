@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.project.chip.*;
 import io.makerplayground.project.expression.*;
 
 import java.io.IOException;
@@ -34,16 +35,17 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         jsonGenerator.writeStringField("action", userSetting.getAction().getName());
 
         jsonGenerator.writeArrayFieldStart("valueMap");
-        for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {
+        for (Map.Entry<Parameter, Expression> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", v.getKey().getName());
-            if (v.getValue() instanceof CustomNumberExpression) {
-                jsonGenerator.writeStringField("type", "CustomNumberExpression");
-            } else if (v.getValue() instanceof NumberWithUnit) {
-                jsonGenerator.writeStringField("type", "NumberWithUnit");
-            } else if (v.getValue() instanceof ProjectValue) {
-                jsonGenerator.writeStringField("type", "ProjectValue");
-            }
+            jsonGenerator.writeStringField("type", v.getValue().getClass().getName());
+//            if (v.getValue() instanceof CustomNumberExpression) {
+//                jsonGenerator.writeStringField("type", "CustomNumberExpression");
+//            } else if (v.getValue() instanceof NumberWithUnit) {
+//                jsonGenerator.writeStringField("type", "NumberWithUnit");
+//            } else if (v.getValue() instanceof ProjectValue) {
+//                jsonGenerator.writeStringField("type", "ProjectValue");
+//            }
             jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }

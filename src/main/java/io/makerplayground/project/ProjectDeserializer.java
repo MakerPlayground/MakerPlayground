@@ -11,8 +11,8 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.Unit;
+import io.makerplayground.project.chip.*;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.version.ProjectVersionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -166,16 +166,21 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             action = projectDevice.getGenericDevice().getCondition(node.get("action").asText());
         }
 
-        Map<Parameter, Object> valueMap = new HashMap<>();
+        Map<Parameter, Expression> valueMap = new HashMap<>();
         for (JsonNode parameterNode : node.get("valueMap")) {
             Parameter parameter = action.getParameter(parameterNode.get("name").asText());
-            Object object = null;
-            if (parameterNode.get("value").has("name") && parameterNode.get("value").has("value")) {
-                object = deserializeProjectValue(mapper, parameterNode.get("value"), inputDevice, outputDevice, connectivityDevices);
-            } else if (parameterNode.get("value").isObject()) {
-                object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnit.class);
-            } else {
-                object = parameterNode.get("value").asText();
+            Expression object = null;
+            String expressionType = parameterNode.get("type").asText();
+            if (ProjectValueExpression.class.getName().equals(expressionType)) {
+                object = mapper.treeToValue(parameterNode.get("value"), ProjectValueExpression.class);
+            } else if (ConstantExpression.class.getName().equals(expressionType)) {
+                object = mapper.treeToValue(parameterNode.get("value"), ConstantExpression.class);
+            } else if (CustomNumberExpression.class.getName().equals(expressionType)) {
+                object = mapper.treeToValue(parameterNode.get("value"), CustomNumberExpression.class);
+            } else if (NumberWithUnitExpression.class.getName().equals(expressionType)) {
+                object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnitExpression.class);
+            } else if (SimpleStringExpression.class.getName().equals(expressionType)) {
+                object = mapper.treeToValue(parameterNode.get("value"), SimpleStringExpression.class);
             }
             valueMap.put(parameter, object);
         }

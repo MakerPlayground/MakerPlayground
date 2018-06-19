@@ -29,6 +29,8 @@ public class SimpleExpressionControl extends HBox {
         rangeSlider.setMin(constraint.getMin());
         rangeSlider.setHighValue(expression.getHighValue());
         rangeSlider.setLowValue(expression.getLowValue());
+        // This line is needed for proper operation of the RangeSlider (See: https://bitbucket.org/controlsfx/controlsfx/issues/728/rangeslider-order-of-setting-low-and-high)
+        rangeSlider.setHighValue(expression.getHighValue());
         rangeSlider.setShowTickMarks(true);
         rangeSlider.setShowTickLabels(true);
         rangeSlider.setBlockIncrement(1);

@@ -1,6 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.expression.ChipType;
+import io.makerplayground.project.chip.ChipType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;

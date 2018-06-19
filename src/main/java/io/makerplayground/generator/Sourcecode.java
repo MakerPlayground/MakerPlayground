@@ -6,6 +6,7 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
+import io.makerplayground.project.chip.*;
 import io.makerplayground.project.expression.*;
 
 import java.text.DecimalFormat;
@@ -24,6 +25,7 @@ public class Sourcecode {
         NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
         NEST_CONDITION("Multiple condition are connected together"),
+        SHORT_CIRCUIT("Some conditions are not reachable"),
         CONDITION_ERROR("Missing required parameter in some conditions");
 
         private final String description;
@@ -216,7 +218,7 @@ public class Sourcecode {
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() == 1) {
                 Scene s = adjacentScene.get(0);
-                sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                sb.append(INDENT).append("currentScene = ").append("scene_").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                 visitedScene.add(s);
                 queue.add(s);
             } else {
@@ -238,7 +240,7 @@ public class Sourcecode {
 
             // create function header
             sb.append(NEW_LINE);
-            sb.append("void ").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
+            sb.append("void ").append("scene_").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
@@ -285,7 +287,7 @@ public class Sourcecode {
                     Scene s = adjacentScene.get(0);
                     visitedScene.add(s);
                     queue.add(s);
-                    sb.append(INDENT).append("currentScene = ").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                    sb.append(INDENT).append("currentScene = ").append("scene_").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                 } else {
                     return new Sourcecode(Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
                 }
@@ -306,7 +308,7 @@ public class Sourcecode {
         if (cppMode) {
             headerStringBuilder.append("void beginScene();").append(NEW_LINE);
             for (Scene scene : visitedScene) {
-                headerStringBuilder.append("void ").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+                headerStringBuilder.append("void ").append("scene_").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
             headerStringBuilder.append(NEW_LINE);
         }
@@ -413,7 +415,7 @@ public class Sourcecode {
             if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (nextScene.size() == 1) {
                     Scene s = nextScene.get(0);
-                    sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = ")
+                    sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = ").append("scene_")
                             .append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
                     sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
                     if (!visitedScene.contains(s)) {

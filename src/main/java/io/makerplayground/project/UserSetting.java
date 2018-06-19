@@ -19,9 +19,11 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.expression.ConstantExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
+import io.makerplayground.project.expression.ProjectValueExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -81,6 +83,33 @@ public class UserSetting {
         this.expression = FXCollections.observableMap(expression);
     }
 
+    UserSetting(UserSetting u) {
+        this.device = u.getDevice();
+        this.action = new SimpleObjectProperty<>(u.getAction());
+        this.valueMap = FXCollections.observableHashMap();
+        for (Parameter p : u.getValueMap().keySet()) {
+            Expression o = u.getValueMap().get(p);
+            // NumberWithUnit, String and ProjectValue are immutable so we are safe to reuse the instance without the need to perform deep copy
+//            if (o instanceof NumberWithUnit || o instanceof String || o instanceof ProjectValue) {
+//                this.valueMap.put(p, o);
+//            } else { // new type add later may not be immutable so we throw exception
+                throw new IllegalStateException("Found expression parameter type which is not implemented!!!");
+//            }
+        }
+        this.expression = FXCollections.observableHashMap();
+        for (Value v : u.getExpression().keySet()) {
+            this.expression.put(v, Expression.newInstance(u.getExpression().get(v)));
+        }
+
+        // Reset value of the valueMap every time that the action is changed
+        this.action.addListener((observable, oldValue, newValue) -> {
+            valueMap.clear();
+            for (Parameter param : action.get().getParameter()) {
+                valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
+            }
+        });
+    }
+
     public ProjectDevice getDevice() {
         return device;
     }
@@ -114,7 +143,7 @@ public class UserSetting {
                 continue;
             }
 
-            ProjectValue projectValue = (ProjectValue) valueMap.get(parameter);
+            ProjectValue projectValue = ((ProjectValueExpression) valueMap.get(parameter)).getProjectValue();
             ProjectDevice projectDevice = projectValue.getDevice();
             if (result.containsKey(projectDevice)) {
                 result.get(projectDevice).add(projectValue.getValue());

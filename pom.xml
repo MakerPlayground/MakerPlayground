@@ -6,7 +6,7 @@
 
     <groupId>io.makerplayground</groupId>
     <artifactId>io.makerplayground.frontend</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
 
     <profiles>
         <profile>
@@ -104,7 +104,7 @@
                                 <argument>-native</argument>
                                 <argument>installer</argument> <!-- or 'installer' -->
                                 <argument>-vendor</argument>
-                                <argument>InGarage Assistive Technology CO. LTD.</argument>
+                                <argument>InGarage Assistive Technology Co., Ltd.</argument>
                                 <argument>-name</argument>
                                 <argument>MakerPlayground</argument>
                                 <argument>-title</argument>
@@ -124,6 +124,7 @@
                                 <argument>-BjvmOptions=--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED</argument>
                                 <argument>-BinstalldirChooser=true</argument>
                                 <argument>-BsystemWide=true</argument>
+                                <argument>-BshortcutHint=true</argument>
                                 <argument>-v</argument>
                             </arguments>
                         </configuration>

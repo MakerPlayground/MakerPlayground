@@ -56,6 +56,22 @@
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
+
+#saveAsBtn{
+    -fx-background-image: url('saveas.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+#saveAsBtn:pressed{
+    -fx-background-image: url('saveas-toggle.png');
+    -fx-background-size : 15px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+
 #loadBtn{
     -fx-background-image: url('load.png');
     -fx-background-size : 15px;

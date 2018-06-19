@@ -69,6 +69,18 @@ public class Scene extends NodeElement {
         this.error = new ReadOnlyBooleanWrapper(checkError());
     }
 
+    Scene(Scene s, String name) {
+        super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight());
+        this.name = new SimpleStringProperty(name);
+        this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        for (UserSetting u : s.setting) {
+            this.setting.add(new UserSetting(u));
+        }
+        this.delay = new SimpleDoubleProperty(s.getDelay());
+        this.delayUnit = new SimpleObjectProperty<>(s.getDelayUnit());
+        this.error = new ReadOnlyBooleanWrapper(checkError());
+    }
+
     public void addDevice(ProjectDevice device) {
         setting.add(new UserSetting(device, true));
         invalidate();

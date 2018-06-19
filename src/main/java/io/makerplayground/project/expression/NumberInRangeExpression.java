@@ -6,6 +6,10 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.chip.ChipOperator;
+import io.makerplayground.project.chip.NumberWithUnitTerm;
+import io.makerplayground.project.chip.OperatorTerm;
+import io.makerplayground.project.chip.ValueTerm;
 
 public class NumberInRangeExpression extends Expression {
 
@@ -18,6 +22,10 @@ public class NumberInRangeExpression extends Expression {
                 , new ValueTerm(new ProjectValue(device, value))
                 , new OperatorTerm(ChipOperator.GREATER_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())));
+    }
+
+    protected NumberInRangeExpression(NumberInRangeExpression s) {
+        super(s);
     }
 
     public double getLowValue() {

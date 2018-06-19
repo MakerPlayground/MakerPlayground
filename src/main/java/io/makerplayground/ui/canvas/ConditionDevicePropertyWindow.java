@@ -5,8 +5,7 @@ import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberInRangeExpression;
+import io.makerplayground.project.expression.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -153,24 +152,24 @@ public class ConditionDevicePropertyWindow extends PopOver {
                         }
                     }
                 });
-                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
                 NumberWithUnit number = (NumberWithUnit) viewModel.getParameterValue(p);
                 SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
                         , FXCollections.observableArrayList(p.getUnit()), number);
-                sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = sliderWithUnit;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
                 textField.setText((String) viewModel.getParameterValue(p));
-                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 control = textField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
                 comboBox.getSelectionModel().select((String) viewModel.getParameterValue(p));
-                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
@@ -179,7 +178,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
                         , defaultValue.getValue()
                         , defaultValue.getUnit()
                         , FXCollections.observableArrayList(p.getUnit()));
-                spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = spinner;
             } else {
                 throw new IllegalStateException("Found unknown control type " + p);

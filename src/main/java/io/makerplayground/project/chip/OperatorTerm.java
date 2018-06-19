@@ -1,4 +1,4 @@
-package io.makerplayground.project.expression;
+package io.makerplayground.project.chip;
 
 public class OperatorTerm extends Term {
 

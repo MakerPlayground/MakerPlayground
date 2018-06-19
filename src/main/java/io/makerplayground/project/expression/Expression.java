@@ -1,6 +1,8 @@
 package io.makerplayground.project.expression;
 
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.chip.ChipType;
+import io.makerplayground.project.chip.Term;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -12,6 +14,22 @@ import java.util.stream.Collectors;
 public class Expression {
     private final ObservableList<Term> terms = FXCollections.observableArrayList();
     private final BooleanProperty enable = new SimpleBooleanProperty(false);
+
+    public Expression() {
+    }
+
+    protected Expression(Expression e) {
+        terms.addAll(e.terms);  // Term is immutable
+        enable.set(e.isEnable());
+    }
+
+    public static Expression newInstance(Expression e) {
+        if (e instanceof NumberInRangeExpression) {
+            return new NumberInRangeExpression((NumberInRangeExpression) e);
+        } else {
+            return new Expression(e);
+        }
+    }
 
     public ObservableList<Term> getTerms() {
         return terms;

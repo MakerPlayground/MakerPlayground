@@ -58,6 +58,8 @@ public class Main extends Application {
     @FXML
     private Button saveButton;
     @FXML
+    private Button saveAsButton;
+    @FXML
     private Button loadButton;
     @FXML
     private Button newButton;
@@ -73,6 +75,7 @@ public class Main extends Application {
     private Timer timer = new Timer();
     private ObjectMapper mapper = new ObjectMapper();
     private ChangeListener<String> projectPathListener;
+    private File latestProjectDirectory;
 
     private boolean flag = false; // for the first tutorial tracking
 
@@ -151,6 +154,7 @@ public class Main extends Application {
         newButton.setOnAction(event -> newProject(primaryStage));
         loadButton.setOnAction(event -> loadProject(primaryStage));
         saveButton.setOnAction(event -> saveProject());
+        saveAsButton.setOnAction(event -> saveProjectAs());
 
         tutorialButton.setOnAction(event -> {
             if (flag) {
@@ -191,22 +195,28 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        if(!SoftwareVersionControl.isCurrentVersion()) {
-            Action navigate = new Action("Download", actionEvent -> {
-                try {
-                    Desktop.getDesktop().browse(new URI(SoftwareVersionControl.getDownload_url()));
-                } catch (IOException | URISyntaxException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            SoftwareVersionControl.getLatestVersionInfo().ifPresent(version -> {
+                if (!version.getVersionString().equals(SoftwareVersionControl.CURRENT_VERSION)) {
+                    Platform.runLater(() -> {
+                        Action navigate = new Action("Download", actionEvent -> {
+                            try {
+                                Desktop.getDesktop().browse(new URI(version.getDownloadURL()));
+                            } catch (IOException | URISyntaxException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        Notifications.create()
+                                .title(version.getBuildName() + " has been released")
+                                .text("Update now?")
+                                .owner(mainWindow.getCanvasView())
+                                .action(navigate)
+                                .hideAfter(Duration.seconds(10))
+                                .show();
+                    });
                 }
             });
-            Notifications.create()
-                    .title("New version is available")
-                    .text("Update now?")
-                    .owner(mainWindow.getCanvasView())
-                    .action(navigate)
-                    .hideAfter(Duration.seconds(10))
-                    .show();
-        }
+        }).start();
 
         hpl.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -317,15 +327,18 @@ public class Main extends Application {
             if (project.getFilePath().isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Save File");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
-                        new FileChooser.ExtensionFilter("All Files", "*.*"));
+                if (latestProjectDirectory != null) {
+                    fileChooser.setInitialDirectory(latestProjectDirectory);
+                }
+                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"));
+                fileChooser.setInitialFileName("*.mp");
                 selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
             } else {
                 selectedFile = new File(project.getFilePath());
             }
 
             if (selectedFile != null) {
+                latestProjectDirectory = selectedFile.getParentFile();
                 mapper.writeValue(selectedFile, project);
                 project.setFilePath(selectedFile.getAbsolutePath());
                 statusLabel.setText("Saved");
@@ -335,7 +348,38 @@ public class Main extends Application {
                         Platform.runLater(() -> statusLabel.setText(""));
                     }
                 }, 3000);
-//                SingletonUtilTools.getInstance().setAll("SAVE");
+            } else {
+                statusLabel.setText("");
+            }
+        } catch (IOException x) {
+            x.printStackTrace();
+        }
+    }
+
+    private void saveProjectAs() {
+        statusLabel.setText("Saving...");
+        try {
+            File selectedFile;
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save File As");
+            if (latestProjectDirectory != null) {
+                fileChooser.setInitialDirectory(latestProjectDirectory);
+            }
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"));
+            fileChooser.setInitialFileName("*.mp");
+            selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+
+            if (selectedFile != null) {
+                latestProjectDirectory = selectedFile.getParentFile();
+                mapper.writeValue(selectedFile, project);
+                project.setFilePath(selectedFile.getAbsolutePath());
+                statusLabel.setText("Saved");
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> statusLabel.setText(""));
+                    }
+                }, 3000);
             } else {
                 statusLabel.setText("");
             }

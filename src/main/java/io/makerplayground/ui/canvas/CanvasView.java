@@ -1,12 +1,24 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.project.Condition;
+import io.makerplayground.project.NodeElement;
+import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
-import javafx.scene.control.Button;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -19,6 +31,8 @@ public class CanvasView extends AnchorPane {
     private final Button zoomInButton = new Button();
     private final Button zoomOutButton = new Button();
     private final Button zoomDefaultButton = new Button();
+
+    private final ObservableList<InteractiveNode> clipboard = FXCollections.observableArrayList();
 
     private final CanvasViewModel canvasViewModel;
 
@@ -95,6 +109,32 @@ public class CanvasView extends AnchorPane {
 //        AnchorPane.setBottomAnchor(zoomTextField, 20.0);
 //        AnchorPane.setRightAnchor(zoomTextField, 50.0);
 
+        ContextMenu contextMenu = new ContextMenu();
+        BooleanBinding selectionGroupEmpty = Bindings.size(mainPane.getSelectionGroup().getSelected()).isEqualTo(0);
+
+        MenuItem cutMenuItem = new MenuItem("Cut");
+        cutMenuItem.setOnAction(event -> cutHandler());
+        cutMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+X"));
+        cutMenuItem.disableProperty().bind(selectionGroupEmpty);
+
+        MenuItem copyMenuItem = new MenuItem("Copy");
+        copyMenuItem.setOnAction(event -> copyHandler());
+        copyMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+C"));
+        copyMenuItem.disableProperty().bind(selectionGroupEmpty);
+
+        MenuItem pasteMenuItem = new MenuItem("Paste");
+        pasteMenuItem.setOnAction(event -> pasteHandler());
+        pasteMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+V"));
+        pasteMenuItem.disableProperty().bind(Bindings.size(clipboard).isEqualTo(0));
+
+        MenuItem deleteMenuItem = new MenuItem("Delete");
+        deleteMenuItem.setOnAction(event -> deleteHandler());
+        deleteMenuItem.setAccelerator(KeyCombination.valueOf("Delete"));
+        deleteMenuItem.disableProperty().bind(selectionGroupEmpty);
+
+        contextMenu.getItems().addAll(cutMenuItem, copyMenuItem, pasteMenuItem, new SeparatorMenuItem(), deleteMenuItem);
+        mainPane.setContextMenu(contextMenu);
+
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
         mainPane.addChildren(beginSceneView);
@@ -149,24 +189,81 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initEvent() {
-        // allow node to be deleted using the delete key
         setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.DELETE) {
-                for (InteractiveNode interactiveNode : mainPane.getSelectedNode()) {
-                    if (interactiveNode instanceof SceneView) {
-                        canvasViewModel.project.removeState(((SceneView) interactiveNode).getSceneViewModel().getScene());
-                    } else if (interactiveNode instanceof ConditionView) {
-                        canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
-                    } else if (interactiveNode instanceof LineView) {
-                        canvasViewModel.project.removeLine(((LineView) interactiveNode).getLineViewModel().getLine());
-                    } else if (interactiveNode instanceof BeginSceneView) {
-                        // we shouldn't delete begin from the canvas
-                    } else {
-                        throw new IllegalStateException("Found invalid object in the canvas!!!");
-                    }
-                }
+            if (event.getCode() == KeyCode.SHIFT) {  // enable multiple selection when the shift key is pressed
+                mainPane.getSelectionGroup().setMultipleSelection(true);
             }
         });
+        setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.SHIFT) {  // disable multiple selection when the shift key is released
+                mainPane.getSelectionGroup().setMultipleSelection(false);
+            }
+        });
+    }
+
+    private void cutHandler() {
+        clipboard.clear();
+        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+        deleteHandler();
+    }
+
+    private void copyHandler() {
+        clipboard.clear();
+        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+    }
+
+    private void pasteHandler() {
+        if (clipboard.isEmpty()) {
+            return;
+        }
+
+        // extract model from view
+        List<NodeElement> elements = clipboard.stream().filter(interactiveNode -> (interactiveNode instanceof SceneView) || (interactiveNode instanceof ConditionView))
+                .map(interactiveNode -> {
+                    if (interactiveNode instanceof SceneView) {
+                        return ((SceneView) interactiveNode).getSceneViewModel().getScene();
+                    } else {
+                        return ((ConditionView) interactiveNode).getConditionViewModel().getCondition();
+                    }
+                }).collect(Collectors.toList());
+
+        // find group min x,y (x,y of the left-top most elements in the group selection)
+        double minX = elements.stream().mapToDouble(NodeElement::getLeft).min().getAsDouble();
+        double minY = elements.stream().mapToDouble(NodeElement::getTop).min().getAsDouble();
+
+        // add elements in clipboard to the canvas
+        for (NodeElement element : elements) {
+            // new x,y is the current mouse position plus the offset (old x,y - group minimum x,y)
+            double newX = element.getLeft() - minX + mainPane.getMouseX();
+            double newY = element.getTop() - minY + mainPane.getMouseY();
+            if (element instanceof Scene) {
+                Scene newScene = canvasViewModel.project.addState((Scene) element);
+                newScene.setLeft(newX);
+                newScene.setTop(newY);
+            } else {
+                Condition newCondition = canvasViewModel.project.addCondition((Condition) element);
+                newCondition.setLeft(newX);
+                newCondition.setTop(newY);
+            }
+        }
+    }
+
+    private void deleteHandler() {
+        // clone the list as the selected list will changed in the loop which will cause NoSuchElementException to be thrown
+        List<InteractiveNode> removeList = new ArrayList<>(mainPane.getSelectionGroup().getSelected());
+        for (InteractiveNode interactiveNode : removeList) {
+            if (interactiveNode instanceof SceneView) {
+                canvasViewModel.project.removeState(((SceneView) interactiveNode).getSceneViewModel().getScene());
+            } else if (interactiveNode instanceof ConditionView) {
+                canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
+            } else if (interactiveNode instanceof LineView) {
+                canvasViewModel.project.removeLine(((LineView) interactiveNode).getLineViewModel().getLine());
+            } else if (interactiveNode instanceof BeginSceneView) {
+                // we shouldn't delete begin from the canvas
+            } else {
+                throw new IllegalStateException("Found invalid object in the canvas!!!");
+            }
+        }
     }
 
     private void addConnectionEvent(InteractiveNode node) {

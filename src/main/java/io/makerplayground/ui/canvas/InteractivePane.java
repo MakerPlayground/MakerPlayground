@@ -28,6 +28,8 @@ public class InteractivePane extends ScrollPane {
     private NodeElement sourceNode; // TODO: leak model into view
     private NodeElement destNode;   // TODO: leak model into view
 
+    private double mouseX, mouseY;
+
     public InteractivePane() {
         // a pane to add content into
         content.setStyle("-fx-background-color: #dbdbdb;");
@@ -69,8 +71,12 @@ public class InteractivePane extends ScrollPane {
             repositionScroller(group, this, scale.get() / oldScaleFactor, scrollOffset);
         });
 
-        // deselect when click at blank space in the canvas
-        setOnMousePressed(event -> selectionGroup.deselect());
+        // deselect when left click at blank space in the canvas
+        setOnMousePressed(event -> {
+            if (event.isPrimaryButtonDown()) {
+                selectionGroup.deselect();
+            }
+        });
 
         guideLine.setVisible(false);
         // guideLine is always bring to front when visible so we must make it transparent otherwise it will block
@@ -79,6 +85,19 @@ public class InteractivePane extends ScrollPane {
         guideLine.setStrokeWidth(3.25);
         guideLine.setStyle("-fx-stroke: #313644;");
         content.getChildren().add(guideLine);
+
+        addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
+            double viewportWidth = getViewportBounds().getWidth();
+            double viewportHeight = getViewportBounds().getHeight();
+            double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
+            double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+
+            double left = getHvalue() * extraWidth;
+            double top = getVvalue() * extraHeight;
+
+            mouseX = (left + event.getX()) / scale.get();
+            mouseY = (top + event.getY()) / scale.get();
+        });
 
         addEventHandler(MouseDragEvent.MOUSE_DRAG_OVER, event -> {
             double viewportWidth = getViewportBounds().getWidth();
@@ -191,8 +210,8 @@ public class InteractivePane extends ScrollPane {
         n.removeEventHandler(InteractiveNodeEvent.MOVED, nodeMovedHandler);
     }
 
-    public List<InteractiveNode> getSelectedNode() {
-        return selectionGroup.getSelected();
+    public SelectionGroup<InteractiveNode> getSelectionGroup() {
+        return selectionGroup;
     }
 
     public NodeElement getSourceNode() {
@@ -213,5 +232,13 @@ public class InteractivePane extends ScrollPane {
 
     public void setScale(double scale) {
         this.scale.set(scale);
+    }
+
+    public double getMouseX() {
+        return mouseX;
+    }
+
+    public double getMouseY() {
+        return mouseY;
     }
 }

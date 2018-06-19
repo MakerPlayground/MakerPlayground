@@ -1,4 +1,6 @@
-package io.makerplayground.project.expression;
+package io.makerplayground.project.chip;
+
+import io.makerplayground.project.chip.ChipType;
 
 public abstract class Term {
     private final ChipType type;

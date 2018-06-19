@@ -1,6 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.expression.ChipType;
+import io.makerplayground.project.chip.ChipType;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
