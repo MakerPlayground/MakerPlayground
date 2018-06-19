@@ -19,6 +19,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
+import io.makerplayground.project.expression.ConstantExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.beans.property.ObjectProperty;
@@ -35,7 +36,7 @@ import java.util.*;
 public class UserSetting {
     private final ProjectDevice device;
     private final ObjectProperty<Action> action;
-    private final ObservableMap<Parameter, Object> valueMap;
+    private final ObservableMap<Parameter, Expression> valueMap;
     private final ObservableMap<Value, Expression> expression;
 
     UserSetting(ProjectDevice device, boolean scene) {  // TODO: Remove boolean field!!!
@@ -55,7 +56,7 @@ public class UserSetting {
             Action action = actionList.get(0);
             this.action.set(action);
             for (Parameter param : action.getParameter()) {
-                this.valueMap.put(param, param.getDefaultValue());
+                this.valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
             }
         }
 
@@ -63,7 +64,7 @@ public class UserSetting {
         this.action.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
             for (Parameter param : action.get().getParameter()) {
-                valueMap.put(param, param.getDefaultValue());
+                valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
             }
         });
 
@@ -73,7 +74,7 @@ public class UserSetting {
         }
     }
 
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Object> valueMap, Map<Value, Expression> expression) {
+    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression) {
         this.device = device;
         this.action = new SimpleObjectProperty<>(action);
         this.valueMap = FXCollections.observableMap(valueMap);
@@ -96,7 +97,7 @@ public class UserSetting {
         this.action.set(action);
     }
 
-    public ObservableMap<Parameter, Object> getValueMap() {
+    public ObservableMap<Parameter, Expression> getValueMap() {
         return valueMap;
     }
 

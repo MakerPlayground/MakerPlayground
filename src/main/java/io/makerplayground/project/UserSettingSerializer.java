@@ -37,11 +37,14 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         for (Map.Entry<Parameter, Object> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", v.getKey().getName());
-            if (v.getValue() instanceof Expression) {
-                throw new IllegalStateException("Implementation not done");
-            } else {
-                jsonGenerator.writeObjectField("value", v.getValue());
+            if (v.getValue() instanceof CustomNumberExpression) {
+                jsonGenerator.writeStringField("type", "CustomNumberExpression");
+            } else if (v.getValue() instanceof NumberWithUnit) {
+                jsonGenerator.writeStringField("type", "NumberWithUnit");
+            } else if (v.getValue() instanceof ProjectValue) {
+                jsonGenerator.writeStringField("type", "ProjectValue");
             }
+            jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
