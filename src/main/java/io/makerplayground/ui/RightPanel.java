@@ -39,7 +39,7 @@ public class RightPanel extends AnchorPane {
     }
 
     private void initView() {
-        setStyle("-fx-background-color : #4d5666");
+        setStyle("-fx-background-color : #5AC1AA");
         //setMaxWidth(50.0);
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
@@ -48,12 +48,12 @@ public class RightPanel extends AnchorPane {
         configureBtn.setOnAction(event -> {
             ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
             ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-            configActualDeviceView.showAndWait();
+            //configActualDeviceView.showAndWait();
         });
 
 
-        Button generateBtn = new Button("Generate Project");
-        generateBtn.setOnAction(event -> {
+        //Button generateBtn = new Button("Generate Project");
+        /*generateBtn.setOnAction(event -> {
             DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
             if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
                 ErrorDialogView errorDialogView = new ErrorDialogView("Controller hasn't been selected");
@@ -79,7 +79,7 @@ public class RightPanel extends AnchorPane {
                 SingletonWiringDiagram.getInstance().setOpenTime();
                 GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
                 GenerateView generateView = new GenerateView(generateViewModel);
-                generateView.showAndWait();
+                //generateView.showAndWait();
             }
         });
         Button uploadBtn = new Button("Upload");
@@ -94,23 +94,23 @@ public class RightPanel extends AnchorPane {
             uploadDialogView.show();
 
             new Thread(uploadTask).start();
-        });
+        });*/
 
         VBox projectButton = new VBox();
-        projectButton.setStyle("-fx-background-color : #313644");
+        projectButton.setStyle("-fx-background-color : #DBDBDB");
         projectButton.setSpacing(2.0);
-        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
+       // projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);
         projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
 
         configureBtn.prefWidthProperty().bind(projectButton.widthProperty());
-        generateBtn.prefWidthProperty().bind(projectButton.widthProperty());
-        uploadBtn.prefWidthProperty().bind(projectButton.widthProperty());
+        //generateBtn.prefWidthProperty().bind(projectButton.widthProperty());
+       // uploadBtn.prefWidthProperty().bind(projectButton.widthProperty());
 
         AnchorPane.setLeftAnchor(devicePanelView,0.0);
         AnchorPane.setRightAnchor(devicePanelView,0.0);
         AnchorPane.setTopAnchor(devicePanelView,0.0);
-        AnchorPane.setBottomAnchor(devicePanelView,120.0);
+        AnchorPane.setBottomAnchor(devicePanelView,20.0);
         AnchorPane.setLeftAnchor(projectButton,0.0);
         AnchorPane.setRightAnchor(projectButton,0.0);
         AnchorPane.setBottomAnchor(projectButton,0.0);

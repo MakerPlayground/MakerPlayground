@@ -71,7 +71,7 @@ public class DeviceSelectorView extends VBox {
             connectivityPane.getChildren().add(controlDevicePane);
             this.connectivityDevice.add(controlDevicePane);
         }
-        //ButtonType importButtonType = new ButtonType("Import", ButtonBar.ButtonData.OK_DONE);
+        ButtonType importButtonType = new ButtonType("Import", ButtonBar.ButtonData.OK_DONE);
         //getDialogPane().getButtonTypes().addAll(importButtonType, ButtonType.CANCEL);
 
         /*setResultConverter(dialogButton -> {

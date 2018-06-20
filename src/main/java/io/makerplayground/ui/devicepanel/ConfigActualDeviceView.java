@@ -36,18 +36,18 @@ import java.util.stream.Collectors;
 /**
  * Created by tanyagorn on 7/11/2017.
  */
-public class ConfigActualDeviceView extends Dialog {
+public class ConfigActualDeviceView extends VBox {
     private final ConfigActualDeviceViewModel viewModel;
 
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
-        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/ConfigActualDeviceView.css").toExternalForm());
-        getDialogPane().setMaxHeight(500);
+        getStylesheets().add(this.getClass().getResource("/css/ConfigActualDeviceView.css").toExternalForm());
+        setMaxHeight(500);
 
-        setTitle("Configure Device");
+        //setTitle("Configure Device");
 //        setResizable(true);
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UTILITY);
+        //Stage stage = (Stage)getScene().getWindow();
+       // stage.initStyle(StageStyle.UTILITY);
 
         initView();
         viewModel.setCallback(this::initView);
@@ -66,8 +66,8 @@ public class ConfigActualDeviceView extends Dialog {
         topicConfigDevice.setId("topicConfigDevice");
         allDevice.getChildren().add(topicConfigDevice);
 
-        Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
+        //Window window = this.getScene().getWindow();
+        //window.setOnCloseRequest(event -> window.hide());
 
         initControllerControl(allDevice);
 
@@ -85,8 +85,9 @@ public class ConfigActualDeviceView extends Dialog {
         }
 
         scrollPane.setContent(allDevice);
-        getDialogPane().setContent(scrollPane);
-        getDialogPane().getScene().getWindow().sizeToScene();
+        getChildren().add(scrollPane);
+        //getDialogPane().setContent(scrollPane);
+        //getScene().getWindow().sizeToScene();
     }
 
     private void initControllerControl(VBox allDevice) {
@@ -347,4 +348,5 @@ public class ConfigActualDeviceView extends Dialog {
             allDevice.getChildren().add(entireDevice);
         }
     }
+
 }

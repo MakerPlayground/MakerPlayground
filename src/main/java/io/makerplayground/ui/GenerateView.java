@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * Created by tanyagorn on 7/19/2017.
  */
-public class GenerateView extends Dialog {
+public class GenerateView extends VBox {
     @FXML private TextArea codeTextArea;
     @FXML private TableView<TableDataList> deviceTable;
     @FXML private TableColumn<TableDataList,String> nameColumn;
@@ -45,12 +45,12 @@ public class GenerateView extends Dialog {
 
     public GenerateView(GenerateViewModel viewModel) {
         this.viewModel = viewModel;
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UTILITY);
-        setTitle("  Generate Project");
+       // Stage stage = (Stage) getDialogPane().getScene().getWindow();
+       // stage.initStyle(StageStyle.UTILITY);
+       // setTitle("  Generate Project");
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/GenerateView.fxml"));
-        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
         try {
@@ -63,11 +63,11 @@ public class GenerateView extends Dialog {
     }
 
     private void initView() {
-        Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> {
+        //Window window = getScene().getWindow();
+       /* window.setOnCloseRequest(event -> {
             SingletonWiringDiagram.getInstance().setCloseTime();
             window.hide();
-        });
+        });*/
 
         Pane wiringDiagram;
         Platform platform = viewModel.getProject().getPlatform();
@@ -79,9 +79,9 @@ public class GenerateView extends Dialog {
             throw new IllegalStateException("Found unsupported platform(" + platform + ")");
         }
 
-        diagramScrollPane.setContent(wiringDiagram);
+       /* diagramScrollPane.setContent(wiringDiagram);
         codeTextArea.setText(viewModel.getCode());
-        codeTextArea.setEditable(false);
+        codeTextArea.setEditable(false);*/
 
         final WebView browser = new WebView();
         final WebEngine webEngine = browser.getEngine();

@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color : #265B69;
+    /*-fx-background-color : #265B69;*/
     -fx-focus-color: transparent;
 }
 .dialog-pane{

@@ -7,33 +7,22 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<fx:root id="devicePanelPane" fx:id="devicePanel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" stylesheets="@../css/DevicePanelView.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="devicePanelPane" fx:id="devicePanel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="150.0" style="-fx-background-color: #DBDBDB;" stylesheets="@../css/DevicePanelView.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <AnchorPane style="-fx-background-color: #313644;">
+      <AnchorPane style="-fx-background-color: #DBDBDB;">
          <children>
-            <Label id="deviceTitle" maxHeight="35.0" maxWidth="70.0" minHeight="35.0" prefHeight="35.0" prefWidth="70.0" text="Devices">
+            <Label id="deviceTitle" layoutX="49.0" maxHeight="35.0" maxWidth="70.0" minHeight="35.0" prefHeight="35.0" prefWidth="53.0" style="-fx-background-color: #DBDBDB;" text="List" textFill="#dbdbdb">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
          </children>
       </AnchorPane>
-      <TitledPane text="Microcontroller">
+      <TitledPane prefWidth="150.0" style="-fx-background-color: #DBDBDB;" text="Sensor">
          <content>
-            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
-               <content>
-                  <FlowPane fx:id="microcontrollerPane" minHeight="80.0" prefHeight="80.0" style="-fx-background-color: #4d5666;" />
-               </content>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </ScrollPane>
-         </content>
-      </TitledPane>
-      <TitledPane text="Sensor">
-         <content>
-            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #DBDBDB;">
                <content>
                   <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #4d5666;" vgap="10.0" />
                </content>
@@ -42,10 +31,13 @@
                </padding>
             </ScrollPane>
          </content>
+         <font>
+            <Font name="Segoe UI" size="1.0" />
+         </font>
       </TitledPane>
-      <TitledPane text="Actuator">
+      <TitledPane style="-fx-background-color: #DBDBDB;" text="Actuator">
          <content>
-            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #DBDBDB;">
                <content>
                   <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0" />
                </content>
@@ -54,10 +46,13 @@
                </padding>
             </ScrollPane>
          </content>
+         <font>
+            <Font name="Segoe UI" size="1.0" />
+         </font>
       </TitledPane>
-      <TitledPane layoutX="10.0" layoutY="298.0" text="Connectivity">
+      <TitledPane layoutX="10.0" layoutY="298.0" style="-fx-background-color: #DBDBDB;" text="Connectivity">
          <content>
-            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #DBDBDB;">
                <content>
                   <FlowPane id="outputPane" fx:id="connectivityPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0" />
                </content>
@@ -66,6 +61,9 @@
                </padding>
             </ScrollPane>
          </content>
+         <font>
+            <Font name="Segoe UI" size="1.0" />
+         </font>
       </TitledPane>
    </children>
 </fx:root>

@@ -145,7 +145,7 @@ public class CanvasView extends AnchorPane {
         AnchorPane.setRightAnchor(mainPane, 0.0);
         AnchorPane.setBottomAnchor(mainPane, 0.0);
         AnchorPane.setLeftAnchor(mainPane, 0.0);
-        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomControl);
+        getChildren().addAll(mainPane,zoomControl);
     }
 
     private void initEvent() {

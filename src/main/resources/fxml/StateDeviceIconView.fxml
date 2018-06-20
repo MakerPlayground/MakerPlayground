@@ -8,16 +8,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root id="vBoxPane" alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" style="-fx-border-color: #0768de; -fx-border-width: 1.5px; -fx-border-radius: 3px;" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="vBoxPane" alignment="CENTER" maxHeight="80.0" maxWidth="80.0" minHeight="80.0" minWidth="80.0" style="-fx-border-color: #0768de; -fx-border-width: 1.5px; -fx-border-radius: 3px;" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox maxHeight="12.0" minHeight="12.0" minWidth="50.0">
          <children>
-            <Label fx:id="nameIconImageView" alignment="CENTER" maxWidth="38.0" minHeight="12.0" minWidth="38.0" prefWidth="38.0" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
+            <Label fx:id="nameIconImageView" alignment="CENTER" maxWidth="38.0" minHeight="12.0" minWidth="38.0" prefWidth="38.0" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS" translateY="-5.0">
                <font>
                   <Font size="8.0" />
                </font>
             </Label>
-            <Button id="removeStateDeviceBtn" fx:id="removeStateDeviceBtn" alignment="CENTER" minHeight="12.0" minWidth="-Infinity" mnemonicParsing="false" prefHeight="12.0" prefWidth="12.0" style="-fx-background-color: transparent;" textAlignment="CENTER">
+            <Button id="removeStateDeviceBtn" fx:id="removeStateDeviceBtn" alignment="CENTER" minHeight="12.0" minWidth="-Infinity" mnemonicParsing="false" prefHeight="12.0" prefWidth="12.0" style="-fx-background-color: transparent;" textAlignment="CENTER" translateY="-5.0">
                <font>
                   <Font size="8.0" />
                </font>
@@ -32,7 +32,7 @@
          </children>
       </HBox>
       <ImageView fx:id="iconImageView" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
-      <Label fx:id="action" minHeight="13.0" text="Label">
+      <Label fx:id="action" minHeight="13.0" text="Label" translateY="5.0">
          <font>
             <Font size="8.0" />
          </font></Label>

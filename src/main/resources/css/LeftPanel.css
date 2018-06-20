@@ -1,5 +1,5 @@
 .button{
-    -fx-font-size:12px;
+    -fx-font-size:13px;
     -fx-background-color : transparent;
     -fx-border-color : #3C9691;
     -fx-text-fill: #3C9691;
@@ -13,15 +13,15 @@
 }
 
 .button:pressed{
-    -fx-font-size:12px;
+    -fx-font-size:13px;
     -fx-background-color : #29DAD4;
-    -fx-border-color : #29DAD41;
+    /*-fx-border-color : #29DAD41;*/
     -fx-text-fill: #272B35;
     -fx-cursor: hand;
 }
 
 #deleteDeviceBtn{
-    -fx-font-size:12px;
+    -fx-font-size:13px;
     -fx-border-color : transparent;
     -fx-background-color : transparent;
     -fx-text-fill : #0768de;
@@ -29,7 +29,7 @@
 .text-field{
     -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
     -fx-border-color :  white;
-    -fx-border-width: 2px;
+    -fx-border-width: 3px;
     -fx-background-inset : 0 0 0;
 }
 #arcNode{

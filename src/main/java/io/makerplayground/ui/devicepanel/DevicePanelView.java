@@ -64,7 +64,7 @@ public class DevicePanelView extends VBox {
             }
             platformVBox.getChildren().add(radioButton);
         }
-        microcontrollerPane.getChildren().add(platformVBox);
+        //microcontrollerPane.getChildren().add(platformVBox);
 
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
                 new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()

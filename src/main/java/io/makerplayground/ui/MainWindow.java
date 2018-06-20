@@ -47,13 +47,13 @@ public class MainWindow extends SplitPane {
             e.printStackTrace();
         }
 
-        //RightPanel rightPanel = new RightPanel(project);
+        RightPanel rightPanel = new RightPanel(project);
 
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
-       // setDividerPositions(0.8, 0.2);
-        getItems().addAll(canvasView);
+       setDividerPositions(0.95, 0.15);
+        getItems().addAll(canvasView,rightPanel);
     }
 
     public Project getProject() {

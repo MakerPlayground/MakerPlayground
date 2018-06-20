@@ -3,26 +3,85 @@
 .titled-pane > .title{
     -fx-background-color : #231F20;
     -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
+    -fx-border-width : 3px;
     -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+#deviceTitlepane> .title{
+    -fx-background-color : #231F20;
+    -fx-border-color: #231F20 transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+#deviceTitlepane:expanded > .title{
+    -fx-background-color : #5AC1AA;
+    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+#aa{
+    -fx-background-color:#231F20;
+    -fx-border-color :#231F20;
+
+}
+#diagrampane:expanded > .title{
+    -fx-background-color : #5AC1AA;
+    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+#diagrampane> .title{
+    -fx-background-color : #231F20;
+    -fx-border-color: #231F20 transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#genpan:expanded > .title{
+    -fx-background-color : #5AC1AA;
+    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+#genpan> .title{
+    -fx-background-color : #231F20;
+    -fx-border-color: #231F20 transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#conpan:expanded > .title{
+    -fx-background-color : #5AC1AA;
+    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+#conpan> .title{
+    -fx-background-color : #231F20;
+    -fx-border-color: #231F20 transparent transparent #5AC1AA;
+    -fx-border-width : 5px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 .titled-pane{
     -fx-focus-color: transparent;
-    -fx-font-size:14px;
+    -fx-font-size:16px;
     -fx-text-fill : white;
 }
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #5AC1AA;
+    -fx-background-color : white;
 }
 .titled-pane > *.content{
     -fx-background-color : #272B35;
     -fx-box-border : transparent;
 }
 
-.titled-pane> .title :pressed ,.titled-pane> .title :hover{
-
-}
 
 .radio-button {
     -fx-font-size: 12px;

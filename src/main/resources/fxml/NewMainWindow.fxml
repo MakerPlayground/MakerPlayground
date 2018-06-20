@@ -8,15 +8,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root style="-fx-background-color: #272B35;" stylesheets="@../css/NewDevicePanelView.css" type="SplitPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="aa" style="-fx-background-color: #272B35;" stylesheets="@../css/NewDevicePanelView.css" type="SplitPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <items>
-      <VBox prefWidth="363.0" style="-fx-background-color: #272B35;">
+      <VBox id="bb" style="-fx-background-color: #272B35;">
          <children>
-            <Accordion fx:id="contollerRight" minHeight="0.0" prefHeight="250.0">
+            <Accordion id="cc" fx:id="contollerRight" prefHeight="300.0">
               <panes>
-                <TitledPane fx:id="newDevice" animated="True" expanded="True" maxHeight="0.0" maxWidth="363.0" minHeight="100.0" prefHeight="150.0" prefWidth="363.0" text="Device">
+                <TitledPane id="deviceTitlepane" fx:id="newDevice" animated="True" expanded="True" maxHeight="0.0" minHeight="100.0" prefHeight="150.0" text="Device">
                   <content>
-                        <VBox minHeight="169.0" prefHeight="169.0" prefWidth="361.0" style="-fx-background-color: #272B35;">
+                        <VBox minHeight="169.0" prefHeight="169.0" style="-fx-background-color: #272B35;">
                            <children>
                               <RadioButton fx:id="rd_MakerKit" mnemonicParsing="false" text="Maker Playground's Kit" textFill="WHITE" translateX="10.0" translateY="30.0">
                                  <font>
@@ -29,23 +29,23 @@
                         </VBox>
                   </content>
                 </TitledPane>
-                <TitledPane fx:id="newDiagram" expanded="false" maxHeight="143.0" minHeight="100.0" prefHeight="125.0" prefWidth="100.0" style="-fx-background-color: #12062C;" text="Diagram">
+                <TitledPane id="diagrampane" fx:id="newDiagram" expanded="false" maxHeight="143.0" minHeight="100.0" prefHeight="125.0" style="-fx-background-color: #12062C;" text="Diagram">
                      <content>
-                        <VBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="125.0" prefWidth="361.0" style="-fx-background-color: #272B35;">
+                        <VBox alignment="TOP_CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="125.0" style="-fx-background-color: #272B35;">
                            <children>
-                              <Button fx:id="btn_Add_Scence" mnemonicParsing="false" text="+ Add Scence" translateX="10.0" translateY="15.0" />
-                              <Button fx:id="brn_Add_Condition" mnemonicParsing="false" text="+ Add Condition" translateX="10.0" translateY="35.0" />
+                              <Button fx:id="btn_Add_Scence" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="   + Add Scence   " translateY="10.0" />
+                              <Button fx:id="brn_Add_Condition" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="+ Add Condition" translateY="30.0" />
                            </children>
                         </VBox>
                      </content>
                 </TitledPane>
-                <TitledPane fx:id="newCounfigure" animated="false" expanded="false" maxWidth="-Infinity" style="-fx-background-color: #272B35;" text="Configure Device" />
-                  <TitledPane fx:id="newGenerate" expanded="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="125.0" text="Generate">
+                <TitledPane id="conpan" fx:id="newCounfigure" animated="false" expanded="false" maxWidth="-Infinity" style="-fx-background-color: #272B35;" text="Configure Device" />
+                  <TitledPane id="genpan" fx:id="newGenerate" expanded="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="125.0" text="Generate">
                      <content>
-                        <VBox maxHeight="-Infinity" prefHeight="110.0" style="-fx-background-color: #272B35;">
+                        <VBox alignment="TOP_CENTER" maxHeight="-Infinity" prefHeight="110.0" style="-fx-background-color: #272B35;">
                            <children>
-                              <Button fx:id="btn_Upload" mnemonicParsing="false" text="Upload" translateX="10.0" translateY="10.0" />
-                              <Button fx:id="btn_Monitor" mnemonicParsing="false" text="LogMP" translateX="10.0" translateY="25.0" />
+                              <Button fx:id="btn_Upload" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Upload" translateY="10.0" />
+                              <Button fx:id="btn_Monitor" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="LogMP" translateY="25.0" />
                            </children>
                         </VBox>
                      </content>

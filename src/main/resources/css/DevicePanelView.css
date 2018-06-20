@@ -1,27 +1,23 @@
 
-#deviceTitle{
-    -fx-background-color : #313644;
-    -fx-text-fill : white;
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
-}
+
 .titled-pane > .title{
-    -fx-background-color : #3b424f;
-    -fx-border-color: #3b424f transparent transparent #5ac2ab;
+    -fx-background-color : #DBDBDB;
+    -fx-border-color: #DBDBDB transparent transparent #DBDBDB;
     -fx-border-width : 8px;
-    -fx-font-size: 18px;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 .titled-pane{
-    -fx-focus-color: transparent;
-    -fx-font-size:18px;
-    -fx-text-fill : white;
+    /*-fx-focus-color: transparent;*/
+    -fx-background-color : #DBDBDB;
+    -fx-font-size:12px;
+    -fx-text-fill : #12062C;
 }
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #5ac2ab;
+    -fx-background-color : #12062C;
 }
 .titled-pane > *.content{
-    -fx-background-color : #4d5666;
+    -fx-background-color : #DBDBDB;
     -fx-box-border : transparent;
 }
 
@@ -44,7 +40,7 @@
     -fx-background-color:transparent;
 }
 .scroll-pane > .viewport {
-    -fx-background-color:#4d5666;
+    -fx-background-color:#DBDBDB;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
