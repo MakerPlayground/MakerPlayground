@@ -6,6 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.expression.NumberWithUnitExpression;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class DeviceMapper {
 
                     Constraint newConstraint = null;
                     if (parameter.getDataType() == DataType.INTEGER || parameter.getDataType() == DataType.DOUBLE) {
-                        NumberWithUnit n = (NumberWithUnit) o;
+                        NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                         newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint((String) o);

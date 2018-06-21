@@ -153,7 +153,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                NumberWithUnit number = (NumberWithUnit) viewModel.getParameterValue(p);
+                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
                 SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
                         , FXCollections.observableArrayList(p.getUnit()), number);
                 sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));

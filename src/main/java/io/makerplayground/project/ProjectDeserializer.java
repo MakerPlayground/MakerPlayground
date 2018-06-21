@@ -173,9 +173,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             String expressionType = parameterNode.get("type").asText();
             if (ProjectValueExpression.class.getName().equals(expressionType)) {
                 object = mapper.treeToValue(parameterNode.get("value"), ProjectValueExpression.class);
-            } else if (ConstantExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), ConstantExpression.class);
-            } else if (CustomNumberExpression.class.getName().equals(expressionType)) {
+            }else if (CustomNumberExpression.class.getName().equals(expressionType)) {
                 object = mapper.treeToValue(parameterNode.get("value"), CustomNumberExpression.class);
             } else if (NumberWithUnitExpression.class.getName().equals(expressionType)) {
                 object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnitExpression.class);

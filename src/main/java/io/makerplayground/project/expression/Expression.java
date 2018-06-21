@@ -1,5 +1,8 @@
 package io.makerplayground.project.expression;
 
+import io.makerplayground.device.NumericConstraint;
+import io.makerplayground.device.Parameter;
+import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.chip.ChipType;
 import io.makerplayground.project.chip.Term;
@@ -29,6 +32,29 @@ public class Expression {
         } else {
             return new Expression(e);
         }
+    }
+
+    public static Expression fromParameter(Parameter param) {
+        switch (param.getDataType()) {
+
+            case DOUBLE:
+                return new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue());
+//                break;
+            case STRING:
+                return new SimpleStringExpression((String) param.getDefaultValue());
+//                break;
+            case ENUM:
+                return new SimpleStringExpression((String) param.getDefaultValue());
+//                break;
+            case INTEGER:
+                return new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue());
+//                break;
+            case VALUE:
+                return new ProjectValueExpression(null);
+//                break;
+        }
+
+        throw new IllegalStateException("implement the Expression Selection here");
     }
 
     public ObservableList<Term> getTerms() {

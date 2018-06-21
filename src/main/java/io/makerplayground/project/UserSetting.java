@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.project.expression.ConstantExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
+import io.makerplayground.project.expression.NumberWithUnitExpression;
 import io.makerplayground.project.expression.ProjectValueExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -58,7 +58,7 @@ public class UserSetting {
             Action action = actionList.get(0);
             this.action.set(action);
             for (Parameter param : action.getParameter()) {
-                this.valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
+                this.valueMap.put(param, Expression.fromParameter(param));
             }
         }
 
@@ -66,7 +66,19 @@ public class UserSetting {
         this.action.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
             for (Parameter param : action.get().getParameter()) {
-                valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
+                switch (param.getDataType()) {
+                    case DOUBLE:
+                        valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
+                        break;
+                    case STRING:
+                        break;
+                    case ENUM:
+                        break;
+                    case INTEGER:
+                        break;
+                    case VALUE:
+                        break;
+                }
             }
         });
 
@@ -105,7 +117,7 @@ public class UserSetting {
         this.action.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
             for (Parameter param : action.get().getParameter()) {
-                valueMap.put(param, new ConstantExpression(param.getDefaultValue()));
+                valueMap.put(param, Expression.fromParameter(param));
             }
         });
     }
