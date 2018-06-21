@@ -1,6 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.Condition;
+import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
@@ -10,6 +11,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -17,7 +19,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -216,7 +220,6 @@ public class CanvasView extends AnchorPane {
         if (clipboard.isEmpty()) {
             return;
         }
-
         // extract model from view
         List<NodeElement> elements = clipboard.stream().filter(interactiveNode -> (interactiveNode instanceof SceneView) || (interactiveNode instanceof ConditionView))
                 .map(interactiveNode -> {
@@ -231,6 +234,8 @@ public class CanvasView extends AnchorPane {
         double minX = elements.stream().mapToDouble(NodeElement::getLeft).min().getAsDouble();
         double minY = elements.stream().mapToDouble(NodeElement::getTop).min().getAsDouble();
 
+        Map<NodeElement, NodeElement> elementsMap = new HashMap<>();
+
         // add elements in clipboard to the canvas
         for (NodeElement element : elements) {
             // new x,y is the current mouse position plus the offset (old x,y - group minimum x,y)
@@ -240,10 +245,21 @@ public class CanvasView extends AnchorPane {
                 Scene newScene = canvasViewModel.project.addState((Scene) element);
                 newScene.setLeft(newX);
                 newScene.setTop(newY);
+                elementsMap.put(element,newScene);
             } else {
                 Condition newCondition = canvasViewModel.project.addCondition((Condition) element);
                 newCondition.setLeft(newX);
                 newCondition.setTop(newY);
+                elementsMap.put(element,newCondition);
+            }
+        }
+
+        for (NodeElement element : elements) {
+            List<Line> lines = canvasViewModel.project.getLineFrom(element);
+            for (Line l : lines) {
+                if (elementsMap.containsKey(l.getDestination())) {
+                    canvasViewModel.project.addLine(elementsMap.get(element), elementsMap.get(l.getDestination()));
+                }
             }
         }
     }

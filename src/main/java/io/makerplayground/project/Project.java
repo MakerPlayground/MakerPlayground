@@ -308,6 +308,10 @@ public class Project {
         return line.stream().anyMatch(line1 -> line1.getSource() == source);
     }
 
+    public List<Line> getLineFrom(NodeElement source) {
+        return line.stream().filter(line1 -> line1.getSource() == source).collect(Collectors.toList());
+    }
+
     public boolean hasLine(NodeElement source, NodeElement destination) {
         return line.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
     }
