@@ -28,6 +28,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -91,9 +92,52 @@ public class ConfigActualDeviceView extends Dialog {
     }
 
     private void initControllerControl(VBox allDevice) {
-        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
-        controllerImage.setFitHeight(25.0);
-        controllerImage.setFitWidth(25.0);
+//        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
+//        controllerImage.setFitHeight(25.0);
+//        controllerImage.setFitWidth(25.0);
+
+        ImageView platFormImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
+        platFormImage.setFitHeight(25.0);
+        platFormImage.setFitWidth(25.0);
+
+        Label platformName = new Label("Platform");
+        platformName.setTextAlignment(TextAlignment.LEFT);
+        platformName.setAlignment(Pos.CENTER_LEFT);
+        platformName.setId("platFormLabel");
+
+        ComboBox<Platform> platFormComboBox = new ComboBox<>(FXCollections.observableArrayList(Platform.values()));
+        platFormComboBox.setId("platformComboBox");
+        platFormComboBox.getSelectionModel().select(viewModel.getSelectedPlatform());
+        platFormComboBox.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Platform> call(ListView<Platform> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Platform item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText("");
+                        } else {
+                            setText(item.getDisplayName());
+                        }
+                    }
+                };
+            }
+        });
+        platFormComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Platform item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText("");
+                } else {
+                    setText(item.getDisplayName());
+                }
+            }
+        });
+        platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            viewModel.setPlatform(newValue);
+        });
 
         Label controllerName = new Label("Controller");
         controllerName.setTextAlignment(TextAlignment.LEFT);
@@ -101,7 +145,7 @@ public class ConfigActualDeviceView extends Dialog {
         controllerName.setId("nameLabel");
 
         ComboBox<Device> controllerComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleControllerDevice()));
-        controllerComboBox.setId("deviceComboBox");
+        controllerComboBox.setId("controllerComboBox");
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Device> call(ListView<Device> param) {
@@ -136,18 +180,28 @@ public class ConfigActualDeviceView extends Dialog {
             viewModel.setController(newValue);
         });
 
-        HBox controllerPicture = new HBox();
-        controllerPicture.setSpacing(10.0);
-        controllerPicture.setAlignment(Pos.CENTER_LEFT);
-        controllerPicture.setMaxHeight(25.0);
-        controllerPicture.getChildren().addAll(controllerImage, controllerName);
+        HBox platFormPicture = new HBox();
+        platFormPicture.setSpacing(10.0);
+        platFormPicture.setAlignment(Pos.CENTER_LEFT);
+        platFormPicture.setMaxHeight(25.0);
+        platFormPicture.getChildren().addAll(platFormImage, platformName);
+
+        HBox platFormSelected = new HBox();
+        platFormSelected.setSpacing(65.0);
+        platFormSelected.setAlignment(Pos.TOP_LEFT);
+        platFormSelected.getChildren().addAll(platFormPicture, platFormComboBox);
 
         HBox entireControllerDevice = new HBox();
-        entireControllerDevice.setSpacing(10.0);
-        entireControllerDevice.setAlignment(Pos.TOP_LEFT);
-        entireControllerDevice.getChildren().addAll(controllerPicture, controllerComboBox);
+        entireControllerDevice.setSpacing(12.0);
+        entireControllerDevice.setAlignment(Pos.CENTER_LEFT);
+        entireControllerDevice.getChildren().addAll(controllerName,controllerComboBox);
+        entireControllerDevice.setId("controllerSelection");
 
-        allDevice.getChildren().add(entireControllerDevice);
+        VBox platFormAndController = new VBox();
+        platFormAndController.setSpacing(10);
+        platFormAndController.getChildren().addAll(platFormSelected,entireControllerDevice);
+
+        allDevice.getChildren().add(platFormAndController);
     }
 
     private void initDeviceControl(VBox allDevice) {
@@ -157,9 +211,10 @@ public class ConfigActualDeviceView extends Dialog {
             HBox entireDevice = new HBox();
             HBox portComboBoxHbox = new HBox();
             VBox entireComboBoxDevice = new VBox();
+            entireComboBoxDevice.setId("entireComboBoxDevice");
+            entireComboBoxDevice.setPadding(new Insets(0,0,0,30));
             //entireDevice.setAlignment(Pos.BASELINE_LEFT);
             HBox devicePic = new HBox();
-
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             Label name = new Label(projectDevice.getName());

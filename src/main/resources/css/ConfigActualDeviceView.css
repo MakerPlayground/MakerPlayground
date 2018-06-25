@@ -34,12 +34,17 @@
     -fx-min-width: 60;
     -fx-font-size:12px;
 }
-#deviceComboBox{
+#controllerSelection{
+    -fx-padding: 0 0 0 35 ; /* 4 8 4 8 */
+
+}
+
+/*#deviceComboBox{
     -fx-max-width: 320;
     -fx-min-width: 320;
     -fx-min-height: 25;
     -fx-max-height: 25;
-}
+}*/
 
 .combo-box-base {
     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
@@ -54,10 +59,10 @@
     -fx-background-insets:0;
     -fx-font-size:12px;
 }
-#deviceComboBox:showing .list-view,#deviceComboBox:armed .list-view {
+/*#deviceComboBox:showing .list-view,#deviceComboBox:armed .list-view {
     -fx-max-width: 320;
     -fx-min-width: 320;
-}
+}*/
 .combo-box.list-cell {
     -fx-background-color: white;
     -fx-background-radius:3px;
