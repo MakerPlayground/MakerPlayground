@@ -175,7 +175,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
                 terms.add(deserializeTerm(term_node, allProjectDevices, parameter));
-            }
+        }
             if (ProjectValueExpression.class.getName().contains(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
             } else if (CustomNumberExpression.class.getName().contains(expressionType)) {
@@ -217,7 +217,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         String term_type = term_node.get("type").asText();
         Term term;
         if (Term.Type.NUMBER.name().equals(term_type)) {
-            double num = term_node.get("value").asDouble();
+            double num = term_node.get("value").get("value").asDouble();
             Unit unit = ((NumericConstraint) parameter.getConstraint()).getUnit();
             NumberWithUnit numberWithUnit = new NumberWithUnit(num, unit);
             term = new NumberWithUnitTerm(numberWithUnit);
