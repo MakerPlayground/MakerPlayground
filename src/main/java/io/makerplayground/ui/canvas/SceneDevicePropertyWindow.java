@@ -127,7 +127,6 @@ public class SceneDevicePropertyWindow extends PopOver {
             if (p.getDataType() == DataType.VALUE) {
                 ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
-                comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
                 comboBox.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(ProjectValue item, boolean empty) {
@@ -171,7 +170,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
-                NumberWithUnit defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+                NumberWithUnit defaultValue = (NumberWithUnit) p.getDefaultValue();
                 SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
                         , defaultValue.getValue()
                         , defaultValue.getUnit()
