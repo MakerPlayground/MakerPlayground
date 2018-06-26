@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.devicepane.output;
 
 import io.makerplayground.project.ProjectDevice;
 

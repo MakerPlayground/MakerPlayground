@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.devicepane.input;
 
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.ui.canvas.node.ConditionViewModel;

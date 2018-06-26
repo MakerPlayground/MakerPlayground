@@ -18,7 +18,7 @@ package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.canvas.OutputDeviceSelector;
+import io.makerplayground.ui.canvas.devicepane.output.OutputDeviceSelector;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;

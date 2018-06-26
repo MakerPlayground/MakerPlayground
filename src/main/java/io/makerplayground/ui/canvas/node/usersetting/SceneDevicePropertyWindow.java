@@ -6,9 +6,9 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.SimpleExpressionControl;
-import io.makerplayground.ui.canvas.SliderWithUnit;
-import io.makerplayground.ui.canvas.SpinnerWithUnit;
+import io.makerplayground.ui.canvas.node.expressioncontrol.NumberInRangeExpressionControl;
+import io.makerplayground.ui.canvas.node.expressioncontrol.SliderWithUnit;
+import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerWithUnit;
 import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -218,7 +218,7 @@ public class SceneDevicePropertyWindow extends PopOver {
         propertyPane.getChildren().add(enableCheckbox);
 
         if (expression instanceof NumberInRangeExpression) {
-            SimpleExpressionControl expressionControl = new SimpleExpressionControl((NumberInRangeExpression) expression, value);
+            NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
             GridPane.setRowIndex(expressionControl, i+1);
             GridPane.setColumnIndex(expressionControl, 1);
             propertyPane.getChildren().add(expressionControl);
