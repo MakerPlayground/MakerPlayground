@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node;
+package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.Action;
 import io.makerplayground.device.GenericDevice;

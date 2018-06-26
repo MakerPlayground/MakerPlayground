@@ -20,6 +20,8 @@ import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.canvas.devicepane.output.OutputDeviceSelector;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.collections.FXCollections;

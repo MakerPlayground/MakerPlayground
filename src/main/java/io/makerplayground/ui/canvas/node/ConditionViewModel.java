@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.*;
-import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;

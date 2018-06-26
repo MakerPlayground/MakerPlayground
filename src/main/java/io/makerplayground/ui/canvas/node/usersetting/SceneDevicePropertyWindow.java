@@ -9,7 +9,6 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expressioncontrol.NumberInRangeExpressionControl;
 import io.makerplayground.ui.canvas.node.expressioncontrol.SliderWithUnit;
 import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerWithUnit;
-import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;

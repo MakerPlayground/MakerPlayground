@@ -3,6 +3,8 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.ui.canvas.devicepane.input.InputDeviceSelector;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
 import javafx.fxml.FXML;

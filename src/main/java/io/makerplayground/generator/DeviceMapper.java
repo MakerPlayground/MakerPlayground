@@ -6,7 +6,9 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberWithUnitExpression;
+import io.makerplayground.project.expression.SimpleStringExpression;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +30,7 @@ public class DeviceMapper {
                 Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
                 for (Parameter parameter : u.getValueMap().keySet()) {
                     Action action = u.getAction();
-                    Object o = u.getValueMap().get(parameter);
+                    Expression o = u.getValueMap().get(parameter);
 
                     if (!compatibility.containsKey(action)) {
                         compatibility.put(action, new HashMap<>());
@@ -39,7 +41,7 @@ public class DeviceMapper {
                         NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                         newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
-                        newConstraint = Constraint.createCategoricalConstraint((String) o);
+                        newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
                     } else {
                         continue;
                     }
