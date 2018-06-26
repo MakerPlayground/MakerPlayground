@@ -1,8 +1,6 @@
 package io.makerplayground.project.expression;
 
-import io.makerplayground.device.Value;
-import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.chip.Term;
+import io.makerplayground.project.term.Term;
 
 import java.util.List;
 

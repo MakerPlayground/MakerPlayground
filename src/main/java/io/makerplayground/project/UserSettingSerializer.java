@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.project.chip.*;
+import io.makerplayground.project.term.*;
 import io.makerplayground.project.expression.*;
 
 import java.io.IOException;

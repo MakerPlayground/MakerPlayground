@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.chip.OperatorTerm;
-import io.makerplayground.project.chip.Term;
+import io.makerplayground.project.term.OperatorTerm;
+import io.makerplayground.project.term.Term;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.Event;

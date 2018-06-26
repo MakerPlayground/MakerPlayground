@@ -6,7 +6,7 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
-import io.makerplayground.project.chip.*;
+import io.makerplayground.project.term.*;
 import io.makerplayground.project.expression.*;
 
 import java.text.DecimalFormat;

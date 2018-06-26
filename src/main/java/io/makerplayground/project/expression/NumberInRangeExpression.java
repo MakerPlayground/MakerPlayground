@@ -6,9 +6,9 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.chip.NumberWithUnitTerm;
-import io.makerplayground.project.chip.OperatorTerm;
-import io.makerplayground.project.chip.ValueTerm;
+import io.makerplayground.project.term.NumberWithUnitTerm;
+import io.makerplayground.project.term.OperatorTerm;
+import io.makerplayground.project.term.ValueTerm;
 
 public class NumberInRangeExpression extends Expression {
 

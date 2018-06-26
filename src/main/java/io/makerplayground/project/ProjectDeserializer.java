@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.*;
-import io.makerplayground.project.chip.*;
+import io.makerplayground.project.term.*;
 import io.makerplayground.project.expression.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

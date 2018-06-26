@@ -1,7 +1,7 @@
 package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.project.chip.StringTerm;
+import io.makerplayground.project.term.StringTerm;
 
 public class SimpleStringExpression extends Expression {
 

@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.chip.Term;
+import io.makerplayground.project.term.Term;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,5 +97,10 @@ public class Expression {
     @JsonIgnore
     public boolean isValid() {
         return !terms.isEmpty();
+    }
+
+    public String translateToCCode() {
+        List<String> termStr = getTerms().stream().map((Object::toString)).collect(Collectors.toList());
+        return String.join("", termStr);
     }
 }

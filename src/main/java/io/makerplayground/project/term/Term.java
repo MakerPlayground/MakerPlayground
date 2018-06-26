@@ -1,4 +1,4 @@
-package io.makerplayground.project.chip;
+package io.makerplayground.project.term;
 
 public abstract class Term {
 

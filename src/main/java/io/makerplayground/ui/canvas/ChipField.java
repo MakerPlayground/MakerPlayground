@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.project.chip.*;
+import io.makerplayground.project.term.*;
 import io.makerplayground.project.expression.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;

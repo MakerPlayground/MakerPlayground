@@ -2,7 +2,7 @@ package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.chip.ValueTerm;
+import io.makerplayground.project.term.ValueTerm;
 
 public class ProjectValueExpression extends Expression {
 

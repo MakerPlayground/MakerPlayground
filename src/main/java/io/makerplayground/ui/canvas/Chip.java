@@ -1,6 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.chip.Term;
+import io.makerplayground.project.term.Term;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
