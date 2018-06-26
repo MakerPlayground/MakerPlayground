@@ -5,7 +5,7 @@ import io.makerplayground.project.ProjectValue;
 public class ValueTerm extends Term {
 
     public ValueTerm(ProjectValue value) {
-        super(ChipType.VALUE, value);
+        super(Type.VALUE, value);
     }
 
     @Override

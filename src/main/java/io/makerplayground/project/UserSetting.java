@@ -58,7 +58,7 @@ public class UserSetting {
             Action action = actionList.get(0);
             this.action.set(action);
             for (Parameter param : action.getParameter()) {
-                this.valueMap.put(param, Expression.fromParameter(param));
+                this.valueMap.put(param, Expression.fromDefaultParameter(param));
             }
         }
 
@@ -101,23 +101,18 @@ public class UserSetting {
         this.valueMap = FXCollections.observableHashMap();
         for (Parameter p : u.getValueMap().keySet()) {
             Expression o = u.getValueMap().get(p);
-            // NumberWithUnit, String and ProjectValue are immutable so we are safe to reuse the instance without the need to perform deep copy
-//            if (o instanceof NumberWithUnit || o instanceof String || o instanceof ProjectValue) {
-//                this.valueMap.put(p, o);
-//            } else { // new type add later may not be immutable so we throw exception
-                throw new IllegalStateException("Found expression parameter type which is not implemented!!!");
-//            }
+            this.valueMap.put(p, Expression.deepCopy(o));
         }
         this.expression = FXCollections.observableHashMap();
         for (Value v : u.getExpression().keySet()) {
-            this.expression.put(v, Expression.newInstance(u.getExpression().get(v)));
+            this.expression.put(v, Expression.deepCopy(u.getExpression().get(v)));
         }
 
         // Reset value of the valueMap every time that the action is changed
         this.action.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
             for (Parameter param : action.get().getParameter()) {
-                valueMap.put(param, Expression.fromParameter(param));
+                valueMap.put(param, Expression.fromDefaultParameter(param));
             }
         });
     }

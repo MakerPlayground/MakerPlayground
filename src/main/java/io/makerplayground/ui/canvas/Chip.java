@@ -1,6 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.chip.ChipType;
+import io.makerplayground.project.chip.Term;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,11 +9,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 public abstract class Chip<T> extends StackPane implements Selectable {
-    private ChipType type;
+    private Term.Type type;
     private ObjectProperty<T> value = new SimpleObjectProperty<>();
     private final BooleanProperty select = new SimpleBooleanProperty(false);
 
-    public Chip(T initialValue, ChipType type) {
+    public Chip(T initialValue, Term.Type type) {
         this.type = type;
         this.value.set(initialValue);
         initView();
@@ -27,7 +27,7 @@ public abstract class Chip<T> extends StackPane implements Selectable {
         addEventFilter(MouseEvent.MOUSE_PRESSED, event -> select.set(true));
     }
 
-    public ChipType getChipType() {
+    public Term.Type getChipType() {
         return type;
     }
 

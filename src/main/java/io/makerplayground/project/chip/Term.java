@@ -1,17 +1,19 @@
 package io.makerplayground.project.chip;
 
-import io.makerplayground.project.chip.ChipType;
-
 public abstract class Term {
-    private final ChipType type;
+
+    public enum Type {
+        NUMBER, STRING, VALUE, OPERATOR,
+    }
+    private final Type type;
     protected final Object value;
 
-    public Term(ChipType type, Object value) {
+    public Term(Type type, Object value) {
         this.type = type;
         this.value = value;
     }
 
-    public ChipType getType() {
+    public Type getType() {
         return type;
     }
 

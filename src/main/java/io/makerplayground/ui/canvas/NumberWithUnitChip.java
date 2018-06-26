@@ -2,7 +2,7 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
-import io.makerplayground.project.chip.ChipType;
+import io.makerplayground.project.chip.Term;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
@@ -15,11 +15,11 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public NumberWithUnitChip() {
-        super(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), ChipType.NUMBER);
+        super(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Term.Type.NUMBER);
     }
 
     public NumberWithUnitChip(NumberWithUnit initialValue) {
-        super(initialValue, ChipType.NUMBER);
+        super(initialValue, Term.Type.NUMBER);
     }
 
     @Override

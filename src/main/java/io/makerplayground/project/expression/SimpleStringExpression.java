@@ -1,13 +1,24 @@
 package io.makerplayground.project.expression;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.makerplayground.project.chip.StringTerm;
+
 public class SimpleStringExpression extends Expression {
-    private final String str;
 
     public SimpleStringExpression(String str) {
-        this.str = str;
+        super(Type.SIMPLE_STRING);
+        this.getTerms().add(new StringTerm(str));
     }
 
-    public String getStr() {
-        return str;
+    SimpleStringExpression(SimpleStringExpression e) {
+        super(e);
+    }
+
+    @JsonIgnore
+    public String getString() {
+        if (this.getTerms().size() > 0) {
+            return ((StringTerm) this.getTerms().get(0)).getValue();
+        }
+        return null;
     }
 }

@@ -99,7 +99,7 @@ public class ChipField extends ScrollPane {
         } else if (t instanceof StringTerm) {
             chip = new StringChip((String) t.getValue());
         } else if (t instanceof ValueTerm) {
-            chip = OperatorChip.getInstance((ChipOperator) t.getValue());
+            chip = OperatorChip.getInstance((OperatorTerm.OP) t.getValue());
         } else {
             throw new IllegalStateException();
         }

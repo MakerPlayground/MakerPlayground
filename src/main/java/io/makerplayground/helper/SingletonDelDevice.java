@@ -29,7 +29,7 @@ public class SingletonDelDevice {
         this.time = new Date().getTime();
         this.operation = "REMOVE";
 
-        String command = "insert into AddorDelDevice (App_ID, Action, Object_ID, Type, Time) values('"
+        String command = "insert into AddorDelDevice (App_ID, Action, Object_ID, OP, Time) values('"
                 + SingletonConnectDB.getINSTANCE().getUuid() + "','" + operation + "','"
                 + objID + "','" + type + "'," + time + ")";
         SingletonConnectDB.getINSTANCE().execute(command);
