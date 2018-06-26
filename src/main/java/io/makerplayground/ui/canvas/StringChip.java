@@ -1,6 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.chip.ChipType;
+import io.makerplayground.project.chip.Term;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
@@ -13,11 +13,11 @@ public class StringChip extends Chip<String> {
     private static final Color BACKGROUND_COLOR_SELECTED = Color.ORANGERED;
 
     public StringChip() {
-        super("", ChipType.STRING);
+        super("", Term.Type.STRING);
     }
 
     public StringChip(String initialValue) {
-        super(initialValue, ChipType.STRING);
+        super(initialValue, Term.Type.STRING);
     }
 
     @Override

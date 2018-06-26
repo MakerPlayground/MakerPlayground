@@ -65,9 +65,6 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case ENUM:
                 defaultValue = node.get("value").asText();
                 break;
-            case CUSTOM:
-                defaultValue = node.get("value").asText();
-                break;
             case INTEGER:
                 defaultValue = new NumberWithUnit(node.get("value").asInt()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));

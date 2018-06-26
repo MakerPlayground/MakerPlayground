@@ -58,12 +58,12 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice();
     }
 
-    public Object getParameterValue(Parameter p) {
+    public Expression getParameterValue(Parameter p) {
         //System.out.println("will return " + userSetting.getValueMap().get(p));
         return userSetting.getValueMap().get(p);
     }
 
-    public Object setParameterValue(Parameter p, Expression o) {
+    public Expression setParameterValue(Parameter p, Expression o) {
         //System.out.println("will set " + o);
         //System.out.println(userSetting.getValueMap());
         return userSetting.getValueMap().replace(p, o);

@@ -38,14 +38,7 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         for (Map.Entry<Parameter, Expression> v : userSetting.getValueMap().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", v.getKey().getName());
-            jsonGenerator.writeStringField("type", v.getValue().getClass().getName());
-//            if (v.getValue() instanceof CustomNumberExpression) {
-//                jsonGenerator.writeStringField("type", "CustomNumberExpression");
-//            } else if (v.getValue() instanceof NumberWithUnit) {
-//                jsonGenerator.writeStringField("type", "NumberWithUnit");
-//            } else if (v.getValue() instanceof ProjectValue) {
-//                jsonGenerator.writeStringField("type", "ProjectValue");
-//            }
+            jsonGenerator.writeStringField("type", v.getValue().getClass().getSimpleName());
             jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }

@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.chip.ChipOperator;
-import io.makerplayground.project.chip.ChipType;
+import io.makerplayground.project.chip.OperatorTerm;
+import io.makerplayground.project.chip.Term;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.Event;
@@ -11,31 +11,31 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class OperatorChip extends Chip<ChipOperator> {
+public class OperatorChip extends Chip<OperatorTerm.OP> {
     private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
     private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
 
-    public static OperatorChip PLUS = new OperatorChip(ChipOperator.PLUS);
-    public static OperatorChip MINUS = new OperatorChip(ChipOperator.MINUS);
-    public static OperatorChip MULTIPLY = new OperatorChip(ChipOperator.MULTIPLY);
-    public static OperatorChip DIVIDE = new OperatorChip(ChipOperator.DIVIDE);
+    public static OperatorChip PLUS = new OperatorChip(OperatorTerm.OP.PLUS);
+    public static OperatorChip MINUS = new OperatorChip(OperatorTerm.OP.MINUS);
+    public static OperatorChip MULTIPLY = new OperatorChip(OperatorTerm.OP.MULTIPLY);
+    public static OperatorChip DIVIDE = new OperatorChip(OperatorTerm.OP.DIVIDE);
 
-    public static OperatorChip GREATER_THAN = new OperatorChip(ChipOperator.GREATER_THAN);
-    public static OperatorChip LESS_THAN = new OperatorChip(ChipOperator.LESS_THAN);
-    public static OperatorChip GREATER_THAN_OR_EQUAL = new OperatorChip(ChipOperator.GREATER_THAN_OR_EQUAL);
-    public static OperatorChip LESS_THAN_OR_EQUAL = new OperatorChip(ChipOperator.LESS_THAN_OR_EQUAL);
+    public static OperatorChip GREATER_THAN = new OperatorChip(OperatorTerm.OP.GREATER_THAN);
+    public static OperatorChip LESS_THAN = new OperatorChip(OperatorTerm.OP.LESS_THAN);
+    public static OperatorChip GREATER_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.GREATER_THAN_OR_EQUAL);
+    public static OperatorChip LESS_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.LESS_THAN_OR_EQUAL);
 
-    public static OperatorChip AND = new OperatorChip(ChipOperator.AND);
-    public static OperatorChip OR = new OperatorChip(ChipOperator.OR);
-    public static OperatorChip NOT = new OperatorChip(ChipOperator.NOT);
-    public static OperatorChip OPEN_PARENTHESIS = new OperatorChip(ChipOperator.OPEN_PARENTHESIS);
-    public static OperatorChip CLOSE_PARENTHESIS = new OperatorChip(ChipOperator.CLOSE_PARENTHESIS);
+    public static OperatorChip AND = new OperatorChip(OperatorTerm.OP.AND);
+    public static OperatorChip OR = new OperatorChip(OperatorTerm.OP.OR);
+    public static OperatorChip NOT = new OperatorChip(OperatorTerm.OP.NOT);
+    public static OperatorChip OPEN_PARENTHESIS = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
+    public static OperatorChip CLOSE_PARENTHESIS = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
 
-    private OperatorChip(ChipOperator initialValue) {
-        super(initialValue, ChipType.OPERATOR);
+    private OperatorChip(OperatorTerm.OP initialValue) {
+        super(initialValue, Term.Type.OPERATOR);
     }
 
-    public static OperatorChip getInstance(ChipOperator operator) {
+    public static OperatorChip getInstance(OperatorTerm.OP operator) {
         switch (operator) {
             case PLUS:
                 return PLUS;
@@ -94,17 +94,17 @@ public class OperatorChip extends Chip<ChipOperator> {
     }
 
     @Override
-    public ChipOperator getValue() {
+    public OperatorTerm.OP getValue() {
         return super.getValue();
     }
 
     @Override
-    public ObjectProperty<ChipOperator> valueProperty() {
+    public ObjectProperty<OperatorTerm.OP> valueProperty() {
         throw new UnsupportedOperationException("OperatorChip should'h not be edited");
     }
 
     @Override
-    public void setValue(ChipOperator value) {
+    public void setValue(OperatorTerm.OP value) {
         throw new UnsupportedOperationException("OperatorChip should'h not be edited");
     }
 }

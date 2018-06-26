@@ -20,6 +20,6 @@ package io.makerplayground.helper;
  * An enum represent type of data
  */
 public enum DataType {
-    DOUBLE,STRING,ENUM,CUSTOM,INTEGER,VALUE
+    DOUBLE,STRING,ENUM,INTEGER,VALUE
     // TODO: add new data type
 }

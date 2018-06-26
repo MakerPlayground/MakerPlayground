@@ -7,20 +7,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.*;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.chip.*;
 import io.makerplayground.project.expression.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -159,7 +153,12 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
             , ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice
-            , ObservableList<ProjectDevice> connectivityDevices) throws IOException {
+            , ObservableList<ProjectDevice> connectivityDevices) {
+        Set<ProjectDevice> allProjectDevices = new HashSet<>();
+        allProjectDevices.addAll(inputDevice);
+        allProjectDevices.addAll(outputDevice);
+        allProjectDevices.addAll(connectivityDevices);
+
         Action action = projectDevice.getGenericDevice().getAction(node.get("action").asText());
         // TODO: find a better way
         if (action == null) {
@@ -169,20 +168,27 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Map<Parameter, Expression> valueMap = new HashMap<>();
         for (JsonNode parameterNode : node.get("valueMap")) {
             Parameter parameter = action.getParameter(parameterNode.get("name").asText());
-            Expression object = null;
+            Expression expression = null;
             String expressionType = parameterNode.get("type").asText();
-            if (ProjectValueExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), ProjectValueExpression.class);
-            } else if (ConstantExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), ConstantExpression.class);
-            } else if (CustomNumberExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), CustomNumberExpression.class);
-            } else if (NumberWithUnitExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), NumberWithUnitExpression.class);
-            } else if (SimpleStringExpression.class.getName().equals(expressionType)) {
-                object = mapper.treeToValue(parameterNode.get("value"), SimpleStringExpression.class);
+
+            JsonNode valueNode = parameterNode.get("value");
+            List<Term> terms = new ArrayList<>();
+            for (JsonNode term_node : valueNode.get("terms")) {
+                terms.add(deserializeTerm(term_node, allProjectDevices, parameter));
             }
-            valueMap.put(parameter, object);
+            if (ProjectValueExpression.class.getName().contains(expressionType)) {
+                expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
+            } else if (CustomNumberExpression.class.getName().contains(expressionType)) {
+                expression = new CustomNumberExpression(terms);
+            } else if (NumberWithUnitExpression.class.getName().contains(expressionType)) {
+                expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
+            } else if (SimpleStringExpression.class.getName().contains(expressionType)) {
+                expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
+            } else {
+                throw new IllegalStateException("expression type not supported");
+            }
+            expression.setEnable(valueNode.get("enable").asBoolean());
+            valueMap.put(parameter, expression);
         }
 
         Map<Value, Expression> expressionMap = new HashMap<>();
@@ -193,7 +199,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
             Expression expression;
             if (type.equals("simple")) {
-                expression = deserializeSimpleExpression(mapper, valueNode.get("expression"), projectDevice, value);
+                expression = deserializeNumberInRangeExpression(mapper, valueNode.get("expression"), projectDevice, value);
                 expression.setEnable(enable);
             } else {
                 throw new IllegalStateException("Unknown expression type");
@@ -205,75 +211,107 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new UserSetting(projectDevice, action, valueMap, expressionMap);
     }
 
-    public Expression deserializeSimpleExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) throws IOException, JsonProcessingException {
-        NumberInRangeExpression simpleExpression = new NumberInRangeExpression(device, value);
-        if (node.get(0).get("type").asText().equals(ChipType.VALUE.name())
-            && node.get(1).get("type").asText().equals(ChipType.OPERATOR.name())
-                && node.get(1).get("value").asText().equals(ChipOperator.LESS_THAN.name())
-                && node.get(2).get("type").asText().equals(ChipType.NUMBER.name())
-                && node.get(3).get("type").asText().equals(ChipType.OPERATOR.name())
-                && node.get(3).get("value").asText().equals(ChipOperator.AND.name())
-                && node.get(4).get("type").asText().equals(ChipType.VALUE.name())
-                && node.get(5).get("type").asText().equals(ChipType.OPERATOR.name())
-                && node.get(5).get("value").asText().equals(ChipOperator.GREATER_THAN.name())
-                && node.get(6).get("type").asText().equals(ChipType.NUMBER.name())) {
-            simpleExpression.setHighValue(node.get(2).get("value").get("value").asDouble());
-            simpleExpression.setLowValue(node.get(6).get("value").get("value").asDouble());
+    private Term deserializeTerm(JsonNode term_node,
+                                 Collection<ProjectDevice> allProjectDevices,
+                                 Parameter parameter) {
+        String term_type = term_node.get("type").asText();
+        Term term;
+        if (Term.Type.NUMBER.name().equals(term_type)) {
+            double num = term_node.get("value").asDouble();
+            Unit unit = ((NumericConstraint) parameter.getConstraint()).getUnit();
+            NumberWithUnit numberWithUnit = new NumberWithUnit(num, unit);
+            term = new NumberWithUnitTerm(numberWithUnit);
+        } else if (Term.Type.OPERATOR.name().equals(term_type)) {
+            String operator = term_node.get("value").asText();
+            term = new OperatorTerm(OperatorTerm.OP.valueOf(operator));
+        } else if (Term.Type.VALUE.name().equals(term_type)) {
+            if ("null".equals(term_node.get("value").asText())) {
+                term = new ValueTerm(null);
+            } else {
+                String projectDeviceName = term_node.get("value").get("name").asText();
+                String valueName = term_node.get("value").get("value").asText();
+                ProjectDevice device = allProjectDevices.stream().filter(pj -> pj.getName().equals(projectDeviceName)).findFirst().get();
+                Value value = device.getGenericDevice().getValue(valueName);
+                term = new ValueTerm(new ProjectValue(device, value));
+            }
+        } else if (Term.Type.STRING.name().equals(term_type)) {
+            String word = term_node.get("value").asText();
+            term = new StringTerm(word);
+        } else {
+            throw new IllegalStateException("deserialize unsupported term");
+        }
+        return term;
+    }
+
+    public Expression deserializeNumberInRangeExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) {
+        NumberInRangeExpression expression = new NumberInRangeExpression(device, value);
+        if (node.get(0).get("type").asText().equals(Term.Type.VALUE.name())
+            && node.get(1).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && node.get(1).get("value").asText().equals(OperatorTerm.OP.LESS_THAN.name())
+                && node.get(2).get("type").asText().equals(Term.Type.NUMBER.name())
+                && node.get(3).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && node.get(3).get("value").asText().equals(OperatorTerm.OP.AND.name())
+                && node.get(4).get("type").asText().equals(Term.Type.VALUE.name())
+                && node.get(5).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && node.get(5).get("value").asText().equals(OperatorTerm.OP.GREATER_THAN.name())
+                && node.get(6).get("type").asText().equals(Term.Type.NUMBER.name())) {
+            expression.setHighValue(node.get(2).get("value").get("value").asDouble());
+            expression.setLowValue(node.get(6).get("value").get("value").asDouble());
         } else {
             throw new IllegalStateException("Simple expression parsing fail");
         }
-        return simpleExpression;
-    }
-
-    public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
-        Expression expression = new Expression();
-
-        for (JsonNode termNode : node) {
-            Term term = null;
-
-            ChipType type = ChipType.valueOf(termNode.get("type").asText());
-            if (type == ChipType.NUMBER) {
-                term = new NumberWithUnitTerm(new NumberWithUnit(termNode.get("value").get("value").asDouble()
-                        , Unit.valueOf(termNode.get("value").get("unit").asText())));
-            } else if (type == ChipType.STRING) {
-                term = new StringTerm(termNode.get("value").asText());
-            } else if (type == ChipType.OPERATOR) {
-                term = new OperatorTerm(ChipOperator.valueOf(termNode.get("value").asText()));
-            } else if (type == ChipType.VALUE) {
-                ProjectValue pv = deserializeProjectValue(mapper, termNode.get("value"), inputDevice, outputDevice, connectivityDevices);
-                term = new ValueTerm(pv);
-            } else {
-                throw new IllegalStateException("Found unknown term " + type);
-            }
-
-            expression.getTerms().add(term);
-        }
-
         return expression;
     }
 
-    public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
-        String deviceName = node.get("name").asText();
-        ProjectDevice device = null;
-        for (ProjectDevice projectDevice : inputDevice) {
-            if (deviceName.equals(projectDevice.getName()))
-                device = projectDevice;
-        }
-        for (ProjectDevice projectDevice : outputDevice) {
-            if (deviceName.equals(projectDevice.getName()))
-                device = projectDevice;
-        }
-        for (ProjectDevice projectDevice : connectivityDevices) {
-            if (deviceName.equals(projectDevice.getName()))
-                device = projectDevice;
-        }
-
-        Value value = device.getGenericDevice().getValue(node.get("value").asText());
-
-        return new ProjectValue(device, value);
-    }
+//    public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
+//            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
+//        Expression expression = new Expression();
+//
+//        for (JsonNode termNode : node) {
+//            Term term = null;
+//
+//            OP type = OP.valueOf(termNode.get("type").asText());
+//            if (type == OP.NUMBER) {
+//                term = new NumberWithUnitTerm(new NumberWithUnit(termNode.get("value").get("value").asDouble()
+//                        , Unit.valueOf(termNode.get("value").get("unit").asText())));
+//            } else if (type == OP.STRING) {
+//                term = new StringTerm(termNode.get("value").asText());
+//            } else if (type == OP.OPERATOR) {
+//                term = new OperatorTerm(OP.valueOf(termNode.get("value").asText()));
+//            } else if (type == OP.VALUE) {
+//                ProjectValue pv = deserializeProjectValue(mapper, termNode.get("value"), inputDevice, outputDevice, connectivityDevices);
+//                term = new ValueTerm(pv);
+//            } else {
+//                throw new IllegalStateException("Found unknown term " + type);
+//            }
+//
+//            expression.getTerms().add(term);
+//        }
+//
+//        return expression;
+//    }
+//
+//    public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
+//            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
+//        String deviceName = node.get("name").asText();
+//        ProjectDevice device = null;
+//        for (ProjectDevice projectDevice : inputDevice) {
+//            if (deviceName.equals(projectDevice.getName()))
+//                device = projectDevice;
+//        }
+//        for (ProjectDevice projectDevice : outputDevice) {
+//            if (deviceName.equals(projectDevice.getName()))
+//                device = projectDevice;
+//        }
+//        for (ProjectDevice projectDevice : connectivityDevices) {
+//            if (deviceName.equals(projectDevice.getName()))
+//                device = projectDevice;
+//        }
+//
+//        Value value = device.getGenericDevice().getValue(node.get("value").asText());
+//
+//        return new ProjectValue(device, value);
+//    }
 
     public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, Device controller) {
         String name = node.get("name").asText();

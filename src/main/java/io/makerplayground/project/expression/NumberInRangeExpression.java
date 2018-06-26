@@ -6,7 +6,6 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.chip.ChipOperator;
 import io.makerplayground.project.chip.NumberWithUnitTerm;
 import io.makerplayground.project.chip.OperatorTerm;
 import io.makerplayground.project.chip.ValueTerm;
@@ -14,13 +13,14 @@ import io.makerplayground.project.chip.ValueTerm;
 public class NumberInRangeExpression extends Expression {
 
     public NumberInRangeExpression(ProjectDevice device, Value value) {
+        super(Expression.Type.NUMBER_IN_RANGE);
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
         getTerms().addAll(new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(ChipOperator.LESS_THAN)
+                , new OperatorTerm(OperatorTerm.OP.LESS_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()))
-                , new OperatorTerm(ChipOperator.AND)
+                , new OperatorTerm(OperatorTerm.OP.AND)
                 , new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(ChipOperator.GREATER_THAN)
+                , new OperatorTerm(OperatorTerm.OP.GREATER_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())));
     }
 

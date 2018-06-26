@@ -25,7 +25,7 @@ public class SingletonUtilTools {
         this.type = type;
         this.time = new Date().getTime();
 
-        String command = "insert into UtilTools (App_ID, Type, Time) values('"
+        String command = "insert into UtilTools (App_ID, OP, Time) values('"
                 + SingletonConnectDB.getINSTANCE().getUuid() + "','" + type + "',"
                 + time + ")";
         SingletonConnectDB.getINSTANCE().execute(command);

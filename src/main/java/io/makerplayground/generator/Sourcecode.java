@@ -384,10 +384,10 @@ public class Sourcecode {
                             } else if (term instanceof StringTerm) {
                                 return ((StringTerm) term).getValue();
                             } else if (term instanceof OperatorTerm) {
-                                ChipOperator chipOperator = ((OperatorTerm) term).getValue();
-                                if (chipOperator == ChipOperator.AND) {
+                                OperatorTerm.OP chipOperator = ((OperatorTerm) term).getValue();
+                                if (chipOperator == OperatorTerm.OP.AND) {
                                     return " && ";
-                                } else if (chipOperator == ChipOperator.OR) {
+                                } else if (chipOperator == OperatorTerm.OP.OR) {
                                     return " || ";
                                 } else {
                                     return " " + chipOperator.toString() + " ";

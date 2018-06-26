@@ -127,7 +127,7 @@ public class SceneDevicePropertyWindow extends PopOver {
             if (p.getDataType() == DataType.VALUE) {
                 ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
-                comboBox.setValue((ProjectValue) viewModel.getParameterValue(p));
+                comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
                 comboBox.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(ProjectValue item, boolean empty) {
@@ -153,25 +153,25 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                NumberWithUnit number = (NumberWithUnit) viewModel.getParameterValue(p);
+                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
                 SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
                         , FXCollections.observableArrayList(p.getUnit()), number);
                 sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = sliderWithUnit;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
-                textField.setText((String) viewModel.getParameterValue(p));
+                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 control = textField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
-                comboBox.getSelectionModel().select((String) viewModel.getParameterValue(p));
+                comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
-                NumberWithUnit defaultValue = (NumberWithUnit) viewModel.getParameterValue(p);
+                NumberWithUnit defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
                 SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
                         , defaultValue.getValue()
                         , defaultValue.getUnit()
