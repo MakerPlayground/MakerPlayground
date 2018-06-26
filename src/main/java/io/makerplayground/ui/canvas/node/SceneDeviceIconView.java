@@ -1,5 +1,6 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
+import io.makerplayground.ui.canvas.node.usersetting.SceneDevicePropertyWindow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,24 +12,27 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 
+
 import java.io.IOException;
 
 /**
- * Created by USER on 05-Jul-17.
+ * Created by tanyagorn on 6/12/2017.
  */
-public class ConditionDeviceIconView extends VBox {
+public class SceneDeviceIconView extends VBox {
 
     private final SceneDeviceIconViewModel viewModel;
-    private static ConditionDevicePropertyWindow devicePropertyWindow;
+    private static SceneDevicePropertyWindow devicePropertyWindow;
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
-    @FXML private Button removeConditionDeviceBtn;
+    @FXML private Label action;
+    @FXML private Button removeStateDeviceBtn;
 
-    public ConditionDeviceIconView(SceneDeviceIconViewModel viewModel) {
+
+    public SceneDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionDeviceIconView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIcon2View.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
@@ -39,17 +43,21 @@ public class ConditionDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
+        action.setText(viewModel.getAction().getName());
+        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
+        // use mouse release so that it can be coexist with mouse drag
+        // (mouse release will be consumed if it was release after drag)
         setOnMouseReleased(e -> {
             if (devicePropertyWindow != null) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
-            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-            devicePropertyWindow.show(ConditionDeviceIconView.this);
+            devicePropertyWindow.show(SceneDeviceIconView.this);
         });
 
         setOnMouseEntered(e -> {
@@ -57,15 +65,14 @@ public class ConditionDeviceIconView extends VBox {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
-            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
             devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-            devicePropertyWindow.show(ConditionDeviceIconView.this);
+            devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }
 
-    public void setOnRemove(EventHandler<ActionEvent> e) {
-        removeConditionDeviceBtn.setOnAction(e);
+    public void setOnRemoved(EventHandler<ActionEvent> e) {
+        removeStateDeviceBtn.setOnAction(e);
     }
-
 }

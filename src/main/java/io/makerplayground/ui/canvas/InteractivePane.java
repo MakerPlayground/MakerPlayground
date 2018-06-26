@@ -2,6 +2,8 @@ package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import io.makerplayground.ui.canvas.node.InteractiveNode;
+import io.makerplayground.ui.canvas.node.SelectionGroup;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -14,8 +16,6 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-
-import java.util.List;
 
 public class InteractivePane extends ScrollPane {
     private final Pane content = new Pane();

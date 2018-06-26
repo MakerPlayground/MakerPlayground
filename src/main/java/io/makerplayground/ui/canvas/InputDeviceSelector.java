@@ -1,6 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.ui.canvas.node.ConditionViewModel;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;

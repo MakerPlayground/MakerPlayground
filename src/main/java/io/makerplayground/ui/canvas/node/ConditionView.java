@@ -1,5 +1,7 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
+import io.makerplayground.ui.canvas.InputDeviceSelector;
+import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
@@ -11,10 +13,8 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
-import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 

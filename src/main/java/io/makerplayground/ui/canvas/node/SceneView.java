@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.Scene;
+import io.makerplayground.ui.canvas.InteractivePane;
+import io.makerplayground.ui.canvas.OutputDeviceSelector;
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -35,7 +36,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
-import javafx.util.converter.NumberStringConverter;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  *
  */
-public class SceneView extends InteractiveNode{
+public class SceneView extends InteractiveNode {
     private final HBox parent = new HBox();
     @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;

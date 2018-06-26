@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
 import javafx.beans.property.BooleanProperty;
 

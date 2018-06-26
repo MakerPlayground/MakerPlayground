@@ -20,10 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberInRangeExpression;
-import io.makerplayground.project.expression.NumberWithUnitExpression;
-import io.makerplayground.project.expression.ProjectValueExpression;
+import io.makerplayground.project.expression.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -71,12 +68,16 @@ public class UserSetting {
                         valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
                         break;
                     case STRING:
+                        valueMap.put(param, new SimpleStringExpression((String) param.getDefaultValue()));
                         break;
                     case ENUM:
+                        valueMap.put(param, new SimpleStringExpression((String) param.getDefaultValue()));
                         break;
                     case INTEGER:
+                        valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
                         break;
                     case VALUE:
+                        valueMap.put(param, new ProjectValueExpression());
                         break;
                 }
             }

@@ -1,15 +1,13 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.*;
+import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by tanyagorn on 6/26/2017.

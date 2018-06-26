@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ControlType;
@@ -6,6 +6,10 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.SimpleExpressionControl;
+import io.makerplayground.ui.canvas.SliderWithUnit;
+import io.makerplayground.ui.canvas.SpinnerWithUnit;
+import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -127,6 +131,9 @@ public class SceneDevicePropertyWindow extends PopOver {
             if (p.getDataType() == DataType.VALUE) {
                 ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
+                if (viewModel.getParameterValue(p) != null) {
+                    comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
+                }
                 comboBox.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(ProjectValue item, boolean empty) {
@@ -170,7 +177,13 @@ public class SceneDevicePropertyWindow extends PopOver {
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
-                NumberWithUnit defaultValue = (NumberWithUnit) p.getDefaultValue();
+                NumberWithUnit defaultValue;
+                if (viewModel.getParameterValue(p) != null) {
+                    defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+                }
+                else {
+                    defaultValue = (NumberWithUnit) p.getDefaultValue();
+                }
                 SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
                         , defaultValue.getValue()
                         , defaultValue.getUnit()

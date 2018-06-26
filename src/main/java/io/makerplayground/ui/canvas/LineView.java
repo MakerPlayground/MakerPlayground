@@ -17,6 +17,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import io.makerplayground.ui.canvas.node.InteractiveNode;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
 import javafx.scene.image.Image;

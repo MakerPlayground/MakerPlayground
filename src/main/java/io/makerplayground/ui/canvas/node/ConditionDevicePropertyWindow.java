@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ControlType;
@@ -6,6 +6,10 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.SimpleExpressionControl;
+import io.makerplayground.ui.canvas.SliderWithUnit;
+import io.makerplayground.ui.canvas.SpinnerWithUnit;
+import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
