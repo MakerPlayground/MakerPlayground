@@ -248,17 +248,18 @@ public class Sourcecode {
                         .append(setting.getAction().getFunctionName()).append("(");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
-                    Object value = setting.getValueMap().get(parameter);
-                    if (value instanceof NumberWithUnit) {
-                        params.add(df.format(((NumberWithUnit) value).getValue()));
-                    } else if (value instanceof String) {
-                        params.add("\"" + value + "\"");
-                    } else if (value instanceof ProjectValue) {
-                        params.add("_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
-                                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
-                    } else if (value instanceof Expression) {
-                        throw new IllegalStateException("Implement needed (expression)");
-                    }
+                    Expression value = setting.getValueMap().get(parameter);
+                    params.add(value.translateToCCode());
+//                    if (value instanceof NumberWithUnit) {
+//                        params.add(df.format(((NumberWithUnit) value).getValue()));
+//                    } else if (value instanceof String) {
+//                        params.add("\"" + value + "\"");
+//                    } else if (value instanceof ProjectValue) {
+//                        params.add("_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
+//                                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
+//                    } else if (value instanceof Expression) {
+//                        throw new IllegalStateException("Implement needed (expression)");
+//                    }
                 }
                 sb.append(String.join(", ", params)).append(");").append(NEW_LINE);
             }

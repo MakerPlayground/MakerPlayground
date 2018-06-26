@@ -50,4 +50,39 @@ public class OperatorTerm extends Term {
             }
         }
     }
+    @Override
+    public String toCCode() {
+        switch (this.getValue()) {
+            case PLUS:
+                return "+";
+            case MINUS:
+                return "-";
+            case MULTIPLY:
+                return "*";
+            case DIVIDE:
+                return "/";
+            case GREATER_THAN:
+                return ">";
+            case LESS_THAN:
+                return "<";
+            case GREATER_THAN_OR_EQUAL:
+                return ">=";
+            case LESS_THAN_OR_EQUAL:
+                return "<=";
+            case AND:
+                return "&&";
+            case OR:
+                return "||";
+            case NOT:
+                return "!";
+            case OPEN_PARENTHESIS:
+                return "(";
+            case CLOSE_PARENTHESIS:
+                return ")";
+            default:
+                throw new IllegalStateException("Unknown enum constant");
+        }
+    }
 }
+
+

@@ -100,7 +100,7 @@ public class Expression {
     }
 
     public String translateToCCode() {
-        List<String> termStr = getTerms().stream().map((Object::toString)).collect(Collectors.toList());
+        List<String> termStr = getTerms().stream().map(Term::toCCode).collect(Collectors.toList());
         return String.join("", termStr);
     }
 }

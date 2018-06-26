@@ -9,7 +9,12 @@ public class ValueTerm extends Term {
     }
 
     @Override
-    public ProjectValue getValue() {
-        return (ProjectValue) value;
+    public ProjectValue getValue() { return (ProjectValue) value;
+    }
+
+    @Override
+    public String toCCode(){
+        return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
+                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()";
     }
 }

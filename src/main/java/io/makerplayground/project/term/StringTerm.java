@@ -9,4 +9,9 @@ public class StringTerm extends Term {
     public String getValue() {
         return (String) value;
     }
+
+    @Override
+    public String toCCode(){
+        return "\"" + value + "\"";
+    }
 }
