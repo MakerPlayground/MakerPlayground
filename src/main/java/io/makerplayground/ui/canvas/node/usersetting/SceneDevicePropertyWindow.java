@@ -12,6 +12,7 @@ import io.makerplayground.ui.canvas.node.expressioncontrol.SliderWithUnit;
 import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerWithUnit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

@@ -3,6 +3,7 @@ package io.makerplayground.ui.canvas.node.expressioncontrol;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.expression.Expression;
+import io.makerplayground.ui.canvas.node.usersetting.NumberWithUnitPopOver;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -14,6 +15,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.PopupWindow;
+import org.controlsfx.control.PopOver;
 
 public class DoubleNumberExpressionControl extends VBox {
 
@@ -26,6 +29,7 @@ public class DoubleNumberExpressionControl extends VBox {
     private ObjectProperty<NumberWithUnit> numberWithUnitProperty;
     private ListProperty<Unit> unitListProperty;
     private final SplitPane splitPane;
+    private NumberWithUnitPopOver popOver;
 
     public DoubleNumberExpressionControl(double minimumValue, double maximumValue, ObservableList<Unit> units, NumberWithUnit number) {
         this.minimumProperty = new SimpleDoubleProperty(minimumValue);
@@ -56,13 +60,15 @@ public class DoubleNumberExpressionControl extends VBox {
         splitPane = new SplitPane(operandChipPane, operatorChipPane);
         splitPane.setOrientation(Orientation.HORIZONTAL);
         splitPane.setDividerPositions(0.5);
-        this.setOnMouseEntered(event -> {
+        this.setOnMouseReleased(event -> {
             if (advanceCheckBox.selectedProperty().get()) {
-                getChildren().add(splitPane);
+                if(popOver != null) {
+                    popOver.hide();
+                }
+                popOver = new NumberWithUnitPopOver();
+                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+                popOver.show(mainControl);
             }
-        });
-        this.setOnMouseExited(event -> {
-            getChildren().remove(splitPane);
         });
     }
 
@@ -87,9 +93,11 @@ public class DoubleNumberExpressionControl extends VBox {
         }
         hbox.getChildren().addAll(mainControl, advanceCheckBox);
         getChildren().addAll(hbox);
-        if (advanceCheckBox.selectedProperty().get()) {
-            getChildren().add(splitPane);
-        }
+//        if (advanceCheckBox.selectedProperty().get()) {
+//            popOver = new NumberWithUnitPopOver();
+//            popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+//            popOver.show(this);
+//        }
     }
 
     public Expression getExpression() {
