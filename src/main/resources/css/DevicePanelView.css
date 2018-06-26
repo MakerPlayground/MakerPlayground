@@ -34,7 +34,7 @@
 .radio-button .radio {
     -fx-background-color: #3b424f;
 }
-
+ 
 .radio-button .radio .dot {
     -fx-mark-color: #51af98;
     -fx-mark-highlight-color: #51af98;
@@ -75,7 +75,7 @@
     -fx-background-insets: 0 3 0 3;
 }
 
-#addBtn:pressed ,#addBtn:hover{
+/*#addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('AddDevice-toggle.png');
@@ -83,12 +83,12 @@
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}
-#addBtn{
+}*/
+/*#addBtn{
     -fx-background-image: url('AddDevice.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}
+}*/

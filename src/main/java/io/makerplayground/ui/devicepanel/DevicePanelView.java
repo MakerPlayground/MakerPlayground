@@ -50,21 +50,21 @@ public class DevicePanelView extends VBox {
             throw new RuntimeException(exception);
         }
 
-        // initialize platform panel
-        VBox platformVBox = new VBox();
-        platformVBox.setSpacing(10);
-        ToggleGroup platformToggleGroup = new ToggleGroup();
-        for (Platform platform : Platform.values()) {
-            RadioButton radioButton  = new RadioButton(platform.getDisplayName());
-            radioButton.setUserData(platform);
-            radioButton.setToggleGroup(platformToggleGroup);
-            radioButton.setOnAction(event -> viewModel.selectedPlatformProperty().set(platform));
-            if (platform == viewModel.selectedPlatformProperty().get()) {
-                radioButton.setSelected(true);
-            }
-            platformVBox.getChildren().add(radioButton);
-        }
-        microcontrollerPane.getChildren().add(platformVBox);
+//        // initialize platform panel
+//        VBox platformVBox = new VBox();
+//        platformVBox.setSpacing(10);
+//        ToggleGroup platformToggleGroup = new ToggleGroup();
+//        for (Platform platform : Platform.values()) {
+//            RadioButton radioButton  = new RadioButton(platform.getDisplayName());
+//            radioButton.setUserData(platform);
+//            radioButton.setToggleGroup(platformToggleGroup);
+//            radioButton.setOnAction(event -> viewModel.selectedPlatformProperty().set(platform));
+//            if (platform == viewModel.selectedPlatformProperty().get()) {
+//                radioButton.setSelected(true);
+//            }
+//            platformVBox.getChildren().add(radioButton);
+//        }
+//        microcontrollerPane.getChildren().add(platformVBox);
 
         DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
                 new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()

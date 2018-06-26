@@ -6,6 +6,7 @@ import io.makerplayground.device.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.DeviceType;
 import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.InvalidationListener;
@@ -72,6 +73,15 @@ public class ConfigActualDeviceViewModel {
 
     public List<Device> getCompatibleControllerDevice() {
         return DeviceMapper.getSupportedController(project);
+    }
+
+    public void setPlatform(Platform platform) {
+        project.setPlatform(platform);
+        reInitialize();
+    }
+
+    public Platform getSelectedPlatform() {
+        return project.getPlatform();
     }
 
     public void setController(Device device) {
