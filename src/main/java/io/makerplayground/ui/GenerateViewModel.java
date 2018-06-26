@@ -20,7 +20,7 @@ public class GenerateViewModel {
         this.code = code;
 
         this.observableTableList = FXCollections.observableArrayList();
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             observableTableList.add(new TableDataList(projectDevice));
         }
     }

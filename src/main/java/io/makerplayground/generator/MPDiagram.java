@@ -46,7 +46,7 @@ public class MPDiagram extends Pane {
         setPrefSize(1000, 600);
 
         // draw all devices
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             List<Peripheral> deviceConnectivity = projectDevice.getActualDevice().getConnectivity();
             if (deviceConnectivity.size() != 1) {
                 throw new IllegalStateException();
