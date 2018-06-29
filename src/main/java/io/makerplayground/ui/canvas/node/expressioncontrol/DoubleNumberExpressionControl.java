@@ -1,8 +1,11 @@
 package io.makerplayground.ui.canvas.node.expressioncontrol;
 
+import com.jfoenix.controls.JFXChipView;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.expression.Expression;
+import io.makerplayground.project.term.Term;
+import io.makerplayground.ui.canvas.chip.ChipField;
 import io.makerplayground.ui.canvas.node.usersetting.NumberWithUnitPopOver;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -17,6 +20,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.PopupWindow;
 import org.controlsfx.control.PopOver;
+
+import static io.makerplayground.project.expression.Expression.Type.CUSTOM_NUMBER;
 
 public class DoubleNumberExpressionControl extends VBox {
 
@@ -65,9 +70,11 @@ public class DoubleNumberExpressionControl extends VBox {
                 if(popOver != null) {
                     popOver.hide();
                 }
-                popOver = new NumberWithUnitPopOver();
-                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-                popOver.show(mainControl);
+                if(mainControl instanceof ChipField) {
+                    popOver = new NumberWithUnitPopOver((ChipField) mainControl);
+                    popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+                    popOver.show(mainControl);
+                }
             }
         });
     }
@@ -78,16 +85,19 @@ public class DoubleNumberExpressionControl extends VBox {
         hbox.setAlignment(Pos.CENTER);
         hbox.setSpacing(5.0);
         if (advanceCheckBox.selectedProperty().get()) {
-            FlowPane pane = new FlowPane(Orientation.HORIZONTAL, 3.0, 2.0);
-            pane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-            pane.setPrefSize(300, 20);
-            for (int i=0; i<5; i++) {
-                Rectangle rectangle = new Rectangle();
-                rectangle.setHeight(20);
-                rectangle.setWidth(40);
-                pane.getChildren().addAll(rectangle);
-            }
-            mainControl = pane;
+//            FlowPane pane = new FlowPane(Orientation.HORIZONTAL, 3.0, 2.0);
+//            pane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//            pane.setPrefSize(300, 20);
+//            for (int i=0; i<5; i++) {
+//                Rectangle rectangle = new Rectangle();
+//                rectangle.setHeight(20);
+//                rectangle.setWidth(40);
+//                pane.getChildren().addAll(rectangle);
+//            }
+//            mainControl = pane;
+
+            ChipField chipField = new ChipField(new Expression(CUSTOM_NUMBER));
+            mainControl = chipField;
         } else {
             mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnitProperty.get());
         }

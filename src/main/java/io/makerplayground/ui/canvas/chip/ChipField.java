@@ -17,7 +17,6 @@ import javafx.scene.text.Text;
 
 public class ChipField extends ScrollPane {
     private final Expression expression;
-    private final SelectionGroup<Chip> selectionGroup = new SelectionGroup<>();
 
     private final HBox mainPane = new HBox();
     private final Text cursor = new Text();
@@ -68,7 +67,7 @@ public class ChipField extends ScrollPane {
 
     private void initEvent() {
         // deselect all chips if select at blank space
-        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> selectionGroup.deselect());
+//        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> selectionGroup.deselect());
 
         // move cursor with left/right arrow key (an event handler is needed as we don't want to interfere TextField in Chip)
         addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -82,7 +81,7 @@ public class ChipField extends ScrollPane {
         // delete selected chip with del key (an event filter is needed as a TextField in Chip can consume KeyEvent)
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.DELETE) {
-                selectionGroup.getSelected().forEach(this::removeChip);
+//                selectionGroup.getSelected().forEach(this::removeChip);
             }
         });
     }
@@ -99,14 +98,14 @@ public class ChipField extends ScrollPane {
             chip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
         } else if (t instanceof StringTerm) {
             chip = new StringChip((String) t.getValue());
-        } else if (t instanceof ValueTerm) {
-            chip = OperatorChip.getInstance((OperatorTerm.OP) t.getValue());
+        } else if (t instanceof OperatorTerm) {
+            chip = new OperatorChip((OperatorTerm.OP) t.getValue());
         } else {
             throw new IllegalStateException();
         }
 
         mainPane.getChildren().add(index, chip);
-        selectionGroup.getSelectable().add(chip);
+//        selectionGroup.getSelectable().add(chip);
     }
 
     // Remove chip when underlying expression has changed
@@ -121,7 +120,7 @@ public class ChipField extends ScrollPane {
         }
 
         mainPane.getChildren().remove(removedChip);
-        selectionGroup.getSelectable().remove(removedChip);
+//        selectionGroup.getSelectable().remove(removedChip);
     }
 
     // Remove chip when press delete key or the delete button

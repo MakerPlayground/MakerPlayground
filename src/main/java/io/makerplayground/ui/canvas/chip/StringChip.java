@@ -11,7 +11,7 @@ import javafx.scene.shape.Rectangle;
 
 public class StringChip extends Chip<String> {
     private static final Color BACKGROUND_COLOR = Color.DARKORANGE;
-    private static final Color BACKGROUND_COLOR_SELECTED = Color.ORANGERED;
+//    private static final Color BACKGROUND_COLOR_SELECTED = Color.ORANGERED;
 
     public StringChip() {
         super("", Term.Type.STRING);
@@ -28,8 +28,9 @@ public class StringChip extends Chip<String> {
         background.setHeight(20);
         background.setArcWidth(20);
         background.setArcHeight(20);
-        background.fillProperty().bind(Bindings.when(selectedProperty())
-                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
+        background.fillProperty().setValue(BACKGROUND_COLOR);
+//        background.fillProperty().bind(Bindings.when(selectedProperty())
+//                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
 
         TextField input = new TextField();
         input.setStyle("-fx-text-fill: white; -fx-background-color: transparent;");

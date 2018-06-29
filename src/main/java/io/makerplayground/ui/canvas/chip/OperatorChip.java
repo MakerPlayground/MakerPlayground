@@ -8,65 +8,66 @@ import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class OperatorChip extends Chip<OperatorTerm.OP> {
     private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
-    private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
+//    private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
 
-    public static OperatorChip PLUS = new OperatorChip(OperatorTerm.OP.PLUS);
-    public static OperatorChip MINUS = new OperatorChip(OperatorTerm.OP.MINUS);
-    public static OperatorChip MULTIPLY = new OperatorChip(OperatorTerm.OP.MULTIPLY);
-    public static OperatorChip DIVIDE = new OperatorChip(OperatorTerm.OP.DIVIDE);
+//    public static OperatorChip PLUS = new OperatorChip(OperatorTerm.OP.PLUS);
+//    public static OperatorChip MINUS = new OperatorChip(OperatorTerm.OP.MINUS);
+//    public static OperatorChip MULTIPLY = new OperatorChip(OperatorTerm.OP.MULTIPLY);
+//    public static OperatorChip DIVIDE = new OperatorChip(OperatorTerm.OP.DIVIDE);
+//
+//    public static OperatorChip GREATER_THAN = new OperatorChip(OperatorTerm.OP.GREATER_THAN);
+//    public static OperatorChip LESS_THAN = new OperatorChip(OperatorTerm.OP.LESS_THAN);
+//    public static OperatorChip GREATER_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.GREATER_THAN_OR_EQUAL);
+//    public static OperatorChip LESS_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.LESS_THAN_OR_EQUAL);
+//
+//    public static OperatorChip AND = new OperatorChip(OperatorTerm.OP.AND);
+//    public static OperatorChip OR = new OperatorChip(OperatorTerm.OP.OR);
+//    public static OperatorChip NOT = new OperatorChip(OperatorTerm.OP.NOT);
+//    public static OperatorChip OPEN_PARENTHESIS = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
+//    public static OperatorChip CLOSE_PARENTHESIS = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
 
-    public static OperatorChip GREATER_THAN = new OperatorChip(OperatorTerm.OP.GREATER_THAN);
-    public static OperatorChip LESS_THAN = new OperatorChip(OperatorTerm.OP.LESS_THAN);
-    public static OperatorChip GREATER_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.GREATER_THAN_OR_EQUAL);
-    public static OperatorChip LESS_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.LESS_THAN_OR_EQUAL);
-
-    public static OperatorChip AND = new OperatorChip(OperatorTerm.OP.AND);
-    public static OperatorChip OR = new OperatorChip(OperatorTerm.OP.OR);
-    public static OperatorChip NOT = new OperatorChip(OperatorTerm.OP.NOT);
-    public static OperatorChip OPEN_PARENTHESIS = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
-    public static OperatorChip CLOSE_PARENTHESIS = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
-
-    private OperatorChip(OperatorTerm.OP initialValue) {
+    public OperatorChip(OperatorTerm.OP initialValue) {
         super(initialValue, Term.Type.OPERATOR);
     }
 
-    public static OperatorChip getInstance(OperatorTerm.OP operator) {
-        switch (operator) {
-            case PLUS:
-                return PLUS;
-            case MINUS:
-                return MINUS;
-            case MULTIPLY:
-                return MULTIPLY;
-            case DIVIDE:
-                return DIVIDE;
-            case GREATER_THAN:
-                return GREATER_THAN;
-            case LESS_THAN:
-                return LESS_THAN;
-            case GREATER_THAN_OR_EQUAL:
-                return GREATER_THAN_OR_EQUAL;
-            case LESS_THAN_OR_EQUAL:
-                return LESS_THAN_OR_EQUAL;
-            case AND:
-                return AND;
-            case OR:
-                return OR;
-            case NOT:
-                return NOT;
-            case OPEN_PARENTHESIS:
-                return OPEN_PARENTHESIS;
-            case CLOSE_PARENTHESIS:
-                return CLOSE_PARENTHESIS;
-            default:
-                throw new IllegalStateException("Unknown enum constant");
-        }
-    }
+//    public static OperatorChip getInstance(OperatorTerm.OP operator) {
+//        switch (operator) {
+//            case PLUS:
+//                return PLUS;
+//            case MINUS:
+//                return MINUS;
+//            case MULTIPLY:
+//                return MULTIPLY;
+//            case DIVIDE:
+//                return DIVIDE;
+//            case GREATER_THAN:
+//                return GREATER_THAN;
+//            case LESS_THAN:
+//                return LESS_THAN;
+//            case GREATER_THAN_OR_EQUAL:
+//                return GREATER_THAN_OR_EQUAL;
+//            case LESS_THAN_OR_EQUAL:
+//                return LESS_THAN_OR_EQUAL;
+//            case AND:
+//                return AND;
+//            case OR:
+//                return OR;
+//            case NOT:
+//                return NOT;
+//            case OPEN_PARENTHESIS:
+//                return OPEN_PARENTHESIS;
+//            case CLOSE_PARENTHESIS:
+//                return CLOSE_PARENTHESIS;
+//            default:
+//                throw new IllegalStateException("Unknown enum constant");
+//        }
+//    }
 
     @Override
     protected void initView() {
@@ -75,15 +76,21 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
         background.setHeight(20);
         background.setArcWidth(20);
         background.setArcHeight(20);
-        background.fillProperty().bind(Bindings.when(selectedProperty())
-                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
+        background.fillProperty().setValue(BACKGROUND_COLOR);
+//        background.fillProperty().bind(Bindings.when(selectedProperty())
+//                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
 
         Label label = new Label();
+        label.setPrefSize(25, 20);
         label.setText(getValue().toString());
         label.setStyle("-fx-text-fill: white;");
         label.setAlignment(Pos.BASELINE_CENTER);
 
         getChildren().addAll(background, label);
+        System.out.println(background.getWidth());
+        System.out.println(label.getPrefWidth());
+        System.out.println(this.getPrefWidth());
+//        setPrefSize(25, StackPane.USE_COMPUTED_SIZE);
     }
 
     @Override

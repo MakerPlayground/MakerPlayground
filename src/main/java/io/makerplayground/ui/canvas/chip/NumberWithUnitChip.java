@@ -8,12 +8,13 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     private static final Color BACKGROUND_COLOR = Color.DARKRED;
-    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
+//    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public NumberWithUnitChip() {
         super(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Term.Type.NUMBER);
@@ -30,8 +31,9 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
         background.setHeight(20);
         background.setArcWidth(20);
         background.setArcHeight(20);
-        background.fillProperty().bind(Bindings.when(selectedProperty())
-                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
+        background.fillProperty().setValue(BACKGROUND_COLOR);
+//        background.fillProperty().bind(Bindings.when(selectedProperty())
+//                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
 
         TextField input = new TextField();
         input.setText(String.valueOf(getValue()));
@@ -51,6 +53,7 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
         });
 
         getChildren().addAll(background, input);
+        setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
     }
 
     @Override
