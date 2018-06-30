@@ -1,11 +1,8 @@
 package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.project.term.Term;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 public abstract class Chip<T> extends StackPane {

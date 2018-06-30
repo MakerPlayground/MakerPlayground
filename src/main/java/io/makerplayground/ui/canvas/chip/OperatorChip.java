@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class OperatorChip extends Chip<OperatorTerm.OP> {
     private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
@@ -77,20 +78,11 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
         background.setArcWidth(20);
         background.setArcHeight(20);
         background.fillProperty().setValue(BACKGROUND_COLOR);
-//        background.fillProperty().bind(Bindings.when(selectedProperty())
-//                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
 
-        Label label = new Label();
-        label.setPrefSize(25, 20);
-        label.setText(getValue().toString());
-        label.setStyle("-fx-text-fill: white;");
-        label.setAlignment(Pos.BASELINE_CENTER);
-
-        getChildren().addAll(background, label);
-        System.out.println(background.getWidth());
-        System.out.println(label.getPrefWidth());
-        System.out.println(this.getPrefWidth());
-//        setPrefSize(25, StackPane.USE_COMPUTED_SIZE);
+        Text text = new Text(getValue().toString());
+        text.setFill(Color.WHITE);
+        getChildren().addAll(background, text);
+        setMaxSize(25,20);
     }
 
     @Override

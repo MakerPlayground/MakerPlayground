@@ -1,7 +1,5 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import com.jfoenix.controls.JFXChip;
-import com.jfoenix.controls.JFXChipView;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
