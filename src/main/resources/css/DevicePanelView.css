@@ -75,20 +75,20 @@
     -fx-background-insets: 0 3 0 3;
 }
 
-/*#addBtn:pressed ,#addBtn:hover{
+#addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('AddDevice-toggle.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('addtoggle.png');
+    -fx-background-size : 30px;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}*/
-/*#addBtn{
-    -fx-background-image: url('AddDevice.png');
-    -fx-background-size : 50px;
+}
+#addBtn{
+    -fx-background-image: url('add2.png');
+    -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}*/
+}

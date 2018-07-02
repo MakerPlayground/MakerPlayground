@@ -19,7 +19,7 @@
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Button id="addBtn" alignment="CENTER" layoutY="10.0" maxHeight="50.0" minHeight="26.0" minWidth="28.0" mnemonicParsing="false" onAction="#onAddDeviceClick" prefHeight="26.0" prefWidth="28.0" style="-fx-cursor: hand;" text="+" AnchorPane.rightAnchor="8.0">
+            <Button id="addBtn" alignment="CENTER" layoutY="10.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" AnchorPane.rightAnchor="8.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>

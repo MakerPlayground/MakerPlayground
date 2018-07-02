@@ -1,6 +1,7 @@
 package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.helper.Singleton;
 import io.makerplayground.helper.SingletonConnectDB;
@@ -63,6 +64,8 @@ public class Main extends Application {
     private Button loadButton;
     @FXML
     private Button newButton;
+    @FXML
+    private Button deviceMonitorButton;
     @FXML
     private Button tutorialButton;
     @FXML
@@ -155,6 +158,7 @@ public class Main extends Application {
         loadButton.setOnAction(event -> loadProject(primaryStage));
         saveButton.setOnAction(event -> saveProject());
         saveAsButton.setOnAction(event -> saveProjectAs());
+        deviceMonitorButton.setOnAction(event -> deviceMonitor());
 
         tutorialButton.setOnAction(event -> {
             if (flag) {
@@ -387,6 +391,17 @@ public class Main extends Application {
             x.printStackTrace();
         }
     }
+    private void deviceMonitor(){
+            if (SerialPort.getCommPorts().length > 0) {
+                DeviceMonitor deviceMonitor = new DeviceMonitor(project);
+                deviceMonitor.showAndWait();
+            }
+            else {
+                ErrorDialogView errorDialogView = new ErrorDialogView("There is no connected serial port.\nPlease connect the board with computer.");
+                errorDialogView.showAndWait();
+            }
+        }
+
 
     public static void main(String[] args) {
         launch(args);

@@ -97,7 +97,7 @@ public class RightPanel extends AnchorPane {
             new Thread(uploadTask).start();
         });
 
-        Button monitorBtn = new Button("Device Monitor");
+        /*Button monitorBtn = new Button("Device Monitor");
         monitorBtn.setOnAction(event -> {
             if (SerialPort.getCommPorts().length > 0) {
                 DeviceMonitor deviceMonitor = new DeviceMonitor(project);
@@ -107,12 +107,12 @@ public class RightPanel extends AnchorPane {
                 ErrorDialogView errorDialogView = new ErrorDialogView("There is no connected serial port.\nPlease connect the board with computer.");
                 errorDialogView.showAndWait();
             }
-        });
+        });*/
 
         VBox projectButton = new VBox();
         projectButton.setStyle("-fx-background-color : #313644");
         projectButton.setSpacing(2.0);
-        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn,monitorBtn);
+        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);
         projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
 
