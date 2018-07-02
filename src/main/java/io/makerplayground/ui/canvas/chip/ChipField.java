@@ -1,11 +1,9 @@
 package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.term.NumberWithUnitTerm;
-import io.makerplayground.project.term.OperatorTerm;
-import io.makerplayground.project.term.StringTerm;
-import io.makerplayground.project.term.Term;
+import io.makerplayground.project.term.*;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -84,6 +82,8 @@ public class ChipField extends HBox {
             chip = new StringChip((String) t.getValue());
         } else if (t instanceof OperatorTerm) {
             chip = new OperatorChip((OperatorTerm.OP) t.getValue());
+        } else if (t instanceof ValueTerm) {
+            chip = new ProjectValueChip((ProjectValue) t.getValue());
         } else {
             throw new IllegalStateException();
         }
