@@ -26,9 +26,6 @@ public class NumberWithUnit {
 
     @Override
     public String toString() {
-        return "NumberWithUnit{" +
-                "d=" + d +
-                ", u=" + u +
-                '}';
+        return Double.toString(this.d);
     }
 }

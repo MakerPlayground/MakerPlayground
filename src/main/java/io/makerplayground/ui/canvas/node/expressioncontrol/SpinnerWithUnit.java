@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node.expressioncontrol;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
@@ -6,7 +6,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;

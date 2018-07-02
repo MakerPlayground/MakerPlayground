@@ -4,12 +4,12 @@ import io.makerplayground.device.*;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.SimpleExpressionControl;
-import io.makerplayground.ui.canvas.SliderWithUnit;
-import io.makerplayground.ui.canvas.SpinnerWithUnit;
-import io.makerplayground.ui.canvas.node.SceneDeviceIconViewModel;
+import io.makerplayground.ui.canvas.node.expressioncontrol.DoubleNumberExpressionControl;
+import io.makerplayground.ui.canvas.node.expressioncontrol.NumberInRangeExpressionControl;
+import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerWithUnit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -159,11 +159,18 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
-                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
-                        , FXCollections.observableArrayList(p.getUnit()), number);
-                sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
-                control = sliderWithUnit;
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+                }
+                DoubleNumberExpressionControl doubleNumberExpressionControl = new DoubleNumberExpressionControl(
+                        p.getMinimumValue(),
+                        p.getMaximumValue(),
+                        FXCollections.observableArrayList(p.getUnit()),
+                        FXCollections.observableArrayList(viewModel.getProjectValue()),
+                        viewModel.getParameterValue(p)
+                );
+                doubleNumberExpressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = doubleNumberExpressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
                 textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
@@ -194,6 +201,72 @@ public class SceneDevicePropertyWindow extends PopOver {
                 throw new IllegalStateException("Found unknown control type " + p);
             }
 
+//            if (p.getDataType() == DataType.VALUE) {
+//                ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
+//                ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
+//                if (viewModel.getParameterValue(p) != null) {
+//                    comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
+//                }
+//                comboBox.setCellFactory(param -> new ListCell<>() {
+//                    @Override
+//                    protected void updateItem(ProjectValue item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        if (empty) {
+//                            setText("");
+//                        } else {
+//                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+//                        }
+//                    }
+//                });
+//                comboBox.setButtonCell(new ListCell<>(){
+//                    @Override
+//                    protected void updateItem(ProjectValue item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        if (empty) {
+//                            setText("");
+//                        } else {
+//                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+//                        }
+//                    }
+//                });
+//                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
+//                control = comboBox;
+//            } else if (p.getControlType() == ControlType.SLIDER) {
+//                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+//                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
+//                        , FXCollections.observableArrayList(p.getUnit()), number);
+//                sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
+//                control = sliderWithUnit;
+//            } else if (p.getControlType() == ControlType.TEXTBOX) {
+//                TextField textField = new TextField();
+//                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
+//                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
+//                control = textField;
+//            } else if (p.getControlType() == ControlType.DROPDOWN) {
+//                ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+//                ComboBox<String> comboBox = new ComboBox<>(list);
+//                comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
+//                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
+//                control = comboBox;
+//            } else if (p.getControlType() == ControlType.SPINBOX) {
+//                NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
+//                NumberWithUnit defaultValue;
+//                if (viewModel.getParameterValue(p) != null) {
+//                    defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+//                }
+//                else {
+//                    defaultValue = (NumberWithUnit) p.getDefaultValue();
+//                }
+//                SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
+//                        , defaultValue.getValue()
+//                        , defaultValue.getUnit()
+//                        , FXCollections.observableArrayList(p.getUnit()));
+//                spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
+//                control = spinner;
+//            } else {
+//                throw new IllegalStateException("Found unknown control type " + p);
+//            }
+
             GridPane.setRowIndex(control, i+1);
             GridPane.setColumnIndex(control, 1);
             propertyPane.getChildren().addAll(name, control);
@@ -218,7 +291,7 @@ public class SceneDevicePropertyWindow extends PopOver {
         propertyPane.getChildren().add(enableCheckbox);
 
         if (expression instanceof NumberInRangeExpression) {
-            SimpleExpressionControl expressionControl = new SimpleExpressionControl((NumberInRangeExpression) expression, value);
+            NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
             GridPane.setRowIndex(expressionControl, i+1);
             GridPane.setColumnIndex(expressionControl, 1);
             propertyPane.getChildren().add(expressionControl);

@@ -1,0 +1,17 @@
+#mainPane{
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+}
+#backspaceBtn{
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url('backspace-arrow.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+}
+#backspaceBtn:pressed{
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url('backspace-arrow.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+}

@@ -24,7 +24,7 @@ public class Expression {
     private final ObservableList<Term> terms = FXCollections.observableArrayList();
     private final BooleanProperty enable = new SimpleBooleanProperty(false);
 
-    protected Expression(Type type) {
+    public Expression(Type type) {
         this.type = type;
     }
 

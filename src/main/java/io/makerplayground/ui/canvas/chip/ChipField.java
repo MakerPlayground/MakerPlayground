@@ -1,154 +1,126 @@
 package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Operator;
+import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
-import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.SelectionGroup;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 
-public class ChipField extends ScrollPane {
-    private final Expression expression;
-    private final SelectionGroup<Chip> selectionGroup = new SelectionGroup<>();
 
-    private final HBox mainPane = new HBox();
-    private final Text cursor = new Text();
+import java.io.IOException;
 
-    public ChipField(Expression expression) {
-        this.expression = expression;
+public class ChipField extends HBox {
+    @FXML
+    private FlowPane mainPane;
+
+    @FXML
+    private Button backspaceBtn;
+
+    private final ObservableList<ProjectValue> projectValues;
+
+    private final ObjectProperty<CustomNumberExpression> expressionProperty = new SimpleObjectProperty<>(new CustomNumberExpression());
+
+    public ChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
+        this.projectValues = projectValues;
         initView();
         initEvent();
+        this.expressionProperty.get().getTerms().addAll(expression.getTerms());
     }
 
     private void initView() {
-        mainPane.setSpacing(5);
-        mainPane.setMinSize(300, 30);
-        mainPane.setAlignment(Pos.CENTER_LEFT);
-        mainPane.setPadding(new Insets(0, 10, 0, 10));
-        mainPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(10), BorderStroke.THIN)));
-
-        cursor.setText("I");
-        mainPane.getChildren().add(cursor);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ChipField.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // initialize chip based on expression
-        expression.getTerms().forEach(this::addTerm);
+        expressionProperty.get().getTerms().forEach((term) -> Platform.runLater(() -> addChip(term)));
 
+        setFocusTraversable(true);
+    }
+
+    private void initEvent() {
         // add/remove chip when expression changed
-        expression.getTerms().addListener((ListChangeListener<? super Term>) c -> {
+        expressionProperty.get().getTerms().addListener((ListChangeListener<? super Term>) c -> {
             while (c.next()) {
                 if (c.wasPermutated()) {
                     throw new UnsupportedOperationException();
                 } else if (c.wasUpdated()) {
                     throw new UnsupportedOperationException();
                 } else {
-                    for (Term removedItem : c.getRemoved()) {
-                        removeTerm(removedItem, c.getFrom());
+                    for (Term ignored : c.getRemoved()) {
+                        removeChipUI(c.getFrom());
                     }
                     for (Term addedItem : c.getAddedSubList()) {
-                        addTerm(addedItem, c.getFrom());
+                        addChipUI(addedItem);
                     }
                 }
             }
         });
 
-        setPrefSize(300, 30);
-        setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        setVbarPolicy(ScrollBarPolicy.NEVER);
-        setFocusTraversable(true);
-        setContent(mainPane);
+        backspaceBtn.setOnMouseReleased(this::handleBackspace);
     }
 
-    private void initEvent() {
-        // deselect all chips if select at blank space
-        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> selectionGroup.deselect());
-
-        // move cursor with left/right arrow key (an event handler is needed as we don't want to interfere TextField in Chip)
-        addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.LEFT) {
-                decreaseCursor();
-            } else if (event.getCode() == KeyCode.RIGHT) {
-                advanceCursor();
-            }
-        });
-
-        // delete selected chip with del key (an event filter is needed as a TextField in Chip can consume KeyEvent)
-        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.DELETE) {
-                selectionGroup.getSelected().forEach(this::removeChip);
-            }
-        });
+    public void addChip(Term t) {
+        this.expressionProperty.get().getTerms().add(t);
     }
 
-    // Add new chip to the current cursor position of ChipField. Change will also be reflected to the underlying expression.
-    public void addTerm(Term t) {
-        expression.getTerms().add(mainPane.getChildren().indexOf(cursor), t);
-    }
-
-    // Add new chip when underlying expression has changed
-    private void addTerm(Term t, int index) {
-        Chip chip = null;
+    private void addChipUI(Term t) {
+        Chip chip;
         if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
+            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
+                int index = mainPane.getChildren().indexOf(chip);
+                expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm((NumberWithUnit) newValue));
+            });
         } else if (t instanceof StringTerm) {
             chip = new StringChip((String) t.getValue());
+            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
+                int index = mainPane.getChildren().indexOf(chip);
+                expressionProperty.get().getTerms().set(index, new StringTerm((String) newValue));
+            });
+        } else if (t instanceof OperatorTerm) {
+            chip = new OperatorChip((OperatorTerm.OP) t.getValue());
         } else if (t instanceof ValueTerm) {
-            chip = OperatorChip.getInstance((OperatorTerm.OP) t.getValue());
+            chip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
+            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
+                int index = mainPane.getChildren().indexOf(chip);
+                expressionProperty.get().getTerms().set(index, new ValueTerm((ProjectValue) newValue));
+            });
         } else {
             throw new IllegalStateException();
         }
-
-        mainPane.getChildren().add(index, chip);
-        selectionGroup.getSelectable().add(chip);
+        mainPane.getChildren().add(chip);
     }
 
     // Remove chip when underlying expression has changed
-    private void removeTerm(Term t, int index) {
-        Chip removedChip = null;
-
-        int cursorIndex = mainPane.getChildren().indexOf(cursor);
-        if (cursorIndex <= index) {
-            removedChip = (Chip) mainPane.getChildren().remove(index + 1);
-        } else {
-            removedChip = (Chip) mainPane.getChildren().remove(index);
-        }
-
-        mainPane.getChildren().remove(removedChip);
-        selectionGroup.getSelectable().remove(removedChip);
+    private void removeChipUI(int index) {
+        mainPane.getChildren().remove(index);
     }
 
-    // Remove chip when press delete key or the delete button
-    private void removeChip(Chip c) {
-        int indexToBeRemoved = mainPane.getChildren().indexOf(c);
-        int cursorIndex = mainPane.getChildren().indexOf(cursor);
-
-        if (cursorIndex <= indexToBeRemoved) {
-            expression.getTerms().remove(indexToBeRemoved - 1);
-        } else {
-            expression.getTerms().remove(indexToBeRemoved);
+    private void handleBackspace(MouseEvent mouseEvent) {
+        if (expressionProperty.get().getTerms().size() > 0) {
+            expressionProperty.get().getTerms().remove(expressionProperty.get().getTerms().size() - 1);
         }
     }
 
-    private void advanceCursor() {
-        int index = mainPane.getChildren().indexOf(cursor);
-        if (index != mainPane.getChildren().size() - 1) {
-            mainPane.getChildren().remove(cursor);
-            mainPane.getChildren().add(index + 1, cursor);
-        }
-    }
-
-    private void decreaseCursor() {
-        int index = mainPane.getChildren().indexOf(cursor);
-        if (index != 0) {
-            mainPane.getChildren().remove(cursor);
-            mainPane.getChildren().add(index - 1, cursor);
-        }
+    public ObjectProperty<CustomNumberExpression> expressionProperty() {
+        return expressionProperty;
     }
 }

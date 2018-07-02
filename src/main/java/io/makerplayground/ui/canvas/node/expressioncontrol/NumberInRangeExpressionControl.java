@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas;
+package io.makerplayground.ui.canvas.node.expressioncontrol;
 
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.RangeSlider;
 
-public class SimpleExpressionControl extends HBox {
+public class NumberInRangeExpressionControl extends HBox {
     private final NumberInRangeExpression expression;
     private final Value value;
 
@@ -16,7 +16,7 @@ public class SimpleExpressionControl extends HBox {
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
 
-    public SimpleExpressionControl(NumberInRangeExpression expression, Value value) {
+    public NumberInRangeExpressionControl(NumberInRangeExpression expression, Value value) {
         this.expression = expression;
         this.value = value;
         initView();

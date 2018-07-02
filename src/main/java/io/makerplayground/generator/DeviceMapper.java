@@ -6,6 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberWithUnitExpression;
 import io.makerplayground.project.expression.SimpleStringExpression;
 
@@ -29,7 +30,7 @@ public class DeviceMapper {
                 Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
                 for (Parameter parameter : u.getValueMap().keySet()) {
                     Action action = u.getAction();
-                    Object o = u.getValueMap().get(parameter);
+                    Expression o = u.getValueMap().get(parameter);
 
                     if (!compatibility.containsKey(action)) {
                         compatibility.put(action, new HashMap<>());
