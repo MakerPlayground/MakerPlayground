@@ -3,32 +3,33 @@
     -fx-effect: null;
     -fx-font-size:12px;
 }
-#statePane{
-    -fx-background-color : white;
+#statePane/*scene*/{
+    -fx-background-color : #2b2b2b;
+    -fx-border-color : #1c1c1c;
 }
 #nameStateTextField{
-    -fx-background-color : #313644;
+    -fx-background-color : #2b2b2b;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size : 14 px;
 }
 #numberTextField{
-    -fx-background-color : white;
+    -fx-background-color : #777677;
     -fx-border-color : transparent;
     -fx-border-width : 0px;
-    -fx-text-fill : black;
+    -fx-text-fill : #ffffff;
     -fx-font-size : 10 px;
     /*-fx-font-weight : bold;*/
 }
 #stateBottomHBox{
-    -fx-background-color : #313644;
+    -fx-background-color : #2b2b2b;
 }
 #delayText {
     -fx-text-fill : white;
     -fx-font-size:12px;
 }
 .flow-pane{
-    -fx-background-color : white;
+    -fx-background-color : #b2b2b2;
     -fx-border-color : null;
 }
 .scroll-pane{
@@ -43,8 +44,8 @@
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport{
-    -fx-background-color:white;
-    -fx-border-color : transparent;
+    -fx-background-color: #2b2b2b;
+    -fx-border-color : #1c1c1c;
 }
 
 .scroll-bar .increment-button {
@@ -106,25 +107,25 @@
 }
 
 #TimeUnitComboBox .arrow{
-    -fx-background-color: white;
+    -fx-background-color: #777677;
 }
 #TimeUnitComboBox: pressed .arrow-button {
-    -fx-background-color: white;
+    -fx-background-color: #1c1c1c;
 }
 #TimeUnitComboBox: pressed .arrow {
-    -fx-background-color: #313644;
+    -fx-background-color: #777677;
 }
 
 #addOutputButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('Add-toggle.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('Add-toggle-2.png');
+    -fx-background-size : 60px;
     -fx-cursor: hand;
 }
 #addOutputButton{
-    -fx-background-image: url('Add.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('Add-2.png');
+    -fx-background-size : 60px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }

@@ -15,16 +15,16 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="inPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 10 10 10 10; -fx-background-color: #313644;" stylesheets="@../css/StateView.css">
+      <Arc id="arcNode" fx:id="inPort" fill="#2b2b2b" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 10 10 10 10; -fx-background-color: #2b2b2b; -fx-border-radius: 7px;" stylesheets="@../css/StateView.css">
          <children>
             <AnchorPane maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200" style="-fx-background-color: transparent;">
                <children>
-                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: transparent;" text="sdfsdf" AnchorPane.leftAnchor="5.0">
+                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="scene" AnchorPane.leftAnchor="5.0">
                      <font>
-                        <Font size="14.0" />
+                        <Font size="12.0" />
                      </font>
                   </TextField>
                   <ImageView fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
@@ -38,10 +38,13 @@
                <content>
                   <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5" maxHeight="70.0" prefHeight="70.0" prefWidth="200.0" vgap="7.5">
                      <padding>
-                        <Insets bottom="2.5" left="6.0" right="5.0" top="2.5" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                      <children>
-                        <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                        <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false">
+                           <font>
+                              <Font name="Segoe UI Semibold" size="18.0" />
+                           </font></Button>
                      </children>
                   </FlowPane>
                </content>
@@ -56,7 +59,7 @@
                         <Font size="12.0" />
                      </font>
                   </Text>
-                  <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" prefWidth="40.0">
+                  <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" prefWidth="50.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -69,6 +72,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc fx:id="outPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="outPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
    </children>
 </fx:root>

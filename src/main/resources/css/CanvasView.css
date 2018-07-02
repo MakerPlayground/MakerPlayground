@@ -11,8 +11,8 @@
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport {
-   -fx-background-color: #dbdbdb;
-   -fx-border-color: #dbdbdb;
+   -fx-background-color: #1c1c1c;
+   -fx-border-color: #1c1c1c;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
@@ -43,33 +43,39 @@
     -fx-background-insets: 2, 0, 0;
 }
 
-#addStateBtn{
+#addStateBtn/*add scene button*/{
      -fx-focus-color: transparent;
-     -fx-border-color : #313644;
-     -fx-background-color : #313644;
+     -fx-border-color : #1c1c1c;
+     -fx-background-color : #2b2b2b;
+     -fx-border-radius : 5px;
+     -fx-background-radius : 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
-     -fx-text-fill : #5ac2ab;
-     -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+     -fx-text-fill : #b7b7b7;
+     -fx-font-weight : bold;
+     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
      -fx-cursor: hand;
-     -fx-min-width: 150;
+     -fx-min-width: 135;
  }
  #addStateBtn:pressed{
-     -fx-border-color : #5ac2ab;
+     -fx-border-color : #b7b7b7;
  }
  #addConditionBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : #313644;
-     -fx-background-color : #313644;
+     -fx-border-color : #1c1c1c;
+     -fx-background-color : #2b2b2b;
+     -fx-border-radius : 5px;
+     -fx-background-radius : 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
-     -fx-text-fill : #5ac2ab;
-     -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+     -fx-text-fill : #b7b7b7;
+     -fx-font-weight : bold;
+     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
      -fx-cursor: hand;
      -fx-min-width: 150;
  }
  #addConditionBtn:pressed{
-     -fx-border-color : #5ac2ab;
+     -fx-border-color : #b7b7b7;
  }
 #zoomInButton:pressed{
     -fx-focus-color: transparent;
