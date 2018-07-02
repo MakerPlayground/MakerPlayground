@@ -1,6 +1,8 @@
 package io.makerplayground.ui;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
 import io.makerplayground.generator.Diagram;
 
 import io.makerplayground.generator.MPDiagram;
@@ -116,32 +118,46 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
         // Create thread to read data from serial port
         serialThread = new Thread(() -> {
-                SerialPort comPort = SerialPort.getCommPorts()[0];
-                comPort.openPort();
-                comPort.setBaudRate(115200);
-                System.out.println(SerialPort.getCommPorts()[0]);
-                comPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 100, 0);
-                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(comPort.getInputStream()))) {
-                    String s = null;
-                    while (!serialThread.isInterrupted() && (s = bufferedReader.readLine()) != null) {  //get raw data and convert to format data
-                        getFormatLog(s).ifPresent(logItems -> Platform.runLater(() -> {
-                            if (onStatus.isSelected()) {
-                                logData.add(logItems);
-                                deviceMonitorTable.scrollTo(logItems);
-                            }
-                            if(!checkTagComboBox.getItems().contains(logItems.getTag())){       // use tag from flash memory of serial port to generate device tag box
-                                List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
-                                checkTagComboBox.getItems().add(logItems.getTag());
-                                checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
-                                checkTagComboBox.getCheckModel().check(logItems.getTag());
-                            }
-                        }));
+            SerialPort comPort = SerialPort.getCommPorts()[0];
+            comPort.openPort();
+            comPort.setBaudRate(115200);
+            while(!serialThread.isInterrupted()) {
+                StringBuilder sb = new StringBuilder();
+                comPort.addDataListener(new SerialPortDataListener() {
+                    @Override
+                    public int getListeningEvents() {
+                        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                comPort.closePort();
 
+                    @Override
+                    public void serialEvent(SerialPortEvent serialPortEvent) {
+                        if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+                            return;
+                        byte[] newData = new byte[comPort.bytesAvailable()];
+                        comPort.readBytes(newData, newData.length);
+                        sb.append(new String(newData));
+                        if(sb.indexOf("\n") >= 0) {
+                            String msg = sb.subSequence(0, sb.indexOf("\n")).toString();
+                            sb.delete(0, sb.indexOf("\n") + 1);
+                            System.out.println("msg: " +msg);
+                            System.out.println(",remain: " + sb.toString());
+                            getFormatLog(msg).ifPresent(logItems -> Platform.runLater(() -> {
+                                if (onStatus.isSelected()) {
+                                    logData.add(logItems);
+                                    deviceMonitorTable.scrollTo(logItems);
+                                }
+                                if(!checkTagComboBox.getItems().contains(logItems.getTag())){       // use tag from flash memory of serial port to generate device tag box
+                                    List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
+                                    checkTagComboBox.getItems().add(logItems.getTag());
+                                    checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
+                                    checkTagComboBox.getCheckModel().check(logItems.getTag());
+                                }
+                            }));
+                        }
+                    }
+                });
+            }
+            comPort.closePort();
         });
         serialThread.start();
     }
@@ -149,8 +165,13 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     private void initView() {
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> {
-            window.hide();
             serialThread.interrupt();
+            try {
+                serialThread.join(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            window.hide();
         });
     }
 
@@ -158,12 +179,8 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     public Optional<LogItems> getFormatLog(String rawLog) {
         Matcher log = format.matcher(rawLog);
         if (log.find()) {
-            //System.out.println("Found value: " + log.group(1));
-            //System.out.println("Found value: " + log.group(2));
-            //System.out.println("Found value: " + log.group(3));
             return Optional.of(new LogItems(log.group(1),log.group(2),log.group(3)));
         } else {
-            //System.out.println("NO MATCH");
             return Optional.empty();
         }
     }
@@ -171,8 +188,6 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     // Change display data in table from value of combobox
     @Override
     public void invalidated(Observable observable) {
-        //logDataFilter.setPredicate(logItems -> checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-        //&& LevelComboBox.getSelectionModel().getSelectedItem().contains(logItems.getLevel()));
         logDataFilter.setPredicate(logItems -> {
             if (levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.VERBOSE)) {
                 return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())

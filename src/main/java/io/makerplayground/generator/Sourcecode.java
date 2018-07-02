@@ -362,10 +362,10 @@ public class Sourcecode {
                     List<String> parameterList = new ArrayList<>();
                     for (Parameter parameter : setting.getAction().getParameter()) {
                         Object value = setting.getValueMap().get(parameter);
-                        if (value instanceof NumberWithUnit) {
-                            parameterList.add(df.format(((NumberWithUnit) value).getValue()));
-                        } else if (value instanceof String) {
-                            parameterList.add("\"" + value + "\"");
+                        if (value instanceof NumberWithUnitExpression) {
+                            parameterList.add(df.format(((NumberWithUnitExpression) value).getNumberWithUnit().getValue()));
+                        } else if (value instanceof SimpleStringExpression) {
+                            parameterList.add("\"" + ((SimpleStringExpression) value).getString() + "\"");
                         }
                     }
                     StringBuilder action = new StringBuilder();
