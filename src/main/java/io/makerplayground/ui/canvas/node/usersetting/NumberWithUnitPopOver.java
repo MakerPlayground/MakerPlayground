@@ -7,6 +7,7 @@ import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.OperatorTerm;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.ui.canvas.chip.ChipField;
+import io.makerplayground.ui.canvas.chip.LabelChip;
 import io.makerplayground.ui.canvas.chip.NumberWithUnitChip;
 import io.makerplayground.ui.canvas.chip.OperatorChip;
 import javafx.application.Platform;
@@ -22,8 +23,10 @@ public class NumberWithUnitPopOver extends PopOver {
         FlowPane operandChipPane = new FlowPane();
         operandChipPane.setPrefSize(150, 150);
         operandChipPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        NumberWithUnitChip numberWithUnitChip = new NumberWithUnitChip();
-        operandChipPane.getChildren().add(numberWithUnitChip);
+        LabelChip labelChip = new LabelChip("number");
+        operandChipPane.getChildren().add(labelChip);
+
+        labelChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addTerm(new NumberWithUnitTerm(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)))));
 
         FlowPane operatorChipPane = new FlowPane();
         operatorChipPane.setPrefSize(150, 150);

@@ -27,20 +27,17 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     @Override
     protected void initView() {
         Rectangle background = new Rectangle();
-        background.setWidth(40);
-        background.setHeight(20);
+        background.setWidth(80);
+        background.setHeight(30);
         background.setArcWidth(20);
         background.setArcHeight(20);
         background.fillProperty().setValue(BACKGROUND_COLOR);
-//        background.fillProperty().bind(Bindings.when(selectedProperty())
-//                .then(BACKGROUND_COLOR_SELECTED).otherwise(BACKGROUND_COLOR));
 
         TextField input = new TextField();
         input.setText(String.valueOf(getValue()));
-        input.setStyle("-fx-text-fill: white; -fx-background-color: transparent;");
         input.setAlignment(Pos.BASELINE_CENTER);
-        input.setPrefSize(40, 20);
-        input.setMaxSize(40, 20);
+        input.setPrefSize(30, 20);
+        input.setMaxSize(30, 20);
         input.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {

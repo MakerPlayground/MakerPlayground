@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.*;
@@ -83,8 +82,7 @@ public class DoubleNumberExpressionControl extends VBox {
         hbox.setAlignment(Pos.CENTER);
         hbox.setSpacing(5.0);
         if (advanceCheckBox.selectedProperty().get()) {
-            ChipField chipField = new ChipField(new Expression(CUSTOM_NUMBER));
-            mainControl = chipField;
+            mainControl = new ChipField(new Expression(CUSTOM_NUMBER));
         } else {
             mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnitProperty.get());
         }

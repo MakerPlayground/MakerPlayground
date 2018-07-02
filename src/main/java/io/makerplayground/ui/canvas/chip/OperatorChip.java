@@ -17,58 +17,9 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
     private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
 
-//    public static OperatorChip PLUS = new OperatorChip(OperatorTerm.OP.PLUS);
-//    public static OperatorChip MINUS = new OperatorChip(OperatorTerm.OP.MINUS);
-//    public static OperatorChip MULTIPLY = new OperatorChip(OperatorTerm.OP.MULTIPLY);
-//    public static OperatorChip DIVIDE = new OperatorChip(OperatorTerm.OP.DIVIDE);
-//
-//    public static OperatorChip GREATER_THAN = new OperatorChip(OperatorTerm.OP.GREATER_THAN);
-//    public static OperatorChip LESS_THAN = new OperatorChip(OperatorTerm.OP.LESS_THAN);
-//    public static OperatorChip GREATER_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.GREATER_THAN_OR_EQUAL);
-//    public static OperatorChip LESS_THAN_OR_EQUAL = new OperatorChip(OperatorTerm.OP.LESS_THAN_OR_EQUAL);
-//
-//    public static OperatorChip AND = new OperatorChip(OperatorTerm.OP.AND);
-//    public static OperatorChip OR = new OperatorChip(OperatorTerm.OP.OR);
-//    public static OperatorChip NOT = new OperatorChip(OperatorTerm.OP.NOT);
-//    public static OperatorChip OPEN_PARENTHESIS = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
-//    public static OperatorChip CLOSE_PARENTHESIS = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
-
     public OperatorChip(OperatorTerm.OP initialValue) {
         super(initialValue, Term.Type.OPERATOR);
     }
-
-//    public static OperatorChip getInstance(OperatorTerm.OP operator) {
-//        switch (operator) {
-//            case PLUS:
-//                return PLUS;
-//            case MINUS:
-//                return MINUS;
-//            case MULTIPLY:
-//                return MULTIPLY;
-//            case DIVIDE:
-//                return DIVIDE;
-//            case GREATER_THAN:
-//                return GREATER_THAN;
-//            case LESS_THAN:
-//                return LESS_THAN;
-//            case GREATER_THAN_OR_EQUAL:
-//                return GREATER_THAN_OR_EQUAL;
-//            case LESS_THAN_OR_EQUAL:
-//                return LESS_THAN_OR_EQUAL;
-//            case AND:
-//                return AND;
-//            case OR:
-//                return OR;
-//            case NOT:
-//                return NOT;
-//            case OPEN_PARENTHESIS:
-//                return OPEN_PARENTHESIS;
-//            case CLOSE_PARENTHESIS:
-//                return CLOSE_PARENTHESIS;
-//            default:
-//                throw new IllegalStateException("Unknown enum constant");
-//        }
-//    }
 
     @Override
     protected void initView() {
@@ -88,8 +39,8 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
     @Override
     protected void initEvent() {
         super.initEvent();
-        // consume to prevent ChipField from deselect this chip immediately
-        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
+//        // consume to prevent ChipField from deselect this chip immediately
+//        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
     }
 
     @Override
