@@ -11,7 +11,7 @@
 
 <fx:root type="BorderPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #313644;" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #404040; -fx-border-color: #1c1c1c;" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
                <children>

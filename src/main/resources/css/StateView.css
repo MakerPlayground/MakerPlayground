@@ -6,6 +6,8 @@
 #statePane/*scene*/{
     -fx-background-color : #2b2b2b;
     -fx-border-color : #1c1c1c;
+    -fx-background-radius : 7.5px;
+    -fx-border-radius : 7px;
 }
 #nameStateTextField{
     -fx-background-color : #2b2b2b;
@@ -30,7 +32,7 @@
 }
 .flow-pane{
     -fx-background-color : #b2b2b2;
-    -fx-border-color : null;
+    -fx-border-color : #1c1c1c;
 }
 .scroll-pane{
      -fx-focus-color: transparent;
