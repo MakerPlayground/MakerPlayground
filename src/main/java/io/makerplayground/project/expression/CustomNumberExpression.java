@@ -6,6 +6,10 @@ import java.util.List;
 
 public class CustomNumberExpression extends Expression {
 
+    public CustomNumberExpression() {
+        super(Type.CUSTOM_NUMBER);
+    }
+
     public CustomNumberExpression(List<Term> terms) {
         super(Type.CUSTOM_NUMBER);
         this.getTerms().addAll(terms);

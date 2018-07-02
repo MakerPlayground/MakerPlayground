@@ -162,7 +162,7 @@ public class SceneDevicePropertyWindow extends PopOver {
             } else if (p.getControlType() == ControlType.SLIDER) {
                 NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
                 DoubleNumberExpressionControl doubleNumberExpressionControl = new DoubleNumberExpressionControl(p.getMinimumValue(), p.getMaximumValue()
-                        , FXCollections.observableArrayList(p.getUnit()), number);
+                        , FXCollections.observableArrayList(p.getUnit()), number, FXCollections.observableArrayList(viewModel.getProjectValue()), viewModel.getParameterValue(p));
                 doubleNumberExpressionControl.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = doubleNumberExpressionControl;
 

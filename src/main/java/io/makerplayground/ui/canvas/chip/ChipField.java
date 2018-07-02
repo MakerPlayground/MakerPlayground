@@ -4,7 +4,9 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -24,8 +26,11 @@ public class ChipField extends HBox {
     @FXML
     private Button backspaceBtn;
 
-    public ChipField(Expression expression) {
+    private final ObservableList<ProjectValue> projectValues;
+
+    public ChipField(Expression expression, ObservableList<ProjectValue> projectValues) {
         this.expression = expression;
+        this.projectValues = projectValues;
         initView();
         initEvent();
     }
@@ -41,7 +46,7 @@ public class ChipField extends HBox {
         }
 
         // initialize chip based on expression
-        expression.getTerms().forEach(this::addTerm);
+        expression.getTerms().forEach((term) -> Platform.runLater(() -> addTerm(term)));
 
         setFocusTraversable(true);
     }
@@ -83,7 +88,7 @@ public class ChipField extends HBox {
         } else if (t instanceof OperatorTerm) {
             chip = new OperatorChip((OperatorTerm.OP) t.getValue());
         } else if (t instanceof ValueTerm) {
-            chip = new ProjectValueChip((ProjectValue) t.getValue());
+            chip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
         } else {
             throw new IllegalStateException();
         }

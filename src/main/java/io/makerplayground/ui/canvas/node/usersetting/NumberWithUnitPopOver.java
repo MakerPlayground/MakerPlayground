@@ -1,13 +1,13 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Operator;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.OperatorTerm;
-import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
-import io.makerplayground.ui.canvas.chip.*;
+import io.makerplayground.ui.canvas.chip.ChipField;
+import io.makerplayground.ui.canvas.chip.LabelChip;
+import io.makerplayground.ui.canvas.chip.OperatorChip;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
@@ -19,7 +19,9 @@ public class NumberWithUnitPopOver extends PopOver {
 
     public NumberWithUnitPopOver(ChipField chipField) {
         FlowPane operandChipPane = new FlowPane();
-        operandChipPane.setPrefSize(150, 150);
+        operandChipPane.setHgap(3);
+        operandChipPane.setVgap(5);
+        operandChipPane.setPrefSize(200, 100);
         operandChipPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
         LabelChip labelChipNumber = new LabelChip("number");
@@ -31,7 +33,9 @@ public class NumberWithUnitPopOver extends PopOver {
         labelChipValue.setOnMousePressed((event -> Platform.runLater(() -> chipField.addTerm(new ValueTerm(null)))));
 
         FlowPane operatorChipPane = new FlowPane();
-        operatorChipPane.setPrefSize(150, 150);
+        operatorChipPane.setHgap(3);
+        operatorChipPane.setVgap(5);
+        operatorChipPane.setPrefSize(200, 100);
         operatorChipPane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         OperatorChip plusChip = new OperatorChip(OperatorTerm.OP.PLUS);
         OperatorChip minusChip = new OperatorChip(OperatorTerm.OP.MINUS);
