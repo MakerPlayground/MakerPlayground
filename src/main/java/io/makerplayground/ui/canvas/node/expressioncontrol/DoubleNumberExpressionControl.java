@@ -18,47 +18,44 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 
-import static io.makerplayground.project.expression.Expression.Type.CUSTOM_NUMBER;
-
 public class DoubleNumberExpressionControl extends VBox {
 
     private Node mainControl;
     private CheckBox advanceCheckBox;
-    private Expression expression;
 
     private DoubleProperty minimumProperty;
     private DoubleProperty maximumProperty;
-    private ObjectProperty<NumberWithUnit> numberWithUnitProperty;
     private ListProperty<Unit> unitListProperty;
-//    private final SplitPane splitPane;
+
+    private ObjectProperty<Expression> expressionProperty = new SimpleObjectProperty<>();
+
     private NumberWithUnitPopOver popOver;
     private final ObservableList<ProjectValue> projectValues;
 
-    public DoubleNumberExpressionControl(double minimumValue, double maximumValue, ObservableList<Unit> units, NumberWithUnit number, ObservableList<ProjectValue> projectValues, Expression expression) {
+    public DoubleNumberExpressionControl(double minimumValue,
+                                         double maximumValue,
+                                         ObservableList<Unit> units,
+                                         ObservableList<ProjectValue> projectValues,
+                                         Expression expression) {
         this.minimumProperty = new SimpleDoubleProperty(minimumValue);
         this.maximumProperty = new SimpleDoubleProperty(maximumValue);
         this.unitListProperty = new SimpleListProperty<>(units);
-        this.numberWithUnitProperty = new SimpleObjectProperty<>(number);
         this.advanceCheckBox = new CheckBox("Advanced");
         this.advanceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(this::redrawControl));
-        this.mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnitProperty.get());
+
         this.projectValues = projectValues;
-        if (expression == null) {
-            this.expression = new Expression(CUSTOM_NUMBER);
-        } else {
-            this.expression = expression;
-        }
+        this.expressionProperty.set(expression);
+        this.advanceCheckBox.selectedProperty().set(expression instanceof CustomNumberExpression);
+
+        this.advanceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                expressionProperty.set(new CustomNumberExpression());
+            } else {
+                expressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+            }
+        });
 
         this.redrawControl();
-
-
-//        this.setOnMouseReleased(event -> {
-//            if (advanceCheckBox.selectedProperty().get()) {
-//                if(popOver != null) {
-//                    popOver.hide();
-//                }
-//            }
-//        });
     }
 
     private void redrawControl() {
@@ -67,38 +64,30 @@ public class DoubleNumberExpressionControl extends VBox {
         hbox.setAlignment(Pos.CENTER);
         hbox.setSpacing(5.0);
         if (advanceCheckBox.selectedProperty().get()) {
-            if (expression instanceof NumberWithUnitExpression) {
-                expression = new CustomNumberExpression();
-            }
-            ChipField chipField = new ChipField(expression, projectValues);
+            ChipField chipField = new ChipField((CustomNumberExpression) expressionProperty.get(), projectValues);
             chipField.setOnMousePressed(event -> {
                 if (popOver != null) {
                     popOver.hide();
-                    popOver = null;
                 }
                 popOver = new NumberWithUnitPopOver((ChipField) mainControl);
                 popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
                 popOver.show(mainControl);
             });
+            this.expressionProperty.bind(chipField.expressionProperty());
+
             mainControl = chipField;
 
         } else {
-            mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnitProperty.get());
+            NumberWithUnit numberWithUnit;
+            numberWithUnit = (NumberWithUnit) expressionProperty.get().getTerms().get(0).getValue();
+            mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnit);
         }
         hbox.getChildren().addAll(mainControl, advanceCheckBox);
         getChildren().addAll(hbox);
-//        if (advanceCheckBox.selectedProperty().get()) {
-//            popOver = new NumberWithUnitPopOver();
-//            popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-//            popOver.show(this);
-//        }
     }
 
-    public Expression getExpression() {
-        return expression;
+    public ObjectProperty<Expression> expressionProperty() {
+        return expressionProperty;
     }
 
-    public ObjectProperty<NumberWithUnit> valueProperty() {
-        return numberWithUnitProperty;
-    }
 }

@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas.chip;
 
+import io.makerplayground.project.term.StringTerm;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.ui.canvas.chip.Chip;
 import javafx.beans.binding.Bindings;
@@ -40,6 +41,11 @@ public class StringChip extends Chip<String> {
         input.textProperty().bindBidirectional(valueProperty());
 
         getChildren().addAll(background, input);
+    }
+
+    @Override
+    public StringTerm getTerm() {
+        return new StringTerm(getValue());
     }
 
     @Override

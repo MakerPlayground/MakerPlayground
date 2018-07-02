@@ -4,15 +4,14 @@ import io.makerplayground.device.*;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expressioncontrol.DoubleNumberExpressionControl;
 import io.makerplayground.ui.canvas.node.expressioncontrol.NumberInRangeExpressionControl;
-import io.makerplayground.ui.canvas.node.expressioncontrol.SliderWithUnit;
 import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerWithUnit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -160,16 +159,18 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
-                DoubleNumberExpressionControl doubleNumberExpressionControl = new DoubleNumberExpressionControl(p.getMinimumValue(), p.getMaximumValue()
-                        , FXCollections.observableArrayList(p.getUnit()), number, FXCollections.observableArrayList(viewModel.getProjectValue()), viewModel.getParameterValue(p));
-                doubleNumberExpressionControl.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+                }
+                DoubleNumberExpressionControl doubleNumberExpressionControl = new DoubleNumberExpressionControl(
+                        p.getMinimumValue(),
+                        p.getMaximumValue(),
+                        FXCollections.observableArrayList(p.getUnit()),
+                        FXCollections.observableArrayList(viewModel.getProjectValue()),
+                        viewModel.getParameterValue(p)
+                );
+                doubleNumberExpressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = doubleNumberExpressionControl;
-
-//                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
-//                        , FXCollections.observableArrayList(p.getUnit()), number);
-//                sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
-//                control = sliderWithUnit;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
                 textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());

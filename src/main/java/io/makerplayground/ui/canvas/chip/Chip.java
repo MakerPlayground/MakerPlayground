@@ -5,7 +5,6 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.StackPane;
 
@@ -16,10 +15,6 @@ public abstract class Chip<T> extends StackPane {
 
     public Chip(T initialValue, Term.Type type) {
         this(initialValue, type, null);
-//        this.type = type;
-//        this.value.set(initialValue);
-//        initView();
-//        initEvent();
     }
 
     public Chip(T initialValue, Term.Type type, ObservableList<T> choices) {
@@ -39,6 +34,8 @@ public abstract class Chip<T> extends StackPane {
     }
 
     protected abstract void initView();
+
+    public abstract Term getTerm();
 
     protected void initEvent() {
         // allow the chip to be selected

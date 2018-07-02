@@ -31,4 +31,9 @@ public class LabelChip extends Chip<String> {
         text.setFill(Color.WHITE);
         getChildren().addAll(background, text);
     }
+
+    @Override
+    public Term getTerm() {
+        throw new IllegalStateException("Unsupported Operation");
+    }
 }

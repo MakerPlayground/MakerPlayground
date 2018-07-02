@@ -37,10 +37,8 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
     }
 
     @Override
-    protected void initEvent() {
-        super.initEvent();
-//        // consume to prevent ChipField from deselect this chip immediately
-//        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
+    public OperatorTerm getTerm() {
+        return new OperatorTerm(getValue());
     }
 
     @Override

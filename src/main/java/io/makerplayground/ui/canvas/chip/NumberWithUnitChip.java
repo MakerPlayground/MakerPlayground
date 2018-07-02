@@ -2,6 +2,7 @@ package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
+import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.ui.canvas.chip.Chip;
 import javafx.beans.binding.Bindings;
@@ -15,10 +16,6 @@ import javafx.scene.shape.Rectangle;
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     private static final Color BACKGROUND_COLOR = Color.DARKRED;
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
-
-    public NumberWithUnitChip() {
-        super(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Term.Type.NUMBER);
-    }
 
     public NumberWithUnitChip(NumberWithUnit initialValue) {
         super(initialValue, Term.Type.NUMBER);
@@ -51,6 +48,11 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
 
         getChildren().addAll(background, input);
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
+    }
+
+    @Override
+    public Term getTerm() {
+        return new NumberWithUnitTerm(getValue());
     }
 
     @Override

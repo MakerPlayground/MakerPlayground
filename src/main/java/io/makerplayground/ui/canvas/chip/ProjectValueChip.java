@@ -2,6 +2,7 @@ package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
+import io.makerplayground.project.term.ValueTerm;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -24,8 +25,6 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     @Override
     protected void initView() {
         Rectangle background = new Rectangle();
-//        background.setWidth(80);
-//        background.setHeight(30);
         background.setArcWidth(20);
         background.setArcHeight(20);
         background.fillProperty().setValue(BACKGROUND_COLOR);
@@ -70,5 +69,10 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             background.setHeight(newValue.getHeight());
         }));
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
+    }
+
+    @Override
+    public ValueTerm getTerm() {
+        return new ValueTerm(getValue());
     }
 }
