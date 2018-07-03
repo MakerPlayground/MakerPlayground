@@ -40,7 +40,7 @@ public class RightPanel extends AnchorPane {
     }
 
     private void initView() {
-        setStyle("-fx-background-color : #404040");
+        setStyle("-fx-background-color : #2b2b2b;");
         setMaxWidth(330.0);
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
@@ -98,7 +98,7 @@ public class RightPanel extends AnchorPane {
         });
 
         VBox projectButton = new VBox();
-        projectButton.setStyle("-fx-background-color : #1c1c1c");
+        projectButton.setStyle("-fx-background-color : #2b2b2b; -fx-border-color: #1c1c1c; -fx-border-width: 1.5px 0px 0px 0px;");
         projectButton.setSpacing(2.0);
         projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);

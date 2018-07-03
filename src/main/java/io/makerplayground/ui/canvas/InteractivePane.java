@@ -32,7 +32,7 @@ public class InteractivePane extends ScrollPane {
 
     public InteractivePane() {
         // a pane to add content into
-        content.setStyle("-fx-background-color: #606060;");
+        content.setStyle("-fx-background-color: #1c1c1c;");
 
         // wrap content in a group to scroll based on visual bounds according to ScrollPane's javadoc
         group.getChildren().add(content);

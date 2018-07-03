@@ -18,7 +18,7 @@
 <fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 7 7 7 7; -fx-background-color: #2b2b2b; -fx-border-radius: 7px;" stylesheets="@../css/StateView.css">
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 10px 10px 10px 10px; -fx-background-color: #404040;" stylesheets="@../css/StateView.css">
          <children>
             <AnchorPane maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200" style="-fx-background-color: transparent;">
                <children>

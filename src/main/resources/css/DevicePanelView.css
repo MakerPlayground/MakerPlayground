@@ -6,9 +6,9 @@
     -fx-font-size: 14px;
 }
 .titled-pane > .title{
-    -fx-background-color : #1c1c1c;
-    -fx-border-color: #1c1c1c transparent transparent #1c1c1c;
-    -fx-border-width : 5px;
+    -fx-background-color : #333333;
+    -fx-border-color: #1c1c1c;
+    -fx-border-width : 1.5px 0px 1.5px 0px;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
@@ -21,7 +21,7 @@
     -fx-background-color : #ffffff;
 }
 .titled-pane > *.content{
-    -fx-background-color : #404040;
+    -fx-background-color : #2b2b2b;
     -fx-box-border : transparent;
 }
 
@@ -82,7 +82,7 @@
     -fx-pref-height: 35px;
     }
 #delButton{
-    -fx-background-image: url('cancelBtn.png');
+    -fx-background-image: url('delete-device-btn.png');
     -fx-background-size : 10px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;

@@ -1,15 +1,19 @@
 .button{
     -fx-font-size:12px;
-    -fx-background-color : transparent;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #5ac2ab;
+    -fx-background-color : #404040;
+    -fx-background-radius : 5px;
+    -fx-border-color : #1c1c1c;
+    -fx-border-radius : 5px;
+    -fx-text-fill: #aaaaaa;
     -fx-cursor: hand;
 }
 .button:pressed{
     -fx-font-size:12px;
-    -fx-background-color : #5ac2ab;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #313644;
+    -fx-background-color : #333333;
+    -fx-background-radius : 5px;
+    -fx-border-color : #1c1c1c;
+    -fx-border-radius : 5px;
+    -fx-text-fill: #aaaaaa;
     -fx-cursor: hand;
 }
 #deleteDeviceBtn{
@@ -19,9 +23,11 @@
     -fx-text-fill : #0768de;
 }
 .text-field{
-    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
-    -fx-border-color :  white;
+    -fx-background-color: -fx-text-box-border, #777677;
+    /*-fx-background-color: -fx-text-box-border, -fx-control-inner-background;*/
+    -fx-border-color :  #777677;
     -fx-border-width: 2px;
+    -fx-border-radius: 2.5px;
     -fx-background-inset : 0 0 0;
 }
 #arcNode{

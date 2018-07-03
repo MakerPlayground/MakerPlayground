@@ -18,7 +18,7 @@ public class OutputDeviceIconSelectorView extends VBox {
         this.projectDevice = projectDevice;
 
         ImageView imv = new ImageView();
-        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons/" + projectDevice.getGenericDevice().getName() + ".png"));
+        Image image = new Image(Main.class.getResourceAsStream("/icons/darktheme/" + projectDevice.getGenericDevice().getName() + ".png"));
         imv.setImage(image);
         imv.setFitHeight(50);
         imv.setPreserveRatio(true);
