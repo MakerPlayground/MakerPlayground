@@ -23,7 +23,7 @@
       </Button>
       <HBox fx:id="conditionPane" alignment="CENTER">
          <children>
-            <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="7.0" radiusY="7.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
+            <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
             <HBox id="contentPane" stylesheets="@../css/ConditionView3.css">
                <children>
                   <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="60.0" prefWidth="135.0" style="-fx-background-color: #2b2b2b;">
