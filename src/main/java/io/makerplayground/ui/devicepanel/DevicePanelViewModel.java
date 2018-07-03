@@ -8,6 +8,7 @@ import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewModelCreator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 
 import java.util.Map;
 
@@ -18,9 +19,7 @@ import java.util.Map;
 public class DevicePanelViewModel {
     private final Project project;
     private final ObjectProperty<Platform> platformProperty;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> inputChildViewModel;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> outputChildViewModel;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> connectivityChildViewModel;
+
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
@@ -29,21 +28,20 @@ public class DevicePanelViewModel {
         this.project.platformProperty().addListener((observable, oldValue, newValue) -> platformProperty.set(newValue));
         // write back to project when view changed
         this.platformProperty.addListener((observable, oldValue, newValue) -> project.setPlatform(newValue));
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getSensor(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getActuator(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.connectivityChildViewModel = new DynamicViewModelCreator<>(project.getConnectivity(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
-        return inputChildViewModel;
+    public Project getProject() {
+        return project;
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getOutputChildViewModel() {
-        return outputChildViewModel;
+    public ObservableList<ProjectDevice> getSensor() {
+        return project.getSensor();
     }
-
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getConnectivityChildViewModel() {
-        return connectivityChildViewModel;
+    public ObservableList<ProjectDevice> getActuator() {
+        return project.getActuator();
+    }
+    public ObservableList<ProjectDevice> getConnectivity() {
+        return project.getConnectivity();
     }
 
     public boolean removeOutputDevice(DevicePanelIconViewModel device) {

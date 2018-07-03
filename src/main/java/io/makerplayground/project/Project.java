@@ -483,4 +483,14 @@ public class Project {
         p.setFilePath(f.getAbsolutePath());
         return p;
     }
+
+    public boolean isNameDuplicate(String newName) {
+        for (ProjectDevice projectDevice : this.getAllDevice()) {
+            if (projectDevice.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+

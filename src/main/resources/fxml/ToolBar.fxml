@@ -30,10 +30,11 @@
                         <Tooltip text="save as" />
                      </tooltip>
                   </Button>
-                  <Line fx:id="separatorV" scaleX="0.5" scaleY="11.0" stroke="WHITE" strokeWidth="2.0">
-                  </Line>
-                  <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
-                     <tooltip><Tooltip text="device monitor" /></tooltip>
+                  <Line scaleX="0.5" scaleY="11" stroke="WHITE" strokeWidth="2.0" />
+                  <Button id="deviceMonitorBtn" fx:id="deviceMonitorButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
+                     <tooltip>
+                        <Tooltip text="device monitor" />
+                     </tooltip>
                   </Button>
                   <Label fx:id="statusLabel" style="-fx-text-fill: white;" />
                </children>

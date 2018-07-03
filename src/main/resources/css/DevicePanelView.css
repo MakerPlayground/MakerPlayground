@@ -1,13 +1,13 @@
 
 #deviceTitle{
-    -fx-background-color : #313644;
+    -fx-background-color : #404040;
     -fx-text-fill : white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 .titled-pane > .title{
-    -fx-background-color : #3b424f;
-    -fx-border-color: #3b424f transparent transparent #5ac2ab;
+    -fx-background-color : #1c1c1c;
+    -fx-border-color: #1c1c1c transparent transparent #1c1c1c;
     -fx-border-width : 5px;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
@@ -18,33 +18,18 @@
     -fx-text-fill : white;
 }
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #5ac2ab;
+    -fx-background-color : #ffffff;
 }
 .titled-pane > *.content{
-    -fx-background-color : #4d5666;
+    -fx-background-color : #404040;
     -fx-box-border : transparent;
-}
-
-.radio-button {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill : white;
-}
-
-.radio-button .radio {
-    -fx-background-color: #3b424f;
-}
- 
-.radio-button .radio .dot {
-    -fx-mark-color: #51af98;
-    -fx-mark-highlight-color: #51af98;
 }
 
 .scroll-pane {
     -fx-background-color:transparent;
 }
 .scroll-pane > .viewport {
-    -fx-background-color:#4d5666;
+    -fx-background-color:#1c1c1c;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
@@ -65,14 +50,9 @@
     -fx-padding:0;
 }
 .scroll-bar .track{
-    -fx-background-color:   #4d5666;
-    -fx-border-color :   #4d5666;
+    -fx-background-color:   #1c1c1c;
+    -fx-border-color :   #1c1c1c;
     -fx-border-radius:2em;
-}
-.scroll-bar .thumb{
-    -fx-background-color: #51af98;
-    -fx-border-radius: 0em;
-    -fx-background-insets: 0 3 0 3;
 }
 
 #addBtn:pressed ,#addBtn:hover{
@@ -88,7 +68,36 @@
     -fx-background-image: url('add2.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
-    -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
+}
+
+.scroll-bar .track{
+    -fx-background-color:   #1c1c1c;
+    -fx-border-color :   #1c1c1c;
+    -fx-border-radius:2em;
+}
+.list-cell {
+    -fx-background-color: #404040;
+    -fx-pref-height: 35px;
+    }
+#delButton{
+    -fx-background-image: url('cancelBtn.png');
+    -fx-background-size : 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+
+#nameLabel{
+    -fx-pref-width: 150px;
+}
+
+#nameTextField{
+    -fx-background-color: #404040;
+    -fx-text-inner-color: white;
+    -fx-min-width: 150px;
+    -fx-pref-width: 150px;
 }

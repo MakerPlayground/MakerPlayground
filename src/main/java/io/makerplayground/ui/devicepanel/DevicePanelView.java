@@ -2,10 +2,15 @@ package io.makerplayground.ui.devicepanel;
 
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.helper.Platform;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.uihelper.DynamicViewCreator;
 import io.makerplayground.uihelper.DynamicViewCreatorBuilder;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -24,14 +29,19 @@ import java.util.Optional;
 public class DevicePanelView extends VBox {
 
     private final DevicePanelViewModel viewModel;
+    private DevicePanelIconViewModel devicePanelIconViewModel;
 
-    @FXML private VBox devicePanel;
-    @FXML private FlowPane inputPane;
-    @FXML private FlowPane outputPane;
-    @FXML private FlowPane connectivityPane;
-    @FXML private FlowPane microcontrollerPane;
+    @FXML
+    private VBox devicePanel;
+    @FXML
+    private ListView<ProjectDevice> sensorPane;
+    @FXML
+    private ListView<ProjectDevice> actuatorPane;
+    @FXML
+    private ListView<ProjectDevice> connectivityPane;
 
-    @FXML public void onAddDeviceClick() {
+    @FXML
+    public void onAddDeviceClick() {
         DeviceSelectorView deviceSelectorView = new DeviceSelectorView();
         Optional<Map<GenericDevice, Integer>> result = deviceSelectorView.showAndWait();
         result.ifPresent(viewModel::addDevice);
@@ -40,7 +50,7 @@ public class DevicePanelView extends VBox {
     public DevicePanelView(DevicePanelViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DevicePanelView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/NewDevicePanelView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
@@ -49,61 +59,14 @@ public class DevicePanelView extends VBox {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-
-//        // initialize platform panel
-//        VBox platformVBox = new VBox();
-//        platformVBox.setSpacing(10);
-//        ToggleGroup platformToggleGroup = new ToggleGroup();
-//        for (Platform platform : Platform.values()) {
-//            RadioButton radioButton  = new RadioButton(platform.getDisplayName());
-//            radioButton.setUserData(platform);
-//            radioButton.setToggleGroup(platformToggleGroup);
-//            radioButton.setOnAction(event -> viewModel.selectedPlatformProperty().set(platform));
-//            if (platform == viewModel.selectedPlatformProperty().get()) {
-//                radioButton.setSelected(true);
-//            }
-//            platformVBox.getChildren().add(radioButton);
-//        }
-//        microcontrollerPane.getChildren().add(platformVBox);
-
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> inputViewCreator =
-                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
-                    .setParent(inputPane)
-                    .setModelLoader(viewModel.getInputChildViewModel())
-                    .setViewFactory(devicePanelIconViewModel -> {
-                        DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-                        icon.setOnAction(event -> viewModel.removeInputDevice(devicePanelIconViewModel));
-                        return icon;
-                    })
-                    .setNodeAdder((parent, node) -> parent.getChildren().add(node))
-                    .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
-                    .createDynamicViewCreator();
-
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> outputViewCreator =
-                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
-                    .setParent(outputPane)
-                    .setModelLoader(viewModel.getOutputChildViewModel())
-                    .setViewFactory(devicePanelIconViewModel -> {
-                        DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-                        icon.setOnAction(event -> viewModel.removeOutputDevice(devicePanelIconViewModel));
-                        return icon;
-                    })
-                    .setNodeAdder((parent, node) -> parent.getChildren().add(node))
-                    .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
-                    .createDynamicViewCreator();
-
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> connectivityViewCreator =
-                new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
-                        .setParent(connectivityPane)
-                        .setModelLoader(viewModel.getConnectivityChildViewModel())
-                        .setViewFactory(devicePanelIconViewModel -> {
-                            DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
-                            icon.setOnAction(event -> viewModel.removeConnectivityDevice(devicePanelIconViewModel));
-                            return icon;
-                        })
-                        .setNodeAdder((parent, node) -> parent.getChildren().add(node))
-                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
-                        .createDynamicViewCreator();
+        sensorPane.setEditable(true);
+        actuatorPane.setEditable(true);
+        connectivityPane.setEditable(true);
+        sensorPane.setCellFactory(param -> new DevicePanelListCell(viewModel.getProject()));
+        sensorPane.setItems(viewModel.getSensor());
+        actuatorPane.setCellFactory(param -> new DevicePanelListCell(viewModel.getProject()));
+        actuatorPane.setItems(viewModel.getActuator());
+        connectivityPane.setCellFactory(param -> new DevicePanelListCell(viewModel.getProject()));
+        connectivityPane.setItems(viewModel.getConnectivity());
     }
-
 }

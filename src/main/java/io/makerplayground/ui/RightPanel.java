@@ -40,7 +40,7 @@ public class RightPanel extends AnchorPane {
     }
 
     private void initView() {
-        setStyle("-fx-background-color : #4d5666");
+        setStyle("-fx-background-color : #404040");
         setMaxWidth(330.0);
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
@@ -97,20 +97,8 @@ public class RightPanel extends AnchorPane {
             new Thread(uploadTask).start();
         });
 
-        /*Button monitorBtn = new Button("Device Monitor");
-        monitorBtn.setOnAction(event -> {
-            if (SerialPort.getCommPorts().length > 0) {
-                DeviceMonitor deviceMonitor = new DeviceMonitor(project);
-                deviceMonitor.showAndWait();
-            }
-            else {
-                ErrorDialogView errorDialogView = new ErrorDialogView("There is no connected serial port.\nPlease connect the board with computer.");
-                errorDialogView.showAndWait();
-            }
-        });*/
-
         VBox projectButton = new VBox();
-        projectButton.setStyle("-fx-background-color : #313644");
+        projectButton.setStyle("-fx-background-color : #1c1c1c");
         projectButton.setSpacing(2.0);
         projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
         projectButton.setAlignment(Pos.CENTER);
