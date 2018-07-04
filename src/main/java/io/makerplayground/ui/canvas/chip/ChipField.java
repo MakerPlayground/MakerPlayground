@@ -1,14 +1,12 @@
 package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Operator;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,8 +16,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 
-
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class ChipField extends HBox {
     @FXML
@@ -30,13 +29,13 @@ public class ChipField extends HBox {
 
     private final ObservableList<ProjectValue> projectValues;
 
-    private final ObjectProperty<CustomNumberExpression> expressionProperty = new SimpleObjectProperty<>(new CustomNumberExpression());
+    private final ObjectProperty<CustomNumberExpression> expressionProperty;
 
-    public ChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
+    public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, ObservableList<ProjectValue> projectValues) {
         this.projectValues = projectValues;
+        this.expressionProperty = expressionProperty;
         initView();
         initEvent();
-        this.expressionProperty.get().getTerms().addAll(expression.getTerms());
     }
 
     private void initView() {
@@ -50,9 +49,10 @@ public class ChipField extends HBox {
         }
 
         // initialize chip based on expression
-        expressionProperty.get().getTerms().forEach((term) -> Platform.runLater(() -> addChip(term)));
-
-        setFocusTraversable(true);
+        List<Term> listTerm = expressionProperty.get().getTerms();
+        Platform.runLater(() -> IntStream.range(0, listTerm.size())
+            .forEach(idx -> addChipUI(listTerm.get(idx), idx)));
+//        setFocusTraversable(true);
     }
 
     private void initEvent() {
@@ -68,7 +68,7 @@ public class ChipField extends HBox {
                         removeChipUI(c.getFrom());
                     }
                     for (Term addedItem : c.getAddedSubList()) {
-                        addChipUI(addedItem);
+                        addChipUI(addedItem, c.getFrom());
                     }
                 }
             }
@@ -81,18 +81,16 @@ public class ChipField extends HBox {
         this.expressionProperty.get().getTerms().add(t);
     }
 
-    private void addChipUI(Term t) {
+    private void addChipUI(Term t, int index) {
         Chip chip;
         if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
             chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                int index = mainPane.getChildren().indexOf(chip);
                 expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm((NumberWithUnit) newValue));
             });
         } else if (t instanceof StringTerm) {
             chip = new StringChip((String) t.getValue());
             chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                int index = mainPane.getChildren().indexOf(chip);
                 expressionProperty.get().getTerms().set(index, new StringTerm((String) newValue));
             });
         } else if (t instanceof OperatorTerm) {
@@ -100,13 +98,12 @@ public class ChipField extends HBox {
         } else if (t instanceof ValueTerm) {
             chip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
             chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                int index = mainPane.getChildren().indexOf(chip);
                 expressionProperty.get().getTerms().set(index, new ValueTerm((ProjectValue) newValue));
             });
         } else {
             throw new IllegalStateException();
         }
-        mainPane.getChildren().add(chip);
+        mainPane.getChildren().add(index, chip);
     }
 
     // Remove chip when underlying expression has changed
@@ -118,9 +115,5 @@ public class ChipField extends HBox {
         if (expressionProperty.get().getTerms().size() > 0) {
             expressionProperty.get().getTerms().remove(expressionProperty.get().getTerms().size() - 1);
         }
-    }
-
-    public ObjectProperty<CustomNumberExpression> expressionProperty() {
-        return expressionProperty;
     }
 }

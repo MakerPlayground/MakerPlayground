@@ -38,8 +38,10 @@ public class DeviceMapper {
 
                     Constraint newConstraint = null;
                     if (parameter.getDataType() == DataType.INTEGER || parameter.getDataType() == DataType.DOUBLE) {
-                        NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
-                        newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
+                        if (o instanceof NumberWithUnitExpression) {
+                            NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
+                            newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
+                        }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
                     } else {

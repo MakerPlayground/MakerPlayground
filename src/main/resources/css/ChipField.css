@@ -1,15 +1,20 @@
 #mainPane{
-    -fx-border-color: black;
+    -fx-border-radius: 5;
+    -fx-border-color: lightgray;
     -fx-border-width: 1;
     -fx-border-style: solid;
 }
 #backspaceBtn{
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
     -fx-background-image: url('backspace-arrow.png');
     -fx-background-size : 25px;
     -fx-cursor: hand;
 }
 #backspaceBtn:pressed{
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
     -fx-background-image: url('backspace-arrow.png');
     -fx-background-size : 25px;

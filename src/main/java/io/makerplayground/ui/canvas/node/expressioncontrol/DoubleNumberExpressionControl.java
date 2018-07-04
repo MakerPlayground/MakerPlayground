@@ -27,6 +27,8 @@ public class DoubleNumberExpressionControl extends VBox {
     private DoubleProperty maximumProperty;
     private ListProperty<Unit> unitListProperty;
 
+    private ObjectProperty<CustomNumberExpression> customNumberExpressionProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<NumberWithUnitExpression> numberWithUnitExpressionProperty = new SimpleObjectProperty<>();
     private ObjectProperty<Expression> expressionProperty = new SimpleObjectProperty<>();
 
     private NumberWithUnitPopOver popOver;
@@ -41,20 +43,34 @@ public class DoubleNumberExpressionControl extends VBox {
         this.maximumProperty = new SimpleDoubleProperty(maximumValue);
         this.unitListProperty = new SimpleListProperty<>(units);
         this.advanceCheckBox = new CheckBox("Advanced");
-        this.advanceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(this::redrawControl));
 
         this.projectValues = projectValues;
-        this.expressionProperty.set(expression);
-        this.advanceCheckBox.selectedProperty().set(expression instanceof CustomNumberExpression);
+        if (expression instanceof CustomNumberExpression) {
+            this.advanceCheckBox.selectedProperty().set(true);
+            this.customNumberExpressionProperty.set((CustomNumberExpression) expression);
+            this.numberWithUnitExpressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+            this.expressionProperty.bind(this.customNumberExpressionProperty);
+        } else if (expression instanceof NumberWithUnitExpression) {
+            this.advanceCheckBox.selectedProperty().set(false);
+            this.customNumberExpressionProperty.set(new CustomNumberExpression());
+            this.numberWithUnitExpressionProperty.set((NumberWithUnitExpression) expression);
+            this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
+        } else {
+            this.advanceCheckBox.selectedProperty().set(false);
+            this.customNumberExpressionProperty.set(new CustomNumberExpression());
+            this.numberWithUnitExpressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+            this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
+        }
 
         this.advanceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            this.expressionProperty.unbind();
             if (newValue) {
-                expressionProperty.set(new CustomNumberExpression());
+                this.expressionProperty.bind(this.customNumberExpressionProperty);
             } else {
-                expressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+                this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
             }
+            Platform.runLater(this::redrawControl);
         });
-
         this.redrawControl();
     }
 
@@ -64,7 +80,7 @@ public class DoubleNumberExpressionControl extends VBox {
         hbox.setAlignment(Pos.CENTER);
         hbox.setSpacing(5.0);
         if (advanceCheckBox.selectedProperty().get()) {
-            ChipField chipField = new ChipField((CustomNumberExpression) expressionProperty.get(), projectValues);
+            ChipField chipField = new ChipField(customNumberExpressionProperty, projectValues);
             chipField.setOnMousePressed(event -> {
                 if (popOver != null) {
                     popOver.hide();
@@ -73,14 +89,12 @@ public class DoubleNumberExpressionControl extends VBox {
                 popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
                 popOver.show(mainControl);
             });
-            this.expressionProperty.bind(chipField.expressionProperty());
-
             mainControl = chipField;
-
         } else {
-            NumberWithUnit numberWithUnit;
-            numberWithUnit = (NumberWithUnit) expressionProperty.get().getTerms().get(0).getValue();
-            mainControl = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnit);
+            NumberWithUnit numberWithUnit = (NumberWithUnit) numberWithUnitExpressionProperty.get().getTerms().get(0).getValue();
+            SliderWithUnit sliderWithUnit = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnit);
+            sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> numberWithUnitExpressionProperty.setValue(new NumberWithUnitExpression(newValue)));
+            mainControl = sliderWithUnit;
         }
         hbox.getChildren().addAll(mainControl, advanceCheckBox);
         getChildren().addAll(hbox);

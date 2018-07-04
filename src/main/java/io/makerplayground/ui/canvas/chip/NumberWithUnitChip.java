@@ -1,11 +1,9 @@
 package io.makerplayground.ui.canvas.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Unit;
 import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.Term;
-import io.makerplayground.ui.canvas.chip.Chip;
-import javafx.beans.binding.Bindings;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -14,7 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
-    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+//    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+    private static final Color BACKGROUND_COLOR = Color.valueOf("081e42");
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public NumberWithUnitChip(NumberWithUnit initialValue) {
@@ -24,8 +23,6 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     @Override
     protected void initView() {
         Rectangle background = new Rectangle();
-        background.setWidth(80);
-        background.setHeight(30);
         background.setArcWidth(20);
         background.setArcHeight(20);
         background.fillProperty().setValue(BACKGROUND_COLOR);
@@ -33,8 +30,11 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
         TextField input = new TextField();
         input.setText(String.valueOf(getValue()));
         input.setAlignment(Pos.BASELINE_CENTER);
-        input.setPrefSize(30, 20);
-        input.setMaxSize(30, 20);
+//        input.setPrefSize(30, 20);
+//        input.setMaxSize(30, 20);
+        input.setStyle("-fx-background-color: transparent;" +
+                "-fx-border-color: transparent;" +
+                "-fx-text-fill: white;");
         input.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {
@@ -47,6 +47,10 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
         });
 
         getChildren().addAll(background, input);
+        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
+            background.setWidth(newValue.getWidth());
+            background.setHeight(newValue.getHeight());
+        }));
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
     }
 

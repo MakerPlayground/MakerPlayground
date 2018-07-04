@@ -14,7 +14,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class OperatorChip extends Chip<OperatorTerm.OP> {
-    private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
+//    private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
+    private static final Color BACKGROUND_COLOR = Color.valueOf("072454");
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
 
     public OperatorChip(OperatorTerm.OP initialValue) {

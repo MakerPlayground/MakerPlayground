@@ -259,7 +259,7 @@ public class Device {
                 if (!parameterMapActualDevice.containsKey(parameter)) {
                     return false;
                 }
-                if (!parameterMapActualDevice.get(parameter).isCompatible(theirMap.get(action).get(parameter))) {
+                if (theirMap.get(action).get(parameter) != null && !parameterMapActualDevice.get(parameter).isCompatible(theirMap.get(action).get(parameter))) {
                     return false;
                 }
             }

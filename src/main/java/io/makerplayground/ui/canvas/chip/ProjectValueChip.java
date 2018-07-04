@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -15,7 +16,10 @@ import javafx.scene.text.Text;
 
 public class ProjectValueChip extends Chip<ProjectValue> {
 
-    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+//    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+//    private static final Color BACKGROUND_COLOR = Color.valueOf("E2E2E2");
+    private static final Color BACKGROUND_COLOR = Color.valueOf("081e42");
+
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public ProjectValueChip(ProjectValue initialValue, ObservableList<ProjectValue> projectValues) {
@@ -37,11 +41,14 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             @Override
             protected void updateItem(ProjectValue item, boolean empty) {
                 super.updateItem(item, empty);
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                 if (empty) {
-                    setText("");
+                    setGraphic(null);
                 } else {
                     Text text = new Text(item.getDevice().getName() + "'s\n" + item.getValue().getName());
-                    text.setStyle("-fx-font-size: 10;");
+                    text.setStyle("-fx-font-size: 10;" +
+                            "-fx-background-color: transparent;" +
+                            "-fx-border-color: transparent;");
                     setGraphic(text);
                     setPrefHeight(30);
                 }
@@ -51,16 +58,21 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             @Override
             protected void updateItem(ProjectValue item, boolean empty) {
                 super.updateItem(item, empty);
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                 if (empty) {
-                    setText("");
+                    setGraphic(null);
                 } else {
                     Text text = new Text(item.getDevice().getName() + "'s\n" + item.getValue().getName());
-                    text.setStyle("-fx-font-size: 10;");
+                    text.setStyle("-fx-font-size: 10;" +
+                            "-fx-background-color: transparent;" +
+                            "-fx-border-color: transparent;");
                     setGraphic(text);
                 }
             }
         });
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
+        comboBox.setStyle("-fx-background-color: transparent;" +
+                "-fx-border-color: transparent;");
 
         getChildren().addAll(background, comboBox);
         StackPane.setMargin(comboBox, new Insets(5, 10, 5, 10));

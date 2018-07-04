@@ -7,7 +7,8 @@ import javafx.scene.text.Text;
 
 public class LabelChip extends Chip<String> {
 
-    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+//    private static final Color BACKGROUND_COLOR = Color.DARKRED;
+    private static final Color BACKGROUND_COLOR = Color.valueOf("081e42");
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public LabelChip(String msg) {
