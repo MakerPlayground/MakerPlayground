@@ -1,5 +1,7 @@
 package io.makerplayground.project.term;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class Term {
 
     public abstract String toCCode();
@@ -20,4 +22,7 @@ public abstract class Term {
     }
 
     public abstract Object getValue();
+
+    @JsonIgnore
+    public abstract boolean isValid();
 }

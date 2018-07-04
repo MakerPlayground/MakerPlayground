@@ -17,6 +17,11 @@ public class NumberWithUnitTerm extends Term {
     }
 
     @Override
+    public boolean isValid() {
+        return value != null;
+    }
+
+    @Override
     public String toCCode(){
         return df.format(((NumberWithUnit) value).getValue());
     }

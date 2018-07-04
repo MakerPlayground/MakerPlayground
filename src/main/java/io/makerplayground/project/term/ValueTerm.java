@@ -13,6 +13,11 @@ public class ValueTerm extends Term {
     }
 
     @Override
+    public boolean isValid() {
+        return value != null;
+    }
+
+    @Override
     public String toCCode(){
         return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
                 + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()";

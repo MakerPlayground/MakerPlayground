@@ -4,9 +4,11 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
+import io.makerplayground.project.term.OperatorTerm.OP;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,9 +33,12 @@ public class ChipField extends HBox {
 
     private final ObjectProperty<CustomNumberExpression> expressionProperty;
 
+    private final BooleanProperty validProperty = new SimpleBooleanProperty();
+
     public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, ObservableList<ProjectValue> projectValues) {
         this.projectValues = projectValues;
         this.expressionProperty = expressionProperty;
+        this.validProperty.set(!expressionProperty.get().isValidTerms());
         initView();
         initEvent();
     }
@@ -52,7 +57,6 @@ public class ChipField extends HBox {
         List<Term> listTerm = expressionProperty.get().getTerms();
         Platform.runLater(() -> IntStream.range(0, listTerm.size())
             .forEach(idx -> addChipUI(listTerm.get(idx), idx)));
-//        setFocusTraversable(true);
     }
 
     private void initEvent() {
@@ -72,9 +76,18 @@ public class ChipField extends HBox {
                     }
                 }
             }
+            this.validProperty.set(!expressionProperty.get().isValidTerms());
         });
 
         backspaceBtn.setOnMouseReleased(this::handleBackspace);
+
+        validProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                mainPane.setStyle("-fx-effect: dropshadow(gaussian, #ff8b01, 10.0 , 0.5, 0.0 , 0.0);");
+            } else {
+                mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+            }
+        });
     }
 
     public void addChip(Term t) {
@@ -84,22 +97,19 @@ public class ChipField extends HBox {
     private void addChipUI(Term t, int index) {
         Chip chip;
         if (t instanceof NumberWithUnitTerm) {
-            chip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
-            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm((NumberWithUnit) newValue));
-            });
+            NumberWithUnitChip numChip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
+            numChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm(n)));
+            chip = numChip;
         } else if (t instanceof StringTerm) {
-            chip = new StringChip((String) t.getValue());
-            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                expressionProperty.get().getTerms().set(index, new StringTerm((String) newValue));
-            });
+            StringChip strChip = new StringChip((String) t.getValue());
+            strChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new StringTerm(n)));
+            chip = strChip;
         } else if (t instanceof OperatorTerm) {
-            chip = new OperatorChip((OperatorTerm.OP) t.getValue());
+            chip = new OperatorChip((OP) t.getValue());
         } else if (t instanceof ValueTerm) {
-            chip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
-            chip.valueProperty().addListener((observable, oldValue, newValue) -> {
-                expressionProperty.get().getTerms().set(index, new ValueTerm((ProjectValue) newValue));
-            });
+            ProjectValueChip pvChip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
+            pvChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new ValueTerm(n)));
+            chip = pvChip;
         } else {
             throw new IllegalStateException();
         }

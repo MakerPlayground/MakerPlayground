@@ -11,6 +11,11 @@ public class StringTerm extends Term {
     }
 
     @Override
+    public boolean isValid() {
+        return value != null;
+    }
+
+    @Override
     public String toCCode(){
         return "\"" + value + "\"";
     }

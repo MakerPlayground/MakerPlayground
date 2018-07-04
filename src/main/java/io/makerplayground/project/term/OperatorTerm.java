@@ -11,6 +11,11 @@ public class OperatorTerm extends Term {
         return (OP) value;
     }
 
+    @Override
+    public boolean isValid() {
+        return value != null;
+    }
+
     public enum OP {
         PLUS, MINUS, MULTIPLY, DIVIDE,
         GREATER_THAN, LESS_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN_OR_EQUAL,
