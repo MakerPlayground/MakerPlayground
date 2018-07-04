@@ -25,7 +25,7 @@
 .text-field{
     -fx-background-color: -fx-text-box-border, #777677;
     /*-fx-background-color: -fx-text-box-border, -fx-control-inner-background;*/
-    -fx-border-color :  #777677;
+    -fx-border-color :  #e2e2e2;
     -fx-border-width: 2px;
     -fx-border-radius: 2.5px;
     -fx-background-inset : 0 0 0;
