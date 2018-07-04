@@ -96,7 +96,7 @@ public class Expression {
 
     @JsonIgnore
     public boolean isValid() {
-        return !terms.isEmpty();
+        return !terms.isEmpty() && terms.stream().allMatch(Term::isValid);
     }
 
     public String translateToCCode() {

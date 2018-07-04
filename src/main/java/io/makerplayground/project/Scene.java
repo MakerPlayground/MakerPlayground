@@ -139,7 +139,7 @@ public class Scene extends NodeElement {
     private boolean checkError() {
         return name.get().isEmpty() || setting.stream()
                 .flatMap(userSetting -> userSetting.getValueMap().values().stream())
-                .anyMatch(o -> (o == null) || !o.isValid() || o.getTerms().size() == 0 || o.getTerms().get(0) == null);
+                .anyMatch(o -> (o == null) || !o.isValid());
     }
 
     public boolean isError() {
