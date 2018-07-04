@@ -12,8 +12,8 @@
    <children>
       <StackPane prefHeight="35.0" prefWidth="35.0">
          <children>
-            <ImageView fx:id="iconImageView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
-            <Button fx:id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
+            <ImageView fx:id="iconImageView" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="removeConditionDeviceBtn" maxHeight="10.0" maxWidth="10.0" minHeight="10.0" minWidth="10.0" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>

@@ -26,14 +26,14 @@
             <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
             <HBox id="contentPane" stylesheets="@../css/ConditionView3.css">
                <children>
-                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="60.0" prefWidth="135.0" style="-fx-background-color: #2b2b2b; -fx-background-radius: 7 7 7 7;">
+                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="215.0" style="-fx-background-color: #2b2b2b; -fx-background-radius: 7 7 7 7;">
                      <content>
-                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="15.0" maxHeight="60.0" prefHeight="60.0" prefWidth="135.0" vgap="7.5">
+                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5.0" maxHeight="60.0" prefHeight="60.0" prefWidth="215.0" vgap="2.5">
                            <padding>
-                              <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                            <children>
-                              <Button id="addOutputButton" fx:id="addInputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                              <Button id="addOutputButton" fx:id="addInputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" />
                            </children>
                         </FlowPane>
                      </content>
