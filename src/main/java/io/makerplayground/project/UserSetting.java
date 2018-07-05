@@ -21,6 +21,8 @@ import io.makerplayground.device.*;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.project.term.Term;
+import io.makerplayground.project.term.ValueTerm;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -146,17 +148,18 @@ public class UserSetting {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
         // list value use in parameters ex. show value of 7-Segment / LCD
-        for (Parameter parameter : valueMap.keySet()) {
-            if (parameter.getDataType() != DataType.VALUE) {
-                continue;
-            }
-
-            ProjectValue projectValue = ((ProjectValueExpression) valueMap.get(parameter)).getProjectValue();
-            ProjectDevice projectDevice = projectValue.getDevice();
-            if (result.containsKey(projectDevice)) {
-                result.get(projectDevice).add(projectValue.getValue());
-            } else {
-                result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+        for (Map.Entry<Parameter, Expression> entry : valueMap.entrySet()) {
+            Expression exp = entry.getValue();
+            for (Term term: exp.getTerms()) {
+                if (term instanceof ValueTerm) {
+                    ProjectValue projectValue = ((ValueTerm) term).getValue();
+                    ProjectDevice projectDevice = projectValue.getDevice();
+                    if (result.containsKey(projectDevice)) {
+                        result.get(projectDevice).add(projectValue.getValue());
+                    } else {
+                        result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+                    }
+                }
             }
         }
 

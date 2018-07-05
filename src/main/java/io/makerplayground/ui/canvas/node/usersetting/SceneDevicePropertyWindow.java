@@ -132,6 +132,7 @@ public class SceneDevicePropertyWindow extends PopOver {
             if (p.getDataType() == DataType.VALUE) {
                 ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 if (viewModel.getParameterValue(p) != null) {
                     comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
                 }
@@ -157,7 +158,6 @@ public class SceneDevicePropertyWindow extends PopOver {
                         }
                     }
                 });
-                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
                 if (viewModel.getParameterValue(p) == null) {
@@ -174,14 +174,14 @@ public class SceneDevicePropertyWindow extends PopOver {
                 control = doubleNumberExpressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
-                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
+                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = textField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
-                comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
+                comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
