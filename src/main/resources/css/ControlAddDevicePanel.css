@@ -9,26 +9,29 @@
     -fx-border-width: 2px;
 }
 #decBtn{
-    -fx-background-image: url('reduce.png');
+    -fx-background-image: url('reduce-2.png');
     -fx-background-size : 20px;
-    -fx-border-color : #313644;
-    -fx-border-width: 1px;
+    -fx-border-color : #1c1c1c;
+    -fx-background-radius: 2.5px 0px 0px 2.5px;
+    -fx-border-width: 0.25px;
     -fx-background-insets: 0, 0, 0;
     -fx-cursor: hand;
 }
 #incBtn{
-    -fx-background-image: url('increase.png');
+    -fx-background-image: url('increase-2.png');
     -fx-background-size : 20px;
-    -fx-border-color : #313644;
-    -fx-border-width: 1px;
+    -fx-border-color : #1c1c1c;
+    -fx-background-radius: 0px 2.5px 2.5px 0px;
+    -fx-border-width: 0.25px;
     -fx-background-insets: 0, 0, 0;
     -fx-cursor: hand;
 }
 #numTextField{
     -fx-font-size:12px;
-    -fx-background-color : white;
-    -fx-text-fill : #313644;
-    -fx-border-color : #cccccc;
-    -fx-border-width: 1px;
+    -fx-background-color : #e2e2e2;
+    -fx-text-fill : #1c1c1c;
+    -fx-border-color : #1c1c1c;
+    -fx-background-radius: 0px 0px 0px 0px;
+    -fx-border-width: 0.25px;
     -fx-background-insets: 0, 0, 0;
 }

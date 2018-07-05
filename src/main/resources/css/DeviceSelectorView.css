@@ -3,30 +3,32 @@
     -fx-focus-color: transparent;
 }
 .dialog-pane{
-    -fx-background-color : white;
+    -fx-background-color : #2b2b2b;
+    /*-fx-border-color : #1c1c1c;*/
 }
 .titled-pane > .title{
-    -fx-background-color : white;
-    -fx-border-color: transparent transparent #313644 transparent;
-    -fx-border-width : 1px;
+    -fx-background-color : transparent;
+    -fx-border-color: #e2e2e2;
+    -fx-border-width : 0px 0px 1.5px 0px;
 }
 
 .titled-pane{
     -fx-font-size: 14px;
-    -fx-text-fill : #313644;
+    -fx-text-fill : #e2e2e2;
+    -fx-background-color : #2b2b2b;
     -fx-font-weight: bold;
 }
 .titled-pane > .title > .arrow-button .arrow{
     -fx-background-color : #5ac2ab;
 }
 .titled-pane > *.content{
-    -fx-background-color : transparent;
-    -fx-box-border : transparent;
+    -fx-background-color : #2b2b2b;
+    -fx-box-border : #2b2b2b;
 }
 
 .scroll-pane > .viewport{
-    -fx-background-color : white;
-    -fx-border-color : white;
+    -fx-background-color : #2b2b2b;
+    -fx-border-color : #2b2b2b;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
@@ -61,18 +63,24 @@
 }
 
 .flow-pane{
-    -fx-background-color : #4d5666;
+    -fx-background-color : #ffffff;
 }
 .button:pressed{
-    -fx-background-color : #313644;
-    -fx-border-color : #313644;
-    -fx-text-fill : white;
+    -fx-background-color : #333333;
+    -fx-background-radius : 5px;
+    -fx-border-color : #b7b7b7;
+    -fx-border-radius : 5px;
+    -fx-text-fill : #e2e2e2;
+    -fx-font-family : Segoe UI, sans-serif;
     -fx-cursor: hand;
 }
 .button{
     -fx-focus-color: transparent;
-    -fx-border-color : #313644;
-    -fx-background-color : transparent;
-    -fx-text-fill : #313644;
+    -fx-background-color : #404040;
+    -fx-background-radius : 5px;
+    -fx-border-color : #1c1c1c;
+    -fx-border-radius : 5px;
+    -fx-text-fill : #e2e2e2;
+    -fx-font-family : Segoe UI, sans-serif;
     -fx-cursor: hand;
 }

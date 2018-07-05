@@ -55,7 +55,8 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
         setTitle(" Device Library");
         getDialogPane().setExpanded(true);
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UTILITY);
+        getDialogPane().getScene().setFill(null);
+        stage.initStyle(StageStyle.DECORATED);
 
         for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);

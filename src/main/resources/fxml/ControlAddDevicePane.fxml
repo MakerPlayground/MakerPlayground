@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="controllAddDevicePane" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" style="-fx-background-color: transparent;" stylesheets="@../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="controllAddDevicePane" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" style="-fx-background-color: transparent;" stylesheets="@../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="nameLabel" style="-fx-text-fill: #313644;" text="Label">
+      <Label fx:id="nameLabel" style="-fx-text-fill: #e2e2e2;" text="Label">
          <font>
-            <Font name="System Bold" size="12.0" />
+            <Font name="Segoe UI Bold" size="12.0" />
          </font>
          <VBox.margin>
             <Insets top="4.0" />
