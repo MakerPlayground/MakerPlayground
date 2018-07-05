@@ -244,23 +244,24 @@ public class Sourcecode {
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
-                sb.append(INDENT).append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
-                        .append(setting.getAction().getFunctionName()).append("(");
+                String deviceName = "_" + setting.getDevice().getName().replace(" ", "_");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
-                    Expression value = setting.getValueMap().get(parameter);
-                    params.add(value.translateToCCode());
-//                    if (value instanceof NumberWithUnit) {
-//                        params.add(df.format(((NumberWithUnit) value).getValue()));
-//                    } else if (value instanceof String) {
-//                        params.add("\"" + value + "\"");
-//                    } else if (value instanceof ProjectValue) {
-//                        params.add("_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
-//                                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()");
-//                    } else if (value instanceof Expression) {
-//                        throw new IllegalStateException("Implement needed (expression)");
-//                    }
+                    Expression expression = setting.getValueMap().get(parameter);
+                    String paramName = deviceName + "_" + parameter.getName().replace(" ", "_");
+                    if (expression instanceof CustomNumberExpression) {
+                        double maxValue = ((CustomNumberExpression) expression).getMaxValue();
+                        double minValue = ((CustomNumberExpression) expression).getMinValue();
+                        sb.append(INDENT).append("double " + paramName + " = " + expression.translateToCCode() + ";").append(NEW_LINE);
+                        sb.append(INDENT).append(paramName + " = " + paramName + " > " + maxValue + " ? " + maxValue + " : " + paramName + ";").append(NEW_LINE);
+                        sb.append(INDENT).append(paramName + " = " + paramName + " < " + minValue + " ? " + minValue + " : " + paramName + ";").append(NEW_LINE);
+                        params.add(paramName);
+                    } else {
+                        params.add(expression.translateToCCode());
+                    }
                 }
+                sb.append(INDENT).append(deviceName).append(".")
+                        .append(setting.getAction().getFunctionName()).append("(");
                 sb.append(String.join(", ", params)).append(");").append(NEW_LINE);
             }
 

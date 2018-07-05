@@ -175,11 +175,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
                 terms.add(deserializeTerm(term_node, allProjectDevices, parameter));
-        }
+            }
             if (ProjectValueExpression.class.getName().contains(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
             } else if (CustomNumberExpression.class.getName().contains(expressionType)) {
-                expression = new CustomNumberExpression(terms);
+                double maxValue = parameterNode.get("maxValue").asDouble();
+                double minValue = parameterNode.get("minValue").asDouble();
+                expression = new CustomNumberExpression(maxValue, minValue, terms);
             } else if (NumberWithUnitExpression.class.getName().contains(expressionType)) {
                 expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
             } else if (SimpleStringExpression.class.getName().contains(expressionType)) {
@@ -198,7 +200,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             String type = valueNode.get("type").asText();
 
             Expression expression;
-            if (type.equals("simple")) {
+            if (NumberInRangeExpression.class.getName().contains(type)) {
                 expression = deserializeNumberInRangeExpression(mapper, valueNode.get("expression"), projectDevice, value);
                 expression.setEnable(enable);
             } else {

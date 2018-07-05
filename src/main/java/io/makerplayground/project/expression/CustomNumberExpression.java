@@ -9,13 +9,20 @@ import java.util.List;
 
 public class CustomNumberExpression extends Expression {
 
-    public CustomNumberExpression() {
+    private double maxValue;
+    private double minValue;
+
+    public CustomNumberExpression(double maxValue, double minValue) {
         super(Type.CUSTOM_NUMBER);
+        this.maxValue = maxValue;
+        this.minValue = minValue;
     }
 
-    public CustomNumberExpression(List<Term> terms) {
+    public CustomNumberExpression(double maxValue, double minValue, List<Term> terms) {
         super(Type.CUSTOM_NUMBER);
         this.getTerms().addAll(terms);
+        this.maxValue = maxValue;
+        this.minValue = minValue;
     }
 
     CustomNumberExpression(CustomNumberExpression e) {
@@ -97,4 +104,11 @@ public class CustomNumberExpression extends Expression {
         return t instanceof ValueTerm || t instanceof NumberWithUnitTerm;
     }
 
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
 }

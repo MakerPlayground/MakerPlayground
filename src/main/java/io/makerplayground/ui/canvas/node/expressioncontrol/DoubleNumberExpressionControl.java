@@ -23,8 +23,8 @@ public class DoubleNumberExpressionControl extends VBox {
     private Node mainControl;
     private CheckBox advanceCheckBox;
 
-    private DoubleProperty minimumProperty;
-    private DoubleProperty maximumProperty;
+    private double maxValue;
+    private double minValue;
     private ListProperty<Unit> unitListProperty;
 
     private ObjectProperty<CustomNumberExpression> customNumberExpressionProperty = new SimpleObjectProperty<>();
@@ -39,8 +39,8 @@ public class DoubleNumberExpressionControl extends VBox {
                                          ObservableList<Unit> units,
                                          ObservableList<ProjectValue> projectValues,
                                          Expression expression) {
-        this.minimumProperty = new SimpleDoubleProperty(minimumValue);
-        this.maximumProperty = new SimpleDoubleProperty(maximumValue);
+        this.maxValue = maximumValue;
+        this.minValue = minimumValue;
         this.unitListProperty = new SimpleListProperty<>(units);
         this.advanceCheckBox = new CheckBox("Advanced");
 
@@ -52,12 +52,12 @@ public class DoubleNumberExpressionControl extends VBox {
             this.expressionProperty.bind(this.customNumberExpressionProperty);
         } else if (expression instanceof NumberWithUnitExpression) {
             this.advanceCheckBox.selectedProperty().set(false);
-            this.customNumberExpressionProperty.set(new CustomNumberExpression());
+            this.customNumberExpressionProperty.set(new CustomNumberExpression(maximumValue, minimumValue));
             this.numberWithUnitExpressionProperty.set((NumberWithUnitExpression) expression);
             this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
         } else {
             this.advanceCheckBox.selectedProperty().set(false);
-            this.customNumberExpressionProperty.set(new CustomNumberExpression());
+            this.customNumberExpressionProperty.set(new CustomNumberExpression(maximumValue, minimumValue));
             this.numberWithUnitExpressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
             this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
         }
@@ -92,7 +92,7 @@ public class DoubleNumberExpressionControl extends VBox {
             mainControl = chipField;
         } else {
             NumberWithUnit numberWithUnit = (NumberWithUnit) numberWithUnitExpressionProperty.get().getTerms().get(0).getValue();
-            SliderWithUnit sliderWithUnit = new SliderWithUnit(minimumProperty.get(), maximumProperty.get(), unitListProperty.get(), numberWithUnit);
+            SliderWithUnit sliderWithUnit = new SliderWithUnit(minValue, maxValue, unitListProperty.get(), numberWithUnit);
             sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> numberWithUnitExpressionProperty.setValue(new NumberWithUnitExpression(newValue)));
             mainControl = sliderWithUnit;
         }

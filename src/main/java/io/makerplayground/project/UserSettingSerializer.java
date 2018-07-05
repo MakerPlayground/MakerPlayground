@@ -40,6 +40,10 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStringField("name", v.getKey().getName());
             jsonGenerator.writeStringField("type", v.getValue().getClass().getSimpleName());
             jsonGenerator.writeObjectField("value", v.getValue());
+            if (v.getValue() instanceof CustomNumberExpression) {
+                jsonGenerator.writeNumberField("maxValue", ((CustomNumberExpression) v.getValue()).getMaxValue());
+                jsonGenerator.writeNumberField("minValue", ((CustomNumberExpression) v.getValue()).getMinValue());
+            }
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -49,11 +53,12 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", entry.getKey().getName());
             jsonGenerator.writeBooleanField("enable", entry.getValue().isEnable());
-            if (entry.getValue() instanceof NumberInRangeExpression) {
-                jsonGenerator.writeStringField("type", "simple");
-            } else {
-                throw new IllegalStateException("Unknown expression type");
-            }
+            jsonGenerator.writeStringField("type", entry.getValue().getClass().getSimpleName());
+//            if (entry.getValue() instanceof NumberInRangeExpression) {
+//                jsonGenerator.writeStringField("type", "numberInRange");
+//            } else {
+//                throw new IllegalStateException("Unknown expression type");
+//            }
             jsonGenerator.writeArrayFieldStart("expression");
             for (Term term : entry.getValue().getTerms()) {
                 jsonGenerator.writeStartObject();
