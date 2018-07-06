@@ -136,9 +136,10 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
                         byte[] newData = new byte[comPort.bytesAvailable()];
                         comPort.readBytes(newData, newData.length);
                         sb.append(new String(newData));
-                        if(sb.indexOf("\n") >= 0) {
-                            String msg = sb.subSequence(0, sb.indexOf("\n")).toString();
-                            sb.delete(0, sb.indexOf("\n") + 1);
+                        while(sb.indexOf("\n") >= 0) {
+                            int index = sb.indexOf("\n");
+                            String msg = sb.subSequence(0, index).toString();
+                            sb.delete(0, index + 1);
                             System.out.println("msg: " +msg);
                             System.out.println(",remain: " + sb.toString());
                             getFormatLog(msg).ifPresent(logItems -> Platform.runLater(() -> {
