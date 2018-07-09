@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class ProjectVersionControl {
 
-    public static final String CURRENT_VERSION = "0.3";
+    public static final String CURRENT_VERSION = "0.2.3";
 
     public static boolean isConvertibleToCurrentVersion(String projectVersion) {
         if (CURRENT_VERSION.equals(projectVersion)) {
