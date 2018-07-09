@@ -214,7 +214,7 @@ public class DeviceMapper {
             }
         }
 
-        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDevice());
+        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDeviceUsed());
 
         // SPECIAL CASE 3: connect MP_*_DUAL first
         if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
