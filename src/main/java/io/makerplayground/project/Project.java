@@ -406,9 +406,9 @@ public class Project {
             for (UserSetting userSetting : s.getSetting())
                 for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
                     if (!allValueUsed.containsKey(entry.getKey())) {
-                        allValueUsed.put(userSetting.getDevice(), new HashSet<>());
+                        allValueUsed.put(entry.getKey(), new HashSet<>());
                     }
-                    allValueUsed.get(userSetting.getDevice()).addAll(entry.getValue());
+                    allValueUsed.get(entry.getKey()).addAll(entry.getValue());
                 }
         }
 
@@ -416,9 +416,9 @@ public class Project {
             for (UserSetting userSetting : c.getSetting()) {
                 for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
                     if (!allValueUsed.containsKey(entry.getKey())) {
-                        allValueUsed.put(userSetting.getDevice(), new HashSet<>());
+                        allValueUsed.put(entry.getKey(), new HashSet<>());
                     }
-                    allValueUsed.get(userSetting.getDevice()).addAll(entry.getValue());
+                    allValueUsed.get(entry.getKey()).addAll(entry.getValue());
                 }
             }
         }

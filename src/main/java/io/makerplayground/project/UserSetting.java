@@ -40,7 +40,7 @@ public class UserSetting {
     private final ObservableMap<Parameter, Expression> valueMap;
     private final ObservableMap<Value, Expression> expression;
 
-    UserSetting(ProjectDevice device, boolean scene) {  // TODO: Remove boolean field!!!
+    UserSetting(ProjectDevice device, boolean scene ) {  // TODO: Remove boolean field!!!
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();

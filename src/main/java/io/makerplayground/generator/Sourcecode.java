@@ -181,6 +181,14 @@ public class Sourcecode {
         // local variable needed
         sb.append(NEW_LINE);
         sb.append("unsigned long endTime = 0;").append(NEW_LINE);
+        Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap();
+        for (ProjectDevice projectDevice : variableMap.keySet()) {
+            for (Value v : variableMap.get(projectDevice)) {
+                sb.append("double ").append("_" + projectDevice.getName().replace(" ", "_")).append("_")
+                        .append(v.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+            }
+        }
+
 
         // generate setup function
         sb.append(NEW_LINE);
@@ -241,6 +249,24 @@ public class Sourcecode {
             // create function header
             sb.append(NEW_LINE);
             sb.append("void ").append("scene_").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
+            sb.append(INDENT).append("update();").append(NEW_LINE);
+
+            HashSet<String> variableUpdateNameSet = new HashSet<>();
+            for (UserSetting setting : currentScene.getSetting()) {
+                for (Map.Entry<ProjectDevice, Set<Value>> entry : setting.getAllValueUsed().entrySet()) {
+                    for(Value v : entry.getValue()) {
+                        String str = "_" + entry.getKey().getName().replace(" ", "_") +("_")
+                                + (v.getName().replace(" ", "_")) + (" = ") + ("_" + entry.getKey().getName().replace(" ", "_")) + (".get")
+                                + (v.getName().replace(" ", "_")) + ("();");
+                        variableUpdateNameSet.add(str);
+                    }
+                }
+            }
+
+            for(String str : variableUpdateNameSet){
+                sb.append(INDENT).append(str).append(NEW_LINE);
+            }
+
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
@@ -248,14 +274,10 @@ public class Sourcecode {
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
                     Expression expression = setting.getValueMap().get(parameter);
-                    String paramName = deviceName + "_" + parameter.getName().replace(" ", "_");
                     if (expression instanceof CustomNumberExpression) {
                         double maxValue = ((CustomNumberExpression) expression).getMaxValue();
                         double minValue = ((CustomNumberExpression) expression).getMinValue();
-                        sb.append(INDENT).append("double " + paramName + " = " + expression.translateToCCode() + ";").append(NEW_LINE);
-                        sb.append(INDENT).append(paramName + " = " + paramName + " > " + maxValue + " ? " + maxValue + " : " + paramName + ";").append(NEW_LINE);
-                        sb.append(INDENT).append(paramName + " = " + paramName + " < " + minValue + " ? " + minValue + " : " + paramName + ";").append(NEW_LINE);
-                        params.add(paramName);
+                        params.add("constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")");
                     } else {
                         params.add(expression.translateToCCode());
                     }
@@ -334,13 +356,6 @@ public class Sourcecode {
             }
         }
 
-        // declare variable to store value from input device(s)
-        for (ProjectDevice projectDevice : valueUsed.keySet()) {
-            for (Value v : valueUsed.get(projectDevice)) {
-                sb.append(INDENT).append("double ").append("_" + projectDevice.getName().replace(" ", "_")).append("_")
-                        .append(v.getName().replace(" ", "_")).append(";").append(NEW_LINE);
-            }
-        }
 
         // loop to check sensor
         sb.append(INDENT).append("while (1) {").append(NEW_LINE);

@@ -6,6 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberWithUnitExpression;
 import io.makerplayground.project.expression.SimpleStringExpression;
@@ -41,6 +42,10 @@ public class DeviceMapper {
                         if (o instanceof NumberWithUnitExpression) {
                             NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                             newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
+                        }
+                        else if (o instanceof CustomNumberExpression) {
+                            CustomNumberExpression exp = (CustomNumberExpression) o;
+                            newConstraint = Constraint.NONE;
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());

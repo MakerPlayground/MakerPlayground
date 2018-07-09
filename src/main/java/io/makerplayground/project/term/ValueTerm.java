@@ -19,7 +19,7 @@ public class ValueTerm extends Term {
 
     @Override
     public String toCCode(){
-        return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + ".get"
-                + ((ProjectValue) value).getValue().getName().replace(" ", "_") + "()";
+        return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + "_"
+                + ((ProjectValue) value).getValue().getName().replace(" ", "_") ;
     }
 }

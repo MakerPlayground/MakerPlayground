@@ -17,6 +17,7 @@
 package io.makerplayground.device;
 
 import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 
 import java.util.*;
@@ -69,17 +70,22 @@ public class NumericConstraint implements Constraint {
 
     @Override
     public boolean isCompatible(Constraint genericConstraint) {
-        for (Unit unit : ((NumericConstraint) genericConstraint).numericValue.keySet()) {
-            if (this.numericValue.containsKey(unit)) {
-                if (!((this.numericValue.get(unit).min <= ((NumericConstraint) genericConstraint).numericValue.get(unit).min)
-                    && (this.numericValue.get(unit).max >= ((NumericConstraint) genericConstraint).numericValue.get(unit).max))) {
+        if (genericConstraint instanceof NumericConstraint) {
+            for (Unit unit : ((NumericConstraint) genericConstraint).numericValue.keySet()) {
+                if (this.numericValue.containsKey(unit)) {
+                    if (!((this.numericValue.get(unit).min <= ((NumericConstraint) genericConstraint).numericValue.get(unit).min)
+                        && (this.numericValue.get(unit).max >= ((NumericConstraint) genericConstraint).numericValue.get(unit).max))) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
-            } else {
-                return false;
             }
+            return true;
+        } else if (Constraint.NONE.equals(genericConstraint)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
