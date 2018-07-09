@@ -400,6 +400,31 @@ public class Project {
         return deviceType;
     }
 
+    public Map<ProjectDevice, Set<Value>> getAllValueUsedMap() {
+        HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
+        for (Scene s : scene) {
+            for (UserSetting userSetting : s.getSetting())
+                for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
+                    if (!allValueUsed.containsKey(entry.getKey())) {
+                        allValueUsed.put(userSetting.getDevice(), new HashSet<>());
+                    }
+                    allValueUsed.get(userSetting.getDevice()).addAll(entry.getValue());
+                }
+        }
+
+        for (Condition c : condition) {
+            for (UserSetting userSetting : c.getSetting()) {
+                for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
+                    if (!allValueUsed.containsKey(entry.getKey())) {
+                        allValueUsed.put(userSetting.getDevice(), new HashSet<>());
+                    }
+                    allValueUsed.get(userSetting.getDevice()).addAll(entry.getValue());
+                }
+            }
+        }
+        return allValueUsed;
+    }
+
     public String getFilePath() {
         return filePath.get();
     }
