@@ -41,34 +41,36 @@ public enum DeviceLibrary {
     }
 
     public void loadDeviceFromJSON() {
-//        List<Microcontroller> temp3;
-        List<GenericDevice> temp;
-        List<Device> temp2, temp3;
+        this.genericInputDevice = loadGenericDeviceFromJSON("json/genericinputdevice.json");
+        this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
+        this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
+        this.actualDevice = loadActualDeviceFromJSON("/json/actualdevice.json");
+    }
 
+    private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName){
         ObjectMapper mapper = new ObjectMapper();
-
+        List<GenericDevice> temp;
         try {
-            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
-                    , new TypeReference<List<GenericDevice>>() {});
-            this.genericInputDevice = Collections.unmodifiableList(temp);
-
-            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericoutputdevice.json")
-                    , new TypeReference<List<GenericDevice>>() {});
-            this.genericOutputDevice = Collections.unmodifiableList(temp);
-
-            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericconnectivitydevice.json")
-                    , new TypeReference<List<GenericDevice>>() {});
-            this.genericConnectivityDevice = Collections.unmodifiableList(temp);
-
-            temp2 = mapper.readValue(getClass().getResourceAsStream("/json/actualdevice.json")
-                    , new TypeReference<List<Device>>() {});
-            temp3 = mapper.readValue(getClass().getResourceAsStream("/json/actualconnectivitydevice.json")
-                    , new TypeReference<List<Device>>() {});
-            this.actualDevice = Stream.concat(temp2.stream(), temp3.stream())
-                    .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+            temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
+            temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
             e.printStackTrace();
+            temp = Collections.EMPTY_LIST;
         }
+        return temp;
+    }
+
+    private List<Device> loadActualDeviceFromJSON(String resourceName){
+        ObjectMapper mapper = new ObjectMapper();
+        List<Device> temp;
+        try {
+            temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<Device>>() {});
+            temp = Collections.unmodifiableList(temp);
+        } catch (IOException e) {
+            e.printStackTrace();
+            temp = Collections.EMPTY_LIST;
+        }
+        return temp;
     }
 
 //    public List<Microcontroller> getMicrocontroller() {
