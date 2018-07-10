@@ -12,6 +12,7 @@
 }
 #nameStateTextField{
     -fx-background-color : #2b2b2b;
+    -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size : 14 px;
@@ -26,9 +27,13 @@
 }
 #stateBottomHBox{
     -fx-background-color : #404040;
+    -fx-background-radius: 0 0 10 10;
 }
 #delayText {
     -fx-text-fill : white;
+    -fx-fill: WHITE;
+    -fx-strokeType: OUTSIDE;
+    -fx-strokeWidth: 0.0;
     -fx-font-size:12px;
 }
 .flow-pane{
@@ -89,6 +94,8 @@
     -fx-font-size:12px;
     -fx-background-color : #0768de;
     -fx-border-color : #0768de;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
 }
 #TimeUnitComboBox .list-cell {
     -fx-font-size:12px;
@@ -133,4 +140,19 @@
     -fx-background-size : 60px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
+}
+#arcNode{
+    -fx-fill: #404040;
+    -fx-stroke: #1c1c1c;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+}
+#anchorPane{
+    -fx-background-color: transparent;
+}
+#outPort{
+    -fx-fill: #404040;
+    -fx-stroke: #1c1c1c;
+    -fx-strokeType: INSIDE;
+    -fx-type:ROUND;
 }

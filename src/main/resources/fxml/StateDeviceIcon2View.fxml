@@ -8,12 +8,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root alignment="CENTER" maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" prefWidth="60.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #404040; -fx-background-radius: 5px 5px 5px 5px; -fx-border-color: #1c1c1c; -fx-border-radius: 5px 5px 5px 5px;">
+<fx:root id="frame" alignment="CENTER" stylesheets="@../css/StateDeviceIcon2View.css" maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" prefWidth="60.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" >
    <children>
       <StackPane prefHeight="35.0" prefWidth="35.0">
          <children>
             <ImageView fx:id="iconImageView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_CENTER" />
-            <Button id="removeStateDeviceBtn" fx:id="removeStateDeviceBtn" maxHeight="10.0" maxWidth="10.0" minHeight="10.0" minWidth="10.0" mnemonicParsing="false" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
+            <Button id="removeStateDeviceBtn" fx:id="removeStateDeviceBtn" maxHeight="10.0" maxWidth="10.0" minHeight="10.0" minWidth="10.0" mnemonicParsing="false"  StackPane.alignment="TOP_RIGHT">
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -24,15 +24,9 @@
             </Button>
          </children>
       </StackPane>
-      <Label fx:id="nameIconImageView" alignment="CENTER" ellipsisString=".." text="7Segment11" textAlignment="CENTER" textFill="#777677" textOverrun="CENTER_ELLIPSIS">
-          <font>
-              <Font name="Segoe UI Semibold" size="10.0" />
-          </font>
+      <Label fx:id="nameIconImageView" alignment="CENTER" ellipsisString=".." text="7Segment11" textAlignment="CENTER" textOverrun="CENTER_ELLIPSIS">
       </Label>
-      <Label fx:id="action" alignment="CENTER" ellipsisString=".." text="Show Number" textAlignment="CENTER" textFill="#00cc6a" textOverrun="CENTER_WORD_ELLIPSIS">
-         <font>
-            <Font name="Segoe UI Black" size="10.0" />
-         </font>
+      <Label fx:id="action" alignment="CENTER" ellipsisString=".." text="Show Number" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
       </Label>
    </children>
 </fx:root>

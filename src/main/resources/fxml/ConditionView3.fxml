@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 
-<fx:root alignment="TOP_RIGHT" type="VBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../css/ConditionView3.css" alignment="TOP_RIGHT" type="VBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+      <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false">
          <graphic>
             <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -23,10 +23,10 @@
       </Button>
       <HBox fx:id="conditionPane" alignment="CENTER">
          <children>
-            <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
+            <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"/>
             <HBox id="contentPane" stylesheets="@../css/ConditionView3.css">
                <children>
-                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="215.0" style="-fx-background-color: #2b2b2b; -fx-background-radius: 7 7 7 7;">
+                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="215.0">
                      <content>
                         <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5.0" maxHeight="60.0" prefHeight="60.0" prefWidth="215.0" vgap="2.5">
                            <padding>
@@ -40,7 +40,7 @@
                   </ScrollPane>
                </children>
             </HBox>
-            <Arc fx:id="outPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
+            <Arc fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" />
          </children>
       </HBox>
    </children>

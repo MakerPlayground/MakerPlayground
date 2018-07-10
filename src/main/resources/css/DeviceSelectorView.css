@@ -84,3 +84,9 @@
     -fx-font-family : Segoe UI, sans-serif;
     -fx-cursor: hand;
 }
+#anchorPane{
+    -fx-background-color: transparent;
+}
+#vBox{
+    -fx-background-color: #404040;
+}

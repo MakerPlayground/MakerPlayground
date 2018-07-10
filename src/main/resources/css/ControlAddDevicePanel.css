@@ -16,6 +16,7 @@
     -fx-border-width: 0.25px;
     -fx-background-insets: 0, 0, 0;
     -fx-cursor: hand;
+    -fx-font-size: 10px;
 }
 #incBtn{
     -fx-background-image: url('increase-2.png');
@@ -34,4 +35,9 @@
     -fx-background-radius: 0px 0px 0px 0px;
     -fx-border-width: 0.25px;
     -fx-background-insets: 0, 0, 0;
+}
+#nameLabel{
+    -fx-text-fill: #e2e2e2;
+    -fx-font-name: Segoe UI Bold;
+    -fx-font-size: 12px;
 }

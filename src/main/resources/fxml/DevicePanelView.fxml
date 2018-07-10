@@ -12,40 +12,22 @@
 
 <fx:root id="devicePanelPane" fx:id="devicePanel" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" stylesheets="@../css/DevicePanelView.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <AnchorPane style="-fx-background-color: #313644;">
+      <AnchorPane fx:id="anchorPane" >
          <children>
             <Label id="deviceTitle" maxHeight="50.0" maxWidth="100.0" minHeight="35.0" prefHeight="50.0" prefWidth="100.0" text="Devices">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Button id="addBtn" alignment="CENTER" layoutY="10.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" AnchorPane.rightAnchor="8.0">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Button>
-
+            <Button id="addBtn" alignment="CENTER" layoutY="10.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" onAction="#onAddDeviceClick" AnchorPane.rightAnchor="8.0">
+            </Button>
         </children>
      </AnchorPane>
-     <!--<TitledPane text="Microcontroller">-->
-         <!--<content>-->
-            <!--<ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">-->
-               <!--<content>-->
-                  <!--<FlowPane fx:id="microcontrollerPane" minHeight="80.0" prefHeight="80.0" style="-fx-background-color: #4d5666;" />-->
-               <!--</content>-->
-               <!--<padding>-->
-                  <!--<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />-->
-               <!--</padding>-->
-            <!--</ScrollPane>-->
-         <!--</content>-->
-      <!--</TitledPane>-->
       <TitledPane text="Sensor">
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #4d5666;" vgap="10.0">
-                     <!--<children>-->
-                        <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
-                     <!--</children>-->
+                  <FlowPane fx:id="inputPane" hgap="10.0" maxHeight="1.7976931348623157E308" vgap="10.0">
                   </FlowPane>
                </content>
                <padding>
@@ -58,10 +40,7 @@
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0">
-                     <!--<children>-->
-                        <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
-                     <!--</children>-->
+                  <FlowPane id="outputPane" fx:id="outputPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP"  vgap="10.0">
                      </FlowPane>
                </content>
                <padding>
@@ -74,10 +53,7 @@
          <content>
             <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <FlowPane id="outputPane" fx:id="connectivityPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #4d5666;" vgap="10.0">
-                     <!--<children>-->
-                        <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
-                     <!--</children>-->
+                  <FlowPane id="outputPane" fx:id="connectivityPane" hgap="10.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" vgap="10.0">
                   </FlowPane>
                </content>
                <padding>

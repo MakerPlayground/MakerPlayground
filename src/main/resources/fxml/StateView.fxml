@@ -15,17 +15,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<fx:root alignment="CENTER" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" stylesheets="@../css/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="inPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" style="-fx-background-radius: 10px 10px 10px 10px; -fx-background-color: #404040;" stylesheets="@../css/StateView.css">
+      <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"/>
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0">
          <children>
-            <AnchorPane maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200" style="-fx-background-color: transparent;">
+            <AnchorPane id="anchorPane" maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200">
                <children>
-                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="scene" AnchorPane.leftAnchor="5.0">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
+                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0"  text="scene" AnchorPane.leftAnchor="5.0">
                   </TextField>
                   <ImageView fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
                      <image>
@@ -42,29 +39,24 @@
                      </padding>
                      <children>
                         <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false">
-                           <font>
-                              <Font name="Segoe UI Semibold" size="18.0" />
-                           </font></Button>
+                           </Button>
                      </children>
                   </FlowPane>
                </content>
             </ScrollPane>
-            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="7.0" style="-fx-background-radius: 0 0 10 10;">
+            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="7.0">
                <children>
-                  <Text id="delayText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Delay">
+                  <Text id="delayText" text="Delay">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
-                     <font>
-                        <Font size="12.0" />
-                     </font>
                   </Text>
                   <TextField id="numberTextField" fx:id="delayTextField" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" prefWidth="50.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="70.0" promptText="sec" style="-fx-border-color: transparent; -fx-background-color: transparent;" />
+                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="70.0" promptText="sec" />
                </children>
                <VBox.margin>
                   <Insets left="15.0" />
@@ -72,6 +64,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc fx:id="outPort" fill="#404040" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#1c1c1c" strokeType="INSIDE" type="ROUND" />
+      <Arc fx:id="outPort"  length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" />
    </children>
 </fx:root>

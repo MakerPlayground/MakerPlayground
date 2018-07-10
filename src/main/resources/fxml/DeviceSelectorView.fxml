@@ -13,9 +13,9 @@
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
     <content>
-      <AnchorPane maxWidth="-Infinity" style="-fx-background-color: transparent;">
+      <AnchorPane id="anchorPane" maxWidth="-Infinity">
          <children>
-            <VBox alignment="TOP_CENTER" minWidth="550.0" style="-fx-background-color: #404040;" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0" stylesheets="@../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TitledPane collapsible="false" text="Sensor">
                      <content>

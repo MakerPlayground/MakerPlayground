@@ -35,7 +35,6 @@
                             <TableColumn fx:id="brandColumn" prefWidth="75.0" text="Brand" />
                             <TableColumn fx:id="modelColumn" prefWidth="75.0" text="Model" />
                               <TableColumn fx:id="pinColumn" prefWidth="75.0" text="Pin" />
-                              <!--<TableColumn fx:id="urlColumn" prefWidth="75.0" text="URL" />-->
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

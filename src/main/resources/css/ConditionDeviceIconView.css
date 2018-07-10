@@ -1,0 +1,17 @@
+#conditionDeviceIconView{
+    -fx-background-color: #404040;
+    -fx-background-radius: 5px 5px 5px 5px;
+    -fx-border-color: #1c1c1c;
+    -fx-border-radius: 5px 5px 5px 5px;
+}
+
+#removeConditionDeviceBtn{
+    -fx-background-color: transparent;
+}
+
+#nameIconImageView{
+    -fx-text-Fill: #777677;
+    -fx-textOverrun: CENTER_WORD_ELLIPSIS;
+    -fx-font-name: Segoe UI Bold;
+    -fx-font-size: 10px;
+}

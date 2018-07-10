@@ -55,23 +55,6 @@
     -fx-border-radius:2em;
 }
 
-#addBtn:pressed ,#addBtn:hover{
-    -fx-focus-color: transparent;
-    -fx-background-color: transparent;
-    -fx-background-image: url('addtoggle.png');
-    -fx-background-size : 30px;
-    -fx-background-repeat:no-repeat;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-#addBtn{
-    -fx-background-image: url('add2.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-
 .scroll-bar .track{
     -fx-background-color:   #1c1c1c;
     -fx-border-color :   #1c1c1c;
@@ -90,18 +73,20 @@
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
-
 #nameLabel{
     -fx-pref-width: 150px;
 }
 #nameTextField{
     -fx-background-color: #404040;
+    -fx-font-size: 13px;
+    -fx-border: none;
+    -fx-border-color: transparent;
     -fx-text-inner-color: white;
     -fx-min-width: 150px;
     -fx-pref-width: 150px;
 }
 #anchorPane{
-    -fx-background-color: #313644;
+    -fx-background-color: #404040;
 }
 #addBtn{
     -fx-cursor: hand;

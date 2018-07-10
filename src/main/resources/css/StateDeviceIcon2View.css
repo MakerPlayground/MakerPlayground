@@ -1,0 +1,20 @@
+#frame{
+    -fx-background-color: #404040;
+    -fx-background-radius: 5px 5px 5px 5px;
+    -fx-border-color: #1c1c1c;
+    -fx-border-radius: 5px 5px 5px 5px;
+}
+#removeStateDeviceBtn{
+    -fx-background-color: transparent;
+}
+#nameIconImageView{
+    -fx-text-fill: #777677;
+    -fx-font-name: Segoe UI Semibold;
+    -fx-font-size: 10px;
+}
+#action{
+    -fx-text-fill: #00cc6a;
+    -fx-font-name: Segoe UI Black;
+    -fx-font-size: 10px;
+}
+

@@ -125,3 +125,6 @@
      -fx-background-repeat: no-repeat;
      -fx-padding: 0px;
  }
+#canvasPane{
+    -fx-background-color: #dbdbdb;
+}
