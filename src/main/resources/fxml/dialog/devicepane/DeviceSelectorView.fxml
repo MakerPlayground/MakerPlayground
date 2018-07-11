@@ -8,14 +8,14 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../css/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="deviceSelectorPane" contentText="Add Devices" expanded="true" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../../css/canvas/node/usersetting/DeviceSelectorView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <header>
       <AnchorPane minHeight="0.0" minWidth="0.0" />
     </header>
     <content>
       <AnchorPane maxWidth="-Infinity" style="-fx-background-color: white;">
          <children>
-            <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0" stylesheets="@../../css/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0" stylesheets="@../../../css/canvas/node/usersetting/DeviceSelectorView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TitledPane collapsible="false" text="Sensor">
                      <content>

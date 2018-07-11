@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="conditionDeviceIconView" alignment="TOP_CENTER" stylesheets="@../../../../css/ConditionDeviceIconView.css" maxHeight="-Infinity" maxWidth="45.0" minWidth="45.0" prefWidth="45.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="conditionDeviceIconView" alignment="TOP_CENTER" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" maxHeight="-Infinity" maxWidth="45.0" minWidth="45.0" prefWidth="45.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <StackPane prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: white; -fx-background-radius: 5;">
          <children>

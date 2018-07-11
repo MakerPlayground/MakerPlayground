@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root stylesheets="@../../css/GenerateView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../../../css/dialog/generate/GenerateView.css" type="DialogPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <TabPane tabClosingPolicy="UNAVAILABLE">
         <tabs>

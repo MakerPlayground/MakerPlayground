@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root id="frame" alignment="CENTER" stylesheets="@../../../../css/StateDeviceIcon2View.css" maxHeight="65.0" maxWidth="55.0" minHeight="65.0" minWidth="55.0" prefWidth="55.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" >
+<fx:root id="frame" alignment="CENTER" stylesheets="@../../../../css/canvas/node/usersetting/StateDeviceIcon2View.css" maxHeight="65.0" maxWidth="55.0" minHeight="65.0" minWidth="55.0" prefWidth="55.0" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" >
    <children>
       <StackPane prefHeight="35.0" prefWidth="35.0">
          <children>

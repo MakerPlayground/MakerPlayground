@@ -46,7 +46,7 @@ public class TutorialView extends Stage {
     public TutorialView(Window owner) {
         rootPane = new AnchorPane();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/TutorialView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/tutorial/TutorialView.fxml"));
         fxmlLoader.setRoot(rootPane);
         fxmlLoader.setController(this);
         try {
@@ -65,7 +65,7 @@ public class TutorialView extends Stage {
         ListIterator<Tutorial> i = tutorial.listIterator();
 
         setTitle("Tips & Tricks");
-        rootPane.getStylesheets().add(getClass().getResource("/css/TutorialView.css").toExternalForm());
+        rootPane.getStylesheets().add(getClass().getResource("/css/dialog/tutorial/TutorialView.css").toExternalForm());
 
 
 
