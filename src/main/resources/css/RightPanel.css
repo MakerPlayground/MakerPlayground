@@ -1,3 +1,13 @@
+#rightPanel {
+    -fx-background-color : #4d5666;
+}
+
+#projectButton {
+    -fx-background-color : #313644;
+    -fx-border-color: #1c1c1c;
+    -fx-border-width: 1.5px 0px 0px 0px;
+}
+
 .button{
     -fx-font-size:12px;
     -fx-background-color : transparent;
