@@ -41,7 +41,7 @@ public class DevicePanelView extends VBox {
     public DevicePanelView(DevicePanelViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/NewDevicePanelView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DevicePanelView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

@@ -27,7 +27,7 @@ public class DevicePanelIcon extends VBox {
     public DevicePanelIcon(DevicePanelIconViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DevicePanelIcon.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/deprecated/DevicePanelIcon.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

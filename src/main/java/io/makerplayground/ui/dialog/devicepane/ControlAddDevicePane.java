@@ -33,7 +33,7 @@ public class ControlAddDevicePane extends VBox {
         this.genericDevice = genericDevice;
         this.count = 0;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ControlAddDevicePane.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/ControlAddDevicePane.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

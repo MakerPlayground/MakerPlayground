@@ -31,7 +31,7 @@ public class SceneDeviceIconView extends VBox {
     public SceneDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateDeviceIcon2View.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/StateDeviceIcon2View.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

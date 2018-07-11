@@ -8,13 +8,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root id="dialog" maxHeight="-Infinity" stylesheets="@../css/ErrorDialogView.css" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="450.0"  type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="dialog" maxHeight="-Infinity" stylesheets="@../../css/ErrorDialogView.css" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="450.0" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <content>
       <VBox alignment="CENTER" spacing="20.0">
          <children>
             <ImageView fitHeight="195.0" fitWidth="130.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../icons/Error.png" />
+                  <Image url="@../../icons/Error.png" />
                </image>
             </ImageView>
             <Label fx:id="descriptionLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" text="Label" textAlignment="CENTER">

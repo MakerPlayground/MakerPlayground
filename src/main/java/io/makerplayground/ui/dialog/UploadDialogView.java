@@ -29,7 +29,7 @@ public class UploadDialogView extends Dialog {
     private final StringProperty logProperty;
 
     public UploadDialogView(UploadTask uploadTask) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/UploadDialogView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/UploadDialogView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
         try {

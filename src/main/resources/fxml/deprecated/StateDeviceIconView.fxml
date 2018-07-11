@@ -24,7 +24,7 @@
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../icons/cancel.png" />
+                        <Image url="@../../icons/cancel.png" />
                      </image>
                   </ImageView>
                </graphic>

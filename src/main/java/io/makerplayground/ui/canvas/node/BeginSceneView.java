@@ -27,7 +27,7 @@ public class BeginSceneView extends InteractiveNode {
         this.beginSceneViewModel = beginSceneViewModel;
 
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BeginScene.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/BeginScene.fxml"));
         fxmlLoader.setRoot(beginHBox);
         fxmlLoader.setController(this);
         try {
