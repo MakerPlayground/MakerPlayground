@@ -1,6 +1,5 @@
 package io.makerplayground.ui;
 
-import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
@@ -11,7 +10,9 @@ import io.makerplayground.ui.devicepanel.ConfigActualDeviceView;
 import io.makerplayground.ui.devicepanel.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.devicepanel.DevicePanelView;
 import io.makerplayground.ui.devicepanel.DevicePanelViewModel;
-import javafx.geometry.Insets;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,100 +24,105 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.IOException;
+
 /**
  * Created by Mai.Manju on 12-Jun-17.
  */
 public class RightPanel extends AnchorPane {
 
+    @FXML
+    private VBox projectButton;
+    @FXML
+    private Button configureBtn;
+    @FXML
+    private Button generateBtn;
+    @FXML
+    private Button uploadBtn;
 
     private final Project project;
 
     public RightPanel(Project project) {
         this.project = project;
-        //File f = new File("src/main/resources/css/RightPanel.css");
-        //getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
-        getStylesheets().add(RightPanel.class.getResource("/css/RightPanel.css").toExternalForm());
         initView();
     }
 
     private void initView() {
-        setStyle("-fx-background-color : #2b2b2b;");
-        setMaxWidth(330.0);
-        DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
-        DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
-        Button configureBtn = new Button("Configure Device");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/RightPanel.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
 
-        configureBtn.setOnAction(event -> {
-            ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
-            ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-            configActualDeviceView.showAndWait();
-        });
-
-
-        Button generateBtn = new Button("Generate Project");
-        generateBtn.setOnAction(event -> {
-            DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-            if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
-                ErrorDialogView errorDialogView = new ErrorDialogView("Controller hasn't been selected");
-                errorDialogView.showAndWait();
-                return;
-            } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-                ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
-                errorDialogView.showAndWait();
-                return;
-            } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-                ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
-                errorDialogView.showAndWait();
-                return;
-            } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
-                throw new IllegalStateException("Found unknown error!!!");
-            }
-
-            Sourcecode code = Sourcecode.generateCode(project, false);
-            if (code.getError() != null) {
-                ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
-                errorDialogView.showAndWait();
-            } else {
-                SingletonWiringDiagram.getInstance().setOpenTime();
-                GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
-                GenerateView generateView = new GenerateView(generateViewModel);
-                generateView.showAndWait();
-            }
-        });
-        Button uploadBtn = new Button("Upload");
-        uploadBtn.setOnAction(event -> {
-            SingletonUploadClick.getInstance().click();
-            UploadTask uploadTask = new UploadTask(project);
-
-            UploadDialogView uploadDialogView = new UploadDialogView(uploadTask);
-            uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
-            uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
-            uploadDialogView.logProperty().bind(uploadTask.logProperty());
-            uploadDialogView.show();
-
-            new Thread(uploadTask).start();
-        });
-
-        VBox projectButton = new VBox();
-        projectButton.setStyle("-fx-background-color : #2b2b2b; -fx-border-color: #1c1c1c; -fx-border-width: 1.5px 0px 0px 0px;");
-        projectButton.setSpacing(2.0);
-        projectButton.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
-        projectButton.setAlignment(Pos.CENTER);
-        projectButton.setPadding(new Insets(20.0,20.0,20.0,20.0));
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         configureBtn.prefWidthProperty().bind(projectButton.widthProperty());
         generateBtn.prefWidthProperty().bind(projectButton.widthProperty());
         uploadBtn.prefWidthProperty().bind(projectButton.widthProperty());
 
+        DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
+        DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
         AnchorPane.setLeftAnchor(devicePanelView,0.0);
         AnchorPane.setRightAnchor(devicePanelView,0.0);
         AnchorPane.setTopAnchor(devicePanelView,0.0);
         AnchorPane.setBottomAnchor(devicePanelView,120.0);
-        AnchorPane.setLeftAnchor(projectButton,0.0);
-        AnchorPane.setRightAnchor(projectButton,0.0);
-        AnchorPane.setBottomAnchor(projectButton,0.0);
 
-        getChildren().addAll(devicePanelView, projectButton);
+        getChildren().add(0, devicePanelView);
+    }
+
+
+    @FXML
+    private void handleConfigureBtn(ActionEvent event) {
+        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
+        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
+        configActualDeviceView.showAndWait();
+    }
+
+    @FXML
+    private void handleGenerateBtn(ActionEvent event) {
+        DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
+        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+            ErrorDialogView errorDialogView = new ErrorDialogView("Controller hasn't been selected");
+            errorDialogView.showAndWait();
+            return;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+            ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
+            errorDialogView.showAndWait();
+            return;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+            ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
+            errorDialogView.showAndWait();
+            return;
+        } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
+            throw new IllegalStateException("Found unknown error!!!");
+        }
+
+        Sourcecode code = Sourcecode.generateCode(project, false);
+        if (code.getError() != null) {
+            ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
+            errorDialogView.showAndWait();
+        } else {
+            SingletonWiringDiagram.getInstance().setOpenTime();
+            GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
+            GenerateView generateView = new GenerateView(generateViewModel);
+            generateView.showAndWait();
+        }
+    }
+
+    @FXML
+    private void handleUploadBtn(ActionEvent event) {
+        SingletonUploadClick.getInstance().click();
+        UploadTask uploadTask = new UploadTask(project);
+
+        UploadDialogView uploadDialogView = new UploadDialogView(uploadTask);
+        uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
+        uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
+        uploadDialogView.logProperty().bind(uploadTask.logProperty());
+        uploadDialogView.show();
+
+        new Thread(uploadTask).start();
     }
 
     public static class ProgressForm {

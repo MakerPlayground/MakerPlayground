@@ -39,7 +39,6 @@ public class MainWindow extends SplitPane {
         CanvasViewModel canvasViewModel = new CanvasViewModel(project);
         canvasView = new CanvasView(canvasViewModel);
 
-        setDividerPositions(0.8, 0.2);
         getItems().addAll(canvasView, rightPanel);
     }
 

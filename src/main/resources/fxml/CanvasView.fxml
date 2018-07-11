@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.makerplayground.ui.canvas.InteractivePane?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 
 <fx:root id="anchorPane" fx:id="anchorPane" stylesheets="@../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <ScrollPane id="scrollPane" fx:id="scrollPane" layoutX="60.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <content>
-            <Pane id="canvasPane" fx:id="canvasPane" />
-         </content>
-      </ScrollPane>
-      <Button id="addStateBtn" fx:id="addStateBtn" maxHeight="30.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" mnemonicParsing="false" text=" Add Scene" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-         <!--<graphic>-->
-            <!--<Text boundsType="VISUAL" fill="#5ac2ab" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold; -fx-font-size: 24px;" text="+ " textOrigin="CENTER" />-->
-         <!--</graphic>-->
-      </Button>
-      <Button id="addConditionBtn" fx:id="addConditionBtn" layoutX="168.0" layoutY="75.0" maxHeight="30.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" mnemonicParsing="false" text=" Add Condition" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="65.0">
-         <!--<graphic>-->
-            <!--<Text boundsType="VISUAL" fill="#5ac2ab" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold; -fx-font-size: 24px;" text="+ " textOrigin="CENTER" />-->
-         <!--</graphic>-->
-      </Button>
-   </children>
+<children>
+   <InteractivePane id="mainPane" fx:id="mainPane" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <contextMenu>
+         <ContextMenu id="contextMenu" fx:id="contextMenu">
+            <items>
+               <MenuItem id="cutMenuItem" fx:id="cutMenuItem" text="Cut" onAction="#handleCutMenu" accelerator="Shortcut+X" />
+               <MenuItem id="copyMenuItem" fx:id="copyMenuItem" text="Copy" onAction="#handleCopyMenu" accelerator="Shortcut+C"/>
+               <MenuItem id="pasteMenuItem" fx:id="pasteMenuItem" text="Paste" onAction="#handlePasteMenu" accelerator="Shortcut+V"/>
+               <SeparatorMenuItem />
+               <MenuItem id="deleteMenuItem" fx:id="deleteMenuItem" text="Delete" onAction="#handleDeleteMenu" accelerator="Delete"/>
+            </items>
+         </ContextMenu>
+      </contextMenu>
+   </InteractivePane>
+   <Button id="addStateBtn" fx:id="addStateBtn" text="+ Add Scene" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0" onAction="#handleAddStateBtn"/>
+   <Button id="addConditionBtn" fx:id="addConditionBtn" text="+ Add Condition" AnchorPane.topAnchor="65.0" AnchorPane.rightAnchor="20.0" onAction="#handleAddConditionBtn"/>
+   <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" spacing="0.0">
+      <children>
+         <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#handleZoomInBtn"/>
+         <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25" onAction="#handleZoomDefaultBtn"/>
+         <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#handleZoomOutBtn"/>
+      </children>
+   </VBox>
+</children>
 </fx:root>
