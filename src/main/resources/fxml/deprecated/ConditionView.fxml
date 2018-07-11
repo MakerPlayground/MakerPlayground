@@ -21,7 +21,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../../css/ConditionView.css">
+      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../../css/deprecated/ConditionView.css">
          <children>
             <Arc id="sourceNode" fx:id="sourceNode" fill="#30354200" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="TRANSPARENT" strokeType="INSIDE" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);" type="ROUND" />
             <ScrollPane fitToHeight="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="110.0" prefWidth="200.0" style="-fx-effect: dropshadow(gaussian,derive(black,75%), 10.0 , 0.0, 0.0 , 0.0);">

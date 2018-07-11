@@ -109,7 +109,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
 
         // arrange title and property sheet
         VBox mainPane = new VBox();
-        mainPane.getStylesheets().add(this.getClass().getResource("/css/DevicePropertyWindow.css").toExternalForm());
+        mainPane.getStylesheets().add(this.getClass().getResource("/css/canvas/node/usersetting/DevicePropertyWindow.css").toExternalForm());
         mainPane.getChildren().addAll(titleHBox, propertyPane);
         mainPane.setSpacing(5.0);
         mainPane.setPadding(new Insets(20, 20, 20, 20));

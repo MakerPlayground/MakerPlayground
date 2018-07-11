@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 
-<fx:root stylesheets="@../../../css/ConditionView3.css" alignment="TOP_RIGHT" type="VBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../../../css/canvas/node/ConditionView3.css" alignment="TOP_RIGHT" type="VBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false">
          <graphic>
@@ -24,7 +24,7 @@
       <HBox fx:id="conditionPane" alignment="CENTER">
          <children>
             <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"/>
-            <HBox id="contentPane" stylesheets="@../../../css/ConditionView3.css">
+            <HBox id="contentPane" stylesheets="@../../../css/canvas/node/ConditionView3.css">
                <children>
                   <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="215.0">
                      <content>

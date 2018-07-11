@@ -39,7 +39,7 @@ public class ConfigActualDeviceView extends Dialog {
 
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
-        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/ConfigActualDeviceView.css").toExternalForm());
+        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/dialog/configdevice/ConfigActualDeviceView.css").toExternalForm());
         getDialogPane().setPrefHeight(500);
         getDialogPane().setMaxHeight(500);
 

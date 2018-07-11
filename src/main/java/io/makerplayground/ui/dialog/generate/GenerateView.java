@@ -43,7 +43,7 @@ public class GenerateView extends Dialog {
         stage.initStyle(StageStyle.UTILITY);
         setTitle("  Generate Project");
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/GenerateView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/generate/GenerateView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
 
