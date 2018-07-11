@@ -8,7 +8,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 
-<fx:root id="anchorPane" fx:id="anchorPane" stylesheets="@../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="anchorPane" fx:id="anchorPane" stylesheets="@../../css/CanvasView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 <children>
    <InteractivePane id="mainPane" fx:id="mainPane" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
       <contextMenu>

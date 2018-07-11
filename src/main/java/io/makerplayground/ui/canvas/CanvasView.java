@@ -55,7 +55,7 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/CanvasView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/CanvasView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
