@@ -1,86 +1,43 @@
 
 
-.titled-pane > .title{
+#right_button{
     -fx-background-color : #231F20;
     -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 3px;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-}
-#deviceTitlepane> .title{
-    -fx-background-color : #231F20;
-    -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
+    -fx-border-width : 8px;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-text-fill: #5AC1AA;
 }
 
-#deviceTitlepane:expanded > .title{
-    -fx-background-color : #5AC1AA;
-    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+#right_button:hover, #right_button:focus, #right_button:active {
+    -fx-background-color: #3C9691;
+    -fx-border-color: #3C9691 transparent transparent #5AC1AA;
+    -fx-text-fill: #FFFFFF;
+    -fx-color: white;
+    -fx-cursor: hand;
 }
-#aa{
-    -fx-background-color:#231F20;
-    -fx-border-color :#231F20;
 
-}
-#diagrampane:expanded > .title{
-    -fx-background-color : #5AC1AA;
+#right_button:pressed, #right:visited{
+    -fx-font-size:18px;
     -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-#diagrampane> .title{
-    -fx-background-color : #231F20;
-    -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-#genpan:expanded > .title{
     -fx-background-color : #5AC1AA;
-    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+    -fx-border-color : #5AC1AA;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
 }
-#genpan> .title{
-    -fx-background-color : #231F20;
-    -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-#conpan:expanded > .title{
-    -fx-background-color : #5AC1AA;
-    -fx-border-color: #5AC1AA transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-#conpan> .title{
-    -fx-background-color : #231F20;
-    -fx-border-color: #231F20 transparent transparent #5AC1AA;
-    -fx-border-width : 5px;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-.titled-pane{
-    -fx-focus-color: transparent;
-    -fx-font-size:16px;
-    -fx-text-fill : white;
-}
-.titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : white;
-}
-.titled-pane > *.content{
-    -fx-background-color : #272B35;
-    -fx-box-border : transparent;
-}
+
+/*.titled-pane{
+     -fx-focus-color: transparent;
+     -fx-font-size:16px;
+     -fx-text-fill : white;
+ }
+ .titled-pane > .title > .arrow-button .arrow{
+     -fx-background-color : white;
+ }
+ .titled-pane > *.content{
+     -fx-background-color : #272B35;
+     -fx-box-border : transparent;
+ }
 
 
 .radio-button {
