@@ -1,8 +1,5 @@
 package io.makerplayground.helper;
 
-import com.microsoft.sqlserver.jdbc.SQLServerBulkCopy;
-import io.makerplayground.ui.Tutorial;
-
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.Executor;

@@ -4,7 +4,7 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.BeginSceneViewModel;
 import io.makerplayground.ui.canvas.node.ConditionViewModel;
 import io.makerplayground.ui.canvas.node.SceneViewModel;
-import io.makerplayground.uihelper.DynamicViewModelCreator;
+import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 
 /**
  *
