@@ -1,8 +1,9 @@
 #mainPane{
     -fx-border-radius: 5;
-    -fx-border-color: lightgray;
+    -fx-border-color: #ED1C24;
     -fx-border-width: 1;
     -fx-border-style: solid;
+    -fx-background-color: #FFFFFF;
 }
 #backspaceBtn{
     -fx-border-color: transparent;
