@@ -208,6 +208,10 @@ public class Sourcecode {
             if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(projectDevice.getGenericDevice())) {
                 sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
             }
+            // TODO: Very Bad Code (Update all C code to contain update function before fix this)
+            if (projectDevice.getGenericDevice().getName().equals("Flow Sensor")) {
+                sb.append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
+            }
         }
         sb.append("}").append(NEW_LINE);
 
