@@ -89,7 +89,7 @@ public class UploadTask extends Task<UploadResult> {
         /* Source Files Preparing */
         updateProgress(0.3, 1);
         updateMessage("Preparing platformio project");
-        String projectPath = MP_WORKSPACE + File.separator + "devicepane";
+        String projectPath = MP_WORKSPACE + File.separator + "upload";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
@@ -102,7 +102,7 @@ public class UploadTask extends Task<UploadResult> {
             try (Scanner s = new Scanner(p.getInputStream())) {
                 while (s.hasNextLine()) {
                     if (isCancelled()) {
-                        updateMessage("Canceling devicepane...");
+                        updateMessage("Canceling upload...");
                         p.destroy();
                         break;
                     }
@@ -171,14 +171,14 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0.75, 1);
         updateMessage("Uploading to board");
         try {
-            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "devicepane");
+            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "upload");
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
                 while (s.hasNextLine()) {
                     if (isCancelled()) {
-                        updateMessage("Canceling devicepane...");
+                        updateMessage("Canceling upload...");
                         p.destroy();
                         break;
                     }

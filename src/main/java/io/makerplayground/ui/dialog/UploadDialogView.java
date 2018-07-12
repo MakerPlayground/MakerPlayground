@@ -41,13 +41,13 @@ public class UploadDialogView extends Dialog {
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
 
-        // Ask for confirmation to cancel when user close this dialog before devicepane complete
+        // Ask for confirmation to cancel when user close this dialog before upload complete
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> {
             if (uploadTask.isDone()) {
                 window.hide();
             } else {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel devicepane?");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent() && result.get() == ButtonType.OK){
                     uploadTask.cancel();
