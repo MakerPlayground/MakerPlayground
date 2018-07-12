@@ -7013,7 +7013,8 @@
       "MP_ARDUINO"
     ],
     "library": [
-      "MP_MakerPlayground7Seg"
+      "MP_MakerPlayground7Seg",
+      "SendOnlySoftwareSerial"
     ],
     "width": 0.0,
     "height": 0.0,
@@ -7028,7 +7029,7 @@
         "type": "MP",
         "function": [
           {
-            "type": "MP_GPIO_DUAL_1",
+            "type": "MP_GPIO_SINGLE_1",
             "pintype": "INOUT"
           }
         ],
@@ -7039,7 +7040,7 @@
       }
     ],
     "connectivity": [
-      "MP_GPIO_DUAL_1"
+      "MP_GPIO_SINGLE_1"
     ],
     "compatibility": [
       {
@@ -7701,7 +7702,7 @@
     ],
     "library": [
       "MP_FlowSensor",
-      "EnableInterrupt"
+      "PinChangeInterrupt"
     ],
     "width": 0.0,
     "height": 0.0,
