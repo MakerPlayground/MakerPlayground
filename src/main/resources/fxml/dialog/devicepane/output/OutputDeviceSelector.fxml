@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.PopOver?>
+<?import javafx.geometry.Insets?>
+<fx:root xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="PopOver" detachable="false" arrowLocation="TOP_LEFT">
+    <contentNode>
+        <FlowPane fx:id="flowPane" maxWidth="245" minWidth="245" hgap="5">
+            <padding> <Insets top="10" right="10" bottom="10" left="10"/> </padding>
+        </FlowPane>
+    </contentNode>
+</fx:root>

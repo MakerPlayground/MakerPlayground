@@ -2,23 +2,29 @@ package io.makerplayground.ui.dialog.devicepane.output;
 
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.ui.canvas.node.SceneViewModel;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import org.controlsfx.control.PopOver;
 
+import java.io.IOException;
+
 /**
  * Created by tanyagorn on 6/26/2017.
  */
 public class OutputDeviceSelector extends PopOver {
-
+    @FXML FlowPane flowPane;
     public OutputDeviceSelector(SceneViewModel viewModel) {
-        FlowPane flowPane = new FlowPane();
-        setContentNode(flowPane);
-        flowPane.setMaxWidth(245.0);
-        flowPane.setMinWidth(245.0);
-        flowPane.setPadding(new Insets(10.0,10.0,10.0,10.));
-        flowPane.setHgap(5.0);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/devicepane/output/OutputDeviceSelector.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         viewModel.getProjectOutputDevice().stream().filter(device -> {
             for (UserSetting userSetting : viewModel.getStateDevice()) {
@@ -36,7 +42,5 @@ public class OutputDeviceSelector extends PopOver {
             });
         });
 
-        setDetachable(false);
-        setArrowLocation(ArrowLocation.TOP_LEFT);
     }
 }

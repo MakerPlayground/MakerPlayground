@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<fx:root type="DialogPane" prefHeight="500" maxHeight="500" style="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER">
+            <content>
+                <VBox fx:id="allDevice" spacing="20" alignment="CENTER">
+                    <padding><Insets top="30" right="30" left="30" bottom="30"/></padding>
+                    <children>
+                        <Label fx:id="topicConfigDevice" id="topicConfigDevice" text="Customize your Devices"/>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </content>
+</fx:root>
