@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.controlsfx.control.CheckComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<fx:root type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <GridPane prefHeight="450" prefWidth="600" hgap="4" vgap="2">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+            <Label fx:id="levelLabel" text="Level" minWidth="30" maxWidth="70" GridPane.columnIndex="5" GridPane.rowIndex="2"/>
+            <ComboBox fx:id="levelComboBox" minWidth="100" GridPane.columnIndex="10" GridPane.rowIndex="2"/>
+            <Label text="Device Tag" GridPane.columnIndex="19" GridPane.rowIndex="2"/>
+            <CheckComboBox fx:id="checkTagComboBox" maxWidth="300" GridPane.columnIndex="24" GridPane.rowIndex="2"/>
+            <TableView fx:id="deviceMonitorTable" GridPane.columnIndex="2" GridPane.rowIndex="6"
+                       GridPane.columnSpan="30" GridPane.rowSpan="30">
+                <columns>
+                    <TableColumn text="Device Tag" minWidth="200">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="Tag"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Message" minWidth="400">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="Message"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+            <CheckBox fx:id="onStatus" text="On" selected="true" GridPane.columnIndex="4" GridPane.rowIndex="47"/>
+        </GridPane>
+    </content>
+</fx:root>

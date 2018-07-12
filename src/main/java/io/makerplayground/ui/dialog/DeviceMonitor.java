@@ -11,6 +11,8 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -22,6 +24,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Window;
 import org.controlsfx.control.CheckComboBox;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,63 +34,41 @@ import java.util.regex.Pattern;
  */
 public class DeviceMonitor extends Dialog implements InvalidationListener{
 
-    private TableView<LogItems> deviceMonitorTable = new TableView<>();
     private ObservableList<LogItems> logData = FXCollections.observableArrayList();
     private Thread serialThread = null;
     private final Pattern format = Pattern.compile("(DEBUG|VERBOSE|WARNING|ERROR|INFO);(.+);(.+)"); // Regex
     private FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
-    private final ComboBox<LogItems.LogLevel> levelComboBox;
-    private CheckComboBox<String> checkTagComboBox;
-
+    @FXML private TableView<LogItems> deviceMonitorTable;
+    @FXML private ComboBox<LogItems.LogLevel> levelComboBox;
+    @FXML private CheckComboBox<String> checkTagComboBox;
+    @FXML private Label levelLabel;
+    @FXML private Label tagLabel;
+    @FXML private GridPane gridPane;
+    @FXML private CheckBox onStatus;
     public DeviceMonitor(Project project) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
+        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
         setTitle("Device Monitor");
 
 
-        Label levelLabel = new Label("Level");
-        Label tagLabel = new Label("Device Tag");
-        levelLabel.setMinWidth(30);
-        tagLabel.setMinWidth(70);
+        checkTagComboBox.getItems().addAll(FXCollections.observableArrayList(new ArrayList<>()));
+        levelComboBox.getItems().addAll(FXCollections.observableArrayList(LogItems.LogLevel.values()));
 
-        CheckBox onStatus = new CheckBox("On");
-        onStatus.setSelected(true);
-
-
-        checkTagComboBox = new CheckComboBox<>(FXCollections.observableArrayList(new ArrayList<>()));
-        levelComboBox = new ComboBox<>(FXCollections.observableArrayList(LogItems.LogLevel.values()));
         checkTagComboBox.getCheckModel().checkAll();
-        levelComboBox.setMinWidth(100);
-        checkTagComboBox.setMaxWidth(300);
         levelComboBox.getSelectionModel().selectedItemProperty().addListener(this);
+
         checkTagComboBox.getCheckModel().getCheckedItems().addListener(this);
         levelComboBox.getSelectionModel().select(0);
 
-
-        TableColumn<LogItems, String> tagCol = new TableColumn<>("Device Tag");
-        tagCol.setCellValueFactory(new PropertyValueFactory<>("Tag"));
-        tagCol.setMinWidth(200);
-        TableColumn<LogItems, String> messageCol = new TableColumn<>("Message");
-        messageCol.setCellValueFactory(new PropertyValueFactory<>("Message"));
-        messageCol.setMinWidth(400);
-
         deviceMonitorTable.setItems(logDataFilter);
-        deviceMonitorTable.getColumns().addAll(tagCol, messageCol);
-
-        GridPane gridPane = new GridPane();
-        gridPane.setPrefSize(600,450);
-        gridPane.setHgap(4);
-        gridPane.setVgap(2);
-        gridPane.setPadding(new Insets(5,5,5,5));
-        gridPane.add(levelLabel,5,2);
-        gridPane.add(levelComboBox,10,2);
-        gridPane.add(tagLabel,19,2);
-        gridPane.add(checkTagComboBox,24,2);
-        gridPane.add(deviceMonitorTable,2,6,30,30);
-        gridPane.add(onStatus,4,47);
-
-        this.getDialogPane().setMinSize(100,100);
-        this.getDialogPane().setContent(gridPane);
 
         initView();
 

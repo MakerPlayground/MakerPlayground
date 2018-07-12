@@ -2,34 +2,38 @@ package io.makerplayground.ui.dialog.devicepane.devicepanel;
 
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
+
 public class DevicePanelListCell extends ListCell<ProjectDevice> {
 
-    private HBox hbox;
-    private Label nameLabel;
-    private TextField nameTextField;
-    private Pane spacingPane;
-    private Button deleteButton;
+    @FXML private HBox hbox;
+    @FXML private TextField nameTextField;
+    @FXML private Pane spacingPane;
+    @FXML private Button deleteButton;
+    private Project project;
 
     public DevicePanelListCell(Project project) {
         super();
-        setEditable(true);
 
-        hbox = new HBox();
+        this.project = project;
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/devicepane/devicepanel/DevicePanelListCell.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
 
-        nameLabel = new Label();
-        nameLabel.managedProperty().bind(nameLabel.visibleProperty());
-        nameLabel.setId("nameLabel");
-        nameLabel.setTextFill(Color.WHITE);
-
-        nameTextField = new TextField();
-        nameTextField.setId("nameTextField");
-        nameTextField.setVisible(false);
         nameTextField.managedProperty().bind(nameTextField.visibleProperty());
         nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -40,34 +44,6 @@ public class DevicePanelListCell extends ListCell<ProjectDevice> {
                 }
             }
         });
-
-        spacingPane = new Pane();
-        HBox.setHgrow(spacingPane, Priority.ALWAYS);
-
-        deleteButton = new Button();
-        deleteButton.setId("delButton");
-        deleteButton.setOnAction(event -> {
-            ProjectDevice projectDevice = getItem();
-            project.removeSensor(projectDevice);
-            project.removeConnectivity(projectDevice);
-            project.removeActuator(projectDevice);
-        });
-
-        hbox.getChildren().addAll(nameLabel, nameTextField, spacingPane, deleteButton);
-    }
-
-    @Override
-    public void startEdit() {
-        super.startEdit();
-        nameLabel.setVisible(false);
-        nameTextField.setVisible(true);
-    }
-
-    @Override
-    public void cancelEdit() {
-        super.cancelEdit();
-        nameLabel.setVisible(true);
-        nameTextField.setVisible(false);
     }
 
     @Override
@@ -78,8 +54,23 @@ public class DevicePanelListCell extends ListCell<ProjectDevice> {
             setText(null);
             setGraphic(null);
         } else {
-            nameLabel.setText(item.getName());
+            nameTextField.setText(item.getName());
             setGraphic(hbox);
         }
     }
+
+    private void deleteHandler() {
+        ProjectDevice projectDevice = getItem();
+        project.removeSensor(projectDevice);
+        project.removeConnectivity(projectDevice);
+        project.removeActuator(projectDevice);
+    }
+
+    @FXML
+    private void handleDelete(ActionEvent event) {
+        deleteHandler();
+    }
+
+
+
 }

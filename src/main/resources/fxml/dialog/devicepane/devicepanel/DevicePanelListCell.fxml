@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+<fx:root stylesheets="@../../../../css/NewDevicePanelView.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="ListCell" editable="true">
+    <HBox fx:id="hbox">
+    <children>
+        <TextField id="nameTextField" fx:id="nameTextField" visible="true" />
+        <Pane fx:id="spacingPane" HBox.hgrow="ALWAYS"/>
+        <Button id="delButton" fx:id="deleteButton" onAction="#handleDelete" />
+    </children>
+    </HBox>
+</fx:root>
