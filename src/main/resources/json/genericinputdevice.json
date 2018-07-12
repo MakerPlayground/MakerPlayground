@@ -1,544 +1,578 @@
 [
   {
-    "name": "Button", 
-    "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to control devices", 
-    "action": [], 
+    "name": "Button",
+    "description": "This is buttons. You can press or release the button to do some action. \\nRelated project:\\n\\tPiano\\n\\tSwitch to control devices",
+    "action": [],
     "condition": [
       {
-        "name": "Wait For Press", 
-        "funcname": "isPressed", 
-        "type": "Active", 
+        "name": "Wait For Press",
+        "funcname": "isPressed",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "Wait For Release", 
-        "funcname": "isReleased", 
-        "type": "Active", 
+        "name": "Wait For Release",
+        "funcname": "isReleased",
+        "type": "Active",
         "parameter": []
       }
-    ], 
-    "value": [], 
+    ],
+    "value": [],
     "property": []
-  }, 
+  },
   {
-    "name": "Accelerometer", 
-    "description": "Accelerometer is a sensor to measure acceleration.\\nYou can use it to detect free fall, acceleration on x,y,z axis. \\nRelated project:\\n\\tFalling object detector", 
-    "action": [], 
+    "name": "Accelerometer",
+    "description": "Accelerometer is a sensor to measure acceleration.\\nYou can use it to detect free fall, acceleration on x,y,z axis. \\nRelated project:\\n\\tFalling object detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "Tap", 
-        "funcname": "isTapped", 
-        "type": "Active", 
+        "name": "Tap",
+        "funcname": "isTapped",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "Free Fall", 
-        "funcname": "isFallen", 
-        "type": "Active", 
+        "name": "Free Fall",
+        "funcname": "isFallen",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Accel_X", 
-        "dataType": "DOUBLE", 
+        "name": "Accel_X",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -100.0, 
-          "max": 100.0, 
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
-      }, 
+      },
       {
-        "name": "Accel_Y", 
-        "dataType": "DOUBLE", 
+        "name": "Accel_Y",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -100.0, 
-          "max": 100.0, 
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
-      }, 
+      },
       {
-        "name": "Accel_Z", 
-        "dataType": "DOUBLE", 
+        "name": "Accel_Z",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -100.0, 
-          "max": 100.0, 
+          "min": -100.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
-      }, 
+      },
       {
-        "name": "Accel_Magnitude", 
-        "dataType": "DOUBLE", 
+        "name": "Accel_Magnitude",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "METERPERSECSQUARE"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Pressuremeter", 
-    "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector", 
-    "action": [], 
+    "name": "Pressuremeter",
+    "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Pressure", 
-        "dataType": "DOUBLE", 
+        "name": "Pressure",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -3000.0, 
-          "max": 3000.0, 
+          "min": -3000.0,
+          "max": 3000.0,
           "unit": "HECTOPASCAL"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Altimeter", 
-    "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector", 
-    "action": [], 
+    "name": "Altimeter",
+    "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Altitude", 
-        "dataType": "DOUBLE", 
+        "name": "Altitude",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -3000.0, 
-          "max": 3000.0, 
+          "min": -3000.0,
+          "max": 3000.0,
           "unit": "METER"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Temperature", 
-    "description": "A thermometer. \\nRelated project:\\n\\tSmart fan\\n\\tHeat detector", 
-    "action": [], 
+    "name": "Temperature",
+    "description": "A thermometer. \\nRelated project:\\n\\tSmart fan\\n\\tHeat detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Temperature", 
-        "dataType": "DOUBLE", 
+        "name": "Temperature",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -500.0, 
-          "max": 500.0, 
+          "min": -500.0,
+          "max": 500.0,
           "unit": "CELSIUS"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Gyroscope", 
-    "description": "A sensor that measure rotation on x,y,z axis. \\nRelated project:\\n\\t Flip detector", 
-    "action": [], 
+    "name": "Gyroscope",
+    "description": "A sensor that measure rotation on x,y,z axis. \\nRelated project:\\n\\t Flip detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Gyro_X", 
-        "dataType": "DOUBLE", 
+        "name": "Gyro_X",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
-      }, 
+      },
       {
-        "name": "Gyro_Y", 
-        "dataType": "DOUBLE", 
+        "name": "Gyro_Y",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
-      }, 
+      },
       {
-        "name": "Gyro_Z", 
-        "dataType": "DOUBLE", 
+        "name": "Gyro_Z",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "RADIUSPERSEC"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Humidity", 
-    "description": "A sensor that measure humidity. \\nRelated project:\\n\\tAutomatic water plant", 
-    "action": [], 
+    "name": "Humidity",
+    "description": "A sensor that measure humidity. \\nRelated project:\\n\\tAutomatic water plant",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Humidity", 
-        "dataType": "DOUBLE", 
+        "name": "Humidity",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Sound", 
-    "description": "A sensor that measure level of sound. \\nRelated project:\\n\\tSound detector", 
-    "action": [], 
+    "name": "Sound",
+    "description": "A sensor that measure level of sound. \\nRelated project:\\n\\tSound detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "SoundLevel", 
-        "dataType": "DOUBLE", 
+        "name": "SoundLevel",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Magnetometer", 
-    "description": "A sensor that measure magnetic. \\nRelated project:\\n\\tMagnet detector\\n\\tCompass", 
-    "action": [], 
+    "name": "Magnetometer",
+    "description": "A sensor that measure magnetic. \\nRelated project:\\n\\tMagnet detector\\n\\tCompass",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "Direction", 
-        "funcname": "checkDirection", 
-        "type": "Active", 
+        "name": "Direction",
+        "funcname": "checkDirection",
+        "type": "Active",
         "parameter": [
           {
-            "name": "Direction", 
-            "value": "North", 
+            "name": "Direction",
+            "value": "North",
             "constraint": [
-              "North", 
-              "South", 
-              "East", 
-              "West", 
-              "NorthEast", 
-              "NorthWest", 
-              "SouthEast", 
+              "North",
+              "South",
+              "East",
+              "West",
+              "NorthEast",
+              "NorthWest",
+              "SouthEast",
               "SouthWest"
-            ], 
-            "datatype": "ENUM", 
+            ],
+            "datatype": "ENUM",
             "controltype": "DROPDOWN"
           }
         ]
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Mag_X", 
-        "dataType": "DOUBLE", 
+        "name": "Mag_X",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "MICROTESLA"
         }
-      }, 
+      },
       {
-        "name": "Mag_Y", 
-        "dataType": "DOUBLE", 
+        "name": "Mag_Y",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "MICROTESLA"
         }
-      }, 
+      },
       {
-        "name": "Mag_Z", 
-        "dataType": "DOUBLE", 
+        "name": "Mag_Z",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -200.0, 
-          "max": 200.0, 
+          "min": -200.0,
+          "max": 200.0,
           "unit": "MICROTESLA"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Distance", 
-    "description": "A sensor that measure distance. \\nRelated project:\\n\\tWall detector\\n\\tObject detector", 
-    "action": [], 
+    "name": "Distance",
+    "description": "A sensor that measure distance. \\nRelated project:\\n\\tWall detector\\n\\tObject detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Distance", 
-        "dataType": "DOUBLE", 
+        "name": "Distance",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 200.0, 
+          "min": 0.0,
+          "max": 200.0,
           "unit": "CENTIMETER"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Presence", 
-    "description": "A sensor that measure movement. \\nRelated project:\\n\\tHuman detector", 
-    "action": [], 
+    "name": "Presence",
+    "description": "A sensor that measure movement. \\nRelated project:\\n\\tHuman detector",
+    "action": [],
     "condition": [
       {
-        "name": "Detect Human", 
-        "funcname": "isDetected", 
-        "type": "Active", 
+        "name": "Detect Human",
+        "funcname": "isDetected",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "No Human", 
-        "funcname": "isNotDetected", 
-        "type": "Active", 
+        "name": "No Human",
+        "funcname": "isNotDetected",
+        "type": "Active",
         "parameter": []
       }
-    ], 
-    "value": [], 
+    ],
+    "value": [],
     "property": []
-  }, 
+  },
   {
-    "name": "Color", 
-    "description": "A sensor that detect color. \\nRelated project:\\n\\tColor detector", 
-    "action": [], 
+    "name": "Color",
+    "description": "A sensor that detect color. \\nRelated project:\\n\\tColor detector",
+    "action": [],
     "condition": [
       {
-        "name": "Detect Color", 
-        "funcname": "isColor", 
-        "type": "Active", 
+        "name": "Detect Color",
+        "funcname": "isColor",
+        "type": "Active",
         "parameter": [
           {
-            "name": "Color", 
-            "value": "Red", 
+            "name": "Color",
+            "value": "Red",
             "constraint": [
-              "Red", 
-              "Green", 
-              "Blue", 
-              "Cyan", 
-              "Magenta", 
-              "Yellow", 
+              "Red",
+              "Green",
+              "Blue",
+              "Cyan",
+              "Magenta",
+              "Yellow",
               "White"
-            ], 
-            "datatype": "ENUM", 
+            ],
+            "datatype": "ENUM",
             "controltype": "DROPDOWN"
           }
         ]
       }
-    ], 
-    "value": [], 
+    ],
+    "value": [],
     "property": []
-  }, 
+  },
   {
-    "name": "Light", 
-    "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light", 
-    "action": [], 
+    "name": "Light",
+    "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Water", 
-    "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector", 
-    "action": [], 
+    "name": "Water",
+    "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector",
+    "action": [],
     "condition": [
       {
-        "name": "Detect Water", 
-        "funcname": "isWet", 
-        "type": "Active", 
+        "name": "Detect Water",
+        "funcname": "isWet",
+        "type": "Active",
         "parameter": []
-      }, 
+      },
       {
-        "name": "No Water", 
-        "funcname": "isDry", 
-        "type": "Active", 
+        "name": "No Water",
+        "funcname": "isDry",
+        "type": "Active",
         "parameter": []
       }
-    ], 
-    "value": [], 
+    ],
+    "value": [],
     "property": []
-  }, 
+  },
   {
-    "name": "Alcohol", 
-    "description": "A sensor that detect alcohol. \\nRelated project:\\n\\tAlcohol meter", 
-    "action": [], 
+    "name": "Alcohol",
+    "description": "A sensor that detect alcohol. \\nRelated project:\\n\\tAlcohol meter",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "LPG", 
-    "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas dectetor", 
-    "action": [], 
+    "name": "LPG",
+    "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas dectetor",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "POT", 
-    "description": "This is potentiometer. You can turn to adjust and make some action.\\nRelated project:\\n\\tHelp many projects in selecting action and/or adjusting the sensor value", 
-    "action": [], 
+    "name": "POT",
+    "description": "This is potentiometer. You can turn to adjust and make some action.\\nRelated project:\\n\\tHelp many projects in selecting action and/or adjusting the sensor value",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
     "property": []
-  }, 
+  },
   {
-    "name": "Soil Moisture", 
-    "description": "This is Moisture Sensor. It can detect the moisture of soil or decide whether there is water around the sensor", 
-    "action": [], 
+    "name": "Soil Moisture",
+    "description": "This is Moisture Sensor. It can detect the moisture of soil or decide whether there is water around the sensor",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
-    ], 
+    ],
+    "property": []
+  },
+  {
+    "name": "Flow Sensor",
+    "description": "A sensor that detects the water flow",
+    "action": [],
+    "condition": [
+      {
+        "name": "Detect Water Flow",
+        "funcname": "isWaterFlow",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Total Water Amount",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 1000000.0,
+          "unit": "MILLILITER"
+        }
+      },
+      {
+        "name": "Flow Rate",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "MILLILITERPERSECOND"
+        }
+      }
+    ],
     "property": []
   }
 ]

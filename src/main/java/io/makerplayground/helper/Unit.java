@@ -22,7 +22,7 @@ package io.makerplayground.helper;
 public enum Unit {
     //INPUT DEVICE
     TIME,METERPERSECSQUARE,HECTOPASCAL,METER,CELSIUS,FAHRENHEIT,KELVIN,RADIUSPERSEC,DEGREEPERSEC,DECIBEL,
-    MICROTESLA,CENTIMETER,LUX,DEGREE,
+    MICROTESLA,CENTIMETER,LUX,DEGREE,MILLILITER,MILLILITERPERSECOND,
     //OUTPUT DEVICE
     SECOND,WAV,NUMBER,
     //BASIC
@@ -57,6 +57,8 @@ public enum Unit {
             case NOT_SPECIFIED: return "not specified";
             case HERTZ: return "Hz";
             case BPM: return "BPM";
+            case MILLILITER: return "mL";
+            case MILLILITERPERSECOND: return "mL/sec";
             default: return "...";
         }
     }

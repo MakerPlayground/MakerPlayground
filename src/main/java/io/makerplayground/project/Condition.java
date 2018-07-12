@@ -113,10 +113,12 @@ public class Condition extends NodeElement {
                 || !(setting.stream().flatMap(userSetting -> userSetting.getExpression().values().stream())
                 .allMatch(Expression::isValid))
                 // at least one expression must be enable
-                || !(setting.stream().filter(userSetting -> userSetting.getValueMap().isEmpty())
-                .map(userSetting -> userSetting.getExpression().values())
-                .filter(expressions -> !expressions.isEmpty())
-                .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
+                || !(setting.stream()
+                    .filter(userSetting -> userSetting.getValueMap().isEmpty())
+                    .filter(userSetting -> userSetting.getAction().getName().equals("Compare"))
+                    .map(userSetting -> userSetting.getExpression().values())
+                    .filter(expressions -> !expressions.isEmpty())
+                    .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
     }
 
     public boolean isError() {
