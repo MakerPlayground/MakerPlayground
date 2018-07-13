@@ -6,9 +6,12 @@ import io.makerplayground.device.Property;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.Main;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -27,6 +30,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,12 +40,31 @@ import java.util.stream.Collectors;
  */
 public class ConfigActualDeviceView extends Dialog {
     private final ConfigActualDeviceViewModel viewModel;
-
+    @FXML private ScrollPane scrollPane;
+    @FXML private VBox allDevice;
+    @FXML private Label topicConfigDevice;
+    @FXML private ImageView platFormImage;
+    @FXML private Label platformName;
+    @FXML private HBox platFormSelected;
+    @FXML private HBox platFormPicture;
+    @FXML private ComboBox<Platform> platFormComboBox;
+    @FXML private VBox platFormAndController;
+    @FXML private HBox entireControllerDevice;
+    @FXML private ComboBox<Device> controllerComboBox;
+    @FXML private Label controllerName;
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
-        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/dialog/configdevice/ConfigActualDeviceView.css").toExternalForm());
-        getDialogPane().setPrefHeight(500);
-        getDialogPane().setMaxHeight(500);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
+        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+//        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/dialog/configdevice/ConfigActualDeviceView.css").toExternalForm());
+//        getDialogPane().setPrefHeight(500);
+//        getDialogPane().setMaxHeight(500);
 
         setTitle("Configure Device");
 //        setResizable(true);
@@ -53,17 +76,17 @@ public class ConfigActualDeviceView extends Dialog {
     }
 
     private void initView() {
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        VBox allDevice = new VBox();
-        allDevice.setSpacing(20.0);
-        allDevice.setPadding(new Insets(30,30,30,30));
-        allDevice.setAlignment(Pos.CENTER);
-
-        Label topicConfigDevice = new Label("Customize your Devices");
-        topicConfigDevice.setId("topicConfigDevice");
-        allDevice.getChildren().add(topicConfigDevice);
+//        ScrollPane scrollPane = new ScrollPane();
+//        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+//
+//        VBox allDevice = new VBox();
+//        allDevice.setSpacing(20.0);
+//        allDevice.setPadding(new Insets(30,30,30,30));
+//        allDevice.setAlignment(Pos.CENTER);
+//
+//        Label topicConfigDevice = new Label("Customize your Devices");
+//        topicConfigDevice.setId("topicConfigDevice");
+//        allDevice.getChildren().add(topicConfigDevice);
 
         Window window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest(event -> window.hide());
@@ -83,8 +106,8 @@ public class ConfigActualDeviceView extends Dialog {
             throw new IllegalStateException("Found unknown error!!!");
         }
 
-        scrollPane.setContent(allDevice);
-        getDialogPane().setContent(scrollPane);
+//        scrollPane.setContent(allDevice);
+//        getDialogPane().setContent(scrollPane);
         getDialogPane().getScene().getWindow().sizeToScene();
     }
 
@@ -92,18 +115,21 @@ public class ConfigActualDeviceView extends Dialog {
 //        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
 //        controllerImage.setFitHeight(25.0);
 //        controllerImage.setFitWidth(25.0);
+        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons/Controller.png"));
+//        ImageView platFormImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
+        platFormImage.setImage(image);
+//        platFormImage.setFitHeight(25.0);
+//        platFormImage.setFitWidth(25.0);
 
-        ImageView platFormImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
-        platFormImage.setFitHeight(25.0);
-        platFormImage.setFitWidth(25.0);
+//        Label platformName = new Label("Platform");
+//        platformName.setTextAlignment(TextAlignment.LEFT);
+//        platformName.setAlignment(Pos.CENTER_LEFT);
+//        platformName.setId("platFormLabel");
 
-        Label platformName = new Label("Platform");
-        platformName.setTextAlignment(TextAlignment.LEFT);
-        platformName.setAlignment(Pos.CENTER_LEFT);
-        platformName.setId("platFormLabel");
+//        ComboBox<Platform> platFormComboBox = new ComboBox<>(FXCollections.observableArrayList(Platform.values()));
 
-        ComboBox<Platform> platFormComboBox = new ComboBox<>(FXCollections.observableArrayList(Platform.values()));
-        platFormComboBox.setId("platformComboBox");
+        platFormComboBox.getItems().addAll(FXCollections.observableArrayList(Platform.values()));
+//        platFormComboBox.setId("platformComboBox");
         platFormComboBox.getSelectionModel().select(viewModel.getSelectedPlatform());
         platFormComboBox.setCellFactory(new Callback<>() {
             @Override
@@ -136,13 +162,15 @@ public class ConfigActualDeviceView extends Dialog {
             viewModel.setPlatform(newValue);
         });
 
-        Label controllerName = new Label("Controller");
-        controllerName.setTextAlignment(TextAlignment.LEFT);
-        controllerName.setAlignment(Pos.CENTER_LEFT);
-        controllerName.setId("nameLabel");
+//        Label controllerName = new Label("Controller");
+//        controllerName.setTextAlignment(TextAlignment.LEFT);
+//        controllerName.setAlignment(Pos.CENTER_LEFT);
+//        controllerName.setId("nameLabel");
 
-        ComboBox<Device> controllerComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleControllerDevice()));
-        controllerComboBox.setId("controllerComboBox");
+//        ComboBox<Device> controllerComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleControllerDevice()));
+
+        controllerComboBox.getItems().addAll(FXCollections.observableArrayList(viewModel.getCompatibleControllerDevice()));
+//        controllerComboBox.setId("controllerComboBox");
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Device> call(ListView<Device> param) {
@@ -177,28 +205,28 @@ public class ConfigActualDeviceView extends Dialog {
             viewModel.setController(newValue);
         });
 
-        HBox platFormPicture = new HBox();
-        platFormPicture.setSpacing(10.0);
-        platFormPicture.setAlignment(Pos.CENTER_LEFT);
-        platFormPicture.setMaxHeight(25.0);
-        platFormPicture.getChildren().addAll(platFormImage, platformName);
+//        HBox platFormPicture = new HBox();
+//        platFormPicture.setSpacing(10.0);
+//        platFormPicture.setAlignment(Pos.CENTER_LEFT);
+//        platFormPicture.setMaxHeight(25.0);
+//        platFormPicture.getChildren().addAll(platFormImage,platformName);
 
-        HBox platFormSelected = new HBox();
-        platFormSelected.setSpacing(65.0);
-        platFormSelected.setAlignment(Pos.TOP_LEFT);
-        platFormSelected.getChildren().addAll(platFormPicture, platFormComboBox);
+//        HBox platFormSelected = new HBox();
+//        platFormSelected.setSpacing(65.0);
+//        platFormSelected.setAlignment(Pos.TOP_LEFT);
+//        platFormSelected.getChildren().addAll(platFormPicture, platFormComboBox);
 
-        HBox entireControllerDevice = new HBox();
-        entireControllerDevice.setSpacing(12.0);
-        entireControllerDevice.setAlignment(Pos.CENTER_LEFT);
-        entireControllerDevice.getChildren().addAll(controllerName,controllerComboBox);
-        entireControllerDevice.setId("controllerSelection");
+//        HBox entireControllerDevice = new HBox();
+//        entireControllerDevice.setSpacing(12.0);
+//        entireControllerDevice.setAlignment(Pos.CENTER_LEFT);
+//        entireControllerDevice.getChildren().addAll(controllerName,controllerComboBox);
+//        entireControllerDevice.setId("controllerSelection");
 
-        VBox platFormAndController = new VBox();
-        platFormAndController.setSpacing(10);
-        platFormAndController.getChildren().addAll(platFormSelected,entireControllerDevice);
+//        VBox platFormAndController = new VBox();
+//        platFormAndController.setSpacing(10);
+//        platFormAndController.getChildren().addAll(platFormSelected,entireControllerDevice);
 
-        allDevice.getChildren().add(platFormAndController);
+//        allDevice.getChildren().add(platFormAndController);
     }
 
     private void initDeviceControl(VBox allDevice) {
