@@ -7760,5 +7760,67 @@
         "count": ""
       }
     ]
+  },
+  {
+    "id": "MP-0018",
+    "brand": "MakerPlayground",
+    "model": "Ultrasonic Sensor Module HY-SRF05",
+    "url": "http://www.makerplayground.io/library/MP-0018",
+    "type": "PERIPHERAL",
+    "formfactor": "MP_DEVICE",
+    "platform": [
+      "MP_ARDUINO"
+    ],
+    "library": [
+      "MP_HY_SRF05"
+    ],
+    "width": 0.0,
+    "height": 0.0,
+    "v": "",
+    "i": "",
+    "w": "",
+    "dependency": "",
+    "category": "",
+    "port": [
+      {
+        "name": "Port",
+        "type": "MP",
+        "function": [
+          {
+            "type": "MP_GPIO_DUAL_1",
+            "pintype": "INOUT"
+          }
+        ],
+        "v_min": 5.0,
+        "v_max": 5.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    ],
+    "connectivity": [
+      "MP_GPIO_DUAL_1"
+    ],
+    "compatibility": [
+      {
+        "name": "Distance",
+        "action": [
+          {
+            "name": "Compare",
+            "parameter": []
+          }
+        ],
+        "value": [
+          {
+            "name": "Distance",
+            "constraint": {
+              "min": 0.02,
+              "max": 4.5,
+              "unit": "METER"
+            }
+          }
+        ],
+        "count": ""
+      }
+    ]
   }
 ]
