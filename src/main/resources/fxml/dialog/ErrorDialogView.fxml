@@ -17,7 +17,7 @@
                   <Image url="@../../icons/Error.png" />
                </image>
             </ImageView>
-            <Label fx:id="descriptionLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" text="Label" textAlignment="CENTER">
+            <Label fx:id="descriptionLabel" wrapText="true" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0" text="Label" textAlignment="CENTER">
             </Label>
          </children>
          <opaqueInsets>
