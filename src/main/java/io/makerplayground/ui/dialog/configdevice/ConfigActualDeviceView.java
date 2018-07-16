@@ -4,21 +4,17 @@ import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.Property;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.*;
+import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.DataType;
+import io.makerplayground.helper.Peripheral;
+import io.makerplayground.helper.Platform;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.Main;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -27,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -52,85 +47,33 @@ public class ConfigActualDeviceView extends Dialog {
     @FXML private HBox entireControllerDevice;
     @FXML private ComboBox<Device> controllerComboBox;
     @FXML private Label controllerName;
+
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
-        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-//        getDialogPane().getStylesheets().add(this.getClass().getResource("/css/dialog/configdevice/ConfigActualDeviceView.css").toExternalForm());
-//        getDialogPane().setPrefHeight(500);
-//        getDialogPane().setMaxHeight(500);
 
-        setTitle("Configure Device");
-//        setResizable(true);
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
+        stage.setOnCloseRequest(event -> stage.hide());
 
-        initView();
-        viewModel.setCallback(this::initView);
+        platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
+        controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
+
+        viewModel.setPlatformChangedCallback(this::initControllerControl);
+        viewModel.setControllerChangedCallback(this::initDeviceControl);
+        viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
+        initPlatformControl();
     }
 
-    private void initView() {
-//        ScrollPane scrollPane = new ScrollPane();
-//        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-//
-//        VBox allDevice = new VBox();
-//        allDevice.setSpacing(20.0);
-//        allDevice.setPadding(new Insets(30,30,30,30));
-//        allDevice.setAlignment(Pos.CENTER);
-//
-//        Label topicConfigDevice = new Label("Customize your Devices");
-//        topicConfigDevice.setId("topicConfigDevice");
-//        allDevice.getChildren().add(topicConfigDevice);
-
-        Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> window.hide());
-
-        initControllerControl(allDevice);
-
-        DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
-        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
-            allDevice.getChildren().add(new Label("Controller hasn't been selected"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-            allDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            allDevice.getChildren().add(new Label("Can't find any supported device"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK) {
-            initDeviceControl(allDevice);
-        } else {
-            throw new IllegalStateException("Found unknown error!!!");
-        }
-
-//        scrollPane.setContent(allDevice);
-//        getDialogPane().setContent(scrollPane);
-        getDialogPane().getScene().getWindow().sizeToScene();
-    }
-
-    private void initControllerControl(VBox allDevice) {
-//        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
-//        controllerImage.setFitHeight(25.0);
-//        controllerImage.setFitWidth(25.0);
-        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons/Controller.png"));
-//        ImageView platFormImage = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/Controller.png")));
-        platFormImage.setImage(image);
-//        platFormImage.setFitHeight(25.0);
-//        platFormImage.setFitWidth(25.0);
-
-//        Label platformName = new Label("Platform");
-//        platformName.setTextAlignment(TextAlignment.LEFT);
-//        platformName.setAlignment(Pos.CENTER_LEFT);
-//        platformName.setId("platFormLabel");
-
-//        ComboBox<Platform> platFormComboBox = new ComboBox<>(FXCollections.observableArrayList(Platform.values()));
-
-        platFormComboBox.getItems().addAll(FXCollections.observableArrayList(Platform.values()));
-//        platFormComboBox.setId("platformComboBox");
-        platFormComboBox.getSelectionModel().select(viewModel.getSelectedPlatform());
+    private void initPlatformControl() {
         platFormComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Platform> call(ListView<Platform> param) {
@@ -158,19 +101,13 @@ public class ConfigActualDeviceView extends Dialog {
                 }
             }
         });
-        platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            viewModel.setPlatform(newValue);
-        });
 
-//        Label controllerName = new Label("Controller");
-//        controllerName.setTextAlignment(TextAlignment.LEFT);
-//        controllerName.setAlignment(Pos.CENTER_LEFT);
-//        controllerName.setId("nameLabel");
+        platFormComboBox.getItems().clear();
+        platFormComboBox.getItems().addAll(Platform.values());
+        platFormComboBox.getSelectionModel().select(viewModel.getSelectedPlatform());
+    }
 
-//        ComboBox<Device> controllerComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleControllerDevice()));
-
-        controllerComboBox.getItems().addAll(FXCollections.observableArrayList(viewModel.getCompatibleControllerDevice()));
-//        controllerComboBox.setId("controllerComboBox");
+    private void initControllerControl() {
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Device> call(ListView<Device> param) {
@@ -198,78 +135,56 @@ public class ConfigActualDeviceView extends Dialog {
                 }
             }
         });
+        controllerComboBox.getItems().clear();
+        controllerComboBox.getItems().addAll(viewModel.getCompatibleControllerDevice());
         if (viewModel.getSelectedController() != null) {
             controllerComboBox.getSelectionModel().select(viewModel.getSelectedController());
         }
-        controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            viewModel.setController(newValue);
-        });
-
-//        HBox platFormPicture = new HBox();
-//        platFormPicture.setSpacing(10.0);
-//        platFormPicture.setAlignment(Pos.CENTER_LEFT);
-//        platFormPicture.setMaxHeight(25.0);
-//        platFormPicture.getChildren().addAll(platFormImage,platformName);
-
-//        HBox platFormSelected = new HBox();
-//        platFormSelected.setSpacing(65.0);
-//        platFormSelected.setAlignment(Pos.TOP_LEFT);
-//        platFormSelected.getChildren().addAll(platFormPicture, platFormComboBox);
-
-//        HBox entireControllerDevice = new HBox();
-//        entireControllerDevice.setSpacing(12.0);
-//        entireControllerDevice.setAlignment(Pos.CENTER_LEFT);
-//        entireControllerDevice.getChildren().addAll(controllerName,controllerComboBox);
-//        entireControllerDevice.setId("controllerSelection");
-
-//        VBox platFormAndController = new VBox();
-//        platFormAndController.setSpacing(10);
-//        platFormAndController.getChildren().addAll(platFormSelected,entireControllerDevice);
-
-//        allDevice.getChildren().add(platFormAndController);
     }
 
-    private void initDeviceControl(VBox allDevice) {
+    private void initDeviceControl() {
+        allDevice.getChildren().clear();
+        DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
+        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+            allDevice.getChildren().add(new Label("Controller hasn't been selected"));
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+            allDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+            allDevice.getChildren().add(new Label("Can't find any supported device"));
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK) {
+            initDeviceControlChildren();
+        } else {
+            throw new IllegalStateException("Found unknown error!!!");
+        }
+        getDialogPane().getScene().getWindow().sizeToScene();
+    }
+
+    private void initDeviceControlChildren() {
+        viewModel.removeDeviceConfigChangedCallback();
         for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
-            //VBox row = new VBox();
-            //row.setAlignment(Pos.BASELINE_LEFT);
-            HBox entireDevice = new HBox();
-            HBox portComboBoxHbox = new HBox();
-            VBox entireComboBoxDevice = new VBox();
-            entireComboBoxDevice.setId("entireComboBoxDevice");
-            entireComboBoxDevice.setPadding(new Insets(0,0,0,30));
-            //entireDevice.setAlignment(Pos.BASELINE_LEFT);
-            HBox devicePic = new HBox();
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
+            imageView.setFitHeight(25.0);
+            imageView.setFitWidth(25.0);
+
             Label name = new Label(projectDevice.getName());
-            devicePic.getChildren().addAll(imageView, name);
-
-            devicePic.setSpacing(10.0);
-            devicePic.setAlignment(Pos.CENTER_LEFT);
-            devicePic.setMaxHeight(25.0);
-
             name.setTextAlignment(TextAlignment.LEFT);
             name.setAlignment(Pos.CENTER_LEFT);
             name.setId("nameLabel");
 
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
-
-            entireDevice.setSpacing(10.0);
-            entireDevice.setAlignment(Pos.TOP_LEFT);
-
-            portComboBoxHbox.setSpacing(5.0);
-
-            //row.setAlignment(Pos.CENTER);
+            HBox devicePic = new HBox();
+            devicePic.setSpacing(10.0);
+            devicePic.setAlignment(Pos.CENTER_LEFT);
+            devicePic.setMaxHeight(25.0);
+            devicePic.getChildren().addAll(imageView, name);
 
             // combobox of selectable devices
             ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
             deviceComboBox.setId("deviceComboBox");
-            deviceComboBox.setCellFactory(new Callback<ListView<Device>, ListCell<Device>>() {
+            deviceComboBox.setCellFactory(new Callback<>() {
                 @Override
                 public ListCell<Device> call(ListView<Device> param) {
-                    return new ListCell<Device>() {
+                    return new ListCell<>() {
                         @Override
                         protected void updateItem(Device item, boolean empty) {
                             super.updateItem(item, empty);
@@ -282,7 +197,7 @@ public class ConfigActualDeviceView extends Dialog {
                     };
                 }
             });
-            deviceComboBox.setButtonCell(new ListCell<Device>() {
+            deviceComboBox.setButtonCell(new ListCell<>() {
                 @Override
                 protected void updateItem(Device item, boolean empty) {
                     super.updateItem(item, empty);
@@ -293,10 +208,6 @@ public class ConfigActualDeviceView extends Dialog {
                     }
                 }
             });
-
-            if (projectDevice.getActualDevice() != null) {
-                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
-            }
             deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 // remove old selection if existed
                 if (oldValue != null) {
@@ -304,29 +215,28 @@ public class ConfigActualDeviceView extends Dialog {
                 }
                 viewModel.setDevice(projectDevice, newValue);
             });
+            if (projectDevice.getActualDevice() != null) {
+                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
+            }
 
             CheckBox checkBox = new CheckBox("Auto Select");
             checkBox.setSelected(projectDevice.isAutoSelectDevice());
             deviceComboBox.setDisable(projectDevice.isAutoSelectDevice());
-            //portComboBox.setDisable(projectDevice.isAutoSelectDevice());
-            checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-                    projectDevice.setAutoSelectDevice(new_val);
-                    if (!new_val) {
-                        deviceComboBox.setDisable(false);
-                        //portComboBox.setDisable(false);
-                    }
-                    else {
-                        deviceComboBox.setDisable(true);
-                        //portComboBox.setDisable(true);
-                    }
-                }
+            checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
+                projectDevice.setAutoSelectDevice(new_val);
+                deviceComboBox.setDisable(new_val);
             });
+
+            VBox entireComboBoxDevice = new VBox();
+            entireComboBoxDevice.setId("entireComboBoxDevice");
+            entireComboBoxDevice.setPadding(new Insets(0,0,0,30));
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
-            entireDevice.getChildren().addAll(devicePic, checkBox, entireComboBoxDevice);
+
+            HBox portComboBoxHbox = new HBox();
+            portComboBoxHbox.setSpacing(5.0);
+            portComboBoxHbox.setAlignment(Pos.CENTER_LEFT);
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
-
             // We only show port combobox when the device has been selected
             Device actualDevice = projectDevice.getActualDevice();
             if (actualDevice != null) {
@@ -337,11 +247,10 @@ public class ConfigActualDeviceView extends Dialog {
 
                     ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
                     portComboBox.setId("portComboBox");
-
-                    portComboBox.setCellFactory(new Callback<ListView<List<DevicePort>>, ListCell<List<DevicePort>>>() {
+                    portComboBox.setCellFactory(new Callback<>() {
                         @Override
                         public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
-                            return new ListCell<List<DevicePort>>() {
+                            return new ListCell<>() {
                                 @Override
                                 protected void updateItem(List<DevicePort> item, boolean empty) {
                                     super.updateItem(item, empty);
@@ -354,7 +263,7 @@ public class ConfigActualDeviceView extends Dialog {
                             };
                         }
                     });
-                    portComboBox.setButtonCell(new ListCell<List<DevicePort>>() {
+                    portComboBox.setButtonCell(new ListCell<>() {
                         @Override
                         protected void updateItem(List<DevicePort> item, boolean empty) {
                             super.updateItem(item, empty);
@@ -365,21 +274,10 @@ public class ConfigActualDeviceView extends Dialog {
                             }
                         }
                     });
-                    if (projectDevice.getDeviceConnection().isEmpty()) {
-                        //portComboBox.getSelectionModel().selectFirst();
-                    } else {
-                        portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-
-                    }
-
-
                     if (!projectDevice.getDeviceConnection().isEmpty()) {
                         portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
                     }
-                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                        viewModel.setPeripheral(projectDevice, p, newValue);
-                    });
-
+                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPeripheral(projectDevice, p, newValue));
                     portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
                     // TODO: handle other type (UART, SPI, etc.)
@@ -389,7 +287,7 @@ public class ConfigActualDeviceView extends Dialog {
                     } else {
                         portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
                     }
-                    portComboBoxHbox.setAlignment(Pos.CENTER_LEFT);
+
                     portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                 }
             }
@@ -421,11 +319,16 @@ public class ConfigActualDeviceView extends Dialog {
                         throw new IllegalStateException("Found unknown property type");
                     }
                 }
-
                 entireComboBoxDevice.getChildren().add(propertyGridPane);
             }
 
+            HBox entireDevice = new HBox();
+            entireDevice.setSpacing(10.0);
+            entireDevice.setAlignment(Pos.TOP_LEFT);
+            entireDevice.getChildren().addAll(devicePic, checkBox, entireComboBoxDevice);
+
             allDevice.getChildren().add(entireDevice);
         }
+        viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
 }

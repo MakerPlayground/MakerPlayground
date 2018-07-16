@@ -21,16 +21,18 @@ public class ConfigActualDeviceViewModel {
     private final ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
     private DeviceMapper.DeviceMapperResult deviceMapperResult;
-    private Callback callback;
+    private Callback platformChangedCallback;
+    private Callback controllerChangedCallback;
+    private Callback deviceConfigChangedCallback;
 
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
         this.compatibleDeviceList = new SimpleObjectProperty<>();
         this.compatiblePortList = new SimpleObjectProperty<>();
-        reInitialize();
+        validateDevice();
     }
 
-    private void reInitialize() {
+    private void validateDevice() {
         deviceMapperResult = DeviceMapper.autoAssignDevices(project);
         if (deviceMapperResult == DeviceMapper.DeviceMapperResult.OK) {
             Map<ProjectDevice, List<Device>> deviceList = DeviceMapper.getSupportedDeviceList(project);
@@ -42,13 +44,22 @@ public class ConfigActualDeviceViewModel {
             compatibleDeviceList.set(null);
             compatiblePortList.set(null);
         }
-        if (callback != null) {
-            callback.call();
-        }
     }
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
+    public void setPlatformChangedCallback(Callback platformChangedCallback) {
+        this.platformChangedCallback = platformChangedCallback;
+    }
+
+    public void setControllerChangedCallback(Callback controllerChangedCallback) {
+        this.controllerChangedCallback = controllerChangedCallback;
+    }
+
+    public void setDeviceConfigChangedCallback(Callback deviceConfigChangedCallback) {
+        this.deviceConfigChangedCallback = deviceConfigChangedCallback;
+    }
+
+    public void removeDeviceConfigChangedCallback() {
+        this.deviceConfigChangedCallback = null;
     }
 
     public DeviceMapper.DeviceMapperResult getDeviceMapperResult() {
@@ -69,7 +80,10 @@ public class ConfigActualDeviceViewModel {
 
     public void setPlatform(Platform platform) {
         project.setPlatform(platform);
-        reInitialize();
+        validateDevice();
+        if (platformChangedCallback != null) {
+            platformChangedCallback.call();
+        }
     }
 
     public Platform getSelectedPlatform() {
@@ -78,7 +92,10 @@ public class ConfigActualDeviceViewModel {
 
     public void setController(Device device) {
         project.setController(device);
-        reInitialize();
+        validateDevice();
+        if (controllerChangedCallback != null) {
+            controllerChangedCallback.call();
+        }
     }
 
     public Device getSelectedController() {
@@ -95,13 +112,19 @@ public class ConfigActualDeviceViewModel {
 
     public void setDevice(ProjectDevice projectDevice, Device device) {
         projectDevice.setActualDevice(device);
-        reInitialize();
+        validateDevice();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.call();
+        }
     }
 
     public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
         // TODO: assume a device only has 1 peripheral
         projectDevice.setDeviceConnection(peripheral, port);
-        reInitialize();
+        validateDevice();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.call();
+        }
     }
 
     public void removePeripheral(ProjectDevice projectDevice) {
@@ -110,10 +133,14 @@ public class ConfigActualDeviceViewModel {
         for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
             projectDevice.removeDeviceConnection(p);
         }
-        reInitialize();
+        validateDevice();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.call();
+        }
     }
 
     public List<ProjectDevice> getAllDevice() {
         return project.getAllDevice();
     }
+
 }

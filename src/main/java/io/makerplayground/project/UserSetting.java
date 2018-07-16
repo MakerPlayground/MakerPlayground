@@ -153,11 +153,13 @@ public class UserSetting {
             for (Term term: exp.getTerms()) {
                 if (term instanceof ValueTerm) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
-                    ProjectDevice projectDevice = projectValue.getDevice();
-                    if (result.containsKey(projectDevice)) {
-                        result.get(projectDevice).add(projectValue.getValue());
-                    } else {
-                        result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+                    if (projectValue != null) {
+                        ProjectDevice projectDevice = projectValue.getDevice();
+                        if (result.containsKey(projectDevice)) {
+                            result.get(projectDevice).add(projectValue.getValue());
+                        } else {
+                            result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+                        }
                     }
                 }
             }
