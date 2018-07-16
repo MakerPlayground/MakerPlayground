@@ -5,12 +5,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<fx:root stylesheets="@../../../../css/NewDevicePanelView.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="ListCell" editable="true">
+<fx:root stylesheets="@../../../../css/NewDevicePanelView.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="ListCell">
     <HBox fx:id="hbox">
-    <children>
-        <TextField id="nameTextField" fx:id="nameTextField" visible="true" />
+        <TextField id="nameTextField" fx:id="nameTextField" />
         <Pane fx:id="spacingPane" HBox.hgrow="ALWAYS"/>
-        <Button id="delButton" fx:id="deleteButton" onAction="#handleDelete" />
-    </children>
+        <Button id="delButton" fx:id="deleteButton" onAction="#handleDelete"/>
     </HBox>
 </fx:root>
