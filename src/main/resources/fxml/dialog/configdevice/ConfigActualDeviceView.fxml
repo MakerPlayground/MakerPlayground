@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Dialog?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
-<fx:root type="DialogPane" prefHeight="500" maxHeight="500" prefWidth="500" maxWidth="500" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <content>
-        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER">
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.DialogPane?>
+
+<?import javafx.scene.image.Image?>
+<fx:root type="Dialog" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" title="Configure Device">
+    <dialogPane>
+        <DialogPane maxHeight="500" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css">
             <content>
-                <VBox fx:id="allDevice" spacing="20" alignment="CENTER">
-                    <padding><Insets top="30" right="30" left="30" bottom="30"/></padding>
-                    <children>
-                        <Label fx:id="topicConfigDevice" id="topicConfigDevice" text="Customize your Devices"/>
+                <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER">
+                    <VBox alignment="CENTER" spacing="20">
+                        <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+                        <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Customize your Devices" textAlignment="CENTER"/>
                         <VBox fx:id="platFormAndController" spacing="10">
-                            <children>
-                                <HBox fx:id="platFormSelected" spacing="65" alignment="TOP_LEFT">
-                                    <children>
-                                        <HBox fx:id="platFormPicture" spacing="10" alignment="CENTER_LEFT" maxHeight="25">
-                                            <children>
-                                                <ImageView fx:id="platFormImage" fitHeight="25" fitWidth="25"/>
-                                                <Label fx:id="platformName" id="platFormLabel" text="Platform" alignment="CENTER_LEFT" textAlignment="LEFT"/>
-                                            </children>
-                                        </HBox>
-                                        <ComboBox fx:id="platFormComboBox" id="platformComboBox" />
-                                    </children>
+                            <HBox fx:id="platFormSelected" spacing="65">
+                                <HBox fx:id="platFormPicture" alignment="CENTER_LEFT" maxHeight="25" spacing="10">
+                                    <ImageView fx:id="platFormImage" fitHeight="25" fitWidth="25">
+                                        <Image url="/icons/colorIcons/Controller.png"/>
+                                    </ImageView>
+                                    <Label id="platFormLabel" fx:id="platformName" text="Platform"/>
                                 </HBox>
-                                <HBox fx:id="entireControllerDevice" id="controllerSelection" spacing="12" alignment="CENTER_LEFT">
-                                    <children>
-                                        <Label fx:id="controllerName" id="nameLabel" textAlignment="LEFT" alignment="CENTER_LEFT" text="Controller"/>
-                                        <ComboBox fx:id="controllerComboBox" id="controllerComboBox"/>
-                                    </children>
-                                </HBox>
-                            </children>
+                                <ComboBox id="platformComboBox" fx:id="platFormComboBox"/>
+                            </HBox>
+                            <HBox id="controllerSelection" fx:id="entireControllerDevice" alignment="CENTER_LEFT" spacing="12">
+                                <Label id="nameLabel" fx:id="controllerName" text="Controller"/>
+                                <ComboBox id="controllerComboBox" fx:id="controllerComboBox"/>
+                            </HBox>
                         </VBox>
-                    </children>
-                </VBox>
+                        <VBox fx:id="allDevice" alignment="CENTER" spacing="20">
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
             </content>
-        </ScrollPane>
-    </content>
+        </DialogPane>
+    </dialogPane>
 </fx:root>
