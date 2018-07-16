@@ -11,37 +11,61 @@
 
 <fx:root type="BorderPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #404040; -fx-border-color: #1c1c1c;" stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
-               <children>
-                  <TextField id="projectNameTextField" fx:id="projectNameTextField" managed="false" maxWidth="130.0" style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project" visible="false" />
-                  <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
-                     <tooltip><Tooltip text="new" /></tooltip>
-                  </Button>
-                  <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
-                     <tooltip><Tooltip text="open" /></tooltip>
-                  </Button>
-                  <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
-                     <tooltip><Tooltip text="save" /></tooltip>
-                  </Button>
-                  <Button id="saveAsBtn" fx:id="saveAsButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
-                     <tooltip>
-                        <Tooltip text="save as" />
-                     </tooltip>
-                  </Button>
-                  <Line scaleX="0.5" scaleY="11" stroke="WHITE" strokeWidth="2.0" />
-                  <Button id="deviceMonitorBtn" fx:id="deviceMonitorButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
-                     <tooltip>
-                        <Tooltip text="device monitor" />
-                     </tooltip>
-                  </Button>
-                  <Label fx:id="statusLabel" style="-fx-text-fill: white;" />
-               </children>
-            </HBox>
-            <Button id="tutorialBtn" fx:id="tutorialButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Tutorials" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0" />
-            <Button id="feedback" fx:id="hpl" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" style="-fx-border-color: #5ac2ab; -fx-background-color: none;" text="Feedback" textAlignment="CENTER" textFill="#5ac2ab" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
-         </children>
+      <AnchorPane fx:id="toolBarPane" style="-fx-background-color: #404040; -fx-border-color: #1c1c1c;"
+                  stylesheets="@../css/MainWindow.css" BorderPane.alignment="CENTER">
+         <HBox alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" style="-fx-background-color: transparent;"
+               AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+            <TextField id="projectNameTextField" fx:id="projectNameTextField" managed="false" maxWidth="130.0"
+                       style="-fx-background-color: #313644; -fx-text-fill: white;" text="Untitled Project"
+                       visible="false"/>
+            <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity"
+                    minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0"
+                    prefWidth="20.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
+               <tooltip>
+                  <Tooltip text="new"/>
+               </tooltip>
+            </Button>
+            <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                    minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                    style="-fx-background-repeat: no-repeat;">
+               <tooltip>
+                  <Tooltip text="open"/>
+               </tooltip>
+            </Button>
+            <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity"
+                    minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0"
+                    prefWidth="20.0" style="-fx-background-color: transparent; -fx-background-repeat: no-repeat;">
+               <tooltip>
+                  <Tooltip text="save"/>
+               </tooltip>
+            </Button>
+            <Button id="saveAsBtn" fx:id="saveAsButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity"
+                    maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                    prefHeight="20.0" prefWidth="20.0" style="-fx-background-repeat: no-repeat;">
+               <tooltip>
+                  <Tooltip text="save as"/>
+               </tooltip>
+            </Button>
+            <Line scaleX="0.5" scaleY="11" stroke="WHITE" strokeWidth="2.0"/>
+            <Button id="deviceMonitorBtn" fx:id="deviceMonitorButton" layoutX="80.0" layoutY="16.0"
+                    maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                    mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                    style="-fx-background-repeat: no-repeat;">
+               <tooltip>
+                  <Tooltip text="device monitor"/>
+               </tooltip>
+            </Button>
+            <Label fx:id="statusLabel" style="-fx-text-fill: white;"/>
+         </HBox>
+         <Button id="tutorialBtn" fx:id="tutorialButton" maxHeight="-Infinity" maxWidth="-Infinity"
+                 minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0"
+                 text="Tutorials" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="100.0"
+                 AnchorPane.topAnchor="5.0"/>
+         <Button id="feedback" fx:id="hpl" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity"
+                 maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                 prefHeight="25.0" prefWidth="80.0" style="-fx-border-color: #5ac2ab; -fx-background-color: none;"
+                 text="Feedback" textAlignment="CENTER" textFill="#5ac2ab" visible="false" AnchorPane.bottomAnchor="5.0"
+                 AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0"/>
       </AnchorPane>
    </top>
 </fx:root>

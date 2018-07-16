@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<fx:root xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="VBox" alignment="CENTER" minWidth="50" minHeight="70">
-    <children>
-        <ImageView fx:id="imv" fitHeight="50" preserveRatio="true" />
-        <Label fx:id="name" minWidth="70" maxWidth="70" textOverrun="CENTER_ELLIPSIS" alignment="CENTER"/>
-    </children>
+<?import javafx.scene.layout.VBox?>
+<fx:root xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="VBox" alignment="CENTER"
+         minWidth="50" minHeight="70">
+    <ImageView fx:id="imv" fitHeight="50" preserveRatio="true"/>
+    <Label fx:id="name" minWidth="70" maxWidth="70" textOverrun="CENTER_ELLIPSIS" alignment="CENTER"/>
 </fx:root>
 

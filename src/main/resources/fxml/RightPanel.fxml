@@ -6,16 +6,16 @@
 <?import javafx.scene.control.Button?>
 
 <?import javafx.geometry.Insets?>
-<fx:root id="rightPanel" fx:id="rightPanel" stylesheets="@../css/RightPanel.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" maxWidth="330.0">
-    <children>
-        <VBox id="projectButton" fx:id="projectButton" spacing="2.0" alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
-            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <children>
-                <!-- configureBtn, generateBtn, uploadBtn -->
-                <Button id="configureBtn" fx:id="configureBtn" text="Configure Device" onAction="#handleConfigureBtn" />
-                <Button id="generateBtn" fx:id="generateBtn" text="Generate Project" onAction="#handleGenerateBtn" />
-                <Button id="uploadBtn" fx:id="uploadBtn" text="Upload" onAction="#handleUploadBtn" />
-            </children>
-        </VBox>
-    </children>
+<fx:root id="rightPanel" fx:id="rightPanel" stylesheets="@../css/RightPanel.css" type="AnchorPane"
+         xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" maxWidth="330.0">
+    <VBox id="projectButton" fx:id="projectButton" spacing="2.0" alignment="CENTER" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <!-- configureBtn, generateBtn, uploadBtn -->
+        <Button id="configureBtn" fx:id="configureBtn" text="Configure Device" onAction="#handleConfigureBtn"/>
+        <Button id="generateBtn" fx:id="generateBtn" text="Generate Project" onAction="#handleGenerateBtn"/>
+        <Button id="uploadBtn" fx:id="uploadBtn" text="Upload" onAction="#handleUploadBtn"/>
+    </VBox>
 </fx:root>

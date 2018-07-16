@@ -5,15 +5,23 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<fx:root maxHeight="-Infinity" prefWidth="400.0" style="-fx-background-color: #edeef3;" stylesheets="@../../../css/dialog/tutorial/TutorialView.css" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Button fx:id="prevBtn" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" text="&lt;" AnchorPane.bottomAnchor="310.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="310.0" />
-      <ImageView fx:id="tipImage" fitHeight="650.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0" />
-      <Button fx:id="nextBtn" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" text="&gt;" AnchorPane.bottomAnchor="310.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="310.0" />
-      <Button id="cancelBtn" fx:id="cancelBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-      </Button>
-   </children>
+<fx:root maxHeight="-Infinity" prefWidth="400.0" style="-fx-background-color: #edeef3;"
+         stylesheets="@../../../css/dialog/tutorial/TutorialView.css" type="AnchorPane"
+         xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <Button fx:id="prevBtn" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" text="&lt;" AnchorPane.bottomAnchor="310.0"
+           AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="310.0"/>
+   <ImageView fx:id="tipImage" fitHeight="650.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0"
+              AnchorPane.topAnchor="0.0"/>
+   <Button fx:id="nextBtn" layoutY="135.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"
+           prefHeight="30.0" text="&gt;" AnchorPane.bottomAnchor="310.0" AnchorPane.rightAnchor="0.0"
+           AnchorPane.topAnchor="310.0"/>
+   <Button id="cancelBtn" fx:id="cancelBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" AnchorPane.rightAnchor="10.0"
+           AnchorPane.topAnchor="10.0">
+      <font>
+         <Font name="System Bold" size="12.0"/>
+      </font>
+   </Button>
 </fx:root>

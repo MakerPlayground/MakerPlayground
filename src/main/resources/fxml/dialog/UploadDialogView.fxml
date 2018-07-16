@@ -13,35 +13,22 @@
 
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="450.0" stylesheets="@../../css/dialog/UploadDialogView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <content>
-      <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="100.0" spacing="20.0">
-         <children>
-            <ImageView fx:id="imgView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../icons/Upload.png" />
-               </image>
-            </ImageView>
-            <VBox alignment="CENTER" spacing="10.0">
-               <children>
-                  <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" />
-                  <Label fx:id="progress" textFill="#51af98">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-            <TitledPane fx:id="detailPane" animated="false" expanded="false" maxWidth="375.0" text="More details" textFill="#51af98">
-               <content>
-                  <TextArea fx:id="textArea" maxWidth="-Infinity" prefHeight="200.0" prefWidth="370.0" wrapText="true" editable="false" />
-               </content>
-               <font>
-                  <Font size="12.0" />
-               </font>
-            </TitledPane>
-         </children>
-         <padding>
-            <Insets top="20.0" />
-         </padding>
+      <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefWidth="100.0" spacing="20.0">
+         <padding><Insets top="20.0"/></padding>
+         <ImageView fx:id="imgView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../../icons/Upload.png"/>
+         </ImageView>
+         <VBox alignment="CENTER" spacing="10.0">
+            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0"/>
+            <Label fx:id="progress" textFill="#51af98">
+               <font><Font size="12.0"/></font>
+            </Label>
+         </VBox>
+         <TitledPane fx:id="detailPane" animated="false" expanded="false" maxWidth="375.0" text="More details" textFill="#51af98">
+            <font><Font size="12.0"/></font>
+            <TextArea fx:id="textArea" maxWidth="-Infinity" prefHeight="200.0" prefWidth="370.0" wrapText="true" editable="false"/>
+         </TitledPane>
       </VBox>
    </content>
 </fx:root>
