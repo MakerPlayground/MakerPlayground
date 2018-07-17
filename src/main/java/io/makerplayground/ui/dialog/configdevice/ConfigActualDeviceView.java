@@ -64,13 +64,16 @@ public class ConfigActualDeviceView extends Dialog {
         stage.initStyle(StageStyle.UTILITY);
         stage.setOnCloseRequest(event -> stage.hide());
 
-        platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
-        controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
+        initPlatformControl();
+        initControllerControl();
+        initDeviceControl();
 
         viewModel.setPlatformChangedCallback(this::initControllerControl);
         viewModel.setControllerChangedCallback(this::initDeviceControl);
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
-        initPlatformControl();
+
+        platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
+        controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
     }
 
     private void initPlatformControl() {
