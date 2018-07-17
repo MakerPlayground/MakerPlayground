@@ -127,10 +127,13 @@
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
+
 #statusLabel {
     -fx-text-fill: white;
 }
 
 #feedback {
-    -fx-border-color: #5ac2ab; -fx-background-color: none;
+    -fx-border-color: #5ac2ab;
+    -fx-background-color: none;
+    -fx-text-fill: #5ac2ab;
 }

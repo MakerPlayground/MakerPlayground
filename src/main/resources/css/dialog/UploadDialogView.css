@@ -64,3 +64,13 @@
     -fx-background-color: #edeef3 ;
     -fx-text-box-border: transparent;
 }
+
+#progress{
+    -fx-text-fill: #51af98;
+    -fx-font-size: 12px;
+}
+
+#detailPane{
+    -fx-text-fill:  #51af98;
+    -fx-font-size: 12px;
+}
