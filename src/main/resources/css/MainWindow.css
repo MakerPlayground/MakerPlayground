@@ -116,3 +116,8 @@
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
+
+#toolBarPane{
+    -fx-background-color: #404040;
+    -fx-border-color: #1c1c1c
+}

@@ -64,3 +64,44 @@
     -fx-background-color: #edeef3 ;
     -fx-text-box-border: transparent;
 }
+
+#progress{
+    -fx-text-fill: #51af98;
+    -fx-font-size: 12px;
+}
+#detailPane{
+    -fx-text-fill:  #51af98;
+    -fx-font-size: 12px;
+}
+#hBox{
+    -fx-background-color: transparent;
+}
+#projectNameTextField{
+    -fx-background-color: #313644;
+    -fx-text-fill: white;
+}
+#newFileBtn{
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+}
+#loadBtn{
+    -fx-background-repeat: no-repeat;
+}
+#saveBtn{
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+}
+#saveAsBtn{
+    -fx-background-repeat: no-repeat;
+}
+#deviceMonitorBtn{
+    -fx-background-repeat: no-repeat;
+}
+#statusLabel{
+    -fx-text-fill: white;
+}
+#feedback{
+    -fx-border-color: #5ac2ab;
+    -fx-background-color: none;
+    -fx-text-fill: #5ac2ab;
+}
