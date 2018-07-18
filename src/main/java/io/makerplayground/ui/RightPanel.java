@@ -1,11 +1,15 @@
 package io.makerplayground.ui;
 
+import io.makerplayground.device.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.generator.UploadTask;
+import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.SingletonUploadClick;
 import io.makerplayground.helper.SingletonWiringDiagram;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.devicepane.devicepanel.DevicePanelView;
@@ -29,6 +33,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mai.Manju on 12-Jun-17.
@@ -99,10 +105,13 @@ public class RightPanel extends AnchorPane {
             ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
             errorDialogView.showAndWait();
             return;
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SELECTED_PORT) {
+            ErrorDialogView errorDialogView = new ErrorDialogView("There is an unselected port.Please configure your device");
+            errorDialogView.showAndWait();
+            return;
         } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
             throw new IllegalStateException("Found unknown error!!!");
         }
-
         Sourcecode code = Sourcecode.generateCode(project, false);
         if (code.getError() != null) {
             ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
