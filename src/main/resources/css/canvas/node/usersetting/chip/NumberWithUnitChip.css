@@ -1,0 +1,9 @@
+#background{
+    -fx-background-color: #081e42;
+}
+#input{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+

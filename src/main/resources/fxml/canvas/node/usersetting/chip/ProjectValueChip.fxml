@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.ComboBox?>
+<fx:root id="stackPane" fx:id="stackPane" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ProjectValueChip.css" type="StackPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <StackPane />
+    <children>
+        <Rectangle id="background" fx:id="background" arcHeight="20.0" arcWidth="20.0" />
+        <ComboBox id="comboBox" fx:id="comboBox" />
+    </children>
+</fx:root>

@@ -5,6 +5,8 @@ import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
@@ -14,12 +16,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import java.io.IOException;
+
 public class ProjectValueChip extends Chip<ProjectValue> {
 
 //    private static final Color BACKGROUND_COLOR = Color.DARKRED;
 //    private static final Color BACKGROUND_COLOR = Color.valueOf("E2E2E2");
     private static final Color BACKGROUND_COLOR = Color.valueOf("081e42");
-
+    @FXML
+    private ComboBox comboBox;
+    @FXML
+    private Rectangle background;
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
     public ProjectValueChip(ProjectValue initialValue, ObservableList<ProjectValue> projectValues) {
@@ -28,10 +35,19 @@ public class ProjectValueChip extends Chip<ProjectValue> {
 
     @Override
     protected void initView() {
-        Rectangle background = new Rectangle();
-        background.setArcWidth(20);
-        background.setArcHeight(20);
-        background.fillProperty().setValue(BACKGROUND_COLOR);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/ProjectValueChip.fxml"));
+            fxmlLoader.setRoot(this);
+            fxmlLoader.setController(this);
+
+            try {
+                fxmlLoader.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        //Rectangle background = new Rectangle();
+        //background.setArcWidth(20);
+       // background.setArcHeight(20);
+       // background.fillProperty().setValue(BACKGROUND_COLOR);
 
         ComboBox<ProjectValue> comboBox = new ComboBox<>(getChoices());
         if (getValue() != null) {
@@ -46,9 +62,10 @@ public class ProjectValueChip extends Chip<ProjectValue> {
                     setGraphic(null);
                 } else {
                     Text text = new Text(item.getDevice().getName() + "'s\n" + item.getValue().getName());
-                    text.setStyle("-fx-font-size: 10;" +
+                    text.setId("text1");
+                    /*text.setStyle("-fx-font-size: 10;" +
                             "-fx-background-color: transparent;" +
-                            "-fx-border-color: transparent;");
+                            "-fx-border-color: transparent;");*/
                     setGraphic(text);
                     setPrefHeight(30);
                 }
@@ -63,19 +80,20 @@ public class ProjectValueChip extends Chip<ProjectValue> {
                     setGraphic(null);
                 } else {
                     Text text = new Text(item.getDevice().getName() + "'s\n" + item.getValue().getName());
-                    text.setStyle("-fx-font-size: 10;" +
+                    text.setId("text1");
+                    /*text.setStyle("-fx-font-size: 10;" +
                             "-fx-background-color: transparent;" +
-                            "-fx-border-color: transparent;");
+                            "-fx-border-color: transparent;");*/
                     setGraphic(text);
                 }
             }
         });
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
-        comboBox.setStyle("-fx-background-color: transparent;" +
-                "-fx-border-color: transparent;");
+        /*comboBox.setStyle("-fx-background-color: transparent;" +
+                "-fx-border-color: transparent;");*/
 
-        getChildren().addAll(background, comboBox);
-        StackPane.setMargin(comboBox, new Insets(5, 10, 5, 10));
+        //getChildren().addAll(background, comboBox);
+       // StackPane.setMargin(comboBox, new Insets(5, 10, 5, 10));
         this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
             background.setWidth(newValue.getWidth());
             background.setHeight(newValue.getHeight());
