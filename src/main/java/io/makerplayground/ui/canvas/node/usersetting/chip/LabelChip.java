@@ -26,7 +26,7 @@ public class LabelChip extends Chip<String> {
 
     @Override
     protected void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/Labelchip.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/Labelchip.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

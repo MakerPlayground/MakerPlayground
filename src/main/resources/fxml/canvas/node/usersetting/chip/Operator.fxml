@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<fx:root id="stackPane" fx:id="stackPane" stylesheets="@../../../../../css/canvas/node/usersetting/chip/OperatorChip.css" type="StackPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Rectangle id="background" fx:id="background" width="25.0" height="20.0" arcWidth="20.0" arcHeight="20.0"/>
+        <TextField id="input" fx:id="input" maxWidth="25.0" maxHeight="20.0"/>
+    </children>>
+</fx:root>
+
