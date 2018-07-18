@@ -188,7 +188,7 @@ public class DeviceMapper {
     }
 
     public enum DeviceMapperResult {
-        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED
+        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED,NO_SELECTED_PORT
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {
@@ -251,6 +251,14 @@ public class DeviceMapper {
             }
         }
 
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                if (port == null) {
+                    return DeviceMapperResult.NO_SELECTED_PORT;
+                }
+            }
+        }
         return DeviceMapperResult.OK;
     }
 }
