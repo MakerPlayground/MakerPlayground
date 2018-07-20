@@ -49,37 +49,34 @@ public class CustomNumberExpression extends Expression {
             }
         }
         if (countParen != 0) { return false; }
-
         /* check each term */
         for (Term t: terms) {
             if (!t.isValid()) {
                 return false;
             }
         }
-
         /* check valid sequence */
         for (int i=0; i<terms.size()-1; i++) {
             Term term = terms.get(i);
             Term nextTerm = terms.get(i+1);
             if (isNumberOrValueTerm(term)) {
-                if (isNumberOrValueTerm(nextTerm) || isParenTerm(nextTerm)) {
+                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.OP.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             } else if (isOperationNotParenTerm(term)) {
-                if (isOperationNotParenTerm(nextTerm) || isParenTerm(nextTerm)) {
+                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             } else if (OperatorTerm.OP.OPEN_PARENTHESIS.equals(term.getValue())) {
-                if (isOperationNotParenTerm(term) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             } else if (OperatorTerm.OP.CLOSE_PARENTHESIS.equals(term.getValue())) {
-                if (isNumberOrValueTerm(term) || OperatorTerm.OP.OPEN_PARENTHESIS.equals(term.getValue())) {
+                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.OP.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             }
         }
-
         /* check last */
         if (terms.size() > 0) {
             Term last = terms.get(terms.size()-1);
@@ -87,7 +84,6 @@ public class CustomNumberExpression extends Expression {
                 return false;
             }
         }
-
         return true;
     }
 
