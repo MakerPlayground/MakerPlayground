@@ -17,6 +17,8 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.Parameter;
+import io.makerplayground.project.expression.Expression;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -90,6 +92,15 @@ public class Scene extends NodeElement {
         for (int i = setting.size() - 1; i >= 0; i--) {
             if (setting.get(i).getDevice() == device) {
                 setting.remove(i);
+            }
+        }
+        for (UserSetting userSetting : setting) {
+            for (Parameter parameter : userSetting.getValueMap().keySet()) {
+                Expression expression = userSetting.getValueMap().get(parameter);
+                if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
+                        && (((ProjectValue) term.getValue()).getDevice() == device))) {
+                    userSetting.getValueMap().replace(parameter, Expression.fromDefaultParameter(parameter));
+                }
             }
         }
         invalidate();

@@ -170,6 +170,9 @@ public class Project {
     }
 
     public boolean removeSensor(ProjectDevice device) {
+        for (Scene s : scene) {
+            s.removeDevice(device);
+        }
         for (Condition c : condition) {
             c.removeDevice(device);
         }
