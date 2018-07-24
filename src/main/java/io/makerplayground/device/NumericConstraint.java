@@ -96,9 +96,14 @@ public class NumericConstraint implements Constraint {
 
     @Override
     public Constraint union(Constraint constraint) {
-        if (!(constraint instanceof NumericConstraint))
+        if (!(constraint instanceof NumericConstraint)) {
             throw new ClassCastException();
+        }
         NumericConstraint numericConstraint = (NumericConstraint) constraint;
+        if (numericConstraint.numericValue.size() != 1 || numericValue.size() != 1) {
+            if (numericConstraint.numericValue.keySet().containsAll(numericValue.keySet()))
+            throw new IllegalStateException("Not Supported Operation");
+        }
 
         Map<Unit, Value> m = new HashMap<>(numericValue);
         Map<Unit, Value> m2 = numericConstraint.numericValue;
@@ -132,6 +137,24 @@ public class NumericConstraint implements Constraint {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NumericConstraint that = (NumericConstraint) o;
+
+        if (!numericValue.equals(that.numericValue)) return false;
+        return unit == that.unit;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = numericValue.hashCode();
+        result = 31 * result + unit.hashCode();
+        return result;
+    }
+
     static class Value {
         public double min;
         public double max;
@@ -157,5 +180,28 @@ public class NumericConstraint implements Constraint {
                     '}';
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Value value = (Value) o;
+
+            if (Double.compare(value.min, min) != 0) return false;
+            if (Double.compare(value.max, max) != 0) return false;
+            return unit == value.unit;
+        }
+
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            temp = Double.doubleToLongBits(min);
+            result = (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(max);
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            result = 31 * result + unit.hashCode();
+            return result;
+        }
     }
 }
