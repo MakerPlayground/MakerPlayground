@@ -1,13 +1,19 @@
 package io.makerplayground.device;
 
 import io.makerplayground.helper.Unit;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NumericConstraintTest {
 
-    NumericConstraint tester = new NumericConstraint(0, 100, Unit.CENTIMETER);
+    private NumericConstraint tester;
+
+    @BeforeEach
+    void setUp() {
+        tester = new NumericConstraint(0, 100, Unit.CENTIMETER);
+    }
 
     @Test
     void isNotCompatibleWithCategorical() {
