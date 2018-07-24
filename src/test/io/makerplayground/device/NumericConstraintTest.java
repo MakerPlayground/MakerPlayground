@@ -16,20 +16,20 @@ class NumericConstraintTest {
     }
 
     @Test
-    void isNotCompatibleWithCategorical() {
+    void shouldNotCompatibleWithCategorical() {
         Constraint constraint = new CategoricalConstraint("");
         assertFalse(tester.isCompatible(constraint));
     }
 
 
     @Test
-    void isCompatibleWithNone() {
+    void shouldCompatibleWithNone() {
         Constraint constraint = Constraint.NONE;
         assertTrue(tester.isCompatible(constraint));
     }
 
     @Test
-    void isCompatibleWithConstraintInRangeAndSameUnit() {
+    void shouldCompatibleWithConstraintInRangeAndSameUnit() {
         /* In Range, same Unit*/
         Constraint constraint = new NumericConstraint(10, 80, Unit.CENTIMETER);
         assertTrue(tester.isCompatible(constraint));
@@ -40,14 +40,14 @@ class NumericConstraintTest {
     }
 
     @Test
-    void isNotCompatibleWithConstraintNotInRangeAndSameUnit() {
+    void shouldNotCompatibleWithConstraintNotInRangeAndSameUnit() {
         /* Not in Range, same UNIT */
         Constraint constraint = new NumericConstraint(-0.1, 100.1, Unit.CENTIMETER);
         assertFalse(tester.isCompatible(constraint));
     }
 
     @Test
-    void isNotCompatibleWithConstraintDifferentUnit() {
+    void shouldNotCompatibleWithConstraintDifferentUnit() {
         /* In Range, different UNIT */
         Constraint constraint = new NumericConstraint(0, 80, Unit.METER);
         assertFalse(tester.isCompatible(constraint));
@@ -74,21 +74,21 @@ class NumericConstraintTest {
     }
 
     @Test
-    void unionWithCategoricalConstraintMustBeThrow() {
+    void unionWithCategoricalConstraintShouldThrow() {
         /* Not a Numeric Constraint and Not NONE */
         Constraint constraint = new CategoricalConstraint("");
         assertThrows(ClassCastException.class, () -> tester.union(constraint));
     }
 
     @Test
-    void unionWithDifferentUnitMustBeThrow() {
+    void unionWithDifferentUnitShouldThrow() {
         /* Different Unit  */
         Constraint constraint = new NumericConstraint(0, 80, Unit.METER);
         assertThrows(IllegalStateException.class, () -> tester.union(constraint));
     }
 
     @Test
-    void unionWithSameUnitMustSuccess() {
+    void unionWithSameUnitShouldSuccess() {
         /* Same Unit, should get Wider Range */
         Constraint c3 = new NumericConstraint(-10, 200, Unit.CENTIMETER);
         assertEquals(new NumericConstraint(-10, 200, Unit.CENTIMETER), tester.union(c3));
@@ -99,13 +99,13 @@ class NumericConstraintTest {
     }
 
     @Test
-    void testConstraintWithStringMustBeFalse() {
+    void testConstraintWithStringShouldBeFalse() {
         assertFalse(tester.test(""));
         assertFalse(tester.test("Hello"));
     }
 
     @Test
-    void testConstraintWithDifferentUnitMustBeThrown() {
+    void testConstraintWithDifferentUnitShouldThrown() {
         assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.NOT_SPECIFIED));
         assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.METER));
         assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.CELSIUS));
