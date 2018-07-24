@@ -16,8 +16,6 @@
 
 package io.makerplayground.device;
 
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 
 import java.util.*;
@@ -60,10 +58,6 @@ public class NumericConstraint implements Constraint {
         }
     }
 
-//    public Collection<Unit> getUnit() {
-//        return numericValue.keySet();
-//    }
-
     public Unit getUnit() {
         return unit;
     }
@@ -82,10 +76,8 @@ public class NumericConstraint implements Constraint {
                 }
             }
             return true;
-        } else if (Constraint.NONE.equals(genericConstraint)) {
-            return true;
         }
-        return false;
+        return Constraint.NONE.equals(genericConstraint);
     }
 
     @Override
@@ -133,17 +125,26 @@ public class NumericConstraint implements Constraint {
         return numericValue.get(unit).max;
     }
 
+    @Override
+    public String toString() {
+        return "NumericConstraint{" +
+                "numericValue=" + numericValue +
+                '}';
+    }
+
     static class Value {
         public double min;
         public double max;
         public Unit unit;
 
-        Value() {
-        }
-
         Value(double min, double max, Unit unit) {
-            this.min = min;
-            this.max = max;
+            if (min > max) {
+                this.max = min;
+                this.min = max;
+            } else {
+                this.min = min;
+                this.max = max;
+            }
             this.unit = unit;
         }
 
@@ -157,12 +158,4 @@ public class NumericConstraint implements Constraint {
         }
 
     }
-
-    @Override
-    public String toString() {
-        return "NumericConstraint{" +
-                "numericValue=" + numericValue +
-                '}';
-    }
-
 }
