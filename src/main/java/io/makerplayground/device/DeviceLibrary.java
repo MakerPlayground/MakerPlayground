@@ -20,7 +20,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.helper.Platform;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +50,15 @@ public enum DeviceLibrary {
         this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
         this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
         this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
-        this.actualDevice = loadActualDeviceFromJSON("/json/actualdevice.json");
+        //this.actualDevice = loadActualDeviceFromJSON("/json/actualdevice.json");
+        Properties appProperties = new Properties();
+        try {
+            appProperties.load(getClass().getResourceAsStream("/appProperties.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
+        this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
     }
 
     private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName){
@@ -70,6 +84,26 @@ public enum DeviceLibrary {
             e.printStackTrace();
             temp = Collections.EMPTY_LIST;
         }
+        return temp;
+    }
+
+    private List<Device> loadActualDeviceList(String deviceRepositoryPath){
+        List<Device> temp = Collections.EMPTY_LIST; //TODO: initialize the list
+
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(deviceRepositoryPath))) {
+            for (Path deviceDirectory : directoryStream) {
+                if(Files.isDirectory(deviceDirectory)){
+                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,entry -> entry.equals("device.json"))){
+                        for(Path deviceDefinitionFile: dev){
+                            //TODO: read the device.json and add to temp
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return temp;
     }
 
