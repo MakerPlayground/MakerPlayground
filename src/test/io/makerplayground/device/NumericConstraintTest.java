@@ -1,18 +1,15 @@
 package io.makerplayground.device;
 
 import io.makerplayground.helper.Unit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.InvocationTargetException;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public class NumericConstraintTest {
+class NumericConstraintTest {
 
     @Test
-    public void isCompatibleShouldBeCorrected() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-
+    void isCompatibleShouldBeCorrected() {
         NumericConstraint tester = new NumericConstraint(0, 100, Unit.CENTIMETER);
 
         /* Not a Numeric Constraint and Not NONE */
@@ -61,16 +58,16 @@ public class NumericConstraintTest {
     }
 
     @Test
-    public void unionShouldBeCorrected() {
+    void unionShouldBeCorrected() {
 
     }
 
     @Test
-    public void test1() {
+    void test1() {
     }
 
     @Test
-    public void test2() {
+    void test2() {
     }
 
 }
