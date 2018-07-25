@@ -57,7 +57,8 @@ public enum DeviceLibrary {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
+        String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+appProperties.getProperty("deviceRepositoryRelativePath");
+
         this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
     }
 
@@ -88,14 +89,15 @@ public enum DeviceLibrary {
     }
 
     private List<Device> loadActualDeviceList(String deviceRepositoryPath){
-        List<Device> temp = Collections.EMPTY_LIST; //TODO: initialize the list
+        List<Device> temp = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(deviceRepositoryPath))) {
             for (Path deviceDirectory : directoryStream) {
                 if(Files.isDirectory(deviceDirectory)){
-                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,entry -> entry.equals("device.json"))){
+                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
                         for(Path deviceDefinitionFile: dev){
-                            //TODO: read the device.json and add to temp
+                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(), new TypeReference<Device>() {}));
                         }
                     }
                 }
@@ -103,7 +105,7 @@ public enum DeviceLibrary {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        temp = Collections.unmodifiableList(temp);
         return temp;
     }
 
