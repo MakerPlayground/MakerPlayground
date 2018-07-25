@@ -2,7 +2,6 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
@@ -112,16 +111,13 @@ public class Sourcecode {
         }
 
         // generate include
-//        for (GenericDevice genericDevice : project.getAllDeviceTypeUsed()) {
-//            headerStringBuilder.append("#include \"MP_").append(genericDevice.getName().replace(" ", "_")).append(".h\"").append(NEW_LINE);
-//        }
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            for (String name : projectDevice.getActualDevice().getLibraryName()) {
-                if (name.startsWith("MP_")) {
-                    headerStringBuilder.append("#include \"").append(name.replace(" ", "_")).append(".h\"").append(NEW_LINE);
-                }
+            for (String name : projectDevice.getActualDevice().getSourceToInclude()){
+                //headerStringBuilder.append("#include \"").append(name.replace(" ", "_")).append(".h\"").append(NEW_LINE);
+                headerStringBuilder.append("#include \"").append(NEW_LINE);
             }
         }
+
         headerStringBuilder.append(NEW_LINE);
         sb.append("void (*currentScene)(void);").append(NEW_LINE);
 

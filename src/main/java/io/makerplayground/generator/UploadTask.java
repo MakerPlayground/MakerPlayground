@@ -78,7 +78,7 @@ public class UploadTask extends Task<UploadResult> {
         String platform = project.getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
         List<String> library = project.getAllDeviceUsed().stream()
-                .map(projectDevice -> projectDevice.getActualDevice().getLibraryName())
+                .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
                 .flatMap(Collection::stream).collect(Collectors.toList());
         library.add("MP_Log");
         Platform.runLater(() -> log.set("List of library used \n"));

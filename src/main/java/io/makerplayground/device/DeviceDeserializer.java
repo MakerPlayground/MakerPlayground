@@ -26,7 +26,8 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
     }
 
     @Override
-    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException,
+            JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
@@ -52,8 +53,10 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         else
             category = Device.Dependency.valueOf(node.get("category").asText());
 
-        List<String> libraryName = mapper.readValue(node.get("library").traverse()
+        List<String> headerFileToInclude = mapper.readValue(node.get("include").traverse()
                 , new TypeReference<List<String>>() {});
+        List<String> libraryDependency = mapper.readValue(node.get("library_dependency").traverse(),
+                new TypeReference<List<String>>() {});
 
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
@@ -132,7 +135,8 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, formFactor, libraryName, platform, port, connectivity
-                , supportedDevice, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue, dependency, category, v, i ,w);
+        return new Device(id, brand, model, url, width, height, type, formFactor, headerFileToInclude, libraryDependency,
+                platform, port, connectivity, supportedDevice, supportedDeviceaction, supportedDeviceCondition,
+                supportedDeviceValue, dependency, category, v, i ,w);
     }
 }

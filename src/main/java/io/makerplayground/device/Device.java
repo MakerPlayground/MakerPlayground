@@ -44,7 +44,8 @@ public class Device {
     private final double w;
     private final Dependency dependency;
     private final Dependency category;
-    private final List<String> libraryName;
+    private final List<String> sourceToInclude;
+    private final List<String> libraryDependency;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -77,7 +78,8 @@ public class Device {
      * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
-            , List<String> libraryName
+            , List<String> sourceToInclude
+            , List<String> libraryDependency
             , Set<Platform> supportedPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
@@ -98,7 +100,8 @@ public class Device {
         this.height = height;
         this.deviceType = deviceType;
         this.formFactor = formFactor;
-        this.libraryName = libraryName;
+        this.sourceToInclude = sourceToInclude;
+        this.libraryDependency = libraryDependency;
         this.supportedPlatform = supportedPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
@@ -180,22 +183,26 @@ public class Device {
         return supportedPlatform;
     }
 
-    public List<String> getLibraryName() {
-        return libraryName;
+    public List<String> getSourceToInclude() {
+        return sourceToInclude;
     }
 
-    public String getMPLibraryName() {
-        for (String s : libraryName) {
+    public List<String> getLibraryDependency() {
+        return libraryDependency;
+    }
+
+    /*public String getMPLibraryName() {
+        for (String s : sourceToInclude) {
             if (s.startsWith("MP_")) {
                 return s;
             }
         }
         return null;
-    }
+    }*/
 
-    public String getSuggestedInstanceName() {
+    /*public String getSuggestedInstanceName() {
         return getMPLibraryName().substring(3);
-    }
+    }*/
 
     public List<DevicePort> getPort() {
         return port;
