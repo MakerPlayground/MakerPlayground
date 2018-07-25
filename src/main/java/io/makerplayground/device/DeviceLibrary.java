@@ -50,16 +50,15 @@ public enum DeviceLibrary {
         this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
         this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
         this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
-        //this.actualDevice = loadActualDeviceFromJSON("/json/actualdevice.json");
         Properties appProperties = new Properties();
         try {
             appProperties.load(getClass().getResourceAsStream("/appProperties.properties"));
+            String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
+            this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
         } catch (IOException e) {
             e.printStackTrace();
+            this.actualDevice = Collections.EMPTY_LIST;
         }
-        String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+appProperties.getProperty("deviceRepositoryRelativePath");
-
-        this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
     }
 
     private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName){
@@ -67,19 +66,6 @@ public enum DeviceLibrary {
         List<GenericDevice> temp;
         try {
             temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
-            temp = Collections.unmodifiableList(temp);
-        } catch (IOException e) {
-            e.printStackTrace();
-            temp = Collections.EMPTY_LIST;
-        }
-        return temp;
-    }
-
-    private List<Device> loadActualDeviceFromJSON(String resourceName){
-        ObjectMapper mapper = new ObjectMapper();
-        List<Device> temp;
-        try {
-            temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<Device>>() {});
             temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,10 +88,11 @@ public enum DeviceLibrary {
                     }
                 }
             }
+            temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
             e.printStackTrace();
+            temp = Collections.EMPTY_LIST;
         }
-        temp = Collections.unmodifiableList(temp);
         return temp;
     }
 
