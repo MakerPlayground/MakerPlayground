@@ -31,3 +31,5 @@ upload/
 hs_err_pid*
 .pioenvs
 .piolibdeps
+
+src/main/resources/app\.properties

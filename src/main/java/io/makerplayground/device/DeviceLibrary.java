@@ -20,8 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.helper.Platform;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -29,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -52,8 +49,8 @@ public enum DeviceLibrary {
         this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
         Properties appProperties = new Properties();
         try {
-            appProperties.load(getClass().getResourceAsStream("/appProperties.properties"));
-            String deviceRepositoryPath = appProperties.getProperty("appStoragePathPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
+            appProperties.load(getClass().getResourceAsStream("/app.properties"));
+            String deviceRepositoryPath = appProperties.getProperty("applicationPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
             this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
         } catch (IOException e) {
             e.printStackTrace();
