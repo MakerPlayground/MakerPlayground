@@ -83,4 +83,18 @@ public class CategoricalConstraint implements Constraint {
                 "categoricalValue=" + categoricalValue +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CategoricalConstraint that = (CategoricalConstraint) o;
+        return this.categoricalValue.containsAll(that.categoricalValue) && that.categoricalValue.containsAll(this.categoricalValue);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(categoricalValue);
+    }
 }
