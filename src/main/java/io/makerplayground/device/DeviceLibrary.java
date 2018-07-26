@@ -47,15 +47,7 @@ public enum DeviceLibrary {
         this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
         this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
         this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
-        Properties appProperties = new Properties();
-        try {
-            appProperties.load(getClass().getResourceAsStream("/app.properties"));
-            String deviceRepositoryPath = appProperties.getProperty("applicationPath")+"\\"+appProperties.getProperty("deviceRepositoryRelativePath");
-            this.actualDevice = loadActualDeviceList(deviceRepositoryPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.actualDevice = Collections.EMPTY_LIST;
-        }
+        this.actualDevice = loadActualDeviceList();
     }
 
     private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName){
@@ -71,21 +63,27 @@ public enum DeviceLibrary {
         return temp;
     }
 
-    private List<Device> loadActualDeviceList(String deviceRepositoryPath){
+    private List<Device> loadActualDeviceList(){
+        Properties appProperties = new Properties();
         List<Device> temp = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
+        try {
+            appProperties.load(getClass().getResourceAsStream("/app.properties"));
+            String applicationPath = appProperties.getProperty("applicationPath");
+            String deviceRepositoryPath = appProperties.getProperty("deviceRepositoryRelativePath");
 
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(deviceRepositoryPath))) {
-            for (Path deviceDirectory : directoryStream) {
-                if(Files.isDirectory(deviceDirectory)){
-                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
-                        for(Path deviceDefinitionFile: dev){
-                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(), new TypeReference<Device>() {}));
+            ObjectMapper mapper = new ObjectMapper();
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(applicationPath,deviceRepositoryPath))){
+                for (Path deviceDirectory : directoryStream) {
+                    if(Files.isDirectory(deviceDirectory)){
+                        try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
+                            for(Path deviceDefinitionFile: dev){
+                                temp.add(mapper.readValue(deviceDefinitionFile.toFile(), new TypeReference<Device>() {}));
+                            }
                         }
                     }
                 }
+                temp = Collections.unmodifiableList(temp);
             }
-            temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
             e.printStackTrace();
             temp = Collections.EMPTY_LIST;
