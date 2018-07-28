@@ -31,6 +31,17 @@
                 <icon.filename>icon.icns</icon.filename>
             </properties>
         </profile>
+        <profile>
+            <id>platform-unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <icon.filename>icon.png</icon.filename>
+            </properties>
+        </profile>
     </profiles>
 
     <build>
@@ -102,7 +113,7 @@
                             <arguments>
                                 <argument>-deploy</argument>
                                 <argument>-native</argument>
-                                <argument>installer</argument> <!-- or 'installer' -->
+                                <argument>installer</argument> <!-- or 'image' -->
                                 <argument>-vendor</argument>
                                 <argument>InGarage Assistive Technology Co., Ltd.</argument>
                                 <argument>-name</argument>
