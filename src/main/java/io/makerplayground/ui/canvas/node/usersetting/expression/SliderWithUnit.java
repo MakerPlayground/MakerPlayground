@@ -2,79 +2,104 @@ package io.makerplayground.ui.canvas.node.usersetting.expression;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
+import io.makerplayground.ui.canvas.node.expressioncontrol.NumberWithUnitControl;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
+
+import java.text.DecimalFormat;
+import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Created by USER on 12-Jul-17.
  */
-public class SliderWithUnit extends HBox {
-    private final Text text;
+public class SliderWithUnit extends NumberWithUnitControl {
     private final Slider slider;
-    private final ComboBox<Unit> comboBox;
+    private final TextField textField;
+    private final ComboBox<Unit> unitComboBox;
+    private final Text unitLabel;  // TODO: Text is used here instead of Label as CSS from property window leak to their underlying control and mess up our layout
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
 
-    public SliderWithUnit(double min, double max, ObservableList<Unit> unit, NumberWithUnit initialValue) {
-        slider = new Slider(min, max, initialValue.getValue());
-        text = new Text();
-        text.textProperty().bind(slider.valueProperty().asString("%.2f"));
-        comboBox = new ComboBox<>(unit);
-        comboBox.getSelectionModel().select(initialValue.getUnit());
-        if (initialValue.getUnit() == Unit.NOT_SPECIFIED) {
-            comboBox.setVisible(false);
-            comboBox.setManaged(false);
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+    private static final UnaryOperator<TextFormatter.Change> textFilter = t -> {
+        if (t.isReplaced()) {
+            if (t.getText().matches("[^0-9]")) {
+                t.setText(t.getControlText().substring(t.getRangeStart(), t.getRangeEnd()));
+            }
         }
-        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(initialValue.getValue(), initialValue.getUnit()));
+
+        if (t.isAdded()) {
+            if (t.getControlText().contains(".")) {
+                if (t.getText().matches("[^0-9]")) {
+                    t.setText("");
+                }
+            } else if (t.getText().matches("[^0-9.]")) {
+                t.setText("");
+            }
+        }
+
+        return t;
+    };
+
+    public SliderWithUnit(double min, double max, List<Unit> unit, NumberWithUnit initialValue) {
+        slider = new Slider(min, max, initialValue.getValue());
+
+        textField = new TextField(decimalFormat.format(initialValue.getValue()));
+        textField.setTextFormatter(new TextFormatter<Double>(textFilter));
+
+        unitLabel = new Text(initialValue.getUnit().toString());
+        unitComboBox = new ComboBox<>(FXCollections.observableArrayList(unit));
+        unitComboBox.getSelectionModel().select(initialValue.getUnit());
+        if (unit.size() == 1 && initialValue.getUnit() == Unit.NOT_SPECIFIED) {
+            unitComboBox.setVisible(false);
+            unitComboBox.setManaged(false);
+            unitLabel.setVisible(false);
+            unitLabel.setManaged(false);
+        } else if (unit.size() == 1) {
+            unitComboBox.setVisible(false);
+            unitComboBox.setManaged(false);
+        } else {    // unit.size() > 1
+            unitLabel.setVisible(false);
+            unitLabel.setManaged(false);
+        }
+
+        numberWithUnit = new SimpleObjectProperty<>(initialValue);
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
             slider.setValue(newValue.getValue());
-            comboBox.getSelectionModel().select(newValue.getUnit());
+            textField.setText(decimalFormat.format(newValue.getValue()));
+            unitComboBox.getSelectionModel().select(newValue.getUnit());
         });
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(newValue.doubleValue(), numberWithUnit.get().getUnit()));
         });
-        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            numberWithUnit.set(new NumberWithUnit(Double.parseDouble(newValue), numberWithUnit.get().getUnit()));
+        });
+        unitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));
         });
-        setSpacing(2);
+
+        setSpacing(5);
         setAlignment(Pos.CENTER);
-        getChildren().addAll(slider,text, comboBox);
+        getChildren().addAll(slider, textField, unitLabel, unitComboBox);
     }
 
+    @Override
     public NumberWithUnit getValue() {
         return numberWithUnit.get();
     }
 
+    @Override
     public ObjectProperty<NumberWithUnit> valueProperty() {
         return numberWithUnit;
     }
 
-    public static class Constraint {
-        private final double min;
-        private final double max;
-        private final Unit unit;
-
-        public Constraint(double min, double max, Unit unit) {
-            this.min = min;
-            this.max = max;
-            this.unit = unit;
-        }
-
-        public double getMin() {
-            return min;
-        }
-
-        public double getMax() {
-            return max;
-        }
-
-        public Unit getUnit() {
-            return unit;
-        }
+    @Override
+    public void setValue(NumberWithUnit numberWithUnit) {
+        this.numberWithUnit.set(numberWithUnit);
     }
 }

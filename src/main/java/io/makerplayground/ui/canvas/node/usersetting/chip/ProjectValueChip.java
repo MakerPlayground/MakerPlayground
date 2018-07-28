@@ -4,10 +4,9 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
@@ -17,6 +16,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ProjectValueChip extends Chip<ProjectValue> {
 
@@ -29,7 +29,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     private Rectangle background;
 //    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
 
-    public ProjectValueChip(ProjectValue initialValue, ObservableList<ProjectValue> projectValues) {
+    public ProjectValueChip(ProjectValue initialValue, List<ProjectValue> projectValues) {
         super(initialValue, Term.Type.VALUE, projectValues);
     }
 
@@ -49,7 +49,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
        // background.setArcHeight(20);
        // background.fillProperty().setValue(BACKGROUND_COLOR);
 
-        ComboBox<ProjectValue> comboBox = new ComboBox<>(getChoices());
+        ComboBox<ProjectValue> comboBox = new ComboBox<>(FXCollections.observableArrayList(getChoices()));
         if (getValue() != null) {
             comboBox.setValue(getValue());
         }

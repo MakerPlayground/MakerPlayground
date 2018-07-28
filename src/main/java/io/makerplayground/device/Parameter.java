@@ -17,14 +17,12 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Unit;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Represent a parameter of an action
@@ -86,7 +84,7 @@ public class Parameter {
         return ((NumericConstraint) constraint).getMax();
     }
 
-    public Collection<Unit> getUnit() {
+    public List<Unit> getUnit() {
         return Collections.singletonList(((NumericConstraint) constraint).getUnit());  // TODO: add another convertible unit
     }
 

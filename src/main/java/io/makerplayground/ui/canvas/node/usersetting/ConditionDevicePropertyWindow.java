@@ -159,9 +159,8 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
-                NumberWithUnit number = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
-                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue()
-                        , FXCollections.observableArrayList(p.getUnit()), number);
+                NumberWithUnit defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+                SliderWithUnit sliderWithUnit = new SliderWithUnit(p.getMinimumValue(), p.getMaximumValue(), p.getUnit(), defaultValue);
                 sliderWithUnit.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = sliderWithUnit;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
@@ -176,12 +175,8 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
-                NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
                 NumberWithUnit defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
-                SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
-                        , defaultValue.getValue()
-                        , defaultValue.getUnit()
-                        , FXCollections.observableArrayList(p.getUnit()));
+                SpinnerWithUnit spinner = new SpinnerWithUnit(p.getMinimumValue(), p.getMaximumValue(), p.getUnit(), defaultValue);
                 spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
                 control = spinner;
             } else {

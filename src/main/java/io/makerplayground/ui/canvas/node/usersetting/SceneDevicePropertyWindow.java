@@ -1,17 +1,20 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.*;
+import io.makerplayground.device.Action;
+import io.makerplayground.device.CategoricalConstraint;
+import io.makerplayground.device.Parameter;
+import io.makerplayground.device.Value;
 import io.makerplayground.helper.ControlType;
 import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.usersetting.expression.DoubleNumberExpressionControl;
+import io.makerplayground.ui.canvas.node.expressioncontrol.SliderNumberWithUnitExpressionControl;
+import io.makerplayground.ui.canvas.node.expressioncontrol.SpinnerNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.usersetting.expression.NumberInRangeExpressionControl;
-import io.makerplayground.ui.canvas.node.usersetting.expression.SpinnerWithUnit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -160,17 +163,17 @@ public class SceneDevicePropertyWindow extends PopOver {
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SLIDER) {
                 if (viewModel.getParameterValue(p) == null) {
-                    viewModel.setParameterValue(p, new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
+                    viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                DoubleNumberExpressionControl doubleNumberExpressionControl = new DoubleNumberExpressionControl(
+                SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
                         p.getMinimumValue(),
                         p.getMaximumValue(),
-                        FXCollections.observableArrayList(p.getUnit()),
-                        FXCollections.observableArrayList(viewModel.getProjectValue()),
+                        p.getUnit(),
+                        viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
-                doubleNumberExpressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
-                control = doubleNumberExpressionControl;
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
                 textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
@@ -183,25 +186,25 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
-                NumericConstraint constraint = ((NumericConstraint) p.getConstraint());
-                NumberWithUnit defaultValue;
-                if (viewModel.getParameterValue(p) != null) {
-                    defaultValue = ((NumberWithUnitExpression) viewModel.getParameterValue(p)).getNumberWithUnit();
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                else {
-                    defaultValue = (NumberWithUnit) p.getDefaultValue();
-                }
-                SpinnerWithUnit spinner = new SpinnerWithUnit(constraint.getMin(), constraint.getMax()
-                        , defaultValue.getValue()
-                        , defaultValue.getUnit()
-                        , FXCollections.observableArrayList(p.getUnit()));
-                spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new NumberWithUnitExpression(newValue)));
-                control = spinner;
+                SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
+                        p.getMinimumValue(),
+                        p.getMaximumValue(),
+                        p.getUnit(),
+                        viewModel.getProjectValue(),
+                        viewModel.getParameterValue(p)
+                );
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
             } else {
                 throw new IllegalStateException("Found unknown control type " + p);
             }
             GridPane.setRowIndex(control, i+1);
             GridPane.setColumnIndex(control, 1);
+            GridPane.setHalignment(control, HPos.LEFT);
+            GridPane.setFillWidth(control, false);
             propertyPane.getChildren().addAll(name, control);
         }
 

@@ -1,35 +1,29 @@
 package io.makerplayground.ui.canvas.node.usersetting.chip;
 
 import io.makerplayground.project.term.Term;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.layout.StackPane;
+import java.util.List;
 
 public abstract class Chip<T> extends StackPane {
     private Term.Type type;
     private ObjectProperty<T> value = new SimpleObjectProperty<>();
-    private ListProperty<T> choices = new SimpleListProperty<>();
+    private List<T> choices;
 
     public Chip(T initialValue, Term.Type type) {
         this(initialValue, type, null);
     }
 
-    public Chip(T initialValue, Term.Type type, ObservableList<T> choices) {
+    public Chip(T initialValue, Term.Type type, List<T> choices) {
         this.type = type;
         this.value.set(initialValue);
-        this.choices.setValue(choices);
+        this.choices = choices;
         initView();
         initEvent();
     }
 
-    ObservableList<T> getChoices() {
-        return choices.get();
-    }
-
-    public ListProperty<T> choicesProperty() {
+    List<T> getChoices() {
         return choices;
     }
 

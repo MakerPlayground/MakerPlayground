@@ -2,48 +2,54 @@ package io.makerplayground.ui.canvas.node.usersetting.expression;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
+import io.makerplayground.ui.canvas.node.expressioncontrol.NumberWithUnitControl;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+
+import java.util.List;
 
 /**
  * Created by USER on 12-Jul-17.
  */
-public class SpinnerWithUnit extends HBox {
+public class SpinnerWithUnit extends NumberWithUnitControl {
     private final Spinner<Double> spinner;
-    private ComboBox<Unit> comboBox;
+    private final ComboBox<Unit> unitComboBox;
+    private final Text unitLabel; // TODO: Text is used here instead of Label as CSS from property window leak to their underlying control and mess up our layout
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
-    private final ObservableList<Constraint> constraintList;
 
-//    public SpinnerWithUnit(double min, double max, double value,) {
-//        this(min, max, value, Unit.NOT_SPECIFIED);
-//    }
-
-    public SpinnerWithUnit(double min, double max, double value, Unit unit, ObservableList<Unit> unitList) {
+    public SpinnerWithUnit(double min, double max, List<Unit> unit, NumberWithUnit initialValue) {
         spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max));
         spinner.setEditable(true);
-        spinner.getValueFactory().setValue(value);
+        spinner.getValueFactory().setValue(initialValue.getValue());
 
-        comboBox = new ComboBox<>(unitList);
-        comboBox.getSelectionModel().select(unit);
-        if (unit == Unit.NOT_SPECIFIED) {
-            comboBox.setVisible(false);
-            comboBox.setManaged(false);
+        unitLabel = new Text(initialValue.getUnit().toString());
+        unitComboBox = new ComboBox<>(FXCollections.observableArrayList(unit));
+        unitComboBox.getSelectionModel().select(initialValue.getUnit());
+        if (unit.size() == 1 && initialValue.getUnit() == Unit.NOT_SPECIFIED) {
+            unitComboBox.setVisible(false);
+            unitComboBox.setManaged(false);
+            unitLabel.setVisible(false);
+            unitLabel.setManaged(false);
+        } else if (unit.size() == 1) {
+            unitComboBox.setVisible(false);
+            unitComboBox.setManaged(false);
+        } else {    // unit.size() > 1
+            unitLabel.setVisible(false);
+            unitLabel.setManaged(false);
         }
 
-        setSpacing(2);
+        setSpacing(5);
 
-        numberWithUnit = new SimpleObjectProperty<>(new NumberWithUnit(value,unit));
+        numberWithUnit = new SimpleObjectProperty<>(initialValue);
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
             spinner.getValueFactory().setValue(newValue.getValue());
-            comboBox.getSelectionModel().select(newValue.getUnit());
+            unitComboBox.getSelectionModel().select(newValue.getUnit());
         });
-        constraintList = FXCollections.observableArrayList();
 
         spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
@@ -52,10 +58,10 @@ public class SpinnerWithUnit extends HBox {
                 numberWithUnit.set(new NumberWithUnit(newValue, numberWithUnit.get().getUnit()));
             }
         });
-        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        unitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));
         });
-        getChildren().addAll(spinner, comboBox);
+        getChildren().addAll(spinner, unitLabel, unitComboBox);
     }
 
     public NumberWithUnit getValue() {
@@ -68,37 +74,5 @@ public class SpinnerWithUnit extends HBox {
 
     public void setValue(NumberWithUnit numberWithUnit) {
         this.numberWithUnit.set(numberWithUnit);
-    }
-
-    public void setUnit(ObservableList<Unit> unitList) {
-        comboBox.setItems(unitList);
-    }
-
-    public ObservableList<Constraint> getSpinnerConstraint() {
-        return constraintList;
-    }
-
-    public static class Constraint {
-        private final double min;
-        private final double max;
-        private final Unit unit;
-
-        public Constraint(double min, double max, Unit unit) {
-            this.min = min;
-            this.max = max;
-            this.unit = unit;
-        }
-
-        public double getMin() {
-            return min;
-        }
-
-        public double getMax() {
-            return max;
-        }
-
-        public Unit getUnit() {
-            return unit;
-        }
     }
 }

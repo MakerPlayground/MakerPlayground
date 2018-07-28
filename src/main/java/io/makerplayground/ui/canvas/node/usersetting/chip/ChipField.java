@@ -29,13 +29,13 @@ public class ChipField extends HBox {
     @FXML
     private Button backspaceBtn;
 
-    private final ObservableList<ProjectValue> projectValues;
+    private final List<ProjectValue> projectValues;
 
     private final ObjectProperty<CustomNumberExpression> expressionProperty;
 
     private final BooleanProperty validProperty = new SimpleBooleanProperty();
 
-    public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, ObservableList<ProjectValue> projectValues) {
+    public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, List<ProjectValue> projectValues) {
         this.projectValues = projectValues;
         this.expressionProperty = expressionProperty;
         this.validProperty.set(!expressionProperty.get().isValidTerms());
