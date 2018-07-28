@@ -33,12 +33,9 @@ public class ChipField extends HBox {
 
     private final ObjectProperty<CustomNumberExpression> expressionProperty;
 
-    private final BooleanProperty validProperty = new SimpleBooleanProperty();
-
     public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, List<ProjectValue> projectValues) {
         this.projectValues = projectValues;
         this.expressionProperty = expressionProperty;
-        this.validProperty.set(!expressionProperty.get().isValidTerms());
         initView();
         initEvent();
     }
@@ -55,8 +52,11 @@ public class ChipField extends HBox {
 
         // initialize chip based on expression
         List<Term> listTerm = expressionProperty.get().getTerms();
-        Platform.runLater(() -> IntStream.range(0, listTerm.size())
-            .forEach(idx -> addChipUI(listTerm.get(idx), idx)));
+        for (int i=0; i<listTerm.size(); i++) {
+            addChipUI(listTerm.get(i), i);
+        }
+
+        showHilight(!expressionProperty.get().isValid());
     }
 
     private void initEvent() {
@@ -76,16 +76,12 @@ public class ChipField extends HBox {
                     }
                 }
             }
-            this.validProperty.set(!expressionProperty.get().isValidTerms());
+            showHilight(!expressionProperty.get().isValid());
         });
 
-        backspaceBtn.setOnMouseReleased(this::handleBackspace);
-
-        validProperty.addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                mainPane.setStyle("-fx-effect: dropshadow(gaussian, #ff8b01, 10.0 , 0.5, 0.0 , 0.0);");
-            } else {
-                mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+        backspaceBtn.setOnMouseReleased(event -> {
+            if (expressionProperty.get().getTerms().size() > 0) {
+                expressionProperty.get().getTerms().remove(expressionProperty.get().getTerms().size() - 1);
             }
         });
     }
@@ -121,9 +117,11 @@ public class ChipField extends HBox {
         mainPane.getChildren().remove(index);
     }
 
-    private void handleBackspace(MouseEvent mouseEvent) {
-        if (expressionProperty.get().getTerms().size() > 0) {
-            expressionProperty.get().getTerms().remove(expressionProperty.get().getTerms().size() - 1);
+    private void showHilight(boolean b) {
+        if (b) {
+            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #ff8b01, 10.0 , 0.5, 0.0 , 0.0);");
+        } else {
+            mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
         }
     }
 }

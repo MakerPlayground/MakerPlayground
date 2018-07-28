@@ -31,11 +31,10 @@ public class CustomNumberExpression extends Expression {
 
     @Override
     public boolean isValid() {
-        return !getTerms().isEmpty() && isValidTerms();
-    }
-
-    public boolean isValidTerms() {
         List<Term> terms = getTerms();
+        if (terms.isEmpty()) {
+            return false;
+        }
 
         /* check parenthesis */
         int countParen = 0;

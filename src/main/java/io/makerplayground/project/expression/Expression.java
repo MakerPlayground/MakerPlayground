@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Expression {
+public abstract class Expression {
 
     public enum Type {
         SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CUSTOM_NUMBER
@@ -29,9 +29,9 @@ public class Expression {
     }
 
     protected Expression(Expression e) {
+        this(e.type);
         terms.addAll(e.terms);  // Term is immutable
         enable.set(e.isEnable());
-        type = e.type;
     }
 
     public static Expression deepCopy(Expression e) {
@@ -69,10 +69,6 @@ public class Expression {
 
     public ObservableList<Term> getTerms() {
         return terms;
-    }
-
-    public void clearTerm() {
-        terms.clear();
     }
 
     @JsonIgnore
