@@ -3,9 +3,8 @@
 
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
-<fx:root id="stackPane" fx:id="stackPane" stylesheets="@../../../../../css/canvas/node/usersetting/chip/LabelChip.css" type="StackPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <Rectangle id="background" fx:id="background"width="80" height="30" arcHeight="20" arcWidth="20"/>
-        <Text id="text" fx:id="text" fill="white"/>
-    </children>>
+<fx:root id="stackPane" fx:id="stackPane" stylesheets="@../../../../../css/canvas/node/usersetting/chip/LabelChip.css"
+         type="StackPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <Rectangle id="background" fx:id="background" width="80" height="30" arcHeight="20" arcWidth="20"/>
+    <Text id="text" fx:id="text" fill="white"/>
 </fx:root>

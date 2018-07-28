@@ -71,7 +71,7 @@ public abstract class NumberWithUnitExpressionControl extends VBox {
             } else {
                 this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
             }
-            Platform.runLater(this::redrawControl);
+            this.redrawControl();
         });
         this.redrawControl();
     }

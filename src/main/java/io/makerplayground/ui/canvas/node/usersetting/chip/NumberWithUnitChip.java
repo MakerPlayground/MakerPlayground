@@ -61,11 +61,10 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
             }
         });
 
-        //getChildren().addAll(background, input);
-        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
+        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
             background.setWidth(newValue.getWidth());
             background.setHeight(newValue.getHeight());
-        }));
+        });
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
     }
 

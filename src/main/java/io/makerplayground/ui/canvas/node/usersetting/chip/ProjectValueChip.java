@@ -89,15 +89,10 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             }
         });
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
-        /*comboBox.setStyle("-fx-background-color: transparent;" +
-                "-fx-border-color: transparent;");*/
-
-        //getChildren().addAll(background, comboBox);
-       // StackPane.setMargin(comboBox, new Insets(5, 10, 5, 10));
-        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
+        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
             background.setWidth(newValue.getWidth());
             background.setHeight(newValue.getHeight());
-        }));
+        });
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
     }
 

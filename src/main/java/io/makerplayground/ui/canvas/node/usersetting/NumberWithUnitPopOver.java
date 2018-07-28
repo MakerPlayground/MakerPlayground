@@ -33,14 +33,14 @@ public class NumberWithUnitPopOver extends PopOver {
         OperatorChip openParenChip = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
         OperatorChip closeParenChip = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
 
-        labelChipNumber.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new NumberWithUnitTerm(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)))));
-        labelChipValue.setOnMousePressed((event -> Platform.runLater(() -> chipField.addChip(new ValueTerm(null)))));
-        plusChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.PLUS))));
-        minusChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MINUS))));
-        multiplyChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MULTIPLY))));
-        divideChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.DIVIDE))));
-        openParenChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.OPEN_PARENTHESIS))));
-        closeParenChip.setOnMousePressed(event -> Platform.runLater(() -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.CLOSE_PARENTHESIS))));
+        labelChipNumber.setOnMousePressed(event -> chipField.addChip(new NumberWithUnitTerm(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED))));
+        labelChipValue.setOnMousePressed((event -> chipField.addChip(new ValueTerm(null))));
+        plusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.PLUS)));
+        minusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MINUS)));
+        multiplyChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MULTIPLY)));
+        divideChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.DIVIDE)));
+        openParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.OPEN_PARENTHESIS)));
+        closeParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.CLOSE_PARENTHESIS)));
 
         chipPane.getChildren().add(labelChipNumber);
         chipPane.getChildren().add(labelChipValue);
