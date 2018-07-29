@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.device.Action;
 import io.makerplayground.project.Condition;
 import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -40,6 +42,8 @@ public class CanvasView extends AnchorPane {
     @FXML private VBox zoomControl;
 
     @FXML private ContextMenu contextMenu;
+    @FXML private MenuItem newSceneMenuItem;
+    @FXML private MenuItem newConditionMenuItem;
     @FXML private MenuItem cutMenuItem;
     @FXML private MenuItem copyMenuItem;
     @FXML private MenuItem pasteMenuItem;
@@ -177,6 +181,18 @@ public class CanvasView extends AnchorPane {
                 .createDynamicViewCreator();
     }
 
+    private void newSceneHandler() {
+        Scene newScene = canvasViewModel.project.newScene();
+        newScene.setLeft(mainPane.getMouseX());
+        newScene.setTop(mainPane.getMouseY());
+    }
+
+    private void newConditionHandler() {
+        Condition newCondition = canvasViewModel.project.newCondition();
+        newCondition.setLeft(mainPane.getMouseX());
+        newCondition.setTop(mainPane.getMouseY());
+    }
+
     private void cutHandler() {
         clipboard.clear();
         clipboard.addAll(mainPane.getSelectionGroup().getSelected());
@@ -258,6 +274,16 @@ public class CanvasView extends AnchorPane {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
             canvasViewModel.connect(event.getSourceNode(), event.getDestinationNode())
         );
+    }
+
+    @FXML
+    private void handleNewScene(ActionEvent event) {
+        newSceneHandler();
+    }
+
+    @FXML
+    private void handleNewCondition(ActionEvent event) {
+        newConditionHandler();
     }
 
     @FXML

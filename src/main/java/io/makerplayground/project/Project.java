@@ -211,7 +211,7 @@ public class Project {
         return unmodifiableScene;
     }
 
-    public void newScene() {
+    public Scene newScene() {
         int id = scene.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
                 .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
@@ -222,6 +222,7 @@ public class Project {
         s.setName("scene" + (id + 1));
         scene.add(s);
         checkAndInvalidateDiagram();
+        return s;
     }
 
     public Scene newScene(Scene s) {
@@ -252,7 +253,7 @@ public class Project {
         checkAndInvalidateDiagram();
     }
 
-    public void newCondition() {
+    public Condition newCondition() {
         int id = condition.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
                 .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
@@ -263,6 +264,7 @@ public class Project {
         c.setName("condition" + (id + 1));
         condition.add(c);
         checkAndInvalidateDiagram();
+        return c;
     }
 
     public Condition newCondition(Condition c) {
