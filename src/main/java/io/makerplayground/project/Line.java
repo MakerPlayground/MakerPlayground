@@ -16,16 +16,28 @@
 
 package io.makerplayground.project;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+
+import java.util.List;
+import java.util.Optional;
+
 /**
  *
  */
 public class Line {
+    private final Project project;
     private final NodeElement source;
     private final NodeElement destination;
+    private final ReadOnlyObjectWrapper<DiagramError> error;
 
-    public Line(NodeElement source, NodeElement destination) {
+    public Line(NodeElement source, NodeElement destination, Project project) {
+        this.project = project;
         this.source = source;
         this.destination = destination;
+        this.error = new ReadOnlyObjectWrapper<>(DiagramError.NONE);
     }
 
     public NodeElement getSource() {
@@ -34,5 +46,24 @@ public class Line {
 
     public NodeElement getDestination() {
         return destination;
+    }
+
+    public final DiagramError getError() {
+        return error.get();
+    }
+
+    public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
+        return error.getReadOnlyProperty();
+    }
+
+    protected DiagramError checkError() {
+        Optional<List<Line>> result = project.getDiagramStatus().keySet().stream()
+                .filter(lines -> lines.contains(this))
+                .findFirst();
+        return result.map(lines -> project.getDiagramStatus().get(lines)).orElse(DiagramError.NONE);
+    }
+
+    public final void invalidate() {
+        error.set(checkError());
     }
 }

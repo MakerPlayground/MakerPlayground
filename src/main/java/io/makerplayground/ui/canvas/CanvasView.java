@@ -4,6 +4,7 @@ import io.makerplayground.project.Condition;
 import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Scene;
+import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
@@ -74,6 +75,48 @@ public class CanvasView extends AnchorPane {
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
         mainPane.addChildren(beginSceneView);
+
+        DynamicViewCreator<InteractivePane, SceneViewModel, SceneView> canvasViewCreator =
+                new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
+                        .setParent(mainPane)
+                        .setModelLoader(canvasViewModel.getPaneStateViewModel())
+                        .setViewFactory(sceneViewModel -> {
+                            SceneView sceneView = new SceneView(sceneViewModel, mainPane);
+                            addConnectionEvent(sceneView);
+                            sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeScene(sceneViewModel.getScene()));
+                            return sceneView;
+                        })
+                        .setNodeAdder(InteractivePane::addChildren)
+                        .setNodeRemover(InteractivePane::removeChildren)
+                        .createDynamicViewCreator();
+        DynamicViewCreator<InteractivePane, ConditionViewModel, ConditionView> conditionViewCreator =
+                new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
+                        .setParent(mainPane)
+                        .setModelLoader(canvasViewModel.getConditionViewModel())
+                        .setViewFactory(conditionViewModel -> {
+                            ConditionView conditionView = new ConditionView(conditionViewModel, mainPane);
+                            addConnectionEvent(conditionView);
+                            conditionView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
+                            return conditionView;
+                        })
+                        .setNodeAdder(InteractivePane::addChildren)
+                        .setNodeRemover(InteractivePane::removeChildren)
+                        .createDynamicViewCreator();
+        DynamicViewCreator<InteractivePane, LineViewModel, LineView> lineViewCreator =
+                new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
+                        .setParent(mainPane)
+                        .setModelLoader(canvasViewModel.getLineViewModel())
+                        .setViewFactory(lineViewModel -> {
+                            LineView lineView = new LineView(lineViewModel, mainPane);
+                            lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
+                            return lineView;
+                        })
+                        .setNodeAdder((parent, node) -> {
+                            parent.addChildren(node);
+                            node.toBack();  // draw line below other elements so that it won't block mouse event on in/out port
+                        })
+                        .setNodeRemover(InteractivePane::removeChildren)
+                        .createDynamicViewCreator();
     }
 
     private void initEvent() {
@@ -95,7 +138,7 @@ public class CanvasView extends AnchorPane {
                 .setViewFactory(sceneViewModel -> {
                     SceneView sceneView = new SceneView(sceneViewModel, mainPane);
                     addConnectionEvent(sceneView);
-                    sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
+                    sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeScene(sceneViewModel.getScene()));
                     return sceneView;
                 })
                 .setNodeAdder(InteractivePane::addChildren)
@@ -171,12 +214,12 @@ public class CanvasView extends AnchorPane {
             double newX = element.getLeft() - minX + mainPane.getMouseX();
             double newY = element.getTop() - minY + mainPane.getMouseY();
             if (element instanceof Scene) {
-                Scene newScene = canvasViewModel.project.addState((Scene) element);
+                Scene newScene = canvasViewModel.project.newScene((Scene) element);
                 newScene.setLeft(newX);
                 newScene.setTop(newY);
                 elementsMap.put(element,newScene);
             } else {
-                Condition newCondition = canvasViewModel.project.addCondition((Condition) element);
+                Condition newCondition = canvasViewModel.project.newCondition((Condition) element);
                 newCondition.setLeft(newX);
                 newCondition.setTop(newY);
                 elementsMap.put(element,newCondition);
@@ -198,7 +241,7 @@ public class CanvasView extends AnchorPane {
         List<InteractiveNode> removeList = new ArrayList<>(mainPane.getSelectionGroup().getSelected());
         for (InteractiveNode interactiveNode : removeList) {
             if (interactiveNode instanceof SceneView) {
-                canvasViewModel.project.removeState(((SceneView) interactiveNode).getSceneViewModel().getScene());
+                canvasViewModel.project.removeScene(((SceneView) interactiveNode).getSceneViewModel().getScene());
             } else if (interactiveNode instanceof ConditionView) {
                 canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
             } else if (interactiveNode instanceof LineView) {
@@ -256,11 +299,11 @@ public class CanvasView extends AnchorPane {
 
     @FXML
     private void handleAddStateBtn(ActionEvent event) {
-        canvasViewModel.project.addState();
+        canvasViewModel.project.newScene();
     }
 
     @FXML
     private void handleAddConditionBtn(ActionEvent event) {
-        canvasViewModel.project.addCondition();
+        canvasViewModel.project.newCondition();
     }
 }

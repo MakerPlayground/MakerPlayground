@@ -72,7 +72,11 @@ public class ConditionViewModel {
         return project.hasLine(condition, other);
     }
 
-    public boolean isError() {
-        return condition.isError();
+    public final DiagramError getError() {
+        return condition.getError();
+    }
+
+    public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
+        return condition.errorProperty();
     }
 }

@@ -16,13 +16,16 @@
 
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
+import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.node.InteractiveNode;
+import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Path;
+import javafx.util.Duration;
 
 /**
  *
@@ -57,6 +60,28 @@ public class LineView extends InteractiveNode {
 
         // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
         setOnMousePressed(Event::consume);
+
+        showHilight(false);
+
+        // update hilight when error property of the condition is changed
+        viewModel.errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+
+        // install tooltip to display error message to the user
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(Duration.millis(250));
+        if (viewModel.getError() != DiagramError.NONE) {
+            tooltip.setText("Error: " + viewModel.getError().toString());
+            Tooltip.install(this, tooltip);
+        }
+        viewModel.errorProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == DiagramError.NONE) {
+                tooltip.setText("");
+                Tooltip.uninstall(this, tooltip);
+            } else {
+                tooltip.setText("Error: " + newValue.toString());
+                Tooltip.install(this, tooltip);
+            }
+        });
     }
 
     public LineViewModel getLineViewModel() {
@@ -65,6 +90,6 @@ public class LineView extends InteractiveNode {
 
     @Override
     protected boolean isError() {
-        return false;
+        return viewModel.getError() != DiagramError.NONE;
     }
 }

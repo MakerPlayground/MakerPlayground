@@ -22,9 +22,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  *
@@ -33,42 +31,40 @@ import java.util.Objects;
 public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
-    private final ReadOnlyBooleanWrapper error;
-
     private final ObservableList<UserSetting> unmodifiableSetting;
 
-    Condition() {
-        super(20,20,135, 100);
+    Condition(Project project) {
+        super(20,20,135, 100, project);
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
-        this.error = new ReadOnlyBooleanWrapper(checkError());
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
+        invalidate();
     }
 
     public Condition(double top, double left, double width, double height
-            , String name, List<UserSetting> setting) {
-        super(top, left, width, height);
+            , String name, List<UserSetting> setting, Project project) {
+        super(top, left, width, height, project);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
-        this.error = new ReadOnlyBooleanWrapper(checkError());
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
+        invalidate();
     }
 
-    public Condition(Condition c, String name) {
-        super(c.getTop(), c.getLeft(), c.getWidth(), c.getHeight());
+    public Condition(Condition c, String name, Project project) {
+        super(c.getTop(), c.getLeft(), c.getWidth(), c.getHeight(), project);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableArrayList();
         for (UserSetting u : c.setting) {
             this.setting.add(new UserSetting(u));
         }
-        this.error = new ReadOnlyBooleanWrapper(checkError());
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
+        invalidate();
     }
 
     public String getName() {
@@ -101,35 +97,35 @@ public class Condition extends NodeElement {
         return unmodifiableSetting;
     }
 
-    private boolean checkError() {
-        return setting.isEmpty()
-                // When the action has some parameters (it is not 'compare'), it's value must not be null
-                // otherwise we assume that it is compare
-                || (setting.stream().map(UserSetting::getValueMap)
+    @Override
+    protected DiagramError checkError() {
+        if (setting.isEmpty()) {
+            return DiagramError.CONDITION_EMPTY;
+        }
+
+        // When the action has some parameters (it is not 'compare'), it's value must not be null
+        // otherwise we assume that it is compare
+        if (setting.stream().map(UserSetting::getValueMap)
                 .filter(valueMap -> !valueMap.isEmpty())
                 .flatMap(valueMap -> valueMap.values().stream())
-                .anyMatch(Objects::isNull))
-                // every expression must be valid
-                || !(setting.stream().flatMap(userSetting -> userSetting.getExpression().values().stream())
-                .allMatch(Expression::isValid))
-                // at least one expression must be enable
-                || !(setting.stream().filter(userSetting -> userSetting.getValueMap().isEmpty())
+                .anyMatch(Objects::isNull)) {
+            return DiagramError.CONDITION_INVALID_PARAM;
+        }
+
+        // every expression must be valid
+        if (!setting.stream().flatMap(userSetting -> userSetting.getExpression().values().stream())
+                .allMatch(Expression::isValid)) {
+            return DiagramError.CONDITION_INVALID_EXPRESSION;
+        }
+
+        // at least one expression must be enable
+        if (!setting.stream().filter(userSetting -> userSetting.getValueMap().isEmpty())
                 .map(userSetting -> userSetting.getExpression().values())
-                .filter(expressions -> !expressions.isEmpty())
-                .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable)));
-    }
+                .filter(expressions -> !expressions.isEmpty())  // TODO: maybe optional
+                .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable))) {
+            return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+        }
 
-    public boolean isError() {
-        return error.get();
-    }
-
-    public ReadOnlyBooleanProperty errorProperty() {
-        return error.getReadOnlyProperty();
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        error.set(checkError());
+        return DiagramError.NONE;
     }
 }

@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas.node;
 
+import io.makerplayground.project.DiagramError;
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
@@ -30,6 +31,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -37,7 +39,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.util.Duration;
 
+import javax.tools.Tool;
 import java.io.IOException;
 import java.util.List;
 
@@ -140,11 +144,27 @@ public class SceneView extends InteractiveNode {
         addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
         addOutputButton.managedProperty().bind(addOutputButton.visibleProperty());
 
-        // this is need to indicate error for empty condition
         showHilight(false);
 
         // update hilight when error property of the condition is changed
         sceneViewModel.getScene().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+
+        // install tooltip to display error message to the user
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(Duration.millis(250));
+        if (sceneViewModel.getError() != DiagramError.NONE) {
+            tooltip.setText("Error: " + sceneViewModel.getError().toString());
+            Tooltip.install(this, tooltip);
+        }
+        sceneViewModel.errorProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == DiagramError.NONE) {
+                tooltip.setText("");
+                Tooltip.uninstall(this, tooltip);
+            } else {
+                tooltip.setText("Error: " + newValue.toString());
+                Tooltip.install(this, tooltip);
+            }
+        });
     }
 
     private void initEvent() {
@@ -244,6 +264,6 @@ public class SceneView extends InteractiveNode {
 
     @Override
     protected boolean isError() {
-        return sceneViewModel.isError();
+        return sceneViewModel.getError() != DiagramError.NONE;
     }
 }

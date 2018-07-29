@@ -1,21 +1,24 @@
 package io.makerplayground.ui.canvas.node;
 
-import io.makerplayground.ui.dialog.devicepane.input.InputDeviceSelector;
+import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
+import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
+import io.makerplayground.ui.dialog.devicepane.input.InputDeviceSelector;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -79,11 +82,27 @@ public class ConditionView extends InteractiveNode {
         // show remove button when select
         removeConditionBtn.visibleProperty().bind(selectedProperty());
 
-        // this is need to indicate error for empty condition
         showHilight(false);
 
         // update hilight when error property of the condition is changed
         conditionViewModel.getCondition().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+
+        // install tooltip to display error message to the user
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(Duration.millis(250));
+        if (conditionViewModel.getError() != DiagramError.NONE) {
+            tooltip.setText("Error: " + conditionViewModel.getError().toString());
+            Tooltip.install(this, tooltip);
+        }
+        conditionViewModel.errorProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == DiagramError.NONE) {
+                tooltip.setText("");
+                Tooltip.uninstall(this, tooltip);
+            } else {
+                tooltip.setText("Error: " + newValue.toString());
+                Tooltip.install(this, tooltip);
+            }
+        });
     }
 
     private void initEvent() {
@@ -176,6 +195,6 @@ public class ConditionView extends InteractiveNode {
 
     @Override
     protected boolean isError() {
-        return conditionViewModel.isError();
+        return conditionViewModel.getError() != DiagramError.NONE;
     }
 }

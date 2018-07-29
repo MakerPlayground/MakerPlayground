@@ -452,11 +452,11 @@ public class Sourcecode {
     }
 
     private static boolean checkScene(Project project) {
-        return project.getScene().stream().noneMatch(Scene::isError);
+        return project.getScene().stream().noneMatch(scene -> scene.getError() != DiagramError.NONE);
     }
 
     private static boolean checkCondition(Project project) {
-        return project.getCondition().stream().noneMatch(Condition::isError);
+        return project.getCondition().stream().noneMatch(condition -> condition.getError() != DiagramError.NONE);
     }
 
     private static boolean checkDeviceProperty(Project project) {

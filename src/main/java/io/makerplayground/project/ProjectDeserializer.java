@@ -34,44 +34,59 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
+        Project project = new Project();
+
         String projectName = node.get("projectName").asText();
+        project.setProjectName(projectName);
+
         Platform platform = Platform.valueOf(node.get("controller").get("platform").asText());
+        project.setPlatform(platform);
+
         Device controller = null;
         if (!node.get("controller").get("device").asText().isEmpty()) {
             controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
                     device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
         }
+        project.setController(controller);
 
         ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
         for (JsonNode inputDeviceNode : node.get("inputDevice")) {
-            //inputDevices.add(mapper.treeToValue(inputDeviceNode, ProjectDevice.class));
-            inputDevices.add(deserializeProjectDevice(mapper, inputDeviceNode, controller));
+            ProjectDevice projectDevice = deserializeProjectDevice(mapper, inputDeviceNode, controller);
+            inputDevices.add(projectDevice);
+            project.addSensor(projectDevice);
         }
 
         ObservableList<ProjectDevice> outputDevices = FXCollections.observableArrayList();
         for (JsonNode outputDeviceNode : node.get("outputDevice")) {
-            //outputDevices.add(mapper.treeToValue(outputDeviceNode, ProjectDevice.class));
-            outputDevices.add(deserializeProjectDevice(mapper, outputDeviceNode, controller));
+            ProjectDevice projectDevice = deserializeProjectDevice(mapper, outputDeviceNode, controller);
+            outputDevices.add(projectDevice);
+            project.addActuator(projectDevice);
         }
 
         ObservableList<ProjectDevice> connectivityDevices = FXCollections.observableArrayList();
         for (JsonNode connectivityDeviceNode : node.get("connectivityDevice")) {
-            connectivityDevices.add(deserializeProjectDevice(mapper, connectivityDeviceNode, controller));
+            ProjectDevice projectDevice = deserializeProjectDevice(mapper, connectivityDeviceNode, controller);
+            connectivityDevices.add(projectDevice);
+            project.addConnectivity(projectDevice);
         }
 
         Begin begin = new Begin(node.get("begin").get("top").asDouble()
-                , node.get("begin").get("left").asDouble());
+                , node.get("begin").get("left").asDouble(), project);
 
         String filePath = null;
 
         ObservableList<Scene> scenes = FXCollections.observableArrayList();
         for (JsonNode sceneNode : node.get("scene")) {
-            scenes.add(deserializeScene(mapper, sceneNode, inputDevices,  outputDevices, connectivityDevices));
+            Scene scene = deserializeScene(mapper, sceneNode, inputDevices,  outputDevices, connectivityDevices, project);
+            scenes.add(scene);
+            project.addScene(scene);
         }
 
         ObservableList<Condition> conditions = FXCollections.observableArrayList();
         for(JsonNode conditionNode : node.get("condition")) {
-            conditions.add(deserializeCondition(mapper, conditionNode, inputDevices, outputDevices, connectivityDevices));
+            Condition condition = deserializeCondition(mapper, conditionNode, inputDevices, outputDevices, connectivityDevices, project);
+            conditions.add(condition);
+            project.addCondition(condition);
         }
 
         ObservableList<Line> lines = FXCollections.observableArrayList();
@@ -104,14 +119,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 }
             }
 
-            lines.add(new Line(source, dest));
+            lines.add(new Line(source, dest, project));
         }
 
-        return new Project(projectName, controller, platform, inputDevices, outputDevices, connectivityDevices, scenes, conditions, lines, begin, filePath);
+        return project;
     }
 
     public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices, Project project) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
@@ -129,11 +144,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         double width = node.get("position").get("width").asDouble();
         double height = node.get("position").get("height").asDouble();
 
-        return new Scene(top, left, width, height, name, setting, delay, delayUnit);
+        return new Scene(top, left, width, height, name, setting, delay, delayUnit, project);
     }
 
     public Condition deserializeCondition(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
+            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices, Project project) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
@@ -148,7 +163,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         double width = node.get("position").get("width").asDouble();
         double height = node.get("position").get("height").asDouble();
 
-        return new Condition(top, left, width, height, name, setting);
+        return new Condition(top, left, width, height, name, setting, project);
     }
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice

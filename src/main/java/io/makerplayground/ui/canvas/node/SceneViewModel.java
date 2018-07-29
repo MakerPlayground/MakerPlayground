@@ -146,7 +146,11 @@ public class SceneViewModel {
         return project.hasLine(scene, other);
     }
 
-    public boolean isError() {
-        return scene.isError();
+    public final DiagramError getError() {
+        return scene.getError();
+    }
+
+    public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
+        return scene.errorProperty();
     }
 }

@@ -17,16 +17,16 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 
 /**
  *
  */
 @JsonSerialize(using = NodeElementSerializer.class)
-public class NodeElement {
+public abstract class NodeElement {
     private static final double PORT_RADIUS = 15;
+
+    protected final Project project;
 
     private final SimpleDoubleProperty top;
     private final SimpleDoubleProperty left;
@@ -38,7 +38,11 @@ public class NodeElement {
     private final ReadOnlyDoubleWrapper destPortX;
     private final ReadOnlyDoubleWrapper destPortY;
 
-    NodeElement(double top,double left,double width, double height) {
+    private final ReadOnlyObjectWrapper<DiagramError> error;
+
+    protected NodeElement(double top,double left,double width, double height, Project project) {
+        this.project = project;
+
         this.top = new SimpleDoubleProperty(top);
         this.left = new SimpleDoubleProperty(left);
         this.width = new SimpleDoubleProperty(width);
@@ -53,89 +57,101 @@ public class NodeElement {
         this.sourcePortY.bind(this.top.add(this.height.divide(2.0)));
         this.destPortX.bind(this.left.add(this.width).add(PORT_RADIUS));
         this.destPortY.bind(this.top.add(this.height.divide(2.0)));
+
+        this.error = new ReadOnlyObjectWrapper<>(DiagramError.NONE);
     }
 
-    public double getTop() {
+    public final double getTop() {
         return top.get();
     }
 
-    public SimpleDoubleProperty topProperty() {
+    public final DoubleProperty topProperty() {
         return top;
     }
 
-    public void setTop(double top) {
+    public final void setTop(double top) {
         this.top.set(top);
     }
 
-    public double getLeft() {
+    public final double getLeft() {
         return left.get();
     }
 
-    public SimpleDoubleProperty leftProperty() {
+    public final DoubleProperty leftProperty() {
         return left;
     }
 
-    public void setLeft(double left) {
+    public final void setLeft(double left) {
         this.left.set(left);
     }
 
-    public double getWidth() {
+    public final double getWidth() {
         return width.get();
     }
 
-    public SimpleDoubleProperty widthProperty() {
+    public final DoubleProperty widthProperty() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public final void setWidth(double width) {
         this.width.set(width);
     }
 
-    public double getHeight() {
+    public final double getHeight() {
         return height.get();
     }
 
-    public SimpleDoubleProperty heightProperty() {
+    public final DoubleProperty heightProperty() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public final void setHeight(double height) {
         this.height.set(height);
     }
 
-    public double getSourcePortX() {
+    public final double getSourcePortX() {
         return sourcePortX.get();
     }
 
-    public ReadOnlyDoubleProperty sourcePortXProperty() {
+    public final ReadOnlyDoubleProperty sourcePortXProperty() {
         return sourcePortX.getReadOnlyProperty();
     }
 
-    public double getSourcePortY() {
+    public final double getSourcePortY() {
         return sourcePortY.get();
     }
 
-    public ReadOnlyDoubleProperty sourcePortYProperty() {
+    public final ReadOnlyDoubleProperty sourcePortYProperty() {
         return sourcePortY.getReadOnlyProperty();
     }
 
-    public double getDestPortX() {
+    public final double getDestPortX() {
         return destPortX.get();
     }
 
-    public ReadOnlyDoubleProperty destPortXProperty() {
+    public final ReadOnlyDoubleProperty destPortXProperty() {
         return destPortX.getReadOnlyProperty();
     }
 
-    public double getDestPortY() {
+    public final double getDestPortY() {
         return destPortY.get();
     }
 
-    public ReadOnlyDoubleProperty destPortYProperty() {
+    public final ReadOnlyDoubleProperty destPortYProperty() {
         return destPortY.getReadOnlyProperty();
     }
 
-    public void invalidate() {
+    public final DiagramError getError() {
+        return error.get();
+    }
 
+    public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
+        return error.getReadOnlyProperty();
+    }
+
+    protected abstract DiagramError checkError();
+
+    public final void invalidate() {
+        error.set(checkError());
     }
 }

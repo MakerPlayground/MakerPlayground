@@ -16,12 +16,17 @@
 
 package io.makerplayground.ui.canvas;
 
+import io.makerplayground.project.DiagramError;
 import io.makerplayground.project.Line;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.shape.*;
+
+import java.util.Optional;
 
 /**
  *
@@ -218,5 +223,13 @@ public class LineViewModel {
 
     public ReadOnlyDoubleProperty centerUnitTangentYProperty() {
         return centerUnitTangentY.getReadOnlyProperty();
+    }
+
+    public final DiagramError getError() {
+        return line.getError();
+    }
+
+    public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
+        return line.errorProperty();
     }
 }

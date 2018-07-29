@@ -25,6 +25,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -48,31 +51,30 @@ public class Scene extends NodeElement {
     private final ObservableList<UserSetting> setting;
     private final DoubleProperty delay;
     private final ObjectProperty<DelayUnit> delayUnit;
-    private final ReadOnlyBooleanWrapper error;
 
-    Scene() {
-        super(20,20,200, 130);
+    Scene(Project project) {
+        super(20,20,200, 130, project);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
         this.delayUnit = new SimpleObjectProperty<>(DelayUnit.Second);
-        this.error = new ReadOnlyBooleanWrapper(checkError());
+        invalidate();
     }
 
     Scene(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit) {
-        super(top, left, width, height);
+            , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit, Project project) {
+        super(top, left, width, height, project);
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
         this.delay = new SimpleDoubleProperty(delay);
         this.delayUnit = new SimpleObjectProperty<>(delayUnit);
-        this.error = new ReadOnlyBooleanWrapper(checkError());
+        invalidate();
     }
 
-    Scene(Scene s, String name) {
-        super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight());
+    Scene(Scene s, String name, Project project) {
+        super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight(), project);
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         for (UserSetting u : s.setting) {
@@ -80,7 +82,7 @@ public class Scene extends NodeElement {
         }
         this.delay = new SimpleDoubleProperty(s.getDelay());
         this.delayUnit = new SimpleObjectProperty<>(s.getDelayUnit());
-        this.error = new ReadOnlyBooleanWrapper(checkError());
+        invalidate();
     }
 
     public void addDevice(ProjectDevice device) {
@@ -147,23 +149,18 @@ public class Scene extends NodeElement {
         return setting;
     }
 
-    private boolean checkError() {
-        return name.get().isEmpty() || setting.stream()
-                .flatMap(userSetting -> userSetting.getValueMap().values().stream())
-                .anyMatch(o -> (o == null) || !o.isValid());
-    }
-
-    public boolean isError() {
-        return error.get();
-    }
-
-    public ReadOnlyBooleanProperty errorProperty() {
-        return error.getReadOnlyProperty();
-    }
-
     @Override
-    public void invalidate() {
-        super.invalidate();
-        error.set(checkError());
+    protected DiagramError checkError() {
+        if (name.get().isEmpty()) {
+            return DiagramError.SCENE_INVALID_NAME;
+        }
+
+        // parameter should not be null and should be valid
+        if (setting.stream().flatMap(userSetting -> userSetting.getValueMap().values().stream())
+                .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
+            return DiagramError.SCENE_INVALID_PARAM;
+        }
+
+        return DiagramError.NONE;
     }
 }

@@ -27,7 +27,6 @@ import io.makerplayground.device.Value;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.SingletonAddDevice;
 import io.makerplayground.helper.SingletonDelDevice;
-import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -78,31 +77,8 @@ public class Project {
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
-        begin = new Begin();
+        begin = new Begin(this);
         filePath = new SimpleStringProperty("");
-
-        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
-        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
-        unmodifiableConnectivity = FXCollections.unmodifiableObservableList(connectivity);
-        unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
-        unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
-        unmodifiableLine = FXCollections.unmodifiableObservableList(line);
-    }
-
-    public Project(String name, Device controller, Platform platform, ObservableList<ProjectDevice> sensor, ObservableList<ProjectDevice> actuator
-            , ObservableList<ProjectDevice> connectivity, ObservableList<Scene> scene, ObservableList<Condition> condition
-            , ObservableList<Line> line, Begin begin, String filePath) {
-        this.projectName = new SimpleStringProperty(name);
-        this.controller = new SimpleObjectProperty<>(controller);
-        this.platform = new ReadOnlyObjectWrapper<>(platform);
-        this.sensor = sensor;
-        this.actuator = actuator;
-        this.connectivity = connectivity;
-        this.scene = scene;
-        this.condition = condition;
-        this.line = line;
-        this.begin = begin;
-        this.filePath = new SimpleStringProperty(filePath);
 
         unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
         unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
@@ -127,6 +103,10 @@ public class Project {
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         actuator.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
+    }
+
+    protected void addActuator(ProjectDevice device) {
+        actuator.add(device);
     }
 
     public Platform getPlatform() {
@@ -169,6 +149,10 @@ public class Project {
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
+    protected void addSensor(ProjectDevice device) {
+        sensor.add(device);
+    }
+
     public boolean removeSensor(ProjectDevice device) {
         for (Scene s : scene) {
             s.removeDevice(device);
@@ -198,6 +182,10 @@ public class Project {
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
+    protected void addConnectivity(ProjectDevice device) {
+        connectivity.add(device);
+    }
+
     public boolean removeConnectivity(ProjectDevice device) {
         for (Scene s : scene) {
             s.removeDevice(device);
@@ -223,31 +211,37 @@ public class Project {
         return unmodifiableScene;
     }
 
-    public void addState() {
+    public void newScene() {
         int id = scene.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
                 .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
                 .max()
                 .orElse(0);
 
-        Scene s = new Scene();
+        Scene s = new Scene(this);
         s.setName("scene" + (id + 1));
         scene.add(s);
+        checkAndInvalidateDiagram();
     }
 
-    public Scene addState(Scene s) {
+    public Scene newScene(Scene s) {
         int id = scene.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
                 .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
                 .max()
                 .orElse(0);
 
-        Scene newScene = new Scene(s, "scene" + (id + 1));
+        Scene newScene = new Scene(s, "scene" + (id + 1), this);
         scene.add(newScene);
+        checkAndInvalidateDiagram();
         return newScene;
     }
 
-    public void removeState(Scene s) {
+    void addScene(Scene s) {
+        scene.add(s);
+    }
+
+    public void removeScene(Scene s) {
         scene.remove(s);
         for (int i=line.size()-1; i>=0; i--) {
             Line l = line.get(i);
@@ -255,30 +249,37 @@ public class Project {
                 line.remove(l);
             }
         }
+        checkAndInvalidateDiagram();
     }
 
-    public void addCondition() {
+    public void newCondition() {
         int id = condition.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
                 .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
                 .max()
                 .orElse(0);
 
-        Condition c = new Condition();
+        Condition c = new Condition(this);
         c.setName("condition" + (id + 1));
         condition.add(c);
+        checkAndInvalidateDiagram();
     }
 
-    public Condition addCondition(Condition c) {
+    public Condition newCondition(Condition c) {
         int id = condition.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
                 .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
                 .max()
                 .orElse(0);
 
-        Condition newCondition = new Condition(c, "condition" + (id + 1));
+        Condition newCondition = new Condition(c, "condition" + (id + 1), this);
         condition.add(newCondition);
+        checkAndInvalidateDiagram();
         return newCondition;
+    }
+
+    void addCondition(Condition c) {
+        condition.add(c);
     }
 
     public void removeCondition(Condition c) {
@@ -289,6 +290,7 @@ public class Project {
                 line.remove(l);
             }
         }
+        checkAndInvalidateDiagram();
     }
 
     public ObservableList<Condition> getCondition() {
@@ -298,13 +300,15 @@ public class Project {
     public void addLine(NodeElement source, NodeElement destination) {
         // do not create new line if there existed a line with identical source and destination
         if (line.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
-            Line l = new Line(source, destination);
+            Line l = new Line(source, destination, this);
             line.add(l);
         }
+        checkAndInvalidateDiagram();
     }
 
     public void removeLine(Line l) {
         line.remove(l);
+        checkAndInvalidateDiagram();
     }
 
     public boolean hasLineFrom(NodeElement source) {
@@ -494,5 +498,43 @@ public class Project {
             }
         }
         return false;
+    }
+
+    private Map<List<Line>, DiagramError> diagramError = Collections.emptyMap();
+
+    private void checkAndInvalidateDiagram() {
+        Map<List<Line>, DiagramError> error = new HashMap<>();
+
+        Map<NodeElement, List<Line>> lineFromSource = this.line.stream().collect(Collectors.groupingBy(Line::getSource));
+
+        for (NodeElement nodeElement : lineFromSource.keySet()) {
+            List<Line> lines = lineFromSource.get(nodeElement);
+
+            // indicate error if there are lines connect to multiple scenes from any node
+            List<Line> lineToScene = lines.stream().filter(line1 -> line1.getDestination() instanceof Scene).collect(Collectors.toList());
+            if (lineToScene.size() > 1) {
+                error.put(lineToScene, DiagramError.DIAGRAM_MULTIPLE_SCENE);
+            }
+
+            // indicate error if the current node is a condition and there is another condition in the list of the adjacent node
+            List<Line> lineToCondition = lines.stream().filter(line1 -> line1.getDestination() instanceof Condition).collect(Collectors.toList());
+            if ((nodeElement instanceof Condition) && !lineToCondition.isEmpty()) {
+                error.put(lineToCondition, DiagramError.DIAGRAM_CHAIN_CONDITION);
+            }
+
+            // indicate error if the current node is a scene/begin and there are both scene and condition connect to it
+            if (!(nodeElement instanceof Condition) && (!lineToScene.isEmpty() && !lineToCondition.isEmpty())) {
+                error.put(lineToCondition, DiagramError.DIAGRAM_CONDITION_IGNORE);
+            }
+        }
+
+        diagramError =  Collections.unmodifiableMap(error);
+
+        // invalidate every lines
+        line.forEach(Line::invalidate);
+    }
+
+    public Map<List<Line>, DiagramError> getDiagramStatus() {
+        return diagramError;
     }
 }
