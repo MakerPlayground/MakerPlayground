@@ -17,8 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -127,6 +126,12 @@ public class CanvasView extends AnchorPane {
         setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SHIFT) {  // enable multiple selection when the shift key is pressed
                 mainPane.getSelectionGroup().setMultipleSelection(true);
+            } else if (event.isShortcutDown() && (event.getCode().equals(KeyCode.EQUALS) || event.getText().equals("+"))) {
+                zoomInHandler();
+            } else if (event.isShortcutDown() && event.getText().equals("-")) {
+                zoomOutHandler();
+            } else if (event.isShortcutDown() && event.getText().equals("0")) {
+                zoomDefaultHandler();
             }
         });
         setOnKeyReleased(event -> {
@@ -268,6 +273,22 @@ public class CanvasView extends AnchorPane {
                 throw new IllegalStateException("Found invalid object in the canvas!!!");
             }
         }
+    }
+
+    private void zoomInHandler() {
+        if(mainPane.getScale()< 5) {
+            mainPane.setScale(mainPane.getScale() + 0.1);
+        }
+    }
+
+    private void zoomOutHandler() {
+        if(mainPane.getScale()> 0.5) {
+            mainPane.setScale(mainPane.getScale() - 0.1);
+        }
+    }
+
+    private void zoomDefaultHandler() {
+        mainPane.setScale(1);
     }
 
     private void addConnectionEvent(InteractiveNode node) {
