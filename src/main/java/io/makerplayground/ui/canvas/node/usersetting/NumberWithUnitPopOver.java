@@ -8,9 +8,8 @@ import io.makerplayground.project.term.ValueTerm;
 import io.makerplayground.ui.canvas.node.usersetting.chip.ChipField;
 import io.makerplayground.ui.canvas.node.usersetting.chip.LabelChip;
 import io.makerplayground.ui.canvas.node.usersetting.chip.OperatorChip;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
 import org.controlsfx.control.PopOver;
 
 public class NumberWithUnitPopOver extends PopOver {
@@ -26,21 +25,21 @@ public class NumberWithUnitPopOver extends PopOver {
         LabelChip labelChipNumber = new LabelChip("number");
         LabelChip labelChipValue = new LabelChip("value");
 
-        OperatorChip plusChip = new OperatorChip(OperatorTerm.OP.PLUS);
-        OperatorChip minusChip = new OperatorChip(OperatorTerm.OP.MINUS);
-        OperatorChip multiplyChip = new OperatorChip(OperatorTerm.OP.MULTIPLY);
-        OperatorChip divideChip = new OperatorChip(OperatorTerm.OP.DIVIDE);
-        OperatorChip openParenChip = new OperatorChip(OperatorTerm.OP.OPEN_PARENTHESIS);
-        OperatorChip closeParenChip = new OperatorChip(OperatorTerm.OP.CLOSE_PARENTHESIS);
+        OperatorChip plusChip = new OperatorChip(OperatorTerm.Operator.PLUS);
+        OperatorChip minusChip = new OperatorChip(OperatorTerm.Operator.MINUS);
+        OperatorChip multiplyChip = new OperatorChip(OperatorTerm.Operator.MULTIPLY);
+        OperatorChip divideChip = new OperatorChip(OperatorTerm.Operator.DIVIDE);
+        OperatorChip openParenChip = new OperatorChip(OperatorTerm.Operator.OPEN_PARENTHESIS);
+        OperatorChip closeParenChip = new OperatorChip(OperatorTerm.Operator.CLOSE_PARENTHESIS);
 
         labelChipNumber.setOnMousePressed(event -> chipField.addChip(new NumberWithUnitTerm(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED))));
         labelChipValue.setOnMousePressed((event -> chipField.addChip(new ValueTerm(null))));
-        plusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.PLUS)));
-        minusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MINUS)));
-        multiplyChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.MULTIPLY)));
-        divideChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.DIVIDE)));
-        openParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.OPEN_PARENTHESIS)));
-        closeParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.OP.CLOSE_PARENTHESIS)));
+        plusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.PLUS)));
+        minusChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.MINUS)));
+        multiplyChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.MULTIPLY)));
+        divideChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.DIVIDE)));
+        openParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.OPEN_PARENTHESIS)));
+        closeParenChip.setOnMousePressed(event -> chipField.addChip(new OperatorTerm(OperatorTerm.Operator.CLOSE_PARENTHESIS)));
 
         chipPane.getChildren().add(labelChipNumber);
         chipPane.getChildren().add(labelChipValue);

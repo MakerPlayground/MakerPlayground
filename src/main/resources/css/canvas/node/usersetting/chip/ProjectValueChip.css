@@ -1,15 +1,14 @@
-#background
-{
+#background {
     -fx-background-color: #081e42;
 }
 #comboBox
 {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-margin-top: 5 px;
-    -fx-margin-right: 10 px;
-    -fx-margin-bottom: 5 px;
-    -fx-margin-left: 10 px;
+    -fx-margin-top: 5px;
+    -fx-margin-right: 10px;
+    -fx-margin-bottom: 5px;
+    -fx-margin-left: 10px;
 }
 #text1
 {

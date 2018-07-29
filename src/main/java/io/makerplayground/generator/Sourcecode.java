@@ -396,10 +396,10 @@ public class Sourcecode {
                             } else if (term instanceof StringTerm) {
                                 return ((StringTerm) term).getValue();
                             } else if (term instanceof OperatorTerm) {
-                                OperatorTerm.OP chipOperator = ((OperatorTerm) term).getValue();
-                                if (chipOperator == OperatorTerm.OP.AND) {
+                                OperatorTerm.Operator chipOperator = ((OperatorTerm) term).getValue();
+                                if (chipOperator == OperatorTerm.Operator.AND) {
                                     return " && ";
-                                } else if (chipOperator == OperatorTerm.OP.OR) {
+                                } else if (chipOperator == OperatorTerm.Operator.OR) {
                                     return " || ";
                                 } else {
                                     return " " + chipOperator.toString() + " ";

@@ -240,7 +240,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             term = new NumberWithUnitTerm(numberWithUnit);
         } else if (Term.Type.OPERATOR.name().equals(term_type)) {
             String operator = term_node.get("value").asText();
-            term = new OperatorTerm(OperatorTerm.OP.valueOf(operator));
+            term = new OperatorTerm(OperatorTerm.Operator.valueOf(operator));
         } else if (Term.Type.VALUE.name().equals(term_type)) {
             if ("null".equals(term_node.get("value").asText())) {
                 term = new ValueTerm(null);
@@ -264,13 +264,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         NumberInRangeExpression expression = new NumberInRangeExpression(device, value);
         if (node.get(0).get("type").asText().equals(Term.Type.VALUE.name())
             && node.get(1).get("type").asText().equals(Term.Type.OPERATOR.name())
-                && node.get(1).get("value").asText().equals(OperatorTerm.OP.LESS_THAN.name())
+                && node.get(1).get("value").asText().equals(OperatorTerm.Operator.LESS_THAN.name())
                 && node.get(2).get("type").asText().equals(Term.Type.NUMBER.name())
                 && node.get(3).get("type").asText().equals(Term.Type.OPERATOR.name())
-                && node.get(3).get("value").asText().equals(OperatorTerm.OP.AND.name())
+                && node.get(3).get("value").asText().equals(OperatorTerm.Operator.AND.name())
                 && node.get(4).get("type").asText().equals(Term.Type.VALUE.name())
                 && node.get(5).get("type").asText().equals(Term.Type.OPERATOR.name())
-                && node.get(5).get("value").asText().equals(OperatorTerm.OP.GREATER_THAN.name())
+                && node.get(5).get("value").asText().equals(OperatorTerm.Operator.GREATER_THAN.name())
                 && node.get(6).get("type").asText().equals(Term.Type.NUMBER.name())) {
             expression.setHighValue(node.get(2).get("value").get("value").asDouble());
             expression.setLowValue(node.get(6).get("value").get("value").asDouble());

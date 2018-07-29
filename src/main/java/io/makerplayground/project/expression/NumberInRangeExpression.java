@@ -16,11 +16,11 @@ public class NumberInRangeExpression extends Expression {
         super(Expression.Type.NUMBER_IN_RANGE);
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
         getTerms().addAll(new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(OperatorTerm.OP.LESS_THAN)
+                , new OperatorTerm(OperatorTerm.Operator.LESS_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()))
-                , new OperatorTerm(OperatorTerm.OP.AND)
+                , new OperatorTerm(OperatorTerm.Operator.AND)
                 , new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(OperatorTerm.OP.GREATER_THAN)
+                , new OperatorTerm(OperatorTerm.Operator.GREATER_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())));
     }
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.Path?>
 <?import javafx.scene.text.Text?>
 <fx:root id="stackPane" fx:id="stackPane"
          stylesheets="@../../../../../css/canvas/node/usersetting/chip/OperatorChip.css" type="StackPane"
          xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <Rectangle id="background" fx:id="background" width="25.0" height="20.0" arcWidth="20.0" arcHeight="20.0"/>
+    <Path id="background" fx:id="background" strokeType="INSIDE" strokeWidth="0" fill="#499B54"/>
     <Text id="input" fx:id="input" />
 </fx:root>
 

@@ -1,26 +1,18 @@
 package io.makerplayground.ui.canvas.node.usersetting.chip;
 
-import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
-import io.makerplayground.project.term.OperatorTerm.OP;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class ChipField extends HBox {
     @FXML
@@ -93,17 +85,17 @@ public class ChipField extends HBox {
     private void addChipUI(Term t, int index) {
         Chip chip;
         if (t instanceof NumberWithUnitTerm) {
-            NumberWithUnitChip numChip = new NumberWithUnitChip((NumberWithUnit) t.getValue());
+            NumberWithUnitChip numChip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
             numChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm(n)));
             chip = numChip;
         } else if (t instanceof StringTerm) {
-            StringChip strChip = new StringChip((String) t.getValue());
+            StringChip strChip = new StringChip(((StringTerm) t).getValue());
             strChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new StringTerm(n)));
             chip = strChip;
         } else if (t instanceof OperatorTerm) {
-            chip = new OperatorChip((OP) t.getValue());
+            chip = new OperatorChip(((OperatorTerm) t).getValue());
         } else if (t instanceof ValueTerm) {
-            ProjectValueChip pvChip = new ProjectValueChip((ProjectValue) t.getValue(), projectValues);
+            ProjectValueChip pvChip = new ProjectValueChip(((ValueTerm) t).getValue(), projectValues);
             pvChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new ValueTerm(n)));
             chip = pvChip;
         } else {
@@ -119,7 +111,7 @@ public class ChipField extends HBox {
 
     private void showHilight(boolean b) {
         if (b) {
-            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #ff8b01, 10.0 , 0.5, 0.0 , 0.0);");
+            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
         } else {
             mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
         }

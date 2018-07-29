@@ -5,22 +5,20 @@ import io.makerplayground.project.term.Term;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
 
-public class OperatorChip extends Chip<OperatorTerm.OP> {
-//    private static final Color BACKGROUND_COLOR = Color.DARKGREEN;
-//    private static final Color BACKGROUND_COLOR = Color.valueOf("072454");
-//    private static final Color BACKGROUND_COLOR_SELECTED = Color.GREEN;
+public class OperatorChip extends Chip<OperatorTerm.Operator> {
 
-    public OperatorChip(OperatorTerm.OP initialValue) {
+    @FXML private Path background;
+    @FXML private Text input;
+
+    public OperatorChip(OperatorTerm.Operator initialValue) {
         super(initialValue, Term.Type.OPERATOR);
     }
-    @FXML private Rectangle background;
-    @FXML private Text input;
+
     @Override
     protected void initView() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/Operator.fxml"));
@@ -34,6 +32,42 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
         }
 
         input.setText(getValue().toString());
+
+        if (getValue().getType() == OperatorTerm.OperatorType.LEFT_UNARY) {
+            background.getElements().addAll(new MoveTo(10, 0)
+                    , new ArcTo(10, 10, 90, 0, 10, false, false)
+                    , new LineTo(0, 15)
+                    , new ArcTo(10, 10, 0, 10, 25, false, false)
+                    , new LineTo(25, 25)
+                    , new ArcTo(10, 10, 0, 15, 15, false, true)
+                    , new LineTo(15, 10)
+                    , new ArcTo(10, 10, 0, 25, 0, false, true)
+                    , new ClosePath());
+        } else if (getValue().getType() == OperatorTerm.OperatorType.BINARY) {
+            background.getElements().addAll(new MoveTo(10, 0)
+                    , new LineTo(0, 0)
+                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new LineTo(10, 15)
+                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new LineTo(35, 25)
+                    , new ArcTo(10, 10, 0, 25, 15, false, true)
+                    , new LineTo(25, 10)
+                    , new ArcTo(10, 10, 0, 35, 0, false, true)
+                    , new ClosePath());
+        } else if (getValue().getType() == OperatorTerm.OperatorType.RIGHT_UNARY) {
+            background.getElements().addAll(new MoveTo(15, 0)
+                    , new LineTo(0, 0)
+                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new LineTo(10, 15)
+                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new LineTo(15, 25)
+                    , new ArcTo(10, 10, 0, 25, 15, false, false)
+                    , new LineTo(25, 10)
+                    , new ArcTo(10, 10, 0, 15, 0, false, false)
+                    , new ClosePath());
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -42,17 +76,17 @@ public class OperatorChip extends Chip<OperatorTerm.OP> {
     }
 
     @Override
-    public OperatorTerm.OP getValue() {
+    public OperatorTerm.Operator getValue() {
         return super.getValue();
     }
 
     @Override
-    public ObjectProperty<OperatorTerm.OP> valueProperty() {
-        throw new UnsupportedOperationException("OperatorChip should'h not be edited");
+    public ObjectProperty<OperatorTerm.Operator> valueProperty() {
+        throw new UnsupportedOperationException("OperatorChip should not be edited");
     }
 
     @Override
-    public void setValue(OperatorTerm.OP value) {
-        throw new UnsupportedOperationException("OperatorChip should'h not be edited");
+    public void setValue(OperatorTerm.Operator value) {
+        throw new UnsupportedOperationException("OperatorChip should not be edited");
     }
 }

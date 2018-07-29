@@ -12,15 +12,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+
+import java.text.DecimalFormat;
 
 import java.io.IOException;
 
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
-//    private static final Color BACKGROUND_COLOR = Color.DARKRED;
-//    private static final Color BACKGROUND_COLOR = Color.valueOf("081e42");
-//    private static final Color BACKGROUND_COLOR_SELECTED = Color.RED;
+
     @FXML private Rectangle background;
     @FXML private TextField input;
+
+    private static final DecimalFormat df = new DecimalFormat("#.##");
+
     public NumberWithUnitChip(NumberWithUnit initialValue) {
         super(initialValue, Term.Type.NUMBER);
     }
@@ -38,25 +42,15 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
             e.printStackTrace();
         }
 
-        //Rectangle background = new Rectangle();
-        //background.setArcWidth(20);
-        // background.setArcHeight(20);
-        //background.fillProperty().setValue(BACKGROUND_COLOR);
-       // TextField input = new TextField();
-        input.setText(String.valueOf(getValue()));
-        //input.setAlignment(Pos.BASELINE_CENTER);
-        //input.setPrefSize(30, 20);
-        //input.setMaxSize(30, 20);
-        /*input.setStyle("-fx-background-color: transparent;" +
-                "-fx-border-color: transparent;" +
-                "-fx-text-fill: white;");*/
+        input.setText(df.format(getValue().getValue())); // TODO: display unit
+
         input.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {
                     double value = Double.parseDouble(input.getText());
                     setValue(new NumberWithUnit(value, getValue().getUnit()));  // TODO: shouldn't hardcoded unit
                 } catch (NumberFormatException e) {
-                    input.setText(String.valueOf(getValue()));
+                    input.setText(df.format(getValue().getValue()) + getValue().getUnit());
                 }
             }
         });
@@ -66,6 +60,9 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
             background.setHeight(newValue.getHeight());
         });
         setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
+
+        // update width of the background based on the combobox width
+        layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
     }
 
     @Override

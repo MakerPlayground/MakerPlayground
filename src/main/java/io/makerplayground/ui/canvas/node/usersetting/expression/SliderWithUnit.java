@@ -77,7 +77,11 @@ public class SliderWithUnit extends NumberWithUnitControl {
             numberWithUnit.set(new NumberWithUnit(newValue.doubleValue(), numberWithUnit.get().getUnit()));
         });
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            numberWithUnit.set(new NumberWithUnit(Double.parseDouble(newValue), numberWithUnit.get().getUnit()));
+            if (newValue.isEmpty()) {
+                numberWithUnit.set(new NumberWithUnit(0, numberWithUnit.get().getUnit()));
+            } else {
+                numberWithUnit.set(new NumberWithUnit(Double.parseDouble(newValue), numberWithUnit.get().getUnit()));
+            }
         });
         unitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             numberWithUnit.set(new NumberWithUnit(numberWithUnit.get().getValue(), newValue));

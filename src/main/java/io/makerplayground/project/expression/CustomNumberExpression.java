@@ -40,8 +40,8 @@ public class CustomNumberExpression extends Expression {
         int countParen = 0;
         for (Term term : terms) {
             if (term instanceof OperatorTerm) {
-                if (OperatorTerm.OP.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
-                else if(OperatorTerm.OP.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
+                else if(OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
                     countParen--;
                     if (countParen < 0) { return false; }
                 }
@@ -59,19 +59,19 @@ public class CustomNumberExpression extends Expression {
             Term term = terms.get(i);
             Term nextTerm = terms.get(i+1);
             if (isNumberOrValueTerm(term)) {
-                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.OP.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
+                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             } else if (isOperationNotParenTerm(term)) {
-                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
+                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
-            } else if (OperatorTerm.OP.OPEN_PARENTHESIS.equals(term.getValue())) {
-                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
+            } else if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(term.getValue())) {
+                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
-            } else if (OperatorTerm.OP.CLOSE_PARENTHESIS.equals(term.getValue())) {
-                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.OP.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
+            } else if (OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             }
@@ -79,7 +79,7 @@ public class CustomNumberExpression extends Expression {
         /* check last */
         if (terms.size() > 0) {
             Term last = terms.get(terms.size()-1);
-            if (OperatorTerm.OP.OPEN_PARENTHESIS.equals(last.getValue()) || isOperationNotParenTerm(last)) {
+            if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(last.getValue()) || isOperationNotParenTerm(last)) {
                 return false;
             }
         }
@@ -88,7 +88,7 @@ public class CustomNumberExpression extends Expression {
 
     private boolean isParenTerm(Term t) {
         return t instanceof OperatorTerm &&
-                (OperatorTerm.OP.OPEN_PARENTHESIS.equals(t.getValue()) || OperatorTerm.OP.CLOSE_PARENTHESIS.equals(t.getValue()));
+                (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(t.getValue()) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(t.getValue()));
     }
 
     private boolean isOperationNotParenTerm(Term t) {

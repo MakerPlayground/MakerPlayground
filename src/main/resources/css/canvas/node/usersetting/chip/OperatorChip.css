@@ -4,5 +4,8 @@
 }
 #input
 {
+    -fx-font-size: 12;
+    -fx-fill: white;
+    -fx-font-weight: bold;
     -fx-text-fill: white;
 }
