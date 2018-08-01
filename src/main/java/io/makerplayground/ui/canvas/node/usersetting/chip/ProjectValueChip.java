@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ProjectValueChip extends Chip<ProjectValue> {
 
-    @FXML private ComboBox comboBox;
+    @FXML private ComboBox<ProjectValue> comboBox;
     @FXML private Rectangle background;
 
     private static final String TEXT_CSS = "-fx-font-size: 10; -fx-fill: white; -fx-font-weight: bold; -fx-text-alignment: center;";
@@ -40,7 +40,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             e.printStackTrace();
         }
 
-        ComboBox<ProjectValue> comboBox = new ComboBox<>(FXCollections.observableArrayList(getChoices()));
+        comboBox.getItems().addAll(FXCollections.observableArrayList(getChoices()));
         if (getValue() != null) {
             comboBox.setValue(getValue());
         }
