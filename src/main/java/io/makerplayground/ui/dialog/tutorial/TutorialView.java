@@ -46,7 +46,7 @@ public class TutorialView extends Stage {
     public TutorialView(Window owner) {
         rootPane = new AnchorPane();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/TutorialView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/TutorialView.fxml"));
         fxmlLoader.setRoot(rootPane);
         fxmlLoader.setController(this);
         try {
