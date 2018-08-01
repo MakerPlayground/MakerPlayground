@@ -9,12 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="controllAddDevicePane" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" style="-fx-background-color: transparent;" stylesheets="@../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="controllAddDevicePane" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" stylesheets="@../../css/ControlAddDevicePanel.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="nameLabel" style="-fx-text-fill: #313644;" text="Label">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
+      <Label id="nameLabel" fx:id="nameLabel" text="Label">
          <VBox.margin>
             <Insets top="4.0" />
          </VBox.margin></Label>
@@ -24,10 +21,7 @@
          </VBox.margin></ImageView>
       <HBox alignment="TOP_CENTER">
          <children>
-            <Button id="decBtn" fx:id="decBtn" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" prefWidth="20.0">
-               <font>
-                  <Font size="10.0" />
-               </font></Button>
+            <Button id="decBtn" fx:id="decBtn" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" prefWidth="20.0" />
             <TextField id="numTextField" fx:id="numberTextField" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" prefWidth="35.0" text="0" />
             <Button id="incBtn" fx:id="incBtn" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" />
          </children>

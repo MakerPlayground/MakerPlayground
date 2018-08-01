@@ -1,4 +1,5 @@
 .root{
+    -fx-background-color: transparent;
     -fx-border-color: transparent transparent transparent transparent;
 }
 .label{
@@ -31,4 +32,9 @@
     -fx-border-color : #cccccc;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
+}
+#nameLabel {
+    -fx-text-fill: #313644;
+    -fx-font-name: System Bold;
+    -fx-font-size: 12px;
 }
