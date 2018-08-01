@@ -23,9 +23,9 @@ import java.util.Optional;
 public class DevicePanelView extends VBox {
 
     private final DevicePanelViewModel viewModel;
+    private DevicePanelIconViewModel devicePanelIconViewModel;
 
-    @FXML
-    private VBox devicePanel;
+    @FXML private VBox devicePanel;
     @FXML private FlowPane inputPane;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane connectivityPane;

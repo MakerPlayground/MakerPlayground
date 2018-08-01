@@ -92,3 +92,7 @@
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
+
+#anchorPane {
+    -fx-background-color: #313644;
+}
