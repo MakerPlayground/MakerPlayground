@@ -1,0 +1,13 @@
+#labelHBox {
+    -fx-font-name: System Bold;
+    -fx-font-size: 14px;
+    -fx-background-color: #313644;
+    -fx-text-fill: WHITE;
+}
+
+#outPort {
+    -fx-fill: #313644;
+    -fx-stroke: TRANSPARENT;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+}
