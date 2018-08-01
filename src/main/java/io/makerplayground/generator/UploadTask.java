@@ -1,5 +1,6 @@
 package io.makerplayground.generator;
 
+import io.makerplayground.device.Device;
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
@@ -12,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -77,12 +79,31 @@ public class UploadTask extends Task<UploadResult> {
         updateMessage("Preparing to generate project");
         String platform = project.getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
-        List<String> library = project.getAllDeviceUsed().stream()
-                .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
-                .flatMap(Collection::stream).collect(Collectors.toList());
-        library.add("MP_Log");
+
+        List<Device> actualDevicesUsed = project.getAllDeviceUsed().stream()
+                .map(projectDevice -> projectDevice.getActualDevice())
+                .collect(Collectors.toList());
+        Platform.runLater(() -> log.set("List of actual device used \n"));
+        for (String actualDeviceId :
+                actualDevicesUsed.stream().map(device -> device.getId()).collect(Collectors.toList())) {
+            Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
+        }
+
+        Set<String> headerIncluded = actualDevicesUsed.stream()
+                .map(device -> device.getSourceToInclude())
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+        headerIncluded.add("MP_Log");
+        Platform.runLater(() -> log.set("List of header included \n"));
+        for (String headerFileName : headerIncluded) {
+            Platform.runLater(() -> log.set(" - " + headerFileName + "\n"));
+        }
+
+        Set<String> libraries = actualDevicesUsed.stream()
+                .map(device -> device.getLibraryDependency())
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+        libraries.add("MakerPlayground/MP_Log");
         Platform.runLater(() -> log.set("List of library used \n"));
-        for (String libName : library) {
+        for (String libName : libraries) {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
         }
 
@@ -138,34 +159,60 @@ public class UploadTask extends Task<UploadResult> {
             bw.write(code);
             bw.close();
             fw.close();
-
-            // copy libraries
-            for (String x : library) {
-                String zipFilePath = "/library/arduino/src/" + x + ".zip";
-                URL sourceHeaderFile = getClass().getResource("/library/arduino/src/" + x + ".h");
-                URL sourceZipFile = getClass().getResource(zipFilePath);
-                // if the library is a single .c/.h file copy the file to the src directory
-                if (sourceHeaderFile != null) {
-                    File destHeaderFile = new File(projectPath + File.separator + "src" + File.separator + x + ".h");
-                    FileUtils.copyURLToFile(sourceHeaderFile, destHeaderFile, 1, 1);
-
-                    URL srcCppFile = getClass().getResource("/library/arduino/src/" + x + ".cpp");
-                    // some library only have a header file so we ignore the cpp file
-                    if (srcCppFile != null) {
-                        File destCppFile = new File(projectPath + File.separator + "src" + File.separator + x + ".cpp");
-                        FileUtils.copyURLToFile(srcCppFile, destCppFile, 1, 1);
+        } catch (IOException | NullPointerException e) {
+            updateMessage("Error: Cannot write code to project directory");
+            return UploadResult.CANT_WRITE_CODE;
+        }
+        // copy device specific (class definition) source codes
+        Properties appProperties = new Properties();
+        String applicationPath = null;
+        String deviceRepositoryPath = null;
+        String libraryRepositoryPath = null;
+        try {
+            //read device repository path
+            appProperties.load(getClass().getResourceAsStream("/app.properties"));
+            applicationPath = appProperties.getProperty("applicationPath");
+            deviceRepositoryPath = appProperties.getProperty("deviceRepositoryRelativePath");
+            libraryRepositoryPath = appProperties.getProperty("libraryRepositoryRelativePath");
+        } catch (IOException e) {
+            e.printStackTrace();
+            updateMessage("Error: Cannot find repository location.");
+            return UploadResult.CANT_FIND_LIBRARY;
+        }
+        try{
+            for (Device x : actualDevicesUsed){
+                String destinationPath = projectPath + File.separator + "src";
+                //enter device's directory
+                if(Files.isDirectory(Paths.get(applicationPath,deviceRepositoryPath,x.getId()))){
+                    Path sourcePath = Paths.get(applicationPath,deviceRepositoryPath,x.getId(),"src");
+                    if(Files.isDirectory(sourcePath)){
+                        addSourcesFromDirectory(sourcePath,destinationPath);
                     }
-                } else if (sourceZipFile != null) {  // if the library comes as a zip, copy the whole zip and extract to the lib directory
-                    String destinationPath = projectPath + File.separator + "lib";
-                    ZipResourceExtractor.extract(getClass(), zipFilePath, destinationPath);
-                } else {
-                    updateMessage("Error: Missing some libraries");
+                    else{
+                        //No source to copy; continue to next device
+                    }
+                }
+                else{
+                    updateMessage("Error: Missing some device's directory");
                     return UploadResult.CANT_FIND_LIBRARY;
                 }
             }
-        } catch (IOException | NullPointerException e) {
-            updateMessage("Error: Missing some libraries");
+        } catch (IOException e) {
+            e.printStackTrace();
+            updateMessage("Error: Cannot write device-specific source codes");
             return UploadResult.CANT_FIND_LIBRARY;
+        }
+
+        for (String x : libraries) {
+            String destinationPath = projectPath + File.separator + "lib";
+            Path libraryPath = Paths.get(applicationPath,libraryRepositoryPath,x);
+            if(Files.exists(libraryPath)){
+                ZipResourceExtractor.extract(getClass(),libraryPath.toString(),destinationPath);
+            }
+            else {
+                updateMessage("Error: Missing some libraries");
+                return UploadResult.CANT_FIND_LIBRARY;
+            }
         }
 
         updateProgress(0.75, 1);
@@ -207,6 +254,18 @@ public class UploadTask extends Task<UploadResult> {
         updateMessage("Done");
 
         return UploadResult.OK;
+    }
+
+    private void addSourcesFromDirectory(Path sourcePath,String destinationPath) throws IOException {
+        //List<Path> possiblePath;
+        int sourcePathStringLength = sourcePath.toString().length();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(sourcePath,"*.{cpp,h}");){
+            for(Path p: directoryStream){
+                String filename = p.toString().substring(sourcePathStringLength);
+                Path targetPath = Paths.get(destinationPath,filename);
+                Files.copy(p,Paths.get(destinationPath,filename),StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
     }
 
     private void extractPythonFromJar() {

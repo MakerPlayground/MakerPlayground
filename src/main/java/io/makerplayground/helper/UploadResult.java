@@ -9,6 +9,7 @@ public enum UploadResult {
     CANT_GENERATE_CODE,
     UNKNOWN_ERROR,
     CANT_FIND_BOARD,
+    CANT_WRITE_CODE,
     CANT_FIND_LIBRARY,
     USER_CANCEL,
     NO_PERMISSION;

@@ -111,12 +111,11 @@ public class Sourcecode {
         }
 
         // generate include
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            for (String name : projectDevice.getActualDevice().getSourceToInclude()){
-                //headerStringBuilder.append("#include \"").append(name.replace(" ", "_")).append(".h\"").append(NEW_LINE);
-                headerStringBuilder.append("#include \"").append(NEW_LINE);
-            }
-        }
+        project.getAllDeviceUsed().stream()
+                .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet())
+                .forEach(s -> headerStringBuilder.append("#include \"").append(s).append(NEW_LINE));
 
         headerStringBuilder.append(NEW_LINE);
         sb.append("void (*currentScene)(void);").append(NEW_LINE);
