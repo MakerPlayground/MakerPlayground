@@ -5,15 +5,12 @@ import io.makerplayground.helper.Unit;
 import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.OperatorTerm;
 import io.makerplayground.project.term.ValueTerm;
-import io.makerplayground.ui.canvas.chip.ChipField;
-import io.makerplayground.ui.canvas.chip.LabelChip;
-import io.makerplayground.ui.canvas.chip.OperatorChip;
+import io.makerplayground.ui.canvas.node.usersetting.chip.ChipField;
+import io.makerplayground.ui.canvas.node.usersetting.chip.LabelChip;
+import io.makerplayground.ui.canvas.node.usersetting.chip.OperatorChip;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import org.controlsfx.control.PopOver;
 
 public class NumberWithUnitPopOver extends PopOver {

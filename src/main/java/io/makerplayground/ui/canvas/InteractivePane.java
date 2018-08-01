@@ -1,7 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.NodeElement;
-import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
+import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import io.makerplayground.ui.canvas.node.InteractiveNode;
 import io.makerplayground.ui.canvas.node.SelectionGroup;
 import javafx.beans.property.DoubleProperty;

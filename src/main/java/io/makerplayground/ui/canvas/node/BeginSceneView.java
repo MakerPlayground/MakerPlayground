@@ -1,7 +1,6 @@
 package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.canvas.event.InteractiveNodeEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
