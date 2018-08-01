@@ -12,12 +12,16 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,13 +32,19 @@ import java.util.stream.Collectors;
  *
  */
 public class CanvasView extends AnchorPane {
-    private final InteractivePane mainPane = new InteractivePane();
-    private final Button addStateBtn = new Button();
-    private final Button addConditionBtn = new Button();
-//    private final TextField zoomTextField = new TextField();
-    private final Button zoomInButton = new Button();
-    private final Button zoomOutButton = new Button();
-    private final Button zoomDefaultButton = new Button();
+    @FXML private InteractivePane mainPane;
+    @FXML private Button addStateBtn;
+    @FXML private Button addConditionBtn;
+    @FXML private Button zoomInButton;
+    @FXML private Button zoomOutButton;
+    @FXML private Button zoomDefaultButton;
+    @FXML private VBox zoomControl;
+
+    @FXML private ContextMenu contextMenu;
+    @FXML private MenuItem cutMenuItem;
+    @FXML private MenuItem copyMenuItem;
+    @FXML private MenuItem pasteMenuItem;
+    @FXML private MenuItem deleteMenuItem;
 
     private final ObservableList<InteractiveNode> clipboard = FXCollections.observableArrayList();
 
@@ -47,149 +57,25 @@ public class CanvasView extends AnchorPane {
     }
 
     private void initView() {
-        getStylesheets().add(getClass().getResource("/css/CanvasView.css").toExternalForm());
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/CanvasView.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
 
-        addStateBtn.setText("+ Add Scene");
-        addStateBtn.setId("addStateBtn");
-        addStateBtn.setOnAction(event -> canvasViewModel.project.addState());
-        AnchorPane.setTopAnchor(addStateBtn, 20.0);
-        AnchorPane.setRightAnchor(addStateBtn, 20.0);
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        addConditionBtn.setText("+ Add Condition");
-        addConditionBtn.setId("addConditionBtn");
-        addConditionBtn.setOnAction(event -> canvasViewModel.project.addCondition());
-        AnchorPane.setTopAnchor(addConditionBtn, 65.0);
-        AnchorPane.setRightAnchor(addConditionBtn, 20.0);
-
-        zoomDefaultButton.setId("zoomDefaultButton");
-        zoomDefaultButton.setPrefSize(25,25);
-        zoomDefaultButton.setOnAction(event -> mainPane.setScale(1));
-//        AnchorPane.setBottomAnchor(zoomDefaultButton, 20.0);
-//        AnchorPane.setRightAnchor(zoomDefaultButton, 125.0);
-
-        zoomInButton.setId("zoomInButton");
-        zoomInButton.setPrefSize(25,25);
-        zoomInButton.setOnAction(event -> {
-            if(mainPane.getScale()< 5)
-                mainPane.setScale(mainPane.getScale() + 0.1);
-        });
-//        AnchorPane.setBottomAnchor(zoomInButton, 20.0);
-//        AnchorPane.setRightAnchor(zoomInButton, 20.0);
-
-        zoomOutButton.setId("zoomOutButton");
-        zoomOutButton.setPrefSize(25,25);
-        zoomOutButton.setOnAction(event -> {
-            if(mainPane.getScale()> 0.5)
-                mainPane.setScale(mainPane.getScale() - 0.1);
-        });
-//        AnchorPane.setBottomAnchor(zoomOutButton, 20.0);
-//        AnchorPane.setRightAnchor(zoomOutButton, 95.0);
-
-        VBox zoomControl = new VBox();
-        zoomControl.setSpacing(0);
-        zoomControl.getChildren().addAll(zoomInButton, zoomDefaultButton,zoomOutButton);
-        AnchorPane.setRightAnchor(zoomControl, 20.0);
-        AnchorPane.setBottomAnchor(zoomControl, 20.0);
-
-//        zoomTextField.setText(String.valueOf((int) (mainPane.getScale() * 100)) + "%");
-//        zoomTextField.setPrefWidth(40.0);
-//        zoomTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-//            try {
-//                if (!newValue.isEmpty()) {
-//                    if (newValue.endsWith("%")) {
-//                        newValue = newValue.substring(0, newValue.indexOf("%"));
-//                    }
-//                    int scale = Integer.parseInt(newValue);
-//                    if (scale > 0) {
-//                        mainPane.setScale(scale / 100.0);
-//                    }
-//                }
-//            } catch (NumberFormatException e) {
-//                zoomTextField.setText(oldValue);
-//            }
-//        });
-//        mainPane.scaleProperty().addListener((observable, oldValue, newValue) ->
-//                zoomTextField.setText(String.valueOf((int) (newValue.doubleValue() * 100)) + "%"));
-//        AnchorPane.setBottomAnchor(zoomTextField, 20.0);
-//        AnchorPane.setRightAnchor(zoomTextField, 50.0);
-
-        ContextMenu contextMenu = new ContextMenu();
         BooleanBinding selectionGroupEmpty = Bindings.size(mainPane.getSelectionGroup().getSelected()).isEqualTo(0);
-
-        MenuItem cutMenuItem = new MenuItem("Cut");
-        cutMenuItem.setOnAction(event -> cutHandler());
-        cutMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+X"));
         cutMenuItem.disableProperty().bind(selectionGroupEmpty);
-
-        MenuItem copyMenuItem = new MenuItem("Copy");
-        copyMenuItem.setOnAction(event -> copyHandler());
-        copyMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+C"));
         copyMenuItem.disableProperty().bind(selectionGroupEmpty);
-
-        MenuItem pasteMenuItem = new MenuItem("Paste");
-        pasteMenuItem.setOnAction(event -> pasteHandler());
-        pasteMenuItem.setAccelerator(KeyCombination.valueOf("Shortcut+V"));
         pasteMenuItem.disableProperty().bind(Bindings.size(clipboard).isEqualTo(0));
-
-        MenuItem deleteMenuItem = new MenuItem("Delete");
-        deleteMenuItem.setOnAction(event -> deleteHandler());
-        deleteMenuItem.setAccelerator(KeyCombination.valueOf("Delete"));
         deleteMenuItem.disableProperty().bind(selectionGroupEmpty);
-
-        contextMenu.getItems().addAll(cutMenuItem, copyMenuItem, pasteMenuItem, new SeparatorMenuItem(), deleteMenuItem);
-        mainPane.setContextMenu(contextMenu);
 
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
         mainPane.addChildren(beginSceneView);
-
-        DynamicViewCreator<InteractivePane, SceneViewModel, SceneView> canvasViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getPaneStateViewModel())
-                        .setViewFactory(sceneViewModel -> {
-                            SceneView sceneView = new SceneView(sceneViewModel, mainPane);
-                            addConnectionEvent(sceneView);
-                            sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
-                            return sceneView;
-                        })
-                        .setNodeAdder(InteractivePane::addChildren)
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
-        DynamicViewCreator<InteractivePane, ConditionViewModel, ConditionView> conditionViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getConditionViewModel())
-                        .setViewFactory(conditionViewModel -> {
-                            ConditionView conditionView = new ConditionView(conditionViewModel, mainPane);
-                            addConnectionEvent(conditionView);
-                            conditionView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
-                            return conditionView;
-                        })
-                        .setNodeAdder(InteractivePane::addChildren)
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
-        DynamicViewCreator<InteractivePane, LineViewModel, LineView> lineViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getLineViewModel())
-                        .setViewFactory(lineViewModel -> {
-                            LineView lineView = new LineView(lineViewModel, mainPane);
-                            lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
-                            return lineView;
-                        })
-                        .setNodeAdder((parent, node) -> {
-                            parent.addChildren(node);
-                            node.toBack();  // draw line below other elements so that it won't block mouse event on in/out port
-                        })
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
-
-        AnchorPane.setTopAnchor(mainPane, 0.0);
-        AnchorPane.setRightAnchor(mainPane, 0.0);
-        AnchorPane.setBottomAnchor(mainPane, 0.0);
-        AnchorPane.setLeftAnchor(mainPane, 0.0);
-        getChildren().addAll(mainPane, addStateBtn, addConditionBtn, zoomControl);
     }
 
     private void initEvent() {
@@ -203,6 +89,51 @@ public class CanvasView extends AnchorPane {
                 mainPane.getSelectionGroup().setMultipleSelection(false);
             }
         });
+
+        /* Dynamically generate the scene UI when scene list is changed.*/
+        new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
+                .setParent(mainPane)
+                .setModelLoader(canvasViewModel.getPaneStateViewModel())
+                .setViewFactory(sceneViewModel -> {
+                    SceneView sceneView = new SceneView(sceneViewModel, mainPane);
+                    addConnectionEvent(sceneView);
+                    sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeState(sceneViewModel.getScene()));
+                    return sceneView;
+                })
+                .setNodeAdder(InteractivePane::addChildren)
+                .setNodeRemover(InteractivePane::removeChildren)
+                .createDynamicViewCreator();
+
+
+        /* Dynamically generate the condition UI when condition list is changed.*/
+        new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
+                .setParent(mainPane)
+                .setModelLoader(canvasViewModel.getConditionViewModel())
+                .setViewFactory(conditionViewModel -> {
+                    ConditionView conditionView = new ConditionView(conditionViewModel, mainPane);
+                    addConnectionEvent(conditionView);
+                    conditionView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
+                    return conditionView;
+                })
+                .setNodeAdder(InteractivePane::addChildren)
+                .setNodeRemover(InteractivePane::removeChildren)
+                .createDynamicViewCreator();
+
+        /* Dynamically generate the line UI when line list is changed.*/
+        new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
+                .setParent(mainPane)
+                .setModelLoader(canvasViewModel.getLineViewModel())
+                .setViewFactory(lineViewModel -> {
+                    LineView lineView = new LineView(lineViewModel, mainPane);
+                    lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
+                    return lineView;
+                })
+                .setNodeAdder((parent, node) -> {
+                    parent.addChildren(node);
+                    node.toBack();  // draw line below other elements so that it won't block mouse event on in/out port
+                })
+                .setNodeRemover(InteractivePane::removeChildren)
+                .createDynamicViewCreator();
     }
 
     private void cutHandler() {
@@ -286,5 +217,52 @@ public class CanvasView extends AnchorPane {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
             canvasViewModel.connect(event.getSourceNode(), event.getDestinationNode())
         );
+    }
+
+    @FXML
+    private void handleCutMenu(ActionEvent event) {
+        cutHandler();
+    }
+
+    @FXML
+    private void handleCopyMenu(ActionEvent event) {
+        copyHandler();
+    }
+
+    @FXML
+    private void handlePasteMenu(ActionEvent event) {
+        pasteHandler();
+    }
+
+    @FXML
+    private void handleDeleteMenu(ActionEvent event) {
+        deleteHandler();
+    }
+
+    @FXML
+    private void handleZoomInBtn(ActionEvent event) {
+        if (mainPane.getScale() < 5)
+            mainPane.setScale(mainPane.getScale() + 0.1);
+    }
+
+    @FXML
+    private void handleZoomDefaultBtn(ActionEvent event) {
+        mainPane.setScale(1);
+    }
+
+    @FXML
+    private void handleZoomOutBtn(ActionEvent event) {
+        if (mainPane.getScale() > 0.5)
+            mainPane.setScale(mainPane.getScale() - 0.1);
+    }
+
+    @FXML
+    private void handleAddStateBtn(ActionEvent event) {
+        canvasViewModel.project.addState();
+    }
+
+    @FXML
+    private void handleAddConditionBtn(ActionEvent event) {
+        canvasViewModel.project.addCondition();
     }
 }
