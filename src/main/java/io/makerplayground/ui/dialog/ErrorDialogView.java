@@ -1,6 +1,5 @@
 package io.makerplayground.ui.dialog;
 
-import io.makerplayground.generator.Sourcecode;
 import io.makerplayground.helper.SingletonError;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +15,7 @@ public class ErrorDialogView extends Dialog{
     @FXML
     private Label descriptionLabel;
     public ErrorDialogView(String error) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ErrorDialogView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/ErrorDialogView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
         try {
