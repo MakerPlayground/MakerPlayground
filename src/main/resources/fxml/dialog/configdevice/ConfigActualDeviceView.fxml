@@ -14,9 +14,9 @@
 <?import javafx.scene.image.Image?>
 <fx:root type="Dialog" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" title="Configure Device">
     <dialogPane>
-        <DialogPane maxHeight="500" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css">
+        <DialogPane stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css">
             <content>
-                <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER">
+                <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="500">
                     <VBox alignment="CENTER" spacing="20">
                         <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
                         <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Customize your Devices" textAlignment="CENTER"/>
