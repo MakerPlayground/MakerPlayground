@@ -44,6 +44,7 @@ public class Device {
     private final double w;
     private final Dependency dependency;
     private final Dependency category;
+    private final String classname;
     private final List<String> sourceToInclude;
     private final List<String> libraryDependency;
 
@@ -78,6 +79,7 @@ public class Device {
      * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
+            , String classname
             , List<String> sourceToInclude
             , List<String> libraryDependency
             , Set<Platform> supportedPlatform
@@ -100,6 +102,7 @@ public class Device {
         this.height = height;
         this.deviceType = deviceType;
         this.formFactor = formFactor;
+        this.classname = classname;
         this.sourceToInclude = sourceToInclude;
         this.libraryDependency = libraryDependency;
         this.supportedPlatform = supportedPlatform;
@@ -181,6 +184,10 @@ public class Device {
 
     public Set<Platform> getSupportedPlatform() {
         return supportedPlatform;
+    }
+
+    public String getClassname() {
+        return classname;
     }
 
     public List<String> getSourceToInclude() {

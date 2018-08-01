@@ -123,8 +123,9 @@ public class Sourcecode {
         // instantiate object(s) for each device
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append(projectDevice.getActualDevice().getMPLibraryName().replace(" ", "_")).append(" ")
-                    .append("_" + projectDevice.getName().replace(" ", "_"));
+            sb.append(projectDevice.getActualDevice().getClassname())
+                    .append(" ")
+                    .append("_"+projectDevice.getName().replace(" ","_"));
 
             List<String> args = new ArrayList<>();
 

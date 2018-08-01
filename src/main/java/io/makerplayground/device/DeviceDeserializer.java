@@ -53,6 +53,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         else
             category = Device.Dependency.valueOf(node.get("category").asText());
 
+        String classname = node.get("classname").asText();
         List<String> headerFileToInclude = mapper.readValue(node.get("include").traverse()
                 , new TypeReference<List<String>>() {});
         List<String> libraryDependency = mapper.readValue(node.get("library_dependency").traverse(),
@@ -135,7 +136,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, formFactor, headerFileToInclude, libraryDependency,
+        return new Device(id, brand, model, url, width, height, type, formFactor, classname, headerFileToInclude, libraryDependency,
                 platform, port, connectivity, supportedDevice, supportedDeviceaction, supportedDeviceCondition,
                 supportedDeviceValue, dependency, category, v, i ,w);
     }
