@@ -41,7 +41,7 @@ public enum DeviceLibrary {
     }
 
     public void loadDeviceFromJSON() {
-        this.genericInputDevice = loadGenericDeviceFromJSON("json/genericinputdevice.json");
+        this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
         this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
         this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
         this.actualDevice = loadActualDeviceFromJSON("/json/actualdevice.json");
