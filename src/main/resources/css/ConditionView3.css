@@ -129,3 +129,9 @@
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
+#arcNode {
+    -fx-fill: #313644;
+    -fx-stroke: #ffffff00;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+}

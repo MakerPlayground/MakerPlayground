@@ -44,7 +44,7 @@ public class ConditionView extends InteractiveNode {
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionView3.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/ConditionView3.fxml"));
         fxmlLoader.setRoot(root);
         fxmlLoader.setController(this);
         try {
