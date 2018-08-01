@@ -44,7 +44,7 @@ public class ChipField extends HBox {
     }
 
     private void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ChipField.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/ChipField.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
