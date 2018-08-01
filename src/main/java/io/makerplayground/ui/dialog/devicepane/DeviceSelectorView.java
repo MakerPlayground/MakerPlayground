@@ -38,7 +38,7 @@ public class DeviceSelectorView extends Dialog<Map<GenericDevice, Integer>> {
         this.outputDevice = FXCollections.observableArrayList();
         this.connectivityDevice = FXCollections.observableArrayList();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DeviceSelectorView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceSelectorView.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
 

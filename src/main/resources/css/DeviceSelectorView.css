@@ -76,3 +76,7 @@
     -fx-text-fill : #313644;
     -fx-cursor: hand;
 }
+
+#vBox {
+    -fx-background-color: white;
+}
