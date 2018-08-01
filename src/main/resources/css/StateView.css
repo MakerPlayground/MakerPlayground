@@ -3,16 +3,18 @@
     -fx-effect: null;
     -fx-font-size:12px;
 }
-#statePane{
+#statePane {
     -fx-background-color : white;
+    -fx-background-radius: 10 10 10 10;
+    -fx-background-color: #313644;
 }
-#nameStateTextField{
-    -fx-background-color : #313644;
+#nameStateTextField {
+    -fx-background-color : transparent;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size : 14 px;
 }
-#numberTextField{
+#numberTextField {
     -fx-background-color : white;
     -fx-border-color : transparent;
     -fx-border-width : 0px;
@@ -22,10 +24,13 @@
 }
 #stateBottomHBox{
     -fx-background-color : #313644;
+    -fx-background-radius: 0 0 10 10;
 }
 #delayText {
     -fx-text-fill : white;
     -fx-font-size:12px;
+    -fx-fill: WHITE;
+    -fx-strokeType: OUTSIDE;
 }
 .flow-pane{
     -fx-background-color : white;
@@ -81,8 +86,8 @@
 
 #TimeUnitComboBox{
     -fx-font-size:12px;
-    -fx-background-color : #0768de;
-    -fx-border-color : #0768de;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
 }
 #TimeUnitComboBox .list-cell {
     -fx-font-size:12px;
@@ -127,4 +132,13 @@
     -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
+}
+#arcNode {
+    -fx-fill: #313644;
+    -fx-stroke: #ffffff00;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+}
+#headerPane {
+    -fx-background-color: transparent;
 }

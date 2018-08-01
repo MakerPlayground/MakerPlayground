@@ -71,7 +71,7 @@ public class SceneView extends InteractiveNode {
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StateView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/StateView.fxml"));
         fxmlLoader.setRoot(parent);
         fxmlLoader.setController(this);
         try {
