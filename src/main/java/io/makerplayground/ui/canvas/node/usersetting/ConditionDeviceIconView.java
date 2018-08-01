@@ -28,7 +28,7 @@ public class ConditionDeviceIconView extends VBox {
     public ConditionDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ConditionDeviceIconView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/ConditionDeviceIconView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
