@@ -392,15 +392,15 @@ public class Main extends Application {
         }
     }
     private void deviceMonitor(){
-            if (SerialPort.getCommPorts().length > 0) {
-                DeviceMonitor deviceMonitor = new DeviceMonitor(project);
-                deviceMonitor.showAndWait();
-            }
-            else {
-                ErrorDialogView errorDialogView = new ErrorDialogView("There is no connected serial port.\nPlease connect the board with computer.");
-                errorDialogView.showAndWait();
-            }
+        if (SerialPort.getCommPorts().length > 0) {
+            DeviceMonitor deviceMonitor = new DeviceMonitor(project);
+            deviceMonitor.showAndWait();
         }
+        else {
+            ErrorDialogView errorDialogView = new ErrorDialogView("There is no connected serial port.\nPlease connect the board with computer.");
+            errorDialogView.showAndWait();
+        }
+    }
 
 
     public static void main(String[] args) {
