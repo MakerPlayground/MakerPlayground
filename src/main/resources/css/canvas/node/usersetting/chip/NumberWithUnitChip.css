@@ -1,6 +1,7 @@
 #background{
-    -fx-background-color: #357A9F;
+    -fx-fill: #357A9F;
 }
+
 #input{
     -fx-background-color: transparent;
     -fx-border-color: transparent;

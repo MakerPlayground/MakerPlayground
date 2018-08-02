@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -76,11 +75,6 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             }
         });
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
-        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            background.setWidth(newValue.getWidth());
-            background.setHeight(newValue.getHeight());
-        });
-        setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));

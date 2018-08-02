@@ -1,11 +1,9 @@
-#background
-{
-    -fx-background-color: #072454;
+#background {
+    -fx-fill: #499B54;
 }
-#input
-{
+
+#text {
     -fx-font-size: 12;
     -fx-fill: white;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
 }

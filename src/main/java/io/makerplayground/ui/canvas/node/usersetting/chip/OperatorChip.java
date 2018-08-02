@@ -13,7 +13,7 @@ import java.io.IOException;
 public class OperatorChip extends Chip<OperatorTerm.Operator> {
 
     @FXML private Path background;
-    @FXML private Text input;
+    @FXML private Text text;
 
     public OperatorChip(OperatorTerm.Operator initialValue) {
         super(initialValue, Term.Type.OPERATOR);
@@ -24,14 +24,13 @@ public class OperatorChip extends Chip<OperatorTerm.Operator> {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/Operator.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-
         try {
             fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        input.setText(getValue().toString());
+        text.setText(getValue().toString());
 
         if (getValue().getType() == OperatorTerm.OperatorType.LEFT_UNARY) {
             background.getElements().addAll(new MoveTo(10, 0)

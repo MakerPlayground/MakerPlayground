@@ -31,11 +31,9 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
 
     @Override
     protected void initView() {
-
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/NumberWithUnitChip.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-
         try {
             fxmlLoader.load();
         } catch (IOException e) {
@@ -43,7 +41,6 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
         }
 
         input.setText(df.format(getValue().getValue())); // TODO: display unit
-
         input.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {
@@ -54,12 +51,6 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
                 }
             }
         });
-
-        this.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            background.setWidth(newValue.getWidth());
-            background.setHeight(newValue.getHeight());
-        });
-        setPrefSize(StackPane.USE_COMPUTED_SIZE, StackPane.USE_COMPUTED_SIZE);
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
