@@ -17,12 +17,14 @@ import io.makerplayground.ui.dialog.UploadDialogView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,16 +35,7 @@ import java.io.IOException;
 /**
  * Created by Mai.Manju on 12-Jun-17.
  */
-public class RightPanel extends AnchorPane {
-
-    @FXML
-    private VBox projectButton;
-    @FXML
-    private Button configureBtn;
-    @FXML
-    private Button generateBtn;
-    @FXML
-    private Button uploadBtn;
+public class RightPanel extends VBox {
 
     private final Project project;
 
@@ -52,39 +45,38 @@ public class RightPanel extends AnchorPane {
     }
 
     private void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/RightPanel.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        configureBtn.prefWidthProperty().bind(projectButton.widthProperty());
-        generateBtn.prefWidthProperty().bind(projectButton.widthProperty());
-        uploadBtn.prefWidthProperty().bind(projectButton.widthProperty());
-
         DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
         DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
-        AnchorPane.setLeftAnchor(devicePanelView,0.0);
-        AnchorPane.setRightAnchor(devicePanelView,0.0);
-        AnchorPane.setTopAnchor(devicePanelView,0.0);
-        AnchorPane.setBottomAnchor(devicePanelView,120.0);
+        devicePanelView.setMaxWidth(Double.MAX_VALUE);
+        VBox.setVgrow(devicePanelView, Priority.ALWAYS);
 
-        getChildren().add(0, devicePanelView);
+        Button configureBtn = new Button("Configure Device");
+        configureBtn.setOnAction(this::handleConfigureBtn);
+        configureBtn.setMaxWidth(Double.MAX_VALUE);
+        Button generateBtn = new Button("Generate Project");
+        generateBtn.setOnAction(this::handleGenerateBtn);
+        generateBtn.setMaxWidth(Double.MAX_VALUE);
+        Button uploadBtn = new Button("Upload");
+        uploadBtn.setOnAction(this::handleUploadBtn);
+        uploadBtn.setMaxWidth(Double.MAX_VALUE);
+
+        VBox vBox = new VBox(2);
+        vBox.setPadding(new Insets(20, 20, 20, 20));
+        vBox.getChildren().addAll(configureBtn, generateBtn, uploadBtn);
+        VBox.setVgrow(vBox, Priority.NEVER);
+        vBox.getStylesheets().add(getClass().getResource("/css/RightPanel.css").toExternalForm());
+
+        getChildren().addAll(devicePanelView, vBox);
+        setStyle("-fx-background-color : #313644;");
+        setMaxWidth(330);
     }
 
-
-    @FXML
     private void handleConfigureBtn(ActionEvent event) {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
         configActualDeviceView.showAndWait();
     }
 
-    @FXML
     private void handleGenerateBtn(ActionEvent event) {
         DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
         if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
@@ -115,7 +107,6 @@ public class RightPanel extends AnchorPane {
         }
     }
 
-    @FXML
     private void handleUploadBtn(ActionEvent event) {
         SingletonUploadClick.getInstance().click();
         UploadTask uploadTask = new UploadTask(project);
@@ -127,32 +118,6 @@ public class RightPanel extends AnchorPane {
         uploadDialogView.show();
 
         new Thread(uploadTask).start();
-    }
-
-    public static class ProgressForm {
-        private final Stage dialogStage;
-        private final ProgressIndicator pin = new ProgressIndicator();
-
-        public ProgressForm() {
-            dialogStage = new Stage();
-            dialogStage.initStyle(StageStyle.UTILITY);
-            dialogStage.setResizable(false);
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-
-            pin.setProgress(-1F);
-
-            final HBox hb = new HBox();
-            hb.setSpacing(5);
-            hb.setAlignment(Pos.CENTER);
-            hb.getChildren().addAll(pin);
-
-            Scene scene = new Scene(hb);
-            dialogStage.setScene(scene);
-        }
-
-        public Stage getDialogStage() {
-            return dialogStage;
-        }
     }
 
 }
