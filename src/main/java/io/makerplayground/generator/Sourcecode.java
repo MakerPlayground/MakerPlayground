@@ -115,7 +115,7 @@ public class Sourcecode {
                 .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet())
-                .forEach(s -> headerStringBuilder.append("#include \"").append(s).append(NEW_LINE));
+                .forEach(s -> headerStringBuilder.append("#include \"").append(s).append("\"").append(NEW_LINE));
 
         headerStringBuilder.append(NEW_LINE);
         sb.append("void (*currentScene)(void);").append(NEW_LINE);
