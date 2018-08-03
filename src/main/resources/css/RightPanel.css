@@ -1,4 +1,12 @@
-.button {
+.root {
+    -fx-background-color : #313644;
+}
+
+#vBox {
+    -fx-background-color : #313644;
+}
+
+#button {
     -fx-font-size: 12px;
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
@@ -6,7 +14,7 @@
     -fx-cursor: hand;
 }
 
-.button:pressed {
+#button:pressed {
     -fx-font-size: 12px;
     -fx-background-color : #5ac2ab;
     -fx-border-color : #5ac2ab;
