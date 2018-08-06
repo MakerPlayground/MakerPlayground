@@ -92,7 +92,6 @@ public class UploadTask extends Task<UploadResult> {
         Set<String> libraries = actualDevicesUsed.stream()
                 .map(device -> device.getLibraryDependency())
                 .flatMap(Collection::stream).collect(Collectors.toSet());
-        libraries.add("MakerPlayground/MP_Log");
         Platform.runLater(() -> log.set("List of library used \n"));
         for (String libName : libraries) {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
