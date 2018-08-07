@@ -1,23 +1,33 @@
 package io.makerplayground.project.term;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StringTermTest {
-    private StringTerm tester;
-
-    @BeforeEach
-    void setTester(){ tester = new StringTerm("TEST"); }
 
     @Test
-    void isValidTest() {
-        assertNotNull(tester);
+    void isValidMustBeTrueIfThereIsExistingString() {
+        StringTerm tester = new StringTerm("TEST");
+        assertTrue(tester.isValid());
+    }
+
+    @Test
+    void isValidMustBeTrueIfThereIsEmptyString() {
+        StringTerm tester = new StringTerm("");
+        assertTrue(tester.isValid());
+    }
+
+    @Test
+    void isValidMustBeFalseIfThereIsNoExistingString() {
+        StringTerm tester = new StringTerm(null);
+        assertFalse(tester.isValid());
     }
 
     @Test
     void StringTermToCCode() {
-        assertEquals("\"TEST\"",tester.toCCode());
+        StringTerm tester = new StringTerm("TEST");
+        String expecting = String.format("\"%s\"", tester.getValue());
+        assertEquals(expecting, tester.toCCode());
     }
 }

@@ -19,7 +19,7 @@ public class OperatorTerm extends Term {
     public enum OP {
         PLUS, MINUS, MULTIPLY, DIVIDE,
         GREATER_THAN, LESS_THAN, GREATER_THAN_OR_EQUAL, LESS_THAN_OR_EQUAL,
-        AND, OR, NOT, OPEN_PARENTHESIS, CLOSE_PARENTHESIS,TEST;
+        AND, OR, NOT, OPEN_PARENTHESIS, CLOSE_PARENTHESIS;
 
         @Override
         public String toString() {

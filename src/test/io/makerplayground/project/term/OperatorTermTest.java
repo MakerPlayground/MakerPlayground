@@ -1,6 +1,5 @@
 package io.makerplayground.project.term;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,12 +86,6 @@ class OperatorTermTest {
         OperatorTerm tester = new OperatorTerm(OperatorTerm.OP.CLOSE_PARENTHESIS);
         assertEquals(")",tester.getValue().toString());
     }
-    
-    @Test
-    void toStringIllegalStateThrow(){
-        OperatorTerm tester = new OperatorTerm(OperatorTerm.OP.TEST);
-        assertThrows(IllegalStateException.class, ()-> tester.getValue().toString());
-    }
 
     @Test
     void PlusToCCode(){
@@ -167,11 +160,4 @@ class OperatorTermTest {
         OperatorTerm tester = new OperatorTerm(OperatorTerm.OP.CLOSE_PARENTHESIS);
         assertEquals(")",tester.toCCode());
     }
-
-    @Test
-    void CCodeIllegalStateThrow(){
-        OperatorTerm tester = new OperatorTerm(OperatorTerm.OP.TEST);
-        assertThrows(IllegalStateException.class, ()-> tester.toCCode());
-    }
-
 }

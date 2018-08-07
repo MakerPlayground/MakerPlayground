@@ -11,11 +11,17 @@ class NumberWithUnitTermTest {
     private NumberWithUnitTerm tester;
 
     @BeforeEach
-    void  setTester(){ tester = new NumberWithUnitTerm(new NumberWithUnit(12.345,Unit.CENTIMETER));}
+    void setTester(){ tester = new NumberWithUnitTerm(new NumberWithUnit(12.345,Unit.CENTIMETER));}
 
     @Test
-    void isValidTest() {
-        assertNotNull(tester);
+    void isValidIsTrueIfThereExistNumberWithUnit() {
+        assertTrue(tester.isValid());
+    }
+
+    @Test
+    void isValidIsFalseIfThereIsNotExistNumberWithUnit() {
+        NumberWithUnitTerm testerNull = new NumberWithUnitTerm(null);
+        assertFalse(tester.isValid());
     }
 
     @Test
