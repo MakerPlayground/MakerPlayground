@@ -250,15 +250,6 @@ public class DeviceMapper {
                 }
             }
         }
-
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-                if (port == null) {
-                    return DeviceMapperResult.NO_SELECTED_PORT;
-                }
-            }
-        }
         return DeviceMapperResult.OK;
     }
 }

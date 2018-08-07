@@ -280,6 +280,9 @@ public class ConfigActualDeviceView extends Dialog {
                     if (!projectDevice.getDeviceConnection().isEmpty()) {
                         portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
                     }
+                    else {
+                        portComboBox.getSelectionModel().selectFirst();
+                    }
                     portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPeripheral(projectDevice, p, newValue));
                     portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
