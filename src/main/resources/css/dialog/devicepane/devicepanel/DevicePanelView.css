@@ -1,3 +1,6 @@
+#devicePanelPane{
+    -fx-background-color: #4d5666;
+}
 
 #deviceTitle{
     -fx-background-color : #313644;
