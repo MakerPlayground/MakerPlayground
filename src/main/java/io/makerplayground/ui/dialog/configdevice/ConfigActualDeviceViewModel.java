@@ -34,7 +34,7 @@ public class ConfigActualDeviceViewModel {
 
     private void validateDevice() {
         deviceMapperResult = DeviceMapper.autoAssignDevices(project);
-        if (deviceMapperResult == DeviceMapper.DeviceMapperResult.OK) {
+        if (deviceMapperResult == DeviceMapper.DeviceMapperResult.OK ) {
             Map<ProjectDevice, List<Device>> deviceList = DeviceMapper.getSupportedDeviceList(project);
             compatibleDeviceList.set(deviceList);
 
@@ -143,4 +143,7 @@ public class ConfigActualDeviceViewModel {
         return project.getAllDevice();
     }
 
+    public Set<ProjectDevice> getAllDeviceUsed(){ return project.getAllDeviceUsed(); }
+
+    public Set<ProjectDevice> getUnUsedDevice() { return  project.getUnUsedDevice();}
 }

@@ -17,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -36,7 +37,8 @@ import java.util.stream.Collectors;
 public class ConfigActualDeviceView extends Dialog {
     private final ConfigActualDeviceViewModel viewModel;
     @FXML private ScrollPane scrollPane;
-    @FXML private VBox allDevice;
+    @FXML private VBox usedDevice;
+    @FXML private FlowPane unUsedDevice;
     @FXML private Label topicConfigDevice;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
@@ -146,16 +148,18 @@ public class ConfigActualDeviceView extends Dialog {
     }
 
     private void initDeviceControl() {
-        allDevice.getChildren().clear();
+        usedDevice.getChildren().clear();
+        unUsedDevice.getChildren().clear();
         DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
         if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
-            allDevice.getChildren().add(new Label("Controller hasn't been selected"));
+            usedDevice.getChildren().add(new Label("Controller hasn't been selected"));
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-            allDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
+            usedDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            allDevice.getChildren().add(new Label("Can't find any supported device"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK) {
+            usedDevice.getChildren().add(new Label("Can't find any supported device"));
+        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK){
             initDeviceControlChildren();
+            initNotUsedDeviceControl();
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
@@ -164,7 +168,7 @@ public class ConfigActualDeviceView extends Dialog {
 
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
-        for (ProjectDevice projectDevice : viewModel.getAllDevice()) {
+        for (ProjectDevice projectDevice : viewModel.getAllDeviceUsed()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(25.0);
@@ -333,8 +337,37 @@ public class ConfigActualDeviceView extends Dialog {
             entireDevice.setAlignment(Pos.TOP_LEFT);
             entireDevice.getChildren().addAll(devicePic, checkBox, entireComboBoxDevice);
 
-            allDevice.getChildren().add(entireDevice);
+            usedDevice.getChildren().add(entireDevice);
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
+    }
+
+    private void initNotUsedDeviceControl(){
+        for (ProjectDevice projectDevice : viewModel.getUnUsedDevice()) {
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+                    + projectDevice.getGenericDevice().getName() + ".png")));
+            imageView.setFitHeight(25.0);
+            imageView.setFitWidth(25.0);
+
+            Label name = new Label(projectDevice.getName());
+            name.setTextAlignment(TextAlignment.LEFT);
+            name.setAlignment(Pos.CENTER_LEFT);
+            name.setId("nameLabel");
+
+            HBox devicePic = new HBox();
+            devicePic.setSpacing(10.0);
+            devicePic.setAlignment(Pos.CENTER_LEFT);
+            devicePic.setMaxHeight(25.0);
+            devicePic.getChildren().addAll(imageView, name);
+
+
+
+            HBox entireDevice = new HBox();
+            entireDevice.setSpacing(10.0);
+            entireDevice.setAlignment(Pos.TOP_LEFT);
+            entireDevice.getChildren().addAll(devicePic);
+
+            unUsedDevice.getChildren().add(entireDevice);
+        }
     }
 }

@@ -151,3 +151,7 @@
     -fx-border-color: #cccccc;
     -fx-background-color: white;
 }
+
+#unUsed{
+    -fx-font-weight: bold;
+}

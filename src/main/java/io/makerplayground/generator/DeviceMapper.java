@@ -188,7 +188,7 @@ public class DeviceMapper {
     }
 
     public enum DeviceMapperResult {
-        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED,NO_SELECTED_PORT
+        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {

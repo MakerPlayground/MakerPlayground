@@ -417,6 +417,12 @@ public class Project {
         return deviceType;
     }
 
+    public Set<ProjectDevice> getUnUsedDevice(){
+        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getAllDevice());
+        devicesNotUsed.removeAll(this.getAllDeviceUsed());
+        return devicesNotUsed;
+    }
+
     public Map<ProjectDevice, Set<Value>> getAllValueUsedMap() {
         HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
         for (Scene s : scene) {

@@ -12,6 +12,10 @@
 <?import javafx.scene.control.DialogPane?>
 
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.FlowPane?>
 <fx:root type="Dialog" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" title="Configure Device">
     <dialogPane>
         <DialogPane stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css">
@@ -19,7 +23,7 @@
                 <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="500">
                     <VBox alignment="CENTER" spacing="20">
                         <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
-                        <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Customize your Devices" textAlignment="CENTER"/>
+                        <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER"/>
                         <VBox fx:id="platFormAndController" spacing="10">
                             <HBox fx:id="platFormSelected" spacing="65">
                                 <HBox fx:id="platFormPicture" alignment="CENTER_LEFT" maxHeight="25" spacing="10">
@@ -35,8 +39,14 @@
                                 <ComboBox id="controllerComboBox" fx:id="controllerComboBox"/>
                             </HBox>
                         </VBox>
-                        <VBox fx:id="allDevice" alignment="CENTER" spacing="20">
+                        <VBox fx:id="usedDevice" alignment="CENTER" spacing="20">
                         </VBox>
+                        <Separator/>
+                        <HBox>
+                            <Label fx:id="unUsed"  text="Unused devices" />
+                        </HBox>
+                        <FlowPane fx:id="unUsedDevice" hgap="10" vgap="10" >
+                        </FlowPane>
                     </VBox>
                 </ScrollPane>
             </content>
