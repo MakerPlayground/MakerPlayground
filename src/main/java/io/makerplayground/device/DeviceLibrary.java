@@ -58,7 +58,7 @@ public enum DeviceLibrary {
             temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
             e.printStackTrace();
-            temp = Collections.EMPTY_LIST;
+            temp = Collections.emptyList();
         }
         return temp;
     }
