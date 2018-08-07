@@ -163,28 +163,14 @@ public class UploadTask extends Task<UploadResult> {
             updateMessage("Error: Cannot write code to project directory");
             return UploadResult.CANT_WRITE_CODE;
         }
+
         // copy device specific (class definition) source codes
-        Properties appProperties = new Properties();
-        String applicationPath = null;
-        String deviceRepositoryPath = null;
-        String libraryRepositoryPath = null;
-        try {
-            //read device repository path
-            appProperties.load(getClass().getResourceAsStream("/app.properties"));
-            applicationPath = appProperties.getProperty("applicationPath");
-            deviceRepositoryPath = appProperties.getProperty("deviceRepositoryRelativePath");
-            libraryRepositoryPath = appProperties.getProperty("libraryRepositoryRelativePath");
-        } catch (IOException e) {
-            e.printStackTrace();
-            updateMessage("Error: Cannot find repository location.");
-            return UploadResult.CANT_FIND_LIBRARY;
-        }
         try{
             for (Device x : actualDevicesUsed){
                 String destinationPath = projectPath + File.separator + "src";
                 //enter device's directory
-                if(Files.isDirectory(Paths.get(applicationPath,deviceRepositoryPath,x.getId()))){
-                    Path sourcePath = Paths.get(applicationPath,deviceRepositoryPath,x.getId(),"src");
+                if(Files.isDirectory(Paths.get("devices",x.getId()))){
+                    Path sourcePath = Paths.get("devices",x.getId(),"src");
                     if(Files.isDirectory(sourcePath)){
                         addSourcesFromDirectory(sourcePath,destinationPath);
                     }
@@ -203,9 +189,10 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.CANT_FIND_LIBRARY;
         }
 
+        //copy libraries
         for (String x : libraries) {
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get(applicationPath,libraryRepositoryPath,x);
+            Path libraryPath = Paths.get("libraries",x);
             if(Files.exists(libraryPath)){
                 ZipResourceExtractor.extract(getClass(),libraryPath.toString(),destinationPath);
             }

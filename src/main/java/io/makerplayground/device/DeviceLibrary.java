@@ -64,29 +64,22 @@ public enum DeviceLibrary {
     }
 
     private List<Device> loadActualDeviceList(){
-        Properties appProperties = new Properties();
         List<Device> temp = new ArrayList<>();
-        try {
-            appProperties.load(getClass().getResourceAsStream("/app.properties"));
-            String applicationPath = appProperties.getProperty("applicationPath");
-            String deviceRepositoryPath = appProperties.getProperty("deviceRepositoryRelativePath");
-
-            ObjectMapper mapper = new ObjectMapper();
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(applicationPath,deviceRepositoryPath))){
-                for (Path deviceDirectory : directoryStream) {
-                    if(Files.isDirectory(deviceDirectory)){
-                        try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
-                            for(Path deviceDefinitionFile: dev){
-                                temp.add(mapper.readValue(deviceDefinitionFile.toFile(), new TypeReference<Device>() {}));
-                            }
+        ObjectMapper mapper = new ObjectMapper();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("devices"))){
+            for (Path deviceDirectory : directoryStream) {
+                if(Files.isDirectory(deviceDirectory)){
+                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
+                        for(Path deviceDefinitionFile: dev){
+                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(),new TypeReference<Device>() {}));
                         }
                     }
                 }
-                temp = Collections.unmodifiableList(temp);
             }
-        } catch (IOException e) {
+            temp = Collections.unmodifiableList(temp);
+        }catch (IOException e){
             e.printStackTrace();
-            temp = Collections.EMPTY_LIST;
+            temp = Collections.emptyList();
         }
         return temp;
     }
