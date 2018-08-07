@@ -3,6 +3,8 @@ package io.makerplayground.util;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -17,6 +19,21 @@ public class ZipResourceExtractor {
         caller_class.getResourceAsStream(zipResourcePath);
         InputStream is = caller_class.getResourceAsStream(zipResourcePath);
         ZipInputStream zis = new ZipInputStream(is);
+        return extract(zis,destinationPath);
+    }
+
+    public static ExtractResult extract(Path zipFilePath, String destinationPath){
+        try {
+            InputStream is = Files.newInputStream(zipFilePath);
+            ZipInputStream zis = new ZipInputStream(is);
+            return extract(zis,destinationPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ExtractResult.FAIL;
+    }
+
+    private static ExtractResult extract(ZipInputStream zis, String destinationPath) {
         ZipEntry entry;
         try {
             while ((entry = zis.getNextEntry()) != null) {

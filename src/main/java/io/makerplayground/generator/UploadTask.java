@@ -12,7 +12,6 @@ import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -182,9 +181,13 @@ public class UploadTask extends Task<UploadResult> {
         //copy libraries
         for (String x : libraries) {
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("libraries",x);
+            Path libraryPath = Paths.get("libraries",x+".zip");
             if(Files.exists(libraryPath)){
-                ZipResourceExtractor.extract(getClass(),libraryPath.toString(),destinationPath);
+                ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath,destinationPath);
+                if(extractResult != ZipResourceExtractor.ExtractResult.SUCCESS){
+                    updateMessage("Error: Failed to extract libraries.");
+                    return UploadResult.CANT_FIND_LIBRARY;
+                }
             }
             else {
                 updateMessage("Error: Missing some libraries");
