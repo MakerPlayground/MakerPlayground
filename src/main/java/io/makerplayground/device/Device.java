@@ -45,7 +45,6 @@ public class Device {
     private final Dependency dependency;
     private final Dependency category;
     private final String classname;
-    private final List<String> sourceToInclude;
     private final List<String> libraryDependency;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
@@ -80,7 +79,6 @@ public class Device {
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
             , String classname
-            , List<String> sourceToInclude
             , List<String> libraryDependency
             , Set<Platform> supportedPlatform
             , List<DevicePort> port
@@ -103,7 +101,6 @@ public class Device {
         this.deviceType = deviceType;
         this.formFactor = formFactor;
         this.classname = classname;
-        this.sourceToInclude = sourceToInclude;
         this.libraryDependency = libraryDependency;
         this.supportedPlatform = supportedPlatform;
         this.port = port;
@@ -190,8 +187,8 @@ public class Device {
         return classname;
     }
 
-    public List<String> getSourceToInclude() {
-        return sourceToInclude;
+    public String getSourceToInclude() {
+        return this.getClassname()+".h";
     }
 
     public List<String> getLibraryDependency() {

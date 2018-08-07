@@ -113,7 +113,6 @@ public class Sourcecode {
         // generate include
         project.getAllDeviceUsed().stream()
                 .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
-                .flatMap(Collection::stream)
                 .collect(Collectors.toSet())
                 .forEach(s -> headerStringBuilder.append("#include \"").append(s).append("\"").append(NEW_LINE));
 

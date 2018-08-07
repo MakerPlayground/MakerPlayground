@@ -89,15 +89,6 @@ public class UploadTask extends Task<UploadResult> {
             Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
         }
 
-        Set<String> headerIncluded = actualDevicesUsed.stream()
-                .map(device -> device.getSourceToInclude())
-                .flatMap(Collection::stream).collect(Collectors.toSet());
-        headerIncluded.add("MP_Log");
-        Platform.runLater(() -> log.set("List of header included \n"));
-        for (String headerFileName : headerIncluded) {
-            Platform.runLater(() -> log.set(" - " + headerFileName + "\n"));
-        }
-
         Set<String> libraries = actualDevicesUsed.stream()
                 .map(device -> device.getLibraryDependency())
                 .flatMap(Collection::stream).collect(Collectors.toSet());
