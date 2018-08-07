@@ -21,7 +21,7 @@ class NumberWithUnitTermTest {
     @Test
     void isValidIsFalseIfThereIsNotExistNumberWithUnit() {
         NumberWithUnitTerm testerNull = new NumberWithUnitTerm(null);
-        assertFalse(tester.isValid());
+        assertFalse(testerNull.isValid());
     }
 
     @Test
