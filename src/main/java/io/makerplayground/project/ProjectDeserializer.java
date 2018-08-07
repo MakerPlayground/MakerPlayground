@@ -70,56 +70,45 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             project.addConnectivity(projectDevice);
         }
 
-        Begin begin = new Begin(node.get("begin").get("top").asDouble()
-                , node.get("begin").get("left").asDouble(), project);
+        Begin begin = project.getBegin();
+        begin.setLeft(node.get("begin").get("left").asDouble());
+        begin.setTop(node.get("begin").get("top").asDouble());
 
-        String filePath = null;
-
-        ObservableList<Scene> scenes = FXCollections.observableArrayList();
         for (JsonNode sceneNode : node.get("scene")) {
             Scene scene = deserializeScene(mapper, sceneNode, inputDevices,  outputDevices, connectivityDevices, project);
-            scenes.add(scene);
             project.addScene(scene);
         }
 
-        ObservableList<Condition> conditions = FXCollections.observableArrayList();
         for(JsonNode conditionNode : node.get("condition")) {
             Condition condition = deserializeCondition(mapper, conditionNode, inputDevices, outputDevices, connectivityDevices, project);
-            conditions.add(condition);
             project.addCondition(condition);
         }
 
-        ObservableList<Line> lines = FXCollections.observableArrayList();
         for (JsonNode lineNode : node.get("line")) {
             NodeElement source = null;
             if (lineNode.get("source").asText().equals("begin")) {  // TODO: hard code
                 source = begin;
             } else {
-                for (Scene s : scenes) {
-                    if (s.getName().equals(lineNode.get("source").asText())) {
-                        source = s;
-                    }
+                Optional<Scene> s = project.getScene(lineNode.get("source").asText());
+                if (s.isPresent()) {
+                    source = s.get();
                 }
-                for (Condition c : conditions) {
-                    if (c.getName().equals(lineNode.get("source").asText())) {
-                        source = c;
-                    }
+                Optional<Condition> c = project.getCondition(lineNode.get("source").asText());
+                if (c.isPresent()) {
+                    source = c.get();
                 }
             }
 
             NodeElement dest = null;
-            for (Scene s : scenes) {
-                if (s.getName().equals(lineNode.get("destination").asText())) {
-                    dest = s;
-                }
+            Optional<Scene> s = project.getScene(lineNode.get("destination").asText());
+            if (s.isPresent()) {
+                dest = s.get();
             }
-            for (Condition c : conditions) {
-                if (c.getName().equals(lineNode.get("destination").asText())) {
-                    dest = c;
-                }
+            Optional<Condition> c = project.getCondition(lineNode.get("destination").asText());
+            if (c.isPresent()) {
+                dest = c.get();
             }
-
-            lines.add(new Line(source, dest, project));
+            project.addLine(source, dest);
         }
 
         return project;

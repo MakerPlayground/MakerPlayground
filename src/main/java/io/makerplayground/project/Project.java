@@ -211,6 +211,10 @@ public class Project {
         return unmodifiableScene;
     }
 
+    public Optional<Scene> getScene(String name) {
+        return scene.stream().filter(s -> s.getName().equals(name)).findFirst();
+    }
+
     public Scene newScene() {
         int id = scene.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
@@ -297,6 +301,10 @@ public class Project {
 
     public ObservableList<Condition> getCondition() {
         return unmodifiableCondition;
+    }
+
+    public Optional<Condition> getCondition(String name) {
+        return condition.stream().filter(c -> c.getName().equals(name)).findFirst();
     }
 
     public void addLine(NodeElement source, NodeElement destination) {
