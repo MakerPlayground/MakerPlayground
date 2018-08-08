@@ -41,8 +41,8 @@ public class ConditionDeviceIconView extends VBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
-        setOnMouseReleased(e -> {
-            if (devicePropertyWindow != null) {
+        setOnMouseEntered(e -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
@@ -51,16 +51,22 @@ public class ConditionDeviceIconView extends VBox {
             devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
-
-        setOnMouseEntered(e -> {
-            if (devicePropertyWindow != null) {
+        setOnMousePressed(e -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            } else {
+                devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+                devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+                devicePropertyWindow.show(ConditionDeviceIconView.this);
+            }
+        });
+        setOnMouseDragged(event -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
-            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
-            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-            devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }
 

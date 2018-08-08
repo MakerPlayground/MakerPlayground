@@ -46,10 +46,8 @@ public class SceneDeviceIconView extends VBox {
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
 
-        // use mouse release so that it can be coexist with mouse drag
-        // (mouse release will be consumed if it was release after drag)
-        setOnMouseReleased(e -> {
-            if (devicePropertyWindow != null) {
+        setOnMouseEntered(e -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
@@ -58,16 +56,22 @@ public class SceneDeviceIconView extends VBox {
             devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
-
-        setOnMouseEntered(e -> {
-            if (devicePropertyWindow != null) {
+        setOnMousePressed(e -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
+                devicePropertyWindow.hide();
+                devicePropertyWindow = null;
+            } else {
+                devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+                devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+                devicePropertyWindow.show(SceneDeviceIconView.this);
+            }
+        });
+        setOnMouseDragged(event -> {
+            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
             }
-            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
-            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-            devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }
 
