@@ -5,7 +5,6 @@ import io.makerplayground.project.Condition;
 import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Scene;
-import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
@@ -78,48 +77,6 @@ public class CanvasView extends AnchorPane {
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);
         mainPane.addChildren(beginSceneView);
-
-        DynamicViewCreator<InteractivePane, SceneViewModel, SceneView> canvasViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getPaneStateViewModel())
-                        .setViewFactory(sceneViewModel -> {
-                            SceneView sceneView = new SceneView(sceneViewModel, mainPane);
-                            addConnectionEvent(sceneView);
-                            sceneView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeScene(sceneViewModel.getScene()));
-                            return sceneView;
-                        })
-                        .setNodeAdder(InteractivePane::addChildren)
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
-        DynamicViewCreator<InteractivePane, ConditionViewModel, ConditionView> conditionViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getConditionViewModel())
-                        .setViewFactory(conditionViewModel -> {
-                            ConditionView conditionView = new ConditionView(conditionViewModel, mainPane);
-                            addConnectionEvent(conditionView);
-                            conditionView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeCondition(conditionViewModel.getCondition()));
-                            return conditionView;
-                        })
-                        .setNodeAdder(InteractivePane::addChildren)
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
-        DynamicViewCreator<InteractivePane, LineViewModel, LineView> lineViewCreator =
-                new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
-                        .setParent(mainPane)
-                        .setModelLoader(canvasViewModel.getLineViewModel())
-                        .setViewFactory(lineViewModel -> {
-                            LineView lineView = new LineView(lineViewModel, mainPane);
-                            lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
-                            return lineView;
-                        })
-                        .setNodeAdder((parent, node) -> {
-                            parent.addChildren(node);
-                            node.toBack();  // draw line below other elements so that it won't block mouse event on in/out port
-                        })
-                        .setNodeRemover(InteractivePane::removeChildren)
-                        .createDynamicViewCreator();
     }
 
     private void initEvent() {
