@@ -241,4 +241,16 @@ public class InteractivePane extends ScrollPane {
     public double getMouseY() {
         return mouseY;
     }
+
+    public double getViewportMinX() {
+        double viewportWidth = getViewportBounds().getWidth();
+        double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
+        return getHvalue() * extraWidth;
+    }
+
+    public double getViewportMinY() {
+        double viewportHeight = getViewportBounds().getHeight();
+        double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+        return getVvalue() * extraHeight;
+    }
 }

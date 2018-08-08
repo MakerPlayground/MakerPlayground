@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.device.Action;
 import io.makerplayground.project.Condition;
 import io.makerplayground.project.Line;
 import io.makerplayground.project.NodeElement;
@@ -12,7 +11,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -97,7 +95,7 @@ public class CanvasView extends AnchorPane {
             }
         });
 
-        /* Dynamically generate the scene UI when scene list is changed.*/
+        // Dynamically generate the scene UI when scene list is changed
         new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
                 .setParent(mainPane)
                 .setModelLoader(canvasViewModel.getPaneStateViewModel())
@@ -112,7 +110,7 @@ public class CanvasView extends AnchorPane {
                 .createDynamicViewCreator();
 
 
-        /* Dynamically generate the condition UI when condition list is changed.*/
+        // Dynamically generate the condition UI when condition list is changed
         new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
                 .setParent(mainPane)
                 .setModelLoader(canvasViewModel.getConditionViewModel())
@@ -126,7 +124,7 @@ public class CanvasView extends AnchorPane {
                 .setNodeRemover(InteractivePane::removeChildren)
                 .createDynamicViewCreator();
 
-        /* Dynamically generate the line UI when line list is changed.*/
+        // Dynamically generate the line UI when line list is changed
         new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
                 .setParent(mainPane)
                 .setModelLoader(canvasViewModel.getLineViewModel())
@@ -143,29 +141,32 @@ public class CanvasView extends AnchorPane {
                 .createDynamicViewCreator();
     }
 
-    private void newSceneHandler() {
+    private void newSceneHandler(double x, double y) {
         Scene newScene = canvasViewModel.project.newScene();
-        newScene.setLeft(mainPane.getMouseX());
-        newScene.setTop(mainPane.getMouseY());
+        newScene.setLeft(x);
+        newScene.setTop(y);
     }
 
-    private void newConditionHandler() {
+    private void newConditionHandler(double x, double y) {
         Condition newCondition = canvasViewModel.project.newCondition();
-        newCondition.setLeft(mainPane.getMouseX());
-        newCondition.setTop(mainPane.getMouseY());
+        newCondition.setLeft(x);
+        newCondition.setTop(y);
     }
 
+    @FXML
     private void cutHandler() {
         clipboard.clear();
         clipboard.addAll(mainPane.getSelectionGroup().getSelected());
         deleteHandler();
     }
 
+    @FXML
     private void copyHandler() {
         clipboard.clear();
         clipboard.addAll(mainPane.getSelectionGroup().getSelected());
     }
 
+    @FXML
     private void pasteHandler() {
         if (clipboard.isEmpty()) {
             return;
@@ -214,6 +215,7 @@ public class CanvasView extends AnchorPane {
         }
     }
 
+    @FXML
     private void deleteHandler() {
         // clone the list as the selected list will changed in the loop which will cause NoSuchElementException to be thrown
         List<InteractiveNode> removeList = new ArrayList<>(mainPane.getSelectionGroup().getSelected());
@@ -232,18 +234,21 @@ public class CanvasView extends AnchorPane {
         }
     }
 
+    @FXML
     private void zoomInHandler() {
         if(mainPane.getScale()< 5) {
             mainPane.setScale(mainPane.getScale() + 0.1);
         }
     }
 
+    @FXML
     private void zoomOutHandler() {
         if(mainPane.getScale()> 0.5) {
             mainPane.setScale(mainPane.getScale() - 0.1);
         }
     }
 
+    @FXML
     private void zoomDefaultHandler() {
         mainPane.setScale(1);
     }
@@ -255,59 +260,22 @@ public class CanvasView extends AnchorPane {
     }
 
     @FXML
-    private void handleNewScene(ActionEvent event) {
-        newSceneHandler();
+    private void newSceneContextMenuHandler() {
+        newSceneHandler(mainPane.getMouseX(), mainPane.getMouseY());
     }
 
     @FXML
-    private void handleNewCondition(ActionEvent event) {
-        newConditionHandler();
+    private void newConditionContextMenuHandler() {
+        newConditionHandler(mainPane.getMouseX(), mainPane.getMouseY());
     }
 
     @FXML
-    private void handleCutMenu(ActionEvent event) {
-        cutHandler();
+    private void addStateButtonHandler() {
+        newSceneHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
     }
 
     @FXML
-    private void handleCopyMenu(ActionEvent event) {
-        copyHandler();
-    }
-
-    @FXML
-    private void handlePasteMenu(ActionEvent event) {
-        pasteHandler();
-    }
-
-    @FXML
-    private void handleDeleteMenu(ActionEvent event) {
-        deleteHandler();
-    }
-
-    @FXML
-    private void handleZoomInBtn(ActionEvent event) {
-        if (mainPane.getScale() < 5)
-            mainPane.setScale(mainPane.getScale() + 0.1);
-    }
-
-    @FXML
-    private void handleZoomDefaultBtn(ActionEvent event) {
-        mainPane.setScale(1);
-    }
-
-    @FXML
-    private void handleZoomOutBtn(ActionEvent event) {
-        if (mainPane.getScale() > 0.5)
-            mainPane.setScale(mainPane.getScale() - 0.1);
-    }
-
-    @FXML
-    private void handleAddStateBtn(ActionEvent event) {
-        canvasViewModel.project.newScene();
-    }
-
-    @FXML
-    private void handleAddConditionBtn(ActionEvent event) {
-        canvasViewModel.project.newCondition();
+    private void addConditionButtonHandler() {
+        newConditionHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
     }
 }

@@ -15,31 +15,31 @@
       <contextMenu>
          <ContextMenu id="contextMenu" fx:id="contextMenu">
             <items>
-               <MenuItem id="newSceneMenuItem" fx:id="newSceneMenuItem" text="New Scene" onAction="#handleNewScene"/>
+               <MenuItem id="newSceneMenuItem" fx:id="newSceneMenuItem" text="New Scene" onAction="#newSceneContextMenuHandler"/>
                <MenuItem id="newConditionMenuItem" fx:id="newConditionMenuItem" text="New Condition"
-                         onAction="#handleNewCondition"/>
+                         onAction="#newConditionContextMenuHandler"/>
                <SeparatorMenuItem/>
-               <MenuItem id="cutMenuItem" fx:id="cutMenuItem" text="Cut" onAction="#handleCutMenu"
+               <MenuItem id="cutMenuItem" fx:id="cutMenuItem" text="Cut" onAction="#cutHandler"
                          accelerator="Shortcut+X"/>
-               <MenuItem id="copyMenuItem" fx:id="copyMenuItem" text="Copy" onAction="#handleCopyMenu"
+               <MenuItem id="copyMenuItem" fx:id="copyMenuItem" text="Copy" onAction="#copyHandler"
                          accelerator="Shortcut+C"/>
-               <MenuItem id="pasteMenuItem" fx:id="pasteMenuItem" text="Paste" onAction="#handlePasteMenu"
+               <MenuItem id="pasteMenuItem" fx:id="pasteMenuItem" text="Paste" onAction="#pasteHandler"
                          accelerator="Shortcut+V"/>
                <SeparatorMenuItem/>
-               <MenuItem id="deleteMenuItem" fx:id="deleteMenuItem" text="Delete" onAction="#handleDeleteMenu"
+               <MenuItem id="deleteMenuItem" fx:id="deleteMenuItem" text="Delete" onAction="#deleteHandler"
                          accelerator="Delete"/>
             </items>
          </ContextMenu>
       </contextMenu>
    </InteractivePane>
    <Button id="addStateBtn" fx:id="addStateBtn" text="+ Add Scene" AnchorPane.topAnchor="20.0"
-           AnchorPane.rightAnchor="20.0" onAction="#handleAddStateBtn"/>
+           AnchorPane.rightAnchor="20.0" onAction="#addStateButtonHandler"/>
    <Button id="addConditionBtn" fx:id="addConditionBtn" text="+ Add Condition" AnchorPane.topAnchor="65.0"
-           AnchorPane.rightAnchor="20.0" onAction="#handleAddConditionBtn"/>
+           AnchorPane.rightAnchor="20.0" onAction="#addConditionButtonHandler"/>
    <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
-      <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#handleZoomInBtn"/>
+      <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#zoomInHandler"/>
       <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25"
-              onAction="#handleZoomDefaultBtn"/>
-      <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#handleZoomOutBtn"/>
+              onAction="#zoomDefaultHandler"/>
+      <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#zoomOutHandler"/>
    </VBox>
 </fx:root>
