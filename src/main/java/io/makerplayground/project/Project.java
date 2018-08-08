@@ -417,7 +417,7 @@ public class Project {
         return deviceType;
     }
 
-    public Set<ProjectDevice> getUnUsedDevice(){
+    public Set<ProjectDevice> getAllDeviceUnused() {
         Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getAllDevice());
         devicesNotUsed.removeAll(this.getAllDeviceUsed());
         return devicesNotUsed;

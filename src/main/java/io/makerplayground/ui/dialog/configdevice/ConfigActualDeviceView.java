@@ -38,8 +38,8 @@ public class ConfigActualDeviceView extends Dialog {
     private final ConfigActualDeviceViewModel viewModel;
     @FXML private ScrollPane scrollPane;
     @FXML private VBox usedDevice;
-    @FXML private FlowPane unUsedDevice;
-    @FXML private Label topicConfigDevice;
+    @FXML private FlowPane unusedDevicePane;
+    @FXML private VBox unusedDevice;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private HBox platFormSelected;
@@ -149,7 +149,7 @@ public class ConfigActualDeviceView extends Dialog {
 
     private void initDeviceControl() {
         usedDevice.getChildren().clear();
-        unUsedDevice.getChildren().clear();
+        unusedDevicePane.getChildren().clear();
         DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
         if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
             usedDevice.getChildren().add(new Label("Controller hasn't been selected"));
@@ -159,7 +159,7 @@ public class ConfigActualDeviceView extends Dialog {
             usedDevice.getChildren().add(new Label("Can't find any supported device"));
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK){
             initDeviceControlChildren();
-            initNotUsedDeviceControl();
+            initUnusedDeviceControl();
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
@@ -279,8 +279,7 @@ public class ConfigActualDeviceView extends Dialog {
                     });
                     if (!projectDevice.getDeviceConnection().isEmpty()) {
                         portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-                    }
-                    else {
+                    } else {
                         portComboBox.getSelectionModel().selectFirst();
                     }
                     portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPeripheral(projectDevice, p, newValue));
@@ -338,32 +337,37 @@ public class ConfigActualDeviceView extends Dialog {
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
 
-    private void initNotUsedDeviceControl(){
-        for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
-                    + projectDevice.getGenericDevice().getName() + ".png")));
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
+    private void initUnusedDeviceControl() {
+        if (viewModel.getUnusedDevice().isEmpty()) {
+            unusedDevice.setVisible(false);
+            unusedDevice.setManaged(false);
+        } else {
+            unusedDevice.setVisible(true);
+            unusedDevice.setManaged(true);
+            for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
+                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+                        + projectDevice.getGenericDevice().getName() + ".png")));
+                imageView.setFitHeight(25.0);
+                imageView.setFitWidth(25.0);
 
-            Label name = new Label(projectDevice.getName());
-            name.setTextAlignment(TextAlignment.LEFT);
-            name.setAlignment(Pos.CENTER_LEFT);
-            name.setId("nameLabel");
+                Label name = new Label(projectDevice.getName());
+                name.setTextAlignment(TextAlignment.LEFT);
+                name.setAlignment(Pos.CENTER_LEFT);
+                name.setId("nameLabel");
 
-            HBox devicePic = new HBox();
-            devicePic.setSpacing(10.0);
-            devicePic.setAlignment(Pos.CENTER_LEFT);
-            devicePic.setMaxHeight(25.0);
-            devicePic.getChildren().addAll(imageView, name);
+                HBox devicePic = new HBox();
+                devicePic.setSpacing(10.0);
+                devicePic.setAlignment(Pos.CENTER_LEFT);
+                devicePic.setMaxHeight(25.0);
+                devicePic.getChildren().addAll(imageView, name);
 
+                HBox entireDevice = new HBox();
+                entireDevice.setSpacing(10.0);
+                entireDevice.setAlignment(Pos.TOP_LEFT);
+                entireDevice.getChildren().addAll(devicePic);
 
-
-            HBox entireDevice = new HBox();
-            entireDevice.setSpacing(10.0);
-            entireDevice.setAlignment(Pos.TOP_LEFT);
-            entireDevice.getChildren().addAll(devicePic);
-
-            unUsedDevice.getChildren().add(entireDevice);
+                unusedDevicePane.getChildren().add(entireDevice);
+            }
         }
     }
 }

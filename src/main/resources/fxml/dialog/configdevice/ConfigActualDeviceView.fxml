@@ -12,9 +12,7 @@
 <?import javafx.scene.control.DialogPane?>
 
 <?import javafx.scene.image.Image?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.FlowPane?>
 <fx:root type="Dialog" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" title="Configure Device">
     <dialogPane>
@@ -41,12 +39,14 @@
                         </VBox>
                         <VBox fx:id="usedDevice" alignment="CENTER" spacing="20">
                         </VBox>
-                        <Separator/>
-                        <HBox>
-                            <Label fx:id="unUsed"  text="Unused devices" />
-                        </HBox>
-                        <FlowPane fx:id="unUsedDevice" hgap="10" vgap="10" >
-                        </FlowPane>
+                        <VBox fx:id="unusedDevice" spacing="20">
+                            <Separator/>
+                            <HBox>
+                                <Label id="unusedLabel" text="Unused devices" />
+                            </HBox>
+                            <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10" >
+                            </FlowPane>
+                        </VBox>
                     </VBox>
                 </ScrollPane>
             </content>

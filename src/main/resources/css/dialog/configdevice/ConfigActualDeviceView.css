@@ -152,6 +152,6 @@
     -fx-background-color: white;
 }
 
-#unUsed{
+#unusedLabel {
     -fx-font-weight: bold;
 }

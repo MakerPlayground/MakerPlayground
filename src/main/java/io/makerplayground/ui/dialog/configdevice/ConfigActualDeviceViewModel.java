@@ -127,7 +127,11 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    Set<ProjectDevice> getUsedDevice(){ return project.getAllDeviceUsed(); }
+    Set<ProjectDevice> getUsedDevice() {
+        return project.getAllDeviceUsed();
+    }
 
-    Set<ProjectDevice> getUnusedDevice() { return  project.getUnUsedDevice();}
+    Set<ProjectDevice> getUnusedDevice() {
+        return  project.getAllDeviceUnused();
+    }
 }
