@@ -1,3 +1,6 @@
 [submodule "src/main/resources/library/arduino"]
 	path = src/main/resources/library/arduino
 	url = https://github.com/InGarage/MakerPlayGround_Library_Arduino.git
+[submodule "library"]
+	path = library
+	url = https://github.com/MakerPlayground/MakerPlayground_Library

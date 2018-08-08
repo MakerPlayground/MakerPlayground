@@ -31,6 +31,3 @@ upload/
 hs_err_pid*
 .pioenvs
 .piolibdeps
-
-libraries/*
-devices/*

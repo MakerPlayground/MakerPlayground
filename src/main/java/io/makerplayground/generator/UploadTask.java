@@ -158,8 +158,8 @@ public class UploadTask extends Task<UploadResult> {
             for (Device x : actualDevicesUsed){
                 String destinationPath = projectPath + File.separator + "src";
                 //enter device's directory
-                if(Files.isDirectory(Paths.get("devices",x.getId()))){
-                    Path sourcePath = Paths.get("devices",x.getId(),"src");
+                if(Files.isDirectory(Paths.get("library/devices",x.getId()))){
+                    Path sourcePath = Paths.get("library/devices",x.getId(),"src");
                     if(Files.isDirectory(sourcePath)){
                         addSourcesFromDirectory(sourcePath,destinationPath);
                     }
@@ -181,7 +181,7 @@ public class UploadTask extends Task<UploadResult> {
         //copy libraries
         for (String x : libraries) {
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("libraries",x+".zip");
+            Path libraryPath = Paths.get("library/lib",x+".zip");
             if(Files.exists(libraryPath)){
                 ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath,destinationPath);
                 if(extractResult != ZipResourceExtractor.ExtractResult.SUCCESS){

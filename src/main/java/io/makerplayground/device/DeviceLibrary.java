@@ -66,7 +66,7 @@ public enum DeviceLibrary {
     private List<Device> loadActualDeviceList(){
         List<Device> temp = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("devices"))){
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("library/devices"))){
             for (Path deviceDirectory : directoryStream) {
                 if(Files.isDirectory(deviceDirectory)){
                     try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
