@@ -52,11 +52,24 @@ public abstract class InteractiveNode extends Group implements Selectable {
             mouseAnchorY = event.getSceneY();
             translateAnchorX = getTranslateX();
             translateAnchorY = getTranslateY();
+
+            hasDragged = true;
         });
         n.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            // allow dragging only when the left button is pressed
-            if (!event.isPrimaryButtonDown())
+            // allow dragging only when the left button is pressed and this node is being selected
+            if (!event.isPrimaryButtonDown() || !isSelected())
                 return;
+
+            // we should set the mouse anchor here to ensure correct drag behaviour in case that MOUSE_DRAGGED fired
+            // without MOUSE_PRESSED for example when we close the property dialog by pressing at the empty space
+            // of the selected scene
+            if (!hasDragged) {
+                mouseAnchorX = event.getSceneX();
+                mouseAnchorY = event.getSceneY();
+                translateAnchorX = getTranslateX();
+                translateAnchorY = getTranslateY();
+                hasDragged = true;
+            }
 
             double deltaX = ((event.getSceneX() - mouseAnchorX) / interactivePane.getScale());
             double deltaY = ((event.getSceneY() - mouseAnchorY) / interactivePane.getScale());
@@ -64,18 +77,12 @@ public abstract class InteractiveNode extends Group implements Selectable {
             mouseAnchorX = event.getSceneX();
             mouseAnchorY = event.getSceneY();
 
-            hasDragged = true;
             event.consume();
 
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.MOVED, null, null
                     , deltaX, deltaY));
         });
         n.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            if (hasDragged) {
-                // we consume this event so that the property window will not be opened if we happened to be dragging
-                // this node and release our mouse
-                event.consume();
-            }
             hasDragged = false;
         });
     }
