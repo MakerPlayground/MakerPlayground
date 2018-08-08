@@ -25,8 +25,8 @@ public class InteractiveNodeEvent extends Event {
     private final NodeElement sourceNode;
     private final NodeElement destinationNode;
 
-    private final double X;
-    private final double Y;
+    private final double x;
+    private final double y;
 
     public InteractiveNodeEvent(InteractiveNode source, EventTarget target, EventType<? extends Event> eventType
             , NodeElement sourceNode, NodeElement destinationNode
@@ -34,8 +34,8 @@ public class InteractiveNodeEvent extends Event {
         super(source, target, eventType);
         this.sourceNode = sourceNode;
         this.destinationNode = destinationNode;
-        this.X = X;
-        this.Y = Y;
+        this.x = X;
+        this.y = Y;
     }
 
     @Override
@@ -52,10 +52,10 @@ public class InteractiveNodeEvent extends Event {
     }
 
     public double getX() {
-        return X;
+        return x;
     }
 
     public double getY() {
-        return Y;
+        return y;
     }
 }

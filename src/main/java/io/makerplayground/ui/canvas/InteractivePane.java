@@ -1,9 +1,7 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.NodeElement;
-import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
-import io.makerplayground.ui.canvas.node.InteractiveNode;
-import io.makerplayground.ui.canvas.node.SelectionGroup;
+import io.makerplayground.ui.canvas.node.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -15,7 +13,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 public class InteractivePane extends ScrollPane {
     private final Pane content = new Pane();
@@ -25,6 +25,9 @@ public class InteractivePane extends ScrollPane {
     private final SelectionGroup<InteractiveNode> selectionGroup = new SelectionGroup<>();
 
     private final Line guideLine = new Line();
+    private final Rectangle groupSelectionArea = new Rectangle();
+    private double groupSelectionStartX, groupSelectionStartY;
+
     private NodeElement sourceNode; // TODO: leak model into view
     private NodeElement destNode;   // TODO: leak model into view
 
@@ -71,13 +74,6 @@ public class InteractivePane extends ScrollPane {
             repositionScroller(group, this, scale.get() / oldScaleFactor, scrollOffset);
         });
 
-        // deselect when left click at blank space in the canvas
-        setOnMousePressed(event -> {
-            if (event.isPrimaryButtonDown()) {
-                selectionGroup.deselect();
-            }
-        });
-
         guideLine.setVisible(false);
         // guideLine is always bring to front when visible so we must make it transparent otherwise it will block
         // MOUSE_DRAGGED event of the destination port and prevent us from creating connection
@@ -86,34 +82,78 @@ public class InteractivePane extends ScrollPane {
         guideLine.setStyle("-fx-stroke: #313644;");
         content.getChildren().add(guideLine);
 
-        addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
-            double viewportWidth = getViewportBounds().getWidth();
-            double viewportHeight = getViewportBounds().getHeight();
-            double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
-            double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+        groupSelectionArea.setVisible(false);
+        groupSelectionArea.setStroke(Color.RED);
+        groupSelectionArea.setStrokeWidth(1);
+        groupSelectionArea.setFill(Color.color(1, 0, 0, 0.5));
+        content.getChildren().add(groupSelectionArea);
 
-            double left = getHvalue() * extraWidth;
-            double top = getVvalue() * extraHeight;
+        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            updateMousePosition(event);
+            groupSelectionStartX = mouseX;
+            groupSelectionStartY = mouseY;
+            groupSelectionArea.setX(mouseX);
+            groupSelectionArea.setY(mouseY);
+            groupSelectionArea.setWidth(0);
+            groupSelectionArea.setHeight(0);
+            groupSelectionArea.toFront();
+            groupSelectionArea.setVisible(true);
 
-            mouseX = (left + event.getX()) / scale.get();
-            mouseY = (top + event.getY()) / scale.get();
+            // deselect when left click at blank space in the canvas while the shift key is not pressed
+            if (event.isPrimaryButtonDown() && !event.isShiftDown()) {
+                selectionGroup.deselect();
+            }
         });
 
+        addEventHandler(MouseEvent.DRAG_DETECTED, event -> startFullDrag());
+
+        addEventHandler(MouseEvent.MOUSE_MOVED, this::updateMousePosition);
+
         addEventHandler(MouseDragEvent.MOUSE_DRAG_OVER, event -> {
-            double viewportWidth = getViewportBounds().getWidth();
-            double viewportHeight = getViewportBounds().getHeight();
-            double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
-            double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+            updateMousePosition(event);
+            guideLine.setEndX(mouseX);
+            guideLine.setEndY(mouseY);
 
-            double left = getHvalue() * extraWidth;
-            double top = getVvalue() * extraHeight;
-
-            guideLine.setEndX((left + event.getX()) / scale.get());
-            guideLine.setEndY((top + event.getY()) / scale.get());
+            if (mouseX > groupSelectionStartX) {
+                groupSelectionArea.setX(groupSelectionStartX);
+                groupSelectionArea.setWidth(mouseX - groupSelectionStartX);
+            } else {
+                groupSelectionArea.setX(mouseX);
+                groupSelectionArea.setWidth(groupSelectionStartX - mouseX);
+            }
+            if (mouseY > groupSelectionStartY) {
+                groupSelectionArea.setY(groupSelectionStartY);
+                groupSelectionArea.setHeight(mouseY - groupSelectionStartY);
+            } else {
+                groupSelectionArea.setY(mouseY);
+                groupSelectionArea.setHeight(groupSelectionStartY - mouseY);
+            }
             event.consume();
         });
 
-        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> guideLine.setVisible(false));
+        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            updateMousePosition(event);
+            guideLine.setVisible(false);
+
+            if (groupSelectionArea.isVisible()) {
+                groupSelectionArea.setVisible(false);
+
+                if (!event.isShiftDown()) {
+                    selectionGroup.deselect();
+                }
+                selectionGroup.setMultipleSelection(true);
+                for (Node node : content.getChildren()) {
+                    if (node instanceof InteractiveNode) {
+                        if (groupSelectionArea.getBoundsInParent().contains(node.getBoundsInParent())) {
+                            ((InteractiveNode) node).setSelected(true);
+                        }
+                    }
+                }
+                if (!event.isShiftDown()) {
+                    selectionGroup.setMultipleSelection(false);
+                }
+            }
+        });
     }
 
     // https://stackoverflow.com/questions/16680295/javafx-correct-scaling/16682180#16682180
@@ -174,6 +214,24 @@ public class InteractivePane extends ScrollPane {
         } else if (bottom < newValue.getMaxY() * scale.get()) {
             setVvalue((newValue.getMaxY() * scale.get() - viewportHeight) / extraHeight);
         }
+
+        double deltaX = event.getX();
+        double deltaY = event.getY();
+
+//        // prevent node from moving out of the canvas
+//        for (Node interactiveNode : selectionGroup.getSelected()) {
+//            Bounds bounds = interactiveNode.getBoundsInParent();
+//            if (bounds.getMinX() + deltaX < 0) {
+//                deltaX = -bounds.getMinX();
+//            }
+//            if (bounds.getMinY() + deltaY < 0) {
+//                deltaY = -bounds.getMinY();
+//            }
+//        }
+
+        for (InteractiveNode interactiveNode : selectionGroup.getSelected()) {
+            interactiveNode.moveNode(deltaX, deltaY);
+        }
     };
 
     public void addChildren(InteractiveNode n) {
@@ -232,6 +290,23 @@ public class InteractivePane extends ScrollPane {
 
     public void setScale(double scale) {
         this.scale.set(scale);
+    }
+
+    // Update current mouse position relative to the pane origin (top left corner) based on the current cursor position
+    // in the visible portion of the pane, the current scroll bar position and the current scale value.
+    // The position calculated is used for example by the copy and paste logic to paste node to the current mouse
+    // position on the pane.
+    private void updateMousePosition(MouseEvent event) {
+        double viewportWidth = getViewportBounds().getWidth();
+        double viewportHeight = getViewportBounds().getHeight();
+        double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
+        double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
+
+        double left = getHvalue() * extraWidth;
+        double top = getVvalue() * extraHeight;
+
+        mouseX = (left + event.getX()) / scale.get();
+        mouseY = (top + event.getY()) / scale.get();
     }
 
     public double getMouseX() {

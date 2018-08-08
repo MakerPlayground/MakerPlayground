@@ -92,4 +92,9 @@ public class LineView extends InteractiveNode {
     protected boolean isError() {
         return viewModel.getError() != DiagramError.NONE;
     }
+
+    @Override
+    public void moveNode(double deltaX, double deltaY) {
+        // do nothing as LineView position is binded to it's source and destination NodeElement
+    }
 }

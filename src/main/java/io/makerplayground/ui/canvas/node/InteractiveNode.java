@@ -3,6 +3,7 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.ui.canvas.InteractivePane;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.Event;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -21,12 +22,20 @@ public abstract class InteractiveNode extends Group implements Selectable {
     public InteractiveNode(InteractivePane interactivePane) {
         this.interactivePane = interactivePane;
 
-        // allow this node to be selected
+        // allow this node to be selected (use event filter without consuming the event to allow children of this
+        // node to process mouse press event)
         addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.isPrimaryButtonDown()) {
-                select.set(!select.get());
+                if (interactivePane.getSelectionGroup().isMultipleSelection()) {
+                    select.set(!select.get());
+                } else {
+                    select.set(true);
+                }
             }
         });
+        // consume mouse pressed event in the event handler so that we can differentiate between mouser press in the node
+        // and mouser press in the pane i.e. pressing inside the node will not trigger MOUSE_PRESSED event of the pane
+        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
 
         // show/hide hi-light when this scene is selected/deselected
         select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
@@ -52,24 +61,14 @@ public abstract class InteractiveNode extends Group implements Selectable {
             double deltaX = ((event.getSceneX() - mouseAnchorX) / interactivePane.getScale());
             double deltaY = ((event.getSceneY() - mouseAnchorY) / interactivePane.getScale());
 
-            // adjust deltaX/Y if needed, to avoid negative coordinate
-            double newMinX = getBoundsInParent().getMinX() - getTranslateX() + (translateAnchorX + deltaX);
-            double newMinY = getBoundsInParent().getMinY() - getTranslateY() + (translateAnchorY + deltaY);
-            if (newMinX < 0) {
-                deltaX = deltaX - newMinX;
-            }
-            if (newMinY < 0) {
-                deltaY = deltaY - newMinY;
-            }
-
-            setTranslateX(translateAnchorX + deltaX);
-            setTranslateY(translateAnchorY + deltaY);
+            mouseAnchorX = event.getSceneX();
+            mouseAnchorY = event.getSceneY();
 
             hasDragged = true;
             event.consume();
 
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.MOVED, null, null
-                    , getBoundsInParent().getMinX(), getBoundsInParent().getMinY()));
+                    , deltaX, deltaY));
         });
         n.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             if (hasDragged) {
@@ -79,6 +78,11 @@ public abstract class InteractiveNode extends Group implements Selectable {
             }
             hasDragged = false;
         });
+    }
+
+    public void moveNode(double deltaX, double deltaY) {
+        setTranslateX(getTranslateX() + deltaX);
+        setTranslateY(getTranslateY() + deltaY);
     }
 
     /**
