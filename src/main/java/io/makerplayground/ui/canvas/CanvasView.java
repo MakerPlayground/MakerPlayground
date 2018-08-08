@@ -205,11 +205,15 @@ public class CanvasView extends AnchorPane {
             }
         }
 
-        for (NodeElement element : elements) {
-            List<Line> lines = canvasViewModel.project.getLineFrom(element);
-            for (Line l : lines) {
-                if (elementsMap.containsKey(l.getDestination())) {
-                    canvasViewModel.project.addLine(elementsMap.get(element), elementsMap.get(l.getDestination()));
+        for (InteractiveNode node : clipboard) {
+            if (node instanceof LineView) {
+                Line line = ((LineView) node).getLineViewModel().getLine();
+                if (elements.contains(line.getSource()) && elements.contains(line.getDestination())){
+                    canvasViewModel.project.addLine(elementsMap.get(line.getSource()), elementsMap.get(line.getDestination()));
+                } else if (elements.contains(line.getSource())){
+                    canvasViewModel.project.addLine(elementsMap.get(line.getSource()), line.getDestination());
+                } else if (elements.contains(line.getDestination())){
+                    canvasViewModel.project.addLine(line.getSource(), elementsMap.get(line.getDestination()));
                 }
             }
         }
