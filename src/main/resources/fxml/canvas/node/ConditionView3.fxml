@@ -40,7 +40,7 @@
                   </ScrollPane>
                </children>
             </HBox>
-            <Arc fx:id="outPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
+            <Arc id="arcNode" fx:id="outPort" fill="#313644" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" stroke="#ffffff00" strokeType="INSIDE" type="ROUND" />
          </children>
       </HBox>
    </children>

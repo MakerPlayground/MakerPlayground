@@ -10,4 +10,5 @@
     -fx-stroke: TRANSPARENT;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
+    -fx-cursor: hand;
 }

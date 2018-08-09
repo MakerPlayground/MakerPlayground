@@ -138,6 +138,7 @@
     -fx-stroke: #ffffff00;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
+    -fx-cursor: hand;
 }
 #headerPane {
     -fx-background-color: transparent;
