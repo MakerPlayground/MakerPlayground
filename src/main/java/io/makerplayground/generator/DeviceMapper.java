@@ -202,7 +202,9 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDeviceUsed());
+
+        for (ProjectDevice projectDevice : deviceList) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set actual device by selecting first element
@@ -213,8 +215,6 @@ public class DeviceMapper {
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
             }
         }
-
-        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDeviceUsed());
 
         // SPECIAL CASE 3: connect MP_*_DUAL first
         if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
@@ -233,12 +233,14 @@ public class DeviceMapper {
             });
         }
 
+        Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
         for (ProjectDevice projectDevice : deviceList) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set port to the first compatible port
                 for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
-                    Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList = getDeviceCompatiblePort(project);
+                    // port list is needed to be recalculated since port is allocated in the previous loop.
+                    portList = getDeviceCompatiblePort(project);
                     if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
                         List<List<DevicePort>> port = portList.get(projectDevice).get(devicePeripheral);
                         if (!port.isEmpty()) {
