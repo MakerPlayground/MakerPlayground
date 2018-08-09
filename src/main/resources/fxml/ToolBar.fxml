@@ -43,7 +43,7 @@
                   <Tooltip text="save as"/>
                </tooltip>
             </Button>
-            <Line fx:id="separatorV" scaleX="0.5" scaleY="11.0" stroke="WHITE" strokeWidth="2.0" />
+            <Line fx:id="separatorV" startY="0" endY="15" stroke="#E2E2E2" strokeWidth="2.0" />
             <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" maxHeight="-Infinity" maxWidth="-Infinity"
                     minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0"
                     prefWidth="20.0">

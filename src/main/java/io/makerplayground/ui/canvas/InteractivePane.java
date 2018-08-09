@@ -83,9 +83,9 @@ public class InteractivePane extends ScrollPane {
         content.getChildren().add(guideLine);
 
         groupSelectionArea.setVisible(false);
-        groupSelectionArea.setStroke(Color.RED);
-        groupSelectionArea.setStrokeWidth(1);
-        groupSelectionArea.setFill(Color.color(1, 0, 0, 0.5));
+        groupSelectionArea.setStroke(Color.web("#1F414B"));
+        groupSelectionArea.setStrokeWidth(0.5);
+        groupSelectionArea.setFill(Color.web("#1F414B", 0.2));
         content.getChildren().add(groupSelectionArea);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
