@@ -202,7 +202,7 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set actual device by selecting first element
