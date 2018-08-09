@@ -235,20 +235,16 @@ public class DeviceMapper {
 
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
         for (ProjectDevice projectDevice : deviceList) {
-            if (projectDevice.isAutoSelectDevice()) {
-                // Set port to the first compatible port
-                for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
-                    // port list is needed to be recalculated since port is allocated in the previous loop.
-                    portList = getDeviceCompatiblePort(project);
-                    if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
-                        List<List<DevicePort>> port = portList.get(projectDevice).get(devicePeripheral);
-                        if (port.isEmpty()) {
-                            return DeviceMapperResult.NOT_ENOUGH_PORT;
-                        }
-                        else {
-                            projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
-                        }
+            // Set port to the first compatible port
+            for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
+                // port list is needed to be recalculated since port is allocated in the previous loop.
+                portList = getDeviceCompatiblePort(project);
+                if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
+                    List<List<DevicePort>> port = portList.get(projectDevice).get(devicePeripheral);
+                    if (port.isEmpty()) {
+                        return DeviceMapperResult.NOT_ENOUGH_PORT;
                     }
+                    projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
                 }
             }
         }
