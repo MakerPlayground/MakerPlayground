@@ -29,121 +29,105 @@ public class ConfigActualDeviceViewModel {
         this.project = project;
         this.compatibleDeviceList = new SimpleObjectProperty<>();
         this.compatiblePortList = new SimpleObjectProperty<>();
-        validateDevice();
+        applyDeviceMapping();
     }
 
-    private void validateDevice() {
+    private void applyDeviceMapping() {
         deviceMapperResult = DeviceMapper.autoAssignDevices(project);
         if (deviceMapperResult == DeviceMapper.DeviceMapperResult.OK ) {
-            Map<ProjectDevice, List<Device>> deviceList = DeviceMapper.getSupportedDeviceList(project);
-            compatibleDeviceList.set(deviceList);
-
-            Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> tmp = DeviceMapper.getDeviceCompatiblePort(project);
-            compatiblePortList.set(tmp);
+            compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
+            compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
         } else {
             compatibleDeviceList.set(null);
             compatiblePortList.set(null);
         }
     }
 
-    public void setPlatformChangedCallback(Callback platformChangedCallback) {
+    void setPlatformChangedCallback(Callback platformChangedCallback) {
         this.platformChangedCallback = platformChangedCallback;
     }
 
-    public void setControllerChangedCallback(Callback controllerChangedCallback) {
+    void setControllerChangedCallback(Callback controllerChangedCallback) {
         this.controllerChangedCallback = controllerChangedCallback;
     }
 
-    public void setDeviceConfigChangedCallback(Callback deviceConfigChangedCallback) {
+    void setDeviceConfigChangedCallback(Callback deviceConfigChangedCallback) {
         this.deviceConfigChangedCallback = deviceConfigChangedCallback;
     }
 
-    public void removeDeviceConfigChangedCallback() {
+    void removeDeviceConfigChangedCallback() {
         this.deviceConfigChangedCallback = null;
     }
 
-    public DeviceMapper.DeviceMapperResult getDeviceMapperResult() {
+    DeviceMapper.DeviceMapperResult getDeviceMapperResult() {
         return deviceMapperResult;
     }
 
-    public List<Device> getCompatibleDevice(ProjectDevice projectDevice) {
+    List<Device> getCompatibleDevice(ProjectDevice projectDevice) {
         return compatibleDeviceList.get().get(projectDevice);
     }
 
-    public Map<Peripheral, List<List<DevicePort>>> getCompatiblePort(ProjectDevice projectDevice) {
+    Map<Peripheral, List<List<DevicePort>>> getCompatiblePort(ProjectDevice projectDevice) {
         return compatiblePortList.get().get(projectDevice);
     }
 
-    public List<Device> getCompatibleControllerDevice() {
+    List<Device> getCompatibleControllerDevice() {
         return DeviceMapper.getSupportedController(project);
     }
 
-    public void setPlatform(Platform platform) {
+    void setPlatform(Platform platform) {
         project.setPlatform(platform);
-        validateDevice();
+        applyDeviceMapping();
         if (platformChangedCallback != null) {
             platformChangedCallback.call();
         }
     }
 
-    public Platform getSelectedPlatform() {
+    Platform getSelectedPlatform() {
         return project.getPlatform();
     }
 
-    public void setController(Device device) {
+    void setController(Device device) {
         project.setController(device);
-        validateDevice();
+        applyDeviceMapping();
         if (controllerChangedCallback != null) {
             controllerChangedCallback.call();
         }
     }
 
-    public Device getSelectedController() {
+    Device getSelectedController() {
         return project.getController();
     }
 
-    public ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceListProperty() {
+    ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceListProperty() {
         return compatibleDeviceList;
     }
 
-    public ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
+    ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
         return compatiblePortList;
     }
 
-    public void setDevice(ProjectDevice projectDevice, Device device) {
+    void setDevice(ProjectDevice projectDevice, Device device) {
+        if (projectDevice.getActualDevice() != null) {
+            projectDevice.removeAllDeviceConnection();
+        }
         projectDevice.setActualDevice(device);
-        validateDevice();
+        applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.call();
         }
     }
 
-    public void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
+    void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
         // TODO: assume a device only has 1 peripheral
         projectDevice.setDeviceConnection(peripheral, port);
-        validateDevice();
+        applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.call();
         }
     }
 
-    public void removePeripheral(ProjectDevice projectDevice) {
-        // TODO: assume a device only has 1 peripheral
-        //projectDevice.removeDeviceConnection(projectDevice.getActualDevice().getConnectivity().get(0));
-        for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-            projectDevice.removeDeviceConnection(p);
-        }
-        validateDevice();
-        if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.call();
-        }
-    }
+    Set<ProjectDevice> getUsedDevice(){ return project.getAllDeviceUsed(); }
 
-    public List<ProjectDevice> getAllDevice() {
-        return project.getAllDevice();
-    }
-
-    public Set<ProjectDevice> getAllDeviceUsed(){ return project.getAllDeviceUsed(); }
-
-    public Set<ProjectDevice> getUnUsedDevice() { return  project.getUnUsedDevice();}
+    Set<ProjectDevice> getUnusedDevice() { return  project.getUnUsedDevice();}
 }

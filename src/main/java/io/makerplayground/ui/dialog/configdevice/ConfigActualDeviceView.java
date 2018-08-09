@@ -168,7 +168,7 @@ public class ConfigActualDeviceView extends Dialog {
 
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
-        for (ProjectDevice projectDevice : viewModel.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(25.0);
@@ -215,16 +215,12 @@ public class ConfigActualDeviceView extends Dialog {
                     }
                 }
             });
-            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                // remove old selection if existed
-                if (oldValue != null) {
-                    viewModel.removePeripheral(projectDevice);
-                }
-                viewModel.setDevice(projectDevice, newValue);
-            });
             if (projectDevice.getActualDevice() != null) {
                 deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
             }
+            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                viewModel.setDevice(projectDevice, newValue);
+            });
 
             CheckBox checkBox = new CheckBox("Auto Select");
             checkBox.setSelected(projectDevice.isAutoSelectDevice());
@@ -343,7 +339,7 @@ public class ConfigActualDeviceView extends Dialog {
     }
 
     private void initNotUsedDeviceControl(){
-        for (ProjectDevice projectDevice : viewModel.getUnUsedDevice()) {
+        for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(25.0);
