@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
@@ -45,6 +46,7 @@ public abstract class NumberWithUnitExpressionControl extends VBox {
         this.minValue = minimumValue;
         this.unitList = units;
         this.advanceCheckBox = new CheckBox("Advanced");
+
 
         this.projectValues = projectValues;
         if (expression instanceof CustomNumberExpression) {
@@ -83,7 +85,7 @@ public abstract class NumberWithUnitExpressionControl extends VBox {
         hbox.setSpacing(5.0);
         if (advanceCheckBox.selectedProperty().get()) {
             ChipField chipField = new ChipField(customNumberExpressionProperty, projectValues);
-            chipField.setOnMousePressed(event -> {
+            chipField.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 if (popOver != null) {
                     popOver.hide();
                 }

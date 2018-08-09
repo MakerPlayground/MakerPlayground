@@ -1,8 +1,43 @@
-#mainPane{
+#scrollPane{
     -fx-border-radius: 5;
-    -fx-border-color: lightgray;
+    -fx-border-color: lightgrey;
+    -fx-background-color: transparent;
     -fx-border-width: 1;
     -fx-border-style: solid;
+}
+
+#mainPane{
+    -fx-background-color: transparent;
+}
+.scroll-bar:horizontal .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:horizontal .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-height: 8;
+}
+.scroll-bar:horizontal .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-height: 8;
+}
+.scroll-bar .thumb{
+    -fx-background-color: derive(#313644,45%);
+}
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.scroll-bar {
+    -fx-background-color: transparent;
 }
 #backspaceBtn{
     -fx-border-color: transparent;

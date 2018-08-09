@@ -16,8 +16,7 @@ import java.util.List;
 
 public class ChipField extends HBox {
     @FXML
-    private FlowPane mainPane;
-
+    private HBox mainPane;
     @FXML
     private Button backspaceBtn;
 
@@ -48,7 +47,7 @@ public class ChipField extends HBox {
             addChipUI(listTerm.get(i), i);
         }
 
-        showHilight(!expressionProperty.get().isValid());
+        showHighlight(!expressionProperty.get().isValid());
     }
 
     private void initEvent() {
@@ -68,7 +67,7 @@ public class ChipField extends HBox {
                     }
                 }
             }
-            showHilight(!expressionProperty.get().isValid());
+            showHighlight(!expressionProperty.get().isValid());
         });
 
         backspaceBtn.setOnMouseReleased(event -> {
@@ -109,7 +108,7 @@ public class ChipField extends HBox {
         mainPane.getChildren().remove(index);
     }
 
-    private void showHilight(boolean b) {
+    private void showHighlight(boolean b) {
         if (b) {
             mainPane.setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
         } else {
