@@ -35,28 +35,28 @@ public class InteractivePane extends ScrollPane {
 
     public InteractivePane() {
         // a pane to add content into
-        content.setStyle("-fx-background-color: #dbdbdb;");
+//        content.setStyle("-fx-background-color: dbdbdb;");
 
         // wrap content in a group to scroll based on visual bounds according to ScrollPane's javadoc
         group.getChildren().add(content);
         setContent(group);
 
         // resize the content pane when the window is resized (viewport's bound of the ScrollPane changed)
-        viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.getWidth() > content.getPrefWidth()) {
-                content.setPrefWidth(newValue.getWidth());
-            }
-            if (newValue.getHeight() > content.getPrefHeight()) {
-                content.setPrefHeight(newValue.getHeight());
-            }
-        });
+//        viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+//            if (newValue.getWidth() > content.getPrefWidth()) {
+//                content.setPrefWidth(newValue.getWidth());
+//            }
+//            if (newValue.getHeight() > content.getPrefHeight()) {
+//                content.setPrefHeight(newValue.getHeight());
+//            }
+//        });
 
         // group's layout bound will be larger when a child of content pane is dragged out of it's area so we keep track
         // of this bound and enlarge our content pane respectively
-        group.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-            content.setPrefSize(newValue.getWidth() / scale.doubleValue()
-                    , newValue.getHeight() / scale.doubleValue());
-        });
+//        group.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+//            content.setPrefSize(newValue.getWidth() / scale.doubleValue()
+//                    , newValue.getHeight() / scale.doubleValue());
+//        });
 
         scale = new SimpleDoubleProperty(1);
         // when scale value changed, we scale content and move scroll position to maintain center
@@ -198,36 +198,25 @@ public class InteractivePane extends ScrollPane {
         double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
         double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
 
-        double left = getHvalue() * extraWidth; // getViewportBounds().getMinX()
+        double left = getHvalue() * extraWidth + group.getLayoutBounds().getMinX(); // getViewportBounds().getMinX()
         double right = left + viewportWidth;
-        double top = getVvalue() * extraHeight;
+        double top = getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
         double bottom = top + viewportHeight;
 
         Bounds newValue = event.getSource().getBoundsInParent();
 
         if (left > newValue.getMinX() * scale.get()) {
-            setHvalue(newValue.getMinX() * scale.get() / extraWidth);
+            setHvalue((newValue.getMinX() - group.getLayoutBounds().getMinX()) * scale.get() / extraWidth);
         } else if (right < newValue.getMaxX() * scale.get()) {
-            setHvalue((newValue.getMaxX() * scale.get() - viewportWidth) / extraWidth);
+            setHvalue(((newValue.getMaxX() - group.getLayoutBounds().getMinX()) * scale.get() - viewportWidth) / extraWidth);
         } else if (top > newValue.getMinY() * scale.get()) {
-            setVvalue(newValue.getMinY() * scale.get() / extraHeight);
+            setVvalue((newValue.getMinY() - group.getLayoutBounds().getMinY()) * scale.get() / extraHeight);
         } else if (bottom < newValue.getMaxY() * scale.get()) {
-            setVvalue((newValue.getMaxY() * scale.get() - viewportHeight) / extraHeight);
+            setVvalue(((newValue.getMaxY() - group.getLayoutBounds().getMinY()) * scale.get() - viewportHeight) / extraHeight);
         }
 
         double deltaX = event.getX();
         double deltaY = event.getY();
-
-//        // prevent node from moving out of the canvas
-//        for (Node interactiveNode : selectionGroup.getSelected()) {
-//            Bounds bounds = interactiveNode.getBoundsInParent();
-//            if (bounds.getMinX() + deltaX < 0) {
-//                deltaX = -bounds.getMinX();
-//            }
-//            if (bounds.getMinY() + deltaY < 0) {
-//                deltaY = -bounds.getMinY();
-//            }
-//        }
 
         for (InteractiveNode interactiveNode : selectionGroup.getSelected()) {
             interactiveNode.moveNode(deltaX, deltaY);
@@ -302,8 +291,8 @@ public class InteractivePane extends ScrollPane {
         double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
         double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
 
-        double left = getHvalue() * extraWidth;
-        double top = getVvalue() * extraHeight;
+        double left = getHvalue() * extraWidth + group.getLayoutBounds().getMinX();
+        double top = getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
 
         mouseX = (left + event.getX()) / scale.get();
         mouseY = (top + event.getY()) / scale.get();
@@ -320,12 +309,12 @@ public class InteractivePane extends ScrollPane {
     public double getViewportMinX() {
         double viewportWidth = getViewportBounds().getWidth();
         double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
-        return getHvalue() * extraWidth;
+        return getHvalue() * extraWidth + group.getLayoutBounds().getMinX();
     }
 
     public double getViewportMinY() {
         double viewportHeight = getViewportBounds().getHeight();
         double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
-        return getVvalue() * extraHeight;
+        return getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
     }
 }
