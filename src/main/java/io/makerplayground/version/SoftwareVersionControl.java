@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -21,7 +22,7 @@ public class SoftwareVersionControl {
         ObjectMapper mapper = new ObjectMapper();
         try {
             latestVersion = mapper.readValue(new URL(URL), SoftwareVersionControl.class);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException|ConnectException e) {
             // exception can normally be thrown when there is no internet connectivity
         } catch (IOException e) {
             e.printStackTrace();
