@@ -94,10 +94,12 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
     /**
      * Show green hilight when node is selected otherwise hilight in red if error is found in the node
-     * @param b true to show green hilight otherwise the node will be hilighted in red/black according to {@link this.isError}
+     * @param forceHilight true to show green hilight regardless of the selection property otherwise the node will be
+     *                     hilighted in green when it is selected, red when {@link this.isError} is true and black
+     *                     (default shadow effect only) otherwise
      */
-    protected void showHilight(boolean b) {
-        if (b) {
+    protected void showHilight(boolean forceHilight) {
+        if (forceHilight || isSelected()) {
             setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");
         } else if (isError()) {
             setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");

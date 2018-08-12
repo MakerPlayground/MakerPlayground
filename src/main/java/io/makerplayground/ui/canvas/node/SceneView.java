@@ -146,7 +146,7 @@ public class SceneView extends InteractiveNode {
         showHilight(false);
 
         // update hilight when error property of the condition is changed
-        sceneViewModel.getScene().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+        sceneViewModel.getScene().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
 
         // install tooltip to display error message to the user
         Tooltip tooltip = new Tooltip();

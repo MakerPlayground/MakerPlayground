@@ -64,7 +64,7 @@ public class LineView extends InteractiveNode {
         showHilight(false);
 
         // update hilight when error property of the condition is changed
-        viewModel.errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+        viewModel.errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
 
         // install tooltip to display error message to the user
         Tooltip tooltip = new Tooltip();

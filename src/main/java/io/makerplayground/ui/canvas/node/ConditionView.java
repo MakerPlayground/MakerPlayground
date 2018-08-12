@@ -85,7 +85,7 @@ public class ConditionView extends InteractiveNode {
         showHilight(false);
 
         // update hilight when error property of the condition is changed
-        conditionViewModel.getCondition().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(isSelected()));
+        conditionViewModel.getCondition().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
 
         // install tooltip to display error message to the user
         Tooltip tooltip = new Tooltip();
