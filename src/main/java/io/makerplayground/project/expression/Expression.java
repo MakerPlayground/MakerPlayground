@@ -10,6 +10,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,11 +19,11 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CUSTOM_NUMBER
+        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CUSTOM_NUMBER, VALUE_LINKING
     }
 
     private final Type type;
-    private final ObservableList<Term> terms = FXCollections.observableArrayList();
+    protected final List<Term> terms = new ArrayList<>();
     private final BooleanProperty enable = new SimpleBooleanProperty(false);
 
     public Expression(Type type) {
@@ -45,6 +47,8 @@ public abstract class Expression {
             return new ProjectValueExpression((ProjectValueExpression) e);
         } else if (e instanceof SimpleStringExpression) {
             return new SimpleStringExpression((SimpleStringExpression) e);
+        } else if (e instanceof ValueLinkingExpression) {
+            return new ValueLinkingExpression((ValueLinkingExpression) e);
         } else {
             throw new IllegalStateException("Not support type of expression");
         }
@@ -67,15 +71,15 @@ public abstract class Expression {
         throw new IllegalStateException("implement the Expression Selection here");
     }
 
-    public ObservableList<Term> getTerms() {
-        return terms;
+    public List<Term> getTerms() {
+        return Collections.unmodifiableList(terms);
     }
 
     @JsonIgnore
     public Set<ProjectValue> getValueUsed() {
         return terms.stream().filter(term -> term.getType() == Term.Type.VALUE)
                 .map(term -> (ProjectValue) term.getValue())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public boolean isEnable() {

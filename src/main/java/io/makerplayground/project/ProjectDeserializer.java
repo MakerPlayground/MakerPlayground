@@ -180,16 +180,18 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             for (JsonNode term_node : valueNode.get("terms")) {
                 terms.add(deserializeTerm(term_node, allProjectDevices, parameter));
             }
-            if (ProjectValueExpression.class.getName().contains(expressionType)) {
+            if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
-            } else if (CustomNumberExpression.class.getName().contains(expressionType)) {
+            } else if (CustomNumberExpression.class.getSimpleName().equals(expressionType)) {
                 double maxValue = parameterNode.get("maxValue").asDouble();
                 double minValue = parameterNode.get("minValue").asDouble();
-                expression = new CustomNumberExpression(maxValue, minValue, terms);
-            } else if (NumberWithUnitExpression.class.getName().contains(expressionType)) {
+                expression = new CustomNumberExpression(minValue, maxValue, terms);
+            } else if (NumberWithUnitExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
-            } else if (SimpleStringExpression.class.getName().contains(expressionType)) {
+            } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
+            } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)){
+                expression = new ValueLinkingExpression(parameter, terms);
             } else {
                 throw new IllegalStateException("expression type not supported");
             }

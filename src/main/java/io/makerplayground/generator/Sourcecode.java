@@ -100,6 +100,8 @@ public class Sourcecode {
         Scene currentScene = null;
         Queue<Scene> queue = new ArrayDeque<>();
 
+        boolean generateMapFunction = false;    // use for ValueLinkingExpression as Arduino built-in map function uses integer arithmetic
+
         // get all adjacent vertices which may be another scene(s) or another condition(s)
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
         List<Scene> adjacentScene = getScene(adjacentVertices);
@@ -246,13 +248,12 @@ public class Sourcecode {
             sb.append("void ").append("scene_").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
             sb.append(INDENT).append("update();").append(NEW_LINE);
 
-            HashSet<String> variableUpdateNameSet = new HashSet<>();
+            Set<String> variableUpdateNameSet = new HashSet<>();
             for (UserSetting setting : currentScene.getSetting()) {
                 for (Map.Entry<ProjectDevice, Set<Value>> entry : setting.getAllValueUsed().entrySet()) {
                     for(Value v : entry.getValue()) {
-                        String str = "_" + entry.getKey().getName().replace(" ", "_") +("_")
-                                + (v.getName().replace(" ", "_")) + (" = ") + ("_" + entry.getKey().getName().replace(" ", "_")) + (".get")
-                                + (v.getName().replace(" ", "_")) + ("();");
+                        String str = getValueVariableName(entry.getKey(), v) + " = _" + entry.getKey().getName().replace(" ", "_")
+                                + ".get" + v.getName().replace(" ", "_") + "();";
                         variableUpdateNameSet.add(str);
                     }
                 }
@@ -261,7 +262,6 @@ public class Sourcecode {
             for(String str : variableUpdateNameSet){
                 sb.append(INDENT).append(str).append(NEW_LINE);
             }
-
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
@@ -273,6 +273,18 @@ public class Sourcecode {
                         double maxValue = ((CustomNumberExpression) expression).getMaxValue();
                         double minValue = ((CustomNumberExpression) expression).getMinValue();
                         params.add("constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")");
+                    } else if (expression instanceof ValueLinkingExpression) {
+                        ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
+                        double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
+                        double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
+                        double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
+                        double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
+                        double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
+                        double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
+                        params.add("constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
+                                , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
+                                + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")");
+                        generateMapFunction = true;
                     } else {
                         params.add(expression.translateToCCode());
                     }
@@ -323,11 +335,23 @@ public class Sourcecode {
             sb.append("}").append(NEW_LINE);
         }
 
+        // generate overload map function for ValueLinkingExpression
+        if (generateMapFunction) {
+            sb.append(NEW_LINE);
+            sb.append("double map(double x, double in_min, double in_max, double out_min, double out_max)\n"
+                    + "{\n"
+                    + INDENT + "return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;\n"
+                    + "}\n");
+        }
+
         // generate function declaration for each scene
         if (cppMode) {
             headerStringBuilder.append("void beginScene();").append(NEW_LINE);
             for (Scene scene : visitedScene) {
                 headerStringBuilder.append("void ").append("scene_").append(scene.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+            }
+            if (generateMapFunction) {
+                headerStringBuilder.append("double map(double x, double in_min, double in_max, double out_min, double out_max);").append(NEW_LINE);
             }
             headerStringBuilder.append(NEW_LINE);
         }
@@ -494,5 +518,9 @@ public class Sourcecode {
     private static List<Condition> getCondition(List<NodeElement> nodeElements) {
         return nodeElements.stream().filter(nodeElement -> nodeElement instanceof Condition)
                 .map(nodeElement -> (Condition) nodeElement).collect(Collectors.toList());
+    }
+
+    private static String getValueVariableName(ProjectDevice projectDevice, Value value) {
+        return "_" + projectDevice.getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_");
     }
 }

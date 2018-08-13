@@ -5,6 +5,7 @@ import io.makerplayground.project.term.OperatorTerm;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomNumberExpression extends Expression {
@@ -12,21 +13,33 @@ public class CustomNumberExpression extends Expression {
     private double maxValue;
     private double minValue;
 
-    public CustomNumberExpression(double maxValue, double minValue) {
+    public CustomNumberExpression(double minValue, double maxValue) {
         super(Type.CUSTOM_NUMBER);
         this.maxValue = maxValue;
         this.minValue = minValue;
     }
 
-    public CustomNumberExpression(double maxValue, double minValue, List<Term> terms) {
+    public CustomNumberExpression(double minValue, double maxValue, List<Term> terms) {
         super(Type.CUSTOM_NUMBER);
-        this.getTerms().addAll(terms);
+        this.terms.addAll(terms);
         this.maxValue = maxValue;
         this.minValue = minValue;
     }
 
     CustomNumberExpression(CustomNumberExpression e) {
         super(e);
+    }
+
+    public CustomNumberExpression addTerm(int index, Term t) {
+        List<Term> newTerm = new ArrayList<>(terms);
+        newTerm.add(index, t);
+        return new CustomNumberExpression(minValue, maxValue, newTerm);
+    }
+
+    public CustomNumberExpression removeTerm(int index) {
+        List<Term> newTerm = new ArrayList<>(terms);
+        newTerm.remove(index);
+        return new CustomNumberExpression(minValue, maxValue, newTerm);
     }
 
     @Override

@@ -8,7 +8,7 @@ public class ProjectValueExpression extends Expression {
 
     public ProjectValueExpression() {
         super(Type.PROJECT_VALUE);
-        this.getTerms().add(new ValueTerm(null));
+        terms.add(new ValueTerm(null));
     }
 
     public ProjectValueExpression(ProjectValue projectValue) {
@@ -22,9 +22,6 @@ public class ProjectValueExpression extends Expression {
 
     @JsonIgnore
     public ProjectValue getProjectValue() {
-        if (this.getTerms().size() > 0) {
-            return ((ValueTerm) this.getTerms().get(0)).getValue();
-        }
-        return null;
+        return ((ValueTerm) terms.get(0)).getValue();
     }
 }

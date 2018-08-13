@@ -1,113 +1,94 @@
 package io.makerplayground.ui.canvas.node.expressioncontrol;
 
+import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberWithUnitExpression;
-import io.makerplayground.ui.canvas.node.usersetting.NumberWithUnitPopOver;
+import io.makerplayground.project.expression.ValueLinkingExpression;
+import io.makerplayground.ui.canvas.node.usersetting.ValueLinkingControl;
 import io.makerplayground.ui.canvas.node.usersetting.chip.ChipField;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.input.MouseEvent;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.geometry.Side;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import org.controlsfx.control.PopOver;
 
 import java.util.List;
 
-public abstract class NumberWithUnitExpressionControl extends VBox {
+public abstract class NumberWithUnitExpressionControl extends HBox {
 
-    private Node mainControl;
-    private CheckBox advanceCheckBox;
-
-    private double maxValue;
-    private double minValue;
-    private List<Unit> unitList;
-
-    private ObjectProperty<CustomNumberExpression> customNumberExpressionProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<NumberWithUnitExpression> numberWithUnitExpressionProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<Expression> expressionProperty = new SimpleObjectProperty<>();
-
-    private NumberWithUnitPopOver popOver;
+    private final Parameter parameter;
     private final List<ProjectValue> projectValues;
 
-    public NumberWithUnitExpressionControl(double minimumValue,
-                                           double maximumValue,
-                                           List<Unit> units,
-                                           List<ProjectValue> projectValues,
-                                           Expression expression) {
-        this.maxValue = maximumValue;
-        this.minValue = minimumValue;
-        this.unitList = units;
-        this.advanceCheckBox = new CheckBox("Advanced");
+    private ReadOnlyObjectWrapper<Expression> expression = new ReadOnlyObjectWrapper<>();
 
-
+    public NumberWithUnitExpressionControl(Parameter p, List<ProjectValue> projectValues, Expression expression) {
+        this.parameter = p;
         this.projectValues = projectValues;
-        if (expression instanceof CustomNumberExpression) {
-            this.advanceCheckBox.selectedProperty().set(true);
-            this.customNumberExpressionProperty.set((CustomNumberExpression) expression);
-            this.numberWithUnitExpressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
-            this.expressionProperty.bind(this.customNumberExpressionProperty);
-        } else if (expression instanceof NumberWithUnitExpression) {
-            this.advanceCheckBox.selectedProperty().set(false);
-            this.customNumberExpressionProperty.set(new CustomNumberExpression(maximumValue, minimumValue));
-            this.numberWithUnitExpressionProperty.set((NumberWithUnitExpression) expression);
-            this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
-        } else {
-            this.advanceCheckBox.selectedProperty().set(false);
-            this.customNumberExpressionProperty.set(new CustomNumberExpression(maximumValue, minimumValue));
-            this.numberWithUnitExpressionProperty.set(new NumberWithUnitExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED)));
-            this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
-        }
-
-        this.advanceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            this.expressionProperty.unbind();
-            if (newValue) {
-                this.expressionProperty.bind(this.customNumberExpressionProperty);
-            } else {
-                this.expressionProperty.bind(this.numberWithUnitExpressionProperty);
-            }
-            this.redrawControl();
-        });
-        this.redrawControl();
+        this.expression.set(expression);
+        initView();
     }
 
-    private void redrawControl() {
-        this.getChildren().clear();
-        HBox hbox = new HBox();
-        hbox.setAlignment(Pos.CENTER);
-        hbox.setSpacing(5.0);
-        if (advanceCheckBox.selectedProperty().get()) {
-            ChipField chipField = new ChipField(customNumberExpressionProperty, projectValues);
-            chipField.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                if (popOver != null) {
-                    popOver.hide();
-                }
-                popOver = new NumberWithUnitPopOver((ChipField) mainControl);
-                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-                popOver.show(mainControl);
-            });
-            mainControl = chipField;
+    private void initView() {
+        getChildren().clear();
+
+        RadioMenuItem numberRadioButton = new RadioMenuItem("Number");
+        RadioMenuItem valueRadioButton = new RadioMenuItem("Value");
+        RadioMenuItem customRadioButton = new RadioMenuItem("Custom");
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        toggleGroup.getToggles().addAll(numberRadioButton, valueRadioButton, customRadioButton);
+
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getItems().addAll(numberRadioButton, valueRadioButton, customRadioButton);
+
+        Button configButton = new Button("Gear");
+        configButton.setOnAction(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
+
+        if (getExpression() instanceof CustomNumberExpression) {
+            ChipField chipField = new ChipField((CustomNumberExpression) getExpression(), projectValues);
+            chipField.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+            toggleGroup.selectToggle(customRadioButton);
+            getChildren().add(chipField);
+        } else if (getExpression() instanceof NumberWithUnitExpression) {
+            NumberWithUnit numberWithUnit = ((NumberWithUnitExpression) getExpression()).getNumberWithUnit();
+            NumberWithUnitControl numberWithUnitControl = createNumberWithUnitControl(parameter.getMinimumValue(), parameter.getMaximumValue(), parameter.getUnit(), numberWithUnit);
+            numberWithUnitControl.valueProperty().addListener((observable, oldValue, newValue) -> expression.set(new NumberWithUnitExpression(newValue)));
+            toggleGroup.selectToggle(numberRadioButton);
+            getChildren().add(numberWithUnitControl);
+        } else if (getExpression() instanceof ValueLinkingExpression) {
+            ValueLinkingControl valueLinkingControl = new ValueLinkingControl((ValueLinkingExpression) getExpression(), projectValues);
+            valueLinkingControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+            toggleGroup.selectToggle(valueRadioButton);
+            getChildren().add(valueLinkingControl);
         } else {
-            NumberWithUnit numberWithUnit = (NumberWithUnit) numberWithUnitExpressionProperty.get().getTerms().get(0).getValue();
-            NumberWithUnitControl numberWithUnitControl = createNumberWithUnitControl(minValue, maxValue, unitList, numberWithUnit);
-            numberWithUnitControl.valueProperty().addListener((observable, oldValue, newValue) -> numberWithUnitExpressionProperty.setValue(new NumberWithUnitExpression(newValue)));
-            mainControl = numberWithUnitControl;
+            throw new IllegalStateException();
         }
-        hbox.getChildren().addAll(mainControl, advanceCheckBox);
-        getChildren().addAll(hbox);
+
+        getChildren().add(configButton);
+
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == numberRadioButton) {
+                expression.set(new NumberWithUnitExpression(new NumberWithUnit(parameter.getMinimumValue(), parameter.getUnit().get(0))));
+            } else if (newValue == valueRadioButton) {
+                expression.set(new ValueLinkingExpression(parameter));
+            } else if (newValue == customRadioButton) {
+                expression.set(new CustomNumberExpression(parameter.getMinimumValue(), parameter.getMaximumValue()));
+            }
+            initView();
+        });
     }
 
     protected abstract NumberWithUnitControl createNumberWithUnitControl(double min, double max, List<Unit> unit, NumberWithUnit initialValue);
 
-    public ObjectProperty<Expression> expressionProperty() {
-        return expressionProperty;
+    public Expression getExpression() {
+        return expression.get();
     }
 
+    public ReadOnlyObjectProperty<Expression> expressionProperty() {
+        return expression.getReadOnlyProperty();
+    }
 }

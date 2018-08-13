@@ -10,18 +10,22 @@ import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.OperatorTerm;
 import io.makerplayground.project.term.ValueTerm;
 
+import java.util.List;
+
 public class NumberInRangeExpression extends Expression {
 
     public NumberInRangeExpression(ProjectDevice device, Value value) {
         super(Expression.Type.NUMBER_IN_RANGE);
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
-        getTerms().addAll(new ValueTerm(new ProjectValue(device, value))
+
+        terms.addAll(List.of(new ValueTerm(new ProjectValue(device, value))
                 , new OperatorTerm(OperatorTerm.Operator.LESS_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()))
                 , new OperatorTerm(OperatorTerm.Operator.AND)
                 , new ValueTerm(new ProjectValue(device, value))
                 , new OperatorTerm(OperatorTerm.Operator.GREATER_THAN)
-                , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())));
+                , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())))
+        );
     }
 
     protected NumberInRangeExpression(NumberInRangeExpression s) {

@@ -177,7 +177,7 @@ public class UserSetting {
                 if (result.containsKey(pv.getDevice())) {
                     result.get(pv.getDevice()).add(pv.getValue());
                 } else {
-                    result.put(pv.getDevice(), new HashSet<>(Collections.singletonList(pv.getValue())));
+                    result.put(pv.getDevice(), new HashSet<>(Set.of(pv.getValue())));
                 }
             }
         }

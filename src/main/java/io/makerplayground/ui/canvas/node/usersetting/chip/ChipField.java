@@ -4,6 +4,9 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,11 +25,11 @@ public class ChipField extends HBox {
 
     private final List<ProjectValue> projectValues;
 
-    private final ObjectProperty<CustomNumberExpression> expressionProperty;
+    private final ReadOnlyObjectWrapper<CustomNumberExpression> expressionProperty;
 
-    public ChipField(ObjectProperty<CustomNumberExpression> expressionProperty, List<ProjectValue> projectValues) {
+    public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
         this.projectValues = projectValues;
-        this.expressionProperty = expressionProperty;
+        this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
         initView();
         initEvent();
     }
@@ -51,34 +54,21 @@ public class ChipField extends HBox {
     }
 
     private void initEvent() {
-        // add/remove chip when expression changed
-        expressionProperty.get().getTerms().addListener((ListChangeListener<? super Term>) c -> {
-            while (c.next()) {
-                if (c.wasPermutated()) {
-                    throw new UnsupportedOperationException();
-                } else if (c.wasUpdated()) {
-                    throw new UnsupportedOperationException();
-                } else {
-                    for (Term ignored : c.getRemoved()) {
-                        removeChipUI(c.getFrom());
-                    }
-                    for (Term addedItem : c.getAddedSubList()) {
-                        addChipUI(addedItem, c.getFrom());
-                    }
-                }
-            }
-            showHighlight(!expressionProperty.get().isValid());
-        });
-
         backspaceBtn.setOnMouseReleased(event -> {
-            if (expressionProperty.get().getTerms().size() > 0) {
-                expressionProperty.get().getTerms().remove(expressionProperty.get().getTerms().size() - 1);
+            if (!expressionProperty.get().getTerms().isEmpty()) {
+                int index = expressionProperty.get().getTerms().size() - 1;
+                expressionProperty.set(expressionProperty.get().removeTerm(index));
+                removeChipUI(index);
+                showHighlight(!expressionProperty.get().isValid());
             }
         });
     }
 
     public void addChip(Term t) {
-        this.expressionProperty.get().getTerms().add(t);
+        int index = expressionProperty.get().getTerms().size();
+        expressionProperty.set(expressionProperty.get().addTerm(index, t));
+        addChipUI(t, index);
+        showHighlight(!expressionProperty.get().isValid());
     }
 
     private void addChipUI(Term t, int index) {
@@ -115,4 +105,13 @@ public class ChipField extends HBox {
             mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
         }
     }
+
+    public CustomNumberExpression getExpression() {
+        return expressionProperty.get();
+    }
+
+    public ReadOnlyObjectProperty<CustomNumberExpression> expressionProperty() {
+        return expressionProperty.getReadOnlyProperty();
+    }
+
 }

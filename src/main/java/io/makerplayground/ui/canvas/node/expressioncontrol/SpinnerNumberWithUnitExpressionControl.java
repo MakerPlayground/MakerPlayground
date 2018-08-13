@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas.node.expressioncontrol;
 
+import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
@@ -10,8 +11,8 @@ import java.util.List;
 
 public class SpinnerNumberWithUnitExpressionControl extends NumberWithUnitExpressionControl {
 
-    public SpinnerNumberWithUnitExpressionControl(double minimumValue, double maximumValue, List<Unit> units, List<ProjectValue> projectValues, Expression expression) {
-        super(minimumValue, maximumValue, units, projectValues, expression);
+    public SpinnerNumberWithUnitExpressionControl(Parameter p, List<ProjectValue> projectValues, Expression expression) {
+        super(p, projectValues, expression);
     }
 
     @Override

@@ -17,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -127,8 +128,10 @@ public class SceneDevicePropertyWindow extends PopOver {
             Parameter p = params.get(i);
 
             Label name = new Label(p.getName());
+            name.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
             GridPane.setRowIndex(name, i+1);
             GridPane.setColumnIndex(name, 0);
+            GridPane.setValignment(name, VPos.TOP);
 
             Node control = null;
             if (p.getDataType() == DataType.VALUE) {
@@ -166,9 +169,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
                 SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
-                        p.getMinimumValue(),
-                        p.getMaximumValue(),
-                        p.getUnit(),
+                        p,
                         viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
@@ -190,9 +191,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
                 SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
-                        p.getMinimumValue(),
-                        p.getMaximumValue(),
-                        p.getUnit(),
+                        p,
                         viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
