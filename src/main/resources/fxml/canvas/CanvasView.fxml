@@ -38,8 +38,8 @@
            AnchorPane.rightAnchor="20.0" onAction="#addConditionButtonHandler"/>
    <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
       <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#zoomInHandler"/>
+      <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#zoomOutHandler"/>
       <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25"
               onAction="#zoomDefaultHandler"/>
-      <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#zoomOutHandler"/>
    </VBox>
 </fx:root>

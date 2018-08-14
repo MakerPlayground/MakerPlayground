@@ -7,8 +7,10 @@
     -fx-background-color : transparent;
 }
 #contentPane{
-    -fx-background-color : white;
+    -fx-background-color : #f6f6f6;
     -fx-background-radius : 10;
+    -fx-border-color : #e3e3e3;
+    -fx-border-radius : 10;
 }
 #nameStateTextField{
     -fx-background-color : #313644;
@@ -25,7 +27,8 @@
     -fx-font-weight : normal;
 }
 #stateBottomHBox{
-    -fx-background-color : #313644;
+    -fx-background-color : #ffffff;
+    -fx-border-color: #e3e3e3;
 }
 .text{
     -fx-text-fill : white;
@@ -77,7 +80,7 @@
 
 #TimeUnitComboBox{
     -fx-font-size:12px;
-    -fx-background-color : #0768de;
+    -fx-background-color: #0768de;
     -fx-border-color : #0768de;
     -fx-min-width : 50px;
 }
@@ -119,19 +122,19 @@
 #addOutputButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('Add-toggle.png');
+    -fx-background-image: url('add-2-toggle.png');
     -fx-background-size : 50px;
     -fx-cursor: hand;
 }
 #addOutputButton{
-    -fx-background-image: url('Add.png');
+    -fx-background-image: url('add-2.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
 #arcNode {
-    -fx-fill: #313644;
-    -fx-stroke: #ffffff00;
+    -fx-fill: #f6f6f6;
+    -fx-stroke: #e3e3e3;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

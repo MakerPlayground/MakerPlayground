@@ -24,7 +24,7 @@
                   <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="100.0" AnchorPane.leftAnchor="5.0" />
                   <ImageView fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
                      <image>
-                        <Image url="@../../../icons/cancel.png" />
+                        <Image url="@../../../icons/cancel-2.png" />
                      </image>
                   </ImageView>
                </children>

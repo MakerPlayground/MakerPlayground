@@ -8,7 +8,8 @@
     -fx-border-width : 2px;
 }
 #toolBarPane {
-    -fx-background-color: #313644;
+    -fx-background-color: #f2f2f2; /*toolbar background area*/
+    -fx-border-color: #e3e3e3;
 }
 #menuHBox {
     -fx-background-color: transparent;

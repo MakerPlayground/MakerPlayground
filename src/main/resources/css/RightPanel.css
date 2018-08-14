@@ -1,23 +1,26 @@
 .root {
-    -fx-background-color : #313644;
+    -fx-background-color : #313644; /*unknown*/
 }
 
 #vBox {
-    -fx-background-color : #313644;
+    -fx-background-color : #ffffff; /*config--diagram-upload button*/
+    -fx-border-color : #e3e3e3;
 }
 
 #button {
     -fx-font-size: 12px;
-    -fx-background-color : transparent;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #5ac2ab;
+    -fx-background-color : #f4f5f7;
+    -fx-border-color : #e3e3e3;
+    -fx-text-fill: #707070;
+    -fx-border-radius: 5px;
     -fx-cursor: hand;
 }
 
 #button:pressed {
     -fx-font-size: 12px;
-    -fx-background-color : #5ac2ab;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #313644;
+    -fx-background-color : #e2e2e2;
+    -fx-border-color : #e3e3e3;
+    -fx-text-fill: #707070;
+    -fx-border-radius: 5px;
     -fx-cursor: hand;
 }

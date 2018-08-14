@@ -17,21 +17,21 @@
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../icons/cancel.png" />
+                        <Image url="@../../../../icons/cancel-2.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
          </children>
       </StackPane>
-      <Label fx:id="nameIconImageView" alignment="CENTER" ellipsisString=".." text="7Segment11" textAlignment="CENTER" textFill="#313644" textOverrun="CENTER_ELLIPSIS">
+      <Label fx:id="nameIconImageView" alignment="CENTER" ellipsisString=".." text="7Segment11" textAlignment="CENTER" textFill="#707070" textOverrun="CENTER_ELLIPSIS">
           <font>
-              <Font name="System Bold" size="10.0" />
+              <Font name="System Bold" size="7.5" />
           </font>
       </Label>
-      <Label fx:id="action" alignment="CENTER" ellipsisString=".." text="Show Number" textAlignment="CENTER" textFill="#5ac2ab" textOverrun="CENTER_WORD_ELLIPSIS">
+      <Label fx:id="action" alignment="CENTER" ellipsisString=".." text="Show Number" textAlignment="CENTER" textFill="#00CC6A" textOverrun="CENTER_WORD_ELLIPSIS">
          <font>
-            <Font name="System Bold" size="10.0" />
+            <Font name="System Bold" size="7.5" />
          </font>
       </Label>
    </children>
