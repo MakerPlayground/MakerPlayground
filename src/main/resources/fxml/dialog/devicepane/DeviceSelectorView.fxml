@@ -25,7 +25,7 @@
                   AnchorPane.topAnchor="0.0">
                 <TitledPane collapsible="false" text="Sensor">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="inputPane" hgap="10.0" vgap="10.0">
+                        <FlowPane fx:id="inputPane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>
@@ -34,7 +34,7 @@
                 </TitledPane>
                 <TitledPane collapsible="false" text="Actuator">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="outputPane" hgap="10.0" vgap="10.0">
+                        <FlowPane fx:id="outputPane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>
@@ -43,7 +43,7 @@
                 </TitledPane>
                 <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Connectivity">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="connectivityPane" hgap="10.0" vgap="10.0">
+                        <FlowPane fx:id="connectivityPane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>

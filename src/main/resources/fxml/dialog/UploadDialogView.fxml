@@ -10,16 +10,16 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="450.0" stylesheets="@../../css/dialog/UploadDialogView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="500.0" stylesheets="@../../css/dialog/UploadDialogView.css" type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefWidth="100.0" spacing="20.0">
          <padding><Insets top="20.0"/></padding>
-         <ImageView fx:id="imgView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@../../icons/Upload.png"/>
-         </ImageView>
+         <!--<ImageView fx:id="imgView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">-->
+            <!--<Image url="@../../icons/Upload.png"/>-->
+         <!--</ImageView>-->
          <VBox alignment="CENTER" spacing="10.0">
-            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0"/>
+            <ProgressBar fx:id="progressBar" prefWidth="400.0" prefHeight="5.0" progress="0.0"/>
             <Label fx:id="progress" />
 
          </VBox>

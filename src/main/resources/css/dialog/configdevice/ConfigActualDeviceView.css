@@ -6,7 +6,7 @@
 }
 #topicConfigDevice{
     -fx-background-color : transparent;
-    -fx-text-fill : #313644;
+    -fx-text-fill : #707070;
     -fx-font-size:14px;
     -fx-font-weight: bold;
 }
@@ -19,20 +19,20 @@
 }
 .label{
     -fx-background-color : transparent;
-    -fx-text-fill : #313644;
-    -fx-font-size:12px;
+    -fx-text-fill : #707070;
+    -fx-font-size: 12px;
 }
 #portComboBox{
     -fx-max-width: 95;
     -fx-min-width: 60;
     -fx-min-height: 25;
     -fx-max-height: 25;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
 #portComboBox:showing .list-view,#portComboBox:armed .list-view{
     -fx-max-width: 95;
     -fx-min-width: 60;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
 #controllerSelection{
     -fx-padding: 0 0 0 35 ; /* 4 8 4 8 */
@@ -65,7 +65,7 @@
 }*/
 .combo-box.list-cell {
     -fx-background-color: white;
-    -fx-background-radius:3px;
+    -fx-background-radius: 3px;
     -fx-text-fill: #313644;
     -fx-padding: 3 0 2 7;
     -fx-cell-size: 1.66667em;
@@ -148,7 +148,7 @@
     -fx-min-height:25;
 }
 .check-box .box{
-    -fx-border-color: #cccccc;
+    -fx-border-color: #707070;
     -fx-background-color: white;
 }
 

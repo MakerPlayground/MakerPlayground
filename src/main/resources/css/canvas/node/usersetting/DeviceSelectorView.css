@@ -7,13 +7,13 @@
 }
 .titled-pane > .title{
     -fx-background-color : white;
-    -fx-border-color: transparent transparent #313644 transparent;
+    -fx-border-color: transparent transparent #e3e3e3 transparent;
     -fx-border-width : 1px;
 }
 
 .titled-pane{
     -fx-font-size: 14px;
-    -fx-text-fill : #313644;
+    -fx-text-fill : #707070;
     -fx-font-weight: bold;
 }
 .titled-pane > .title > .arrow-button .arrow{
@@ -64,19 +64,23 @@
     -fx-background-color : #4d5666;
 }
 .button:pressed{
-    -fx-background-color : #313644;
-    -fx-border-color : #313644;
-    -fx-text-fill : white;
+    -fx-background-color : #f6f6f6;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #e3e3e3;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #707070;
     -fx-cursor: hand;
 }
 .button{
-    -fx-focus-color: transparent;
-    -fx-border-color : #313644;
-    -fx-background-color : transparent;
-    -fx-text-fill : #313644;
+    -fx-focus-color: #f6f6f6;
+    -fx-border-color : #e3e3e3;
+    /*-fx-border-radius : 5px;*/
+    -fx-background-color : #ffffff;
+    /*-fx-background-radius : 5px;*/
+    -fx-text-fill : #707070;
     -fx-cursor: hand;
 }
 
 #vBox {
-    -fx-background-color: white;
+    -fx-background-color: #ffffff;
 }

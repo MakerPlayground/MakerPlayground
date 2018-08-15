@@ -6,35 +6,35 @@
     -fx-text-fill : white;
 }
 .hbox{
-    -fx-border-color : #313644;
+    -fx-border-color : red;
     -fx-border-width: 2px;
 }
 #decBtn{
-    -fx-background-image: url('reduce.png');
+    -fx-background-image: url('reduce-device.png');
     -fx-background-size : 20px;
-    -fx-border-color : #313644;
+    -fx-border-color : #e3e3e3;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
     -fx-cursor: hand;
 }
 #incBtn{
-    -fx-background-image: url('increase.png');
+    -fx-background-image: url('increase-device.png');
     -fx-background-size : 20px;
-    -fx-border-color : #313644;
+    -fx-border-color : #e3e3e3;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
     -fx-cursor: hand;
 }
 #numTextField{
-    -fx-font-size:12px;
-    -fx-background-color : white;
-    -fx-text-fill : #313644;
-    -fx-border-color : #cccccc;
+    -fx-font-size: 12px;
+    -fx-background-color : #f6f6f6;
+    -fx-text-fill : #707070;
+    -fx-border-color : #e3e3e3;
     -fx-border-width: 1px;
     -fx-background-insets: 0, 0, 0;
 }
 #nameLabel {
-    -fx-text-fill: #313644;
+    -fx-text-fill: #707070;
     -fx-font-name: System Bold;
     -fx-font-size: 12px;
 }
