@@ -227,6 +227,7 @@ public class SceneDevicePropertyWindow extends PopOver {
 
         if (expression instanceof NumberInRangeExpression) {
             NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
+            expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
             GridPane.setRowIndex(expressionControl, i+1);
             GridPane.setColumnIndex(expressionControl, 1);
             propertyPane.getChildren().add(expressionControl);

@@ -2,14 +2,15 @@ package io.makerplayground.ui.canvas.node.usersetting.expression;
 
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
-import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.RangeSlider;
 
 public class NumberInRangeExpressionControl extends HBox {
-    private final NumberInRangeExpression expression;
+    private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;
     private final Value value;
 
     private final RangeSlider rangeSlider = new RangeSlider();
@@ -17,7 +18,7 @@ public class NumberInRangeExpressionControl extends HBox {
     private final TextField highTextField = new TextField();
 
     public NumberInRangeExpressionControl(NumberInRangeExpression expression, Value value) {
-        this.expression = expression;
+        this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.value = value;
         initView();
     }
@@ -27,10 +28,10 @@ public class NumberInRangeExpressionControl extends HBox {
 
         rangeSlider.setMax(constraint.getMax());
         rangeSlider.setMin(constraint.getMin());
-        rangeSlider.setHighValue(expression.getHighValue());
-        rangeSlider.setLowValue(expression.getLowValue());
+        rangeSlider.setHighValue(expression.get().getHighValue());
+        rangeSlider.setLowValue(expression.get().getLowValue());
         // This line is needed for proper operation of the RangeSlider (See: https://bitbucket.org/controlsfx/controlsfx/issues/728/rangeslider-order-of-setting-low-and-high)
-        rangeSlider.setHighValue(expression.getHighValue());
+        rangeSlider.setHighValue(expression.get().getHighValue());
         rangeSlider.setShowTickMarks(true);
         rangeSlider.setShowTickLabels(true);
         rangeSlider.setBlockIncrement(1);
@@ -71,15 +72,19 @@ public class NumberInRangeExpressionControl extends HBox {
         getChildren().addAll(lowTextField, rangeSlider, highTextField);
 
         // disable this control if the expression is disabled
-        disableProperty().bind(expression.enableProperty().not());
+        disableProperty().bind(expression.get().enableProperty().not());
     }
 
     private void updateExpression() {
-        expression.setLowValue(rangeSlider.getLowValue());
-        expression.setHighValue(rangeSlider.getHighValue());
+        expression.set(expression.get().setLowValue(rangeSlider.getLowValue()));
+        expression.set(expression.get().setHighValue(rangeSlider.getHighValue()));
     }
 
-    public Expression getExpression() {
-        return expression;
+    public NumberInRangeExpression getExpression() {
+        return expression.get();
+    }
+
+    public ReadOnlyObjectProperty<NumberInRangeExpression> expressionProperty() {
+        return expression.getReadOnlyProperty();
     }
 }

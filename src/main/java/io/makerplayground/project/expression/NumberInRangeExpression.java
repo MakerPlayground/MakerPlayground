@@ -36,25 +36,31 @@ public class NumberInRangeExpression extends Expression {
         return ((NumberWithUnit) getTerms().get(6).getValue()).getValue();
     }
 
-    public void setLowValue(double d) {
-        getTerms().set(6, new NumberWithUnitTerm(new NumberWithUnit(d, getUnit())));
+    public NumberInRangeExpression setLowValue(double d) {
+        NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
+        newExpression.terms.set(6, new NumberWithUnitTerm(new NumberWithUnit(d, getUnit())));
+        return newExpression;
     }
 
     public double getHighValue() {
         return ((NumberWithUnit) getTerms().get(2).getValue()).getValue();
     }
 
-    public void setHighValue(double d) {
-        getTerms().set(2, new NumberWithUnitTerm(new NumberWithUnit(d, getUnit())));
+    public NumberInRangeExpression setHighValue(double d) {
+        NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
+        newExpression.terms.set(2, new NumberWithUnitTerm(new NumberWithUnit(d, getUnit())));
+        return newExpression;
     }
 
     public Unit getUnit() {
         return ((NumberWithUnit) getTerms().get(2).getValue()).getUnit();
     }
 
-    public void setUnit(Unit u) {
-        getTerms().set(6, new NumberWithUnitTerm(new NumberWithUnit(getLowValue(), u)));
-        getTerms().set(2, new NumberWithUnitTerm(new NumberWithUnit(getHighValue(), u)));
+    public NumberInRangeExpression setUnit(Unit u) {
+        NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
+        newExpression.terms.set(6, new NumberWithUnitTerm(new NumberWithUnit(getLowValue(), u)));
+        newExpression.terms.set(2, new NumberWithUnitTerm(new NumberWithUnit(getHighValue(), u)));
+        return newExpression;
     }
 
     @Override
