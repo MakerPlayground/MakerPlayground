@@ -88,11 +88,17 @@ public class UploadTask extends Task<UploadResult> {
             Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
         }
 
-        Set<String> libraries = actualDevicesUsed.stream()
-                .map(device -> device.getLibraryDependency())
+        Set<String> mpLibraries = actualDevicesUsed.stream()
+                .map(device -> device.getMpLibrary())
+                .collect(Collectors.toSet());
+        Set<String> externalLibraries = actualDevicesUsed.stream()
+                .map(device -> device.getExternalLibrary())
                 .flatMap(Collection::stream).collect(Collectors.toSet());
         Platform.runLater(() -> log.set("List of library used \n"));
-        for (String libName : libraries) {
+        for (String libName : mpLibraries) {
+            Platform.runLater(() -> log.set(" - " + libName + "\n"));
+        }
+        for (String libName : externalLibraries) {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
         }
 
@@ -153,35 +159,29 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.CANT_WRITE_CODE;
         }
 
-        // copy device specific (class definition) source codes
-        try{
-            for (Device x : actualDevicesUsed){
-                String destinationPath = projectPath + File.separator + "src";
-                //enter device's directory
-                if(Files.isDirectory(Paths.get("library/devices",x.getId()))){
-                    Path sourcePath = Paths.get("library/devices",x.getId(),"src");
-                    if(Files.isDirectory(sourcePath)){
-                        addSourcesFromDirectory(sourcePath,destinationPath);
-                    }
-                    else{
-                        //No source to copy; continue to next device
-                    }
-                }
-                else{
-                    updateMessage("Error: Missing some device's directory");
+        // copy mp library
+        for (String x: mpLibraries){
+            String destinationPath = projectPath + File.separator + "lib";
+            Path libraryPath = Paths.get("library/lib",x);
+            if(Files.exists(libraryPath)&&Files.isDirectory(libraryPath)){
+                try {
+                    FileUtils.copyDirectory(libraryPath.toFile(),new File(destinationPath+File.separator+x));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    updateMessage("Error: Missing some libraries");
                     return UploadResult.CANT_FIND_LIBRARY;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            updateMessage("Error: Cannot write device-specific source codes");
-            return UploadResult.CANT_FIND_LIBRARY;
+            else {
+                updateMessage("Error: Missing some libraries");
+                return UploadResult.CANT_FIND_LIBRARY;
+            }
         }
 
-        //copy libraries
-        for (String x : libraries) {
+        //copy and extract external Libraries
+        for (String x : externalLibraries) {
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("library/lib",x+".zip");
+            Path libraryPath = Paths.get("library/lib_ext",x+".zip");
             if(Files.exists(libraryPath)){
                 ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath,destinationPath);
                 if(extractResult != ZipResourceExtractor.ExtractResult.SUCCESS){
