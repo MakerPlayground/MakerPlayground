@@ -14,6 +14,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import java.util.List;
@@ -34,6 +36,7 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
 
     private void initView() {
         getChildren().clear();
+        getStylesheets().add(getClass().getResource("/css/canvas/node/expressioncontrol/NumberWithUnitExpressionControl.css").toExternalForm());
 
         RadioMenuItem numberRadioButton = new RadioMenuItem("Number");
         RadioMenuItem valueRadioButton = new RadioMenuItem("Value");
@@ -45,8 +48,10 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(numberRadioButton, valueRadioButton, customRadioButton);
 
-        Button configButton = new Button("Gear");
-        configButton.setOnAction(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
+        ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/gear.png")));
+        configButton.setFitWidth(25);
+        configButton.setPreserveRatio(true);
+        configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
 
         if (getExpression() instanceof CustomNumberExpression) {
             ChipField chipField = new ChipField((CustomNumberExpression) getExpression(), projectValues);

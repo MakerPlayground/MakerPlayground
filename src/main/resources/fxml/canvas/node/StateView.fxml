@@ -12,7 +12,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
@@ -30,7 +29,7 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <ScrollPane fitToWidth="true" prefHeight="70.0" prefWidth="200.0">
+            <ScrollPane id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="200.0">
                <content>
                   <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5" maxHeight="70.0" prefHeight="70.0" prefWidth="200.0" vgap="7.5">
                      <padding>
