@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.io.IOException;
  *
  * Created by Nuntipat Narkthong on 6/8/2017 AD.
  */
-public class DevicePanelIcon extends VBox {
+public class DevicePanelIcon extends AnchorPane {
 
     private final DevicePanelIconViewModel viewModel;
 

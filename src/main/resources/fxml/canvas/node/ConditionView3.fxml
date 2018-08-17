@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 
-<fx:root stylesheets="@../../../css/canvas/node/ConditionView3.css" alignment="TOP_RIGHT" type="VBox" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" stylesheets="@../../../css/canvas/node/ConditionView3.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="removeConditionBtn" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
          <graphic>
@@ -23,17 +23,17 @@
       </Button>
       <HBox fx:id="conditionPane" alignment="CENTER">
          <children>
-            <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"/>
+            <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" />
             <HBox id="contentPane" stylesheets="@../../../css/canvas/node/ConditionView3.css">
                <children>
-                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="215.0" style="-fx-background-color: transparent;">
                      <content>
-                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="15.0" maxHeight="70.0" prefHeight="70.0" prefWidth="200.0" vgap="7.5">
+                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5.5" maxHeight="70.0" prefHeight="70.0" prefWidth="215.0" vgap="5.5">
                            <padding>
-                              <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                              <Insets bottom="5.5" left="5.5" right="5.5" top="5.5" />
                            </padding>
                            <children>
-                              <Button id="addOutputButton" fx:id="addInputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                              <Button id="addOutputButton" fx:id="addInputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" />
                            </children>
                         </FlowPane>
                      </content>

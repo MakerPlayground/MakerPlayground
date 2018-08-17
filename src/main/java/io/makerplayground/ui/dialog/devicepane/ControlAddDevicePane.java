@@ -43,7 +43,7 @@ public class ControlAddDevicePane extends VBox {
             throw new RuntimeException(exception);
         }
 
-        InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons/" + genericDevice.getName() + ".png");
+        InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons-2/" + genericDevice.getName() + ".png");
         if (imageStream == null) {
             throw new IllegalStateException("Missing icon of " + genericDevice.getName());
         }

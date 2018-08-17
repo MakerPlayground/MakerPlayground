@@ -51,70 +51,70 @@
     -fx-padding: 0 0 0 0;
 }
 #saveBtn{
-    -fx-background-image: url('save-white.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('save_1.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
     -fx-background-repeat: no-repeat;
 }
 #saveBtn:pressed{
-    -fx-background-image: url('save1.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('save-press.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
 #saveAsBtn{
-    -fx-background-image: url('saveas-white.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('save-as_1.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
     -fx-background-repeat: no-repeat;
 }
 #saveAsBtn:pressed{
-    -fx-background-image: url('save-as.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('save-as-press.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
 #loadBtn{
-    -fx-background-image: url('open-white.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('open_1.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
     -fx-background-repeat: no-repeat;
 }
 #loadBtn:pressed{
-    -fx-background-image: url('open.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('open-press.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #newFileBtn{
-    -fx-background-image: url('new-white.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('new_1.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
     -fx-background-repeat: no-repeat;
 }
 #newFileBtn:pressed{
-    -fx-background-image: url('new1.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('new-press.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #deviceMonitorButton{
-    -fx-background-image: url('serial-monitor-white.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('serial-monitor_1.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
@@ -122,8 +122,8 @@
 }
 
 #deviceMonitorButton:pressed{
-    -fx-background-image: url('serial-monitor.png');
-    -fx-background-size : 20px;
+    -fx-background-image: url('serial-monitor-press.png');
+    -fx-background-size : 40px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
