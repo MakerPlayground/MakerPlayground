@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 
-<?import javafx.scene.control.ScrollPane?>
-<fx:root type="HBox" alignment="CENTER" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" spacing="3" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" >
-    <ScrollPane id="scrollPane" vbarPolicy="NEVER" hbarPolicy="ALWAYS" minWidth="250" prefWidth="250" maxWidth="250" >
-        <HBox fx:id="mainPane" prefHeight="28" spacing="-10.5"/>
-    </ScrollPane>
-    <Button fx:id="backspaceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" HBox.hgrow="ALWAYS"/>
+<fx:root id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" minHeight="27.0" prefHeight="27.0"
+         minWidth="250" prefWidth="250" maxWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css"
+         type="ScrollPane" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox fx:id="mainPane" maxHeight="25" spacing="-10.5"/>
 </fx:root>

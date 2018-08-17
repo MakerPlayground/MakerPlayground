@@ -18,9 +18,11 @@ public class StringChip extends Chip<String> {
 
     @FXML private Rectangle background;
     @FXML private TextField input;
+
     public StringChip() {
         super("", Term.Type.STRING);
     }
+
     public StringChip(String initialValue) {
         super(initialValue, Term.Type.STRING);
     }
@@ -50,7 +52,7 @@ public class StringChip extends Chip<String> {
         //input.setAlignment(Pos.BASELINE_CENTER);
         //input.setPrefSize(40, 20);
         //input.setMaxSize(40, 20);
-        input.textProperty().bindBidirectional(valueProperty());
+        input.textProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
 
         //getChildren().addAll(background, input);
     }
@@ -58,20 +60,5 @@ public class StringChip extends Chip<String> {
     @Override
     public StringTerm getTerm() {
         return new StringTerm(getValue());
-    }
-
-    @Override
-    public String getValue() {
-        return super.getValue();
-    }
-
-    @Override
-    public ObjectProperty<String> valueProperty() {
-        return super.valueProperty();
-    }
-
-    @Override
-    public void setValue(String value) {
-        super.setValue(value);
     }
 }

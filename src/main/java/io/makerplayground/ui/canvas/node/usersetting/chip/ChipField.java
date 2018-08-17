@@ -3,29 +3,35 @@ package io.makerplayground.ui.canvas.node.usersetting.chip;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
-import javafx.beans.property.ObjectProperty;
+import io.makerplayground.ui.canvas.node.SelectionGroup;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class ChipField extends HBox {
-    @FXML
-    private HBox mainPane;
-    @FXML
-    private Button backspaceBtn;
+public class ChipField extends ScrollPane {
+    @FXML private HBox mainPane;
+    private ChipSelectorPopover popOver;
 
     private final List<ProjectValue> projectValues;
-
     private final ReadOnlyObjectWrapper<CustomNumberExpression> expressionProperty;
+
+    private final List<Chip> chipList = new ArrayList<>();
+    private final Map<Chip, Term> chipMap = new HashMap<>();
+
+    private final SelectionGroup<Chip> selectionGroup = new SelectionGroup<>();
 
     public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
         this.projectValues = projectValues;
@@ -50,60 +56,101 @@ public class ChipField extends HBox {
             addChipUI(listTerm.get(i), i);
         }
 
-        showHighlight(!expressionProperty.get().isValid());
+        // initialize popup window to add new chip
+        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            if (popOver == null || !popOver.isShowing()) {
+                popOver = new ChipSelectorPopover();
+                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+                popOver.setOnChipSelected(t -> addChip(t, chipList.size()));
+                popOver.show(ChipField.this);
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            selectionGroup.deselect();
+        });
+
+//        showHighlight(!expressionProperty.get().isValid());
     }
 
     private void initEvent() {
-        backspaceBtn.setOnMouseReleased(event -> {
-            if (!expressionProperty.get().getTerms().isEmpty()) {
-                int index = expressionProperty.get().getTerms().size() - 1;
-                expressionProperty.set(expressionProperty.get().removeTerm(index));
-                removeChipUI(index);
-                showHighlight(!expressionProperty.get().isValid());
+        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DELETE) {
+                new ArrayList<>(selectionGroup.getSelected()).forEach(this::removeChip);
             }
+        });
+
+        selectionGroup.getSelected().addListener((InvalidationListener) observable -> {
+            selectionGroup.getSelected().stream()
+                    .min(Comparator.comparingDouble(chip -> chip.getBoundsInParent().getMinX()))
+                    .ifPresent(this::repositionScrollpane);
         });
     }
 
-    public void addChip(Term t) {
-        int index = expressionProperty.get().getTerms().size();
-        expressionProperty.set(expressionProperty.get().addTerm(index, t));
+    private void repositionScrollpane(Chip c) {
+        double chipMinX = c.getBoundsInParent().getMinX();
+        double chipMaxX = c.getBoundsInParent().getMaxX();
+        double contentWidth = mainPane.getLayoutBounds().getWidth();
+        double viewportWidth = getViewportBounds().getWidth();
+        double extraWidth = contentWidth - viewportWidth;
+        if (extraWidth > 0) {
+            if (chipMinX < getHvalue() * extraWidth) {
+                setHvalue(chipMinX / extraWidth);
+            } else if (chipMaxX > getHvalue() * extraWidth + viewportWidth) {
+                setHvalue((chipMaxX - viewportWidth) / extraWidth);
+            }
+        } else {
+            setHvalue(0);
+        }
+    }
+
+    private void addChip(Term t, int index) {
         addChipUI(t, index);
-        showHighlight(!expressionProperty.get().isValid());
+        updateExpression();
     }
 
     private void addChipUI(Term t, int index) {
         Chip chip;
         if (t instanceof NumberWithUnitTerm) {
-            NumberWithUnitChip numChip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
-            numChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new NumberWithUnitTerm(n)));
-            chip = numChip;
+            chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
+            ((NumberWithUnitChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof StringTerm) {
-            StringChip strChip = new StringChip(((StringTerm) t).getValue());
-            strChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new StringTerm(n)));
-            chip = strChip;
+            chip = new StringChip(((StringTerm) t).getValue());
+            ((StringChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {
             chip = new OperatorChip(((OperatorTerm) t).getValue());
+            ((OperatorChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof ValueTerm) {
-            ProjectValueChip pvChip = new ProjectValueChip(((ValueTerm) t).getValue(), projectValues);
-            pvChip.valueProperty().addListener((ob, o, n) -> expressionProperty.get().getTerms().set(index, new ValueTerm(n)));
-            chip = pvChip;
+            chip = new ProjectValueChip(((ValueTerm) t).getValue(), projectValues);
+            ((ProjectValueChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else {
             throw new IllegalStateException();
         }
+        chipList.add(chip);
+        chipMap.put(chip, t);
+        selectionGroup.getSelectable().add(chip);
         mainPane.getChildren().add(index, chip);
     }
 
-    // Remove chip when underlying expression has changed
-    private void removeChipUI(int index) {
-        mainPane.getChildren().remove(index);
+    private void removeChip(Chip chip) {
+        chipList.remove(chip);
+        chipMap.remove(chip);
+        selectionGroup.getSelectable().remove(chip);
+        mainPane.getChildren().remove(chip);
+        updateExpression();
     }
 
-    private void showHighlight(boolean b) {
-        if (b) {
-            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
-        } else {
-            mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
-        }
+//    private void showHighlight(boolean b) {
+//        if (b) {
+//            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
+//        } else {
+//            mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+//        }
+//    }
+
+    private void updateExpression() {
+        expressionProperty.set(new CustomNumberExpression(expressionProperty.get().getMinValue(), expressionProperty.get().getMaxValue()
+                , chipList.stream().map(Chip::getTerm).collect(Collectors.toList())));
     }
 
     public CustomNumberExpression getExpression() {

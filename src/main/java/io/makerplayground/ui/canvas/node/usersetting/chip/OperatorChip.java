@@ -75,19 +75,4 @@ public class OperatorChip extends Chip<Operator> {
     public OperatorTerm getTerm() {
         return new OperatorTerm(getValue());
     }
-
-    @Override
-    public Operator getValue() {
-        return super.getValue();
-    }
-
-    @Override
-    public ObjectProperty<Operator> valueProperty() {
-        throw new UnsupportedOperationException("OperatorChip should not be edited");
-    }
-
-    @Override
-    public void setValue(Operator value) {
-        throw new UnsupportedOperationException("OperatorChip should not be edited");
-    }
 }

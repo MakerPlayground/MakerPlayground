@@ -60,19 +60,4 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     public Term getTerm() {
         return new NumberWithUnitTerm(getValue());
     }
-
-    @Override
-    public NumberWithUnit getValue() {
-        return super.getValue();
-    }
-
-    @Override
-    public ObjectProperty<NumberWithUnit> valueProperty() {
-        return super.valueProperty();
-    }
-
-    @Override
-    public void setValue(NumberWithUnit value) {
-        super.setValue(value);
-    }
 }

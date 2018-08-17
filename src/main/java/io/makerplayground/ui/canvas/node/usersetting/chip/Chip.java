@@ -1,39 +1,50 @@
 package io.makerplayground.ui.canvas.node.usersetting.chip;
 
 import io.makerplayground.project.term.Term;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import io.makerplayground.ui.canvas.node.Selectable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.Event;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+
+import java.util.Collections;
 import java.util.List;
 
-public abstract class Chip<T> extends StackPane {
-    private Term.Type type;
-    private ObjectProperty<T> value = new SimpleObjectProperty<>();
-    private List<T> choices;
+public abstract class Chip<T> extends StackPane implements Selectable {
+    private final Term.Type type;
+    private final ReadOnlyObjectWrapper<T> value = new ReadOnlyObjectWrapper<>();
+    private final List<T> choices;
+
+    private final BooleanProperty selected = new SimpleBooleanProperty(false);
 
     public Chip(T initialValue, Term.Type type) {
-        this(initialValue, type, null);
+        this(initialValue, type, Collections.emptyList());
     }
 
     public Chip(T initialValue, Term.Type type, List<T> choices) {
         this.type = type;
         this.value.set(initialValue);
         this.choices = choices;
-        initView();
-        initEvent();
-    }
 
-    List<T> getChoices() {
-        return choices;
+        initView();
+        // use geometric shape of this node instead of the bounding box for mouse event
+        setPickOnBounds(false);
+        selected.addListener((observable, oldValue, newValue) -> showHighlight(newValue));
+
+        // check for chip selection in an event filter to prevent children node of chip e.g. TextField, Combobox etc.
+        // to consume mouse event and prevent the chip from being selected
+        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> selected.set(true));
+        // consume mouse event in an event handler to differentiate between pressing on the chip and pressing on
+        // the empty area of the chip field
+        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
     }
 
     protected abstract void initView();
 
     public abstract Term getTerm();
-
-    protected void initEvent() {
-        // allow the chip to be selected
-    }
 
     public Term.Type getChipType() {
         return type;
@@ -43,11 +54,39 @@ public abstract class Chip<T> extends StackPane {
         return value.get();
     }
 
-    public ObjectProperty<T> valueProperty() {
-        return value;
+    public ReadOnlyObjectProperty<T> valueProperty() {
+        return value.getReadOnlyProperty();
     }
 
-    public void setValue(T value) {
+    protected void setValue(T value) {
         this.value.set(value);
     }
+
+    public List<T> getChoices() {
+        return choices;
+    }
+
+    @Override
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    @Override
+    public void setSelected(boolean b) {
+        selected.set(b);
+    }
+
+    private void showHighlight(boolean b) {
+        if (b) {
+            setStyle("-fx-effect: dropshadow(gaussian, white, 10.0 , 0.5, 0.0 , 0.0);");
+        } else {
+            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+        }
+    }
+
 }

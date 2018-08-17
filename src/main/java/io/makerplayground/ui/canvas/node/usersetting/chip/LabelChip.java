@@ -13,6 +13,7 @@ public class LabelChip extends Chip<String> {
 
     @FXML private Rectangle background;
     @FXML private Text text;
+
     public LabelChip(String msg) {
         this(msg, Term.Type.STRING);
     }
