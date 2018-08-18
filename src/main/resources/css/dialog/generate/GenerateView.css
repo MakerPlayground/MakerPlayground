@@ -77,6 +77,7 @@
 {
     -fx-background-color: transparent;
     -fx-padding: 5 15 5 15;
+    -fx-cursor: hand;
 }
 .tab-pane .tab:selected
 {

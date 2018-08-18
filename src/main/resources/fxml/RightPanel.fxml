@@ -15,21 +15,21 @@
          <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../css/config-project.png" />
+                  <Image url="@../css/config-project-2.png" />
                </image></ImageView>
          </graphic></Button>
         <Button id="button" fx:id="generateBtn" maxWidth="Infinity" onAction="#handleGenerateBtn" text="Generate Project">
          <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../css/generate-project.png" />
+                  <Image url="@../css/generate-project-2.png" />
                </image></ImageView>
          </graphic></Button>
         <Button id="button" fx:id="uploadBtn" maxWidth="Infinity" onAction="#handleUploadBtn" text="Upload Project">
          <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../css/upload-project.png" />
+                  <Image url="@../css/upload-project-2.png" />
                </image></ImageView>
          </graphic></Button>
     </VBox>
