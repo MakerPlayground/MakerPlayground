@@ -37,6 +37,45 @@
     -fx-font-weight: bold;
     -fx-min-width: 90;
 }
+
+.range-slider .range-bar {
+    -fx-background-color: #2673fd;
+}
+.range-slider .low-thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0, 0, 0;
+    -fx-pref-height: 15;
+    -fx-pref-width: 15;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 7.5;
+}
+.range-slider .low-thumb:hover {
+    -fx-background-color: #e3e3e3;
+    -fx-background-insets: 0, 0, 0;
+    -fx-pref-height: 15;
+    -fx-pref-width: 15;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 7.5;
+    -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+}
+.range-slider .high-thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0, 0, 0;
+    -fx-pref-height: 15;
+    -fx-pref-width: 15;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 7.5;
+}
+.range-slider .high-thumb:hover {
+    -fx-background-color: #e3e3e3;
+    -fx-background-insets: 0, 0, 0;
+    -fx-pref-height: 15;
+    -fx-pref-width: 15;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 7.5;
+    -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+}
+
 .slider{
     -fx-min-width: 85;
     -fx-max-width: 85;
