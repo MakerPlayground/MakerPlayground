@@ -31,7 +31,7 @@ public class InputDeviceIconSelectorView extends  VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons/" + projectDevice.getGenericDevice().getName() + ".png"));
+        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons-2/" + projectDevice.getGenericDevice().getName() + ".png"));
         imv.setImage(image);
 
         name.setText(projectDevice.getName());

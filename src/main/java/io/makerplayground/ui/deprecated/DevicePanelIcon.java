@@ -38,7 +38,7 @@ public class DevicePanelIcon extends AnchorPane {
             throw new RuntimeException(exception);
         }
 
-        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getDeviceName() + ".png")));
+        imageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-2/" + viewModel.getDeviceName() + ".png")));
         //nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
         nameTextField.setText(viewModel.getDevice().getName());
 
