@@ -1,8 +1,9 @@
 .root{
+    /*-fx-background-color: #ffffff;*/
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
 #topicConfigDevice{
     -fx-background-color : transparent;

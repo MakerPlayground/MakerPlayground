@@ -169,10 +169,10 @@ public class ConfigActualDeviceView extends Dialog {
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-2/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
+            imageView.setFitHeight(30.0);
+            imageView.setFitWidth(30.0);
 
             Label name = new Label(projectDevice.getName());
             name.setTextAlignment(TextAlignment.LEFT);
@@ -345,10 +345,10 @@ public class ConfigActualDeviceView extends Dialog {
             unusedDevice.setVisible(true);
             unusedDevice.setManaged(true);
             for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-2/"
                         + projectDevice.getGenericDevice().getName() + ".png")));
-                imageView.setFitHeight(25.0);
-                imageView.setFitWidth(25.0);
+                imageView.setFitHeight(30.0);
+                imageView.setFitWidth(30.0);
 
                 Label name = new Label(projectDevice.getName());
                 name.setTextAlignment(TextAlignment.LEFT);
