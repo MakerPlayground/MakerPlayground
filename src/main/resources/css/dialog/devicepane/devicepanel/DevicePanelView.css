@@ -81,14 +81,14 @@
 #addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('add-device-toggle.png');
+    -fx-background-image: url('add-device-toggle-3.png');
     -fx-background-size : 30px;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #addBtn{
-    -fx-background-image: url('add-device.png');
+    -fx-background-image: url('add-device-3.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;

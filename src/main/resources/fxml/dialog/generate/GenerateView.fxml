@@ -17,7 +17,7 @@
        <TabPane tabClosingPolicy="UNAVAILABLE">
            <Tab fx:id="simulateTab" text="Connection Diagram">
                <AnchorPane>
-                   <ScrollPane maxHeight="350" fx:id="diagramScrollPane" AnchorPane.bottomAnchor="0.0"
+                   <ScrollPane maxHeight="450" fx:id="diagramScrollPane" AnchorPane.bottomAnchor="0.0"
                                AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0"
                                AnchorPane.topAnchor="15.0"/>
                </AnchorPane>
