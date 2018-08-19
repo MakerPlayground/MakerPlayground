@@ -64,20 +64,20 @@
     -fx-background-color : #4d5666;
 }
 .button:pressed{
-    -fx-background-color : #f6f6f6;
+    -fx-background-color : #c1c1c1;
     /*-fx-background-radius : 5px;*/
-    -fx-border-color : #e3e3e3;
+    -fx-border-color : #333333;
     /*-fx-border-radius : 5px;*/
-    -fx-text-fill : #707070;
+    -fx-text-fill : #333333;
     -fx-cursor: hand;
 }
 .button{
-    -fx-focus-color: #f6f6f6;
-    -fx-border-color : #e3e3e3;
+    -fx-focus-color: #c1c1c1;
+    -fx-border-color : #333333;
     /*-fx-border-radius : 5px;*/
-    -fx-background-color : #ffffff;
+    -fx-background-color : #e1e1e1;
     /*-fx-background-radius : 5px;*/
-    -fx-text-fill : #707070;
+    -fx-text-fill : #333333;
     -fx-cursor: hand;
 }
 

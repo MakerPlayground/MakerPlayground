@@ -38,6 +38,16 @@
     -fx-min-width: 90;
 }
 
+.check-box .box {
+
+    -fx-background-color: white;
+    -fx-border-color: #333333;
+    -fx-border-radius:3px;
+}
+.check-box:selected .mark {
+    -fx-background-color: #2673fd;
+}
+
 .range-slider .range-bar {
     -fx-background-color: #2673fd;
 }
