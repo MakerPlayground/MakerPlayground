@@ -414,27 +414,7 @@ public class Sourcecode {
                         if (!expression.isEnable()) {
                             continue;
                         }
-                        conditionList.add("(" + expression.getTerms().stream().map(term -> {
-                            if (term instanceof NumberWithUnitTerm) {
-                                return String.valueOf(((NumberWithUnitTerm) term).getValue().getValue());
-                            } else if (term instanceof StringTerm) {
-                                return ((StringTerm) term).getValue();
-                            } else if (term instanceof OperatorTerm) {
-                                Operator chipOperator = ((OperatorTerm) term).getValue();
-                                if (chipOperator == Operator.AND) {
-                                    return " && ";
-                                } else if (chipOperator == Operator.OR) {
-                                    return " || ";
-                                } else {
-                                    return " " + chipOperator.toString() + " ";
-                                }
-                            } else if (term instanceof ValueTerm) {
-                                return "_" + setting.getDevice().getName().replace(" ", "_") + "_"
-                                        + value.getName().replace(" ", "_");
-                            } else {
-                                throw new IllegalStateException("Unknown term is found " + term);
-                            }
-                        }).collect(Collectors.joining()) + ")");
+                        conditionList.add("(" + expression.translateToCCode() + ")");
                     }
                 }
             }

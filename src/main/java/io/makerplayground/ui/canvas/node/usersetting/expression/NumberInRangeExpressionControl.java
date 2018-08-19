@@ -13,7 +13,7 @@ public class NumberInRangeExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;
     private final Value value;
 
-    private final RangeSlider rangeSlider = new RangeSlider();
+    private final RangeSliderWithOperator rangeSlider = new RangeSliderWithOperator();
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
 
@@ -32,6 +32,8 @@ public class NumberInRangeExpressionControl extends HBox {
         rangeSlider.setLowValue(expression.get().getLowValue());
         // This line is needed for proper operation of the RangeSlider (See: https://bitbucket.org/controlsfx/controlsfx/issues/728/rangeslider-order-of-setting-low-and-high)
         rangeSlider.setHighValue(expression.get().getHighValue());
+        rangeSlider.setLowThumbOperator(expression.get().getLowOperator());
+        rangeSlider.setHighThumbOperator(expression.get().getHighOperator());
         rangeSlider.setShowTickMarks(true);
         rangeSlider.setShowTickLabels(true);
         rangeSlider.setBlockIncrement(1);
@@ -43,6 +45,8 @@ public class NumberInRangeExpressionControl extends HBox {
             highTextField.setText(String.valueOf(rangeSlider.getHighValue()));
             updateExpression();
         });
+        rangeSlider.lowThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
+        rangeSlider.highThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
 
         lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
         lowTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -76,8 +80,10 @@ public class NumberInRangeExpressionControl extends HBox {
     }
 
     private void updateExpression() {
-        expression.set(expression.get().setLowValue(rangeSlider.getLowValue()));
-        expression.set(expression.get().setHighValue(rangeSlider.getHighValue()));
+        expression.set(expression.get().setLowValue(rangeSlider.getLowValue())
+                .setHighValue(rangeSlider.getHighValue())
+                .setLowOperator(rangeSlider.getLowThumbOperator())
+                .setHighOperator(rangeSlider.getHighThumbOperator()));
     }
 
     public NumberInRangeExpression getExpression() {

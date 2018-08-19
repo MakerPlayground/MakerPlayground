@@ -40,6 +40,16 @@ public class NumberInRangeExpression extends Expression {
         return newExpression;
     }
 
+    public Operator getLowOperator() {
+        return ((OperatorTerm) getTerms().get(5)).getValue();
+    }
+
+    public NumberInRangeExpression setLowOperator(Operator o) {
+        NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
+        newExpression.terms.set(5, new OperatorTerm(o));
+        return newExpression;
+    }
+
     public double getHighValue() {
         return ((NumberWithUnit) getTerms().get(2).getValue()).getValue();
     }
@@ -47,6 +57,16 @@ public class NumberInRangeExpression extends Expression {
     public NumberInRangeExpression setHighValue(double d) {
         NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
         newExpression.terms.set(2, new NumberWithUnitTerm(new NumberWithUnit(d, getUnit())));
+        return newExpression;
+    }
+
+    public Operator getHighOperator() {
+        return ((OperatorTerm) getTerms().get(1)).getValue();
+    }
+
+    public NumberInRangeExpression setHighOperator(Operator o) {
+        NumberInRangeExpression newExpression = new NumberInRangeExpression(this);
+        newExpression.terms.set(1, new OperatorTerm(o));
         return newExpression;
     }
 
