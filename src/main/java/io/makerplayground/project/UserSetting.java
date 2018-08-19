@@ -39,12 +39,14 @@ public class UserSetting {
     private final ObjectProperty<Action> action;
     private final ObservableMap<Parameter, Expression> valueMap;
     private final ObservableMap<Value, Expression> expression;
+    private final ObservableMap<Value, Boolean> expressionEnable;
 
     UserSetting(ProjectDevice device, boolean scene ) {  // TODO: Remove boolean field!!!
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();
         this.expression = FXCollections.observableHashMap();
+        this.expressionEnable = FXCollections.observableHashMap();
 
         // Initialize the map with default action and it's parameters
         List<Action> actionList;
@@ -88,14 +90,16 @@ public class UserSetting {
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
             expression.put(v, new NumberInRangeExpression(device, v));
+            expressionEnable.put(v, false);
         }
     }
 
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression) {
+    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
         this.device = device;
         this.action = new SimpleObjectProperty<>(action);
         this.valueMap = FXCollections.observableMap(valueMap);
         this.expression = FXCollections.observableMap(expression);
+        this.expressionEnable = FXCollections.observableMap(enable);
     }
 
     UserSetting(UserSetting u) {
@@ -107,8 +111,10 @@ public class UserSetting {
             this.valueMap.put(p, Expression.deepCopy(o));
         }
         this.expression = FXCollections.observableHashMap();
+        this.expressionEnable = FXCollections.observableHashMap();
         for (Value v : u.getExpression().keySet()) {
             this.expression.put(v, Expression.deepCopy(u.getExpression().get(v)));
+            this.expressionEnable.put(v, u.getExpressionEnable().get(v));
         }
 
         // Reset value of the valueMap every time that the action is changed
@@ -144,6 +150,10 @@ public class UserSetting {
         return expression;
     }
 
+    public ObservableMap<Value, Boolean> getExpressionEnable() {
+        return expressionEnable;
+    }
+
     public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
@@ -165,19 +175,17 @@ public class UserSetting {
             }
         }
 
-        // TODO: edit comment
-        // assume that each expression contain reference to itself
-        for (Expression exp : expression.values()) {
+        // list value use in every enable expression in a condition
+        for (Value v : expression.keySet()) {
             // skip if this expression is disabled
-            if (!exp.isEnable()) {
-                continue;
-            }
-            Set<ProjectValue> valueUsed = exp.getValueUsed();
-            for (ProjectValue pv : valueUsed) {
-                if (result.containsKey(pv.getDevice())) {
-                    result.get(pv.getDevice()).add(pv.getValue());
-                } else {
-                    result.put(pv.getDevice(), new HashSet<>(Set.of(pv.getValue())));
+            if (expressionEnable.get(v)) {
+                Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
+                for (ProjectValue pv : valueUsed) {
+                    if (result.containsKey(pv.getDevice())) {
+                        result.get(pv.getDevice()).add(pv.getValue());
+                    } else {
+                        result.put(pv.getDevice(), new HashSet<>(Set.of(pv.getValue())));
+                    }
                 }
             }
         }

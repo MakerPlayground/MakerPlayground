@@ -52,7 +52,7 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         for (Map.Entry<Value, Expression> entry : userSetting.getExpression().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", entry.getKey().getName());
-            jsonGenerator.writeBooleanField("enable", entry.getValue().isEnable());
+            jsonGenerator.writeBooleanField("enable", userSetting.getExpressionEnable().get(entry.getKey()));
             jsonGenerator.writeStringField("type", entry.getValue().getClass().getSimpleName());
 //            if (entry.getValue() instanceof NumberInRangeExpression) {
 //                jsonGenerator.writeStringField("type", "numberInRange");

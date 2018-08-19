@@ -24,7 +24,6 @@ public abstract class Expression {
 
     private final Type type;
     protected final List<Term> terms = new ArrayList<>();
-    private final BooleanProperty enable = new SimpleBooleanProperty(false);
 
     public Expression(Type type) {
         this.type = type;
@@ -33,7 +32,6 @@ public abstract class Expression {
     protected Expression(Expression e) {
         this(e.type);
         terms.addAll(e.terms);  // Term is immutable
-        enable.set(e.isEnable());
     }
 
     public static Expression deepCopy(Expression e) {
@@ -80,18 +78,6 @@ public abstract class Expression {
         return terms.stream().filter(term -> term.getType() == Term.Type.VALUE)
                 .map(term -> (ProjectValue) term.getValue())
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    public boolean isEnable() {
-        return enable.get();
-    }
-
-    public BooleanProperty enableProperty() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable.set(enable);
     }
 
     @JsonIgnore

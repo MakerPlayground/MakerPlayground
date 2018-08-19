@@ -1,5 +1,6 @@
 package io.makerplayground.project.expression;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
@@ -87,6 +88,7 @@ public class ValueLinkingExpression extends Expression {
         this(e.getDestinationParameter(), e.getTerms());
     }
 
+    @JsonIgnore
     public ProjectValue getSourceValue() {
         return ((ValueTerm) terms.get(3)).getValue();
     }
@@ -108,6 +110,7 @@ public class ValueLinkingExpression extends Expression {
         return newExpression;
     }
 
+    @JsonIgnore
     public NumberWithUnit getSourceLowValue() {
         return ((NumberWithUnitTerm) terms.get(5)).getValue();
     }
@@ -120,6 +123,7 @@ public class ValueLinkingExpression extends Expression {
         return newExpression;
     }
 
+    @JsonIgnore
     public NumberWithUnit getSourceHighValue() {
         return ((NumberWithUnitTerm) terms.get(9)).getValue();
     }
@@ -131,10 +135,12 @@ public class ValueLinkingExpression extends Expression {
         return newExpression;
     }
 
+    @JsonIgnore
     public Parameter getDestinationParameter() {
         return destParam;
     }
 
+    @JsonIgnore
     public NumberWithUnit getDestinationLowValue() {
         return ((NumberWithUnitTerm) terms.get(18)).getValue();
     }
@@ -147,6 +153,7 @@ public class ValueLinkingExpression extends Expression {
         return newExpression;
     }
 
+    @JsonIgnore
     public NumberWithUnit getDestinationHighValue() {
         return ((NumberWithUnitTerm) terms.get(16)).getValue();
     }

@@ -206,34 +206,5 @@ public class SceneDevicePropertyWindow extends PopOver {
             GridPane.setFillWidth(control, false);
             propertyPane.getChildren().addAll(name, control);
         }
-
-        if (viewModel.getAction().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
-            List<Value> values = viewModel.getValue();
-            for (int i=0; i<values.size(); i++) {
-                Value value = values.get(i);
-                createExpressionControl(i, value);
-            }
-        }
     }
-
-    private void createExpressionControl(int i, Value value) {
-        Expression expression = viewModel.getExpression(value);
-
-        CheckBox enableCheckbox = new CheckBox(value.getName());
-        enableCheckbox.selectedProperty().bindBidirectional(expression.enableProperty());
-        GridPane.setRowIndex(enableCheckbox, i+1);
-        GridPane.setColumnIndex(enableCheckbox, 0);
-        propertyPane.getChildren().add(enableCheckbox);
-
-        if (expression instanceof NumberInRangeExpression) {
-            NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
-            expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
-            GridPane.setRowIndex(expressionControl, i+1);
-            GridPane.setColumnIndex(expressionControl, 1);
-            propertyPane.getChildren().add(expressionControl);
-        } else {
-            throw new IllegalStateException("");    // TODO: add support soon
-        }
-    }
-
 }

@@ -74,9 +74,6 @@ public class NumberInRangeExpressionControl extends HBox {
 
         setSpacing(5);
         getChildren().addAll(lowTextField, rangeSlider, highTextField);
-
-        // disable this control if the expression is disabled
-        disableProperty().bind(expression.get().enableProperty().not());
     }
 
     private void updateExpression() {

@@ -409,12 +409,10 @@ public class Sourcecode {
                     conditionList.add(action.toString());
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
-                        Expression expression = setting.getExpression().get(value);
-                        // skip if it is disable
-                        if (!expression.isEnable()) {
-                            continue;
+                        if (!setting.getExpressionEnable().get(value)) {
+                            Expression expression = setting.getExpression().get(value);
+                            conditionList.add("(" + expression.translateToCCode() + ")");
                         }
-                        conditionList.add("(" + expression.translateToCCode() + ")");
                     }
                 }
             }

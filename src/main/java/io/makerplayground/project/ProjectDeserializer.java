@@ -195,11 +195,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             } else {
                 throw new IllegalStateException("expression type not supported");
             }
-            expression.setEnable(valueNode.get("enable").asBoolean());
             valueMap.put(parameter, expression);
         }
 
         Map<Value, Expression> expressionMap = new HashMap<>();
+        Map<Value, Boolean> expressionEnableMap = new HashMap<>();
         for (JsonNode valueNode : node.get("expression")) {
             Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText());
             boolean enable = valueNode.get("enable").asBoolean();
@@ -208,15 +208,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             Expression expression;
             if (NumberInRangeExpression.class.getName().contains(type)) {
                 expression = deserializeNumberInRangeExpression(mapper, valueNode.get("expression"), projectDevice, value);
-                expression.setEnable(enable);
             } else {
                 throw new IllegalStateException("Unknown expression type");
             }
 
             expressionMap.put(value, expression);
+            expressionEnableMap.put(value, enable);
         }
 
-        return new UserSetting(projectDevice, action, valueMap, expressionMap);
+        return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
     }
 
     private Term deserializeTerm(JsonNode term_node,
@@ -252,23 +252,26 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public Expression deserializeNumberInRangeExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) {
-        NumberInRangeExpression expression = new NumberInRangeExpression(device, value);
         if (node.get(0).get("type").asText().equals(Term.Type.VALUE.name())
             && node.get(1).get("type").asText().equals(Term.Type.OPERATOR.name())
-                && node.get(1).get("value").asText().equals(Operator.LESS_THAN.name())
+                && (node.get(1).get("value").asText().equals(Operator.LESS_THAN.name())
+                || node.get(1).get("value").asText().equals(Operator.LESS_THAN_OR_EQUAL.name()))
                 && node.get(2).get("type").asText().equals(Term.Type.NUMBER.name())
                 && node.get(3).get("type").asText().equals(Term.Type.OPERATOR.name())
                 && node.get(3).get("value").asText().equals(Operator.AND.name())
                 && node.get(4).get("type").asText().equals(Term.Type.VALUE.name())
                 && node.get(5).get("type").asText().equals(Term.Type.OPERATOR.name())
-                && node.get(5).get("value").asText().equals(Operator.GREATER_THAN.name())
+                && (node.get(5).get("value").asText().equals(Operator.GREATER_THAN.name())
+                || node.get(5).get("value").asText().equals(Operator.GREATER_THAN_OR_EQUAL.name()))
                 && node.get(6).get("type").asText().equals(Term.Type.NUMBER.name())) {
-            expression.setHighValue(node.get(2).get("value").get("value").asDouble());
-            expression.setLowValue(node.get(6).get("value").get("value").asDouble());
+            return new NumberInRangeExpression(device, value)
+                    .setLowValue(node.get(6).get("value").get("value").asDouble())
+                    .setHighValue(node.get(2).get("value").get("value").asDouble())
+                    .setLowOperator(Operator.valueOf(node.get(5).get("value").asText()))
+                    .setHighOperator(Operator.valueOf(node.get(1).get("value").asText()));
         } else {
             throw new IllegalStateException("Simple expression parsing fail");
         }
-        return expression;
     }
 
 //    public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice

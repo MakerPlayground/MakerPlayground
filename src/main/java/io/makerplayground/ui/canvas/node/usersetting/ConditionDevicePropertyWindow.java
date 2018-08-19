@@ -201,21 +201,28 @@ public class ConditionDevicePropertyWindow extends PopOver {
     private void createExpressionControl(int i, Value value) {
         Expression expression = viewModel.getExpression(value);
 
-        CheckBox enableCheckbox = new CheckBox(value.getName());
-        enableCheckbox.selectedProperty().bindBidirectional(expression.enableProperty());
-        GridPane.setValignment(enableCheckbox, VPos.TOP);
-        GridPane.setRowIndex(enableCheckbox, i+1);
-        GridPane.setColumnIndex(enableCheckbox, 0);
-        propertyPane.getChildren().add(enableCheckbox);
-
+        Node control;
         if (expression instanceof NumberInRangeExpression) {
             NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
             expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
-            GridPane.setRowIndex(expressionControl, i+1);
-            GridPane.setColumnIndex(expressionControl, 1);
-            propertyPane.getChildren().add(expressionControl);
+            expressionControl.setDisable(!viewModel.isExpressionEnable(value));
+            control = expressionControl;
         } else {
-            throw new IllegalStateException("");    // TODO: add support soon
+            throw new IllegalStateException("Found unsupported expression!!!");
         }
+        GridPane.setRowIndex(control, i+1);
+        GridPane.setColumnIndex(control, 1);
+
+        CheckBox enableCheckbox = new CheckBox(value.getName());
+        enableCheckbox.setSelected(viewModel.isExpressionEnable(value));
+        enableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            control.setDisable(!newValue);
+            viewModel.setExpressionEnable(value, newValue);
+        });
+        GridPane.setValignment(enableCheckbox, VPos.TOP);
+        GridPane.setRowIndex(enableCheckbox, i+1);
+        GridPane.setColumnIndex(enableCheckbox, 0);
+
+        propertyPane.getChildren().addAll(enableCheckbox, control);
     }
 }

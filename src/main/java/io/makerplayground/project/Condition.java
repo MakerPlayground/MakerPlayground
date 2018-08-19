@@ -119,11 +119,13 @@ public class Condition extends NodeElement {
         }
 
         // at least one expression must be enable
-        if (!setting.stream().filter(userSetting -> userSetting.getValueMap().isEmpty())
-                .map(userSetting -> userSetting.getExpression().values())
-                .filter(expressions -> !expressions.isEmpty())  // TODO: maybe optional
-                .allMatch(expressions -> expressions.stream().anyMatch(Expression::isEnable))) {
-            return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+        for (UserSetting userSetting : setting) {
+            if (userSetting.getValueMap().isEmpty()) {
+                Collection<Boolean> booleans = userSetting.getExpressionEnable().values();
+                if (!booleans.contains(true)) {
+                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+                }
+            }
         }
 
         return DiagramError.NONE;
