@@ -6,9 +6,7 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.term.NumberWithUnitTerm;
-import io.makerplayground.project.term.OperatorTerm;
-import io.makerplayground.project.term.ValueTerm;
+import io.makerplayground.project.term.*;
 
 import java.util.List;
 
@@ -19,11 +17,11 @@ public class NumberInRangeExpression extends Expression {
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
 
         terms.addAll(List.of(new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(OperatorTerm.Operator.LESS_THAN)
+                , new OperatorTerm(Operator.LESS_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()))
-                , new OperatorTerm(OperatorTerm.Operator.AND)
+                , new OperatorTerm(Operator.AND)
                 , new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(OperatorTerm.Operator.GREATER_THAN)
+                , new OperatorTerm(Operator.GREATER_THAN)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())))
         );
     }

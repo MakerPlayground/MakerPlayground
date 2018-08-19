@@ -101,6 +101,6 @@ public abstract class Expression {
 
     public String translateToCCode() {
         List<String> termStr = getTerms().stream().map(Term::toCCode).collect(Collectors.toList());
-        return String.join("", termStr);
+        return String.join(" ", termStr);
     }
 }

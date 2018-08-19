@@ -1,6 +1,8 @@
 package io.makerplayground.ui.canvas.node.usersetting.chip;
 
+import io.makerplayground.project.term.Operator;
 import io.makerplayground.project.term.OperatorTerm;
+import io.makerplayground.project.term.OperatorType;
 import io.makerplayground.project.term.Term;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
@@ -10,12 +12,12 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
-public class OperatorChip extends Chip<OperatorTerm.Operator> {
+public class OperatorChip extends Chip<Operator> {
 
     @FXML private Path background;
     @FXML private Text text;
 
-    public OperatorChip(OperatorTerm.Operator initialValue) {
+    public OperatorChip(Operator initialValue) {
         super(initialValue, Term.Type.OPERATOR);
     }
 
@@ -32,7 +34,7 @@ public class OperatorChip extends Chip<OperatorTerm.Operator> {
 
         text.setText(getValue().toString());
 
-        if (getValue().getType() == OperatorTerm.OperatorType.LEFT_UNARY) {
+        if (getValue().getType() == OperatorType.LEFT_UNARY) {
             background.getElements().addAll(new MoveTo(10, 0)
                     , new ArcTo(10, 10, 90, 0, 10, false, false)
                     , new LineTo(0, 15)
@@ -42,7 +44,7 @@ public class OperatorChip extends Chip<OperatorTerm.Operator> {
                     , new LineTo(15, 10)
                     , new ArcTo(10, 10, 0, 25, 0, false, true)
                     , new ClosePath());
-        } else if (getValue().getType() == OperatorTerm.OperatorType.BINARY) {
+        } else if (getValue().getType() == OperatorType.BINARY) {
             background.getElements().addAll(new MoveTo(10, 0)
                     , new LineTo(0, 0)
                     , new ArcTo(10, 10, 90, 10, 10, false, true)
@@ -53,7 +55,7 @@ public class OperatorChip extends Chip<OperatorTerm.Operator> {
                     , new LineTo(25, 10)
                     , new ArcTo(10, 10, 0, 35, 0, false, true)
                     , new ClosePath());
-        } else if (getValue().getType() == OperatorTerm.OperatorType.RIGHT_UNARY) {
+        } else if (getValue().getType() == OperatorType.RIGHT_UNARY) {
             background.getElements().addAll(new MoveTo(15, 0)
                     , new LineTo(0, 0)
                     , new ArcTo(10, 10, 90, 10, 10, false, true)
@@ -75,17 +77,17 @@ public class OperatorChip extends Chip<OperatorTerm.Operator> {
     }
 
     @Override
-    public OperatorTerm.Operator getValue() {
+    public Operator getValue() {
         return super.getValue();
     }
 
     @Override
-    public ObjectProperty<OperatorTerm.Operator> valueProperty() {
+    public ObjectProperty<Operator> valueProperty() {
         throw new UnsupportedOperationException("OperatorChip should not be edited");
     }
 
     @Override
-    public void setValue(OperatorTerm.Operator value) {
+    public void setValue(Operator value) {
         throw new UnsupportedOperationException("OperatorChip should not be edited");
     }
 }

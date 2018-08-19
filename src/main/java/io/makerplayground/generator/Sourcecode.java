@@ -420,10 +420,10 @@ public class Sourcecode {
                             } else if (term instanceof StringTerm) {
                                 return ((StringTerm) term).getValue();
                             } else if (term instanceof OperatorTerm) {
-                                OperatorTerm.Operator chipOperator = ((OperatorTerm) term).getValue();
-                                if (chipOperator == OperatorTerm.Operator.AND) {
+                                Operator chipOperator = ((OperatorTerm) term).getValue();
+                                if (chipOperator == Operator.AND) {
                                     return " && ";
-                                } else if (chipOperator == OperatorTerm.Operator.OR) {
+                                } else if (chipOperator == Operator.OR) {
                                     return " || ";
                                 } else {
                                     return " " + chipOperator.toString() + " ";

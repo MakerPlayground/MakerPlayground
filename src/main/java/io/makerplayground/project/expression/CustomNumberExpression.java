@@ -1,9 +1,6 @@
 package io.makerplayground.project.expression;
 
-import io.makerplayground.project.term.NumberWithUnitTerm;
-import io.makerplayground.project.term.OperatorTerm;
-import io.makerplayground.project.term.Term;
-import io.makerplayground.project.term.ValueTerm;
+import io.makerplayground.project.term.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +50,8 @@ public class CustomNumberExpression extends Expression {
         int countParen = 0;
         for (Term term : terms) {
             if (term instanceof OperatorTerm) {
-                if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
-                else if(OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
+                else if(Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
                     countParen--;
                     if (countParen < 0) { return false; }
                 }
@@ -72,19 +69,19 @@ public class CustomNumberExpression extends Expression {
             Term term = terms.get(i);
             Term nextTerm = terms.get(i+1);
             if (isNumberOrValueTerm(term)) {
-                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
+                if (isNumberOrValueTerm(nextTerm) || Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             } else if (isOperationNotParenTerm(term)) {
-                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
+                if (isOperationNotParenTerm(nextTerm) || Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
-            } else if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(term.getValue())) {
-                if (isOperationNotParenTerm(nextTerm) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
+            } else if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) {
+                if (isOperationNotParenTerm(nextTerm) || Operator.CLOSE_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
-            } else if (OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
-                if (isNumberOrValueTerm(nextTerm) || OperatorTerm.Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
+            } else if (Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (isNumberOrValueTerm(nextTerm) || Operator.OPEN_PARENTHESIS.equals(nextTerm.getValue())) {
                     return false;
                 }
             }
@@ -92,7 +89,7 @@ public class CustomNumberExpression extends Expression {
         /* check last */
         if (terms.size() > 0) {
             Term last = terms.get(terms.size()-1);
-            if (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(last.getValue()) || isOperationNotParenTerm(last)) {
+            if (Operator.OPEN_PARENTHESIS.equals(last.getValue()) || isOperationNotParenTerm(last)) {
                 return false;
             }
         }
@@ -101,7 +98,7 @@ public class CustomNumberExpression extends Expression {
 
     private boolean isParenTerm(Term t) {
         return t instanceof OperatorTerm &&
-                (OperatorTerm.Operator.OPEN_PARENTHESIS.equals(t.getValue()) || OperatorTerm.Operator.CLOSE_PARENTHESIS.equals(t.getValue()));
+                (Operator.OPEN_PARENTHESIS.equals(t.getValue()) || Operator.CLOSE_PARENTHESIS.equals(t.getValue()));
     }
 
     private boolean isOperationNotParenTerm(Term t) {

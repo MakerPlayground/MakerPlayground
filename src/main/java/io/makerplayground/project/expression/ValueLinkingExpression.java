@@ -5,10 +5,7 @@ import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.term.NumberWithUnitTerm;
-import io.makerplayground.project.term.OperatorTerm;
-import io.makerplayground.project.term.Term;
-import io.makerplayground.project.term.ValueTerm;
+import io.makerplayground.project.term.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,12 +19,12 @@ public class ValueLinkingExpression extends Expression {
             , Term.Type.NUMBER, Term.Type.OPERATOR, Term.Type.NUMBER, Term.Type.OPERATOR, Term.Type.OPERATOR, Term.Type.OPERATOR
             , Term.Type.OPERATOR, Term.Type.NUMBER, Term.Type.OPERATOR, Term.Type.NUMBER, Term.Type.OPERATOR, Term.Type.OPERATOR
             , Term.Type.OPERATOR, Term.Type.NUMBER);
-    private static final List<Object> termValue = List.of(OperatorTerm.Operator.OPEN_PARENTHESIS, OperatorTerm.Operator.OPEN_PARENTHESIS
-            , OperatorTerm.Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, OperatorTerm.Operator.MINUS, NumberWithUnit.ZERO, OperatorTerm.Operator.CLOSE_PARENTHESIS
-            , OperatorTerm.Operator.DIVIDE, OperatorTerm.Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, OperatorTerm.Operator.MINUS
-            , NumberWithUnit.ZERO, OperatorTerm.Operator.CLOSE_PARENTHESIS, OperatorTerm.Operator.CLOSE_PARENTHESIS, OperatorTerm.Operator.MULTIPLY
-            , OperatorTerm.Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, OperatorTerm.Operator.MINUS, NumberWithUnit.ZERO, OperatorTerm.Operator.CLOSE_PARENTHESIS
-            , OperatorTerm.Operator.CLOSE_PARENTHESIS, OperatorTerm.Operator.PLUS, NumberWithUnit.ZERO);
+    private static final List<Object> termValue = List.of(Operator.OPEN_PARENTHESIS, Operator.OPEN_PARENTHESIS
+            , Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, Operator.MINUS, NumberWithUnit.ZERO, Operator.CLOSE_PARENTHESIS
+            , Operator.DIVIDE, Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, Operator.MINUS
+            , NumberWithUnit.ZERO, Operator.CLOSE_PARENTHESIS, Operator.CLOSE_PARENTHESIS, Operator.MULTIPLY
+            , Operator.OPEN_PARENTHESIS, NumberWithUnit.ZERO, Operator.MINUS, NumberWithUnit.ZERO, Operator.CLOSE_PARENTHESIS
+            , Operator.CLOSE_PARENTHESIS, Operator.PLUS, NumberWithUnit.ZERO);
 
     public ValueLinkingExpression(Parameter destParam) {
         this(destParam, Collections.emptyList());
@@ -45,7 +42,7 @@ public class ValueLinkingExpression extends Expression {
         if (t.isEmpty()) {
             for (int i=0; i<termType.size(); i++) {
                 if (termType.get(i) == Term.Type.OPERATOR) {
-                    terms.add(new OperatorTerm((OperatorTerm.Operator) termValue.get(i)));
+                    terms.add(new OperatorTerm((Operator) termValue.get(i)));
                 } else if (termType.get(i) == Term.Type.VALUE) {
                     terms.add(new ValueTerm(null));
                 } else if (termType.get(i) == Term.Type.NUMBER) {
