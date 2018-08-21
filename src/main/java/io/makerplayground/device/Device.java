@@ -44,8 +44,8 @@ public class Device {
     private final double w;
     private final Dependency dependency;
     private final Dependency category;
-    private final String classname;
-    private final List<String> libraryDependency;
+    private final String mpLibrary;
+    private final List<String> externalLibrary;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -78,8 +78,8 @@ public class Device {
      * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
-            , String classname
-            , List<String> libraryDependency
+            , String mpLibrary
+            , List<String> externalLibrary
             , Set<Platform> supportedPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
@@ -100,8 +100,8 @@ public class Device {
         this.height = height;
         this.deviceType = deviceType;
         this.formFactor = formFactor;
-        this.classname = classname;
-        this.libraryDependency = libraryDependency;
+        this.mpLibrary = mpLibrary;
+        this.externalLibrary = externalLibrary;
         this.supportedPlatform = supportedPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
@@ -183,16 +183,16 @@ public class Device {
         return supportedPlatform;
     }
 
-    public String getClassname() {
-        return classname;
+    public String getMpLibrary() {
+        return mpLibrary;
     }
 
     public String getSourceToInclude() {
-        return this.getClassname()+".h";
+        return this.getMpLibrary()+".h";
     }
 
-    public List<String> getLibraryDependency() {
-        return libraryDependency;
+    public List<String> getExternalLibrary() {
+        return externalLibrary;
     }
 
     /*public String getMPLibraryName() {

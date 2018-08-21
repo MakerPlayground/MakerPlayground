@@ -124,7 +124,7 @@ public class Sourcecode {
         // instantiate object(s) for each device
         sb.append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            sb.append(projectDevice.getActualDevice().getClassname())
+            sb.append(projectDevice.getActualDevice().getMpLibrary())
                     .append(" ")
                     .append("_"+projectDevice.getName().replace(" ","_"));
 
