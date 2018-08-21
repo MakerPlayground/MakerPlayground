@@ -409,7 +409,7 @@ public class Sourcecode {
                     conditionList.add(action.toString());
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
-                        if (!setting.getExpressionEnable().get(value)) {
+                        if (setting.getExpressionEnable().get(value)) {
                             Expression expression = setting.getExpression().get(value);
                             conditionList.add("(" + expression.translateToCCode() + ")");
                         }
