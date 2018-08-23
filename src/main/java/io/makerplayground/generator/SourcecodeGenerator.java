@@ -165,7 +165,7 @@ public class SourcecodeGenerator {
             builder.append(INDENT).append("status_code = ").append("_").append(projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("MP_ERR(_").append(projectDevice.getName().replace(" ", "_")).append(", status_code);").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("while(1);");
+            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
         }
