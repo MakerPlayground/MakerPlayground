@@ -126,7 +126,11 @@ public class SourcecodeGenerator {
                 args.add("\"" + value + "\"");
             }
 
-            builder.append("(").append(String.join(", ", args)).append(");").append(NEW_LINE);
+            if (args.size() > 0) {
+                builder.append("(").append(String.join(", ", args)).append(");").append(NEW_LINE);
+            } else {
+                builder.append(";").append(NEW_LINE);
+            }
         }
         builder.append(NEW_LINE);
     }
