@@ -18,6 +18,7 @@ import io.makerplayground.ui.dialog.generate.GenerateViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -57,8 +58,8 @@ class RightPanel extends VBox {
     @FXML
     private void handleConfigureBtn(ActionEvent event) {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-        configActualDeviceView.showAndWait();
+        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(getScene().getWindow(), configActualDeviceViewModel);
+        configActualDeviceView.show();
     }
 
     @FXML

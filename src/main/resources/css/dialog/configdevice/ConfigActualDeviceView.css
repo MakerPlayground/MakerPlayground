@@ -11,13 +11,6 @@
     -fx-font-size:14px;
     -fx-font-weight: bold;
 }
-#nameLabel{
-    -fx-background-color : transparent;
-    -fx-text-fill : #313644;
-    -fx-max-width: 100;
-    -fx-min-width: 100;
-    -fx-font-size:12px;
-}
 .label{
     -fx-background-color : transparent;
     -fx-text-fill : #707070;

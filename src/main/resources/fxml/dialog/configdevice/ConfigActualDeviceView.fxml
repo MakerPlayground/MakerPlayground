@@ -1,55 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Dialog?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.DialogPane?>
-
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.FlowPane?>
-<fx:root type="Dialog" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" title="Configure Device">
-    <dialogPane>
-        <DialogPane stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css">
-            <content>
-                <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="500">
-                    <VBox alignment="CENTER" spacing="20">
-                        <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
-                        <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER"/>
-                        <VBox fx:id="platFormAndController" spacing="10">
-                            <HBox fx:id="platFormSelected" spacing="65">
-                                <HBox fx:id="platFormPicture" alignment="CENTER_LEFT" maxHeight="25" spacing="10">
-                                    <ImageView fx:id="platFormImage" fitHeight="25" fitWidth="25">
-                                        <Image url="/icons/colorIcons/Controller.png"/>
-                                    </ImageView>
-                                    <Label id="platFormLabel" fx:id="platformName" text="Platform"/>
-                                </HBox>
-                                <ComboBox id="platformComboBox" fx:id="platFormComboBox"/>
-                            </HBox>
-                            <HBox id="controllerSelection" fx:id="entireControllerDevice" alignment="CENTER_LEFT" spacing="12">
-                                <Label id="nameLabel" fx:id="controllerName" text="Controller"/>
-                                <ComboBox id="controllerComboBox" fx:id="controllerComboBox"/>
-                            </HBox>
-                        </VBox>
-                        <VBox fx:id="usedDevice" alignment="CENTER" spacing="20">
-                        </VBox>
-                        <VBox fx:id="unusedDevice" spacing="20">
-                            <Separator/>
-                            <HBox>
-                                <Label id="unusedLabel" text="Unused devices" />
-                            </HBox>
-                            <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10" >
-                            </FlowPane>
-                        </VBox>
-                    </VBox>
-                </ScrollPane>
-            </content>
-        </DialogPane>
-    </dialogPane>
+<fx:root maxHeight="600" hbarPolicy="NEVER" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="ScrollPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <VBox alignment="CENTER" spacing="20">
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30" />
+        </padding>
+        <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER" />
+      <GridPane hgap="10.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" />
+            <ColumnConstraints hgrow="NEVER" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+                <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="2" />
+                <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                 <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1" />
+                 <ImageView fx:id="platFormImage" fitHeight="25" fitWidth="25">
+                     <Image url="@../../../icons/colorIcons/Controller.png" />
+                 </ImageView>
+         </children>
+      </GridPane>
+        <VBox fx:id="usedDevice" alignment="CENTER" spacing="20">
+        </VBox>
+        <VBox fx:id="unusedDevice" spacing="20">
+            <Separator />
+            <HBox>
+                <Label id="unusedLabel" text="Unused devices" />
+            </HBox>
+            <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
+            </FlowPane>
+        </VBox>
+      <Button fx:id="okButton" mnemonicParsing="false" text="OK" />
+    </VBox>
 </fx:root>
