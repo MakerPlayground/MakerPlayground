@@ -13,7 +13,7 @@ public class ProjectValueExpression extends Expression {
 
     public ProjectValueExpression(ProjectValue projectValue) {
         super(Type.PROJECT_VALUE);
-        this.getTerms().add(new ValueTerm(projectValue));
+        terms.add(new ValueTerm(projectValue));
     }
 
     ProjectValueExpression(ProjectValueExpression e) {
