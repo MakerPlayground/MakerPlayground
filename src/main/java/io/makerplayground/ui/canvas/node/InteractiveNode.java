@@ -103,7 +103,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
             setStyle("-fx-effect: dropshadow(gaussian, #008ef4, 5.0 , 0.5, 0.0 , 0.0);");
             /*setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");*/
         } else if (isError()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #ff8b01, 5.0 , 0.5, 0.0 , 0.0);");
+            setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
             /*setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");*/
         } else {
             setStyle("-fx-effect: dropshadow(gaussian, derive(black,85%), 5.0 , 0.0, 0.0 , 0.0);");

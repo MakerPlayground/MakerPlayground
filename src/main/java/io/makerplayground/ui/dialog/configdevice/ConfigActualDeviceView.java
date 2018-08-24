@@ -169,7 +169,7 @@ public class ConfigActualDeviceView extends Dialog {
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-2/"
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
@@ -345,7 +345,7 @@ public class ConfigActualDeviceView extends Dialog {
             unusedDevice.setVisible(true);
             unusedDevice.setManaged(true);
             for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-2/"
+                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + projectDevice.getGenericDevice().getName() + ".png")));
                 imageView.setFitHeight(30.0);
                 imageView.setFitWidth(30.0);

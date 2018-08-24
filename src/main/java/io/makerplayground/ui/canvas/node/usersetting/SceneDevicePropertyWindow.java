@@ -50,7 +50,7 @@ public class SceneDevicePropertyWindow extends PopOver {
 
     private void initView() {
         // Create title layout
-        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-2/" + viewModel.getImageName() + ".png"));
+        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png"));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);
