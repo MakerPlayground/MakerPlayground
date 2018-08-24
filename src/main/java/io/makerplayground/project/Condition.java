@@ -103,11 +103,8 @@ public class Condition extends NodeElement {
             return DiagramError.CONDITION_EMPTY;
         }
 
-        // When the action has some parameters (it is not 'compare'), it's value must not be null
-        // otherwise we assume that it is compare
-        if (setting.stream().map(UserSetting::getValueMap)
-                .filter(valueMap -> !valueMap.isEmpty())
-                .flatMap(valueMap -> valueMap.values().stream())
+        // value of every parameters should not be null
+        if (setting.stream().flatMap(userSetting -> userSetting.getValueMap().values().stream())
                 .anyMatch(Objects::isNull)) {
             return DiagramError.CONDITION_INVALID_PARAM;
         }
@@ -120,11 +117,8 @@ public class Condition extends NodeElement {
 
         // at least one expression must be enable
         for (UserSetting userSetting : setting) {
-            if (userSetting.getValueMap().isEmpty()) {
-                Collection<Boolean> booleans = userSetting.getExpressionEnable().values();
-                if (!booleans.contains(true)) {
-                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
-                }
+            if (!userSetting.getExpressionEnable().isEmpty() && !userSetting.getExpressionEnable().values().contains(true)) {
+                return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
             }
         }
 
