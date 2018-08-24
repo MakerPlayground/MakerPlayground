@@ -123,15 +123,17 @@ public class ChipField extends ScrollPane {
     }
 
     private void addChip(Term t) {
+        Chip c;
         if (selectionGroup.getSelected().isEmpty()) {
-            addChipUI(t, chipList.size());
+            c = addChipUI(t, chipList.size());
         } else {
-            addChipUI(t, chipList.indexOf(selectionGroup.getSelected().get(0)) + 1);
+            c = addChipUI(t, chipList.indexOf(selectionGroup.getSelected().get(0)) + 1);
         }
         updateExpression();
+        selectionGroup.setSelected(c);
     }
 
-    private void addChipUI(Term t, int index) {
+    private Chip addChipUI(Term t, int index) {
         Chip chip;
         if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
@@ -149,6 +151,7 @@ public class ChipField extends ScrollPane {
         chipMap.put(chip, t);
         selectionGroup.getSelectable().add(chip);
         mainPane.getChildren().add(index, chip);
+        return chip;
     }
 
     private void removeChip(Chip chip) {
@@ -167,6 +170,10 @@ public class ChipField extends ScrollPane {
     }
 
     private void updateViewLayout() {
+        if (chipList.isEmpty()) {
+            return;
+        }
+
         HBox.setMargin(chipList.get(0), Insets.EMPTY);
         // Add margin between chips that aren't fit together
         for (int i=1; i<chipList.size(); i++) {
