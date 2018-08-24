@@ -94,7 +94,7 @@ public class DeviceMapper {
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> result = new HashMap<>();
 
         if (project.getController() == null) {
-            for (ProjectDevice projectDevice : project.getAllDevice()) {
+            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
                 result.put(projectDevice, new HashMap<>());
                 for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
                     result.get(projectDevice).put(peripheral, Collections.emptyList());
@@ -106,7 +106,7 @@ public class DeviceMapper {
         List<DevicePort> processorPort = new ArrayList<>(project.getController().getPort());
 
         // remove port that has been used (manually by user)
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C) {
                     processorPort.removeAll(projectDevice.getDeviceConnection().get(p));
@@ -129,7 +129,7 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Map<Peripheral, List<List<DevicePort>>> possibleDevice = new HashMap<>();
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
                 possibleDevice.put(pDevice, new ArrayList<>());
@@ -202,7 +202,7 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set actual device by selecting first element
@@ -212,6 +212,12 @@ public class DeviceMapper {
                 }
                 projectDevice.setActualDevice(deviceList.get(projectDevice).get(0));
             }
+        }
+
+        // reclaim ports from unused devices
+        for (ProjectDevice projectDevice : project.getAllDeviceUnused()) {
+            projectDevice.setAutoSelectDevice(true);
+            projectDevice.removeAllDeviceConnection();
         }
 
         List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDeviceUsed());
