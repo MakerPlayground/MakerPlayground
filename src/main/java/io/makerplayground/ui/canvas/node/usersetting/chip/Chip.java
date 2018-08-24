@@ -32,7 +32,10 @@ public abstract class Chip<T> extends StackPane implements Selectable {
         initView();
         // use geometric shape of this node instead of the bounding box for mouse event
         setPickOnBounds(false);
-        selected.addListener((observable, oldValue, newValue) -> showHighlight(newValue));
+        selected.addListener((observable, oldValue, newValue) -> {
+            updateChipStyle(newValue);
+            requestFocus();
+        });
 
         // check for chip selection in an event filter to prevent children node of chip e.g. TextField, Combobox etc.
         // to consume mouse event and prevent the chip from being selected
@@ -81,12 +84,6 @@ public abstract class Chip<T> extends StackPane implements Selectable {
         selected.set(b);
     }
 
-    private void showHighlight(boolean b) {
-        if (b) {
-            setStyle("-fx-effect: dropshadow(gaussian, white, 10.0 , 0.5, 0.0 , 0.0);");
-        } else {
-            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
-        }
-    }
+    protected abstract void updateChipStyle(boolean selected);
 
 }

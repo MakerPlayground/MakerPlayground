@@ -60,4 +60,13 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     public Term getTerm() {
         return new NumberWithUnitTerm(getValue());
     }
+
+    @Override
+    protected void updateChipStyle(boolean selected) {
+        if (!selected) {
+            background.setFill(Color.web("#357A9F"));
+        } else {
+            background.setFill(Color.web("#357A9F").darker());
+        }
+    }
 }

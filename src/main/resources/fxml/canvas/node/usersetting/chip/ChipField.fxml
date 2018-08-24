@@ -6,5 +6,5 @@
 <fx:root id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" minHeight="27.0" prefHeight="27.0"
          minWidth="250" prefWidth="250" maxWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css"
          type="ScrollPane" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <HBox fx:id="mainPane" maxHeight="25" spacing="-10.5"/>
+    <HBox fx:id="mainPane" maxHeight="25" spacing="-10"/>
 </fx:root>

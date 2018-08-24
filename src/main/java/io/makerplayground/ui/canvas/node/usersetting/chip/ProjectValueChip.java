@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -83,5 +84,14 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     @Override
     public ValueTerm getTerm() {
         return new ValueTerm(getValue());
+    }
+
+    @Override
+    protected void updateChipStyle(boolean selected) {
+        if (!selected) {
+            background.setFill(Color.web("#C5534F"));
+        } else {
+            background.setFill(Color.web("#C5534F").darker());
+        }
     }
 }

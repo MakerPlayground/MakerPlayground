@@ -8,6 +8,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 
+import java.util.List;
+
 /**
  * Created by Mai.Manju on 13-Jul-17.
  */
@@ -56,6 +58,16 @@ public class SelectionGroup<T extends Selectable> {
 
     public ObservableList<T> getSelected() {
         return selected;
+    }
+
+    public void setSelected(Selectable s) {
+        deselect();
+        s.setSelected(true);
+    }
+
+    public void setSelected(List<Selectable> l) {
+        deselect();
+        l.forEach(s -> s.setSelected(true));
     }
 
     public boolean isMultipleSelection() {

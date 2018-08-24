@@ -6,6 +6,11 @@
     -fx-border-style: solid;
 }
 
+#scrollPane > .viewport{
+    -fx-background-radius: 5;
+    -fx-background: transparent;
+}
+
 #mainPane{
     -fx-background-color: transparent;
 }

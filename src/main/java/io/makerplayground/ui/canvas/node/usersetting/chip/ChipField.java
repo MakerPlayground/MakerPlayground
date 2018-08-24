@@ -9,7 +9,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -61,7 +61,7 @@ public class ChipField extends ScrollPane {
             if (popOver == null || !popOver.isShowing()) {
                 popOver = new ChipSelectorPopover();
                 popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-                popOver.setOnChipSelected(t -> addChip(t, chipList.size()));
+                popOver.setOnChipSelected(this::addChip);
                 popOver.show(ChipField.this);
             }
         });
@@ -70,20 +70,38 @@ public class ChipField extends ScrollPane {
             selectionGroup.deselect();
         });
 
-//        showHighlight(!expressionProperty.get().isValid());
+        updateHilight();
     }
 
     private void initEvent() {
         addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.DELETE) {
-                new ArrayList<>(selectionGroup.getSelected()).forEach(this::removeChip);
+                if (!selectionGroup.getSelected().isEmpty()) {
+                    Chip selectedChip = selectionGroup.getSelected().get(0);
+                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) + 1, chipList.size())));
+                    removeChip(selectedChip);
+                }
+            }
+        });
+
+        addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.LEFT) {
+                if (!selectionGroup.getSelected().isEmpty()) {
+                    Chip selectedChip = selectionGroup.getSelected().get(0);
+                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) - 1, chipList.size())));
+                }
+            } else if (event.getCode() == KeyCode.RIGHT) {
+                if (!selectionGroup.getSelected().isEmpty()) {
+                    Chip selectedChip = selectionGroup.getSelected().get(0);
+                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) + 1, chipList.size())));
+                }
             }
         });
 
         selectionGroup.getSelected().addListener((InvalidationListener) observable -> {
-            selectionGroup.getSelected().stream()
-                    .min(Comparator.comparingDouble(chip -> chip.getBoundsInParent().getMinX()))
-                    .ifPresent(this::repositionScrollpane);
+            if (!selectionGroup.getSelected().isEmpty()) {
+                repositionScrollpane(selectionGroup.getSelected().get(0));
+            }
         });
     }
 
@@ -104,8 +122,12 @@ public class ChipField extends ScrollPane {
         }
     }
 
-    private void addChip(Term t, int index) {
-        addChipUI(t, index);
+    private void addChip(Term t) {
+        if (selectionGroup.getSelected().isEmpty()) {
+            addChipUI(t, chipList.size());
+        } else {
+            addChipUI(t, chipList.indexOf(selectionGroup.getSelected().get(0)) + 1);
+        }
         updateExpression();
     }
 
@@ -114,9 +136,6 @@ public class ChipField extends ScrollPane {
         if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
             ((NumberWithUnitChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
-        } else if (t instanceof StringTerm) {
-            chip = new StringChip(((StringTerm) t).getValue());
-            ((StringChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {
             chip = new OperatorChip(((OperatorTerm) t).getValue());
             ((OperatorChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
@@ -126,7 +145,7 @@ public class ChipField extends ScrollPane {
         } else {
             throw new IllegalStateException();
         }
-        chipList.add(chip);
+        chipList.add(index, chip);
         chipMap.put(chip, t);
         selectionGroup.getSelectable().add(chip);
         mainPane.getChildren().add(index, chip);
@@ -140,17 +159,36 @@ public class ChipField extends ScrollPane {
         updateExpression();
     }
 
-//    private void showHighlight(boolean b) {
-//        if (b) {
-//            mainPane.setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
-//        } else {
-//            mainPane.setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
-//        }
-//    }
-
     private void updateExpression() {
         expressionProperty.set(new CustomNumberExpression(expressionProperty.get().getMinValue(), expressionProperty.get().getMaxValue()
                 , chipList.stream().map(Chip::getTerm).collect(Collectors.toList())));
+        updateViewLayout();
+        updateHilight();
+    }
+
+    private void updateViewLayout() {
+        HBox.setMargin(chipList.get(0), Insets.EMPTY);
+        // Add margin between chips that aren't fit together
+        for (int i=1; i<chipList.size(); i++) {
+            Chip previousChip = chipList.get(i-1);
+            Chip currentChip = chipList.get(i);
+            if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
+                    || (previousChip instanceof OperatorChip && ((OperatorChip) previousChip).getTerm().getValue().getType() == OperatorType.RIGHT_UNARY))
+                    && (currentChip instanceof NumberWithUnitChip || currentChip instanceof ProjectValueChip
+                    || (currentChip instanceof OperatorChip && ((OperatorChip) currentChip).getTerm().getValue().getType() == OperatorType.LEFT_UNARY))) {
+                HBox.setMargin(currentChip, new Insets(0, 0, 0, 10));
+            } else {
+                HBox.setMargin(currentChip, Insets.EMPTY);
+            }
+        }
+    }
+
+    private void updateHilight() {
+        if (!expressionProperty.get().isValid()) {
+            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
+        } else {
+            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+        }
     }
 
     public CustomNumberExpression getExpression() {

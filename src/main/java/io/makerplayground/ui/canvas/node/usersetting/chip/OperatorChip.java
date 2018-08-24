@@ -7,6 +7,7 @@ import io.makerplayground.project.term.Term;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 
@@ -74,5 +75,14 @@ public class OperatorChip extends Chip<Operator> {
     @Override
     public OperatorTerm getTerm() {
         return new OperatorTerm(getValue());
+    }
+
+    @Override
+    protected void updateChipStyle(boolean selected) {
+        if (!selected) {
+            background.setFill(Color.web("#499B54"));
+        } else {
+            background.setFill(Color.web("#499B54").darker());
+        }
     }
 }
