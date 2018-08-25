@@ -64,9 +64,9 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     @Override
     protected void updateChipStyle(boolean selected) {
         if (!selected) {
-            background.setFill(Color.web("#357A9F"));
+            background.setFill(Color.web("#2673fd"));
         } else {
-            background.setFill(Color.web("#357A9F").darker());
+            background.setFill(Color.web("#2673fd").darker());
         }
     }
 }

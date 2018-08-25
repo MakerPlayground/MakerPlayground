@@ -14,7 +14,7 @@
     -fx-background-color : transparent;
     -fx-text-fill: #707070;
     -fx-font-weight: bold;
-    -fx-font-size : 12px;
+    -fx-font-size : 14px;
 }
 #numberTextField {
     -fx-background-color : #f6f6f6;
@@ -23,7 +23,7 @@
     -fx-border-width : 1px;
     -fx-border-radius: 5 5 5 5;
     -fx-text-fill : #707070;
-    -fx-font-size : 12px;
+    -fx-font-size : 9px;
     /*-fx-font-weight : bold;*/
 }
 #stateBottomHBox{
@@ -32,7 +32,7 @@
 }
 #delayText {
     -fx-text-fill : white;
-    -fx-font-size:14px;
+    -fx-font-size:9px;
     -fx-fill: #707070;
     -fx-strokeType: OUTSIDE;
 }

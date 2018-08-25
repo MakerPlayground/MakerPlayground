@@ -14,28 +14,28 @@
       <AnchorPane id="toolBarPane" fx:id="toolBarPane" BorderPane.alignment="CENTER">
          <HBox id="menuHBox" alignment="CENTER" layoutX="10.0" layoutY="5.0" spacing="20.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
             <TextField id="projectNameTextField" fx:id="projectNameTextField" managed="false" maxWidth="130.0" text="Untitled Project" visible="false" />
-            <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+            <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="new" />
                </tooltip>
             </Button>
-            <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+            <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="open" />
                </tooltip>
             </Button>
-            <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+            <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="save" />
                </tooltip>
             </Button>
-            <Button id="saveAsBtn" fx:id="saveAsButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+            <Button id="saveAsBtn" fx:id="saveAsButton" layoutX="80.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="save as" />
                </tooltip>
             </Button>
             <Line fx:id="separatorV" endY="15" startY="0" stroke="#E2E2E2" strokeWidth="2.0" />
-            <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+            <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="device monitor" />
                </tooltip>

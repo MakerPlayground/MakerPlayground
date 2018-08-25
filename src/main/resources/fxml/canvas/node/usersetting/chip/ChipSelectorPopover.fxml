@@ -27,19 +27,19 @@
    <children>
       <StackPane fx:id="numberChip">
          <children>
-            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#357a9f" height="25.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Number" />
+            <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#2673fd" height="25.0" width="60.0" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Number" />
          </children>
       </StackPane>
       <StackPane fx:id="valueChip" GridPane.rowIndex="1">
          <children>
-            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#c5534f" height="25.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
+            <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#081949" height="25.0" width="60.0" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
          </children>
       </StackPane>
       <StackPane fx:id="plusChip" GridPane.columnIndex="1">
          <children>
-             <Path fill="#499B54" strokeType="INSIDE">
+             <Path fill="#ff8b01" stroke="#ffffff">
                  <elements>
                      <MoveTo x="10.0" y="0.0" />
                      <LineTo x="0.0" y="0.0" />
@@ -53,12 +53,12 @@
                      <ClosePath />
                  </elements>
              </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="+" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="+" />
          </children>
       </StackPane>
       <StackPane fx:id="multiplyChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
-            <Path fill="#499B54" strokeType="INSIDE">
+            <Path fill="#ff8b01" stroke="#ffffff">
                <elements>
                   <MoveTo x="10.0" y="0.0" />
                   <LineTo x="0.0" y="0.0" />
@@ -72,12 +72,12 @@
                   <ClosePath />
                </elements>
             </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="x" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="x" />
          </children>
       </StackPane>
       <StackPane fx:id="minusChip" GridPane.columnIndex="2">
          <children>
-            <Path fill="#499B54" strokeType="INSIDE">
+            <Path fill="#ff8b01" stroke="#ffffff">
                <elements>
                   <MoveTo x="10.0" y="0.0" />
                   <LineTo x="0.0" y="0.0" />
@@ -91,12 +91,12 @@
                   <ClosePath />
                </elements>
             </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
          </children>
       </StackPane>
       <StackPane fx:id="divideChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <children>
-            <Path fill="#499B54" strokeType="INSIDE">
+            <Path fill="#ff8b01" stroke="#ffffff">
                <elements>
                   <MoveTo x="10.0" y="0.0" />
                   <LineTo x="0.0" y="0.0" />
@@ -110,12 +110,12 @@
                   <ClosePath />
                </elements>
             </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
          </children>
       </StackPane>
       <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="3">
          <children>
-            <Path fill="#499B54" strokeType="INSIDE">
+            <Path fill="#ff8b01" stroke="#ffffff">
                 <elements>
                     <MoveTo x="10.0" y="0.0" />
                     <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="false" x="0.0" y="10.0" />
@@ -131,7 +131,7 @@
                   <Insets />
                </StackPane.margin>
             </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="(">
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="(">
                <StackPane.margin>
                   <Insets right="7.5" />
                </StackPane.margin></Text>
@@ -139,7 +139,7 @@
       </StackPane>
       <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
          <children>
-             <Path fill="#499B54" strokeType="INSIDE">
+             <Path fill="#ff8b01" stroke="#ffffff">
                  <elements>
                      <MoveTo x="15.0" y="0.0" />
                      <LineTo x="0.0" y="0.0" />
@@ -153,7 +153,7 @@
                      <ClosePath />
                  </elements>
              </Path>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=")">
+            <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text=")">
                <StackPane.margin>
                   <Insets left="7.5" />
                </StackPane.margin>
@@ -162,6 +162,6 @@
       </StackPane>
    </children>
    <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
 </fx:root>

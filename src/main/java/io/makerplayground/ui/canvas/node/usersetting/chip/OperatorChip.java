@@ -80,9 +80,9 @@ public class OperatorChip extends Chip<Operator> {
     @Override
     protected void updateChipStyle(boolean selected) {
         if (!selected) {
-            background.setFill(Color.web("#499B54"));
+            background.setFill(Color.web("#ff8b01"));
         } else {
-            background.setFill(Color.web("#499B54").darker());
+            background.setFill(Color.web("#ff8b01").darker());
         }
     }
 }

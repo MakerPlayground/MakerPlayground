@@ -26,12 +26,12 @@
       </StackPane>
       <Label fx:id="nameIconImageView" alignment="CENTER" ellipsisString=".." text="7Segment11" textAlignment="CENTER" textFill="#707070" textOverrun="CENTER_ELLIPSIS">
           <font>
-              <Font name="System Bold" size="7.5" />
+              <Font name="System Bold" size="9" />
           </font>
       </Label>
       <Label fx:id="action" alignment="CENTER" ellipsisString=".." text="Show Number" textAlignment="CENTER" textFill="#00CC6A" textOverrun="CENTER_WORD_ELLIPSIS">
          <font>
-            <Font name="System Bold" size="7.5" />
+            <Font name="System Bold" size="9" />
          </font>
       </Label>
    </children>
