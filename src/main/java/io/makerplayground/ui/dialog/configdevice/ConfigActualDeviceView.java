@@ -9,43 +9,30 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.ProjectDevice;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ConfigActualDeviceView extends Stage {
+public class ConfigActualDeviceView extends UndecoratedDialog {
 
-    private final Window owner;
     private final ConfigActualDeviceViewModel viewModel;
 
     private final ScrollPane scrollPane = new ScrollPane();
@@ -60,7 +47,7 @@ public class ConfigActualDeviceView extends Stage {
     @FXML private Button okButton;
 
     public ConfigActualDeviceView(Window owner, ConfigActualDeviceViewModel viewModel) {
-        this.owner = owner;
+        super(owner);
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
@@ -76,11 +63,7 @@ public class ConfigActualDeviceView extends Stage {
         initControllerControl();
         initDeviceControl();
 
-        initOwner(owner);
-        initStyle(StageStyle.UNDECORATED);
-        Scene scene = new Scene(scrollPane);
-        setScene(scene);
-
+        setContent(scrollPane);
         initEvent();
     }
 
@@ -96,39 +79,6 @@ public class ConfigActualDeviceView extends Stage {
 
         // allow the dialog to be closed
         okButton.setOnAction(event -> hide());
-
-        addEventHandler(KeyEvent.KEY_RELEASED, (event) -> {
-            if (KeyCode.ESCAPE == event.getCode()) {
-                hide();
-            }
-        });
-
-        // JavaFX's modal stage blocks event to other stage so we can't allow user to close this dialog by pressing at
-        // the surround space. Thus, we consume every mouse event to the parent window here to simulate behaviour of a
-        // modal dialog and close ourselves when detect MOUSE_PRESSED at the parent window
-        Parent rootPane = owner.getScene().getRoot();
-        rootPane.addEventFilter(MouseEvent.ANY, new EventHandler<>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    rootPane.removeEventFilter(MouseEvent.ANY, this);
-                    hide();
-                }
-                event.consume();
-            }
-        });
-
-        // dim the parent window after the dialog is shown on the screen
-        Effect previousEffect = rootPane.getEffect();
-
-        ColorAdjust colorAdjust = new ColorAdjust(0, 0, 0, 0);
-        rootPane.setEffect(colorAdjust);
-
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(750),
-                new KeyValue(colorAdjust.brightnessProperty(), -0.25)
-        ));
-        setOnShowing(event -> timeline.play());
-        setOnHidden(t -> rootPane.setEffect(previousEffect));
     }
 
     private void initPlatformControl() {

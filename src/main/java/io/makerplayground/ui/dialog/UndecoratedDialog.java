@@ -1,0 +1,72 @@
+package io.makerplayground.ui.dialog;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
+import javafx.util.Duration;
+
+public class UndecoratedDialog extends Stage {
+
+    public UndecoratedDialog(Window owner) {
+        initOwner(owner);
+        initStyle(StageStyle.UNDECORATED);
+
+        // always center to the parent window
+        widthProperty().addListener((observable, oldValue, newValue) -> {
+            setX(owner.getX() + owner.getWidth() / 2 - newValue.doubleValue() / 2);
+        });
+        heightProperty().addListener((observable, oldValue, newValue) -> {
+            setY(owner.getY() + owner.getHeight() / 2 - newValue.doubleValue() / 2);
+        });
+
+        // allow the dialog to be closed using escape key
+        addEventHandler(KeyEvent.KEY_RELEASED, (event) -> {
+            if (KeyCode.ESCAPE == event.getCode()) {
+                hide();
+            }
+        });
+
+        // JavaFX's modal stage blocks event to other stage so we can't allow user to close this dialog by pressing at
+        // the surround space. Thus, we consume every mouse event to the parent window here to simulate behaviour of a
+        // modal dialog and close ourselves when detect MOUSE_PRESSED at the parent window
+        Parent rootPane = owner.getScene().getRoot();
+        rootPane.addEventFilter(MouseEvent.ANY, new EventHandler<>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                    rootPane.removeEventFilter(MouseEvent.ANY, this);
+                    hide();
+                }
+                event.consume();
+            }
+        });
+
+        // dim the parent window after the dialog is shown on the screen
+        Effect previousEffect = rootPane.getEffect();
+
+        ColorAdjust colorAdjust = new ColorAdjust(0, 0, 0, 0);
+        rootPane.setEffect(colorAdjust);
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(750),
+                new KeyValue(colorAdjust.brightnessProperty(), -0.25)
+        ));
+        setOnShowing(event -> timeline.play());
+        setOnHidden(t -> rootPane.setEffect(previousEffect));
+    }
+
+    public void setContent(Parent root) {
+        Scene scene = new Scene(root);
+        setScene(scene);
+    }
+}
