@@ -192,9 +192,9 @@ public class ChipField extends ScrollPane {
 
     private void updateHilight() {
         if (!expressionProperty.get().isValid()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 10.0 , 0.5, 0.0 , 0.0);");
+            setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
         } else {
-            setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 0.0 , 0.0, 0.0 , 0.0);");
+            setStyle("-fx-effect: null;");
         }
     }
 

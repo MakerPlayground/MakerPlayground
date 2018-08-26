@@ -37,35 +37,35 @@ public class OperatorChip extends Chip<Operator> {
 
         if (getValue().getType() == OperatorType.LEFT_UNARY) {
             background.getElements().addAll(new MoveTo(10, 0)
-                    , new ArcTo(10, 10, 90, 0, 10, false, false)
+                    , new ArcTo(12.5, 12.5, 90, 0, 10, false, false)
                     , new LineTo(0, 15)
-                    , new ArcTo(10, 10, 0, 10, 25, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 10, 25, false, false)
                     , new LineTo(25, 25)
-                    , new ArcTo(10, 10, 0, 15, 15, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 15, 15, false, true)
                     , new LineTo(15, 10)
-                    , new ArcTo(10, 10, 0, 25, 0, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 25, 0, false, true)
                     , new ClosePath());
         } else if (getValue().getType() == OperatorType.BINARY) {
             background.getElements().addAll(new MoveTo(10, 0)
                     , new LineTo(0, 0)
-                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new ArcTo(12.5, 12.5, 90, 10, 10, false, true)
                     , new LineTo(10, 15)
-                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 0, 25, false, true)
                     , new LineTo(35, 25)
-                    , new ArcTo(10, 10, 0, 25, 15, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 25, 15, false, true)
                     , new LineTo(25, 10)
-                    , new ArcTo(10, 10, 0, 35, 0, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 35, 0, false, true)
                     , new ClosePath());
         } else if (getValue().getType() == OperatorType.RIGHT_UNARY) {
             background.getElements().addAll(new MoveTo(15, 0)
                     , new LineTo(0, 0)
-                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new ArcTo(12.5, 12.5, 90, 10, 10, false, true)
                     , new LineTo(10, 15)
-                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 0, 25, false, true)
                     , new LineTo(15, 25)
-                    , new ArcTo(10, 10, 0, 25, 15, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 25, 15, false, false)
                     , new LineTo(25, 10)
-                    , new ArcTo(10, 10, 0, 15, 0, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 15, 0, false, false)
                     , new ClosePath());
         } else {
             throw new IllegalStateException();
