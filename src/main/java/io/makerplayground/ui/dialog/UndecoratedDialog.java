@@ -16,7 +16,11 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.util.function.BooleanSupplier;
+
 public class UndecoratedDialog extends Stage {
+
+    private BooleanSupplier closingPredicate = () -> true;
 
     public UndecoratedDialog(Window owner) {
         initOwner(owner);
@@ -32,7 +36,7 @@ public class UndecoratedDialog extends Stage {
 
         // allow the dialog to be closed using escape key
         addEventHandler(KeyEvent.KEY_RELEASED, (event) -> {
-            if (KeyCode.ESCAPE == event.getCode()) {
+            if (KeyCode.ESCAPE == event.getCode() && closingPredicate.getAsBoolean()) {
                 hide();
             }
         });
@@ -44,7 +48,7 @@ public class UndecoratedDialog extends Stage {
         rootPane.addEventFilter(MouseEvent.ANY, new EventHandler<>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                if (event.getEventType() == MouseEvent.MOUSE_PRESSED && closingPredicate.getAsBoolean()) {
                     rootPane.removeEventFilter(MouseEvent.ANY, this);
                     hide();
                 }
@@ -68,5 +72,9 @@ public class UndecoratedDialog extends Stage {
     public void setContent(Parent root) {
         Scene scene = new Scene(root);
         setScene(scene);
+    }
+
+    public void setClosingPredicate(BooleanSupplier supplier) {
+        this.closingPredicate = supplier;
     }
 }

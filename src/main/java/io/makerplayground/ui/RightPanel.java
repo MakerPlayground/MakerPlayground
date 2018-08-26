@@ -98,7 +98,7 @@ class RightPanel extends VBox {
         SingletonUploadClick.getInstance().click();
         UploadTask uploadTask = new UploadTask(project);
 
-        UploadDialogView uploadDialogView = new UploadDialogView(uploadTask);
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
         uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
         uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
         uploadDialogView.logProperty().bind(uploadTask.logProperty());
