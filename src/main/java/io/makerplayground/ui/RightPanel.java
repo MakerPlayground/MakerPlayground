@@ -88,8 +88,8 @@ class RightPanel extends VBox {
         } else {
             SingletonWiringDiagram.getInstance().setOpenTime();
             GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
-            GenerateView generateView = new GenerateView(generateViewModel);
-            generateView.showAndWait();
+            GenerateView generateView = new GenerateView(getScene().getWindow(), generateViewModel);
+            generateView.show();
         }
     }
 
