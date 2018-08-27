@@ -18,10 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Window;
 import javafx.util.Callback;
@@ -35,7 +32,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
 
     private final ConfigActualDeviceViewModel viewModel;
 
-    private final ScrollPane scrollPane = new ScrollPane();
+    private final VBox pane = new VBox();
     @FXML private VBox usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
@@ -51,7 +48,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
-        fxmlLoader.setRoot(scrollPane);
+        fxmlLoader.setRoot(pane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -63,7 +60,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         initControllerControl();
         initDeviceControl();
 
-        setContent(scrollPane);
+        setContent(pane);
         initEvent();
     }
 

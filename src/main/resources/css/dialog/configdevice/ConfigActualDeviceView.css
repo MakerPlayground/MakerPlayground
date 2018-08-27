@@ -1,9 +1,13 @@
 .root{
-    /*-fx-background-color: #ffffff;*/
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
     -fx-font-size: 12px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 15;
+    -fx-background-color: white;
+    -fx-background-radius: 15;
 }
 #topicConfigDevice{
     -fx-background-color : transparent;
@@ -81,6 +85,10 @@
     -fx-padding:0;
     -fx-border-color: transparent;
     -fx-border-width: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: white;
 }
 
 .scroll-bar:vertical .increment-button {

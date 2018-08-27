@@ -11,6 +11,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -24,7 +25,7 @@ public class UndecoratedDialog extends Stage {
 
     public UndecoratedDialog(Window owner) {
         initOwner(owner);
-        initStyle(StageStyle.UNDECORATED);
+        initStyle(StageStyle.TRANSPARENT);
 
         // always center to the parent window
         widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -71,6 +72,7 @@ public class UndecoratedDialog extends Stage {
 
     public void setContent(Parent root) {
         Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
         setScene(scene);
     }
 
