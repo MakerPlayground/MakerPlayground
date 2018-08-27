@@ -16,3 +16,7 @@
     -fx-font-size: 0.75em;
     -fx-font-weight: bold;
 }
+
+#removeStateDeviceBtn:hover {
+    -fx-cursor: hand;
+}

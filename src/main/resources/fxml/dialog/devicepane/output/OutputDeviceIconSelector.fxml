@@ -3,9 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
-<fx:root xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" type="VBox" alignment="CENTER"
-         minWidth="50" minHeight="70">
-    <ImageView fx:id="imv" fitHeight="50" preserveRatio="true"/>
-    <Label fx:id="name" minWidth="70" alignment="CENTER"/>
-</fx:root>
 
+<fx:root alignment="CENTER" minHeight="45" minWidth="45" stylesheets="@../../../../css/dialog/devicepane/devicepanel/DeviceIconSelector.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <ImageView fx:id="imv" fitHeight="35" preserveRatio="true" />
+    <Label fx:id="name" id="name" alignment="CENTER" minWidth="45" />
+</fx:root>

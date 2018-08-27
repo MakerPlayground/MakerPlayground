@@ -12,3 +12,7 @@
     -fx-text-size: 0.5em;
     -fx-text-weight: bold;
 }
+
+#removeConditionDeviceBtn {
+    -fx-cursor: hand;
+}
