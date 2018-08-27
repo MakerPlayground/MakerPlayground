@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.util.function.BooleanSupplier;
@@ -46,16 +47,13 @@ public class UndecoratedDialog extends Stage {
         // the surround space. Thus, we consume every mouse event to the parent window here to simulate behaviour of a
         // modal dialog and close ourselves when detect MOUSE_PRESSED at the parent window
         Parent rootPane = owner.getScene().getRoot();
-        rootPane.addEventFilter(MouseEvent.ANY, new EventHandler<>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED && closingPredicate.getAsBoolean()) {
-                    rootPane.removeEventFilter(MouseEvent.ANY, this);
-                    hide();
-                }
-                event.consume();
+        EventHandler<MouseEvent> mouseEventFilter = event -> {
+            if (event.getEventType() == MouseEvent.MOUSE_PRESSED && closingPredicate.getAsBoolean()) {
+                hide();
             }
-        });
+            event.consume();
+        };
+        rootPane.addEventFilter(MouseEvent.ANY, mouseEventFilter);
 
         // dim the parent window after the dialog is shown on the screen
         Effect previousEffect = rootPane.getEffect();
@@ -66,8 +64,13 @@ public class UndecoratedDialog extends Stage {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(750),
                 new KeyValue(colorAdjust.brightnessProperty(), -0.25)
         ));
-        setOnShowing(event -> timeline.play());
-        setOnHidden(t -> rootPane.setEffect(previousEffect));
+        addEventHandler(WindowEvent.WINDOW_SHOWING, event -> {
+            timeline.play();
+        });
+        addEventHandler(WindowEvent.WINDOW_HIDDEN, t -> {
+            rootPane.removeEventFilter(MouseEvent.ANY, mouseEventFilter);
+            rootPane.setEffect(previousEffect);
+        });
     }
 
     public void setContent(Parent root) {
