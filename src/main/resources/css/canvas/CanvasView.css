@@ -45,19 +45,24 @@
 
 #addStateBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : #00cc6a;
-     -fx-border-radius: 5px;
      -fx-background-color : #00cc6a;
      -fx-background-insets:0;
      -fx-font-size : 14px;
+     -fx-font-weight: bold;
      -fx-text-fill : #ffffff;
-     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
-     -fx-cursor: hand;
      -fx-min-width: 150;
  }
- #addStateBtn:pressed{
-     -fx-border-color : #02af59;
+
+ #addStateBtn:hover {
+    -fx-background-color: #2db07c;
+    -fx-cursor: hand;
  }
+
+ #addStateBtn:pressed{
+     -fx-background-color: #2db07c;
+     -fx-cursor: hand;
+ }
+
  #addConditionBtn{
      -fx-focus-color: transparent;
      -fx-border-color : #00cc6a;
@@ -66,12 +71,20 @@
      -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-text-fill : #ffffff;
+     -fx-font-weight: bold;
      /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
      -fx-cursor: hand;
      -fx-min-width: 150;
  }
+
+  #addConditionBtn:hover {
+     -fx-background-color: #2db07c;
+     -fx-cursor: hand;
+  }
+
  #addConditionBtn:pressed{
-     -fx-border-color : #02af59;
+     -fx-border-color : #2db07c;
+     -fx-cursor: hand;
  }
 #zoomInButton:pressed{
     -fx-focus-color: transparent;

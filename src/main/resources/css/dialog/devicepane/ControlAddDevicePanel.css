@@ -9,6 +9,15 @@
     -fx-border-color : red;
     -fx-border-width: 2px;
 }
+
+#controlAddDevicePane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-padding: 7.5;
+}
+
 #decBtn{
     -fx-background-image: url('reduce-device.png');
     -fx-background-size : 20px;

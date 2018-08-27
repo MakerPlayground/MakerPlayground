@@ -15,8 +15,8 @@
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
     </padding>
-    <ImageView fx:id="imgView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-        <Image url="@../../icons/Upload.png"/>
+    <ImageView fx:id="imgView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../../icons/Uploading.png"/>
     </ImageView>
     <VBox alignment="CENTER" spacing="10.0">
         <ProgressBar fx:id="progressBar" prefHeight="5.0" prefWidth="400.0" progress="0.0"/>

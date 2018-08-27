@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxWidth="-Infinity" style="-fx-background-color: white;"
+<fx:root id="deviceLibraryPane" maxWidth="-Infinity"
          stylesheets="@../../../css/canvas/node/usersetting/DeviceSelectorView.css" type="VBox"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0">

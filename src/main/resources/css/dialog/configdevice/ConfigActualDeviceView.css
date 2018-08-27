@@ -5,9 +5,10 @@
     -fx-font-size: 12px;
     -fx-border-color: transparent;
     -fx-border-width: 0;
-    -fx-border-radius: 15;
+    -fx-border-radius: 10;
     -fx-background-color: white;
-    -fx-background-radius: 15;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
 }
 #topicConfigDevice{
     -fx-background-color : transparent;

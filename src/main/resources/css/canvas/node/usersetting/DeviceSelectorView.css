@@ -5,6 +5,11 @@
 .dialog-pane{
     -fx-background-color : white;
 }
+#deviceLibraryPane {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+}
 .titled-pane > .title{
     -fx-background-color : white;
     -fx-border-color: transparent transparent #e3e3e3 transparent;
@@ -63,24 +68,55 @@
 .flow-pane{
     -fx-background-color : #4d5666;
 }
-
-.button:hover {
-    -fx-background-color : #e3e3e3;
-    /*-fx-background-radius : 5px;*/
-    -fx-border-color : #e3e3e3;
-    /*-fx-border-radius : 5px;*/
-    -fx-text-fill : #707070;
-    -fx-cursor: hand;
+/*-----------------------------------------------------------------------*/
+#okButton {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 40 5 40;
 }
-
-.button:pressed{
-    -fx-background-color : #2673fd;
-    /*-fx-background-radius : 5px;*/
-    -fx-border-color : #2673fd;
-    /*-fx-border-radius : 5px;*/
-    -fx-text-fill : #ffffff;
+#okButton:hover {
+    -fx-background-color: #e3e3e3;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
     -fx-cursor: hand;
+    -fx-text-fill: #333333;
 }
+#okButton:pressed {
+    -fx-background-color: #2673fd;
+    -fx-background-radius: 5px;
+    -fx-border-color: #2673fd;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #ffffff;
+}
+/*-----------------------------------------------------------------------*/
+#cancelButton {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 30 5 30;
+}
+#cancelButton:hover {
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ff0000;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-text-fill: #ffffff;
+}
+#cancelButton:pressed {
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ff0000;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #ffffff;
+}
+/*-----------------------------------------------------------------------*/
 .button{
     -fx-focus-color: #707070;
     -fx-border-color : #e3e3e3;
@@ -90,7 +126,23 @@
     -fx-text-fill : #707070;
     -fx-cursor: hand;
 }
-
+.button:hover {
+    -fx-background-color : #e3e3e3;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #e3e3e3;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #707070;
+    -fx-cursor: hand;
+}
+.button:pressed{
+    -fx-background-color : #2673fd;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #2673fd;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #ffffff;
+    -fx-cursor: hand;
+}
+/*-----------------------------------------------------------------------*/
 #vBox {
     -fx-background-color: #ffffff;
 }
