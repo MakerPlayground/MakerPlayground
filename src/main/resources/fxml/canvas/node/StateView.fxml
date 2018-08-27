@@ -17,9 +17,9 @@
 <fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="200.0" >
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="205.0" >
          <children>
-            <AnchorPane id="headerPane" maxHeight="30.0" maxWidth="200" minHeight="30.0" minWidth="200" prefWidth="200">
+            <AnchorPane id="headerPane" maxHeight="30.0" maxWidth="205.0" minHeight="30.0" minWidth="205.0" prefWidth="205.0">
                <children>
                   <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="100.0" AnchorPane.leftAnchor="5.0" />
                   <ImageView fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
@@ -29,14 +29,14 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <ScrollPane id="scrollPane" fitToWidth="true" prefHeight="70.0" prefWidth="200.0">
+            <ScrollPane id="scrollPane" fitToWidth="true" prefHeight="65.0" prefWidth="205.0">
                <content>
-                  <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="5" maxHeight="70.0" prefHeight="70.0" prefWidth="200.0" vgap="7.5">
+                  <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="2.5" maxHeight="65.0" prefHeight="65.0" prefWidth="205.0" vgap="2.5">
                      <padding>
-                        <Insets bottom="2.5" left="6.0" right="5.0" top="2.5" />
+                        <Insets bottom="2.5" left="2.5" right="2.5" top="2.5" />
                      </padding>
                      <children>
-                        <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" />
+                        <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" />
                      </children>
                   </FlowPane>
                </content>

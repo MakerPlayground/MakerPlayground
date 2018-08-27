@@ -8,9 +8,9 @@
 }
 #contentPane{
     -fx-background-color : #f6f6f6;
-    -fx-background-radius : 10;
+    -fx-background-radius : 7.5;
     -fx-border-color : #e3e3e3;
-    -fx-border-radius : 10;
+    -fx-border-radius : 7.5;
 }
 #nameStateTextField{
     -fx-background-color : #313644;
@@ -23,7 +23,7 @@
     -fx-border-color : transparent;
     -fx-border-width : 0px;
     -fx-text-fill : black;
-    -fx-font-size : 9 px;
+    -fx-font-size : 6 px;
     -fx-font-weight : normal;
 }
 #stateBottomHBox{
@@ -32,29 +32,29 @@
 }
 .text{
     -fx-text-fill : white;
-    -fx-font-size:12px;
+    -fx-font-size: 9 px;
 }
 #deviceIconFlowPane{
     -fx-background-color : transparent;
-    -fx-background-radius : 10;
+    -fx-background-radius : 5;
     -fx-border-color : null;
 }
 
 #scrollPane > .viewport{
     -fx-background-color : transparent;
-    -fx-background-radius : 10;
+    -fx-background-radius : 7.5;
     -fx-border-color : transparent;
 }
 
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding:0 5 0 0;
 }
 .scroll-bar .decrement-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding:0 5 0 0;
 }
 .scroll-bar .increment-arrow{
     -fx-shape: " ";
@@ -70,8 +70,8 @@
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#313644,45%);
-    -fx-border-radius: 2em;
+    -fx-background-color: derive(#333333,45%);
+    -fx-border-radius: 1em;
     -fx-background-insets: 2, 0, 0;
 }
 .scroll-bar {
@@ -123,12 +123,12 @@
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('add-2-toggle.png');
-    -fx-background-size : 60px;
+    -fx-background-size : 50px;
     -fx-cursor: hand;
 }
 #addOutputButton{
     -fx-background-image: url('add-2.png');
-    -fx-background-size : 60px;
+    -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }

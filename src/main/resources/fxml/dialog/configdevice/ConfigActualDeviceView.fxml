@@ -51,6 +51,6 @@
             <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
             </FlowPane>
         </VBox>
-      <Button fx:id="okButton" mnemonicParsing="false" text="OK" />
+      <Button fx:id="okButton" id="okButton" mnemonicParsing="false" text="OK" />
     </VBox>
 </fx:root>

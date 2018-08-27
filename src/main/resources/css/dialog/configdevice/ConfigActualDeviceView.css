@@ -149,3 +149,32 @@
 #unusedLabel {
     -fx-font-weight: bold;
 }
+
+#okButton {
+    -fx-text-fill: #707070;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+}
+
+#okButton:hover{
+    -fx-text-fill: #707070;
+    -fx-background-color: #e3e3e3;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+    -fx-cursor: hand;
+}
+
+#okButton:pressed {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #2673fd;
+    -fx-background-radius: 5px;
+    -fx-border-color: #2673fd;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+    -fx-cursor: hand;
+}

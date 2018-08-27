@@ -8,12 +8,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="conditionDeviceIconView" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="60.0" minWidth="60.0" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: white; -fx-border-color: e3e3e3; -fx-background-radius: 5px; -fx-border-radius: 5px;" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="deviceIcon" fx:id="conditionDeviceIconView" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="50.0" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <StackPane prefHeight="35.0" prefWidth="35.0"  style="-fx-background-color: transparent; -fx-background-radius: 5;">
+      <StackPane prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
          <children>
-            <ImageView fx:id="iconImageView" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
-            <Button fx:id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
+            <ImageView fx:id="iconImageView" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="7.5" prefWidth="7.5" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -24,9 +24,9 @@
             </Button>
          </children>
       </StackPane>
-      <Label fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" text="Label" textAlignment="CENTER" textFill="#313644" textOverrun="CENTER_WORD_ELLIPSIS">
+      <Label id="deviceIcontext" fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
          <font>
-            <Font name="System Bold" size="10.0" />
+            <Font name="System Bold"/>
          </font>
       </Label>
    </children>

@@ -63,21 +63,31 @@
 .flow-pane{
     -fx-background-color : #4d5666;
 }
-.button:pressed{
-    -fx-background-color : #c1c1c1;
+
+.button:hover {
+    -fx-background-color : #e3e3e3;
     /*-fx-background-radius : 5px;*/
-    -fx-border-color : #333333;
+    -fx-border-color : #e3e3e3;
     /*-fx-border-radius : 5px;*/
-    -fx-text-fill : #333333;
+    -fx-text-fill : #707070;
+    -fx-cursor: hand;
+}
+
+.button:pressed{
+    -fx-background-color : #2673fd;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #2673fd;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #ffffff;
     -fx-cursor: hand;
 }
 .button{
-    -fx-focus-color: #c1c1c1;
-    -fx-border-color : #333333;
+    -fx-focus-color: #707070;
+    -fx-border-color : #e3e3e3;
     /*-fx-border-radius : 5px;*/
-    -fx-background-color : #e1e1e1;
+    -fx-background-color : #ffffff;
     /*-fx-background-radius : 5px;*/
-    -fx-text-fill : #333333;
+    -fx-text-fill : #707070;
     -fx-cursor: hand;
 }
 
