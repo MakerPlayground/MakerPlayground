@@ -58,8 +58,10 @@ public class SourcecodeGenerator {
                 .collect(Collectors.toSet())    //remove duplicates
                 .forEach(s -> builder.append("#include \"").append(s).append("\"").append(NEW_LINE));
         builder.append(NEW_LINE);
-        builder.append("#define MP_LOG(name) Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); name.printStatus(); Serial.println('\\0');").append(NEW_LINE);
-        builder.append("#define MP_ERR(name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(name.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+//        builder.append("#define MP_LOG(name) Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); name.printStatus(); Serial.println('\\0');").append(NEW_LINE);
+//        builder.append("#define MP_ERR(name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(name.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+        builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
+        builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
@@ -162,9 +164,10 @@ public class SourcecodeGenerator {
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            builder.append(INDENT).append("status_code = ").append("_").append(projectDevice.getName().replace(" ", "_")).append(".init();").append(NEW_LINE);
+            String projectDeviceName = "_" + projectDevice.getName().replace(" ", "_");
+            builder.append(INDENT).append("status_code = ").append(projectDeviceName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(_").append(projectDevice.getName().replace(" ", "_")).append(", status_code);").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_ERR(").append(projectDeviceName).append(", \"").append(projectDeviceName).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -182,7 +185,8 @@ public class SourcecodeGenerator {
         }
         builder.append(INDENT).append("if (millis() - oldTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            builder.append(INDENT).append(INDENT).append("MP_LOG(_").append(projectDevice.getName().replace(" ", "_")).append(");").append(NEW_LINE);
+            String projectDeviceName = "_" + projectDevice.getName().replace(" ", "_");
+            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(projectDeviceName).append(", \"").append(projectDeviceName).append("\");").append(NEW_LINE);
         }
         builder.append(INDENT).append(INDENT).append("oldTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
