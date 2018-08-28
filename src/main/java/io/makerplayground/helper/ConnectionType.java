@@ -14,6 +14,9 @@ public enum ConnectionType {
     I2C,
     SPI,
     UART,
+    POWER,
+
+    /* Maker Playground */
     MP_INT_UART,
     MP_GPIO_SINGLE,
     MP_GPIO_DUAL,
@@ -22,5 +25,13 @@ public enum ConnectionType {
     MP_ANALOG_SINGLE,
     MP_ANALOG_DUAL,
     MP_I2C,
-    POWER
+
+    /* Grove */
+    GROVE_GPIO_SINGLE,
+    GROVE_GPIO_DUAL,
+    GROVE_PWM_SINGLE,
+    GROVE_PWM_DUAL,
+    GROVE_ANALOG_SINGLE,
+    GROVE_ANALOG_DUAL,
+    GROVE_I2C
 }
