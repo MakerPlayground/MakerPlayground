@@ -1,10 +1,11 @@
 #background{
     -fx-fill: #2673fd;
 }
-
 #input{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-text-fill: white;
 }
+
+
 

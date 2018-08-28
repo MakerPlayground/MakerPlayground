@@ -89,9 +89,9 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     @Override
     protected void updateChipStyle(boolean selected) {
         if (!selected) {
-            background.setFill(Color.web("#081949"));
+            background.setFill(Color.web("#9129d7"));
         } else {
-            background.setFill(Color.web("#081949").darker());
+            background.setFill(Color.web("#9129d7").darker());
         }
     }
 }

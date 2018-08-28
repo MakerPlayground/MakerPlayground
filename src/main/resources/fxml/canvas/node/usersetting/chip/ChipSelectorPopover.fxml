@@ -33,7 +33,7 @@
       </StackPane>
       <StackPane fx:id="valueChip" GridPane.rowIndex="1">
          <children>
-            <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#081949" height="25.0" width="60.0" />
+            <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#9129d7" height="25.0" width="60.0" />
             <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
          </children>
       </StackPane>
