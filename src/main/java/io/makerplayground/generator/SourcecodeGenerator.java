@@ -164,10 +164,10 @@ public class SourcecodeGenerator {
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            String projectDeviceName = "_" + projectDevice.getName().replace(" ", "_");
-            builder.append(INDENT).append("status_code = ").append(projectDeviceName).append(".init();").append(NEW_LINE);
+            String variableName = "_" + projectDevice.getName().replace(" ", "_");
+            builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(").append(projectDeviceName).append(", \"").append(projectDeviceName).append("\", status_code);").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_ERR(").append(variableName).append(", \"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -185,8 +185,8 @@ public class SourcecodeGenerator {
         }
         builder.append(INDENT).append("if (millis() - oldTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            String projectDeviceName = "_" + projectDevice.getName().replace(" ", "_");
-            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(projectDeviceName).append(", \"").append(projectDeviceName).append("\");").append(NEW_LINE);
+            String variableName = "_" + projectDevice.getName().replace(" ", "_");
+            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(variableName).append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
         builder.append(INDENT).append(INDENT).append("oldTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
