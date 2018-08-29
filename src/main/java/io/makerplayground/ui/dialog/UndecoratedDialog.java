@@ -44,10 +44,15 @@ public class UndecoratedDialog extends Stage {
         });
 
         // JavaFX's modal stage blocks event to other stage so we can't allow user to close this dialog by pressing at
-        // the surround space. Thus, we consume every mouse event to the parent window here to simulate behaviour of a
-        // modal dialog and close ourselves when detect MOUSE_PRESSED at the parent window
+        // the surround space. Thus, we consume every mouse event to the parent window here (except MOUSE_EXITED_TARGET)
+        // to simulate behaviour of a modal dialog and close ourselves when detect MOUSE_PRESSED at the parent window
         Parent rootPane = owner.getScene().getRoot();
         EventHandler<MouseEvent> mouseEventFilter = event -> {
+            // we shouldn't consume MOUSE_EXITED_TARGET otherwise the skin of a button we've pressed to open this dialog
+            // will stuck in the press state as it doesn't receive MOUSE_EXITED_TARGET
+            if (event.getEventType() == MouseEvent.MOUSE_EXITED_TARGET) {
+                return;
+            }
             if (event.getEventType() == MouseEvent.MOUSE_PRESSED && closingPredicate.getAsBoolean()) {
                 hide();
             }
