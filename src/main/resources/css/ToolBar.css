@@ -67,7 +67,7 @@
 }
 
 #saveAsBtn{
-    -fx-background-image: url('Save-as.png');
+    -fx-background-image: url('save-as.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
@@ -75,7 +75,7 @@
     -fx-background-repeat: no-repeat;
 }
 #saveAsBtn:pressed{
-    -fx-background-image: url('Save-as-press.png');
+    -fx-background-image: url('save-as-press.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
