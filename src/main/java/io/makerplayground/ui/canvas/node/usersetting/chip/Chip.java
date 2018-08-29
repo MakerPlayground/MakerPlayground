@@ -30,6 +30,7 @@ public abstract class Chip<T> extends StackPane implements Selectable {
         this.choices = choices;
 
         initView();
+        updateChipStyle(false);
         // use geometric shape of this node instead of the bounding box for mouse event
         setPickOnBounds(false);
         selected.addListener((observable, oldValue, newValue) -> {

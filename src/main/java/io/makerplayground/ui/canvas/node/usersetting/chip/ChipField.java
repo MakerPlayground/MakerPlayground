@@ -70,6 +70,7 @@ public class ChipField extends ScrollPane {
             selectionGroup.deselect();
         });
 
+        updateViewLayout();
         updateHilight();
     }
 
