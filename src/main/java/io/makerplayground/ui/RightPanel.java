@@ -66,16 +66,16 @@ class RightPanel extends VBox {
     private void handleGenerateBtn(ActionEvent event) {
         DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
         if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Controller hasn't been selected");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Controller hasn't been selected");
+            errorDialogView.show();
             return;
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Not enough port");
+            errorDialogView.show();
             return;
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Can't find any support device");
+            errorDialogView.show();
             return;
         } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
             throw new IllegalStateException("Found unknown error!!!");
@@ -83,8 +83,8 @@ class RightPanel extends VBox {
 
         Sourcecode code = SourcecodeGenerator.generateCode(project, true);
         if (code.getError() != null) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), code.getError().getDescription());
+            errorDialogView.show();
         } else {
             SingletonWiringDiagram.getInstance().setOpenTime();
             GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
