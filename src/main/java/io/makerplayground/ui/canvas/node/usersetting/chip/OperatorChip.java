@@ -7,6 +7,8 @@ import io.makerplayground.project.term.Term;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
@@ -45,6 +47,7 @@ public class OperatorChip extends Chip<Operator> {
                     , new LineTo(15, 10)
                     , new ArcTo(12.5, 12.5, 0, 25, 0, false, true)
                     , new ClosePath());
+            StackPane.setMargin(text, new Insets(0, 7.5, 0, 0));
         } else if (getValue().getType() == OperatorType.BINARY) {
             background.getElements().addAll(new MoveTo(10, 0)
                     , new LineTo(0, 0)
@@ -67,6 +70,7 @@ public class OperatorChip extends Chip<Operator> {
                     , new LineTo(25, 10)
                     , new ArcTo(12.5, 12.5, 0, 15, 0, false, false)
                     , new ClosePath());
+            StackPane.setMargin(text, new Insets(0, 0, 0, 7.5));
         } else {
             throw new IllegalStateException();
         }
