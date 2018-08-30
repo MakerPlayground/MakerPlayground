@@ -90,6 +90,43 @@ public enum Peripheral {
     MP_I2C_3(ConnectionType.MP_I2C),
     MP_I2C_4(ConnectionType.MP_I2C),
 
+    GROVE_GPIO_SINGLE_1(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_2(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_3(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_4(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_5(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_6(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_7(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_8(ConnectionType.GROVE_GPIO_SINGLE),
+    GROVE_GPIO_SINGLE_9(ConnectionType.GROVE_GPIO_SINGLE),
+
+    GROVE_GPIO_DUAL_1(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_2(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_3(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_4(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_5(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_6(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_7(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_8(ConnectionType.GROVE_GPIO_DUAL),
+    GROVE_GPIO_DUAL_9(ConnectionType.GROVE_GPIO_DUAL),
+
+    GROVE_PWM_SINGLE_1(ConnectionType.GROVE_PWM_SINGLE),
+    GROVE_PWM_SINGLE_2(ConnectionType.GROVE_PWM_SINGLE),
+    GROVE_PWM_SINGLE_3(ConnectionType.GROVE_PWM_SINGLE),
+
+    GROVE_PWM_DUAL_1(ConnectionType.GROVE_PWM_DUAL),
+
+    GROVE_ANALOG_SINGLE_1(ConnectionType.GROVE_ANALOG_SINGLE),
+    GROVE_ANALOG_SINGLE_2(ConnectionType.GROVE_ANALOG_SINGLE),
+    GROVE_ANALOG_SINGLE_3(ConnectionType.GROVE_ANALOG_SINGLE),
+
+    GROVE_ANALOG_DUAL_1(ConnectionType.GROVE_ANALOG_DUAL),
+    GROVE_ANALOG_DUAL_2(ConnectionType.GROVE_ANALOG_DUAL),
+    GROVE_ANALOG_DUAL_3(ConnectionType.GROVE_ANALOG_DUAL),
+
+    GROVE_I2C_1(ConnectionType.GROVE_I2C),
+    GROVE_I2C_2(ConnectionType.GROVE_I2C),
+
     POWER(ConnectionType.POWER);
 
     private ConnectionType connectionType;
@@ -120,5 +157,26 @@ public enum Peripheral {
            default:
                return false;
        }
+    }
+
+    public boolean isGroveDual() {
+        switch (this) {
+            case GROVE_GPIO_DUAL_1:
+            case GROVE_GPIO_DUAL_2:
+            case GROVE_GPIO_DUAL_3:
+            case GROVE_GPIO_DUAL_4:
+            case GROVE_GPIO_DUAL_5:
+            case GROVE_GPIO_DUAL_6:
+            case GROVE_GPIO_DUAL_7:
+            case GROVE_GPIO_DUAL_8:
+            case GROVE_GPIO_DUAL_9:
+            case GROVE_PWM_DUAL_1:
+            case GROVE_ANALOG_DUAL_1:
+            case GROVE_ANALOG_DUAL_2:
+            case GROVE_ANALOG_DUAL_3:
+                return true;
+            default:
+                return false;
+        }
     }
 }

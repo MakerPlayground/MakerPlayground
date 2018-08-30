@@ -51,7 +51,7 @@ public class UploadTask extends Task<UploadResult> {
         }
 
         /* Code Generating */
-        Sourcecode sourcecode = Sourcecode.generateCode(project, true);
+        Sourcecode sourcecode = SourcecodeGenerator.generateCode(project, true);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;

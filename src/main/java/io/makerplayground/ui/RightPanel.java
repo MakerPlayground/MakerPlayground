@@ -2,6 +2,7 @@ package io.makerplayground.ui;
 
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.Sourcecode;
+import io.makerplayground.generator.SourcecodeGenerator;
 import io.makerplayground.generator.UploadTask;
 import io.makerplayground.helper.SingletonUploadClick;
 import io.makerplayground.helper.SingletonWiringDiagram;
@@ -79,7 +80,7 @@ class RightPanel extends VBox {
             throw new IllegalStateException("Found unknown error!!!");
         }
 
-        Sourcecode code = Sourcecode.generateCode(project, false);
+        Sourcecode code = SourcecodeGenerator.generateCode(project, true);
         if (code.getError() != null) {
             ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
             errorDialogView.showAndWait();
