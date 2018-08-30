@@ -209,7 +209,7 @@
         "type": "Active",
         "parameter": [
           {
-            "name": "value",
+            "name": "Value",
             "value": "0",
             "constraint": {
               "min": -50000.0,
