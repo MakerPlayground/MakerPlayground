@@ -198,5 +198,49 @@
         "type": "STRING"
       }
     ]
+  },
+  {
+    "name": "Number Container",
+    "description": "Virtual Number Container",
+    "action": [
+      {
+        "name": "Set to",
+        "funcname": "setValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "value",
+            "value": "0",
+            "constraint": {
+              "min": -50000.0,
+              "max": 50000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -50000.0,
+          "max": 50000.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ],
+    "property": []
   }
 ]
