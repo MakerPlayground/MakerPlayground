@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
@@ -94,28 +95,30 @@ public class SourcecodeGenerator {
             builder.append(projectDevice.getActualDevice().getMpLibrary())
                     .append(" _").append(projectDevice.getName().replace(" ", "_"));
             List<String> args = new ArrayList<>();
-            // port
-            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
-                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-                    if (port == null) {
-                        throw new IllegalStateException("Port hasn't been selected!!!");
-                    }
-                    // SPECIAL CASE
-                    if (project.getPlatform() == Platform.MP_ARDUINO) {
-                        if (port.size() != 1) {
-                            throw new IllegalStateException();
+            if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+                // port
+                for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
+                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                        if (port == null) {
+                            throw new IllegalStateException("Port hasn't been selected!!!");
                         }
-                        List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
-                        if (!portName.isEmpty()) {
-                            if (p.isMPDual()) {
-                                args.addAll(portName);
-                            } else {
-                                args.add(portName.get(0));
+                        // SPECIAL CASE
+                        if (project.getPlatform() == Platform.MP_ARDUINO) {
+                            if (port.size() != 1) {
+                                throw new IllegalStateException();
                             }
+                            List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
+                            if (!portName.isEmpty()) {
+                                if (p.isMPDual()) {
+                                    args.addAll(portName);
+                                } else {
+                                    args.add(portName.get(0));
+                                }
+                            }
+                        } else {
+                            args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                         }
-                    } else {
-                        args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                     }
                 }
             }
