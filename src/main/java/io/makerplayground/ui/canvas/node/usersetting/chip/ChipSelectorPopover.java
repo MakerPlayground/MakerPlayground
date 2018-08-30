@@ -43,6 +43,7 @@ public class ChipSelectorPopover extends PopOver {
         openParenthesisChip.setOnMousePressed(event -> fireEvent(new OperatorTerm(Operator.OPEN_PARENTHESIS)));
         closeParenthesisChip.setOnMousePressed(event -> fireEvent(new OperatorTerm(Operator.CLOSE_PARENTHESIS)));
 
+        setDetachable(false);
         setContentNode(gridPane);
     }
 
