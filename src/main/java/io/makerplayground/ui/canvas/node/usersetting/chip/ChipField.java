@@ -3,18 +3,24 @@ package io.makerplayground.ui.canvas.node.usersetting.chip;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.*;
-import io.makerplayground.ui.canvas.node.SelectionGroup;
-import javafx.beans.InvalidationListener;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
@@ -23,6 +29,7 @@ import java.util.stream.Collectors;
 
 public class ChipField extends ScrollPane {
     @FXML private HBox mainPane;
+    @FXML private Rectangle cursor;
     private ChipSelectorPopover popOver;
 
     private final List<ProjectValue> projectValues;
@@ -30,8 +37,6 @@ public class ChipField extends ScrollPane {
 
     private final List<Chip> chipList = new ArrayList<>();
     private final Map<Chip, Term> chipMap = new HashMap<>();
-
-    private final SelectionGroup<Chip> selectionGroup = new SelectionGroup<>();
 
     private final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
 
@@ -68,49 +73,79 @@ public class ChipField extends ScrollPane {
             }
         });
 
-        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            selectionGroup.deselect();
-        });
+        // hide the cursor until the ChipField or it's children (chip in the ChipField) received focus
+        cursor.setVisible(false);
+        cursor.setManaged(false);
 
         updateViewLayout();
         updateHilight();
     }
 
     private void initEvent() {
-        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.DELETE) {
-                if (!selectionGroup.getSelected().isEmpty()) {
-                    Chip selectedChip = selectionGroup.getSelected().get(0);
-                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) + 1, chipList.size())));
-                    removeChip(selectedChip);
-                }
-            }
-        });
-
         addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.LEFT) {
-                if (!selectionGroup.getSelected().isEmpty()) {
-                    Chip selectedChip = selectionGroup.getSelected().get(0);
-                    selectionGroup.setSelected(chipList.get(Math.max(chipList.indexOf(selectedChip) - 1, 0)));
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
+                if (currentCursorPosition > 0) {
+                    Chip chip = chipList.get(currentCursorPosition - 1);
+                    removeChip(chip);
+                }
+            } else if (event.getCode() == KeyCode.DELETE) {
+                int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
+                if (currentCursorPosition < chipList.size()) {
+                    Chip chip = chipList.get(currentCursorPosition);
+                    removeChip(chip);
+                }
+            } else if (event.getCode() == KeyCode.LEFT) {
+                int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
+                if (currentCursorPosition > 0) {
+                    mainPane.getChildren().remove(cursor);
+                    mainPane.getChildren().add(currentCursorPosition - 1, cursor);
+                    updateViewLayout();
+                    repositionScrollpane(cursor);
                 }
             } else if (event.getCode() == KeyCode.RIGHT) {
-                if (!selectionGroup.getSelected().isEmpty()) {
-                    Chip selectedChip = selectionGroup.getSelected().get(0);
-                    selectionGroup.setSelected(chipList.get(Math.min(chipList.indexOf(selectedChip) + 1, chipList.size()-1)));
+                int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
+                if (currentCursorPosition < chipList.size()) {
+                    mainPane.getChildren().remove(cursor);
+                    mainPane.getChildren().add(currentCursorPosition + 1, cursor);
+                    updateViewLayout();
+                    repositionScrollpane(cursor);
                 }
             }
         });
 
-        selectionGroup.getSelected().addListener((InvalidationListener) observable -> {
-            if (!selectionGroup.getSelected().isEmpty()) {
-                repositionScrollpane(selectionGroup.getSelected().get(0));
+        addEventHandler(KeyEvent.ANY, Event::consume);
+
+        // blink the cursor when the ChipField or it's children (chip in the ChipField) received focus
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> cursor.setVisible(false)),
+                new KeyFrame(Duration.seconds( 1), evt -> cursor.setVisible(true)));
+        timeline.setCycleCount(Animation.INDEFINITE);
+
+        sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.focusOwnerProperty().addListener((observable1, oldFocusOwner, newFocusOwner) -> {
+                    if (isFocused() || isChildFocused(this)) {
+                        timeline.play();
+                        cursor.setVisible(true);
+                        cursor.setManaged(true);
+                    } else {
+                        timeline.stop();
+                        cursor.setVisible(false);
+                        cursor.setManaged(false);
+                    }
+                    updateViewLayout();
+                });
             }
         });
     }
 
-    private void repositionScrollpane(Chip c) {
-        double chipMinX = c.getBoundsInParent().getMinX();
-        double chipMaxX = c.getBoundsInParent().getMaxX();
+    private void repositionScrollpane(Node node) {
+        // ensure that the ChipField has been redrawn completely otherwise bounds receive from various method call below
+        // will be the old bound and the calculation will be wrong
+        getParent().layout();
+
+        double chipMinX = node.getBoundsInParent().getMinX();
+        double chipMaxX = node.getBoundsInParent().getMaxX();
         double contentWidth = mainPane.getLayoutBounds().getWidth();
         double viewportWidth = getViewportBounds().getWidth();
         double extraWidth = contentWidth - viewportWidth;
@@ -125,15 +160,23 @@ public class ChipField extends ScrollPane {
         }
     }
 
-    private void addChip(Term t) {
-        Chip c;
-        if (selectionGroup.getSelected().isEmpty()) {
-            c = addChipUI(t, chipList.size());
-        } else {
-            c = addChipUI(t, chipList.indexOf(selectionGroup.getSelected().get(0)) + 1);
+    private boolean isChildFocused(Parent parent) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            if (node.isFocused()) {
+                return true;
+            } else if (node instanceof Parent) {
+                if (isChildFocused((Parent) node)) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
+
+    private void addChip(Term t) {
+        Chip c = addChipUI(t, mainPane.getChildren().indexOf(cursor));
         updateExpression();
-        selectionGroup.setSelected(c);
+        repositionScrollpane(c);
     }
 
     private Chip addChipUI(Term t, int index) {
@@ -150,17 +193,25 @@ public class ChipField extends ScrollPane {
         } else {
             throw new IllegalStateException();
         }
+
+        chip.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            int chipPosition = chipList.indexOf(chip);
+            mainPane.getChildren().remove(cursor);
+            mainPane.getChildren().add(chipPosition+1, cursor);
+            updateViewLayout();
+            repositionScrollpane(chip);
+        });
+
         chipList.add(index, chip);
         chipMap.put(chip, t);
-        selectionGroup.getSelectable().add(chip);
         mainPane.getChildren().add(index, chip);
+
         return chip;
     }
 
     private void removeChip(Chip chip) {
         chipList.remove(chip);
         chipMap.remove(chip);
-        selectionGroup.getSelectable().remove(chip);
         mainPane.getChildren().remove(chip);
         updateExpression();
     }
@@ -177,11 +228,15 @@ public class ChipField extends ScrollPane {
             return;
         }
 
+        int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
+
         HBox.setMargin(chipList.get(0), Insets.EMPTY);
         for (int i=1; i<chipList.size(); i++) {
             Chip previousChip = chipList.get(i - 1);
             Chip currentChip = chipList.get(i);
-            if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
+            if (i == currentCursorPosition && cursor.isVisible()) {
+                HBox.setMargin(currentChip, Insets.EMPTY);
+            } else if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
                     || isOperatorChip(previousChip, OperatorType.RIGHT_UNARY))
                     && (currentChip instanceof NumberWithUnitChip || currentChip instanceof ProjectValueChip
                     || isOperatorChip(currentChip, OperatorType.LEFT_UNARY))) {

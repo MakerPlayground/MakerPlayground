@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Rectangle?>
 
-<fx:root id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" minHeight="27.0" prefHeight="27.0"
-         minWidth="250" prefWidth="250" maxWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css"
-         type="ScrollPane" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <HBox fx:id="mainPane" maxHeight="25"/>
+<fx:root id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="250" minHeight="27.0" minWidth="250" prefHeight="27.0" prefWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" type="ScrollPane" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox fx:id="mainPane" maxHeight="25">
+        <children>
+            <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
+            <HBox.margin>
+               <Insets bottom="2.5" left="2.0" right="2.0" top="2.5" />
+            </HBox.margin></Rectangle>
+        </children>
+    </HBox>
 </fx:root>
