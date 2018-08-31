@@ -80,13 +80,4 @@ public class OperatorChip extends Chip<Operator> {
     public OperatorTerm getTerm() {
         return new OperatorTerm(getValue());
     }
-
-    @Override
-    protected void updateChipStyle(boolean selected) {
-        if (!selected) {
-            background.setFill(Color.web("#ff8b01"));
-        } else {
-            background.setFill(Color.web("#ff8b01").darker());
-        }
-    }
 }
