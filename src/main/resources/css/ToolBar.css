@@ -51,7 +51,7 @@
     -fx-padding: 0 0 0 0;
 }
 #saveBtn{
-    -fx-background-image: url('Save.png');
+    -fx-background-image: url('save.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
@@ -59,7 +59,7 @@
     -fx-background-repeat: no-repeat;
 }
 #saveBtn:pressed{
-    -fx-background-image: url('Save-press.png');
+    -fx-background-image: url('save-press.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
@@ -83,7 +83,7 @@
 }
 
 #loadBtn{
-    -fx-background-image: url('Open.png');
+    -fx-background-image: url('open.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
@@ -91,14 +91,14 @@
     -fx-background-repeat: no-repeat;
 }
 #loadBtn:pressed{
-    -fx-background-image: url('Open-press.png');
+    -fx-background-image: url('open-press.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #newFileBtn{
-    -fx-background-image: url('New.png');
+    -fx-background-image: url('new.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
@@ -106,7 +106,7 @@
     -fx-background-repeat: no-repeat;
 }
 #newFileBtn:pressed{
-    -fx-background-image: url('New-press.png');
+    -fx-background-image: url('new-press.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
