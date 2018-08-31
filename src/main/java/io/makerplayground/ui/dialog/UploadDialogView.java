@@ -76,13 +76,15 @@ public class UploadDialogView extends UndecoratedDialog {
             UploadResult result = uploadTask.getValue();
             if (result == UploadResult.OK) {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Success.png")));
+                rt.stop();
+                imgView.setRotate(0);
             } else {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Error-uploading.png")));
                 progress.setTextFill(Color.RED);
                 detailPane.setExpanded(true);
                 SingletonError.getInstance().setAll(progress.getText());
+                rt.stop();
             }
-            rt.stop();
         });
 
         // append text to the textarea when new log is coming

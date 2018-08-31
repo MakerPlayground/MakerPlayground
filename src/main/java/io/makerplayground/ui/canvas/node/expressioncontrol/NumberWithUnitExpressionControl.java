@@ -48,7 +48,7 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(numberRadioButton, valueRadioButton, customRadioButton);
 
-        ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting.png")));
+        ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting-press.png")));
         configButton.setFitWidth(25);
         configButton.setPreserveRatio(true);
         configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
