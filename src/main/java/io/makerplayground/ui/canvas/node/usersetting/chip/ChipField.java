@@ -33,6 +33,8 @@ public class ChipField extends ScrollPane {
 
     private final SelectionGroup<Chip> selectionGroup = new SelectionGroup<>();
 
+    private final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
+
     public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
         this.projectValues = projectValues;
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
@@ -89,12 +91,12 @@ public class ChipField extends ScrollPane {
             if (event.getCode() == KeyCode.LEFT) {
                 if (!selectionGroup.getSelected().isEmpty()) {
                     Chip selectedChip = selectionGroup.getSelected().get(0);
-                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) - 1, chipList.size())));
+                    selectionGroup.setSelected(chipList.get(Math.max(chipList.indexOf(selectedChip) - 1, 0)));
                 }
             } else if (event.getCode() == KeyCode.RIGHT) {
                 if (!selectionGroup.getSelected().isEmpty()) {
                     Chip selectedChip = selectionGroup.getSelected().get(0);
-                    selectionGroup.setSelected(chipList.get(Math.floorMod(chipList.indexOf(selectedChip) + 1, chipList.size())));
+                    selectionGroup.setSelected(chipList.get(Math.min(chipList.indexOf(selectedChip) + 1, chipList.size()-1)));
                 }
             }
         });
@@ -176,19 +178,28 @@ public class ChipField extends ScrollPane {
         }
 
         HBox.setMargin(chipList.get(0), Insets.EMPTY);
-        // Add margin between chips that aren't fit together
         for (int i=1; i<chipList.size(); i++) {
-            Chip previousChip = chipList.get(i-1);
+            Chip previousChip = chipList.get(i - 1);
             Chip currentChip = chipList.get(i);
             if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
-                    || (previousChip instanceof OperatorChip && ((OperatorChip) previousChip).getTerm().getValue().getType() == OperatorType.RIGHT_UNARY))
+                    || isOperatorChip(previousChip, OperatorType.RIGHT_UNARY))
                     && (currentChip instanceof NumberWithUnitChip || currentChip instanceof ProjectValueChip
-                    || (currentChip instanceof OperatorChip && ((OperatorChip) currentChip).getTerm().getValue().getType() == OperatorType.LEFT_UNARY))) {
-                HBox.setMargin(currentChip, new Insets(0, 0, 0, 10));
-            } else {
+                    || isOperatorChip(currentChip, OperatorType.LEFT_UNARY))) {
                 HBox.setMargin(currentChip, Insets.EMPTY);
+            } else if (isOperatorChip(previousChip, OperatorType.BINARY)
+                    && isOperatorChip(currentChip, OperatorType.BINARY)) {
+                HBox.setMargin(currentChip, Insets.EMPTY);
+            } else if (isOperatorChip(previousChip, OperatorType.LEFT_UNARY)
+                    && isOperatorChip(currentChip, OperatorType.RIGHT_UNARY)) {
+                HBox.setMargin(currentChip, Insets.EMPTY);
+            } else {
+                HBox.setMargin(currentChip, CHIP_FIT_INSETS);
             }
         }
+    }
+
+    private boolean isOperatorChip(Chip<?> chip, OperatorType operator) {
+        return (chip instanceof OperatorChip) && (((OperatorChip) chip).getTerm().getValue().getType() == operator);
     }
 
     private void updateHilight() {
