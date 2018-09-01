@@ -3,8 +3,8 @@
     -fx-font-size: 14px;
     -fx-background-color: #ffffff;
     -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 5px;
+    /*-fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;*/
     -fx-text-fill: #333333;
     -fx-font-weight: bold;
 }

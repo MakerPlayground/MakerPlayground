@@ -9,8 +9,8 @@
 #contentPane{
     -fx-background-color : #f6f6f6;
     -fx-background-radius : 7.5;
-    -fx-border-color : #e3e3e3;
-    -fx-border-radius : 7.5;
+    /*-fx-border-color : #e3e3e3;
+    -fx-border-radius : 7.5;*/
 }
 #nameStateTextField{
     -fx-background-color : #313644;
@@ -133,7 +133,7 @@
     -fx-cursor: hand;
 }
 #arcNode {
-    -fx-fill: #f6f6f6;
+    -fx-fill: #e3e3e3;
     -fx-stroke: #e3e3e3;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;

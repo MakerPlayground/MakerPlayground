@@ -14,7 +14,7 @@
          xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <Tab fx:id="simulateTab" text="Connection Diagram">
         <AnchorPane>
-            <ScrollPane maxHeight="600" fx:id="diagramScrollPane" AnchorPane.bottomAnchor="0.0"
+            <ScrollPane maxHeight="550" fx:id="diagramScrollPane" AnchorPane.bottomAnchor="0.0"
                         AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0"
                         AnchorPane.topAnchor="15.0"/>
         </AnchorPane>

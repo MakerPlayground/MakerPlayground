@@ -4,11 +4,10 @@
     -fx-font-size:12px;
 }
 #statePane {
-    -fx-background-color : white;
     -fx-background-radius: 10 10 10 10;
     -fx-background-color: #ffffff;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 10 10 10 10;
+    /*-fx-border-color: #e3e3e3;
+    -fx-border-radius: 10 10 10 10;*/
 }
 #nameStateTextField {
     -fx-background-color : transparent;
