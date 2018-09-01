@@ -1,21 +1,23 @@
 .root{
     -fx-font-size:12px;
 }
-.titled-pane > .title{
+/*.titled-pane > .title{
     -fx-font-size:12px;
     -fx-background-color : #313644;
     -fx-border-color: #313644;
     -fx-border-width : 2px;
-}
+}*/
+
 #toolBarPane {
     -fx-background-color: #ffffff; /*toolbar background area*/
     -fx-border-color: #e3e3e3;
+    -fx-border-width: 1 1 1 1;
 }
 #menuHBox {
     -fx-background-color: transparent;
 }
-#projectNameTextField{
-    -fx-font-size:12px;
+/*#projectNameTextField{
+    -fx-font-size: 12px;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-background-color: #313644;
@@ -26,8 +28,8 @@
 #projectNameTextField:focus{
     -fx-text-fill: white;
     -fx-border-color: transparent;
-}
-#tutorialBtn{
+}*/
+/*#tutorialBtn{
     -fx-background-color : transparent;
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #5ac2ab;
@@ -39,7 +41,8 @@
     -fx-border-color : #5ac2ab;
     -fx-text-fill: #231f20;
     -fx-cursor: hand;
-}
+}*/
+
 .split-pane{
     -fx-border-width:0;
     -fx-border-insets:0;
@@ -50,6 +53,7 @@
 .split-pane *.split-pane-divider {
     -fx-padding: 0 0 0 0;
 }
+
 #saveBtn{
     -fx-background-image: url('save.png');
     -fx-background-size : 30px;
