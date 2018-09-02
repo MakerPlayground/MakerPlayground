@@ -15,6 +15,7 @@ public enum ConnectionType {
     SPI,
     UART,
     POWER,
+    NONE,
 
     /* Maker Playground */
     MP_INT_UART,

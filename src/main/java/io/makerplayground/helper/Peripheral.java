@@ -4,6 +4,8 @@ package io.makerplayground.helper;
  * Created by nuntipat on 7/7/2017 AD.
  */
 public enum Peripheral {
+    NOT_CONNECTED(ConnectionType.NONE),
+
     GPIO_1(ConnectionType.GPIO),
     GPIO_2(ConnectionType.GPIO),
     GPIO_3(ConnectionType.GPIO),

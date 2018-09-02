@@ -119,6 +119,11 @@ public class Diagram extends Pane {
         int maxHeight = 0;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
+            if (device.getFormFactor() == FormFactor.GROVE) {
+                continue;
+            } else if (device.getFormFactor() == FormFactor.NONE) {
+                continue;
+            }
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                 DevicePort topLeftPort = getTopLeftHole(device);
@@ -138,9 +143,7 @@ public class Diagram extends Pane {
             } else if (device.getFormFactor() == FormFactor.SHIELD) {
                 deviceTopLeftPos.put(projectDevice, controllerPosition);
                 maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
-            } else if (device.getFormFactor() == FormFactor.GROVE) {
-                continue;
-            }  // TODO: add new form factor here
+            } // TODO: add new form factor here
             if( lastX + device.getWidth() > 750){
                 lastX = BREADBOARD_LEFT_MARGIN;
                 lastY = lastY + CONTROLLER_Y_MARGIN + maxHeight;
@@ -160,6 +163,9 @@ public class Diagram extends Pane {
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             lastX = BREADBOARD_LEFT_MARGIN;
             Device device = projectDevice.getActualDevice();
+            if (device.getFormFactor() == FormFactor.NONE) {
+                continue; // prevent the image file loading.
+            }
             ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
             Text text = new Text();
             text.setFont(Font.font(GROVE_FONT_SIZE));
@@ -386,7 +392,7 @@ public class Diagram extends Pane {
             Device device = projectDevice.getActualDevice();
             double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
-                if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlike
+                if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlike -> sourcePeripheral.getConnectionType() == ConnectionType.I2C
                     DevicePort desSDA = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSDA).findFirst().get();
                     DevicePort desSCL = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCL).findFirst().get();
 
@@ -438,7 +444,7 @@ public class Diagram extends Pane {
                     break;
                 }
 
-                if (sourcePeripheral == Peripheral.SPI_1) { // TODO: not tested yet
+                if (sourcePeripheral == Peripheral.SPI_1) { // TODO: not tested yet   -> sourcePeripheral.getConnectionType() == ConnectionType.SPI
 //                    DevicePort sourceMOSI = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMOSI).findFirst().get(); // TODO: shouldn't use findfirst
 //                    DevicePort sourceMISO = device.getPort(sourcePeripheral).stream().filter(DevicePort::isMISO).findFirst().get();
 //                    DevicePort sourceSCK = device.getPort(sourcePeripheral).stream().filter(DevicePort::isSCK).findFirst().get();
@@ -453,7 +459,7 @@ public class Diagram extends Pane {
 //                    createLine(projectDevice, sourceMISO, project.getController(), desMISO);
 //                    createLine(projectDevice, sourceSCK, project.getController(), desSCK);
 //                    createLine(projectDevice, sourceSS, project.getController(), desSS);
-                } else if (sourcePeripheral == Peripheral.UART_1) { // TODO: not tested yet
+                } else if (sourcePeripheral == Peripheral.UART_1) { // TODO: not tested yet   -> sourcePeripheral.getConnectionType() == ConnectionType.UART
 //                    DevicePort sourceRX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isRX).findFirst().get();
 //                    DevicePort sourceTX = device.getPort(sourcePeripheral).stream().filter(DevicePort::isTX).findFirst().get();
 //

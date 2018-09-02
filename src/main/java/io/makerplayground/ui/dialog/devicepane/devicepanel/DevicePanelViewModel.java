@@ -21,7 +21,7 @@ public class DevicePanelViewModel {
     private final ObjectProperty<Platform> platformProperty;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> inputChildViewModel;
     private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> outputChildViewModel;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> connectivityChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> virtualChildViewModel;
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
@@ -32,7 +32,7 @@ public class DevicePanelViewModel {
         this.platformProperty.addListener((observable, oldValue, newValue) -> project.setPlatform(newValue));
         this.inputChildViewModel = new DynamicViewModelCreator<>(project.getSensor(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
         this.outputChildViewModel = new DynamicViewModelCreator<>(project.getActuator(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.connectivityChildViewModel = new DynamicViewModelCreator<>(project.getConnectivity(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.virtualChildViewModel = new DynamicViewModelCreator<>(project.getVirtual(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
     }
 
     public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
@@ -43,8 +43,8 @@ public class DevicePanelViewModel {
         return outputChildViewModel;
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getConnectivityChildViewModel() {
-        return connectivityChildViewModel;
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getVirtualChildViewModel() {
+        return virtualChildViewModel;
     }
 
     public boolean removeOutputDevice(DevicePanelIconViewModel device) {
@@ -59,7 +59,7 @@ public class DevicePanelViewModel {
 
     public boolean removeConnectivityDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeConnectivity(deviceToBeRemoved);
+        return project.removeVirtual(deviceToBeRemoved);
     }
 
     public void addDevice(Map<GenericDevice, Integer> device) {
@@ -74,7 +74,7 @@ public class DevicePanelViewModel {
                 }
             } else if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addConnectivity(genericDevice);
+                    project.addVirtual(genericDevice);
                 }
             } else {
                 throw new IllegalStateException("We are in great danger!!!");

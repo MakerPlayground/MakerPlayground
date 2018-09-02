@@ -1,6 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -47,6 +48,9 @@ public class MPDiagram extends Pane {
 
         // draw all devices
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.getActualDevice().getFormFactor() == FormFactor.NONE) {
+                continue;
+            }
             List<Peripheral> deviceConnectivity = projectDevice.getActualDevice().getConnectivity();
             if (deviceConnectivity.size() != 1) {
                 throw new IllegalStateException();

@@ -243,7 +243,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
             // We only show port combobox when the device has been selected
             Device actualDevice = projectDevice.getActualDevice();
-            if (actualDevice != null) {
+            if (actualDevice != null && actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
                 // loop for each peripheral
                 for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
                     if (combo.get(p) == null)

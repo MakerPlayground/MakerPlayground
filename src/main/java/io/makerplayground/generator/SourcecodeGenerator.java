@@ -2,6 +2,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
+import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
@@ -30,18 +31,16 @@ public class SourcecodeGenerator {
             Map.entry("Internal", Collections.<String>emptyList())
     );
 
-    private StringBuilder builder;
-    private Project project;
-    private boolean cppMode;
-    private Queue<Scene> queue = new ArrayDeque<>();
+    private final Project project;
+    private final boolean cppMode;
+    private final StringBuilder builder = new StringBuilder();
 
     /* these variables are for keeping the result of generateCodeForSceneFunctions() */
-    private Set<Scene> visitedScene = new HashSet<>();
-    private StringBuilder sceneFunctions = new StringBuilder();
+    private final Set<Scene> visitedScene = new HashSet<>();
+    private final StringBuilder sceneFunctions = new StringBuilder();
     private boolean generateMapFunction;    // use for ValueLinkingExpression as Arduino built-in map function uses integer arithmetic
 
     private SourcecodeGenerator(Project project, boolean cppMode) {
-        this.builder = new StringBuilder();
         this.project = project;
         this.cppMode = cppMode;
     }
@@ -94,28 +93,30 @@ public class SourcecodeGenerator {
             builder.append(projectDevice.getActualDevice().getMpLibrary())
                     .append(" _").append(projectDevice.getName().replace(" ", "_"));
             List<String> args = new ArrayList<>();
-            // port
-            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
-                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-                    if (port == null) {
-                        throw new IllegalStateException("Port hasn't been selected!!!");
-                    }
-                    // SPECIAL CASE
-                    if (project.getPlatform() == Platform.MP_ARDUINO) {
-                        if (port.size() != 1) {
-                            throw new IllegalStateException();
+            if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+                // port
+                for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
+                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                        if (port == null) {
+                            throw new IllegalStateException("Port hasn't been selected!!!");
                         }
-                        List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
-                        if (!portName.isEmpty()) {
-                            if (p.isMPDual()) {
-                                args.addAll(portName);
-                            } else {
-                                args.add(portName.get(0));
+                        // SPECIAL CASE
+                        if (project.getPlatform() == Platform.MP_ARDUINO) {
+                            if (port.size() != 1) {
+                                throw new IllegalStateException();
                             }
+                            List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
+                            if (!portName.isEmpty()) {
+                                if (p.isMPDual()) {
+                                    args.addAll(portName);
+                                } else {
+                                    args.add(portName.get(0));
+                                }
+                            }
+                        } else {
+                            args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                         }
-                    } else {
-                        args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                     }
                 }
             }
@@ -240,6 +241,7 @@ public class SourcecodeGenerator {
     }
 
     private Sourcecode generateCodeForSceneFunctions() {
+        Queue<Scene> queue = new ArrayDeque<>();
 
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
         List<Scene> adjacentScene = getScene(adjacentVertices);
@@ -296,26 +298,7 @@ public class SourcecodeGenerator {
                 String deviceName = "_" + setting.getDevice().getName().replace(" ", "_");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
-                    Expression expression = setting.getValueMap().get(parameter);
-                    if (expression instanceof CustomNumberExpression) {
-                        double maxValue = ((CustomNumberExpression) expression).getMaxValue();
-                        double minValue = ((CustomNumberExpression) expression).getMinValue();
-                        params.add("constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")");
-                    } else if (expression instanceof ValueLinkingExpression) {
-                        ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
-                        double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
-                        double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
-                        double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
-                        double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-                        double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
-                        double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
-                        params.add("constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
-                                , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
-                                + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")");
-                        generateMapFunction = true;
-                    } else {
-                        params.add(expression.translateToCCode());
-                    }
+                    params.add(parseExpression(setting.getValueMap().get(parameter)));
                 }
                 sceneFunctions.append(INDENT).append(deviceName).append(".")
                         .append(setting.getAction().getFunctionName()).append("(");
@@ -365,7 +348,7 @@ public class SourcecodeGenerator {
         return new Sourcecode(Sourcecode.Error.NONE, "");
     }
 
-    private static Sourcecode.Error processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
+    private Sourcecode.Error processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
         // gather every value used by every condition connect to the current scene
         Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
         for (Condition condition : adjacentCondition) {
@@ -400,19 +383,12 @@ public class SourcecodeGenerator {
             List<String> conditionList = new ArrayList<>();
             for (UserSetting setting : condition.getSetting()) {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
-                    List<String> parameterList = new ArrayList<>();
+                    List<String> params = new ArrayList<>();
                     for (Parameter parameter : setting.getAction().getParameter()) {
-                        Object value = setting.getValueMap().get(parameter);
-                        if (value instanceof NumberWithUnitExpression) {
-                            parameterList.add(df.format(((NumberWithUnitExpression) value).getNumberWithUnit().getValue()));
-                        } else if (value instanceof SimpleStringExpression) {
-                            parameterList.add("\"" + ((SimpleStringExpression) value).getString() + "\"");
-                        }
+                        params.add(parseExpression(setting.getValueMap().get(parameter)));
                     }
-                    StringBuilder action = new StringBuilder();
-                    action.append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
-                            .append(setting.getAction().getFunctionName()).append("(").append(String.join(",", parameterList)).append(")");
-                    conditionList.add(action.toString());
+                    conditionList.add("_" + setting.getDevice().getName().replace(" ", "_") + "." +
+                            setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
                         if (setting.getExpressionEnable().get(value)) {
@@ -457,6 +433,30 @@ public class SourcecodeGenerator {
         sb.append(INDENT).append("}").append(NEW_LINE); // end of while loop
 
         return Sourcecode.Error.NONE;
+    }
+
+    private String parseExpression(Expression expression) {
+        String returnValue;
+        if (expression instanceof CustomNumberExpression) {
+            double maxValue = ((CustomNumberExpression) expression).getMaxValue();
+            double minValue = ((CustomNumberExpression) expression).getMinValue();
+            returnValue =  "constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")";
+        } else if (expression instanceof ValueLinkingExpression) {
+            ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
+            double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
+            double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
+            double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
+            double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
+            double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
+            double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
+            returnValue = "constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
+                    , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
+                    + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")";
+            generateMapFunction = true;
+        } else {
+            returnValue = expression.translateToCCode();
+        }
+        return returnValue;
     }
 
     private boolean checkScene(Project project) {

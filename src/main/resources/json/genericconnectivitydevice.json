@@ -198,5 +198,209 @@
         "type": "STRING"
       }
     ]
+  },
+  {
+    "name": "Container",
+    "description": "Virtual Number/Value Container",
+    "action": [
+      {
+        "name": "Set to",
+        "funcname": "setValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 0.0,
+            "constraint": {
+              "min": -50000.0,
+              "max": 50000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Check Value",
+        "funcname": "checkValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 0.0,
+            "constraint": {
+              "min": -50000.0,
+              "max": 50000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -50000.0,
+          "max": 50000.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ],
+    "property": []
+  },
+  {
+    "name": "Counter",
+    "description": "Virtual Counter",
+    "action": [
+      {
+        "name": "Set to",
+        "funcname": "setValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 0,
+            "constraint": {
+              "min": -32768,
+              "max": 32767,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Count up",
+        "funcname": "increaseValue",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Count down",
+        "funcname": "decreaseValue",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Count by",
+        "funcname": "increaseValueBy",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Change",
+            "value": 0,
+            "constraint": {
+              "min": -32768,
+              "max": 32767,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Check Value",
+        "funcname": "checkValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 5,
+            "constraint": {
+              "min": -32768,
+              "max": 32767,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": -32768,
+          "max": 32767,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ],
+    "property": []
+  },
+  {
+    "name": "Timer",
+    "description": "Virtual Timer",
+    "action": [
+      {
+        "name": "Start timer",
+        "funcname": "startTimer",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Stop timer",
+        "funcname": "startTimer",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [
+      {
+        "name": "Time out",
+        "funcname": "isOverTime",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Second",
+            "value": 5,
+            "constraint": {
+              "min": 1,
+              "max": 1000000,
+              "unit": "SECOND"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "value": [
+      {
+        "name": "Second",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 1000000,
+          "unit": "SECOND"
+        }
+      }
+    ],
+    "property": []
   }
 ]

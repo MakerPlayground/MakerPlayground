@@ -50,7 +50,7 @@ public class Project {
     private ObjectProperty<Device> controller;
     private final ObservableList<ProjectDevice> sensor;
     private final ObservableList<ProjectDevice> actuator;
-    private final ObservableList<ProjectDevice> connectivity;
+    private final ObservableList<ProjectDevice> virtual;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
@@ -58,7 +58,7 @@ public class Project {
 
     private final ObservableList<ProjectDevice> unmodifiableSensor;
     private final ObservableList<ProjectDevice> unmodifiableActuator;
-    private final ObservableList<ProjectDevice> unmodifiableConnectivity;
+    private final ObservableList<ProjectDevice> unmodifiableVirtual;
     private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
@@ -73,7 +73,7 @@ public class Project {
         controller = new SimpleObjectProperty<>();
         actuator = FXCollections.observableArrayList();
         sensor = FXCollections.observableArrayList();
-        connectivity = FXCollections.observableArrayList();
+        virtual = FXCollections.observableArrayList();
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
@@ -82,7 +82,7 @@ public class Project {
 
         unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
         unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
-        unmodifiableConnectivity = FXCollections.unmodifiableObservableList(connectivity);
+        unmodifiableVirtual = FXCollections.unmodifiableObservableList(virtual);
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
@@ -165,28 +165,28 @@ public class Project {
         return sensor.remove(device);
     }
 
-    public ObservableList<ProjectDevice> getConnectivity() {
-        return unmodifiableConnectivity;
+    public ObservableList<ProjectDevice> getVirtual() {
+        return unmodifiableVirtual;
     }
 
-    public void addConnectivity(GenericDevice device) {
+    public void addVirtual(GenericDevice device) {
         Pattern p = Pattern.compile(device.getName()+"\\d+");
-        int id = connectivity.stream()
+        int id = virtual.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
-        connectivity.add(projectDevice);
+        virtual.add(projectDevice);
         SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
-    protected void addConnectivity(ProjectDevice device) {
-        connectivity.add(device);
+    protected void addVirtual(ProjectDevice device) {
+        virtual.add(device);
     }
 
-    public boolean removeConnectivity(ProjectDevice device) {
+    public boolean removeVirtual(ProjectDevice device) {
         for (Scene s : scene) {
             s.removeDevice(device);
         }
@@ -194,16 +194,16 @@ public class Project {
             c.removeDevice(device);
         }
 
-        return connectivity.remove(device);
+        return virtual.remove(device);
     }
 
     public List<ProjectDevice> getInputDevice() {
-        return Stream.concat(sensor.stream(), connectivity.filtered(device -> !device.getGenericDevice().getCondition().isEmpty()).stream())
+        return Stream.concat(sensor.stream(), virtual.filtered(device -> !device.getGenericDevice().getCondition().isEmpty()).stream())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public List<ProjectDevice> getOutputDevice() {
-        return Stream.concat(actuator.stream(), connectivity.filtered(device -> !device.getGenericDevice().getAction().isEmpty()).stream())
+        return Stream.concat(actuator.stream(), virtual.filtered(device -> !device.getGenericDevice().getAction().isEmpty()).stream())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
@@ -356,7 +356,7 @@ public class Project {
                 value.add(new ProjectValue(projectDevice, v));
             }
         }
-        for (ProjectDevice projectDevice : connectivity) {
+        for (ProjectDevice projectDevice : virtual) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 value.add(new ProjectValue(projectDevice, v));
             }
@@ -383,7 +383,7 @@ public class Project {
     }
 
     public List<ProjectDevice> getAllDevice() {
-        return Stream.concat(Stream.concat(sensor.stream(), actuator.stream()), connectivity.stream())
+        return Stream.concat(Stream.concat(sensor.stream(), actuator.stream()), virtual.stream())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
@@ -464,7 +464,7 @@ public class Project {
         if (getFilePath().isEmpty()) {
             // A hack way to check for project modification in case that it hasn't been saved
             return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null
-                    && sensor.isEmpty() && actuator.isEmpty() && connectivity.isEmpty()
+                    && sensor.isEmpty() && actuator.isEmpty() && virtual.isEmpty()
                     && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
                     && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
         } else {

@@ -141,7 +141,10 @@ public class DeviceMapper {
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                if (pDevice.getConnectionType() == ConnectionType.I2C) {
+                if (pDevice.getConnectionType() == ConnectionType.NONE) {
+                    possibleDevice.get(pDevice).add(Collections.emptyList());
+                }
+                else if (pDevice.getConnectionType() == ConnectionType.I2C) {
                     DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
                     DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
                     possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));

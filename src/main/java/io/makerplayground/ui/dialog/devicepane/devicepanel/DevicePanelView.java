@@ -1,7 +1,5 @@
 package io.makerplayground.ui.dialog.devicepane.devicepanel;
 
-import io.makerplayground.device.GenericDevice;
-
 import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
 import io.makerplayground.ui.deprecated.DevicePanelIcon;
@@ -13,8 +11,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  *
@@ -27,7 +23,7 @@ public class DevicePanelView extends VBox {
     @FXML private VBox devicePanel;
     @FXML private FlowPane inputPane;
     @FXML private FlowPane outputPane;
-    @FXML private FlowPane connectivityPane;
+    @FXML private FlowPane virtualPane;
     @FXML private FlowPane microcontrollerPane;
 
     @FXML public void onAddDeviceClick() {
@@ -91,10 +87,10 @@ public class DevicePanelView extends VBox {
                     .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                     .createDynamicViewCreator();
 
-        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> connectivityViewCreator =
+        DynamicViewCreator<FlowPane, DevicePanelIconViewModel, DevicePanelIcon> virtualViewCreator =
                 new DynamicViewCreatorBuilder<FlowPane, DevicePanelIconViewModel, DevicePanelIcon>()
-                        .setParent(connectivityPane)
-                        .setModelLoader(viewModel.getConnectivityChildViewModel())
+                        .setParent(virtualPane)
+                        .setModelLoader(viewModel.getVirtualChildViewModel())
                         .setViewFactory(devicePanelIconViewModel -> {
                             DevicePanelIcon icon = new DevicePanelIcon(devicePanelIconViewModel);
                             icon.setOnAction(event -> viewModel.removeConnectivityDevice(devicePanelIconViewModel));

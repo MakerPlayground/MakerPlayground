@@ -67,7 +67,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         for (JsonNode connectivityDeviceNode : node.get("connectivityDevice")) {
             ProjectDevice projectDevice = deserializeProjectDevice(mapper, connectivityDeviceNode, controller);
             connectivityDevices.add(projectDevice);
-            project.addConnectivity(projectDevice);
+            project.addVirtual(projectDevice);
         }
 
         Begin begin = project.getBegin();
