@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <ScrollPane hbarPolicy="NEVER" maxHeight="600">
+        <ScrollPane hbarPolicy="NEVER" maxHeight="600" vbarPolicy="ALWAYS">
             <VBox alignment="CENTER" spacing="20">
                 <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER" />
                 <GridPane hgap="10.0">
@@ -50,7 +50,7 @@
                     <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
                     </FlowPane>
                 </VBox>
-                <Button fx:id="okButton" id="okButton" mnemonicParsing="false" text="OK" />
+                <Button id="okButton" fx:id="okButton" mnemonicParsing="false" text="OK" />
             <padding>
                <Insets left="30.0" right="30.0" />
             </padding>
