@@ -50,7 +50,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("connectivityDevice");
-        for(ProjectDevice connectivityDevice : project.getConnectivity()) {
+        for(ProjectDevice connectivityDevice : project.getVirtual()) {
             mapper.writeValue(jsonGenerator, connectivityDevice);
         }
         jsonGenerator.writeEndArray();

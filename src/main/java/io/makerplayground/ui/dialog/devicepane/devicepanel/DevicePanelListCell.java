@@ -8,8 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -62,7 +60,7 @@ public class DevicePanelListCell extends ListCell<ProjectDevice> {
     private void deleteHandler() {
         ProjectDevice projectDevice = getItem();
         project.removeSensor(projectDevice);
-        project.removeConnectivity(projectDevice);
+        project.removeVirtual(projectDevice);
         project.removeActuator(projectDevice);
     }
 

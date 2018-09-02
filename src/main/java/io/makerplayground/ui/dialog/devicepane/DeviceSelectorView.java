@@ -27,20 +27,20 @@ public class DeviceSelectorView extends UndecoratedDialog {
     @FXML private Button cancelButton;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane inputPane;
-    @FXML private FlowPane connectivityPane;
+    @FXML private FlowPane virtualPane;
 
     private Map<GenericDevice, Integer> deviceToBeAdded = new HashMap<>();
 
     private ObservableList<ControlAddDevicePane> outputDevice;
     private ObservableList<ControlAddDevicePane> inputDevice;
-    private ObservableList<ControlAddDevicePane> connectivityDevice;
+    private ObservableList<ControlAddDevicePane> virtualDevice;
 
     public DeviceSelectorView(Window owner) {
         super(owner);
 
         this.inputDevice = FXCollections.observableArrayList();
         this.outputDevice = FXCollections.observableArrayList();
-        this.connectivityDevice = FXCollections.observableArrayList();
+        this.virtualDevice = FXCollections.observableArrayList();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/devicepane/DeviceSelectorView.fxml"));
         fxmlLoader.setRoot(anchorPane);
@@ -69,8 +69,8 @@ public class DeviceSelectorView extends UndecoratedDialog {
         }
         for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericConnectivityDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
-            connectivityPane.getChildren().add(controlDevicePane);
-            this.connectivityDevice.add(controlDevicePane);
+            virtualPane.getChildren().add(controlDevicePane);
+            this.virtualDevice.add(controlDevicePane);
         }
     }
 
@@ -82,7 +82,7 @@ public class DeviceSelectorView extends UndecoratedDialog {
             for (ControlAddDevicePane d : inputDevice) {
                 deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
             }
-            for (ControlAddDevicePane d : connectivityDevice) {
+            for (ControlAddDevicePane d : virtualDevice) {
                 deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
             }
             hide();

@@ -31,7 +31,7 @@ public class ConditionViewModel {
         this.project.getSensor().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
         });
-        this.project.getConnectivity().addListener((InvalidationListener) observable -> {
+        this.project.getVirtual().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
         });
         // when we remove something from the condition

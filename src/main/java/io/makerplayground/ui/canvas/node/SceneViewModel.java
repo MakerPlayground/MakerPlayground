@@ -36,7 +36,7 @@ public class SceneViewModel {
         this.project.getActuator().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
-        this.project.getConnectivity().addListener((InvalidationListener) observable -> {
+        this.project.getVirtual().addListener((InvalidationListener) observable -> {
             hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
         });
         // when we remove something from the scene

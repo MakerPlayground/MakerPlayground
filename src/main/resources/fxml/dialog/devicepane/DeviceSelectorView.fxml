@@ -30,9 +30,9 @@
                 </FlowPane>
             </ScrollPane>
         </TitledPane>
-        <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Connectivity">
+        <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Virtual">
             <ScrollPane fitToWidth="true" prefHeight="115.0">
-                <FlowPane fx:id="connectivityPane" hgap="5.0" vgap="5.0">
+                <FlowPane fx:id="virtualPane" hgap="5.0" vgap="5.0">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                     </padding>
