@@ -200,8 +200,8 @@
     ]
   },
   {
-    "name": "Number Container",
-    "description": "Virtual Number Container",
+    "name": "Container",
+    "description": "Virtual Number/Value Container",
     "action": [
       {
         "name": "Set to",
