@@ -1,0 +1,7 @@
+.root {
+    -fx-accent: #2673fd;
+}
+
+.menu-item:focused {
+    -fx-background-color: #2673fd;
+}

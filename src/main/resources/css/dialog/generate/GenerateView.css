@@ -6,7 +6,9 @@
     -fx-border-radius: 15;
     -fx-background-color: white;
     -fx-background-radius: 15;
+    -fx-accent: #2673fd;
 }
+
 .scroll-pane{
     -fx-padding:0;
     -fx-background-color: transparent;

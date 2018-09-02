@@ -99,6 +99,7 @@ public class Main extends Application {
         borderPane.setCenter(mainWindow);
 
         final Scene scene = new Scene(borderPane, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(borderPane);
