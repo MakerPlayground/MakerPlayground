@@ -2,16 +2,182 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.ArcTo?>
+<?import javafx.scene.shape.ClosePath?>
+<?import javafx.scene.shape.LineTo?>
+<?import javafx.scene.shape.MoveTo?>
+<?import javafx.scene.shape.Path?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
 
-<fx:root id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="250" minHeight="27.0" minWidth="250" prefHeight="27.0" prefWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" type="ScrollPane" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <HBox fx:id="mainPane" maxHeight="25">
+<fx:root type="VBox" spacing="5" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="250" minHeight="27.0" minWidth="250" prefHeight="27.0" prefWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" vbarPolicy="NEVER">
+        <content>
+            <HBox fx:id="mainPane" maxHeight="25">
+                <children>
+                    <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
+                        <HBox.margin>
+                            <Insets left="2.0" right="2.0" top="2.0" />
+                        </HBox.margin>
+                    </Rectangle>
+                </children>
+            </HBox>
+        </content>
+    </ScrollPane>
+    <GridPane fx:id="chipSelectorPane" alignment="CENTER" hgap="5.0" vgap="5.0">
+        <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
         <children>
-            <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
-            <HBox.margin>
-               <Insets left="2.0" right="2.0" top="2.0" />
-            </HBox.margin></Rectangle>
+            <StackPane fx:id="numberChip">
+                <children>
+                    <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#2673fd" height="25.0" width="60.0" />
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Number" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="valueChip" GridPane.rowIndex="1">
+                <children>
+                    <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#9129d7" height="25.0" width="60.0" />
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="plusChip" GridPane.columnIndex="1">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="35.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="35.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="+" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="multiplyChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="35.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="35.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="x" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="minusChip" GridPane.columnIndex="2">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="35.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="35.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="divideChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="35.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="35.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="3">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="false" x="0.0" y="10.0" />
+                            <LineTo x="0.0" y="15.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="false" x="10.0" y="25.0" />
+                            <LineTo x="25.0" y="25.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="15.0" y="15.0" />
+                            <LineTo x="15.0" y="10.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                        <StackPane.margin>
+                            <Insets />
+                        </StackPane.margin>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="(">
+                        <StackPane.margin>
+                            <Insets right="7.5" />
+                        </StackPane.margin>
+                    </Text>
+                </children>
+            </StackPane>
+            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="15.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="15.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="false" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="false" x="15.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text=")">
+                        <StackPane.margin>
+                            <Insets left="7.5" />
+                        </StackPane.margin>
+                    </Text>
+                </children>
+            </StackPane>
         </children>
-    </HBox>
+    </GridPane>
 </fx:root>
