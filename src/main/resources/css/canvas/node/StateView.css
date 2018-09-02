@@ -4,32 +4,35 @@
     -fx-font-size:12px;
 }
 #statePane {
-    -fx-background-color : white;
     -fx-background-radius: 10 10 10 10;
-    -fx-background-color: #313644;
+    -fx-background-color: #ffffff;
+    /*-fx-border-color: #e3e3e3;
+    -fx-border-radius: 10 10 10 10;*/
 }
 #nameStateTextField {
     -fx-background-color : transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: #707070;
     -fx-font-weight: bold;
-    -fx-font-size : 14 px;
+    -fx-font-size : 14px;
 }
 #numberTextField {
-    -fx-background-color : white;
-    -fx-border-color : transparent;
-    -fx-border-width : 0px;
-    -fx-text-fill : black;
-    -fx-font-size : 10 px;
+    -fx-background-color : #f6f6f6;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color : #e3e3e3;
+    -fx-border-width : 1px;
+    -fx-border-radius: 5 5 5 5;
+    -fx-text-fill : #707070;
+    -fx-font-size : 9px;
     /*-fx-font-weight : bold;*/
 }
 #stateBottomHBox{
-    -fx-background-color : #313644;
+    -fx-background-color : #ffffff;
     -fx-background-radius: 0 0 10 10;
 }
 #delayText {
     -fx-text-fill : white;
-    -fx-font-size:12px;
-    -fx-fill: WHITE;
+    -fx-font-size:9px;
+    -fx-fill: #707070;
     -fx-strokeType: OUTSIDE;
 }
 .flow-pane{
@@ -38,8 +41,9 @@
 }
 
 #scrollPane > .viewport{
-    -fx-background-color: white;
-    -fx-border-color : transparent;
+    -fx-background-color: #f6f6f6;
+    -fx-border-color : #e3e3e3;
+    -fx-border-width : 1px 0px 1px 0px;
 }
 
 .scroll-bar .increment-button {
@@ -63,36 +67,37 @@
 .scroll-bar .track{
     -fx-background-color: transparent;
     -fx-border-color : transparent;
-    -fx-border-radius:2em;
+    -fx-border-radius:0.5em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#313644,45%);
-    -fx-border-radius: 2em;
+    -fx-background-color: derive(#707070,45%);
+    -fx-border-radius: 0.5em;
     -fx-background-insets: 2, 0, 0;
 }
 .scroll-bar {
     -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 #TimeUnitComboBox{
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
     -fx-border-color: transparent;
     -fx-background-color: transparent;
 }
 #TimeUnitComboBox .list-cell {
-    -fx-font-size:12px;
-    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-text-fill: #707070;
 }
 #TimeUnitComboBox .combo-box-popup .list-cell{
-    -fx-font-size:12px;
-    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-text-fill: #707070;
     -fx-background-color: white;
 }
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {
-    -fx-font-size:12px;
-    -fx-background-color: #5ac2ab;
-    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-background-color: #008ef4;
+    -fx-text-fill: #ffffff;
 }
 #TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
     -fx-background-color: derive(#cccccc,40%);
@@ -101,31 +106,31 @@
 }
 
 #TimeUnitComboBox .arrow{
-    -fx-background-color: white;
+    -fx-background-color: #707070;
 }
 #TimeUnitComboBox: pressed .arrow-button {
     -fx-background-color: white;
 }
 #TimeUnitComboBox: pressed .arrow {
-    -fx-background-color: #313644;
+    -fx-background-color: #777677;
 }
 
 #addOutputButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('Add-toggle.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('add-2-toggle.png');
+    -fx-background-size : 60px;
     -fx-cursor: hand;
 }
 #addOutputButton{
-    -fx-background-image: url('Add.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('add-2.png');
+    -fx-background-size : 60px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
 #arcNode {
-    -fx-fill: #313644;
-    -fx-stroke: #ffffff00;
+    -fx-fill: #e3e3e3;
+    -fx-stroke: #e3e3e3;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

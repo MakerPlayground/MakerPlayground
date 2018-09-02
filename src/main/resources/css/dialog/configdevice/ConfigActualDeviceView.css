@@ -2,37 +2,36 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 10;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
 }
 #topicConfigDevice{
     -fx-background-color : transparent;
-    -fx-text-fill : #313644;
+    -fx-text-fill : #707070;
     -fx-font-size:14px;
     -fx-font-weight: bold;
 }
-#nameLabel{
-    -fx-background-color : transparent;
-    -fx-text-fill : #313644;
-    -fx-max-width: 100;
-    -fx-min-width: 100;
-    -fx-font-size:12px;
-}
 .label{
     -fx-background-color : transparent;
-    -fx-text-fill : #313644;
-    -fx-font-size:12px;
+    -fx-text-fill : #707070;
+    -fx-font-size: 12px;
 }
 #portComboBox{
     -fx-max-width: 95;
     -fx-min-width: 60;
     -fx-min-height: 25;
     -fx-max-height: 25;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
 #portComboBox:showing .list-view,#portComboBox:armed .list-view{
     -fx-max-width: 95;
     -fx-min-width: 60;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
 #controllerSelection{
     -fx-padding: 0 0 0 35 ; /* 4 8 4 8 */
@@ -65,7 +64,7 @@
 }*/
 .combo-box.list-cell {
     -fx-background-color: white;
-    -fx-background-radius:3px;
+    -fx-background-radius: 3px;
     -fx-text-fill: #313644;
     -fx-padding: 3 0 2 7;
     -fx-cell-size: 1.66667em;
@@ -87,6 +86,10 @@
     -fx-padding:0;
     -fx-border-color: transparent;
     -fx-border-width: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: white;
 }
 
 .scroll-bar:vertical .increment-button {
@@ -148,10 +151,39 @@
     -fx-min-height:25;
 }
 .check-box .box{
-    -fx-border-color: #cccccc;
+    -fx-border-color: #707070;
     -fx-background-color: white;
 }
 
 #unusedLabel {
     -fx-font-weight: bold;
+}
+
+#okButton {
+    -fx-text-fill: #707070;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+}
+
+#okButton:hover{
+    -fx-text-fill: #707070;
+    -fx-background-color: #e3e3e3;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+    -fx-cursor: hand;
+}
+
+#okButton:pressed {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #2673fd;
+    -fx-background-radius: 5px;
+    -fx-border-color: #2673fd;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 50 5 50;
+    -fx-cursor: hand;
 }

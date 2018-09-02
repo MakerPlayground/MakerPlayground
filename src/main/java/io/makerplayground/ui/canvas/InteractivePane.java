@@ -78,8 +78,8 @@ public class InteractivePane extends ScrollPane {
         // guideLine is always bring to front when visible so we must make it transparent otherwise it will block
         // MOUSE_DRAGGED event of the destination port and prevent us from creating connection
         guideLine.setMouseTransparent(true);
-        guideLine.setStrokeWidth(3.25);
-        guideLine.setStyle("-fx-stroke: #313644;");
+        guideLine.setStrokeWidth(2.25);
+        guideLine.setStyle("-fx-stroke: #707070;");
         content.getChildren().add(guideLine);
 
         groupSelectionArea.setVisible(false);

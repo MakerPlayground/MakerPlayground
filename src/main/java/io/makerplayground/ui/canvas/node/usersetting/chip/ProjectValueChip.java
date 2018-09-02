@@ -85,13 +85,4 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     public ValueTerm getTerm() {
         return new ValueTerm(getValue());
     }
-
-    @Override
-    protected void updateChipStyle(boolean selected) {
-        if (!selected) {
-            background.setFill(Color.web("#C5534F"));
-        } else {
-            background.setFill(Color.web("#C5534F").darker());
-        }
-    }
 }

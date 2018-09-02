@@ -39,7 +39,7 @@ public class ConditionDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
-        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons/" + viewModel.getImageName() + ".png" )));
+        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" )));
 
         setOnMouseEntered(e -> {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {

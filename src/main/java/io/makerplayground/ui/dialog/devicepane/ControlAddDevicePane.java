@@ -1,6 +1,8 @@
 package io.makerplayground.ui.dialog.devicepane;
 
 import io.makerplayground.device.GenericDevice;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -43,7 +45,7 @@ public class ControlAddDevicePane extends VBox {
             throw new RuntimeException(exception);
         }
 
-        InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons/" + genericDevice.getName() + ".png");
+        InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons-3/" + genericDevice.getName() + ".png");
         if (imageStream == null) {
             throw new IllegalStateException("Missing icon of " + genericDevice.getName());
         }
@@ -58,22 +60,20 @@ public class ControlAddDevicePane extends VBox {
 
         numberTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                this.count = Integer.parseInt(numberTextField.getText());
+                count = Integer.parseInt(numberTextField.getText());
             }
         });
 
-        decBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                decrease();
-                numberTextField.setText(String.valueOf(count));
+        decBtn.setOnAction(event -> {
+            if (count > 0) {
+                count = count - 1;
             }
+            numberTextField.setText(String.valueOf(count));
         });
 
-        incBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                increase();
-                numberTextField.setText(String.valueOf(count));
-            }
+        incBtn.setOnAction(event -> {
+            count = count + 1;
+            numberTextField.setText(String.valueOf(count));
         });
     }
 
@@ -82,16 +82,6 @@ public class ControlAddDevicePane extends VBox {
     }
 
     public int getCount() {
-        return this.count;
-    }
-
-    public void decrease() {
-        if (this.count > 0) {
-            this.count = count - 1;
-        }
-    }
-
-    public void increase() {
-        this.count = count + 1;
+        return count;
     }
 }

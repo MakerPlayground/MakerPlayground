@@ -1,3 +1,11 @@
+.root{
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 15;
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+}
+
 .scroll-pane{
     -fx-padding:0;
     -fx-border-color: transparent;
@@ -26,12 +34,12 @@
     -fx-padding:0;
 }
 .scroll-bar .track{
-    -fx-background-color:   #edeef3;
-    -fx-border-color :   #edeef3;
+    -fx-background-color:   #f6f6f6;
+    -fx-border-color :   #e3e3e3;
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: #51af98;
+    -fx-background-color: #707070;
     -fx-border-radius: 2em;
     -fx-background-insets: 2 0 0;
 }
@@ -44,33 +52,34 @@
 }
 
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #5ac2ab;
+    -fx-background-color : #707070;
 }
 
 .progress-bar .bar {
     -fx-background-color:
         -fx-box-border,
         linear-gradient(to bottom, derive(-fx-accent,95%), derive(-fx-accent,10%)),
-        #51af98; /* this line is the background color of the bar */
+        #008ef4; /* this line is the background color of the bar */
 }
 
 .progress-bar > .track {
-    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
-    -fx-text-box-border: edeef3;
-    -fx-control-inner-background: edeef3;
+    -fx-background-color: #e3e3e3;
+    /*-fx-background-color: -fx-text-box-border, -fx-control-inner-background;*/
+    -fx-text-box-border: #e3e3e3;
+    -fx-control-inner-background: #008ef4;
 }
 
 .text-area .content {
-    -fx-background-color: #edeef3 ;
+    -fx-background-color: #f6f6f6 ;
     -fx-text-box-border: transparent;
 }
 
 #progress{
-    -fx-text-fill: #51af98;
+    -fx-text-fill: #707070;
     -fx-font-size: 12px;
 }
 
 #detailPane{
-    -fx-text-fill:  #51af98;
+    -fx-text-fill: #707070;
     -fx-font-size: 12px;
 }

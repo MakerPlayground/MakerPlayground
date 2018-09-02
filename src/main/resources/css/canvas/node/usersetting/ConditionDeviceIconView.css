@@ -1,0 +1,18 @@
+#deviceIcon {
+    -fx-background-color: white;
+    -fx-border-color: e3e3e3;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+    -fx-text-size: 0.75em;
+}
+
+#deviceIconText {
+    -fx-text-fill: #333333;
+    -fx-text-size: 0.5em;
+    -fx-text-weight: bold;
+}
+
+#removeConditionDeviceBtn {
+    -fx-cursor: hand;
+}

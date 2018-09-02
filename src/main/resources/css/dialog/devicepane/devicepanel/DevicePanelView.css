@@ -1,35 +1,35 @@
 #devicePanelPane{
-    -fx-background-color: #4d5666;
+    -fx-background-color: #f6f6f6;
 }
 
 #deviceTitle{
-    -fx-background-color : #313644;
-    -fx-text-fill : white;
+    -fx-background-color : #ffffff;
+    -fx-text-fill : #707070;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 .titled-pane > .title{
-    -fx-background-color : #3b424f;
-    -fx-border-color: #3b424f transparent transparent #5ac2ab;
-    -fx-border-width : 5px;
-    -fx-font-size: 12px;
+    -fx-background-color : #ffffff;
+    -fx-border-color: #e3e3e3;
+    -fx-border-width : 1 0 1 0;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 .titled-pane{
     -fx-focus-color: transparent;
     -fx-font-size:14px;
-    -fx-text-fill : white;
+    -fx-text-fill : #707070;
 }
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color : #5ac2ab;
+    -fx-background-color : #707070;
 }
 .titled-pane > *.content{
-    -fx-background-color : #4d5666;
+    -fx-background-color : #f6f6f6;
     -fx-box-border : transparent;
 }
 
 .radio-button {
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill : white;
 }
@@ -47,7 +47,7 @@
     -fx-background-color:transparent;
 }
 .scroll-pane > .viewport {
-    -fx-background-color:#4d5666;
+    -fx-background-color: #f6f6f6;
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
@@ -68,12 +68,12 @@
     -fx-padding:0;
 }
 .scroll-bar .track{
-    -fx-background-color:   #4d5666;
-    -fx-border-color :   #4d5666;
+    -fx-background-color:   #f6f6f6;
+    -fx-border-color :   #f6f6f6;
     -fx-border-radius:2em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: #51af98;
+    -fx-background-color: #707070;
     -fx-border-radius: 0em;
     -fx-background-insets: 0 3 0 3;
 }
@@ -81,14 +81,14 @@
 #addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('addtoggle.png');
+    -fx-background-image: url('add-device-toggle-2.png');
     -fx-background-size : 30px;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #addBtn{
-    -fx-background-image: url('add2.png');
+    -fx-background-image: url('add-device-2.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;
@@ -97,5 +97,5 @@
 }
 
 #anchorPane {
-    -fx-background-color: #313644;
+    -fx-background-color: #ffffff;
 }

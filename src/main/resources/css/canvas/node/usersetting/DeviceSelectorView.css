@@ -5,15 +5,20 @@
 .dialog-pane{
     -fx-background-color : white;
 }
+#deviceLibraryPane {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+}
 .titled-pane > .title{
     -fx-background-color : white;
-    -fx-border-color: transparent transparent #313644 transparent;
+    -fx-border-color: transparent transparent #e3e3e3 transparent;
     -fx-border-width : 1px;
 }
 
 .titled-pane{
     -fx-font-size: 14px;
-    -fx-text-fill : #313644;
+    -fx-text-fill : #707070;
     -fx-font-weight: bold;
 }
 .titled-pane > .title > .arrow-button .arrow{
@@ -63,20 +68,81 @@
 .flow-pane{
     -fx-background-color : #4d5666;
 }
-.button:pressed{
-    -fx-background-color : #313644;
-    -fx-border-color : #313644;
-    -fx-text-fill : white;
-    -fx-cursor: hand;
+/*-----------------------------------------------------------------------*/
+#okButton {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 40 5 40;
 }
+#okButton:hover {
+    -fx-background-color: #e3e3e3;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-text-fill: #333333;
+}
+#okButton:pressed {
+    -fx-background-color: #2673fd;
+    -fx-background-radius: 5px;
+    -fx-border-color: #2673fd;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #ffffff;
+}
+/*-----------------------------------------------------------------------*/
+#cancelButton {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 30 5 30;
+}
+#cancelButton:hover {
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ff0000;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-text-fill: #ffffff;
+}
+#cancelButton:pressed {
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ff0000;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #ffffff;
+}
+/*-----------------------------------------------------------------------*/
 .button{
-    -fx-focus-color: transparent;
-    -fx-border-color : #313644;
-    -fx-background-color : transparent;
-    -fx-text-fill : #313644;
+    -fx-focus-color: #707070;
+    -fx-border-color : #e3e3e3;
+    /*-fx-border-radius : 5px;*/
+    -fx-background-color : #ffffff;
+    /*-fx-background-radius : 5px;*/
+    -fx-text-fill : #707070;
     -fx-cursor: hand;
 }
-
+.button:hover {
+    -fx-background-color : #e3e3e3;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #e3e3e3;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #707070;
+    -fx-cursor: hand;
+}
+.button:pressed{
+    -fx-background-color : #2673fd;
+    /*-fx-background-radius : 5px;*/
+    -fx-border-color : #2673fd;
+    /*-fx-border-radius : 5px;*/
+    -fx-text-fill : #ffffff;
+    -fx-cursor: hand;
+}
+/*-----------------------------------------------------------------------*/
 #vBox {
-    -fx-background-color: white;
+    -fx-background-color: #ffffff;
 }

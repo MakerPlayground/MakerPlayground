@@ -18,6 +18,7 @@ import io.makerplayground.ui.dialog.generate.GenerateViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -57,24 +58,24 @@ class RightPanel extends VBox {
     @FXML
     private void handleConfigureBtn(ActionEvent event) {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-        configActualDeviceView.showAndWait();
+        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(getScene().getWindow(), configActualDeviceViewModel);
+        configActualDeviceView.show();
     }
 
     @FXML
     private void handleGenerateBtn(ActionEvent event) {
         DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
         if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Controller hasn't been selected");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Controller hasn't been selected");
+            errorDialogView.show();
             return;
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Not enough port");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Not enough port");
+            errorDialogView.show();
             return;
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            ErrorDialogView errorDialogView = new ErrorDialogView("Can't find any support device");
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Can't find any support device");
+            errorDialogView.show();
             return;
         } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
             throw new IllegalStateException("Found unknown error!!!");
@@ -82,13 +83,13 @@ class RightPanel extends VBox {
 
         Sourcecode code = SourcecodeGenerator.generateCode(project, true);
         if (code.getError() != null) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(code.getError().getDescription());
-            errorDialogView.showAndWait();
+            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), code.getError().getDescription());
+            errorDialogView.show();
         } else {
             SingletonWiringDiagram.getInstance().setOpenTime();
             GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
-            GenerateView generateView = new GenerateView(generateViewModel);
-            generateView.showAndWait();
+            GenerateView generateView = new GenerateView(getScene().getWindow(), generateViewModel);
+            generateView.show();
         }
     }
 
@@ -97,7 +98,7 @@ class RightPanel extends VBox {
         SingletonUploadClick.getInstance().click();
         UploadTask uploadTask = new UploadTask(project);
 
-        UploadDialogView uploadDialogView = new UploadDialogView(uploadTask);
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
         uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
         uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
         uploadDialogView.logProperty().bind(uploadTask.logProperty());

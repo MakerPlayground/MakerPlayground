@@ -7,6 +7,8 @@ import io.makerplayground.project.term.Term;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
@@ -37,36 +39,38 @@ public class OperatorChip extends Chip<Operator> {
 
         if (getValue().getType() == OperatorType.LEFT_UNARY) {
             background.getElements().addAll(new MoveTo(10, 0)
-                    , new ArcTo(10, 10, 90, 0, 10, false, false)
+                    , new ArcTo(12.5, 12.5, 90, 0, 10, false, false)
                     , new LineTo(0, 15)
-                    , new ArcTo(10, 10, 0, 10, 25, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 10, 25, false, false)
                     , new LineTo(25, 25)
-                    , new ArcTo(10, 10, 0, 15, 15, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 15, 15, false, true)
                     , new LineTo(15, 10)
-                    , new ArcTo(10, 10, 0, 25, 0, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 25, 0, false, true)
                     , new ClosePath());
+            StackPane.setMargin(text, new Insets(0, 7.5, 0, 0));
         } else if (getValue().getType() == OperatorType.BINARY) {
             background.getElements().addAll(new MoveTo(10, 0)
                     , new LineTo(0, 0)
-                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new ArcTo(12.5, 12.5, 90, 10, 10, false, true)
                     , new LineTo(10, 15)
-                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 0, 25, false, true)
                     , new LineTo(35, 25)
-                    , new ArcTo(10, 10, 0, 25, 15, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 25, 15, false, true)
                     , new LineTo(25, 10)
-                    , new ArcTo(10, 10, 0, 35, 0, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 35, 0, false, true)
                     , new ClosePath());
         } else if (getValue().getType() == OperatorType.RIGHT_UNARY) {
             background.getElements().addAll(new MoveTo(15, 0)
                     , new LineTo(0, 0)
-                    , new ArcTo(10, 10, 90, 10, 10, false, true)
+                    , new ArcTo(12.5, 12.5, 90, 10, 10, false, true)
                     , new LineTo(10, 15)
-                    , new ArcTo(10, 10, 0, 0, 25, false, true)
+                    , new ArcTo(12.5, 12.5, 0, 0, 25, false, true)
                     , new LineTo(15, 25)
-                    , new ArcTo(10, 10, 0, 25, 15, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 25, 15, false, false)
                     , new LineTo(25, 10)
-                    , new ArcTo(10, 10, 0, 15, 0, false, false)
+                    , new ArcTo(12.5, 12.5, 0, 15, 0, false, false)
                     , new ClosePath());
+            StackPane.setMargin(text, new Insets(0, 0, 0, 7.5));
         } else {
             throw new IllegalStateException();
         }
@@ -75,14 +79,5 @@ public class OperatorChip extends Chip<Operator> {
     @Override
     public OperatorTerm getTerm() {
         return new OperatorTerm(getValue());
-    }
-
-    @Override
-    protected void updateChipStyle(boolean selected) {
-        if (!selected) {
-            background.setFill(Color.web("#499B54"));
-        } else {
-            background.setFill(Color.web("#499B54").darker());
-        }
     }
 }

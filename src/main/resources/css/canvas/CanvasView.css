@@ -11,8 +11,8 @@
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport {
-   -fx-background-color: #dbdbdb;
-   -fx-border-color: #dbdbdb;
+   -fx-background-color: #e4e4e4;/*diagram editor area*/
+   -fx-border-color: #e4e4e4;/*diagram editor border*/
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
@@ -45,77 +45,104 @@
 
 #addStateBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : #313644;
-     -fx-background-color : #313644;
+     -fx-background-color : #00cc6a;
+     -fx-background-radius: 5px;
+     -fx-border-color: #00cc6a;
+     -fx-border-radius: 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
-     -fx-text-fill : #5ac2ab;
-     -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
-     -fx-cursor: hand;
+     -fx-font-weight: bold;
+     -fx-text-fill : #ffffff;
      -fx-min-width: 150;
  }
- #addStateBtn:pressed{
-     -fx-border-color : #5ac2ab;
+
+ #addStateBtn:hover {
+    -fx-background-color: #04aa53;
+    -fx-border-color : #04aa53;
+    -fx-cursor: hand;
  }
+
+ #addStateBtn:pressed{
+     -fx-background-color: #04aa53;
+     -fx-border-color : #04aa53;
+     -fx-cursor: hand;
+ }
+
  #addConditionBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : #313644;
-     -fx-background-color : #313644;
+     -fx-border-color : #00cc6a;
+     -fx-border-radius: 5px;
+     -fx-background-color : #00cc6a;
+     -fx-background-radius: 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
-     -fx-text-fill : #5ac2ab;
-     -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+     -fx-text-fill : #ffffff;
+     -fx-font-weight: bold;
+     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
      -fx-cursor: hand;
      -fx-min-width: 150;
  }
+
+  #addConditionBtn:hover {
+     -fx-background-color: #04aa53;
+     -fx-border-color : #04aa53;
+     -fx-cursor: hand;
+  }
+
  #addConditionBtn:pressed{
-     -fx-border-color : #5ac2ab;
+     -fx-background-color: #04aa53;
+     -fx-border-color : #04aa53;
+     -fx-cursor: hand;
  }
 #zoomInButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('zoomInBtn-toggle.png');
+    -fx-background-image: url('zoom-in-toggle.png');
     -fx-background-size : 25px;
+    -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
 }
 #zoomInButton{
-    -fx-background-image: url('zoomInBtn.png');
+    -fx-background-image: url('zoom-in.png');
     -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
-     -fx-padding: 0px;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
 }
 #zoomOutButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('zoomOutBtn-toggle.png');
+    -fx-background-image: url('zoom-out-toggle.png');
     -fx-background-size : 25px;
     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
 }
 #zoomOutButton{
-    -fx-background-image: url('zoomOutBtn.png');
+    -fx-background-image: url('zoom-out.png');
     -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
-     -fx-padding: 0px;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
 }
 #zoomDefaultButton:pressed{
-     -fx-focus-color: transparent;
-     -fx-background-color: transparent;
-     -fx-background-image: url('zoomDefaultBtn-toggle.png');
-     -fx-background-size : 25px;
-     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('zoom-default-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
  }
 #zoomDefaultButton{
-     -fx-background-image: url('zoomDefaultBtn.png');
-     -fx-background-size : 25px;
-     -fx-background-color: transparent;
-     -fx-cursor: hand;
-     -fx-background-repeat: no-repeat;
-     -fx-padding: 0px;
+    -fx-background-image: url('zoom-default.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
  }

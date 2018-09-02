@@ -31,9 +31,9 @@ public class DevicePanelView extends VBox {
     @FXML private FlowPane microcontrollerPane;
 
     @FXML public void onAddDeviceClick() {
-        DeviceSelectorView deviceSelectorView = new DeviceSelectorView();
-        Optional<Map<GenericDevice, Integer>> result = deviceSelectorView.showAndWait();
-        result.ifPresent(viewModel::addDevice);
+        DeviceSelectorView deviceSelectorView = new DeviceSelectorView(getScene().getWindow());
+        deviceSelectorView.show();
+        deviceSelectorView.setOnHidden(event -> viewModel.addDevice(deviceSelectorView.getDeviceToBeAdded()));
     }
 
     public DevicePanelView(DevicePanelViewModel viewModel) {

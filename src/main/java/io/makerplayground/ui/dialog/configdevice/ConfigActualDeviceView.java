@@ -9,6 +9,7 @@ import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,13 +18,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -31,30 +28,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Created by tanyagorn on 7/11/2017.
- */
-public class ConfigActualDeviceView extends Dialog {
+public class ConfigActualDeviceView extends UndecoratedDialog {
+
     private final ConfigActualDeviceViewModel viewModel;
-    @FXML private ScrollPane scrollPane;
+
+    private final VBox pane = new VBox();
     @FXML private VBox usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
-    @FXML private HBox platFormSelected;
-    @FXML private HBox platFormPicture;
     @FXML private ComboBox<Platform> platFormComboBox;
-    @FXML private VBox platFormAndController;
-    @FXML private HBox entireControllerDevice;
     @FXML private ComboBox<Device> controllerComboBox;
     @FXML private Label controllerName;
+    @FXML private Button okButton;
 
-    public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
+    public ConfigActualDeviceView(Window owner, ConfigActualDeviceViewModel viewModel) {
+        super(owner);
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
-        fxmlLoader.setRoot(this);
+        fxmlLoader.setRoot(pane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -62,20 +56,26 @@ public class ConfigActualDeviceView extends Dialog {
             throw new RuntimeException(exception);
         }
 
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UTILITY);
-        stage.setOnCloseRequest(event -> stage.hide());
-
         initPlatformControl();
         initControllerControl();
         initDeviceControl();
 
+        setContent(pane);
+        initEvent();
+    }
+
+    private void initEvent() {
+        // redraw when needed
         viewModel.setPlatformChangedCallback(this::initControllerControl);
         viewModel.setControllerChangedCallback(this::initDeviceControl);
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
 
+        // write change to the viewmodel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
+
+        // allow the dialog to be closed
+        okButton.setOnAction(event -> hide());
     }
 
     private void initPlatformControl() {
@@ -163,16 +163,17 @@ public class ConfigActualDeviceView extends Dialog {
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
-        getDialogPane().getScene().getWindow().sizeToScene();
+        // resize this stage according to the underlying scene so that the window's size change based on the content of the dialog
+        sizeToScene();
     }
 
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
+            imageView.setFitHeight(30.0);
+            imageView.setFitWidth(30.0);
 
             Label name = new Label(projectDevice.getName());
             name.setTextAlignment(TextAlignment.LEFT);
@@ -345,10 +346,10 @@ public class ConfigActualDeviceView extends Dialog {
             unusedDevice.setVisible(true);
             unusedDevice.setManaged(true);
             for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons/"
+                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + projectDevice.getGenericDevice().getName() + ".png")));
-                imageView.setFitHeight(25.0);
-                imageView.setFitWidth(25.0);
+                imageView.setFitHeight(30.0);
+                imageView.setFitWidth(30.0);
 
                 Label name = new Label(projectDevice.getName());
                 name.setTextAlignment(TextAlignment.LEFT);

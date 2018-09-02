@@ -40,7 +40,7 @@ public class LineView extends InteractiveNode {
         super(interactivePane);
         this.viewModel = viewModel;
 
-        Image removeButtonImage = new Image(getClass().getResourceAsStream("/icons/cancelLine.png"));
+        Image removeButtonImage = new Image(getClass().getResourceAsStream("/icons/cancel-line-2.png"));
         ImageView removeButton = new ImageView(removeButtonImage);
         removeButton.layoutXProperty().bind(viewModel.centerXProperty().subtract(removeButtonImage.getWidth()/2)
                 .add(viewModel.centerUnitTangentXProperty().multiply(REMOVE_BTN_GAP)));
@@ -52,8 +52,8 @@ public class LineView extends InteractiveNode {
                 , InteractiveNodeEvent.REMOVED, null, null, 0, 0)));
 
         Path path = new Path();
-        path.setStrokeWidth(3.25);
-        path.setStyle("-fx-stroke: #313644;");
+        path.setStrokeWidth(2.25);
+        path.setStyle("-fx-stroke: #707070;");
         Bindings.bindContentBidirectional(path.getElements(), viewModel.getPoint());
 
         getChildren().addAll(path, removeButton);
