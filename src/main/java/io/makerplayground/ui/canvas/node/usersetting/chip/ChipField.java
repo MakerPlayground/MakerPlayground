@@ -24,7 +24,10 @@ import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ChipField extends ScrollPane {
@@ -64,7 +67,7 @@ public class ChipField extends ScrollPane {
         }
 
         // initialize popup window to add new chip
-        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (popOver == null || !popOver.isShowing()) {
                 popOver = new ChipSelectorPopover();
                 popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
@@ -234,7 +237,7 @@ public class ChipField extends ScrollPane {
         for (int i=1; i<chipList.size(); i++) {
             Chip previousChip = chipList.get(i - 1);
             Chip currentChip = chipList.get(i);
-            if (i == currentCursorPosition && cursor.isVisible()) {
+            if (i == currentCursorPosition && (isFocused() || isChildFocused(this))) {
                 HBox.setMargin(currentChip, Insets.EMPTY);
             } else if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
                     || isOperatorChip(previousChip, OperatorType.RIGHT_UNARY))

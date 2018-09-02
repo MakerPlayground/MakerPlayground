@@ -10,7 +10,7 @@
         <children>
             <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
             <HBox.margin>
-               <Insets bottom="2.5" left="2.0" right="2.0" top="2.5" />
+               <Insets left="2.0" right="2.0" top="2.0" />
             </HBox.margin></Rectangle>
         </children>
     </HBox>
