@@ -31,18 +31,16 @@ public class SourcecodeGenerator {
             Map.entry("Internal", Collections.<String>emptyList())
     );
 
-    private StringBuilder builder;
-    private Project project;
-    private boolean cppMode;
-    private Queue<Scene> queue = new ArrayDeque<>();
+    private final Project project;
+    private final boolean cppMode;
+    private final StringBuilder builder = new StringBuilder();
 
     /* these variables are for keeping the result of generateCodeForSceneFunctions() */
-    private Set<Scene> visitedScene = new HashSet<>();
-    private StringBuilder sceneFunctions = new StringBuilder();
+    private final Set<Scene> visitedScene = new HashSet<>();
+    private final StringBuilder sceneFunctions = new StringBuilder();
     private boolean generateMapFunction;    // use for ValueLinkingExpression as Arduino built-in map function uses integer arithmetic
 
     private SourcecodeGenerator(Project project, boolean cppMode) {
-        this.builder = new StringBuilder();
         this.project = project;
         this.cppMode = cppMode;
     }
@@ -243,6 +241,7 @@ public class SourcecodeGenerator {
     }
 
     private Sourcecode generateCodeForSceneFunctions() {
+        Queue<Scene> queue = new ArrayDeque<>();
 
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
         List<Scene> adjacentScene = getScene(adjacentVertices);
@@ -299,26 +298,7 @@ public class SourcecodeGenerator {
                 String deviceName = "_" + setting.getDevice().getName().replace(" ", "_");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
-                    Expression expression = setting.getValueMap().get(parameter);
-                    if (expression instanceof CustomNumberExpression) {
-                        double maxValue = ((CustomNumberExpression) expression).getMaxValue();
-                        double minValue = ((CustomNumberExpression) expression).getMinValue();
-                        params.add("constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")");
-                    } else if (expression instanceof ValueLinkingExpression) {
-                        ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
-                        double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
-                        double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
-                        double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
-                        double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-                        double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
-                        double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
-                        params.add("constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
-                                , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
-                                + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")");
-                        generateMapFunction = true;
-                    } else {
-                        params.add(expression.translateToCCode());
-                    }
+                    params.add(parseExpression(setting.getValueMap().get(parameter)));
                 }
                 sceneFunctions.append(INDENT).append(deviceName).append(".")
                         .append(setting.getAction().getFunctionName()).append("(");
@@ -368,7 +348,7 @@ public class SourcecodeGenerator {
         return new Sourcecode(Sourcecode.Error.NONE, "");
     }
 
-    private static Sourcecode.Error processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
+    private Sourcecode.Error processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
         // gather every value used by every condition connect to the current scene
         Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
         for (Condition condition : adjacentCondition) {
@@ -403,19 +383,12 @@ public class SourcecodeGenerator {
             List<String> conditionList = new ArrayList<>();
             for (UserSetting setting : condition.getSetting()) {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
-                    List<String> parameterList = new ArrayList<>();
+                    List<String> params = new ArrayList<>();
                     for (Parameter parameter : setting.getAction().getParameter()) {
-                        Object value = setting.getValueMap().get(parameter);
-                        if (value instanceof NumberWithUnitExpression) {
-                            parameterList.add(df.format(((NumberWithUnitExpression) value).getNumberWithUnit().getValue()));
-                        } else if (value instanceof SimpleStringExpression) {
-                            parameterList.add("\"" + ((SimpleStringExpression) value).getString() + "\"");
-                        }
+                        params.add(parseExpression(setting.getValueMap().get(parameter)));
                     }
-                    StringBuilder action = new StringBuilder();
-                    action.append("_" + setting.getDevice().getName().replace(" ", "_")).append(".")
-                            .append(setting.getAction().getFunctionName()).append("(").append(String.join(",", parameterList)).append(")");
-                    conditionList.add(action.toString());
+                    conditionList.add("_" + setting.getDevice().getName().replace(" ", "_") + "." +
+                            setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                 } else {
                     for (Value value : setting.getExpression().keySet()) {
                         if (setting.getExpressionEnable().get(value)) {
@@ -460,6 +433,30 @@ public class SourcecodeGenerator {
         sb.append(INDENT).append("}").append(NEW_LINE); // end of while loop
 
         return Sourcecode.Error.NONE;
+    }
+
+    private String parseExpression(Expression expression) {
+        String returnValue;
+        if (expression instanceof CustomNumberExpression) {
+            double maxValue = ((CustomNumberExpression) expression).getMaxValue();
+            double minValue = ((CustomNumberExpression) expression).getMinValue();
+            returnValue =  "constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")";
+        } else if (expression instanceof ValueLinkingExpression) {
+            ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
+            double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
+            double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
+            double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
+            double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
+            double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
+            double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
+            returnValue = "constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
+                    , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
+                    + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")";
+            generateMapFunction = true;
+        } else {
+            returnValue = expression.translateToCCode();
+        }
+        return returnValue;
     }
 
     private boolean checkScene(Project project) {
