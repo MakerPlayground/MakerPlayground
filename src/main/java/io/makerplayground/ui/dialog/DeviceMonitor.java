@@ -13,13 +13,10 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import javafx.stage.Window;
 import org.controlsfx.control.CheckComboBox;
@@ -36,7 +33,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
     private ObservableList<LogItems> logData = FXCollections.observableArrayList();
     private Thread serialThread = null;
-    private final Pattern format = Pattern.compile("(DEBUG|VERBOSE|WARNING|ERROR|INFO);(.+);(.+)"); // Regex
+    private final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)"); // Regex
     private FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
     @FXML private TableView<LogItems> deviceMonitorTable;
     @FXML private ComboBox<LogItems.LogLevel> levelComboBox;
@@ -92,22 +89,20 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
                         byte[] newData = new byte[comPort.bytesAvailable()];
                         comPort.readBytes(newData, newData.length);
                         sb.append(new String(newData));
-                        while(sb.indexOf("\n") >= 0) {
-                            int index = sb.indexOf("\n");
+                        while(sb.indexOf("\0") >= 0) {
+                            int index = sb.indexOf("\0");
                             String msg = sb.subSequence(0, index).toString();
                             sb.delete(0, index + 1);
-                            System.out.println("msg: " +msg);
-                            System.out.println(",remain: " + sb.toString());
                             getFormatLog(msg).ifPresent(logItems -> Platform.runLater(() -> {
                                 if (onStatus.isSelected()) {
                                     logData.add(logItems);
                                     deviceMonitorTable.scrollTo(logItems);
                                 }
-                                if(!checkTagComboBox.getItems().contains(logItems.getTag())){       // use tag from flash memory of serial port to generate device tag box
+                                if(!checkTagComboBox.getItems().contains(logItems.getDeviceName())){       // use deviceName from flash memory of serial port to generate device deviceName box
                                     List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
-                                    checkTagComboBox.getItems().add(logItems.getTag());
+                                    checkTagComboBox.getItems().add(logItems.getDeviceName());
                                     checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
-                                    checkTagComboBox.getCheckModel().check(logItems.getTag());
+                                    checkTagComboBox.getCheckModel().check(logItems.getDeviceName());
                                 }
                             }));
                         }
@@ -133,11 +128,12 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     }
 
     // Regex Function
-    public Optional<LogItems> getFormatLog(String rawLog) {
+    private Optional<LogItems> getFormatLog(String rawLog) {
         Matcher log = format.matcher(rawLog);
         if (log.find()) {
-            return Optional.of(new LogItems(log.group(1),log.group(2),log.group(3)));
+            return Optional.of(new LogItems(log.group(1), log.group(2), log.group(3)));
         } else {
+            System.out.println("Not match");
             return Optional.empty();
         }
     }
@@ -145,55 +141,49 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     // Change display data in table from value of combobox
     @Override
     public void invalidated(Observable observable) {
-        logDataFilter.setPredicate(logItems -> {
-            if (levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.VERBOSE)) {
-                return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && (logItems.getLevel().equals(LogItems.LogLevel.VERBOSE)
-                        || logItems.getLevel().equals(LogItems.LogLevel.INFO)
-                        || logItems.getLevel().equals(LogItems.LogLevel.DEBUG)
-                        || logItems.getLevel().equals(LogItems.LogLevel.WARNING)
-                        || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
-
-                );
-            }
-            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.DEBUG)){
-                return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && (logItems.getLevel().equals(LogItems.LogLevel.INFO)
-                        || logItems.getLevel().equals(LogItems.LogLevel.DEBUG)
-                        || logItems.getLevel().equals(LogItems.LogLevel.WARNING)
-                        || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
-                );
-            }
-            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.INFO)) {
-                return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && (logItems.getLevel().equals(LogItems.LogLevel.INFO)
-                        || logItems.getLevel().equals(LogItems.LogLevel.WARNING)
-                        || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
-                );
-
-            }
-            else if(levelComboBox.getSelectionModel().getSelectedItem().equals(LogItems.LogLevel.WARNING)){
-                return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && (logItems.getLevel().equals(LogItems.LogLevel.WARNING)
-                        || logItems.getLevel().equals(LogItems.LogLevel.ERROR)
-                );
-            }
-            else
-                return checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getTag())
-                        && logItems.getLevel().equals(LogItems.LogLevel.ERROR);
-        });
+        logDataFilter.setPredicate(
+                logItems -> checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getDeviceName())
+                && logItems.getLevel().getPriority() >= levelComboBox.getSelectionModel().getSelectedItem().getPriority()
+        );
     }
 
     public static class LogItems {
-        enum LogLevel {VERBOSE,DEBUG,INFO,WARNING,ERROR}
+        enum LogLevel {
+            INFO("[[INFO]]", 0),
+            ERROR("[[ERROR]]", 1);
+
+            String levelTag;
+            int priority;
+
+            LogLevel(String levelTag, int priority) {
+                this.levelTag = levelTag;
+                this.priority = priority;
+            }
+
+            public int getPriority() {
+                return priority;
+            }
+
+            static public LogLevel fromString(String levelTag) {
+                for (LogLevel level: LogLevel.values()) {
+                    if (level.levelTag.equals(levelTag)) {
+                        return level;
+                    }
+                }
+                throw new IllegalStateException("Cannot find LogLevel of tag: " + levelTag);
+            }
+        }
 
         private final LogLevel level;
-        private final String tag;
+        private final String deviceName;
         private final String message;
 
-        public LogItems(String level, String tag, String message) {
-            this.level = LogLevel.valueOf(level);
-            this.tag = tag;
+        LogItems(String level, String tag, String message) {
+            if (level == null) {
+                level = "[[INFO]]";
+            }
+            this.level = LogLevel.fromString(level);
+            this.deviceName = tag;
             this.message = message;
         }
 
@@ -201,8 +191,8 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
             return level;
         }
 
-        public String getTag() {
-            return tag;
+        public String getDeviceName() {
+            return deviceName;
         }
 
         public String getMessage() {

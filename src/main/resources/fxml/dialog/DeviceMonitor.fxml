@@ -22,7 +22,7 @@
                 <columns>
                     <TableColumn text="Device Tag" minWidth="200">
                         <cellValueFactory>
-                            <PropertyValueFactory property="Tag"/>
+                            <PropertyValueFactory property="DeviceName"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="Message" minWidth="400">
