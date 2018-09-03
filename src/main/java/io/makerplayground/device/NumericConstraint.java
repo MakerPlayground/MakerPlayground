@@ -96,6 +96,9 @@ public class NumericConstraint implements Constraint {
 
     @Override
     public Constraint union(Constraint constraint) {
+        if (constraint == Constraint.NONE) {
+            return this;
+        }
         if (!(constraint instanceof NumericConstraint)) {
             throw new ClassCastException();
         }

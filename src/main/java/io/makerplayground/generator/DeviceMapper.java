@@ -6,10 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
 import io.makerplayground.project.UserSetting;
-import io.makerplayground.project.expression.CustomNumberExpression;
-import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberWithUnitExpression;
-import io.makerplayground.project.expression.SimpleStringExpression;
+import io.makerplayground.project.expression.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +43,13 @@ public class DeviceMapper {
                         else if (o instanceof CustomNumberExpression) {
                             CustomNumberExpression exp = (CustomNumberExpression) o;
                             newConstraint = Constraint.NONE;
+                        }
+                        else if (o instanceof ValueLinkingExpression) {
+                            ValueLinkingExpression exp = (ValueLinkingExpression) o;
+                            newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
+                        }
+                        else {
+                            throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
