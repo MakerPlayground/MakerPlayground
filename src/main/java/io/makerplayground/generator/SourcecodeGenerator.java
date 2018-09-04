@@ -321,15 +321,18 @@ public class SourcecodeGenerator {
 
             // update list of adjacent vertices (scenes/conditions)
             adjacentVertices = findAdjacentVertices(project, currentScene);
-            adjacentScene = getUnvisitedScene(adjacentVertices, visitedScene);
+            adjacentScene = getScene(adjacentVertices);
+//            adjacentScene = getUnvisitedScene(adjacentVertices, visitedScene);
             adjacentCondition = getCondition(adjacentVertices);
 
             if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (adjacentScene.size() == 1) {
                     Scene s = adjacentScene.get(0);
-                    visitedScene.add(s);
-                    queue.add(s);
                     sceneFunctions.append(INDENT).append("currentScene = ").append("scene_").append(s.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                    if (!visitedScene.contains(s)) {
+                        visitedScene.add(s);
+                        queue.add(s);
+                    }
                 } else {
                     return new Sourcecode(Sourcecode.Error.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
                 }
