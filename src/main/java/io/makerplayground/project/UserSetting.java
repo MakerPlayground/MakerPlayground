@@ -29,6 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  *
@@ -191,5 +192,11 @@ public class UserSetting {
         }
 
         return result;
+    }
+
+    public boolean isDataBindingUsed() {
+        return getValueMap().values()
+                .stream()
+                .anyMatch(expression1 -> !(expression1 instanceof NumberWithUnitExpression));
     }
 }

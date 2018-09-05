@@ -2,7 +2,6 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
 import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.Platform;
 import io.makerplayground.project.*;
@@ -61,6 +60,8 @@ public class SourcecodeGenerator {
                 .collect(Collectors.toSet())    //remove duplicates
                 .forEach(s -> builder.append("#include \"").append(s).append("\"").append(NEW_LINE));
         builder.append(NEW_LINE);
+
+        builder.append("typedef void (*Action)(void);").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -93,7 +94,7 @@ public class SourcecodeGenerator {
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             builder.append(projectDevice.getActualDevice().getMpLibrary())
-                    .append(" _").append(projectDevice.getName().replace(" ", "_"));
+                    .append(" ").append(getDeviceVariableName(projectDevice));
             List<String> args = new ArrayList<>();
             if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
                 // port
@@ -144,8 +145,7 @@ public class SourcecodeGenerator {
         Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap();
         for (ProjectDevice projectDevice : variableMap.keySet()) {
             for (Value v : variableMap.get(projectDevice)) {
-                builder.append("double _").append(projectDevice.getName().replace(" ", "_")).append("_")
-                        .append(v.getName().replace(" ", "_")).append(";").append(NEW_LINE);
+                builder.append("double ").append(getValueVariableName(projectDevice, v)).append(";").append(NEW_LINE);
             }
         }
         builder.append(NEW_LINE);
@@ -154,10 +154,9 @@ public class SourcecodeGenerator {
     private void appendMapFunction() {
         // generate overload map function for ValueLinkingExpression
         if (generateMapFunction) {
-            builder.append("double map(double x, double in_min, double in_max, double out_min, double out_max)\n"
-                    + "{\n"
-                    + INDENT + "return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;\n"
-                    + "}\n");
+            builder.append("double map(double x, double in_min, double in_max, double out_min, double out_max) {").append(NEW_LINE)
+                    .append(INDENT + "return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;").append(NEW_LINE)
+                    .append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
         }
     }
@@ -167,7 +166,7 @@ public class SourcecodeGenerator {
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            String variableName = "_" + projectDevice.getName().replace(" ", "_");
+            String variableName = getDeviceVariableName(projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("MP_ERR(").append(variableName).append(", \"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
@@ -180,12 +179,47 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
     }
 
+    private void appendActionVariables() {
+        for (Map.Entry<ProjectDevice, String> entry: getAllDevicesActionVariableNames().entrySet()) {
+            builder.append("Action ").append(entry.getValue()).append(" = NULL;").append(NEW_LINE);
+        }
+        builder.append(NEW_LINE);
+    }
+
     private void appendUpdateFunction() {
         // generate update function
+
+        /* 1: allow all devices to update their own tasks */
         builder.append("void update() {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             builder.append(INDENT).append("_").append(projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
         }
+        builder.append(NEW_LINE);
+
+        /* 2: retrieve all project values */
+        Set<String> variableUpdateNameSet = new HashSet<>();
+        for (Map.Entry<ProjectDevice, Set<Value>> entry : project.getAllValueUsedMap().entrySet()) {
+            for(Value v : entry.getValue()) {
+                String str = getValueVariableName(entry.getKey(), v) + " = _" + entry.getKey().getName().replace(" ", "_")
+                        + ".get" + v.getName().replace(" ", "_") + "();";
+                variableUpdateNameSet.add(str);
+            }
+        }
+        for(String str : variableUpdateNameSet){
+            builder.append(INDENT).append(str).append(NEW_LINE);
+        }
+        builder.append(NEW_LINE);
+
+        /* 3: call the function that need the updated expression evaluation */
+        for (Map.Entry<ProjectDevice, String> entry: getAllDevicesActionVariableNames().entrySet()) {
+            String actionVariableName = entry.getValue();
+            builder.append(INDENT).append("if (").append(actionVariableName).append(" != NULL) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(actionVariableName).append("();").append(NEW_LINE);
+            builder.append(INDENT).append("}").append(NEW_LINE);
+        }
+        builder.append(NEW_LINE);
+
+        /* 4: ask device for serial monitor logging */
         builder.append(INDENT).append("if (millis() - oldTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             String variableName = "_" + projectDevice.getName().replace(" ", "_");
@@ -195,6 +229,21 @@ public class SourcecodeGenerator {
         builder.append(INDENT).append("}").append(NEW_LINE);
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
+    }
+
+    private Map<ProjectDevice, String> getAllDevicesActionVariableNames() {
+//        return null;
+        Map<ProjectDevice, String> map = new HashMap<>();
+        for (ProjectDevice device: project.getAllDeviceUsed()) {
+            for (Scene scene: project.getScene()) {
+                for (UserSetting setting: scene.getSetting()) {
+                    if (setting.getDevice() == device && setting.isDataBindingUsed()) {
+                        map.put(device, getDeviceActionVariableName(device));
+                    }
+                }
+            }
+        }
+        return map;
     }
 
     private void appendLoopFunction() {
@@ -229,15 +278,16 @@ public class SourcecodeGenerator {
         }
 
         generator.appendHeader();
-        generator.appendFunctionDeclaration();
         generator.appendGlobalVariables();
-        generator.appendInstanceVariables();
         generator.appendProjectValue();
-        generator.appendMapFunction();
+        generator.appendFunctionDeclaration();
+        generator.appendActionVariables();
+        generator.appendInstanceVariables();
         generator.appendSetupFunction();
         generator.appendUpdateFunction();
         generator.appendLoopFunction();
         generator.appendSceneFunctions();
+        generator.appendMapFunction();
 
         return new Sourcecode(generator.builder.toString());
     }
@@ -280,31 +330,25 @@ public class SourcecodeGenerator {
             sceneFunctions.append("void ").append("scene_").append(currentScene.getName().replace(" ", "_")).append("() {").append(NEW_LINE);
             sceneFunctions.append(INDENT).append("update();").append(NEW_LINE);
 
-            Set<String> variableUpdateNameSet = new HashSet<>();
-            for (UserSetting setting : currentScene.getSetting()) {
-                for (Map.Entry<ProjectDevice, Set<Value>> entry : setting.getAllValueUsed().entrySet()) {
-                    for(Value v : entry.getValue()) {
-                        String str = getValueVariableName(entry.getKey(), v) + " = _" + entry.getKey().getName().replace(" ", "_")
-                                + ".get" + v.getName().replace(" ", "_") + "();";
-                        variableUpdateNameSet.add(str);
-                    }
-                }
-            }
-
-            for(String str : variableUpdateNameSet){
-                sceneFunctions.append(INDENT).append(str).append(NEW_LINE);
-            }
-
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
-                String deviceName = "_" + setting.getDevice().getName().replace(" ", "_");
                 List<String> params = new ArrayList<>();
                 for (Parameter parameter : setting.getAction().getParameter()) {
                     params.add(parseExpression(setting.getValueMap().get(parameter)));
                 }
-                sceneFunctions.append(INDENT).append(deviceName).append(".")
-                        .append(setting.getAction().getFunctionName()).append("(");
-                sceneFunctions.append(String.join(", ", params)).append(");").append(NEW_LINE);
+                ProjectDevice device = setting.getDevice();
+                String deviceName = getDeviceVariableName(device);
+                String codeToCallAction = deviceName + "." + setting.getAction().getFunctionName() + "(" + String.join(", ", params) + ");";
+                // if data binding
+                if (setting.isDataBindingUsed()){
+                    sceneFunctions.append(INDENT).append(getDeviceActionVariableName(device)).append(" = []() {").append(codeToCallAction).append("};").append(NEW_LINE);
+                }
+
+                // if run once
+                else {
+                    sceneFunctions.append(INDENT).append(getDeviceActionVariableName(device)).append(" = NULL;").append(NEW_LINE);
+                    sceneFunctions.append(INDENT).append(codeToCallAction).append(NEW_LINE);
+                }
             }
 
             // delay
@@ -374,15 +418,15 @@ public class SourcecodeGenerator {
         sb.append(INDENT).append("while (1) {").append(NEW_LINE);
         // call the update function
         sb.append(INDENT).append(INDENT).append("update();").append(NEW_LINE);
-        // update value from input device(s) to the variable
-        for (ProjectDevice projectDevice : valueUsed.keySet()) {
-            for (Value v : valueUsed.get(projectDevice)) {
-                sb.append(INDENT).append(INDENT).append("_" + projectDevice.getName().replace(" ", "_")).append("_")
-                        .append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
-                        //.append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
-                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
-            }
-        }
+//        // update value from input device(s) to the variable
+//        for (ProjectDevice projectDevice : valueUsed.keySet()) {
+//            for (Value v : valueUsed.get(projectDevice)) {
+//                sb.append(INDENT).append(INDENT).append("_").append(projectDevice.getName().replace(" ", "_")).append("_")
+//                        .append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
+//                        //.append(v.getName().replace(" ", "_")).append(" = ").append("_" + projectDevice.getName().replace(" ", "_")).append(".get")
+//                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+//            }
+//        }
         // generate if for each condition
         for (Condition condition : adjacentCondition) {
             List<String> conditionList = new ArrayList<>();
@@ -509,7 +553,15 @@ public class SourcecodeGenerator {
                 .map(nodeElement -> (Condition) nodeElement).collect(Collectors.toList());
     }
 
+    private static String getDeviceVariableName(ProjectDevice projectDevice) {
+        return "_" + projectDevice.getName().replace(" ", "_");
+    }
+
     private static String getValueVariableName(ProjectDevice projectDevice, Value value) {
-        return "_" + projectDevice.getName().replace(" ", "_") + "_" + value.getName().replace(" ", "_");
+        return getDeviceVariableName(projectDevice) + "_" + value.getName().replace(" ", "_");
+    }
+
+    private static String getDeviceActionVariableName(ProjectDevice device) {
+        return getDeviceVariableName(device) + "_Action";
     }
 }
