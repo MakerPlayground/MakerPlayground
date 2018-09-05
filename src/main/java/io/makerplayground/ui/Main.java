@@ -8,6 +8,7 @@ import io.makerplayground.helper.SingletonConnectDB;
 import io.makerplayground.helper.SingletonTutorial;
 import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.ui.dialog.tutorial.TutorialView;
 import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.version.ProjectVersionControl;
@@ -33,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -124,11 +126,11 @@ public class Main extends Application {
         // close program
         primaryStage.setOnCloseRequest(event -> {
             if (project.hasUnsavedModification()) {
-                ButtonType retVal = showConfirmationDialog();
-                if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                UnsavedDialog.Response retVal = showConfirmationDialog();
+                if (retVal == UnsavedDialog.Response.CANCEL) {
                     event.consume();
                     return;
-                } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
+                } else if (retVal == UnsavedDialog.Response.SAVE) {
                     saveProject();
                 }
             }
@@ -214,9 +216,13 @@ public class Main extends Application {
                                 e.printStackTrace();
                             }
                         });
+                        ImageView imageView = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
+                        imageView.setFitWidth(50);
+                        imageView.setPreserveRatio(true);
                         Notifications.create()
                                 .title(version.getBuildName() + " has been released")
                                 .text("Update now?")
+                                .graphic(imageView)
                                 .owner(mainWindow.getCanvasView())
                                 .action(navigate)
                                 .hideAfter(Duration.seconds(10))
@@ -270,22 +276,17 @@ public class Main extends Application {
         }
     }
 
-    private ButtonType showConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Current project is modified");
-        alert.setContentText("Save?");
-        alert.getButtonTypes().setAll(new ButtonType("Yes", ButtonBar.ButtonData.YES)
-                , new ButtonType("No", ButtonBar.ButtonData.NO)
-                , new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
-        return alert.showAndWait().get();
+    private UnsavedDialog.Response showConfirmationDialog() {
+        UnsavedDialog dialog = new UnsavedDialog(borderPane.getScene().getWindow());
+        return dialog.showAndGetResponse();
     }
 
     private void newProject(Stage primaryStage) {
         if (project.hasUnsavedModification()) {
-            ButtonType retVal = showConfirmationDialog();
-            if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+            UnsavedDialog.Response retVal = showConfirmationDialog();
+            if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
-            } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
+            } else if (retVal == UnsavedDialog.Response.SAVE) {
                 saveProject();
             }
         }
@@ -302,10 +303,10 @@ public class Main extends Application {
 
     private void loadProject(Stage primaryStage) {
         if (project.hasUnsavedModification()) {
-            ButtonType retVal = showConfirmationDialog();
-            if (retVal.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+            UnsavedDialog.Response retVal = showConfirmationDialog();
+            if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
-            } else if (retVal.getButtonData() == ButtonBar.ButtonData.YES) {
+            } else if (retVal == UnsavedDialog.Response.SAVE) {
                 saveProject();
             }
         }

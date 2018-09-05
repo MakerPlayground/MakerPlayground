@@ -2,9 +2,9 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-text-fill : black;
-    -fx-font-size:12px;
+    -fx-font-size: 12px;
 }
-.property-sheet .scroll-pane .property-pane {
+/*.property-sheet .scroll-pane .property-pane {
     -fx-font-size: 12px;
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -25,7 +25,7 @@
      -fx-background-radius: 0;
      -fx-background-insets: 0;
      -fx-padding: 0;
-}
+}*/
 #toLabel{
     -fx-font-size: 12px;
     -fx-min-width: 20;
@@ -39,7 +39,6 @@
 }
 
 .check-box .box {
-
     -fx-background-color: white;
     -fx-border-color: #333333;
     -fx-border-radius:3px;

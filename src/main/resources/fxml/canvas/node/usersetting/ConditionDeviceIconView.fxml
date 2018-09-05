@@ -13,7 +13,7 @@
       <StackPane prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
          <children>
             <ImageView fx:id="iconImageView" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
-            <Button fx:id="removeConditionDeviceBtn" id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="7.5" prefWidth="7.5" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
+            <Button id="removeConditionDeviceBtn" fx:id="removeConditionDeviceBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="7.5" prefWidth="7.5" style="-fx-background-color: transparent;" StackPane.alignment="TOP_RIGHT">
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -26,7 +26,7 @@
       </StackPane>
       <Label id="deviceIcontext" fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
          <font>
-            <Font name="System Bold"/>
+            <Font name="System Bold" size="18.0" />
          </font>
       </Label>
    </children>

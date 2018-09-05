@@ -1,7 +1,6 @@
 #devicePanelPane{
     -fx-background-color: #f6f6f6;
 }
-
 #deviceTitle{
     -fx-background-color : #ffffff;
     -fx-text-fill : #707070;
@@ -11,7 +10,7 @@
 .titled-pane > .title{
     -fx-background-color : #ffffff;
     -fx-border-color: #e3e3e3;
-    -fx-border-width : 1 0 1 0;
+    -fx-border-width : 0 0 0 0;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
@@ -81,14 +80,14 @@
 #addBtn:pressed ,#addBtn:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('add-device-toggle-2.png');
+    -fx-background-image: url('add-device-toggle-7.png');
     -fx-background-size : 30px;
     -fx-background-repeat:no-repeat;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 #addBtn{
-    -fx-background-image: url('add-device-2.png');
+    -fx-background-image: url('add-device-7.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
     -fx-background-repeat:no-repeat;
@@ -98,4 +97,6 @@
 
 #anchorPane {
     -fx-background-color: #ffffff;
+    -fx-border-color: #e3e3e3;
+    -fx-border-width : 0 0 0 0;
 }

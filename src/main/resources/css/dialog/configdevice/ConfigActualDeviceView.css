@@ -71,7 +71,7 @@
     -fx-font-size:12px;
 }
 .combo-box-popup .list-view .list-cell:filled:hover{
-    -fx-background-color: #5ac2ab;
+    -fx-background-color: #2673fd;
     -fx-background-radius:0;
     -fx-text-fill: white;
     -fx-font-size:12px;
