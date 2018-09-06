@@ -42,7 +42,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     @FXML private Label tagLabel;
     @FXML private GridPane gridPane;
     @FXML private CheckBox onStatus;
-    public DeviceMonitor(Project project) {
+    public DeviceMonitor(Project project, SerialPort comPort) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);
@@ -53,7 +53,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         }
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UTILITY);
-        setTitle("Device Monitor");
+        setTitle("Device Monitor - " + comPort.getSystemPortName());
 
 
         checkTagComboBox.getItems().addAll(FXCollections.observableArrayList(new ArrayList<>()));
@@ -71,7 +71,6 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
         // Create thread to read data from serial port
         serialThread = new Thread(() -> {
-            SerialPort comPort = SerialPort.getCommPorts()[0];
             comPort.openPort();
             comPort.setBaudRate(115200);
             while(!serialThread.isInterrupted()) {

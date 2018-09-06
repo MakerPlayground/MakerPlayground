@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -35,11 +36,11 @@
                </tooltip>
             </Button>
             <Line fx:id="separatorV" endY="15" startY="0" stroke="#E2E2E2" strokeWidth="2.0" />
-            <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+            <MenuButton id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
                <tooltip>
                   <Tooltip text="device monitor" />
                </tooltip>
-            </Button>
+            </MenuButton>
             <Label id="statusLabel" fx:id="statusLabel" />
          </HBox>
          <Button id="tutorialBtn" fx:id="tutorialButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Tutorials" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0" />
