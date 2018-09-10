@@ -1,14 +1,11 @@
 package io.makerplayground.project.expression;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,16 +19,43 @@ public abstract class Expression {
         SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CUSTOM_NUMBER, VALUE_LINKING
     }
 
+    public enum RefreshInterval {
+        ONCE, REALTIME, USER_DEFINED;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case ONCE: return "once";
+                case REALTIME: return "realtime";
+                case USER_DEFINED: return "every";
+                default: throw new IllegalStateException();
+            }
+        }
+    }
+
     private final Type type;
     protected final List<Term> terms = new ArrayList<>();
+    private RefreshInterval refreshInterval;
+    private NumberWithUnit userDefinedInterval;
 
     public Expression(Type type) {
         this.type = type;
+        this.refreshInterval = RefreshInterval.ONCE;
+        this.userDefinedInterval = NumberWithUnit.ZERO_SECOND;
+    }
+
+    @JsonCreator
+    private Expression(Type type, RefreshInterval refreshInterval, NumberWithUnit userDefinedInterval) {
+        this.type = type;
+        this.refreshInterval = refreshInterval;
+        this.userDefinedInterval = userDefinedInterval;
     }
 
     protected Expression(Expression e) {
         this(e.type);
         terms.addAll(e.terms);  // Term is immutable
+        refreshInterval = e.refreshInterval;
+        userDefinedInterval = e.userDefinedInterval;
     }
 
     public static Expression deepCopy(Expression e) {
@@ -71,6 +95,26 @@ public abstract class Expression {
 
     public List<Term> getTerms() {
         return Collections.unmodifiableList(terms);
+    }
+
+    public RefreshInterval getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    public void setRefreshInterval(RefreshInterval interval) {
+        refreshInterval = interval;
+        // reset user defined interval when refresh interval is not USER_DEFINED
+        if (refreshInterval != RefreshInterval.USER_DEFINED) {
+            userDefinedInterval = NumberWithUnit.ZERO_SECOND;
+        }
+    }
+
+    public NumberWithUnit getUserDefinedInterval() {
+        return userDefinedInterval;
+    }
+
+    public void setUserDefinedInterval(NumberWithUnit userDefinedInterval) {
+        this.userDefinedInterval = userDefinedInterval;
     }
 
     @JsonIgnore

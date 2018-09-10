@@ -24,7 +24,7 @@ public enum Unit {
     TIME,METERPERSECSQUARE,HECTOPASCAL,METER,CELSIUS,FAHRENHEIT,KELVIN,RADIUSPERSEC,DEGREEPERSEC,DECIBEL,
     MICROTESLA,CENTIMETER,LUX,DEGREE,
     //OUTPUT DEVICE
-    SECOND,WAV,NUMBER,
+    SECOND,MILLISECOND, WAV,NUMBER,
     //BASIC
     PERCENT,NOT_SPECIFIED,HERTZ,BPM;
     // TODO: add new unit
@@ -51,13 +51,14 @@ public enum Unit {
             case LUX: return "lux";
             case DEGREE: return DEGREE;
             case SECOND: return "sec";
+            case MILLISECOND: return "ms";
             case WAV: return "wav";
             case NUMBER: return "Number";
             case PERCENT: return PERCENT;
             case NOT_SPECIFIED: return "not specified";
             case HERTZ: return "Hz";
             case BPM: return "BPM";
-            default: return "...";
+            default: throw new IllegalStateException();
         }
     }
 

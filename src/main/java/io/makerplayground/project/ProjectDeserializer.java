@@ -2,6 +2,7 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -157,7 +158,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
             , ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice
-            , ObservableList<ProjectDevice> connectivityDevices) {
+            , ObservableList<ProjectDevice> connectivityDevices) throws IOException {
         Set<ProjectDevice> allProjectDevices = new HashSet<>();
         allProjectDevices.addAll(inputDevice);
         allProjectDevices.addAll(outputDevice);
@@ -195,6 +196,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             } else {
                 throw new IllegalStateException("expression type not supported");
             }
+
+            Expression.RefreshInterval refreshInterval = Expression.RefreshInterval.valueOf(valueNode.get("refreshInterval").asText());
+            NumberWithUnit interval = mapper.readValue(valueNode.get("userDefinedInterval").traverse()
+                    , new TypeReference<NumberWithUnit>(){});
+            expression.setRefreshInterval(refreshInterval);
+            expression.setUserDefinedInterval(interval);
+
             valueMap.put(parameter, expression);
         }
 

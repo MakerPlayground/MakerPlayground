@@ -13,11 +13,22 @@ public class NumberWithUnit {
     private Unit u;
 
     public static final NumberWithUnit ZERO = new NumberWithUnit(0, Unit.NOT_SPECIFIED);
+    public static final NumberWithUnit ZERO_SECOND = new NumberWithUnit(0, Unit.SECOND);
 
-    @JsonCreator
-    public NumberWithUnit(@JsonProperty("value") double d, @JsonProperty("unit") Unit u) {
+    public NumberWithUnit(double d, Unit u) {
         this.d = d;
         this.u = u;
+    }
+
+    @JsonCreator
+    public static NumberWithUnit of(@JsonProperty("value") double d, @JsonProperty("unit") Unit u) {
+        if (d == 0 && u == Unit.NOT_SPECIFIED) {
+            return ZERO;
+        } else if (d == 0 && u == Unit.SECOND) {
+            return ZERO_SECOND;
+        } else {
+            return new NumberWithUnit(d, u);
+        }
     }
 
     public double getValue() {

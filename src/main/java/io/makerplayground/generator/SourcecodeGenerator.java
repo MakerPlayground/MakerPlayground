@@ -1,9 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 
@@ -50,7 +48,6 @@ public class SourcecodeGenerator {
 
     private void appendHeader() {
         // add #include <Arduino.h> if in cpp mode
-        builder.append("#define MP_LOG_INTERVAL 3000").append(NEW_LINE);
         if (cppMode) {
             builder.append("#include <Arduino.h>").append(NEW_LINE);
         }
@@ -61,9 +58,19 @@ public class SourcecodeGenerator {
                 .forEach(s -> builder.append("#include \"").append(s).append("\"").append(NEW_LINE));
         builder.append(NEW_LINE);
 
-        builder.append("typedef void (*Action)(void);").append(NEW_LINE);
+        // macros needed for logging system
+        builder.append("#define MP_LOG_INTERVAL 3000").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
+        // type definition require for background task execution system
+        builder.append("typedef void (*Task)(void);").append(NEW_LINE);
+        builder.append("struct Expr {").append(NEW_LINE);
+        builder.append(INDENT).append("double (*fn)(void);").append(NEW_LINE);
+        builder.append(INDENT).append("double interval;").append(NEW_LINE);
+        builder.append(INDENT).append("double value;").append(NEW_LINE);
+        builder.append("};").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
@@ -78,6 +85,9 @@ public class SourcecodeGenerator {
             if (generateMapFunction) {
                 builder.append("double map(double x, double in_min, double in_max, double out_min, double out_max);").append(NEW_LINE);
             }
+            builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr);").append(NEW_LINE);
+            builder.append("void setExpression(Expr expr, double (*fn)(void), double interval);").append(NEW_LINE);
+            builder.append("void setExpression(Expr expr, double value);").append(NEW_LINE);
             builder.append(NEW_LINE);
         }
     }
@@ -179,11 +189,16 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    private void appendActionVariables() {
-        for (Map.Entry<ProjectDevice, String> entry: getAllDevicesActionVariableNames().entrySet()) {
-            builder.append("Action ").append(entry.getValue()).append(" = NULL;").append(NEW_LINE);
+    private void appendTaskVariables() {
+        Set<ProjectDevice> devices = project.getAllDeviceUsed();
+        if (!devices.isEmpty()) {
+            for (ProjectDevice projectDevice : devices) {
+                builder.append("Task ").append(getDeviceTaskVariableName(projectDevice)).append(" = NULL;").append(NEW_LINE);
+                builder.append("Expr ").append(getDeviceExpressionVariableName(projectDevice))
+                        .append("[").append(getMaximumNumberOfExpression(projectDevice)).append("];").append(NEW_LINE);
+            }
+            builder.append(NEW_LINE);
         }
-        builder.append(NEW_LINE);
     }
 
     private void appendUpdateFunction() {
@@ -211,11 +226,10 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
 
         /* 3: call the function that need the updated expression evaluation */
-        for (Map.Entry<ProjectDevice, String> entry: getAllDevicesActionVariableNames().entrySet()) {
-            String actionVariableName = entry.getValue();
-            builder.append(INDENT).append("if (").append(actionVariableName).append(" != NULL) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append(actionVariableName).append("();").append(NEW_LINE);
-            builder.append(INDENT).append("}").append(NEW_LINE);
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            builder.append(INDENT).append("evaluateExpression(").append(getDeviceTaskVariableName(projectDevice)).append(", ")
+                    .append(getDeviceExpressionVariableName(projectDevice)).append(", ")
+                    .append(getMaximumNumberOfExpression(projectDevice)).append(");").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
@@ -231,19 +245,36 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    private Map<ProjectDevice, String> getAllDevicesActionVariableNames() {
-//        return null;
-        Map<ProjectDevice, String> map = new HashMap<>();
-        for (ProjectDevice device: project.getAllDeviceUsed()) {
-            for (Scene scene: project.getScene()) {
-                for (UserSetting setting: scene.getSetting()) {
-                    if (setting.getDevice() == device && setting.isDataBindingUsed()) {
-                        map.put(device, getDeviceActionVariableName(device));
-                    }
-                }
-            }
-        }
-        return map;
+    private List<ProjectDevice> getUsedDevicesWithTask() {
+        return project.getScene().stream()
+                .flatMap(scene -> scene.getSetting().stream())
+                .filter(UserSetting::isDataBindingUsed)
+                .map(UserSetting::getDevice)
+                .collect(Collectors.toList());
+    }
+
+    private void appendExpressionFunction() {
+        builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr) {").append(NEW_LINE);
+        builder.append(INDENT).append("for (int i=0; i<numExpr; i++) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("if (expr[i].fn != NULL && millis() - oldTime > expr[i].interval) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("expr[i].value = expr[i].fn();").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("task();").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+        builder.append(INDENT).append("}").append(NEW_LINE);
+        builder.append("}").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
+        builder.append("void setExpression(Expr expr, double (*fn)(void), double interval) {").append(NEW_LINE);
+        builder.append(INDENT).append("expr.fn = fn;").append(NEW_LINE);
+        builder.append(INDENT).append("expr.interval = interval;").append(NEW_LINE);
+        builder.append("}").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
+        builder.append("void setExpression(Expr expr, double value) {").append(NEW_LINE);
+        builder.append(INDENT).append("expr.value = value;").append(NEW_LINE);
+        builder.append(INDENT).append("expr.fn = NULL;").append(NEW_LINE);
+        builder.append("}").append(NEW_LINE);
+        builder.append(NEW_LINE);
     }
 
     private void appendLoopFunction() {
@@ -255,7 +286,7 @@ public class SourcecodeGenerator {
     }
 
     private void appendSceneFunctions() {
-        builder.append(sceneFunctions);
+        builder.append(sceneFunctions).append(NEW_LINE);
     }
 
     public static Sourcecode generateCode(Project project, boolean cppMode) {
@@ -281,13 +312,14 @@ public class SourcecodeGenerator {
         generator.appendGlobalVariables();
         generator.appendProjectValue();
         generator.appendFunctionDeclaration();
-        generator.appendActionVariables();
+        generator.appendTaskVariables();
         generator.appendInstanceVariables();
         generator.appendSetupFunction();
         generator.appendUpdateFunction();
         generator.appendLoopFunction();
         generator.appendSceneFunctions();
         generator.appendMapFunction();
+        generator.appendExpressionFunction();
 
         return new Sourcecode(generator.builder.toString());
     }
@@ -332,23 +364,29 @@ public class SourcecodeGenerator {
 
             // do action
             for (UserSetting setting : currentScene.getSetting()) {
-                List<String> params = new ArrayList<>();
-                for (Parameter parameter : setting.getAction().getParameter()) {
-                    params.add(parseExpression(setting.getValueMap().get(parameter)));
-                }
                 ProjectDevice device = setting.getDevice();
                 String deviceName = getDeviceVariableName(device);
-                String codeToCallAction = deviceName + "." + setting.getAction().getFunctionName() + "(" + String.join(", ", params) + ");";
-                // if data binding
-                if (setting.isDataBindingUsed()){
-                    sceneFunctions.append(INDENT).append(getDeviceActionVariableName(device)).append(" = []() {").append(codeToCallAction).append("};").append(NEW_LINE);
-                }
+                List<String> taskParameter = new ArrayList<>();
 
-                // if run once
-                else {
-                    sceneFunctions.append(INDENT).append(getDeviceActionVariableName(device)).append(" = NULL;").append(NEW_LINE);
-                    sceneFunctions.append(INDENT).append(codeToCallAction).append(NEW_LINE);
+                List<Parameter> parameters = setting.getAction().getParameter();
+                for (int i=0; i<parameters.size(); i++) {
+                    Parameter p = parameters.get(i);
+                    Expression e = setting.getValueMap().get(p);
+                    String expressionVarName = getDeviceExpressionVariableName(device) + "[" + i + "]";
+                    if (setting.isDataBindingUsed(p)) {
+                        sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
+                                .append("[]()->double{").append("return ").append(parseExpression(e)).append(";}, ")
+                                .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
+                    } else {
+                        sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
+                                .append(parseExpression(e)).append(");").append(NEW_LINE);
+                    }
+                    taskParameter.add(expressionVarName + ".value");
                 }
+                sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append(" = []() -> void {")
+                        .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
+                        .append(String.join(", ", taskParameter)).append(");};").append(NEW_LINE);
+                sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append("();").append(NEW_LINE);
             }
 
             // delay
@@ -508,6 +546,17 @@ public class SourcecodeGenerator {
         return returnValue;
     }
 
+    private int parseRefreshInterval(Expression expression) {
+        NumberWithUnit interval = expression.getUserDefinedInterval();
+        if (interval.getUnit() == Unit.SECOND) {
+            return (int) interval.getValue() * 1000;    // accurate down to 1 ms
+        } else if (interval.getUnit() == Unit.MILLISECOND) {
+            return (int) interval.getValue();   // fraction of a ms is discard
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
     private boolean checkScene(Project project) {
         return project.getScene().stream().noneMatch(scene -> scene.getError() != DiagramError.NONE);
     }
@@ -561,7 +610,23 @@ public class SourcecodeGenerator {
         return getDeviceVariableName(projectDevice) + "_" + value.getName().replace(" ", "_");
     }
 
-    private static String getDeviceActionVariableName(ProjectDevice device) {
-        return getDeviceVariableName(device) + "_Action";
+    private String getDeviceTaskVariableName(ProjectDevice device) {
+        return getDeviceVariableName(device) + "_Task";
     }
+
+    private String getDeviceExpressionVariableName(ProjectDevice device) {
+        return getDeviceVariableName(device) + "_Expr";
+    }
+
+    // maximum number of binded parameter in each action of each devices
+    private long getMaximumNumberOfExpression(ProjectDevice device) {
+        return project.getScene().stream()
+                .flatMap(scene -> scene.getSetting().stream())
+                .filter(userSetting -> userSetting.getDevice() == device)
+                .filter(UserSetting::isDataBindingUsed)
+                .mapToLong(UserSetting::getNumberOfDatabindParams)
+                .max().orElse(0);
+    }
+
+
 }

@@ -1,9 +1,12 @@
 package io.makerplayground.ui.canvas.node.usersetting.chip;
 
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
+import io.makerplayground.ui.canvas.node.usersetting.expression.SpinnerWithUnit;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -11,12 +14,16 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -76,6 +83,27 @@ public class ChipField extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // controls for adjusting refresh interval
+        Label refreshIntervalLabel = new Label("Refresh Interval");
+
+        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
+        refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
+        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setRefreshInterval(newValue);
+        });
+
+        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
+        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setUserDefinedInterval(newValue);
+        });
+        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
+        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
+
+        HBox refreshIntervalHBox = new HBox(5);
+        refreshIntervalHBox.setAlignment(Pos.CENTER_LEFT);
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalLabel, refreshIntervalComboBox, customIntervalSpinner);
+        getChildren().add(refreshIntervalHBox);
 
         // initialize chip based on expression
         List<Term> listTerm = expressionProperty.get().getTerms();

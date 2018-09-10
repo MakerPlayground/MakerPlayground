@@ -29,7 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 import java.util.*;
-import java.util.function.Predicate;
+
 
 /**
  *
@@ -195,8 +195,18 @@ public class UserSetting {
     }
 
     public boolean isDataBindingUsed() {
-        return getValueMap().values()
-                .stream()
-                .anyMatch(expression1 -> !(expression1 instanceof NumberWithUnitExpression));
+        return getValueMap().values().stream()
+                .anyMatch(expression1 -> (expression1.getRefreshInterval() != Expression.RefreshInterval.ONCE));
+    }
+
+    public boolean isDataBindingUsed(Parameter p) {
+        return valueMap.get(p).getRefreshInterval() != Expression.RefreshInterval.ONCE;
+    }
+
+    public long getNumberOfDatabindParams() {
+        return getValueMap().keySet().stream()
+                .filter(parameter -> (parameter.getDataType() == DataType.DOUBLE)
+                        || (parameter.getDataType() == DataType.INTEGER))
+                .count();
     }
 }

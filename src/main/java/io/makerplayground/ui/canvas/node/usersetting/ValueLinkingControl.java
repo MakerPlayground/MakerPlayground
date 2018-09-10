@@ -3,9 +3,12 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.ValueLinkingExpression;
 import io.makerplayground.ui.canvas.node.usersetting.expression.RangeSliderWithUnit;
+import io.makerplayground.ui.canvas.node.usersetting.expression.SpinnerWithUnit;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -13,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import java.util.List;
 
@@ -91,9 +95,31 @@ public class ValueLinkingControl extends GridPane {
         GridPane.setRowIndex(destRange, 2);
         GridPane.setColumnIndex(destRange, 1);
 
+        Label refreshIntervalLabel = new Label("Refresh Interval");
+        GridPane.setRowIndex(refreshIntervalLabel, 3);
+        GridPane.setColumnIndex(refreshIntervalLabel, 0);
+
+        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
+        refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
+        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setRefreshInterval(newValue);
+        });
+
+        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
+        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setUserDefinedInterval(newValue);
+        });
+        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
+        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
+
+        HBox refreshIntervalHBox = new HBox(5);
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
+        GridPane.setRowIndex(refreshIntervalHBox, 3);
+        GridPane.setColumnIndex(refreshIntervalHBox, 1);
+
         setHgap(5);
         setVgap(5);
-        getChildren().addAll(fromLabel, valueCombobox, sourceRange, toLabel, destRange);
+        getChildren().addAll(fromLabel, valueCombobox, sourceRange, toLabel, destRange, refreshIntervalLabel, refreshIntervalHBox);
     }
 
     private void initEvent() {
