@@ -16,32 +16,40 @@ import java.util.Map;
 
 public class MPDiagram extends Pane {
     private static final Point2D BASEBOARD_CENTER_POSITION = new Point2D(500, 400);
-    private static final Map<String, Point2D> WIRE_POSITION = Map.of(
-            "D1", new Point2D(248, 433),
-            "D2", new Point2D(248, 380),
-            "D3", new Point2D(254, 274),
-            "D4", new Point2D(250, 170),
-            "D5/A1", new Point2D(255, 54),
-            "D6/A2", new Point2D(510, 54),
-            "I2C1", new Point2D(590, 170),
-            "I2C2", new Point2D(620, 274),
-            "I2C3", new Point2D(620, 380),
-            "I2C4", new Point2D(590, 433)
+    private static final Map<String, Point2D> WIRE_POSITION = Map.ofEntries(
+            Map.entry("D1", new Point2D(248, 433)),
+            Map.entry("D2", new Point2D(248, 380)),
+            Map.entry("D3", new Point2D(254, 274)),
+            Map.entry("D4", new Point2D(250, 170)),
+            Map.entry("D5/A1", new Point2D(255, 54)),
+            Map.entry("D6/A2", new Point2D(510, 54)),
+            Map.entry("I2C (#1)", new Point2D(590, 170)),
+            Map.entry("I2C (#2)", new Point2D(620, 274)),
+            Map.entry("I2C (#3)", new Point2D(620, 380)),
+            Map.entry("I2C (#4)", new Point2D(590, 433)),
+            Map.entry("D7/A3", new Point2D(590, 170)),
+            Map.entry("D8/I2C1", new Point2D(620, 274)),
+            Map.entry("I2C0 (#1)", new Point2D(620, 380)),
+            Map.entry("I2C0 (#2)", new Point2D(590, 433))
     );
-    private static final Map<String, Point2D> DEVICE_POSITION = Map.of(
-            "D1", new Point2D(270, 521),
-            "D2", new Point2D(270, 418),
-            "D3", new Point2D(270, 292),
-            "D4", new Point2D(270, 189),
-            "D5/A1", new Point2D(270, 72),
-            "D6/A2", new Point2D(730, 72),
-            "I2C1", new Point2D(730, 189),
-            "I2C2", new Point2D(730, 292),
-            "I2C3", new Point2D(730, 418),
-            "I2C4", new Point2D(730, 521)
+    private static final Map<String, Point2D> DEVICE_POSITION = Map.ofEntries(
+            Map.entry("D1", new Point2D(270, 521)),
+            Map.entry("D2", new Point2D(270, 418)),
+            Map.entry("D3", new Point2D(270, 292)),
+            Map.entry("D4", new Point2D(270, 189)),
+            Map.entry("D5/A1", new Point2D(270, 72)),
+            Map.entry("D6/A2", new Point2D(730, 72)),
+            Map.entry("I2C (#1)", new Point2D(730, 189)),
+            Map.entry("I2C (#2)", new Point2D(730, 292)),
+            Map.entry("I2C (#3)", new Point2D(730, 418)),
+            Map.entry("I2C (#4)", new Point2D(730, 521)),
+            Map.entry("D7/A3", new Point2D(730, 189)),
+            Map.entry("D8/I2C1", new Point2D(730, 292)),
+            Map.entry("I2C0 (#1)", new Point2D(730, 418)),
+            Map.entry("I2C0 (#2)", new Point2D(730, 521))
     );
     private static final List<String> LEFT_PORT_NAME = List.of("D1", "D2", "D3", "D4", "D5/A1");
-    private static final List<String> RIGHT_PORT_NAME = List.of("D6/A2", "I2C1", "I2C2", "I2C3", "I2C4");
+    private static final List<String> RIGHT_PORT_NAME = List.of("D6/A2", "I2C (#1)", "I2C (#2)", "I2C (#3)", "I2C (#4)", "D7/A3", "D8/I2C1", "I2C0 (#1)", "I2C0 (#2)");
 
     public MPDiagram(Project project) {
         setPrefSize(1000, 600);

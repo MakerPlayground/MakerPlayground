@@ -24,11 +24,15 @@ public class SourcecodeGenerator {
             Map.entry("D4", List.of("9", "10")),
             Map.entry("D5/A1", List.of("A0", "A1")),
             Map.entry("D6/A2", List.of("A2", "A3")),
-            Map.entry("I2C1", Collections.<String>emptyList()),
-            Map.entry("I2C2", Collections.<String>emptyList()),
-            Map.entry("I2C3", Collections.<String>emptyList()),
-            Map.entry("I2C4", Collections.<String>emptyList()),
-            Map.entry("Internal", Collections.<String>emptyList())
+            Map.entry("D7/A3", List.of("A4", "A5")),
+            Map.entry("D8/I2C1", List.of("11", "12")),
+            Map.entry("I2C0 (#1)", Collections.emptyList()),
+            Map.entry("I2C0 (#2)", Collections.emptyList()),
+            Map.entry("I2C (#1)", Collections.emptyList()),
+            Map.entry("I2C (#2)", Collections.emptyList()),
+            Map.entry("I2C (#3)", Collections.emptyList()),
+            Map.entry("I2C (#4)", Collections.emptyList()),
+            Map.entry("Internal", Collections.emptyList())
     );
 
     private final Project project;
@@ -57,8 +61,6 @@ public class SourcecodeGenerator {
                 .collect(Collectors.toSet())    //remove duplicates
                 .forEach(s -> builder.append("#include \"").append(s).append("\"").append(NEW_LINE));
         builder.append(NEW_LINE);
-//        builder.append("#define MP_LOG(name) Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); name.printStatus(); Serial.println('\\0');").append(NEW_LINE);
-//        builder.append("#define MP_ERR(name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(\"name\")); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(name.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
         builder.append(NEW_LINE);

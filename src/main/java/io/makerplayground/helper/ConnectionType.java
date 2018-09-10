@@ -34,5 +34,5 @@ public enum ConnectionType {
     GROVE_PWM_DUAL,
     GROVE_ANALOG_SINGLE,
     GROVE_ANALOG_DUAL,
-    GROVE_I2C
+    GROVE_I2C;
 }
