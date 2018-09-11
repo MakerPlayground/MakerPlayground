@@ -81,20 +81,6 @@
     "description": "A screen that can display number and some alphabet", 
     "action": [
       {
-        "name": "Show Value", 
-        "funcname": "showValue", 
-        "type": "Active", 
-        "parameter": [
-          {
-            "name": "Value", 
-            "value": "", 
-            "constraint": [], 
-            "datatype": "VALUE", 
-            "controltype": "DROPDOWN"
-          }
-        ]
-      }, 
-      {
         "name": "Show Number", 
         "funcname": "showData", 
         "type": "Inactive", 
