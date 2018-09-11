@@ -63,6 +63,8 @@ public enum Peripheral {
     MP_GPIO_SINGLE_4(ConnectionType.MP_GPIO_SINGLE),
     MP_GPIO_SINGLE_5(ConnectionType.MP_GPIO_SINGLE),
     MP_GPIO_SINGLE_6(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_7(ConnectionType.MP_GPIO_SINGLE),
+    MP_GPIO_SINGLE_8(ConnectionType.MP_GPIO_SINGLE),
 
     MP_GPIO_DUAL_1(ConnectionType.MP_GPIO_DUAL),
     MP_GPIO_DUAL_2(ConnectionType.MP_GPIO_DUAL),
@@ -70,6 +72,8 @@ public enum Peripheral {
     MP_GPIO_DUAL_4(ConnectionType.MP_GPIO_DUAL),
     MP_GPIO_DUAL_5(ConnectionType.MP_GPIO_DUAL),
     MP_GPIO_DUAL_6(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_7(ConnectionType.MP_GPIO_DUAL),
+    MP_GPIO_DUAL_8(ConnectionType.MP_GPIO_DUAL),
 
     MP_PWM_SINGLE_1(ConnectionType.MP_PWM_SINGLE),
     MP_PWM_SINGLE_2(ConnectionType.MP_PWM_SINGLE),
@@ -83,14 +87,18 @@ public enum Peripheral {
 
     MP_ANALOG_SINGLE_1(ConnectionType.MP_ANALOG_SINGLE),
     MP_ANALOG_SINGLE_2(ConnectionType.MP_ANALOG_SINGLE),
+    MP_ANALOG_SINGLE_3(ConnectionType.MP_ANALOG_SINGLE),
 
     MP_ANALOG_DUAL_1(ConnectionType.MP_ANALOG_DUAL),
     MP_ANALOG_DUAL_2(ConnectionType.MP_ANALOG_DUAL),
+    MP_ANALOG_DUAL_3(ConnectionType.MP_ANALOG_DUAL),
 
     MP_I2C_1(ConnectionType.MP_I2C),
     MP_I2C_2(ConnectionType.MP_I2C),
     MP_I2C_3(ConnectionType.MP_I2C),
     MP_I2C_4(ConnectionType.MP_I2C),
+
+    MP_I2C1_1(ConnectionType.MP_I2C),
 
     GROVE_GPIO_SINGLE_1(ConnectionType.GROVE_GPIO_SINGLE),
     GROVE_GPIO_SINGLE_2(ConnectionType.GROVE_GPIO_SINGLE),
@@ -176,6 +184,15 @@ public enum Peripheral {
             case GROVE_ANALOG_DUAL_1:
             case GROVE_ANALOG_DUAL_2:
             case GROVE_ANALOG_DUAL_3:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isI2C1() {
+        switch (this) {
+            case MP_I2C1_1:
                 return true;
             default:
                 return false;
