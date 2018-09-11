@@ -10,7 +10,6 @@ import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.tutorial.TutorialView;
 import io.makerplayground.ui.dialog.DeviceMonitor;
-import io.makerplayground.ui.dialog.ErrorDialogView;
 import io.makerplayground.version.ProjectVersionControl;
 import io.makerplayground.version.SoftwareVersionControl;
 import javafx.animation.KeyFrame;
@@ -20,6 +19,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
@@ -67,7 +68,7 @@ public class Main extends Application {
     @FXML
     private Button newButton;
     @FXML
-    private Button deviceMonitorButton;
+    private MenuButton deviceMonitorMenuButton;
     @FXML
     private Button tutorialButton;
     @FXML
@@ -160,7 +161,7 @@ public class Main extends Application {
         loadButton.setOnAction(event -> loadProject(primaryStage));
         saveButton.setOnAction(event -> saveProject());
         saveAsButton.setOnAction(event -> saveProjectAs());
-        deviceMonitorButton.setOnAction(event -> deviceMonitor());
+        deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
 
         tutorialButton.setOnAction(event -> {
             if (flag) {
@@ -240,6 +241,24 @@ public class Main extends Application {
             }
         });
 
+    }
+
+    private void deviceMonitorMenuShowing(Event e) {
+        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
+        deviceMonitorButton.getItems().clear();
+        SerialPort[] commPorts = SerialPort.getCommPorts();
+        if (commPorts.length > 0) {
+            for ( SerialPort port: commPorts){
+                MenuItem item = new MenuItem(port.getDescriptivePortName());
+                item.setOnAction(event -> openDeviceMonitor(port.getSystemPortName()));
+                deviceMonitorButton.getItems().add(item);
+            }
+        }
+        else {
+            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
+            item.setDisable(true);
+            deviceMonitorButton.getItems().add(item);
+        }
     }
 
     private void updatePathTextField(Stage primaryStage) {
@@ -394,16 +413,11 @@ public class Main extends Application {
         }
     }
 
-    private void deviceMonitor(){
-        if (SerialPort.getCommPorts().length > 0) {
-            DeviceMonitor deviceMonitor = new DeviceMonitor(project);
-            deviceMonitor.showAndWait();
-        }
-        else {
-            ErrorDialogView errorDialogView = new ErrorDialogView(borderPane.getScene().getWindow()
-                    , "There is no connected serial port.\nPlease connect the board with computer.");
-            errorDialogView.show();
-        }
+    private void openDeviceMonitor(String portName){
+        SerialPort port = SerialPort.getCommPort(portName);
+        //TODO: capture error in rare case the port is disconnected
+        DeviceMonitor deviceMonitor = new DeviceMonitor(project, port);
+        deviceMonitor.showAndWait();
     }
 
 
