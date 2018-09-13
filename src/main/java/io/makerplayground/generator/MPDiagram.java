@@ -10,7 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -91,39 +95,40 @@ public class MPDiagram extends Pane {
 
                 // draw device
                 Point2D devicePosition = DEVICE_POSITION.get(controllerPortName);
+                Path deviceImagePath = Paths.get("library/devices",projectDevice.getActualDevice().getId(),"asset","MPdevice.png");
+                try (InputStream deviceImageStream = Files.newInputStream(deviceImagePath)){
+                    Image deviceImage = new Image(deviceImageStream);
+                    ImageView deviceImageView = new ImageView(deviceImage);
+                    if (LEFT_PORT_NAME.contains(controllerPortName)) {
+                        deviceImageView.setRotate(90);
+                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2)
+                                - deviceImage.getHeight());
+                    } else if (RIGHT_PORT_NAME.contains(controllerPortName)) {
+                        deviceImageView.setRotate(-90);
+                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
+                    } else {
+                        throw new IllegalStateException("Invalid port");
+                    }
+                    deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
+                            - deviceImage.getWidth() / 2.0);
 
-                InputStream deviceImageStream = getClass().getResourceAsStream("/device/" + projectDevice.getActualDevice().getId() + ".png");
-                if (deviceImageStream == null) {
-                    throw new IllegalStateException("Image not found : " + "/device/" + projectDevice.getActualDevice().getId() + ".png");
+                    getChildren().addAll(deviceImageView);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Image not found : " + "library/devices/" + projectDevice.getActualDevice().getId() + "/asset/MPdevice.png");
                 }
-                Image deviceImage = new Image(deviceImageStream);
-                ImageView deviceImageView = new ImageView(deviceImage);
-                if (LEFT_PORT_NAME.contains(controllerPortName)) {
-                    deviceImageView.setRotate(90);
-                    deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2)
-                            - deviceImage.getHeight());
-                } else if (RIGHT_PORT_NAME.contains(controllerPortName)) {
-                    deviceImageView.setRotate(-90);
-                    deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
-                } else {
-                    throw new IllegalStateException("Invalid port");
-                }
-                deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
-                        - deviceImage.getWidth() / 2.0);
-
-                getChildren().addAll(deviceImageView);
             }
         }
 
         // draw controller
-        InputStream controllerImageStream = getClass().getResourceAsStream("/device/" + project.getController().getId() + ".png");
-        if (controllerImageStream == null) {
-            throw new IllegalStateException("Image not found");
+        Path controllerImagePath = Paths.get("library/devices",project.getController().getId(),"asset","MPcontroller.png");
+        try (InputStream controllerImageStream = Files.newInputStream(controllerImagePath)) {
+            Image controllerImage = new Image(controllerImageStream);
+            ImageView controllerImageView = new ImageView(controllerImage);
+            controllerImageView.setLayoutX(BASEBOARD_CENTER_POSITION.getX() - (controllerImage.getWidth() / 2.0));
+            controllerImageView.setLayoutY(BASEBOARD_CENTER_POSITION.getY() - (controllerImage.getHeight() / 2.0));
+            getChildren().add(controllerImageView);
+        } catch (IOException e) {
+            throw new IllegalStateException("Image not found : " + "library/devices/" + project.getController().getId() + "asset/MPcontroller.png");
         }
-        Image controllerImage = new Image(controllerImageStream);
-        ImageView controllerImageView = new ImageView(controllerImage);
-        controllerImageView.setLayoutX(BASEBOARD_CENTER_POSITION.getX() - (controllerImage.getWidth() / 2.0));
-        controllerImageView.setLayoutY(BASEBOARD_CENTER_POSITION.getY() - (controllerImage.getHeight() / 2.0));
-        getChildren().add(controllerImageView);
     }
 }
