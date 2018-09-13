@@ -6,7 +6,6 @@ import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectController;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,7 +18,10 @@ import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -90,11 +92,18 @@ public class Diagram extends Pane {
         // draw controller
         lastY += CONTROLLER_Y_MARGIN;
         Device controller = project.getController();
-        String controllerFilename = "/device/" + controller.getId() + ".png";
-        if(useGrove()) {
-            controllerFilename = "/device/Seeed-103030000.png";
+        ImageView controllerImage = null;
+        if(useGrove()){
+            String controllerFilename = "/device/Seeed-103030000.png";
+            controllerImage = new ImageView(new Image(getClass().getResourceAsStream(controllerFilename)));
         }
-        ImageView controllerImage = new ImageView(new Image(getClass().getResourceAsStream(controllerFilename)));
+        else{
+            try (InputStream controllerImageStream = Files.newInputStream(Paths.get("library/devices",controller.getId(),"asset","controller.png"))){
+                controllerImage = new ImageView(new Image(controllerImageStream));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
             DevicePort topLeftPort = getTopLeftHole(controller);
@@ -124,38 +133,41 @@ public class Diagram extends Pane {
             } else if (device.getFormFactor() == FormFactor.NONE) {
                 continue;
             }
-            ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
-            if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-                DevicePort topLeftPort = getTopLeftHole(device);
-                currentRow += calculateNumberOfHoleWithCurrentDeviceLeftWing(topLeftPort);
-                deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
-                        , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
+            try (InputStream deviceImageStream = Files.newInputStream(Paths.get("library/devices",device.getId(),"asset","device.png"))){
+                ImageView deviceImage = new ImageView(new Image(deviceImageStream));
+                if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+                    DevicePort topLeftPort = getTopLeftHole(device);
+                    currentRow += calculateNumberOfHoleWithCurrentDeviceLeftWing(topLeftPort);
+                    deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
+                            , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
 
-                currentRow += calculateNumberOfHoleWithoutLeftWing(device);
-            } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
-                int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE) + 1;
-                 deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
-                        , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
-                currentRow += calculateNumberOfHoleWithoutLeftWing(device);
-            } else if (device.getFormFactor() == FormFactor.STANDALONE) {
-                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
-                maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
-            } else if (device.getFormFactor() == FormFactor.SHIELD) {
-                deviceTopLeftPos.put(projectDevice, controllerPosition);
-                maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
-            } // TODO: add new form factor here
-            if( lastX + device.getWidth() > 750){
-                lastX = BREADBOARD_LEFT_MARGIN;
-                lastY = lastY + CONTROLLER_Y_MARGIN + maxHeight;
+                    currentRow += calculateNumberOfHoleWithoutLeftWing(device);
+                } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
+                    int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE) + 1;
+                    deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
+                            , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
+                    currentRow += calculateNumberOfHoleWithoutLeftWing(device);
+                } else if (device.getFormFactor() == FormFactor.STANDALONE) {
+                    deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
+                    maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
+                } else if (device.getFormFactor() == FormFactor.SHIELD) {
+                    deviceTopLeftPos.put(projectDevice, controllerPosition);
+                    maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
+                } // TODO: add new form factor here
+                if( lastX + device.getWidth() > 750){
+                    lastX = BREADBOARD_LEFT_MARGIN;
+                    lastY = lastY + CONTROLLER_Y_MARGIN + maxHeight;
+                }
+                else{
+                    lastX = lastX + device.getWidth() + DEVICE_MARGIN;
+                }
+                deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
+                deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
+                this.getChildren().add(deviceImage);
+                deviceCount++;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            else{
-                lastX = lastX + device.getWidth() + DEVICE_MARGIN;
-
-            }
-            deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
-            deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
-            this.getChildren().add(deviceImage);
-            deviceCount++;
         }
         lastY += (maxHeight + CONTROLLER_Y_MARGIN);
 
@@ -166,42 +178,46 @@ public class Diagram extends Pane {
             if (device.getFormFactor() == FormFactor.NONE) {
                 continue; // prevent the image file loading.
             }
-            ImageView deviceImage = new ImageView(new Image(getClass().getResourceAsStream("/device/" + device.getId() + ".png")));
-            Text text = new Text();
-            text.setFont(Font.font(GROVE_FONT_SIZE));
-            if (device.getFormFactor() == FormFactor.GROVE) {
-                lastY += GROVE_Y_MARGIN;
-                deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY));
-                lastX = lastX + device.getWidth() + GROVE_X_MARGIN;
-                for(Peripheral p : device.getConnectivity()) {
-                    ConnectionType conn = p.getConnectionType();
-                    String str = "connects to ";
-                    if(conn == ConnectionType.ANALOG) {
-                        List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
-                        Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
-                        str += selectedPort.get();
-                    } else if (conn == ConnectionType.GPIO) {
-                        List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
-                        Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
-                        str += ("D" + selectedPort.get());
+            try (InputStream deviceImageStream = Files.newInputStream(Paths.get("library/devices",device.getId(),"asset","device.png"))) {
+                ImageView deviceImage = new ImageView(new Image(deviceImageStream));
+                Text text = new Text();
+                text.setFont(Font.font(GROVE_FONT_SIZE));
+                if (device.getFormFactor() == FormFactor.GROVE) {
+                    lastY += GROVE_Y_MARGIN;
+                    deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY));
+                    lastX = lastX + device.getWidth() + GROVE_X_MARGIN;
+                    for(Peripheral p : device.getConnectivity()) {
+                        ConnectionType conn = p.getConnectionType();
+                        String str = "connects to ";
+                        if(conn == ConnectionType.ANALOG) {
+                            List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
+                            Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
+                            str += selectedPort.get();
+                        } else if (conn == ConnectionType.GPIO) {
+                            List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
+                            Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
+                            str += ("D" + selectedPort.get());
+                        }
+                        else if (conn == ConnectionType.I2C) {
+                            str += "I2C";
+                        }
+                        text.setText(str);
+                        text.setLayoutX(lastX);
+                        text.setLayoutY(lastY + device.getHeight() / 2);
                     }
-                    else if (conn == ConnectionType.I2C) {
-                        str += "I2C";
-                    }
-                    text.setText(str);
-                    text.setLayoutX(lastX);
-                    text.setLayoutY(lastY + device.getHeight() / 2);
+                    lastY = lastY + device.getHeight();
+                } else {
+                    continue;
                 }
-                lastY = lastY + device.getHeight();
-            } else {
-                continue;
-            }
-            deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
-            deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
+                deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
+                deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
 
-            this.getChildren().add(deviceImage);
-            this.getChildren().add(text);
-            deviceCount++;
+                this.getChildren().add(deviceImage);
+                this.getChildren().add(text);
+                deviceCount++;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         int numberOfPwrPinUsed = 0;
