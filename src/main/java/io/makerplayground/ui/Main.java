@@ -24,6 +24,8 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -39,6 +41,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -209,23 +214,35 @@ public class Main extends Application {
             SoftwareVersionControl.getLatestVersionInfo().ifPresent(version -> {
                 if (!version.getVersionString().equals(SoftwareVersionControl.CURRENT_VERSION)) {
                     Platform.runLater(() -> {
-                        Action navigate = new Action("Download", actionEvent -> {
-                            try {
-                                Desktop.getDesktop().browse(new URI(version.getDownloadURL()));
-                            } catch (IOException | URISyntaxException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        ImageView imageView = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
-                        imageView.setFitWidth(50);
-                        imageView.setPreserveRatio(true);
+                        ImageView icon = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
+                        icon.setFitWidth(50);
+                        icon.setPreserveRatio(true);
+
+                        Text text = new Text(version.getBuildName() + " has been released");
+                        text.setId("text");
+                        text.setWrappingWidth(250);
+
+                        Button button = new Button("Download Now");
+                        button.setId("UpdateButton");
+                        button.setOnAction(event -> getHostServices().showDocument(version.getDownloadURL()));
+
+                        VBox vBox = new VBox();
+                        vBox.setSpacing(10);
+                        vBox.setAlignment(Pos.TOP_CENTER);
+                        vBox.getChildren().addAll(text, button);
+
+                        HBox mainPane = new HBox();
+                        mainPane.setPadding(new Insets(10));
+                        mainPane.setSpacing(20);
+                        mainPane.getStylesheets().add(getClass().getResource("/css/UpdateNotificationDialog.css").toExternalForm());
+                        mainPane.setPrefSize(300, 110);
+                        mainPane.getChildren().addAll(icon, vBox);
+
                         Notifications.create()
-                                .title(version.getBuildName() + " has been released")
-                                .text("Update now?")
-                                .graphic(imageView)
+                                .hideCloseButton()
+                                .graphic(mainPane)
                                 .owner(mainWindow.getCanvasView())
-                                .action(navigate)
-                                .hideAfter(Duration.seconds(10))
+                                .hideAfter(Duration.seconds(5))
                                 .show();
                     });
                 }

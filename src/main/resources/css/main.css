@@ -67,7 +67,7 @@
      -fx-background-color: #333333;
 }
 
-.notification-bar>.pane . button {
+/*.notification-bar>.pane . button {
     -fx-background-color: white;
     -fx-background-radius: 5px;
     -fx-border-color: #e3e3e3;
@@ -95,5 +95,5 @@
     -fx-padding: 7.5 7.5 7.5 7.5;
     -fx-cursor: hand;
 }
-
+*/
 
