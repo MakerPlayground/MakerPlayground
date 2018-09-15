@@ -50,6 +50,7 @@ public class Device {
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
     private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+    private final CloudPlatform cloudPlatform;
     private final String pioBoardId;
 
     private final List<DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
@@ -83,6 +84,7 @@ public class Device {
             , String mpLibrary
             , List<String> externalLibrary
             , Set<Platform> supportedPlatform
+            , CloudPlatform cloudPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
             , Map<GenericDevice, Integer> supportedDevice
@@ -106,6 +108,7 @@ public class Device {
         this.mpLibrary = mpLibrary;
         this.externalLibrary = externalLibrary;
         this.supportedPlatform = supportedPlatform;
+        this.cloudPlatform = cloudPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
         this.supportedDevice = supportedDevice;
@@ -188,6 +191,10 @@ public class Device {
 
     public Set<Platform> getSupportedPlatform() {
         return supportedPlatform;
+    }
+
+    public CloudPlatform getCloudPlatform() {
+        return cloudPlatform;
     }
 
     public String getMpLibrary() {

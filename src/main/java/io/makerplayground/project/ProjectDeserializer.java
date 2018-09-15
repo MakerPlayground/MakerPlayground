@@ -43,6 +43,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Platform platform = Platform.valueOf(node.get("controller").get("platform").asText());
         project.setPlatform(platform);
 
+        for (JsonNode cloudPlatformNode : node.get("cloudplatform")) {
+            CloudPlatform cloudPlatform = CloudPlatform.valueOf(cloudPlatformNode.get("name").asText());
+            for (JsonNode parameterNode : cloudPlatformNode.get("parameter")) {
+                String name = parameterNode.get("name").asText();
+                String value = parameterNode.get("value").asText();
+                project.setCloudPlatformParameter(cloudPlatform, name, value);
+            }
+        }
+
         Device controller = null;
         if (!node.get("controller").get("device").asText().isEmpty()) {
             controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(

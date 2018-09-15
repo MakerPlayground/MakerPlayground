@@ -1,5 +1,6 @@
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.CloudPlatform;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
@@ -99,13 +100,13 @@ public class ConfigActualDeviceViewModel {
         return project.getController();
     }
 
-    ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceListProperty() {
-        return compatibleDeviceList;
-    }
-
-    ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
-        return compatiblePortList;
-    }
+//    ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceListProperty() {
+//        return compatibleDeviceList;
+//    }
+//
+//    ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
+//        return compatiblePortList;
+//    }
 
     void setDevice(ProjectDevice projectDevice, Device device) {
         if (projectDevice.getActualDevice() != null) {
@@ -125,6 +126,18 @@ public class ConfigActualDeviceViewModel {
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.call();
         }
+    }
+
+    Set<CloudPlatform> getCloudPlatformUsed() {
+        return project.getCloudPlatformUsed();
+    }
+
+    String getCloudPlatfromParameterValue(CloudPlatform cloudPlatform, String name) {
+        return project.getCloudPlatformParameter(cloudPlatform, name);
+    }
+
+    void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
+        project.setCloudPlatformParameter(cloudPlatform, parameterName, value);
     }
 
     Set<ProjectDevice> getUsedDevice() {

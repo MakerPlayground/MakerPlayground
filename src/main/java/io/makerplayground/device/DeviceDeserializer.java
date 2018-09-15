@@ -69,6 +69,10 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
                 , new TypeReference<List<Platform>>() {}));
+        CloudPlatform cloudPlatform = null;
+        if (node.has("cloud_platform")) {
+            cloudPlatform = CloudPlatform.valueOf(node.get("cloud_platform").asText());
+        }
         List<DevicePort> port = mapper.readValue(node.get("port").traverse()
                 , new TypeReference<List<DevicePort>>() {});
         List<Peripheral> connectivity = mapper.readValue(node.get("connectivity").traverse()
@@ -142,8 +146,8 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
-                platform, port, connectivity, supportedDevice, supportedDeviceaction, supportedDeviceCondition,
-                supportedDeviceValue, dependency, category, v, i ,w);
+        return new Device(id, brand, model, url, width, height, type, formFactor, mpLibrary, externalLibrary,
+                platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
+                supportedDeviceCondition, supportedDeviceValue, dependency, category, v, i ,w);
     }
 }

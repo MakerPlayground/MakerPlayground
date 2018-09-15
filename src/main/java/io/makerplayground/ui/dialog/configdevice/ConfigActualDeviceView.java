@@ -1,5 +1,6 @@
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.CloudPlatform;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.Property;
@@ -26,6 +27,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends UndecoratedDialog {
@@ -36,6 +38,8 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private VBox usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
+    @FXML private VBox cloudPlatformParameterSection;
+    @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
@@ -160,6 +164,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK){
             initDeviceControlChildren();
             initUnusedDeviceControl();
+            initCloudPlatformPropertyControl();
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
@@ -368,6 +373,51 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                 entireDevice.getChildren().addAll(devicePic);
 
                 unusedDevicePane.getChildren().add(entireDevice);
+            }
+        }
+    }
+
+    private void initCloudPlatformPropertyControl() {
+        if (viewModel.getCloudPlatformUsed().isEmpty()) {
+            cloudPlatformParameterSection.setVisible(false);
+            cloudPlatformParameterSection.setManaged(false);
+        } else {
+            cloudPlatformParameterSection.setVisible(true);
+            cloudPlatformParameterSection.setManaged(true);
+
+            int currentRow = 0;
+            for (CloudPlatform cloudPlatform : viewModel.getCloudPlatformUsed()) {
+                ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
+                        + cloudPlatform.getDisplayName() + ".png")));
+                cloudPlatformIcon.setFitHeight(30.0);
+                cloudPlatformIcon.setFitWidth(30.0);
+                GridPane.setRowIndex(cloudPlatformIcon, currentRow);
+                GridPane.setColumnIndex(cloudPlatformIcon, 0);
+
+                Label cloudPlatformNameLabel = new Label(cloudPlatform.getDisplayName());
+                cloudPlatformNameLabel.setId("nameLabel");
+                GridPane.setRowIndex(cloudPlatformNameLabel, currentRow);
+                GridPane.setColumnIndex(cloudPlatformNameLabel, 1);
+
+                cloudPlatformParameterPane.getChildren().addAll(cloudPlatformIcon, cloudPlatformNameLabel);
+
+                for (String parameterName : cloudPlatform.getParameter()) { // use cloudPlatform.getParameter() as the map may not contain every params as key and we want it in the order defined
+                    String value = viewModel.getCloudPlatfromParameterValue(cloudPlatform, parameterName);
+
+                    Label parameterNameLabel = new Label(parameterName);
+                    GridPane.setRowIndex(parameterNameLabel, currentRow);
+                    GridPane.setColumnIndex(parameterNameLabel, 2);
+
+                    TextField parameterValueLabel = new TextField(Objects.requireNonNullElse(value, ""));
+                    parameterValueLabel.textProperty().addListener((observable, oldValue, newValue) -> {
+                        viewModel.setCloudPlatformParameter(cloudPlatform, parameterName, newValue);
+                    });
+                    GridPane.setRowIndex(parameterValueLabel, currentRow);
+                    GridPane.setColumnIndex(parameterValueLabel, 3);
+                    currentRow++;
+
+                    cloudPlatformParameterPane.getChildren().addAll(parameterNameLabel, parameterValueLabel);
+                }
             }
         }
     }

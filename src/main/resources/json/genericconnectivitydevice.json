@@ -200,6 +200,27 @@
     ]
   },
   {
+    "name": "Virtual Button",
+    "description": "Virtual Button in your IoT dashboard",
+    "action": [],
+    "condition": [
+      {
+        "name": "Pressed",
+        "funcname": "isPressed",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not pressed",
+        "funcname": "isNotPressed",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [],
+    "property": []
+  },
+  {
     "name": "Container",
     "description": "Virtual Number/Value Container",
     "action": [

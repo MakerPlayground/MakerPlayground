@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.makerplayground.device.CloudPlatform;
 import io.makerplayground.version.ProjectVersionControl;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by nuntipat on 6/25/2017 AD.
@@ -36,6 +39,23 @@ public class ProjectSerializer extends StdSerializer<Project> {
         else
             jsonGenerator.writeStringField("device", "");
         jsonGenerator.writeEndObject();
+
+        jsonGenerator.writeArrayFieldStart("cloudplatform");
+        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("name", cloudPlatform.name());
+            jsonGenerator.writeArrayFieldStart("parameter");
+            for (String parameterName : cloudPlatform.getParameter()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("name", parameterName);
+                jsonGenerator.writeStringField("value", Objects.requireNonNullElse(
+                        project.getCloudPlatformParameter(cloudPlatform, parameterName), ""));
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("inputDevice");
         for(ProjectDevice inputDevice : project.getSensor()) {
