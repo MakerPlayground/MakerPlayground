@@ -8,7 +8,6 @@
     -fx-border-radius: 10;
     -fx-background-color: white;
     -fx-background-radius: 10;
-    -fx-padding: 30;
 }
 #topicConfigDevice{
     -fx-background-color : transparent;
@@ -159,31 +158,16 @@
     -fx-font-weight: bold;
 }
 
-#okButton {
-    -fx-text-fill: #707070;
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 5px;
-    -fx-padding: 5 50 5 50;
+#close-button {
+    -fx-image: url('/css/cancel-button.png');
 }
 
-#okButton:hover{
-    -fx-text-fill: #707070;
-    -fx-background-color: #e3e3e3;
-    -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 5px;
-    -fx-padding: 5 50 5 50;
+#close-button:hover {
+    -fx-image: url('/css/cancel-button-hover.png');
     -fx-cursor: hand;
 }
 
-#okButton:pressed {
-    -fx-text-fill: #ffffff;
-    -fx-background-color: #2673fd;
-    -fx-background-radius: 5px;
-    -fx-border-color: #2673fd;
-    -fx-border-radius: 5px;
-    -fx-padding: 5 50 5 50;
+#close-button:pressed {
+    -fx-image: url('/css/cancel-button-press.png');
     -fx-cursor: hand;
 }

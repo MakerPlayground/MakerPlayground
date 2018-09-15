@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,49 +15,51 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="AnchorPane"
+         xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <ScrollPane hbarPolicy="NEVER" maxHeight="600" vbarPolicy="ALWAYS">
+        <ScrollPane hbarPolicy="NEVER" maxHeight="600" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="30.0"
+                    AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
             <VBox alignment="CENTER" spacing="20">
-                <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER" />
+                <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration"
+                       textAlignment="CENTER"/>
                 <GridPane hgap="10.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="NEVER" />
-                        <ColumnConstraints hgrow="NEVER" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="NEVER"/>
+                        <ColumnConstraints hgrow="NEVER" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES"/>
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="2" />
-                        <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1" />
+                        <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="2"
+                                  GridPane.rowIndex="1"/>
+                        <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="2"/>
+                        <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1"/>
                         <ImageView fx:id="platFormImage" fitHeight="25" fitWidth="25">
-                            <Image url="@../../../icons/colorIcons/Controller.png" />
+                            <Image url="@../../../icons/colorIcons/Controller.png"/>
                         </ImageView>
                     </children>
                 </GridPane>
                 <VBox fx:id="usedDevice" alignment="CENTER" spacing="20">
                 </VBox>
                 <VBox fx:id="unusedDevice" spacing="20">
-                    <Separator />
+                    <Separator/>
                     <HBox>
-                        <Label id="unusedLabel" text="Unused devices" />
+                        <Label id="unusedLabel" text="Unused devices"/>
                     </HBox>
                     <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
                     </FlowPane>
                 </VBox>
-                <Button id="okButton" fx:id="okButton" mnemonicParsing="false" text="OK" />
-            <padding>
-               <Insets left="30.0" right="30.0" />
-            </padding>
+                <padding>
+                    <Insets right="30.0"/>
+                </padding>
             </VBox>
         </ScrollPane>
+        <ImageView id="close-button" fx:id="closeButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
+                   preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
     </children>
-   <padding>
-      <Insets bottom="15.0" top="15.0" />
-   </padding>
 </fx:root>

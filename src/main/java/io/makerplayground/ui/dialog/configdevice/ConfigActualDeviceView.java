@@ -32,7 +32,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
 
     private final ConfigActualDeviceViewModel viewModel;
 
-    private final VBox pane = new VBox();
+    private final AnchorPane pane = new AnchorPane();
     @FXML private VBox usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
@@ -41,7 +41,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<Device> controllerComboBox;
     @FXML private Label controllerName;
-    @FXML private Button okButton;
+    @FXML private ImageView closeButton;
 
     public ConfigActualDeviceView(Window owner, ConfigActualDeviceViewModel viewModel) {
         super(owner);
@@ -75,7 +75,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
 
         // allow the dialog to be closed
-        okButton.setOnAction(event -> hide());
+        closeButton.setOnMouseReleased(event -> hide());
     }
 
     private void initPlatformControl() {

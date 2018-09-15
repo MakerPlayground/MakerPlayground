@@ -83,3 +83,17 @@
     -fx-text-fill: #707070;
     -fx-font-size: 12px;
 }
+
+#close-button {
+    -fx-image: url('/css/cancel-button.png');
+}
+
+#close-button:hover {
+    -fx-image: url('/css/cancel-button-hover.png');
+    -fx-cursor: hand;
+}
+
+#close-button:pressed {
+    -fx-image: url('/css/cancel-button-press.png');
+    -fx-cursor: hand;
+}

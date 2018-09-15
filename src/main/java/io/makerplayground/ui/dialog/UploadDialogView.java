@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
@@ -22,14 +23,16 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class UploadDialogView extends UndecoratedDialog {
-    private final VBox vbox = new VBox();
+    private final AnchorPane anchorPane = new AnchorPane();
     @FXML private Label progress;
     @FXML private ProgressBar progressBar;
     @FXML private TextArea textArea;
     @FXML private ImageView imgView;
     @FXML private TitledPane detailPane;
+    @FXML private ImageView closeButton;
 
     private final StringProperty logProperty;
 
@@ -37,7 +40,7 @@ public class UploadDialogView extends UndecoratedDialog {
         super(owner);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/UploadDialogView.fxml"));
-        fxmlLoader.setRoot(vbox);
+        fxmlLoader.setRoot(anchorPane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -53,16 +56,24 @@ public class UploadDialogView extends UndecoratedDialog {
         rt.play();
 
         // Ask for confirmation to cancel when user close this dialog before upload complete
-        setClosingPredicate(() -> {
+        BooleanSupplier closingConfirm = () -> {
             if (uploadTask.isDone()) {
                 return true;
             } else {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
                 Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK){
+                if (result.isPresent() && result.get() == ButtonType.OK) {
                     uploadTask.cancel();
                 }
                 return false;
+            }
+        };
+        setClosingPredicate(closingConfirm);
+
+        // allow the dialog to be closed with the close button at the top right corner
+        closeButton.setOnMouseReleased(event -> {
+            if (closingConfirm.getAsBoolean()) {
+                hide();
             }
         });
 
@@ -101,7 +112,7 @@ public class UploadDialogView extends UndecoratedDialog {
             Platform.runLater(this::sizeToScene);
         });
 
-        setContent(vbox);
+        setContent(anchorPane);
     }
 
     public StringProperty descriptionProperty() {

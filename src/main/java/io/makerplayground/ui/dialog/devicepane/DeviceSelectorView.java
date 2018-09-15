@@ -8,8 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
 import java.io.IOException;
@@ -22,9 +23,10 @@ import java.util.Map;
  * Created by Nuntipat Narkthong on 6/7/2017 AD.
  */
 public class DeviceSelectorView extends UndecoratedDialog {
-    private VBox anchorPane = new VBox();
+    private AnchorPane anchorPane = new AnchorPane();
     @FXML private Button okButton;
     @FXML private Button cancelButton;
+    @FXML private ImageView closeButton;
     @FXML private FlowPane outputPane;
     @FXML private FlowPane inputPane;
     @FXML private FlowPane virtualPane;
@@ -89,6 +91,7 @@ public class DeviceSelectorView extends UndecoratedDialog {
         });
 
         cancelButton.setOnAction(event -> hide());
+        closeButton.setOnMouseReleased(event -> hide());
     }
 
     public Map<GenericDevice, Integer> getDeviceToBeAdded() {

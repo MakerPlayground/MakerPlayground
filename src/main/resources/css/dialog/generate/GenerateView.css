@@ -159,3 +159,17 @@
 .table-view .column-header .label{
     -fx-text-fill: white;
 }
+
+#close-button {
+    -fx-image: url('/css/cancel-button.png');
+}
+
+#close-button:hover {
+    -fx-image: url('/css/cancel-button-hover.png');
+    -fx-cursor: hand;
+}
+
+#close-button:pressed {
+    -fx-image: url('/css/cancel-button-press.png');
+    -fx-cursor: hand;
+}

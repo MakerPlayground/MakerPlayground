@@ -4,46 +4,55 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root id="deviceLibraryPane" maxWidth="-Infinity" spacing="15"
-         stylesheets="@../../../css/canvas/node/usersetting/DeviceSelectorView.css" type="VBox"
+<fx:root id="deviceLibraryPane" maxWidth="-Infinity"
+         stylesheets="@../../../css/canvas/node/usersetting/DeviceSelectorView.css" type="AnchorPane"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0">
-        <TitledPane collapsible="false" text="Sensor">
-            <ScrollPane fitToWidth="true" prefHeight="115.0">
-                <FlowPane fx:id="inputPane" hgap="5.0" vgap="5.0">
-                    <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
-                    </padding>
-                </FlowPane>
-            </ScrollPane>
-        </TitledPane>
-        <TitledPane collapsible="false" text="Actuator">
-            <ScrollPane fitToWidth="true" prefHeight="115.0">
-                <FlowPane fx:id="outputPane" hgap="5.0" vgap="5.0">
-                    <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
-                    </padding>
-                </FlowPane>
-            </ScrollPane>
-        </TitledPane>
-        <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Virtual">
-            <ScrollPane fitToWidth="true" prefHeight="115.0">
-                <FlowPane fx:id="virtualPane" hgap="5.0" vgap="5.0">
-                    <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
-                    </padding>
-                </FlowPane>
-            </ScrollPane>
-        </TitledPane>
-    </VBox>
-    <HBox alignment="CENTER" spacing="10.0">
+    <VBox spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0"
+          AnchorPane.topAnchor="30.0">
         <children>
-            <Button fx:id="okButton" mnemonicParsing="false" text="Import"/>
-            <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
+            <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0">
+                <TitledPane collapsible="false" text="Sensor">
+                    <ScrollPane fitToWidth="true" prefHeight="115.0">
+                        <FlowPane fx:id="inputPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </FlowPane>
+                    </ScrollPane>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Actuator">
+                    <ScrollPane fitToWidth="true" prefHeight="115.0">
+                        <FlowPane fx:id="outputPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </FlowPane>
+                    </ScrollPane>
+                </TitledPane>
+                <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Virtual">
+                    <ScrollPane fitToWidth="true" prefHeight="115.0">
+                        <FlowPane fx:id="virtualPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </FlowPane>
+                    </ScrollPane>
+                </TitledPane>
+            </VBox>
+            <HBox alignment="CENTER" spacing="10.0">
+                <children>
+                    <Button fx:id="okButton" mnemonicParsing="false" text="Import"/>
+                    <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
+                </children>
+            </HBox>
         </children>
-    </HBox>
+    </VBox>
+    <ImageView id="close-button" fx:id="closeButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
+               preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
 </fx:root>

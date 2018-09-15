@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
@@ -17,7 +19,7 @@ import java.io.IOException;
  * Created by tanyagorn on 7/19/2017.
  */
 public class GenerateView extends UndecoratedDialog {
-    private final TabPane tabPane = new TabPane();
+    private final AnchorPane anchorPane = new AnchorPane();
     @FXML private TextArea codeTextArea;
     @FXML private TableView<TableDataList> deviceTable;
     @FXML private TableColumn<TableDataList,String> nameColumn;
@@ -27,6 +29,7 @@ public class GenerateView extends UndecoratedDialog {
     @FXML private ScrollPane diagramScrollPane;
     @FXML private Tab simulateTab;
     @FXML private Tab codeDeviceTableTab;
+    @FXML private ImageView closeButton;
 
     private final GenerateViewModel viewModel;
 
@@ -35,7 +38,7 @@ public class GenerateView extends UndecoratedDialog {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/generate/GenerateView.fxml"));
-        fxmlLoader.setRoot(tabPane);
+        fxmlLoader.setRoot(anchorPane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -44,7 +47,9 @@ public class GenerateView extends UndecoratedDialog {
         }
 
         initView();
-        setContent(tabPane);
+        setContent(anchorPane);
+
+        closeButton.setOnMouseReleased(event -> hide());
     }
 
     private void initView() {
