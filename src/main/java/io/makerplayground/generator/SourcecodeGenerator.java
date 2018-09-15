@@ -65,13 +65,15 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
 
         // type definition require for background task execution system
-        builder.append("typedef void (*Task)(void);").append(NEW_LINE);
-        builder.append("struct Expr {").append(NEW_LINE);
-        builder.append(INDENT).append("double (*fn)(void);").append(NEW_LINE);
-        builder.append(INDENT).append("double interval;").append(NEW_LINE);
-        builder.append(INDENT).append("double value;").append(NEW_LINE);
-        builder.append("};").append(NEW_LINE);
-        builder.append(NEW_LINE);
+        if (!getUsedDevicesWithTask().isEmpty()) {
+            builder.append("typedef void (*Task)(void);").append(NEW_LINE);
+            builder.append("struct Expr {").append(NEW_LINE);
+            builder.append(INDENT).append("double (*fn)(void);").append(NEW_LINE);
+            builder.append(INDENT).append("double interval;").append(NEW_LINE);
+            builder.append(INDENT).append("double value;").append(NEW_LINE);
+            builder.append("};").append(NEW_LINE);
+            builder.append(NEW_LINE);
+        }
     }
 
     /* Beware!! this function need the result from generateCodeForSceneFunctions() before run */
@@ -85,9 +87,11 @@ public class SourcecodeGenerator {
             if (generateMapFunction) {
                 builder.append("double map(double x, double in_min, double in_max, double out_min, double out_max);").append(NEW_LINE);
             }
-            builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr);").append(NEW_LINE);
-            builder.append("void setExpression(Expr expr, double (*fn)(void), double interval);").append(NEW_LINE);
-            builder.append("void setExpression(Expr expr, double value);").append(NEW_LINE);
+            if (!getUsedDevicesWithTask().isEmpty()) {
+                builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr);").append(NEW_LINE);
+                builder.append("void setExpression(Expr expr, double (*fn)(void), double interval);").append(NEW_LINE);
+                builder.append("void setExpression(Expr expr, double value);").append(NEW_LINE);
+            }
             builder.append(NEW_LINE);
         }
     }
@@ -190,7 +194,7 @@ public class SourcecodeGenerator {
     }
 
     private void appendTaskVariables() {
-        Set<ProjectDevice> devices = project.getAllDeviceUsed();
+        List<ProjectDevice> devices = getUsedDevicesWithTask();
         if (!devices.isEmpty()) {
             for (ProjectDevice projectDevice : devices) {
                 builder.append("Task ").append(getDeviceTaskVariableName(projectDevice)).append(" = NULL;").append(NEW_LINE);
@@ -226,12 +230,14 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
 
         /* 3: call the function that need the updated expression evaluation */
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : getUsedDevicesWithTask()) {
             builder.append(INDENT).append("evaluateExpression(").append(getDeviceTaskVariableName(projectDevice)).append(", ")
                     .append(getDeviceExpressionVariableName(projectDevice)).append(", ")
                     .append(getMaximumNumberOfExpression(projectDevice)).append(");").append(NEW_LINE);
         }
-        builder.append(NEW_LINE);
+        if (!getUsedDevicesWithTask().isEmpty()) {
+            builder.append(NEW_LINE);
+        }
 
         /* 4: ask device for serial monitor logging */
         builder.append(INDENT).append("if (millis() - oldTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
@@ -254,27 +260,31 @@ public class SourcecodeGenerator {
     }
 
     private void appendExpressionFunction() {
-        builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr) {").append(NEW_LINE);
-        builder.append(INDENT).append("for (int i=0; i<numExpr; i++) {").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("if (expr[i].fn != NULL && millis() - oldTime > expr[i].interval) {").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("expr[i].value = expr[i].fn();").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("task();").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
-        builder.append(INDENT).append("}").append(NEW_LINE);
-        builder.append("}").append(NEW_LINE);
-        builder.append(NEW_LINE);
+        if (!getUsedDevicesWithTask().isEmpty()) {
+            builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr) {").append(NEW_LINE);
+            builder.append(INDENT).append("if (task != NULL) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("for (int i=0; i<numExpr; i++) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append("if (expr[i].fn != NULL && millis() - oldTime > expr[i].interval) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("expr[i].value = expr[i].fn();").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("task();").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+            builder.append(INDENT).append("}").append(NEW_LINE);
+            builder.append("}").append(NEW_LINE);
+            builder.append(NEW_LINE);
 
-        builder.append("void setExpression(Expr expr, double (*fn)(void), double interval) {").append(NEW_LINE);
-        builder.append(INDENT).append("expr.fn = fn;").append(NEW_LINE);
-        builder.append(INDENT).append("expr.interval = interval;").append(NEW_LINE);
-        builder.append("}").append(NEW_LINE);
-        builder.append(NEW_LINE);
+            builder.append("void setExpression(Expr expr, double (*fn)(void), double interval) {").append(NEW_LINE);
+            builder.append(INDENT).append("expr.fn = fn;").append(NEW_LINE);
+            builder.append(INDENT).append("expr.interval = interval;").append(NEW_LINE);
+            builder.append("}").append(NEW_LINE);
+            builder.append(NEW_LINE);
 
-        builder.append("void setExpression(Expr expr, double value) {").append(NEW_LINE);
-        builder.append(INDENT).append("expr.value = value;").append(NEW_LINE);
-        builder.append(INDENT).append("expr.fn = NULL;").append(NEW_LINE);
-        builder.append("}").append(NEW_LINE);
-        builder.append(NEW_LINE);
+            builder.append("void setExpression(Expr expr, double value) {").append(NEW_LINE);
+            builder.append(INDENT).append("expr.value = value;").append(NEW_LINE);
+            builder.append(INDENT).append("expr.fn = NULL;").append(NEW_LINE);
+            builder.append("}").append(NEW_LINE);
+            builder.append(NEW_LINE);
+        }
     }
 
     private void appendLoopFunction() {
@@ -369,24 +379,37 @@ public class SourcecodeGenerator {
                 List<String> taskParameter = new ArrayList<>();
 
                 List<Parameter> parameters = setting.getAction().getParameter();
-                for (int i=0; i<parameters.size(); i++) {
-                    Parameter p = parameters.get(i);
-                    Expression e = setting.getValueMap().get(p);
-                    String expressionVarName = getDeviceExpressionVariableName(device) + "[" + i + "]";
-                    if (setting.isDataBindingUsed(p)) {
-                        sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                .append("[]()->double{").append("return ").append(parseExpression(e)).append(";}, ")
-                                .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
-                    } else {
-                        sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                .append(parseExpression(e)).append(");").append(NEW_LINE);
+                if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
+                    for (int i = 0; i < parameters.size(); i++) {
+                        Parameter p = parameters.get(i);
+                        Expression e = setting.getValueMap().get(p);
+                        String expressionVarName = getDeviceExpressionVariableName(device) + "[" + i + "]";
+                        if (setting.isDataBindingUsed(p)) {
+                            sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
+                                    .append("[]()->double{").append("return ").append(parseExpression(e)).append(";}, ")
+                                    .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
+                        } else {
+                            sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
+                                    .append(parseExpression(e)).append(");").append(NEW_LINE);
+                        }
+                        taskParameter.add(expressionVarName + ".value");
                     }
-                    taskParameter.add(expressionVarName + ".value");
+                    sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append(" = []() -> void {")
+                            .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
+                            .append(String.join(", ", taskParameter)).append(");};").append(NEW_LINE);
+                    sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append("();").append(NEW_LINE);
+                } else {    // generate code to perform action once
+                    // clear task if this device used to have background task set
+                    if (getUsedDevicesWithTask().contains(device)) {
+                        sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append(" = NULL;").append(NEW_LINE);
+                    }
+                    // generate code to perform the action
+                    for (Parameter p : parameters) {
+                        taskParameter.add(parseExpression(setting.getValueMap().get(p)));
+                    }
+                    sceneFunctions.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
+                            .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
                 }
-                sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append(" = []() -> void {")
-                        .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
-                        .append(String.join(", ", taskParameter)).append(");};").append(NEW_LINE);
-                sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append("();").append(NEW_LINE);
             }
 
             // delay
