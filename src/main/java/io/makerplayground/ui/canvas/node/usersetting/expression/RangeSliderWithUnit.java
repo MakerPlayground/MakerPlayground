@@ -132,6 +132,7 @@ public class RangeSliderWithUnit extends HBox {
 
         setSpacing(5);
         setAlignment(Pos.CENTER);
+        setMaxSize(USE_PREF_SIZE, USE_PREF_SIZE);
         getChildren().addAll(lowSpinner, slider, highSpinner, unitLabel, unitComboBox);
     }
 

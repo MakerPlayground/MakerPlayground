@@ -4,10 +4,7 @@ import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.expression.CustomNumberExpression;
-import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberWithUnitExpression;
-import io.makerplayground.project.expression.ValueLinkingExpression;
+import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.usersetting.ValueLinkingControl;
 import io.makerplayground.ui.canvas.node.usersetting.chip.ChipField;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -64,8 +61,8 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
             numberWithUnitControl.valueProperty().addListener((observable, oldValue, newValue) -> expression.set(new NumberWithUnitExpression(newValue)));
             toggleGroup.selectToggle(numberRadioButton);
             getChildren().add(numberWithUnitControl);
-        } else if (getExpression() instanceof ValueLinkingExpression) {
-            ValueLinkingControl valueLinkingControl = new ValueLinkingControl((ValueLinkingExpression) getExpression(), projectValues);
+        } else if (getExpression() instanceof ValueLinkingExpression || getExpression() instanceof ProjectValueExpression) {
+            ValueLinkingControl valueLinkingControl = new ValueLinkingControl(getExpression(), projectValues, parameter);
             valueLinkingControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
             toggleGroup.selectToggle(valueRadioButton);
             getChildren().add(valueLinkingControl);
@@ -74,12 +71,13 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
         }
 
         getChildren().add(configButton);
+        setSpacing(5);
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == numberRadioButton) {
                 expression.set(new NumberWithUnitExpression(new NumberWithUnit(parameter.getMinimumValue(), parameter.getUnit().get(0))));
             } else if (newValue == valueRadioButton) {
-                expression.set(new ValueLinkingExpression(parameter));
+                expression.set(new ProjectValueExpression());
             } else if (newValue == customRadioButton) {
                 expression.set(new CustomNumberExpression(parameter.getMinimumValue(), parameter.getMaximumValue()));
             }

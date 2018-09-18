@@ -24,4 +24,10 @@ public class ProjectValueExpression extends Expression {
     public ProjectValue getProjectValue() {
         return ((ValueTerm) terms.get(0)).getValue();
     }
+
+    public ProjectValueExpression setProjectValue(ProjectValue projectValue) {
+        ProjectValueExpression expression = new ProjectValueExpression(this);
+        expression.terms.set(0, new ValueTerm(projectValue));
+        return expression;
+    }
 }

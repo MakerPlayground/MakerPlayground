@@ -39,16 +39,14 @@ public class DeviceMapper {
                         if (o instanceof NumberWithUnitExpression) {
                             NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                             newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
-                        }
-                        else if (o instanceof CustomNumberExpression) {
-                            CustomNumberExpression exp = (CustomNumberExpression) o;
+                        } else if (o instanceof CustomNumberExpression) {
                             newConstraint = Constraint.NONE;
-                        }
-                        else if (o instanceof ValueLinkingExpression) {
+                        } else if (o instanceof ValueLinkingExpression) {
                             ValueLinkingExpression exp = (ValueLinkingExpression) o;
                             newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
-                        }
-                        else {
+                        } else if (o instanceof ProjectValueExpression) {
+                            newConstraint = Constraint.NONE;
+                        } else {
                             throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {

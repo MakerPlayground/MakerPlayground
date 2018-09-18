@@ -85,7 +85,8 @@ public class ValueLinkingExpression extends Expression {
     }
 
     public ValueLinkingExpression(ValueLinkingExpression e) {
-        this(e.getDestinationParameter(), e.getTerms());
+        super(e);
+        this.destParam = e.destParam;
     }
 
     @JsonIgnore
@@ -95,17 +96,24 @@ public class ValueLinkingExpression extends Expression {
 
     public ValueLinkingExpression setSourceValue(ProjectValue v) {
         ValueLinkingExpression newExpression = new ValueLinkingExpression(this);
-        newExpression.terms.set(3, new ValueTerm(v));
+        if (v == null) {
+            newExpression.terms.set(3, new ValueTerm(null));
+            newExpression.terms.set(5, new NumberWithUnitTerm(NumberWithUnit.ZERO));
+            newExpression.terms.set(11, new NumberWithUnitTerm(NumberWithUnit.ZERO));
+            newExpression.terms.set(9, new NumberWithUnitTerm(NumberWithUnit.ZERO));
+        } else {
+            newExpression.terms.set(3, new ValueTerm(v));
 
-        NumericConstraint constraint = (NumericConstraint) v.getValue().getConstraint();
-        NumberWithUnitTerm newMinTerm = new NumberWithUnitTerm(new NumberWithUnit(
-                (constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit()));
-        newExpression.terms.set(5, newMinTerm);
-        newExpression.terms.set(11, newMinTerm);
+            NumericConstraint constraint = (NumericConstraint) v.getValue().getConstraint();
+            NumberWithUnitTerm newMinTerm = new NumberWithUnitTerm(new NumberWithUnit(
+                    (constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit()));
+            newExpression.terms.set(5, newMinTerm);
+            newExpression.terms.set(11, newMinTerm);
 
-        NumberWithUnitTerm newMaxTerm = new NumberWithUnitTerm(new NumberWithUnit(
-                (constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()));
-        newExpression.terms.set(9, newMaxTerm);
+            NumberWithUnitTerm newMaxTerm = new NumberWithUnitTerm(new NumberWithUnit(
+                    (constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()));
+            newExpression.terms.set(9, newMaxTerm);
+        }
 
         return newExpression;
     }
