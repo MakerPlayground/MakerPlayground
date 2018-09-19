@@ -184,9 +184,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
             } else if (CustomNumberExpression.class.getSimpleName().equals(expressionType)) {
-                double maxValue = parameterNode.get("maxValue").asDouble();
-                double minValue = parameterNode.get("minValue").asDouble();
-                expression = new CustomNumberExpression(minValue, maxValue, terms);
+                expression = new CustomNumberExpression(terms);
             } else if (NumberWithUnitExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
             } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {

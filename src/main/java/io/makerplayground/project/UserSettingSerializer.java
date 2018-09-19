@@ -40,10 +40,6 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStringField("name", v.getKey().getName());
             jsonGenerator.writeStringField("type", v.getValue().getClass().getSimpleName());
             jsonGenerator.writeObjectField("value", v.getValue());
-            if (v.getValue() instanceof CustomNumberExpression) {
-                jsonGenerator.writeNumberField("maxValue", ((CustomNumberExpression) v.getValue()).getMaxValue());
-                jsonGenerator.writeNumberField("minValue", ((CustomNumberExpression) v.getValue()).getMinValue());
-            }
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

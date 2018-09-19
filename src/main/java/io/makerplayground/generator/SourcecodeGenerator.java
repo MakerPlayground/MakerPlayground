@@ -7,6 +7,7 @@ import io.makerplayground.project.expression.*;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SourcecodeGenerator {
@@ -386,11 +387,11 @@ public class SourcecodeGenerator {
                         String expressionVarName = getDeviceExpressionVariableName(device) + "[" + i + "]";
                         if (setting.isDataBindingUsed(p)) {
                             sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                    .append("[]()->double{").append("return ").append(parseExpression(e)).append(";}, ")
+                                    .append("[]()->double{").append("return ").append(parseExpression(p, e)).append(";}, ")
                                     .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
                         } else {
                             sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                    .append(parseExpression(e)).append(");").append(NEW_LINE);
+                                    .append(parseExpression(p, e)).append(");").append(NEW_LINE);
                         }
                         taskParameter.add(expressionVarName + ".value");
                     }
@@ -405,7 +406,7 @@ public class SourcecodeGenerator {
                     }
                     // generate code to perform the action
                     for (Parameter p : parameters) {
-                        taskParameter.add(parseExpression(setting.getValueMap().get(p)));
+                        taskParameter.add(parseExpression(p, setting.getValueMap().get(p)));
                     }
                     sceneFunctions.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                             .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
@@ -495,7 +496,7 @@ public class SourcecodeGenerator {
                 if ((setting.getAction() != null) && !setting.getAction().getName().equals("Compare")) {
                     List<String> params = new ArrayList<>();
                     for (Parameter parameter : setting.getAction().getParameter()) {
-                        params.add(parseExpression(setting.getValueMap().get(parameter)));
+                        params.add(parseExpression(parameter, setting.getValueMap().get(parameter)));
                     }
                     conditionList.add("_" + setting.getDevice().getName().replace(" ", "_") + "." +
                             setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
@@ -545,26 +546,27 @@ public class SourcecodeGenerator {
         return Sourcecode.Error.NONE;
     }
 
-    private String parseExpression(Expression expression) {
+    private String parseExpression(Parameter parameter, Expression expression) {
         String returnValue;
         if (expression instanceof CustomNumberExpression) {
-            double maxValue = ((CustomNumberExpression) expression).getMaxValue();
-            double minValue = ((CustomNumberExpression) expression).getMinValue();
-            returnValue =  "constrain(" + expression.translateToCCode() + "," + minValue + "," + maxValue + ")";
+            returnValue =  "constrain(" + expression.translateToCCode() + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
             double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            double toMin = valueLinkingExpression.getDestinationParameter().getMinimumValue();
-            double toMax = valueLinkingExpression.getDestinationParameter().getMaximumValue();
             returnValue = "constrain(map(" + getValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
-                    + ", " + toLow + ", " + toHigh + "), " + toMin + ", " + toMax + ")";
+                    + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
             generateMapFunction = true;
+        } else if (expression instanceof ProjectValueExpression) {
+            ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
+            NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
+            NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
+            returnValue =  "constrain(" + expression.translateToCCode() + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else {
-            returnValue = expression.translateToCCode();
+            throw new IllegalStateException();
         }
         return returnValue;
     }

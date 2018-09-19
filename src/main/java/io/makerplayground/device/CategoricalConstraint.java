@@ -78,6 +78,17 @@ public class CategoricalConstraint implements Constraint {
     }
 
     @Override
+    public Constraint intersect(Constraint constraint) {
+        if (!(constraint instanceof CategoricalConstraint))
+            throw new ClassCastException();
+
+        CategoricalConstraint categoricalConstraint = (CategoricalConstraint) constraint;
+        Set<String> tmp = new HashSet<>(categoricalValue);
+        tmp.retainAll(categoricalConstraint.categoricalValue);
+        return new CategoricalConstraint(tmp);
+    }
+
+    @Override
     public String toString() {
         return "CategoricalConstraint{" +
                 "categoricalValue=" + categoricalValue +

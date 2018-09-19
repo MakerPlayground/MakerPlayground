@@ -48,6 +48,8 @@ public interface Constraint {
 
     Constraint union(Constraint constraint);
 
+    Constraint intersect(Constraint constraint);
+
     /**
      * A special value indicating no constraint (returns true for every tests)
      */
@@ -65,6 +67,11 @@ public interface Constraint {
         @Override
         public Constraint union(Constraint constraint) {
             return constraint;
+        }
+
+        @Override
+        public Constraint intersect(Constraint constraint) {
+            return NONE;
         }
 
         @Override

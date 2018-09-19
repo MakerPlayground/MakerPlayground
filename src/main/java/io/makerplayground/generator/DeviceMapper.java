@@ -9,6 +9,7 @@ import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.expression.*;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -40,12 +41,14 @@ public class DeviceMapper {
                             NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                             newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
                         } else if (o instanceof CustomNumberExpression) {
+                            // TODO: should be calculated from the expression or use range of parameter value
                             newConstraint = Constraint.NONE;
                         } else if (o instanceof ValueLinkingExpression) {
                             ValueLinkingExpression exp = (ValueLinkingExpression) o;
                             newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
                         } else if (o instanceof ProjectValueExpression) {
-                            newConstraint = Constraint.NONE;
+                            ProjectValueExpression exp = (ProjectValueExpression) o;
+                            newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
                         } else {
                             throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }

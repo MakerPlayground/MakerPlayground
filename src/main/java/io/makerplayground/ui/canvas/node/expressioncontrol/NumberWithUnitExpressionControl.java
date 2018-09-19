@@ -79,7 +79,7 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
             } else if (newValue == valueRadioButton) {
                 expression.set(new ProjectValueExpression());
             } else if (newValue == customRadioButton) {
-                expression.set(new CustomNumberExpression(parameter.getMinimumValue(), parameter.getMaximumValue()));
+                expression.set(new CustomNumberExpression());
             }
             initView();
         });

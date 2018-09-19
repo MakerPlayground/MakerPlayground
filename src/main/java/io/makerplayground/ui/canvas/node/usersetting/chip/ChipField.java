@@ -276,8 +276,7 @@ public class ChipField extends VBox {
     }
 
     private void updateExpression() {
-        expressionProperty.set(new CustomNumberExpression(expressionProperty.get().getMinValue(), expressionProperty.get().getMaxValue()
-                , chipList.stream().map(Chip::getTerm).collect(Collectors.toList())));
+        expressionProperty.set(new CustomNumberExpression(chipList.stream().map(Chip::getTerm).collect(Collectors.toList())));
         updateViewLayout();
         updateHilight();
     }

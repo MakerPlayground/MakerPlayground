@@ -19,13 +19,15 @@ package io.makerplayground.device;
 import io.makerplayground.helper.Unit;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Represent a constraint for a numeric value
  */
 public class NumericConstraint implements Constraint {
-    private final Map<Unit, Value> numericValue;    // TODO: edit because a map is not needed to store single constraint
-    private Unit unit;
+    private final double min;
+    private final double max;
+    private final Unit unit;
 
     /**
      * Construct a constraint based on the specify min, max and unit. The constructor should only
@@ -35,28 +37,19 @@ public class NumericConstraint implements Constraint {
      * @param unit the unit of the value
      */
     NumericConstraint(double min, double max, Unit unit) {
-        Value value = new Value(min, max, unit);
+        this.min = min;
+        this.max = max;
         this.unit = unit;
-        this.numericValue = Collections.singletonMap(unit, value);
     }
 
-    /**
-     * Construct constraint for number with multiple units using list of {@link Value}.
-     * The constructor should only be invoked by the DeviceLibrary in order to rebuild
-     * the library from file.
-     * @param value list of {@link Value} for initializing new constraint instance
-     */
-    private NumericConstraint(Collection<Value> value) {
-        this.numericValue = new EnumMap<>(Unit.class);
-        // we only accept 1 pair of value and unit but we maintain this method for
-        // backward compatibility
-        if (value.size() != 1)
-            throw new IllegalStateException("value size must be 1");
-        for (Value v : value) {
-            this.numericValue.put(v.unit, v);
-            this.unit = v.unit;
-        }
+    public double getMin() {
+        return min;
     }
+
+    public double getMax() {
+        return max;
+    }
+
 
     public Unit getUnit() {
         return unit;
@@ -64,29 +57,18 @@ public class NumericConstraint implements Constraint {
 
     @Override
     public boolean isCompatible(Constraint genericConstraint) {
-        if (genericConstraint instanceof NumericConstraint) {
-            for (Unit unit : ((NumericConstraint) genericConstraint).numericValue.keySet()) {
-                if (this.numericValue.containsKey(unit)) {
-                    if (!((this.numericValue.get(unit).min <= ((NumericConstraint) genericConstraint).numericValue.get(unit).min)
-                        && (this.numericValue.get(unit).max >= ((NumericConstraint) genericConstraint).numericValue.get(unit).max))) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
+        if (genericConstraint == Constraint.NONE) {
             return true;
+        } else if (genericConstraint instanceof NumericConstraint) {
+            return (min <= ((NumericConstraint) genericConstraint).min) && (max >= ((NumericConstraint) genericConstraint).max);
+        } else {
+            return false;
         }
-        return Constraint.NONE.equals(genericConstraint);
     }
 
     @Override
     public boolean test(double d, Unit unit) {
-        Value v = numericValue.get(unit);
-        if (v == null) {
-            throw new IllegalArgumentException("Can't find a constraint for the given unit: " + unit);
-        }
-        return (d >= v.min) && (d <= v.max);
+        return (unit == this.unit) && (d >= min) && (d <= max);
     }
 
     @Override
@@ -95,116 +77,69 @@ public class NumericConstraint implements Constraint {
     }
 
     @Override
-    public Constraint union(Constraint constraint) {
+    public NumericConstraint union(Constraint constraint) {
         if (constraint == Constraint.NONE) {
             return this;
         }
         if (!(constraint instanceof NumericConstraint)) {
             throw new ClassCastException();
         }
-        NumericConstraint numericConstraint = (NumericConstraint) constraint;
-        if (numericConstraint.numericValue.size() != 1 || numericValue.size() != 1) {
-            if (numericConstraint.numericValue.keySet().containsAll(numericValue.keySet()))
-            throw new IllegalStateException("Not Supported Operation");
+        if (unit == ((NumericConstraint) constraint).unit) {
+            return new NumericConstraint(Math.min(min, ((NumericConstraint) constraint).min)
+                    , Math.max(max, ((NumericConstraint) constraint).max), unit);
+        } else {
+            throw new UnsupportedOperationException();
         }
-
-        Map<Unit, Value> m = new HashMap<>(numericValue);
-        Map<Unit, Value> m2 = numericConstraint.numericValue;
-        for (Unit u : m2.keySet()) {
-            if (m.containsKey(u)) {
-                Value v1 = m.get(u);
-                Value v2 = m2.get(u);
-                m.put(u, new Value(v1.min < v2.min ? v1.min : v2.min
-                        , v1.max > v2.max ? v1.max : v2.max
-                        , u));
-            } else {
-                m.put(u, m2.get(u));
-            }
-        }
-
-        return new NumericConstraint(m.values());
-    }
-
-    public double getMin() {
-        return numericValue.get(unit).min;
-    }
-
-    public double getMax() {
-        return numericValue.get(unit).max;
     }
 
     @Override
-    public String toString() {
-        return "NumericConstraint{" +
-                "numericValue=" + numericValue +
-                '}';
+    public NumericConstraint intersect(Constraint constraint) {
+        if (constraint == Constraint.NONE) {
+            return this;
+        }
+        if (!(constraint instanceof NumericConstraint)) {
+            throw new ClassCastException();
+        }
+        if (unit == ((NumericConstraint) constraint).unit) {
+            return new NumericConstraint(Math.max(min, ((NumericConstraint) constraint).min)
+                    , Math.min(max, ((NumericConstraint) constraint).max), unit);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public NumericConstraint intersect(Constraint constraint, Function<Double, Double> unitConverter) {
+        if (constraint == Constraint.NONE) {
+            return this;
+        }
+        if (!(constraint instanceof NumericConstraint)) {
+            throw new ClassCastException();
+        }
+        return new NumericConstraint(Math.max(unitConverter.apply(min), unitConverter.apply(((NumericConstraint) constraint).min))
+                    , Math.min(unitConverter.apply(max), unitConverter.apply(((NumericConstraint) constraint).max)), unit);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         NumericConstraint that = (NumericConstraint) o;
-
-        if (!numericValue.equals(that.numericValue)) return false;
-        return unit == that.unit;
+        return Double.compare(that.min, min) == 0 &&
+                Double.compare(that.max, max) == 0 &&
+                unit == that.unit;
     }
 
     @Override
     public int hashCode() {
-        int result = numericValue.hashCode();
-        result = 31 * result + unit.hashCode();
-        return result;
+        return Objects.hash(min, max, unit);
     }
 
-    static class Value {
-        public double min;
-        public double max;
-        public Unit unit;
-
-        Value(double min, double max, Unit unit) {
-            if (min > max) {
-                this.max = min;
-                this.min = max;
-            } else {
-                this.min = min;
-                this.max = max;
-            }
-            this.unit = unit;
-        }
-
-        @Override
-        public String toString() {
-            return "Value{" +
-                    "min=" + min +
-                    ", max=" + max +
-                    ", unit=" + unit +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Value value = (Value) o;
-
-            if (Double.compare(value.min, min) != 0) return false;
-            if (Double.compare(value.max, max) != 0) return false;
-            return unit == value.unit;
-        }
-
-        @Override
-        public int hashCode() {
-            int result;
-            long temp;
-            temp = Double.doubleToLongBits(min);
-            result = (int) (temp ^ (temp >>> 32));
-            temp = Double.doubleToLongBits(max);
-            result = 31 * result + (int) (temp ^ (temp >>> 32));
-            result = 31 * result + unit.hashCode();
-            return result;
-        }
+    @Override
+    public String toString() {
+        return "NumericConstraint{" +
+                "min=" + min +
+                ", max=" + max +
+                ", unit=" + unit +
+                '}';
     }
 }
