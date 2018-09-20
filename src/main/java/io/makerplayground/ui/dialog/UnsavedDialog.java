@@ -23,7 +23,7 @@ public class UnsavedDialog extends UndecoratedDialog {
     @FXML private Button cancelButton;
     @FXML private ImageView closeButton;
 
-    private Response response;
+    private Response response = Response.CANCEL;
 
     public UnsavedDialog(Window owner/*, String error*/) {
         super(owner);
