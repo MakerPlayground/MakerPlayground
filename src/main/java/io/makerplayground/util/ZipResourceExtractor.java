@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -28,9 +29,8 @@ public class ZipResourceExtractor {
             ZipInputStream zis = new ZipInputStream(is);
             return extract(zis,destinationPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            return ExtractResult.FAIL;
         }
-        return ExtractResult.FAIL;
     }
 
     private static ExtractResult extract(ZipInputStream zis, String destinationPath) {

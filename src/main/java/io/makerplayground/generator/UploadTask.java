@@ -76,7 +76,6 @@ public class UploadTask extends Task<UploadResult> {
         /* Library List Preparing */
         updateProgress(0.25, 1);
         updateMessage("Preparing to generate project");
-        String platform = project.getPlatform().getPlatformioId();
         String code = sourcecode.getCode();
 
         List<Device> actualDevicesUsed = project.getAllDeviceUsed().stream()
@@ -111,7 +110,8 @@ public class UploadTask extends Task<UploadResult> {
             FileUtils.deleteDirectory(new File(projectPath));
             FileUtils.forceMkdir(new File(projectPath));
 
-            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init", "--board", platform);
+            ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init"
+                    , "--board", project.getController().getPlatformIOBoardId());
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             Process p = builder.start();
@@ -162,17 +162,11 @@ public class UploadTask extends Task<UploadResult> {
         // copy mp library
         for (String x: mpLibraries){
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("library/lib",x);
-            if(Files.exists(libraryPath)&&Files.isDirectory(libraryPath)){
-                try {
-                    FileUtils.copyDirectory(libraryPath.toFile(),new File(destinationPath+File.separator+x));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    updateMessage("Error: Missing some libraries");
-                    return UploadResult.CANT_FIND_LIBRARY;
-                }
-            }
-            else {
+            Path libraryPath = Paths.get("library", "lib", project.getPlatform().getLibraryFolderName(), x);
+            try {
+                FileUtils.copyDirectory(libraryPath.toFile(),new File(destinationPath+File.separator+x));
+            } catch (IOException e) {
+                Platform.runLater(() -> log.set("Error: Missing some libraries (" + libraryPath + ")\n"));
                 updateMessage("Error: Missing some libraries");
                 return UploadResult.CANT_FIND_LIBRARY;
             }
@@ -182,15 +176,10 @@ public class UploadTask extends Task<UploadResult> {
         for (String x : externalLibraries) {
             String destinationPath = projectPath + File.separator + "lib";
             Path libraryPath = Paths.get("library/lib_ext",x+".zip");
-            if(Files.exists(libraryPath)){
-                ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath,destinationPath);
-                if(extractResult != ZipResourceExtractor.ExtractResult.SUCCESS){
-                    updateMessage("Error: Failed to extract libraries.");
-                    return UploadResult.CANT_FIND_LIBRARY;
-                }
-            }
-            else {
-                updateMessage("Error: Missing some libraries");
+            ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath, destinationPath);
+            if (extractResult != ZipResourceExtractor.ExtractResult.SUCCESS) {
+                Platform.runLater(() -> log.set("Error: Failed to extract libraries (" + libraryPath + ")\n"));
+                updateMessage("Error: Failed to extract libraries");
                 return UploadResult.CANT_FIND_LIBRARY;
             }
         }

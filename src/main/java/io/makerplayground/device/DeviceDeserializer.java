@@ -58,6 +58,14 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 new TypeReference<List<String>>() {});
 
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
+        String pioBoardId = "";
+        if (type == DeviceType.CONTROLLER) {
+            if (node.has("pio_boardid")) {
+                pioBoardId = node.get("pio_boardid").asText();
+            } else {
+                throw new IllegalStateException("Missing field 'pio_boardid' for device id = " + id);
+            }
+        }
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
                 , new TypeReference<List<Platform>>() {}));
@@ -134,7 +142,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, formFactor, mpLibrary, externalLibrary,
+        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
                 platform, port, connectivity, supportedDevice, supportedDeviceaction, supportedDeviceCondition,
                 supportedDeviceValue, dependency, category, v, i ,w);
     }

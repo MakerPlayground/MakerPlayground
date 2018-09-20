@@ -4,23 +4,23 @@ package io.makerplayground.helper;
  *
  */
 public enum Platform {
-    MP_ARDUINO("atmega328pb", "Maker Playground's Kit"),
-    ARDUINO("uno", "Arduino"), //, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
-    GROVE_ARDUINO("uno", "Grove for Arduino");
+    MP_ARDUINO("Maker Playground's Kit", "arduino"),
+    ARDUINO("Arduino", "arduino"),
+    GROVE_ARDUINO("Grove for Arduino", "arduino");
 
-    private String platformioId;
     private String displayName;
+    private String libFolderName;
 
-    Platform(String platformioId, String displayName) {
-        this.platformioId = platformioId;
+    Platform(String displayName, String libFolderName) {
         this.displayName = displayName;
-    }
-
-    public String getPlatformioId() {
-        return platformioId;
+        this.libFolderName = libFolderName;
     }
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getLibraryFolderName() {
+        return libFolderName;
     }
 }

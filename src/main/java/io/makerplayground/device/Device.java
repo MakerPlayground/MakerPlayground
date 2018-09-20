@@ -50,6 +50,7 @@ public class Device {
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
     private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+    private final String pioBoardId;
 
     private final List<DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
     // and port position and type ex. WIRE, GROOVE_3PIN
@@ -77,7 +78,8 @@ public class Device {
      * @param supportedAction
      * @param supportedValue
      */
-    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, FormFactor formFactor
+    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, String pioBoardId
+            , FormFactor formFactor
             , String mpLibrary
             , List<String> externalLibrary
             , Set<Platform> supportedPlatform
@@ -99,6 +101,7 @@ public class Device {
         this.width = width;
         this.height = height;
         this.deviceType = deviceType;
+        this.pioBoardId = pioBoardId;
         this.formFactor = formFactor;
         this.mpLibrary = mpLibrary;
         this.externalLibrary = externalLibrary;
@@ -173,6 +176,10 @@ public class Device {
 
     public DeviceType getDeviceType() {
         return deviceType;
+    }
+
+    public String getPlatformIOBoardId() {
+        return pioBoardId;
     }
 
     public FormFactor getFormFactor() {
