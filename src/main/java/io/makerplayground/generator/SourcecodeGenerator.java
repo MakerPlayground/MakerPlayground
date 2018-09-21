@@ -70,7 +70,8 @@ public class SourcecodeGenerator {
             builder.append("typedef void (*Task)(void);").append(NEW_LINE);
             builder.append("struct Expr {").append(NEW_LINE);
             builder.append(INDENT).append("double (*fn)(void);").append(NEW_LINE);
-            builder.append(INDENT).append("double interval;").append(NEW_LINE);
+            builder.append(INDENT).append("unsigned int interval;").append(NEW_LINE);
+            builder.append(INDENT).append("unsigned long latestUpdateTime;").append(NEW_LINE);
             builder.append(INDENT).append("double value;").append(NEW_LINE);
             builder.append("};").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -90,8 +91,9 @@ public class SourcecodeGenerator {
             }
             if (!getUsedDevicesWithTask().isEmpty()) {
                 builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr);").append(NEW_LINE);
-                builder.append("void setExpression(Expr expr, double (*fn)(void), double interval);").append(NEW_LINE);
-                builder.append("void setExpression(Expr expr, double value);").append(NEW_LINE);
+                builder.append("void setExpression(Expr& expr, double (*fn)(void), unsigned int interval);").append(NEW_LINE);
+                builder.append("void setExpression(Expr& expr, double value);").append(NEW_LINE);
+                builder.append("void setTask(Task& task, void (*fn)(void));").append(NEW_LINE);
             }
             builder.append(NEW_LINE);
         }
@@ -100,8 +102,8 @@ public class SourcecodeGenerator {
     private void appendGlobalVariables() {
         builder.append("void (*currentScene)(void);").append(NEW_LINE);
         builder.append("int status_code = 0;").append(NEW_LINE);
-        builder.append("unsigned long endTime = 0;").append(NEW_LINE);
-        builder.append("unsigned long oldTime = 0;").append(NEW_LINE);
+        builder.append("unsigned long currentTime = 0;").append(NEW_LINE);
+        builder.append("unsigned long latestLogTime = 0;").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
@@ -207,30 +209,30 @@ public class SourcecodeGenerator {
     }
 
     private void appendUpdateFunction() {
-        // generate update function
-
-        /* 1: allow all devices to update their own tasks */
         builder.append("void update() {").append(NEW_LINE);
+        builder.append(INDENT).append("currentTime = millis();").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
+        // allow all devices to perform their own tasks
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            builder.append(INDENT).append("_").append(projectDevice.getName().replace(" ", "_")).append(".update(millis());").append(NEW_LINE);
+            builder.append(INDENT).append(getDeviceVariableName(projectDevice)).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
-        /* 2: retrieve all project values */
-        Set<String> variableUpdateNameSet = new HashSet<>();
-        for (Map.Entry<ProjectDevice, Set<Value>> entry : project.getAllValueUsedMap().entrySet()) {
-            for(Value v : entry.getValue()) {
-                String str = getValueVariableName(entry.getKey(), v) + " = _" + entry.getKey().getName().replace(" ", "_")
-                        + ".get" + v.getName().replace(" ", "_") + "();";
-                variableUpdateNameSet.add(str);
+        // retrieve all project values
+        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap();
+        for (ProjectDevice projectDevice : valueUsed.keySet()) {
+            for(Value v : valueUsed.get(projectDevice)) {
+                builder.append(INDENT).append(getValueVariableName(projectDevice, v)).append(" = ")
+                        .append(getDeviceVariableName(projectDevice)).append(".get")
+                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
             }
         }
-        for(String str : variableUpdateNameSet){
-            builder.append(INDENT).append(str).append(NEW_LINE);
+        if (!valueUsed.isEmpty()) {
+            builder.append(NEW_LINE);
         }
-        builder.append(NEW_LINE);
 
-        /* 3: call the function that need the updated expression evaluation */
+        // recompute expression's value
         for (ProjectDevice projectDevice : getUsedDevicesWithTask()) {
             builder.append(INDENT).append("evaluateExpression(").append(getDeviceTaskVariableName(projectDevice)).append(", ")
                     .append(getDeviceExpressionVariableName(projectDevice)).append(", ")
@@ -240,13 +242,13 @@ public class SourcecodeGenerator {
             builder.append(NEW_LINE);
         }
 
-        /* 4: ask device for serial monitor logging */
-        builder.append(INDENT).append("if (millis() - oldTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
+        // log status of each devices
+        builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            String variableName = "_" + projectDevice.getName().replace(" ", "_");
-            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(variableName).append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(getDeviceVariableName(projectDevice))
+                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
-        builder.append(INDENT).append(INDENT).append("oldTime = millis();").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -265,8 +267,9 @@ public class SourcecodeGenerator {
             builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr) {").append(NEW_LINE);
             builder.append(INDENT).append("if (task != NULL) {").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("for (int i=0; i<numExpr; i++) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append(INDENT).append("if (expr[i].fn != NULL && millis() - oldTime > expr[i].interval) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append("if (expr[i].fn != NULL && currentTime - expr[i].latestUpdateTime >= expr[i].interval) {").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("expr[i].value = expr[i].fn();").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("expr[i].latestUpdateTime = currentTime;").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("task();").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
@@ -274,15 +277,23 @@ public class SourcecodeGenerator {
             builder.append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
 
-            builder.append("void setExpression(Expr expr, double (*fn)(void), double interval) {").append(NEW_LINE);
+            builder.append("void setExpression(Expr& expr, double (*fn)(void), unsigned int interval) {").append(NEW_LINE);
             builder.append(INDENT).append("expr.fn = fn;").append(NEW_LINE);
+            builder.append(INDENT).append("expr.value = fn();").append(NEW_LINE);
             builder.append(INDENT).append("expr.interval = interval;").append(NEW_LINE);
+            builder.append(INDENT).append("expr.latestUpdateTime = currentTime;").append(NEW_LINE);
             builder.append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
 
-            builder.append("void setExpression(Expr expr, double value) {").append(NEW_LINE);
+            builder.append("void setExpression(Expr& expr, double value) {").append(NEW_LINE);
             builder.append(INDENT).append("expr.value = value;").append(NEW_LINE);
             builder.append(INDENT).append("expr.fn = NULL;").append(NEW_LINE);
+            builder.append("}").append(NEW_LINE);
+            builder.append(NEW_LINE);
+
+            builder.append("void setTask(Task& task, void (*fn)(void)) {").append(NEW_LINE);
+            builder.append(INDENT).append("task = fn;").append(NEW_LINE);
+            builder.append(INDENT).append("task();").append(NEW_LINE);
             builder.append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
         }
@@ -395,10 +406,9 @@ public class SourcecodeGenerator {
                         }
                         taskParameter.add(expressionVarName + ".value");
                     }
-                    sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append(" = []() -> void {")
+                    sceneFunctions.append(INDENT).append("setTask(").append(getDeviceTaskVariableName(device)).append(", []() -> void {")
                             .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
-                            .append(String.join(", ", taskParameter)).append(");};").append(NEW_LINE);
-                    sceneFunctions.append(INDENT).append(getDeviceTaskVariableName(device)).append("();").append(NEW_LINE);
+                            .append(String.join(", ", taskParameter)).append(");});").append(NEW_LINE);
                 } else {    // generate code to perform action once
                     // clear task if this device used to have background task set
                     if (getUsedDevicesWithTask().contains(device)) {
