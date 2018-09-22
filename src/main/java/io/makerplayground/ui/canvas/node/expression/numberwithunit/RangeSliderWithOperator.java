@@ -1,11 +1,8 @@
-package io.makerplayground.ui.canvas.node.usersetting.expression;
+package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.project.term.Operator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;

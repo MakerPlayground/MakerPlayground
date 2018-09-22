@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.usersetting.chip;
+package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 

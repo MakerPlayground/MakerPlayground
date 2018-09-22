@@ -1,13 +1,13 @@
-package io.makerplayground.ui.canvas.node.usersetting.expression;
+package io.makerplayground.ui.canvas.node.expression.valuelinking;
 
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
 import io.makerplayground.project.expression.NumberInRangeExpression;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWithOperator;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import org.controlsfx.control.RangeSlider;
 
 public class NumberInRangeExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;

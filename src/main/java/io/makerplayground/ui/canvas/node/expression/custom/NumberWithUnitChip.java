@@ -1,18 +1,12 @@
-package io.makerplayground.ui.canvas.node.usersetting.chip;
+package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.Term;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 
 import java.text.DecimalFormat;
 

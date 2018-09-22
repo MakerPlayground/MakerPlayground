@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.usersetting.chip;
+package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.project.term.Term;
 import javafx.beans.property.ReadOnlyObjectProperty;

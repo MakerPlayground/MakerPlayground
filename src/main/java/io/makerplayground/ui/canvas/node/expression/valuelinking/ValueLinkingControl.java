@@ -1,16 +1,15 @@
-package io.makerplayground.ui.canvas.node.usersetting;
+package io.makerplayground.ui.canvas.node.expression.valuelinking;
 
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
-import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.ProjectValueExpression;
 import io.makerplayground.project.expression.ValueLinkingExpression;
-import io.makerplayground.ui.canvas.node.usersetting.expression.RangeSliderWithUnit;
-import io.makerplayground.ui.canvas.node.usersetting.expression.SpinnerWithUnit;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWithUnit;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;

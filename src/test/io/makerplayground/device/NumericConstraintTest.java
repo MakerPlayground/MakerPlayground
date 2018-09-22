@@ -105,9 +105,9 @@ class NumericConstraintTest {
     }
 
     @Test
-    void testConstraintWithDifferentUnitShouldThrown() {
-        assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.NOT_SPECIFIED));
-        assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.METER));
-        assertThrows(IllegalArgumentException.class, ()->tester.test(0, Unit.CELSIUS));
+    void testConstraintWithDifferentUnitShouldBeFalse() {
+        assertFalse(tester.test(0, Unit.NOT_SPECIFIED));
+        assertFalse(tester.test(0, Unit.METER));
+        assertFalse(tester.test(0, Unit.CELSIUS));
     }
 }

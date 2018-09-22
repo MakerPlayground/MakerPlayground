@@ -1,15 +1,13 @@
-package io.makerplayground.ui.canvas.node.usersetting.chip;
+package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.project.term.Operator;
 import io.makerplayground.project.term.OperatorTerm;
 import io.makerplayground.project.term.OperatorType;
 import io.makerplayground.project.term.Term;
-import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 

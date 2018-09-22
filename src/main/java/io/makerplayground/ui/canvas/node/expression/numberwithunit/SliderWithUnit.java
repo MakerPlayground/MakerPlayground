@@ -1,8 +1,7 @@
-package io.makerplayground.ui.canvas.node.usersetting.expression;
+package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
-import io.makerplayground.ui.canvas.node.expressioncontrol.NumberWithUnitControl;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -12,8 +11,6 @@ import javafx.scene.text.Text;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 
 /**
  * Created by USER on 12-Jul-17.

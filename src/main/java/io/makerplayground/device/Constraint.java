@@ -29,7 +29,7 @@ import java.util.List;
 public interface Constraint {
 
     /**
-     * Test a given number
+     * Test a given numberwithunit
      * @param d the value to be tested
      * @param unit the unit of the value to be tested
      * @throws IllegalArgumentException if there isn't any constraint specify for this unit

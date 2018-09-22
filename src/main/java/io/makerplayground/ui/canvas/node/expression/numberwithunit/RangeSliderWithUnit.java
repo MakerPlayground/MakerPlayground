@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.usersetting.expression;
+package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;

@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.expressioncontrol;
+package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.helper.NumberWithUnit;
 import javafx.beans.property.ObjectProperty;

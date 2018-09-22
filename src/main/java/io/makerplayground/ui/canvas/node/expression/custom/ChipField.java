@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.usersetting.chip;
+package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
@@ -6,7 +6,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
-import io.makerplayground.ui.canvas.node.usersetting.expression.SpinnerWithUnit;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
