@@ -104,6 +104,7 @@ public class SourcecodeGenerator {
         builder.append("int status_code = 0;").append(NEW_LINE);
         builder.append("unsigned long currentTime = 0;").append(NEW_LINE);
         builder.append("unsigned long latestLogTime = 0;").append(NEW_LINE);
+        builder.append("unsigned long delayEndTime = 0;").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
@@ -431,8 +432,8 @@ public class SourcecodeGenerator {
                 } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
                     delayDuration = (int) currentScene.getDelay();
                 }
-                sceneFunctions.append(INDENT).append("endTime = millis() + ").append(delayDuration).append(";").append(NEW_LINE);
-                sceneFunctions.append(INDENT).append("while (millis() < endTime) {").append(NEW_LINE);
+                sceneFunctions.append(INDENT).append("delayEndTime = millis() + ").append(delayDuration).append(";").append(NEW_LINE);
+                sceneFunctions.append(INDENT).append("while (millis() < delayEndTime) {").append(NEW_LINE);
                 sceneFunctions.append(INDENT).append(INDENT).append("update();").append(NEW_LINE);
                 sceneFunctions.append(INDENT).append("}").append(NEW_LINE);
             }
@@ -558,7 +559,9 @@ public class SourcecodeGenerator {
 
     private String parseExpression(Parameter parameter, Expression expression) {
         String returnValue;
-        if (expression instanceof CustomNumberExpression) {
+        if (expression instanceof NumberWithUnitExpression) {
+            returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
+        } else if (expression instanceof CustomNumberExpression) {
             returnValue =  "constrain(" + expression.translateToCCode() + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
