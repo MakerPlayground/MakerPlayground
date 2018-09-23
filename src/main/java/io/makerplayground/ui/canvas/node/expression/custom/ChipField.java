@@ -84,9 +84,6 @@ public class ChipField extends VBox {
             e.printStackTrace();
         }
 
-        // controls for adjusting refresh interval
-        Label refreshIntervalLabel = new Label("Refresh Interval");
-
         ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
         refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -102,8 +99,9 @@ public class ChipField extends VBox {
 
         HBox refreshIntervalHBox = new HBox(5);
         refreshIntervalHBox.setAlignment(Pos.CENTER_LEFT);
-        refreshIntervalHBox.getChildren().addAll(refreshIntervalLabel, refreshIntervalComboBox, customIntervalSpinner);
-        getChildren().add(refreshIntervalHBox);
+        Label toValueLabel = new Label("to value");
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner, toValueLabel);
+        getChildren().add(0, refreshIntervalHBox);
 
         // initialize chip based on expression
         List<Term> listTerm = expressionProperty.get().getTerms();

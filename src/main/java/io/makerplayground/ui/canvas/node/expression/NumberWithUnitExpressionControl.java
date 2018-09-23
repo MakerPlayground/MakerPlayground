@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.expression.valuelinking;
+package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.Parameter;
 import io.makerplayground.helper.NumberWithUnit;
@@ -7,6 +7,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import io.makerplayground.ui.canvas.node.expression.custom.ChipField;
+import io.makerplayground.ui.canvas.node.expression.valuelinking.ValueLinkingControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Side;

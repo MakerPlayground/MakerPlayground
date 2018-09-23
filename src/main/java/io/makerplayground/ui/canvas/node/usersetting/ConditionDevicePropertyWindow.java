@@ -8,7 +8,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.valuelinking.NumberInRangeExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.NumberInRangeExpressionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;

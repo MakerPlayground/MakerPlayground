@@ -20,14 +20,14 @@ public abstract class Expression {
     }
 
     public enum RefreshInterval {
-        ONCE, REALTIME, USER_DEFINED;
+        ONCE, USER_DEFINED, REALTIME;
 
         @Override
         public String toString() {
             switch (this) {
-                case ONCE: return "once";
-                case REALTIME: return "realtime";
-                case USER_DEFINED: return "every";
+                case ONCE: return "Set once";
+                case REALTIME: return "Update realtime";
+                case USER_DEFINED: return "Update every";
                 default: throw new IllegalStateException();
             }
         }

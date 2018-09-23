@@ -5,6 +5,7 @@ import io.makerplayground.helper.NumberWithUnit;
 import io.makerplayground.helper.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
+import io.makerplayground.ui.canvas.node.expression.NumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 

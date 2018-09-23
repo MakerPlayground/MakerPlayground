@@ -67,8 +67,25 @@ public class ValueLinkingControl extends GridPane {
 
         ProjectValueExpression projectValueExpression = (ProjectValueExpression) getExpression();
 
-        Label fromLabel = new Label("from value");
-        GridPane.setConstraints(fromLabel, 0, 0);
+        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
+        refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
+        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setRefreshInterval(newValue);
+        });
+
+        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
+        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            getExpression().setUserDefinedInterval(newValue);
+        });
+        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
+        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
+
+        HBox refreshIntervalHBox = new HBox(5);
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
+        GridPane.setConstraints(refreshIntervalHBox, 0, 0, 2, 1);
+
+        Label fromLabel = new Label("to value");
+        GridPane.setConstraints(fromLabel, 0, 1);
 
         valueCombobox = new ComboBox<>(FXCollections.observableList(projectValues));
         if (projectValueExpression.getProjectValue() != null) {
@@ -99,14 +116,21 @@ public class ValueLinkingControl extends GridPane {
         valueCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             expression.set(((ProjectValueExpression) expression.get()).setProjectValue(newValue));
         });
-        GridPane.setConstraints(valueCombobox, 1, 0);
+        GridPane.setConstraints(valueCombobox, 1, 1);
 
-        CheckBox mappingEnableCheckbox = new CheckBox("map range");
+        CheckBox mappingEnableCheckbox = new CheckBox("with mapping");
         mappingEnableCheckbox.selectedProperty().addListener(booleanChangeListener);
-        GridPane.setConstraints(mappingEnableCheckbox, 2, 0);
+        GridPane.setConstraints(mappingEnableCheckbox, 2, 1);
 
-        Label refreshIntervalLabel = new Label("refresh interval");
-        GridPane.setConstraints(refreshIntervalLabel, 0, 1);
+        setHgap(10);
+        setVgap(5);
+        getChildren().addAll(fromLabel, valueCombobox, mappingEnableCheckbox, refreshIntervalHBox);
+    }
+
+    private void initValueLinkingControl() {
+        getChildren().clear();
+
+        ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) getExpression();
 
         ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
@@ -123,20 +147,10 @@ public class ValueLinkingControl extends GridPane {
 
         HBox refreshIntervalHBox = new HBox(5);
         refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
-        GridPane.setConstraints(refreshIntervalHBox, 1, 1, 2, 1);
+        GridPane.setConstraints(refreshIntervalHBox, 0, 0, 2, 1);
 
-        setHgap(10);
-        setVgap(5);
-        getChildren().addAll(fromLabel, valueCombobox, mappingEnableCheckbox, refreshIntervalLabel, refreshIntervalHBox);
-    }
-
-    private void initValueLinkingControl() {
-        getChildren().clear();
-
-        ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) getExpression();
-
-        Label fromLabel = new Label("from value");
-        GridPane.setConstraints(fromLabel, 0, 0);
+        Label fromLabel = new Label("to value");
+        GridPane.setConstraints(fromLabel, 0, 1);
 
         valueCombobox = new ComboBox<>(FXCollections.observableList(projectValues));
         if (valueLinkingExpression.getSourceValue() != null) {
@@ -178,15 +192,15 @@ public class ValueLinkingControl extends GridPane {
             sourceRange.setHighValue(newExpression.getSourceHighValue());
             sourceRange.setLowValue(newExpression.getSourceLowValue());
         });
-        GridPane.setConstraints(valueCombobox, 1, 0);
+        GridPane.setConstraints(valueCombobox, 1, 1);
 
-        CheckBox mappingEnableCheckbox = new CheckBox("map range");
+        CheckBox mappingEnableCheckbox = new CheckBox("with mapping");
         mappingEnableCheckbox.setSelected(true);
         mappingEnableCheckbox.selectedProperty().addListener(booleanChangeListener);
-        GridPane.setConstraints(mappingEnableCheckbox, 2, 0);
+        GridPane.setConstraints(mappingEnableCheckbox, 2, 1);
 
         Label fromRangeLabel = new Label("from range");
-        GridPane.setConstraints(fromRangeLabel, 0, 1);
+        GridPane.setConstraints(fromRangeLabel, 0, 2);
 
         sourceRange = new RangeSliderWithUnit();
         sourceRange.disableProperty().bind(valueCombobox.getSelectionModel().selectedItemProperty().isNull());
@@ -203,10 +217,10 @@ public class ValueLinkingControl extends GridPane {
         sourceRange.highValueProperty().addListener((observable, oldValue, newValue) -> {
             expression.set(((ValueLinkingExpression) getExpression()).setSourceHighValue(newValue));
         });
-        GridPane.setConstraints(sourceRange, 1, 1, 2, 1);
+        GridPane.setConstraints(sourceRange, 1, 2, 2, 1);
 
         Label toLabel = new Label("to range");
-        GridPane.setConstraints(toLabel, 0, 2);
+        GridPane.setConstraints(toLabel, 0, 3);
 
         destRange = new RangeSliderWithUnit();
         Parameter p = valueLinkingExpression.getDestinationParameter();
@@ -220,31 +234,11 @@ public class ValueLinkingControl extends GridPane {
         destRange.highValueProperty().addListener((observable, oldValue, newValue) -> {
             expression.set(((ValueLinkingExpression) getExpression()).setDestinationHighValue(newValue));
         });
-        GridPane.setConstraints(destRange, 1, 2, 2, 1);
-
-        Label refreshIntervalLabel = new Label("refresh interval");
-        GridPane.setConstraints(refreshIntervalLabel, 0, 3);
-
-        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
-        refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
-        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setRefreshInterval(newValue);
-        });
-
-        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
-        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setUserDefinedInterval(newValue);
-        });
-        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
-        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
-
-        HBox refreshIntervalHBox = new HBox(5);
-        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
-        GridPane.setConstraints(refreshIntervalHBox, 1, 3, 2, 1);
+        GridPane.setConstraints(destRange, 1, 3, 2, 1);
 
         setHgap(10);
         setVgap(5);
-        getChildren().addAll(fromLabel, valueCombobox, mappingEnableCheckbox, fromRangeLabel, sourceRange, toLabel, destRange, refreshIntervalLabel, refreshIntervalHBox);
+        getChildren().addAll(fromLabel, valueCombobox, mappingEnableCheckbox, fromRangeLabel, sourceRange, toLabel, destRange, refreshIntervalHBox);
     }
 
     public Expression getExpression() {

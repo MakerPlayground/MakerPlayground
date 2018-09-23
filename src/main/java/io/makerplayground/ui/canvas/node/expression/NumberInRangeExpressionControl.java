@@ -1,4 +1,4 @@
-package io.makerplayground.ui.canvas.node.expression.valuelinking;
+package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.NumericConstraint;
 import io.makerplayground.device.Value;
