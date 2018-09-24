@@ -14,6 +14,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,9 @@ public class ControlAddDevicePane extends VBox {
         String text = genericDevice.getDescription();
         text = text.replaceAll("\\\\n", "\r\n");
         text = text.replaceAll("\\\\t", "\t");
-        Tooltip.install(imageView, new Tooltip(text));
+        Tooltip tooltip = new Tooltip(text);
+        tooltip.setShowDelay(Duration.millis(100));
+        Tooltip.install(imageView, tooltip);
 
         numberTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
