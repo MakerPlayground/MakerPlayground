@@ -146,7 +146,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //            dependency.put(name, device);
 //        }
 
-        return new Device(id, brand, model, url, width, height, type, formFactor, mpLibrary, externalLibrary,
+        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
                 platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
                 supportedDeviceCondition, supportedDeviceValue, dependency, category, v, i ,w);
     }
