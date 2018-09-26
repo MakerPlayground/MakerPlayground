@@ -384,7 +384,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Map<Property, String> property = new HashMap<>();
         for (JsonNode propertyNode : node.get("property")) {
             String propertyName = propertyNode.get("name").asText();
-            Property p = genericDevice.getProperty(propertyName);
+            Property p = actualDevice.getProperty(propertyName);
             property.put(p, propertyNode.get("value").asText());
         }
 

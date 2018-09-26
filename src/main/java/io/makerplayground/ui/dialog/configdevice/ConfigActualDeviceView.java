@@ -306,12 +306,12 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             entireComboBoxDevice.setSpacing(10.0);
 
             // property
-            if (!projectDevice.getGenericDevice().getProperty().isEmpty()) {
+            if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
                 GridPane propertyGridPane = new GridPane();
                 propertyGridPane.setHgap(10);
                 propertyGridPane.setVgap(10);
 
-                List<Property> propertyList = projectDevice.getGenericDevice().getProperty();
+                List<Property> propertyList = projectDevice.getActualDevice().getProperty();
                 for (int i=0; i<propertyList.size(); i++) {
                     Property p = propertyList.get(i);
 

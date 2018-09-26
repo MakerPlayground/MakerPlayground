@@ -142,7 +142,7 @@ public class SourcecodeGenerator {
                 }
             }
             // property for the generic device
-            for (Property p : projectDevice.getGenericDevice().getProperty()) {
+            for (Property p : projectDevice.getActualDevice().getProperty()) {
                 String value = projectDevice.getPropertyValue(p);
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");
@@ -606,8 +606,8 @@ public class SourcecodeGenerator {
     private boolean checkDeviceProperty(Project project) {
         for (ProjectDevice device : project.getAllDeviceUsed()) {
             // check only device that has a property
-            if (!device.getGenericDevice().getProperty().isEmpty()) {
-                for (Property p : device.getGenericDevice().getProperty()) {
+            if (!device.getActualDevice().getProperty().isEmpty()) {
+                for (Property p : device.getActualDevice().getProperty()) {
                     String value = device.getPropertyValue(p);
                     // TODO: allow property to be optional
                     if (value == null || value.isEmpty()) {

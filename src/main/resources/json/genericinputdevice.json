@@ -23,8 +23,7 @@
         "parameter": []
       }
     ], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Accelerometer", 
@@ -87,8 +86,7 @@
           "unit": "METERPERSECSQUARE"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Pressuremeter", 
@@ -112,8 +110,7 @@
           "unit": "HECTOPASCAL"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Altimeter", 
@@ -137,8 +134,7 @@
           "unit": "METER"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Temperature", 
@@ -162,8 +158,7 @@
           "unit": "CELSIUS"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Gyroscope", 
@@ -205,8 +200,7 @@
           "unit": "RADIUSPERSEC"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Humidity", 
@@ -230,8 +224,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Sound", 
@@ -255,8 +248,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Magnetometer", 
@@ -321,8 +313,7 @@
           "unit": "MICROTESLA"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Distance", 
@@ -346,8 +337,7 @@
           "unit": "CENTIMETER"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Presence", 
@@ -367,8 +357,7 @@
         "parameter": []
       }
     ], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Color", 
@@ -398,8 +387,7 @@
         ]
       }
     ], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Light", 
@@ -423,8 +411,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Water", 
@@ -444,8 +431,7 @@
         "parameter": []
       }
     ], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Alcohol", 
@@ -469,8 +455,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "LPG", 
@@ -494,8 +479,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "POT", 
@@ -519,8 +503,7 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }, 
   {
     "name": "Soil Moisture", 
@@ -544,7 +527,6 @@
           "unit": "PERCENT"
         }
       }
-    ], 
-    "property": []
+    ]
   }
 ]

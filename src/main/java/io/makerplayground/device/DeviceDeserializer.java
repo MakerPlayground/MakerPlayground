@@ -26,8 +26,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
     }
 
     @Override
-    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException,
-            JsonProcessingException {
+    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
@@ -37,9 +36,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         String url = node.get("url").asText();
         double width = node.get("width").asDouble();
         double height = node.get("height").asDouble();
-        double v = node.get("v").asDouble();
-        double i = node.get("i").asDouble();
-        double w = node.get("w").asDouble();
         Device.Dependency dependency;
         Device.Dependency category;
 
@@ -77,6 +73,9 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 , new TypeReference<List<DevicePort>>() {});
         List<Peripheral> connectivity = mapper.readValue(node.get("connectivity").traverse()
                 , new TypeReference<List<Peripheral>>() {});
+        List<Property> property = mapper.readValue(node.get("property").traverse()
+                , new TypeReference<List<Property>>() {});
+
 
         Map<GenericDevice, Integer> supportedDevice = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
@@ -89,6 +88,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
+                System.out.println(id);
                 Action action = genericDevice.getAction(actionName);
                 if (action == null) {
                     continue;
@@ -148,6 +148,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 
         return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
                 platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
-                supportedDeviceCondition, supportedDeviceValue, dependency, category, v, i ,w);
+                supportedDeviceCondition, supportedDeviceValue, dependency, category, property);
     }
 }
