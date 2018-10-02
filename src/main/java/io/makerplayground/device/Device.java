@@ -73,8 +73,6 @@ public class Device {
      * @param brand           brand of this device ex. Sparkfun
      * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
      * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
-     * @param supportedAction
-     * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, String pioBoardId
             , FormFactor formFactor
@@ -297,6 +295,7 @@ public class Device {
                 ", deviceType=" + deviceType +
                 ", formFactor=" + formFactor +
                 ", supportedPlatform=" + supportedPlatform +
+                ", cloudPlatform=" + cloudPlatform +
                 ", port=" + port +
                 ", connectivity=" + connectivity +
                 ", supportedDevice=" + supportedDevice +
