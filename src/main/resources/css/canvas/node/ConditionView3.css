@@ -30,10 +30,10 @@
     -fx-background-color : #ffffff;
     -fx-border-color: #e3e3e3;
 }
-.text{
+/*.text{
     -fx-text-fill : white;
     -fx-font-size: 9 px;
-}
+}*/
 #deviceIconFlowPane{
     -fx-background-color : transparent;
     -fx-background-radius : 5;

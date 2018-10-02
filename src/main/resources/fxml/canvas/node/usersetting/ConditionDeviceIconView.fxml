@@ -24,10 +24,6 @@
             </Button>
          </children>
       </StackPane>
-      <Label id="deviceIcontext" fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" stylesheets="@../../../../css/canvas/node/usersetting/ConditionDeviceIconView.css" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
+      <Label id="deviceIconText" fx:id="nameIconImageView" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" text="Label" textAlignment="CENTER" textOverrun="CENTER_WORD_ELLIPSIS" />
    </children>
 </fx:root>
