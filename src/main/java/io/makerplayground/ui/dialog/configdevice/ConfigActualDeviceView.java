@@ -1,17 +1,13 @@
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.CloudPlatform;
-import io.makerplayground.device.Device;
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.Property;
+import io.makerplayground.device.*;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.expression.SimpleStringExpression;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -320,12 +316,18 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                     GridPane.setColumnIndex(propertyLabel, 0);
                     propertyGridPane.getChildren().add(propertyLabel);
 
-                    if (p.getType() == DataType.STRING) {
+                    if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
                         TextField textField = new TextField(projectDevice.getPropertyValue(p));
                         textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
                         GridPane.setRowIndex(textField, i);
                         GridPane.setColumnIndex(textField, 1);
                         propertyGridPane.getChildren().add(textField);
+                    } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                        ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                        ComboBox<String> comboBox = new ComboBox<>(list);
+                        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
+                        comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
+                        propertyGridPane.getChildren().add(comboBox);
                     } else {    // TODO: add support for new property type
                         throw new IllegalStateException("Found unknown property type");
                     }
