@@ -6,6 +6,7 @@ package io.makerplayground.helper;
 public enum Peripheral {
     NOT_CONNECTED(ConnectionType.NONE),
 
+    GPIO_0(ConnectionType.GPIO),
     GPIO_1(ConnectionType.GPIO),
     GPIO_2(ConnectionType.GPIO),
     GPIO_3(ConnectionType.GPIO),
@@ -20,6 +21,8 @@ public enum Peripheral {
     GPIO_12(ConnectionType.GPIO),
     GPIO_13(ConnectionType.GPIO),
     GPIO_14(ConnectionType.GPIO),
+    GPIO_15(ConnectionType.GPIO),
+    GPIO_16(ConnectionType.GPIO),
 
     PWM_1(ConnectionType.PWM),
     PWM_2(ConnectionType.PWM),
@@ -27,6 +30,13 @@ public enum Peripheral {
     PWM_4(ConnectionType.PWM),
     PWM_5(ConnectionType.PWM),
     PWM_6(ConnectionType.PWM),
+    PWM_7(ConnectionType.PWM),
+    PWM_8(ConnectionType.PWM),
+    PWM_9(ConnectionType.PWM),
+    PWM_10(ConnectionType.PWM),
+    PWM_11(ConnectionType.PWM),
+    PWM_12(ConnectionType.PWM),
+    PWM_13(ConnectionType.PWM),
 
     INT_1(ConnectionType.INT),
     INT_2(ConnectionType.INT),
