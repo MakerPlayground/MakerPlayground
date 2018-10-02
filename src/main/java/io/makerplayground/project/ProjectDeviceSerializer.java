@@ -70,12 +70,14 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("property");
-        for (Property property : projectDevice.getActualDevice().getProperty()) {
-            String value = projectDevice.getPropertyValue(property);
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("name", property.getName());
-            jsonGenerator.writeStringField("value", value);
-            jsonGenerator.writeEndObject();
+        if (projectDevice.getActualDevice() != null) {
+            for (Property property : projectDevice.getActualDevice().getProperty()) {
+                String value = projectDevice.getPropertyValue(property);
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("name", property.getName());
+                jsonGenerator.writeStringField("value", value);
+                jsonGenerator.writeEndObject();
+            }
         }
         jsonGenerator.writeEndArray();
 
