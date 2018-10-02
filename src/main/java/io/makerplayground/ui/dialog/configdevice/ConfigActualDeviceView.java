@@ -322,11 +322,13 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                         GridPane.setRowIndex(textField, i);
                         GridPane.setColumnIndex(textField, 1);
                         propertyGridPane.getChildren().add(textField);
-                    } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                    } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                         ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                         ComboBox<String> comboBox = new ComboBox<>(list);
                         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
                         comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
+                        GridPane.setRowIndex(comboBox, i);
+                        GridPane.setColumnIndex(comboBox, 1);
                         propertyGridPane.getChildren().add(comboBox);
                     } else {    // TODO: add support for new property type
                         throw new IllegalStateException("Found unknown property type");
