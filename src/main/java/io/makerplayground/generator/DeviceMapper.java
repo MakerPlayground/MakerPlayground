@@ -79,9 +79,14 @@ public class DeviceMapper {
 //                }
 //            }
 //        }
-        
+
+        List<Device> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform()));
+        // append with integrated device of the current controller if existed
+        if (project.getController() != null) {
+            actualDevice.addAll(project.getController().getIntegratedDevices());
+        }
+
         // Get the list of compatible device
-        List<Device> actualDevice = DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform());
         Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
         for (ProjectDevice device : tempMap.keySet()) {
             selectableDevice.put(device, new ArrayList<>());
@@ -146,10 +151,13 @@ public class DeviceMapper {
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                if (pDevice.getConnectionType() == ConnectionType.NONE) {
+                if (projectDevice.getActualDevice() instanceof IntegratedDevice) {
+                    // in case of an integrated device, possible port is only the port with the same name
+                    processorPort.stream().filter(devicePort -> devicePort.getName().equals(projectDevice.getActualDevice().getPort(pDevice).get(0).getName()))
+                            .findFirst().ifPresent(devicePort -> possibleDevice.get(pDevice).add(Collections.singletonList(devicePort)));
+                } else if (pDevice.getConnectionType() == ConnectionType.NONE) {    // TODO: should be removed
                     possibleDevice.get(pDevice).add(Collections.emptyList());
-                }
-                else if (pDevice.getConnectionType() == ConnectionType.I2C) {
+                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
                     DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
                     DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
                     possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
@@ -247,18 +255,44 @@ public class DeviceMapper {
             });
         }
 
+        Map<ProjectDevice, List<Device>> supportedDeviceMap = getSupportedDeviceList(project);
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
         for (ProjectDevice projectDevice : deviceList) {
-            // Set port to the first compatible port
-            for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
-                // port list is needed to be recalculated since port is allocated in the previous loop.
-                portList = getDeviceCompatiblePort(project);
-                if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
-                    List<List<DevicePort>> port = portList.get(projectDevice).get(devicePeripheral);
-                    if (port.isEmpty()) {
-                        return DeviceMapperResult.NOT_ENOUGH_PORT;
+            // assign this device only if user selects auto
+            if (projectDevice.isAutoSelectDevice()) {
+                //
+                if (supportedDeviceMap.get(projectDevice).isEmpty()) {
+                    return DeviceMapperResult.NO_SUPPORT_DEVICE;
+                }
+
+                // try each support device until we find the one that works
+                boolean error = false;
+                for (Device device : supportedDeviceMap.get(projectDevice)) {
+                    projectDevice.removeAllDeviceConnection();
+                    projectDevice.setActualDevice(device);
+
+                    // set port to the first compatible port
+                    error = false;
+                    for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
+                        // portList needs to be recalculated since some ports have been used in the previous loop.
+                        portList = getDeviceCompatiblePort(project);
+                        if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
+                            List<List<DevicePort>> port = portList.get(projectDevice).get(devicePeripheral);
+                            if (port.isEmpty()) {
+                                error = true;
+                                break;
+                            }
+                            projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
+                        }
                     }
-                    projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
+
+                    // done if error is false
+                    if (!error) {
+                        break;
+                    }
+                }
+                if (error) {
+                    return DeviceMapperResult.NOT_ENOUGH_PORT;
                 }
             }
         }

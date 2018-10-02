@@ -71,12 +71,11 @@ public class SourcecodeGenerator {
         // macros needed for logging system
         builder.append("#define MP_LOG_INTERVAL 3000").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
-        builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+        builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(&(device.ERRORS[status_code])))); Serial.println('\\0');").append(NEW_LINE);
         if (project.getCloudPlatformUsed().size() > 0) {
             builder.append("#define MP_LOG_P(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device->printStatus(); Serial.println('\\0');").append(NEW_LINE);
-            builder.append("#define MP_ERR_P(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device->ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+            builder.append("#define MP_ERR_P(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(&(device->ERRORS[status_code])))); Serial.println('\\0');").append(NEW_LINE);
         }
-
         builder.append(NEW_LINE);
 
         // type definition require for background task execution system
@@ -378,13 +377,14 @@ public class SourcecodeGenerator {
         if (!generator.checkScene(project)) {
             return new Sourcecode(Sourcecode.Error.SCENE_ERROR, "-");   // TODO: add location
         }
-
         if (!generator.checkCondition(project)) {
             return new Sourcecode(Sourcecode.Error.CONDITION_ERROR, "-");
         }
-
         if (!generator.checkDeviceProperty(project)) {
             return new Sourcecode(Sourcecode.Error.MISSING_PROPERTY, "-");   // TODO: add location
+        }
+        if (!generator.checkDeviceAssignment(project)) {
+            return new Sourcecode(Sourcecode.Error.NOT_SELECT_DEVICE_OR_PORT, "-");
         }
 
         if (project.getCloudPlatformUsed().size() > 1) {
@@ -678,6 +678,22 @@ public class SourcecodeGenerator {
                     if (value == null || value.isEmpty()) {
                         return false;
                     }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean checkDeviceAssignment(Project project) {
+        for (ProjectDevice device : project.getAllDeviceUsed()) {
+            // indicate error immediately if an actual device hasn't been selected
+            if (device.getActualDevice() == null) {
+                return false;
+            }
+            // for each connectivity required, check if it has been connected and indicate error if it hasn't
+            for (Peripheral peripheral : device.getActualDevice().getConnectivity()) {
+                if (!device.getDeviceConnection().containsKey(peripheral)) {
+                    return false;
                 }
             }
         }

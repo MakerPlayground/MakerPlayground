@@ -25,7 +25,8 @@ public class Sourcecode {
         NEST_CONDITION("Multiple condition are connected together"),
         SHORT_CIRCUIT("Some conditions are not reachable"),
         CONDITION_ERROR("Missing required parameter in some conditions"),
-        MORE_THAN_ONE_CLOUD_PLATFORM("Only one cloud platform (e.g. Blynk or NETPIE) is allowed");
+        MORE_THAN_ONE_CLOUD_PLATFORM("Only one cloud platform (e.g. Blynk or NETPIE) is allowed"),
+        NOT_SELECT_DEVICE_OR_PORT("Some devices and/or their ports haven't been selected");
 
         private final String description;
 

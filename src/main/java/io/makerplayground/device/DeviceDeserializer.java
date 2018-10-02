@@ -81,6 +81,52 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition = new HashMap<>();
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
+        readCompatibilityField(mapper, node, supportedDevice, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue);
+
+        List<IntegratedDevice> integratedDevices = new ArrayList<>();
+        if (node.has("integrated_device")) {
+            for (JsonNode deviceNode : node.get("integrated_device")) {
+                String integratedDeviceName = deviceNode.get("name").asText();
+                String integratedLibrary = deviceNode.get("classname").asText();
+                List<String> integratedExternalLibrary = mapper.readValue(deviceNode.get("library_dependency").traverse(),
+                        new TypeReference<List<String>>() {});
+
+                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse()
+                        , new TypeReference<List<DevicePort>>() {});
+                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse()
+                        , new TypeReference<List<Peripheral>>() {});
+
+                Map<GenericDevice, Integer> integratedSupportedDevice = new HashMap<>();
+                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
+                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceCondition = new HashMap<>();
+                Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
+                readCompatibilityField(mapper, deviceNode, integratedSupportedDevice, integratedSupportedDeviceaction
+                        , integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
+
+                integratedDevices.add(new IntegratedDevice(integratedDeviceName, integratedLibrary, integratedExternalLibrary, integratedPort, integratedConnectivity
+                        , integratedSupportedDevice, integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
+            }
+        }
+
+        Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform = new HashMap<>();
+        if (type == DeviceType.CONTROLLER) {
+            if (node.has("support_cloudplatform") && node.get("support_cloudplatform").isArray()) {
+                for (JsonNode cloudPlatformNode : node.get("support_cloudplatform")) {
+                    CloudPlatform cloudPlatformKey = mapper.treeToValue(cloudPlatformNode.get("cloud_platform"), CloudPlatform.class);
+                    String className = mapper.treeToValue(cloudPlatformNode.get("classname"), String.class);
+                    List<String> cloudPlatformDependency = mapper.readValue(cloudPlatformNode.get("library_dependency").traverse(), new TypeReference<List<String>>() {});
+                    CloudPlatformLibrary cloudPlatformLibrary = new CloudPlatformLibrary(className, cloudPlatformDependency);
+                    supportedCloudPlatform.put(cloudPlatformKey, cloudPlatformLibrary);
+                }
+            }
+        }
+
+        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
+                platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
+                supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform, integratedDevices);
+    }
+
+    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Integer> supportedDevice, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
         for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
@@ -88,7 +134,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
-                System.out.println(id);
                 Action action = genericDevice.getAction(actionName);
                 if (action == null) {
                     continue;
@@ -135,32 +180,5 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 
             supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
-
-        Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform = new HashMap<>();
-        if (type == DeviceType.CONTROLLER) {
-            if (node.has("support_cloudplatform") && node.get("support_cloudplatform").isArray()) {
-                for (JsonNode cloudPlatformNode : node.get("support_cloudplatform")) {
-                    CloudPlatform cloudPlatformKey = mapper.treeToValue(cloudPlatformNode.get("cloud_platform"), CloudPlatform.class);
-                    String className = mapper.treeToValue(cloudPlatformNode.get("classname"), String.class);
-                    List<String> cloudPlatformDependency = mapper.readValue(cloudPlatformNode.get("library_dependency").traverse(), new TypeReference<List<String>>() {});
-                    CloudPlatformLibrary cloudPlatformLibrary = new CloudPlatformLibrary(className, cloudPlatformDependency);
-                    supportedCloudPlatform.put(cloudPlatformKey, cloudPlatformLibrary);
-                }
-            }
-        }
-
-//        Map<String, List<String>> dependency = new HashMap<>();
-//        for (JsonNode dependencyNode : node.get("dependency")) {
-//            String name = dependencyNode.get("name").asText();
-//            List<String> device = new ArrayList<>();
-//            for (JsonNode deviceNode : dependencyNode.get("device")) {
-//                device.add(deviceNode.asText());
-//            }
-//            dependency.put(name, device);
-//        }
-
-        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
-                platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
-                supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform);
     }
 }

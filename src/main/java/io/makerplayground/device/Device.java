@@ -64,6 +64,8 @@ public class Device {
     private final Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform;          // optional value for microcontroller
     private final List<Property> property;
 
+    private final List<IntegratedDevice> integratedDevices;
+
     //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
     // or an amplifier for a thermistor
 
@@ -90,7 +92,8 @@ public class Device {
             , Dependency dependency
             , Dependency category
             , List<Property> property
-            , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform) {
+            , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform
+            , List<IntegratedDevice> integratedDevices) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -114,6 +117,7 @@ public class Device {
         this.category = category;
         this.property = Collections.unmodifiableList(property);
         this.supportedCloudPlatform = supportedCloudPlatform;
+        this.integratedDevices = Collections.unmodifiableList(integratedDevices);
     }
 
     public Dependency getCategory() {
@@ -277,7 +281,9 @@ public class Device {
         return true;
     }
 
-
+    public List<IntegratedDevice> getIntegratedDevices() {
+        return integratedDevices;
+    }
 
     @Override
     public String toString() {

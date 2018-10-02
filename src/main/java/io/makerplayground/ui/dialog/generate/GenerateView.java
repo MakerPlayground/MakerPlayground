@@ -55,7 +55,7 @@ public class GenerateView extends UndecoratedDialog {
     private void initView() {
         Pane wiringDiagram;
         Platform platform = viewModel.getProject().getPlatform();
-        if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO) {
+        if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO || platform == Platform.ESP32) {
             wiringDiagram = new Diagram(viewModel.getProject());
         } else if (platform == Platform.MP_ARDUINO) {
             wiringDiagram = new MPDiagram(viewModel.getProject());
