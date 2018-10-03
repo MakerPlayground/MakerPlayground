@@ -326,6 +326,9 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                         ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                         ComboBox<String> comboBox = new ComboBox<>(list);
                         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
+                        if (projectDevice.getPropertyValue(p) == null) {
+                            projectDevice.setPropertyValue(p, p.getDefaultValue().toString());
+                        }
                         comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
                         GridPane.setRowIndex(comboBox, i);
                         GridPane.setColumnIndex(comboBox, 1);
