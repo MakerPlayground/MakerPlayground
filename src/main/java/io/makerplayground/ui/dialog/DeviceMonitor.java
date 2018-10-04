@@ -130,7 +130,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     private Optional<LogItems> getFormatLog(String rawLog) {
         Matcher log = format.matcher(rawLog);
         if (log.find()) {
-            return Optional.of(new LogItems(log.group(1), log.group(2), log.group(3)));
+            return Optional.of(new LogItems(log.group(1).trim(), log.group(2), log.group(3)));
         } else {
             System.out.println("Not match");
             return Optional.empty();
