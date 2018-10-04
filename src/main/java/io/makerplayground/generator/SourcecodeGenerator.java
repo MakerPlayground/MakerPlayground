@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SourcecodeGenerator {
 
@@ -47,22 +48,35 @@ public class SourcecodeGenerator {
         this.cppMode = cppMode;
     }
 
+    private static String generateInclude(String library) {
+        return "#include \"" + library + ".h\"";
+    }
+
     private void appendHeader() {
         // add #include <Arduino.h> if in cpp mode
         if (cppMode) {
             builder.append("#include <Arduino.h>").append(NEW_LINE);
         }
+
         // generate include
-        project.getAllDeviceUsed().stream()
-                .map(projectDevice -> projectDevice.getActualDevice().getSourceToInclude())
-                .collect(Collectors.toSet())    //remove duplicates
-                .forEach(s -> builder.append("#include \"").append(s).append("\"").append(NEW_LINE));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().map(projectDevice -> projectDevice.getActualDevice().getMpLibrary());
+        Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
+                .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
+        Stream.concat(device_libs, cloud_libs)
+                .sorted()
+                .collect(Collectors.toCollection(LinkedHashSet::new))    //remove duplicates
+                .forEach(s -> builder.append(generateInclude(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
 
         // macros needed for logging system
         builder.append("#define MP_LOG_INTERVAL 3000").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device.ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+        if (project.getCloudPlatformUsed().size() > 0) {
+            builder.append("#define MP_LOG_P(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device->printStatus(); Serial.println('\\0');").append(NEW_LINE);
+            builder.append("#define MP_ERR_P(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>pgm_read_word(&(device->ERRORS[status_code]))); Serial.println('\\0');").append(NEW_LINE);
+        }
+
         builder.append(NEW_LINE);
 
         // type definition require for background task execution system
@@ -109,6 +123,18 @@ public class SourcecodeGenerator {
     }
 
     private void appendInstanceVariables() {
+        // create cloud singleton variables
+        for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+            String cloudPlatformLibName = cloudPlatform.getLibName();
+            String specificCloudPlatformLibName = project.getController().getCloudPlatformLibraryName(cloudPlatform);
+
+            List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
+                    .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
+            builder.append(cloudPlatformLibName).append("* ").append(getCloudPlatformVariableName(cloudPlatform))
+                    .append(" = new ").append(specificCloudPlatformLibName)
+                    .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
+        }
+
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             builder.append(projectDevice.getActualDevice().getMpLibrary())
@@ -147,7 +173,21 @@ public class SourcecodeGenerator {
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");
                 }
-                args.add("\"" + value + "\"");
+                switch (p.getDataType()) {
+                    case INTEGER:
+                    case INTEGER_ENUM:
+                    case DOUBLE:
+                        args.add(value);
+                        break;
+                    default:
+                        args.add("\"" + value + "\"");
+                }
+            }
+
+            // Cloud Platform instance
+            CloudPlatform cloudPlatform = projectDevice.getActualDevice().getCloudPlatform();
+            if (cloudPlatform != null) {
+                args.add(getCloudPlatformVariableName(cloudPlatform));
             }
 
             if (args.size() > 0) {
@@ -183,6 +223,17 @@ public class SourcecodeGenerator {
         // generate setup function
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
+
+        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+            String cloudPlatformVariableName = getCloudPlatformVariableName(cloudPlatform);
+            builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
+            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_ERR_P(").append(cloudPlatformVariableName).append(", \"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
+            builder.append(INDENT).append("}").append(NEW_LINE);
+            builder.append(NEW_LINE);
+        }
+
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             String variableName = getDeviceVariableName(projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
@@ -213,6 +264,11 @@ public class SourcecodeGenerator {
         builder.append("void update() {").append(NEW_LINE);
         builder.append(INDENT).append("currentTime = millis();").append(NEW_LINE);
         builder.append(NEW_LINE);
+
+        // allow all cloudplatform maintains their own tasks (e.g. connection)
+        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+            builder.append(INDENT).append(getCloudPlatformVariableName(cloudPlatform)).append("->update(currentTime);").append(NEW_LINE);
+        }
 
         // allow all devices to perform their own tasks
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
@@ -245,6 +301,11 @@ public class SourcecodeGenerator {
 
         // log status of each devices
         builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
+        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(getCloudPlatformVariableName(cloudPlatform))
+                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+        }
+
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             builder.append(INDENT).append(INDENT).append("MP_LOG(").append(getDeviceVariableName(projectDevice))
                     .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
@@ -324,6 +385,10 @@ public class SourcecodeGenerator {
 
         if (!generator.checkDeviceProperty(project)) {
             return new Sourcecode(Sourcecode.Error.MISSING_PROPERTY, "-");   // TODO: add location
+        }
+
+        if (project.getCloudPlatformUsed().size() > 1) {
+            return new Sourcecode(Sourcecode.Error.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
 
         Sourcecode sourcecode = generator.generateCodeForSceneFunctions();
@@ -638,6 +703,10 @@ public class SourcecodeGenerator {
     private static List<Condition> getCondition(List<NodeElement> nodeElements) {
         return nodeElements.stream().filter(nodeElement -> nodeElement instanceof Condition)
                 .map(nodeElement -> (Condition) nodeElement).collect(Collectors.toList());
+    }
+
+    private static String getCloudPlatformVariableName(CloudPlatform cloudPlatform) {
+        return "_" + cloudPlatform.getLibName().replaceAll(" ", "_");
     }
 
     private static String getDeviceVariableName(ProjectDevice projectDevice) {

@@ -61,6 +61,7 @@ public class Device {
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition;  // action support for each generic device
     private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
+    private final Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform;          // optional value for microcontroller
     private final List<Property> property;
 
     //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
@@ -88,7 +89,8 @@ public class Device {
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
             , Dependency dependency
             , Dependency category
-            , List<Property> property) {
+            , List<Property> property
+            , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -111,6 +113,7 @@ public class Device {
         this.dependency = dependency;
         this.category = category;
         this.property = Collections.unmodifiableList(property);
+        this.supportedCloudPlatform = supportedCloudPlatform;
     }
 
     public Dependency getCategory() {
@@ -180,10 +183,6 @@ public class Device {
         return mpLibrary;
     }
 
-    public String getSourceToInclude() {
-        return this.getMpLibrary()+".h";
-    }
-
     public List<String> getExternalLibrary() {
         return externalLibrary;
     }
@@ -199,18 +198,13 @@ public class Device {
         return null;
     }
 
-    /*public String getMPLibraryName() {
-        for (String s : sourceToInclude) {
-            if (s.startsWith("MP_")) {
-                return s;
-            }
-        }
-        return null;
-    }*/
+    public String getCloudPlatformLibraryName(CloudPlatform cloudPlatform) {
+        return supportedCloudPlatform.get(cloudPlatform).getClassName();
+    }
 
-    /*public String getSuggestedInstanceName() {
-        return getMPLibraryName().substring(3);
-    }*/
+    public List<String> getCloudPlatformLibraryDependency(CloudPlatform cloudPlatform) {
+        return supportedCloudPlatform.get(cloudPlatform).getDependency();
+    }
 
     public List<DevicePort> getPort() {
         return port;

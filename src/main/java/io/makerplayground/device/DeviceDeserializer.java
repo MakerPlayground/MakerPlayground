@@ -136,6 +136,19 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
 
+        Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform = new HashMap<>();
+        if (type == DeviceType.CONTROLLER) {
+            if (node.has("support_cloudplatform") && node.get("support_cloudplatform").isArray()) {
+                for (JsonNode cloudPlatformNode : node.get("support_cloudplatform")) {
+                    CloudPlatform cloudPlatformKey = mapper.treeToValue(cloudPlatformNode.get("cloud_platform"), CloudPlatform.class);
+                    String className = mapper.treeToValue(cloudPlatformNode.get("classname"), String.class);
+                    List<String> cloudPlatformDependency = mapper.readValue(cloudPlatformNode.get("library_dependency").traverse(), new TypeReference<List<String>>() {});
+                    CloudPlatformLibrary cloudPlatformLibrary = new CloudPlatformLibrary(className, cloudPlatformDependency);
+                    supportedCloudPlatform.put(cloudPlatformKey, cloudPlatformLibrary);
+                }
+            }
+        }
+
 //        Map<String, List<String>> dependency = new HashMap<>();
 //        for (JsonNode dependencyNode : node.get("dependency")) {
 //            String name = dependencyNode.get("name").asText();
@@ -148,6 +161,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 
         return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
                 platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
-                supportedDeviceCondition, supportedDeviceValue, dependency, category, property);
+                supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform);
     }
 }

@@ -1,5 +1,6 @@
 package io.makerplayground.generator;
 
+import io.makerplayground.device.CloudPlatform;
 import io.makerplayground.device.Device;
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
@@ -93,6 +94,19 @@ public class UploadTask extends Task<UploadResult> {
         Set<String> externalLibraries = actualDevicesUsed.stream()
                 .map(device -> device.getExternalLibrary())
                 .flatMap(Collection::stream).collect(Collectors.toSet());
+
+        // Add Cloud Platform libraries
+        for(CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+            // add abstract .h library for the cloudPlatform.
+            mpLibraries.add(cloudPlatform.getLibName());
+
+            // add controller-specific library when using cloudPlatform.
+            mpLibraries.add(project.getController().getCloudPlatformLibraryName(cloudPlatform));
+
+            // add controller-specific external dependency when using cloudPlatform.
+            externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
+        }
+
         Platform.runLater(() -> log.set("List of library used \n"));
         for (String libName : mpLibraries) {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));
