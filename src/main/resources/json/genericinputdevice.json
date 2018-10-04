@@ -528,5 +528,73 @@
         }
       }
     ]
+  },
+  {
+    "name": "Gesture",
+    "description": "A gesture sensor can be used to detect hand movement in front of the sensor",
+    "action": [],
+    "condition": [
+      {
+        "name": "Swipe Up",
+        "funcname": "isSwipeUp",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Swipe Down",
+        "funcname": "isSwipeDown",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Swipe Left",
+        "funcname": "isSwipeLeft",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Swipe Right",
+        "funcname": "isSwipeRight",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Move Forward",
+        "funcname": "isMoveForward",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Move Backward",
+        "funcname": "isMoveBackward",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Spin Clockwise",
+        "funcname": "isSpinClockwise",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Spin Counter Clockwise",
+        "funcname": "isSpinCounterClockwise",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Waving",
+        "funcname": "isWave",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not Detected",
+        "funcname": "isNotDetected",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
   }
 ]
