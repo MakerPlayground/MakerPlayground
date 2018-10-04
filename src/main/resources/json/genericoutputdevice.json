@@ -29,8 +29,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Buzzer", 
@@ -73,8 +72,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "7 Segment", 
@@ -106,8 +104,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "DC Motor", 
@@ -149,8 +146,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Servo", 
@@ -176,8 +172,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "RGB LED", 
@@ -242,8 +237,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Relay Module", 
@@ -263,8 +257,7 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }, 
   {
     "name": "Load Driver", 
@@ -284,7 +277,6 @@
       }
     ], 
     "condition": [], 
-    "value": [], 
-    "property": []
+    "value": []
   }
 ]

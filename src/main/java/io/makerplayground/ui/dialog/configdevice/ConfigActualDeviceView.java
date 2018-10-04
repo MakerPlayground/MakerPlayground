@@ -1,16 +1,13 @@
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.Device;
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.Property;
+import io.makerplayground.device.*;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.expression.SimpleStringExpression;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -26,6 +23,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends UndecoratedDialog {
@@ -36,6 +34,8 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private VBox usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
+    @FXML private VBox cloudPlatformParameterSection;
+    @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
@@ -160,6 +160,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK){
             initDeviceControlChildren();
             initUnusedDeviceControl();
+            initCloudPlatformPropertyControl();
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
@@ -301,12 +302,12 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             entireComboBoxDevice.setSpacing(10.0);
 
             // property
-            if (!projectDevice.getGenericDevice().getProperty().isEmpty()) {
+            if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
                 GridPane propertyGridPane = new GridPane();
                 propertyGridPane.setHgap(10);
                 propertyGridPane.setVgap(10);
 
-                List<Property> propertyList = projectDevice.getGenericDevice().getProperty();
+                List<Property> propertyList = projectDevice.getActualDevice().getProperty();
                 for (int i=0; i<propertyList.size(); i++) {
                     Property p = propertyList.get(i);
 
@@ -315,12 +316,23 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                     GridPane.setColumnIndex(propertyLabel, 0);
                     propertyGridPane.getChildren().add(propertyLabel);
 
-                    if (p.getType() == DataType.STRING) {
+                    if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
                         TextField textField = new TextField(projectDevice.getPropertyValue(p));
                         textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
                         GridPane.setRowIndex(textField, i);
                         GridPane.setColumnIndex(textField, 1);
                         propertyGridPane.getChildren().add(textField);
+                    } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                        ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                        ComboBox<String> comboBox = new ComboBox<>(list);
+                        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
+                        if (projectDevice.getPropertyValue(p) == null) {
+                            projectDevice.setPropertyValue(p, p.getDefaultValue().toString());
+                        }
+                        comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
+                        GridPane.setRowIndex(comboBox, i);
+                        GridPane.setColumnIndex(comboBox, 1);
+                        propertyGridPane.getChildren().add(comboBox);
                     } else {    // TODO: add support for new property type
                         throw new IllegalStateException("Found unknown property type");
                     }
@@ -368,6 +380,51 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                 entireDevice.getChildren().addAll(devicePic);
 
                 unusedDevicePane.getChildren().add(entireDevice);
+            }
+        }
+    }
+
+    private void initCloudPlatformPropertyControl() {
+        if (viewModel.getCloudPlatformUsed().isEmpty()) {
+            cloudPlatformParameterSection.setVisible(false);
+            cloudPlatformParameterSection.setManaged(false);
+        } else {
+            cloudPlatformParameterSection.setVisible(true);
+            cloudPlatformParameterSection.setManaged(true);
+
+            int currentRow = 0;
+            for (CloudPlatform cloudPlatform : viewModel.getCloudPlatformUsed()) {
+                ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
+                        + cloudPlatform.getDisplayName() + ".png")));
+                cloudPlatformIcon.setFitHeight(30.0);
+                cloudPlatformIcon.setFitWidth(30.0);
+                GridPane.setRowIndex(cloudPlatformIcon, currentRow);
+                GridPane.setColumnIndex(cloudPlatformIcon, 0);
+
+                Label cloudPlatformNameLabel = new Label(cloudPlatform.getDisplayName());
+                cloudPlatformNameLabel.setId("nameLabel");
+                GridPane.setRowIndex(cloudPlatformNameLabel, currentRow);
+                GridPane.setColumnIndex(cloudPlatformNameLabel, 1);
+
+                cloudPlatformParameterPane.getChildren().addAll(cloudPlatformIcon, cloudPlatformNameLabel);
+
+                for (String parameterName : cloudPlatform.getParameter()) { // use cloudPlatform.getParameter() as the map may not contain every params as key and we want it in the order defined
+                    String value = viewModel.getCloudPlatfromParameterValue(cloudPlatform, parameterName);
+
+                    Label parameterNameLabel = new Label(parameterName);
+                    GridPane.setRowIndex(parameterNameLabel, currentRow);
+                    GridPane.setColumnIndex(parameterNameLabel, 2);
+
+                    TextField parameterValueLabel = new TextField(Objects.requireNonNullElse(value, ""));
+                    parameterValueLabel.textProperty().addListener((observable, oldValue, newValue) -> {
+                        viewModel.setCloudPlatformParameter(cloudPlatform, parameterName, newValue);
+                    });
+                    GridPane.setRowIndex(parameterValueLabel, currentRow);
+                    GridPane.setColumnIndex(parameterValueLabel, 3);
+                    currentRow++;
+
+                    cloudPlatformParameterPane.getChildren().addAll(parameterNameLabel, parameterValueLabel);
+                }
             }
         }
     }

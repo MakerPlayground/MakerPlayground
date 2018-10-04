@@ -26,8 +26,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
     }
 
     @Override
-    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException,
-            JsonProcessingException {
+    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
@@ -37,9 +36,6 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         String url = node.get("url").asText();
         double width = node.get("width").asDouble();
         double height = node.get("height").asDouble();
-        double v = node.get("v").asDouble();
-        double i = node.get("i").asDouble();
-        double w = node.get("w").asDouble();
         Device.Dependency dependency;
         Device.Dependency category;
 
@@ -69,10 +65,17 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
         Set<Platform> platform = EnumSet.copyOf((List<Platform>) mapper.readValue(node.get("platform").traverse()
                 , new TypeReference<List<Platform>>() {}));
+        CloudPlatform cloudPlatform = null;
+        if (node.has("cloud_platform")) {
+            cloudPlatform = CloudPlatform.valueOf(node.get("cloud_platform").asText());
+        }
         List<DevicePort> port = mapper.readValue(node.get("port").traverse()
                 , new TypeReference<List<DevicePort>>() {});
         List<Peripheral> connectivity = mapper.readValue(node.get("connectivity").traverse()
                 , new TypeReference<List<Peripheral>>() {});
+        List<Property> property = mapper.readValue(node.get("property").traverse()
+                , new TypeReference<List<Property>>() {});
+
 
         Map<GenericDevice, Integer> supportedDevice = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
@@ -85,6 +88,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
             for (JsonNode actionNode : deviceNode.get("action")) {
                 String actionName = actionNode.get("name").asText();
+                System.out.println(id);
                 Action action = genericDevice.getAction(actionName);
                 if (action == null) {
                     continue;
@@ -132,6 +136,19 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
 
+        Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform = new HashMap<>();
+        if (type == DeviceType.CONTROLLER) {
+            if (node.has("support_cloudplatform") && node.get("support_cloudplatform").isArray()) {
+                for (JsonNode cloudPlatformNode : node.get("support_cloudplatform")) {
+                    CloudPlatform cloudPlatformKey = mapper.treeToValue(cloudPlatformNode.get("cloud_platform"), CloudPlatform.class);
+                    String className = mapper.treeToValue(cloudPlatformNode.get("classname"), String.class);
+                    List<String> cloudPlatformDependency = mapper.readValue(cloudPlatformNode.get("library_dependency").traverse(), new TypeReference<List<String>>() {});
+                    CloudPlatformLibrary cloudPlatformLibrary = new CloudPlatformLibrary(className, cloudPlatformDependency);
+                    supportedCloudPlatform.put(cloudPlatformKey, cloudPlatformLibrary);
+                }
+            }
+        }
+
 //        Map<String, List<String>> dependency = new HashMap<>();
 //        for (JsonNode dependencyNode : node.get("dependency")) {
 //            String name = dependencyNode.get("name").asText();
@@ -143,7 +160,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
 //        }
 
         return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
-                platform, port, connectivity, supportedDevice, supportedDeviceaction, supportedDeviceCondition,
-                supportedDeviceValue, dependency, category, v, i ,w);
+                platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
+                supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform);
     }
 }

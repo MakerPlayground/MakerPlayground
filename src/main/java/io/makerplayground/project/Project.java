@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.CloudPlatform;
 import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
@@ -55,6 +56,7 @@ public class Project {
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
     private final Begin begin;
+    private final Map<CloudPlatform, Map<String, String>> parameter;
 
     private final ObservableList<ProjectDevice> unmodifiableSensor;
     private final ObservableList<ProjectDevice> unmodifiableActuator;
@@ -78,6 +80,7 @@ public class Project {
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin(this);
+        parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
 
         unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
@@ -335,6 +338,36 @@ public class Project {
 
     public ObservableList<Line> getLine() {
         return unmodifiableLine;
+    }
+
+//    public Map<String, String> getCloudPlatformParameter(CloudPlatform cloudPlatform) {
+//        return parameter.get(cloudPlatform);
+//    }
+
+    // TODO: need to get again after set
+    public String getCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName) {
+        if (parameter.containsKey(cloudPlatform)) {
+            return parameter.get(cloudPlatform).get(parameterName);
+        } else {
+            return null;
+        }
+    }
+
+    public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
+        if (parameter.containsKey(cloudPlatform)) {
+            parameter.get(cloudPlatform).put(parameterName, value);
+        } else {
+            Map<String, String> parameterMap = new HashMap<>();
+            parameterMap.put(parameterName, value);
+            parameter.put(cloudPlatform, parameterMap);
+        }
+    }
+
+    public Set<CloudPlatform> getCloudPlatformUsed() {
+        return getAllDeviceUsed().stream().filter(projectDevice -> Objects.nonNull(projectDevice.getActualDevice())
+                    && Objects.nonNull(projectDevice.getActualDevice().getCloudPlatform()))
+                .map(projectDevice -> projectDevice.getActualDevice().getCloudPlatform())
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public String getProjectName() {

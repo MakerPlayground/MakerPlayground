@@ -24,7 +24,8 @@ public class Sourcecode {
         MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
         NEST_CONDITION("Multiple condition are connected together"),
         SHORT_CIRCUIT("Some conditions are not reachable"),
-        CONDITION_ERROR("Missing required parameter in some conditions");
+        CONDITION_ERROR("Missing required parameter in some conditions"),
+        MORE_THAN_ONE_CLOUD_PLATFORM("Only one cloud platform (e.g. Blynk or NETPIE) is allowed");
 
         private final String description;
 

@@ -183,19 +183,98 @@
           "unit": "NOT_SPECIFIED"
         }
       }
+    ]
+  },
+  {
+    "name": "Virtual Button",
+    "description": "Virtual Button: retrieving click events from your IoT dashboard",
+    "action": [],
+    "condition": [
+      {
+        "name": "Press",
+        "funcname": "isPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press and release",
+        "funcname": "isPressAndRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press",
+        "funcname": "isNotPress",
+        "type": "Active",
+        "parameter": []
+      }
     ],
-    "property": [
+    "value": []
+  },
+  {
+    "name": "Virtual Slider",
+    "description": "Virtual Slider: retrieving number/value from your IoT dashboard",
+    "action": [],
+    "condition": [
       {
-        "name": "Blynk Auth Key",
-        "type": "STRING"
-      },
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
       {
-        "name": "Wifi's SSID",
-        "type": "STRING"
-      },
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Virtual Gauge",
+    "description": "Virtual Gauge: displaying number/value in IoT dashboard",
+    "action": [
       {
-        "name": "Wifi's Password",
-        "type": "STRING"
+        "name": "Set to",
+        "funcname": "setValue",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 0.0,
+            "constraint": {
+              "min": -99999999.0,
+              "max": 99999999.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
       }
     ]
   },
@@ -258,8 +337,7 @@
           "unit": "NOT_SPECIFIED"
         }
       }
-    ],
-    "property": []
+    ]
   },
   {
     "name": "Counter",
@@ -350,8 +428,7 @@
           "unit": "NOT_SPECIFIED"
         }
       }
-    ],
-    "property": []
+    ]
   },
   {
     "name": "Timer",
@@ -400,7 +477,30 @@
           "unit": "SECOND"
         }
       }
+    ]
+  },
+  {
+    "name": "Mobile Sensor",
+    "description": "Sensors from other devices that send the value via IoT platform such as\n- Blynk's Proximity Light\n- Blynk's Accelerometer",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
     ],
-    "property": []
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
   }
 ]

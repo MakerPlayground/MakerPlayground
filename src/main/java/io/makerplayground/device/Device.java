@@ -39,9 +39,6 @@ public class Device {
     private final String url;
     private final double width;
     private final double height;
-    private final double v;
-    private final double i;
-    private final double w;
     private final Dependency dependency;
     private final Dependency category;
     private final String mpLibrary;
@@ -50,6 +47,7 @@ public class Device {
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
     private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+    private final CloudPlatform cloudPlatform;
     private final String pioBoardId;
 
     private final List<DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
@@ -63,7 +61,8 @@ public class Device {
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition;  // action support for each generic device
     private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
-
+    private final Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform;          // optional value for microcontroller
+    private final List<Property> property;
 
     //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
     // or an amplifier for a thermistor
@@ -75,14 +74,13 @@ public class Device {
      * @param brand           brand of this device ex. Sparkfun
      * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
      * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
-     * @param supportedAction
-     * @param supportedValue
      */
     Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, String pioBoardId
             , FormFactor formFactor
             , String mpLibrary
             , List<String> externalLibrary
             , Set<Platform> supportedPlatform
+            , CloudPlatform cloudPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
             , Map<GenericDevice, Integer> supportedDevice
@@ -91,9 +89,8 @@ public class Device {
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
             , Dependency dependency
             , Dependency category
-            , double v
-            , double i
-            , double w ) {
+            , List<Property> property
+            , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -106,6 +103,7 @@ public class Device {
         this.mpLibrary = mpLibrary;
         this.externalLibrary = externalLibrary;
         this.supportedPlatform = supportedPlatform;
+        this.cloudPlatform = cloudPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
         this.supportedDevice = supportedDevice;
@@ -113,22 +111,9 @@ public class Device {
         this.supportedCondition = supportedCondition;
         this.supportedValue = supportedValue;
         this.dependency = dependency;
-        this.v = v;
-        this.i = i;
-        this.w = w;
         this.category = category;
-    }
-
-    public double getV() {
-        return v;
-    }
-
-    public double getI() {
-        return i;
-    }
-
-    public double getW() {
-        return w;
+        this.property = Collections.unmodifiableList(property);
+        this.supportedCloudPlatform = supportedCloudPlatform;
     }
 
     public Dependency getCategory() {
@@ -190,30 +175,36 @@ public class Device {
         return supportedPlatform;
     }
 
-    public String getMpLibrary() {
-        return mpLibrary;
+    public CloudPlatform getCloudPlatform() {
+        return cloudPlatform;
     }
 
-    public String getSourceToInclude() {
-        return this.getMpLibrary()+".h";
+    public String getMpLibrary() {
+        return mpLibrary;
     }
 
     public List<String> getExternalLibrary() {
         return externalLibrary;
     }
 
-    /*public String getMPLibraryName() {
-        for (String s : sourceToInclude) {
-            if (s.startsWith("MP_")) {
-                return s;
+    public List<Property> getProperty() { return property; }
+
+    public Property getProperty(String name) {
+        for (Property p : property) {
+            if (p.getName().equals(name)) {
+                return p;
             }
         }
         return null;
-    }*/
+    }
 
-    /*public String getSuggestedInstanceName() {
-        return getMPLibraryName().substring(3);
-    }*/
+    public String getCloudPlatformLibraryName(CloudPlatform cloudPlatform) {
+        return supportedCloudPlatform.get(cloudPlatform).getClassName();
+    }
+
+    public List<String> getCloudPlatformLibraryDependency(CloudPlatform cloudPlatform) {
+        return supportedCloudPlatform.get(cloudPlatform).getDependency();
+    }
 
     public List<DevicePort> getPort() {
         return port;
@@ -298,12 +289,14 @@ public class Device {
                 ", deviceType=" + deviceType +
                 ", formFactor=" + formFactor +
                 ", supportedPlatform=" + supportedPlatform +
+                ", cloudPlatform=" + cloudPlatform +
                 ", port=" + port +
                 ", connectivity=" + connectivity +
                 ", supportedDevice=" + supportedDevice +
                 ", supportedAction=" + supportedAction +
                 ", supportedValue=" + supportedValue +
                 ", dependency=" + dependency +
+                ", property=" + property +
                 '}';
     }
 }
