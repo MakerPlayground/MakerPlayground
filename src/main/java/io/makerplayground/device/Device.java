@@ -223,17 +223,7 @@ public class Device {
     }
 
     public List<DevicePort> getPort(Peripheral peripheral) {
-        return port.stream().filter(new Predicate<DevicePort>() {
-            @Override
-            public boolean test(DevicePort devicePort) {
-                return devicePort.getFunction().stream().anyMatch(new Predicate<DevicePort.DevicePortFunction>() {
-                    @Override
-                    public boolean test(DevicePort.DevicePortFunction devicePortFunction) {
-                        return devicePortFunction.getPeripheral() == peripheral;
-                    }
-                });
-            }
-        }).collect(Collectors.toList());
+        return port.stream().filter(devicePort -> devicePort.hasPeripheral(peripheral)).collect(Collectors.toList());
     }
 
     public List<Peripheral> getConnectivity() {

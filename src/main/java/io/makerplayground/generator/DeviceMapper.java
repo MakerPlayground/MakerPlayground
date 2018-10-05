@@ -112,28 +112,46 @@ public class DeviceMapper {
             return result;
         }
 
-        // Get every port of the controller
-        List<DevicePort> processorPort = new ArrayList<>(project.getController().getPort());
+        // get every port of the controller
+        Set<DevicePort> processorPort = new HashSet<>(project.getController().getPort());
 
-        // remove port that has been used (manually by user)
+        // get list of ports that have been used
+        Set<DevicePort> usedPort = new HashSet<>();
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C) {
-                    processorPort.removeAll(projectDevice.getDeviceConnection().get(p));
+                    usedPort.addAll(projectDevice.getDeviceConnection().get(p));
                 }
-                // SPECIAL CASE 1: if both pin of D2 is used, D3 can't be used
-                if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
-                    if ((p == Peripheral.MP_GPIO_DUAL_1) || (p == Peripheral.MP_PWM_DUAL_1)) {
-                        for (DevicePort controllerPort : projectDevice.getDeviceConnection().get(p)) {
-                            for (DevicePort.DevicePortFunction function : controllerPort.getFunction()) {
-                                if ((function.getPeripheral() == Peripheral.MP_GPIO_DUAL_2) || (function.getPeripheral() == Peripheral.MP_PWM_DUAL_2)) {
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_GPIO_SINGLE_3));
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_GPIO_DUAL_3));
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_PWM_SINGLE_3));
-                                    processorPort.removeAll(project.getController().getPort(Peripheral.MP_PWM_DUAL_3));
-                                }
-                            }
-                        }
+            }
+        }
+
+        // get list of port that conflict to the used port i.e. the used port can't be used if this port is being used
+        Map<ProjectDevice, Set<DevicePort>> conflictIfUsedPortMap = new HashMap<>();
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
+                if (p.getConnectionType() != ConnectionType.I2C) {
+                    List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
+                    Set<DevicePort> conflictIfUsedPort = processorPort.stream()
+                            .filter(devicePort -> ports.stream().anyMatch(devicePort::isConflictedTo))
+                            .collect(Collectors.toSet());
+                    conflictIfUsedPortMap.put(projectDevice, conflictIfUsedPort);
+                }
+            }
+        }
+
+        // get list of port that the used port conflict to i.e. port that can't be used if this used port is being used
+        Map<ProjectDevice, Set<DevicePort>> conflictPortMap = new HashMap<>();
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (Peripheral devicePeripheral : projectDevice.getDeviceConnection().keySet()) {
+                List<DevicePort> controllerPort = projectDevice.getDeviceConnection().get(devicePeripheral);
+                for (DevicePort port : controllerPort) {
+                    List<Peripheral> conflictPeripheral = port.getConflictPeripheral(devicePeripheral);
+                    if (!conflictPeripheral.isEmpty()) {
+                        conflictPortMap.put(projectDevice, new HashSet<>());
+                    }
+                    for (Peripheral p : conflictPeripheral) {
+                        processorPort.stream().filter(devicePort -> devicePort.hasPeripheral(p)).findFirst()
+                                .ifPresent(devicePort -> conflictPortMap.get(projectDevice).add(devicePort));
                     }
                 }
             }
@@ -162,29 +180,24 @@ public class DeviceMapper {
                     DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
                     possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
                 } else {
-                    for (DevicePort pPort : processorPort) {
-                        if (pPort.isSupport(pDevice)) {
-                            possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
+                    Set<DevicePort> possiblePort = new HashSet<>(processorPort);
+                    possiblePort.removeAll(usedPort);
+                    // remove port that the used port conflict to i.e. port that can't be used if this used port is being used
+                    for (ProjectDevice pd : conflictPortMap.keySet()) {
+                        if (pd != projectDevice) {
+                            possiblePort.removeAll(conflictPortMap.get(pd));
                         }
                     }
-                }
-            }
-
-            // SPECIAL CASE 2: try not to connect device using 2 pins to D2 as it will block D3
-            if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
-                for (Peripheral peripheral : possibleDevice.keySet()) {
-                    if ((peripheral == Peripheral.MP_GPIO_DUAL_1) || (peripheral == Peripheral.MP_PWM_DUAL_1)) {
-                        List<List<DevicePort>> port = possibleDevice.get(peripheral);
-                        for (int i = port.size() - 1; i >= 0; i--) {
-                            boolean needSwap = false;
-                            for (DevicePort.DevicePortFunction function : port.get(i).get(0).getFunction()) {
-                                if ((function.getPeripheral() == Peripheral.MP_GPIO_DUAL_2) || (function.getPeripheral() == Peripheral.MP_PWM_DUAL_2)) {
-                                    needSwap = true;
-                                }
-                            }
-                            if (needSwap) {
-                                port.add(port.remove(i));
-                            }
+                    // remove port that conflict to the used port i.e. the used port can't be used if this port is being used
+                    for (ProjectDevice pd : conflictIfUsedPortMap.keySet()) {
+                        if (pd != projectDevice) {
+                            possiblePort.removeAll(conflictIfUsedPortMap.get(pd));
+                        }
+                    }
+                    // for each port in the possible port list, add to the result if it supported
+                    for (DevicePort pPort : possiblePort) {
+                        if (pPort.isSupport(pDevice)) {
+                            possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
                         }
                     }
                 }
@@ -236,28 +249,9 @@ public class DeviceMapper {
             projectDevice.removeAllDeviceConnection();
         }
 
-        List<ProjectDevice> deviceList = new ArrayList<>(project.getAllDeviceUsed());
-
-        // SPECIAL CASE 3: connect MP_*_DUAL first
-        if (project.getController() != null && project.getController().getId().equals("MP-0000")) {
-            deviceList.sort((o1, o2) -> {
-                boolean b1 = o1.getActualDevice().getConnectivity().contains(Peripheral.MP_GPIO_DUAL_1)
-                        || o1.getActualDevice().getConnectivity().contains(Peripheral.MP_PWM_DUAL_1);
-                boolean b2 = o2.getActualDevice().getConnectivity().contains(Peripheral.MP_GPIO_DUAL_1)
-                        || o2.getActualDevice().getConnectivity().contains(Peripheral.MP_PWM_DUAL_1);
-                if (b1 == b2) {
-                    return 0;
-                } else if (b1) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            });
-        }
-
         Map<ProjectDevice, List<Device>> supportedDeviceMap = getSupportedDeviceList(project);
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
-        for (ProjectDevice projectDevice : deviceList) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // assign this device only if user selects auto
             if (projectDevice.isAutoSelectDevice()) {
                 //

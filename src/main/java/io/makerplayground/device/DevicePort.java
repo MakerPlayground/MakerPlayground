@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.PinType;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Palmn on 7/15/2017.
@@ -18,6 +21,7 @@ public class DevicePort {
     }
 
     private String name;
+    private List<String> alias;
     private Type type;
     private List<DevicePortFunction> function;
     private double vmin;
@@ -26,29 +30,55 @@ public class DevicePort {
     private double y;
 
     @JsonCreator
-    public DevicePort(@JsonProperty("name") String name, @JsonProperty("type")Type type
+    public DevicePort(@JsonProperty("name") String name, @JsonProperty("alias") List<String> alias, @JsonProperty("type")Type type
             , @JsonProperty("function") List<DevicePortFunction> function
             , @JsonProperty("v_min") double vmin, @JsonProperty("v_max") double vmax
             , @JsonProperty("x") double x, @JsonProperty("y") double y) {
         this.name = name;
+        this.alias = (alias == null) ? Collections.emptyList() : alias;
         this.type = type;
         this.function = function;
         this.vmin = vmin;
         this.vmax = vmax;
         this.x = x;
         this.y = y;
+
+        // Port shouldn't contain more than one function with identical type e.g. GPIO_1 and GPIO_2 or GROVE_GPIO_SINGLE_1 and GROVE_GPIO_SINGLE_2
+        // as it doesn't make sense and break our device mapping logic. Note that port can have multiple functions with different type
+        // e.g. GPIO_1 and PWM_1 or GROVE_GPIO_SINGLE_1 and GROVE_ANALOG_SINGLE_1
+        if (function.size() != function.stream().map(DevicePortFunction::getPeripheral).collect(Collectors.toSet()).size()) {
+            throw new IllegalStateException("Port shouldn't contain more than one function with identical type");
+        }
     }
 
     public String getName() {
         return name;
     }
 
+    public List<String> getAlias() {
+        return alias;
+    }
+
     public Type getType() {
         return type;
     }
 
-    public List<DevicePortFunction> getFunction() {
-        return function;
+    public boolean hasPeripheral(Peripheral peripheral) {
+        return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPeripheral() == peripheral);
+    }
+
+    public List<Peripheral> getConflictPeripheral(Peripheral peripheral) {
+        for (DevicePortFunction devicePortFunction : function) {
+            if (devicePortFunction.getPeripheral().getConnectionType() == peripheral.getConnectionType()) {
+                return devicePortFunction.getConflict();
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    public boolean isConflictedTo(DevicePort devicePort) {
+        return function.stream().flatMap(devicePortFunction -> devicePortFunction.getConflict().stream())
+                .anyMatch(devicePort::hasPeripheral);
     }
 
     public boolean isSupport(Peripheral p) {
@@ -111,18 +141,24 @@ public class DevicePort {
         return y;
     }
 
-    public static class DevicePortFunction {
+    private static class DevicePortFunction {
         private Peripheral peripheral;
+        private List<Peripheral> conflict;
         private PinType pinType;
 
         @JsonCreator
-        public DevicePortFunction(@JsonProperty("type") Peripheral peripheral, @JsonProperty("pintype") PinType pinType) {
+        public DevicePortFunction(@JsonProperty("type") Peripheral peripheral, @JsonProperty("conflict") List<Peripheral> conflict, @JsonProperty("pintype") PinType pinType) {
             this.peripheral = peripheral;
+            this.conflict = (conflict == null) ? Collections.emptyList() : conflict;
             this.pinType = pinType;
         }
 
         public Peripheral getPeripheral() {
             return peripheral;
+        }
+
+        public List<Peripheral> getConflict() {
+            return conflict;
         }
 
         public PinType getPinType() {
@@ -133,6 +169,7 @@ public class DevicePort {
         public String toString() {
             return "DevicePortFunction{" +
                     "peripheral=" + peripheral +
+                    ", conflict=" + conflict +
                     ", pinType=" + pinType +
                     '}';
         }
@@ -142,6 +179,7 @@ public class DevicePort {
     public String toString() {
         return "DevicePort{" +
                 "name='" + name + '\'' +
+                ", alias=" + alias +
                 ", type=" + type +
                 ", function=" + function +
                 ", vmin=" + vmin +

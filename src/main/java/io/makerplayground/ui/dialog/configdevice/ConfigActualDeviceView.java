@@ -21,9 +21,7 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends UndecoratedDialog {
@@ -280,9 +278,21 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                         }
                     });
                     if (!projectDevice.getDeviceConnection().isEmpty()) {
+                        // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
+                        portComboBox.getItems().add(1, Collections.emptyList());
                         portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
+                    } else {
+                        // add dummy value to allow the selected port to be cleared
+                        portComboBox.getItems().add(0, Collections.emptyList());
+                        portComboBox.getSelectionModel().select(Collections.emptyList());
                     }
-                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPeripheral(projectDevice, p, newValue));
+                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                        if (newValue.isEmpty()) {
+                            viewModel.clearPeripheral(projectDevice, p);
+                        } else {
+                            viewModel.setPeripheral(projectDevice, p, newValue);
+                        }
+                    });
                     portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
                     // TODO: handle other type (UART, SPI, etc.)

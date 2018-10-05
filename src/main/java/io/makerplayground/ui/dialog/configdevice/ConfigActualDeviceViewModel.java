@@ -128,6 +128,14 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
+    void clearPeripheral(ProjectDevice projectDevice, Peripheral peripheral) {
+        projectDevice.removeDeviceConnection(peripheral);
+        applyDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.call();
+        }
+    }
+
     Set<CloudPlatform> getCloudPlatformUsed() {
         return project.getCloudPlatformUsed();
     }

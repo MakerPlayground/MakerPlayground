@@ -16,23 +16,6 @@ public class SourcecodeGenerator {
     private static final String INDENT = "    ";
     private static final String NEW_LINE = "\n";
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    private static final Map<String, List<String>> MP_PORT_MAP = Map.ofEntries(
-            Map.entry("D1", List.of("3", "4")),
-            Map.entry("D2", List.of("5", "6")),
-            Map.entry("D3", List.of("6", "7")),
-            Map.entry("D4", List.of("9", "10")),
-            Map.entry("D5/A1", List.of("A0", "A1")),
-            Map.entry("D6/A2", List.of("A2", "A3")),
-            Map.entry("D7/A3", List.of("A4", "A5")),
-            Map.entry("D8/I2C1", List.of("11", "12")),
-            Map.entry("I2C0 (#1)", Collections.emptyList()),
-            Map.entry("I2C0 (#2)", Collections.emptyList()),
-            Map.entry("I2C (#1)", Collections.emptyList()),
-            Map.entry("I2C (#2)", Collections.emptyList()),
-            Map.entry("I2C (#3)", Collections.emptyList()),
-            Map.entry("I2C (#4)", Collections.emptyList()),
-            Map.entry("Internal", Collections.emptyList())
-    );
 
     private final Project project;
     private final boolean cppMode;
@@ -147,21 +130,13 @@ public class SourcecodeGenerator {
                         if (port == null) {
                             throw new IllegalStateException("Port hasn't been selected!!!");
                         }
-                        // SPECIAL CASE
-                        if (project.getPlatform() == Platform.MP_ARDUINO) {
-                            if (port.size() != 1) {
-                                throw new IllegalStateException();
+                        // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
+                        for (DevicePort devicePort : port) {
+                            if (!devicePort.getAlias().isEmpty()) {
+                                args.addAll(devicePort.getAlias());
+                            } else {
+                                args.add(devicePort.getName());
                             }
-                            List<String> portName = MP_PORT_MAP.get(port.get(0).getName());
-                            if (!portName.isEmpty()) {
-                                if (p.isMPDual()) {
-                                    args.addAll(portName);
-                                } else {
-                                    args.add(portName.get(0));
-                                }
-                            }
-                        } else {
-                            args.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
                         }
                     }
                 }
