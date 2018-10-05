@@ -202,6 +202,10 @@ public class Device {
         return null;
     }
 
+    public Set<CloudPlatform> getSupportedCloudPlatform() {
+        return supportedCloudPlatform.keySet();
+    }
+
     public String getCloudPlatformLibraryName(CloudPlatform cloudPlatform) {
         return supportedCloudPlatform.get(cloudPlatform).getClassName();
     }

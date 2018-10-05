@@ -212,7 +212,8 @@ public class DeviceMapper {
     public static List<Device> getSupportedController(Project project) {
         return DeviceLibrary.INSTANCE.getActualDevice().stream()
                 .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
-                        && (device.getSupportedPlatform().contains(project.getPlatform())))
+                        && (device.getSupportedPlatform().contains(project.getPlatform()))
+                        && (device.getSupportedCloudPlatform().containsAll(project.getCloudPlatformUsed())))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
