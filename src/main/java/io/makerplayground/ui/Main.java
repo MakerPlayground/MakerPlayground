@@ -274,7 +274,8 @@ public class Main extends Application {
         if (commPorts.length > 0) {
             for ( SerialPort port: commPorts){
                 MenuItem item = new MenuItem(port.getDescriptivePortName());
-                item.setOnAction(event -> openDeviceMonitor(port.getSystemPortName()));
+                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
+                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
                 deviceMonitorButton.getItems().add(item);
             }
         }
