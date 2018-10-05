@@ -94,14 +94,16 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
                             sb.delete(0, index + 1);
                             getFormatLog(msg).ifPresent(logItems -> Platform.runLater(() -> {
                                 if (onStatus.isSelected()) {
-                                    logData.add(logItems);
-                                    deviceMonitorTable.scrollTo(logItems);
+                                    logData.addAll(logItems);
+                                    deviceMonitorTable.scrollTo(logItems.get(logItems.size()-1));
                                 }
-                                if(!checkTagComboBox.getItems().contains(logItems.getDeviceName())){       // use deviceName from flash memory of serial port to generate device deviceName box
-                                    List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
-                                    checkTagComboBox.getItems().add(logItems.getDeviceName());
-                                    checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
-                                    checkTagComboBox.getCheckModel().check(logItems.getDeviceName());
+                                for (LogItems item: logItems) {
+                                    if(!checkTagComboBox.getItems().contains(item.getDeviceName())){       // use deviceName from flash memory of serial port to generate device deviceName box
+                                        List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
+                                        checkTagComboBox.getItems().add(item.getDeviceName());
+                                        checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
+                                        checkTagComboBox.getCheckModel().check(item.getDeviceName());
+                                    }
                                 }
                             }));
                         }
@@ -127,12 +129,16 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     }
 
     // Regex Function
-    private Optional<LogItems> getFormatLog(String rawLog) {
+    private Optional<List<LogItems>> getFormatLog(String rawLog) {
+        List<LogItems> logitems = new ArrayList<>();
         Matcher log = format.matcher(rawLog);
-        if (log.find()) {
-            return Optional.of(new LogItems(log.group(1).trim(), log.group(2), log.group(3)));
-        } else {
-            System.out.println("Not match");
+        while (log.find()) {
+            logitems.add(new LogItems(log.group(1), log.group(2), log.group(3)));
+        }
+        if (logitems.size() > 0) {
+            return Optional.of(logitems);
+        }
+        else {
             return Optional.empty();
         }
     }
@@ -165,7 +171,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
             static public LogLevel fromString(String levelTag) {
                 for (LogLevel level: LogLevel.values()) {
-                    if (level.levelTag.equals(levelTag)) {
+                    if (level.levelTag.equals(levelTag.trim())) {
                         return level;
                     }
                 }

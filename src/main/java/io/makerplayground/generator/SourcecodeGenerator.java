@@ -52,7 +52,7 @@ public class SourcecodeGenerator {
         builder.append(NEW_LINE);
 
         // macros needed for logging system
-        builder.append("#define MP_LOG_INTERVAL 3000").append(NEW_LINE);
+        builder.append("#define MP_LOG_INTERVAL 1000").append(NEW_LINE);
         builder.append("#define MP_LOG(device, name) Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); device.printStatus(); Serial.println('\\0');").append(NEW_LINE);
         builder.append("#define MP_ERR(device, name, status_code) Serial.print(F(\"[[ERROR]] \")); Serial.print(F(\"[[\")); Serial.print(F(name)); Serial.print(F(\"]] \")); Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(&(device.ERRORS[status_code])))); Serial.println('\\0');").append(NEW_LINE);
         if (project.getCloudPlatformUsed().size() > 0) {
