@@ -108,7 +108,7 @@ public enum Peripheral {
     MP_I2C_3(ConnectionType.MP_I2C),
     MP_I2C_4(ConnectionType.MP_I2C),
 
-    MP_I2C1_1(ConnectionType.MP_I2C),
+    MP_I2C1_1(ConnectionType.MP_I2C1),
 
     GROVE_GPIO_SINGLE_1(ConnectionType.GROVE_GPIO_SINGLE),
     GROVE_GPIO_SINGLE_2(ConnectionType.GROVE_GPIO_SINGLE),
@@ -212,8 +212,19 @@ public enum Peripheral {
     }
 
     public boolean isI2C1() {
-        switch (this) {
-            case MP_I2C1_1:
+        switch (this.getConnectionType()) {
+            case MP_I2C1:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isI2C() {
+        switch (this.getConnectionType()) {
+            case I2C:
+            case MP_I2C:
+            case GROVE_I2C:
                 return true;
             default:
                 return false;
