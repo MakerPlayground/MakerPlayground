@@ -54,8 +54,8 @@
     "description": "Virtual Gauge: displaying number/value in IoT dashboard",
     "action": [
       {
-        "name": "Set to",
-        "funcname": "setValue",
+        "name": "Display number",
+        "funcname": "setNumber",
         "type": "Active",
         "parameter": [
           {
@@ -72,25 +72,8 @@
         ]
       }
     ],
-    "condition": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Value",
-        "dataType": "DOUBLE",
-        "constraint": {
-          "min": -99999999.0,
-          "max": 99999999.0,
-          "unit": "NOT_SPECIFIED"
-        }
-      }
-    ]
+    "condition": [],
+    "value": []
   },
   {
     "name": "Container",
