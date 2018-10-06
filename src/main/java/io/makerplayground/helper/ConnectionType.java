@@ -26,6 +26,7 @@ public enum ConnectionType {
     MP_ANALOG_SINGLE,
     MP_ANALOG_DUAL,
     MP_I2C,
+    MP_I2C1,
 
     /* Grove */
     GROVE_GPIO_SINGLE,
