@@ -89,11 +89,15 @@ public enum Peripheral {
     MP_PWM_SINGLE_2(ConnectionType.MP_PWM_SINGLE),
     MP_PWM_SINGLE_3(ConnectionType.MP_PWM_SINGLE),
     MP_PWM_SINGLE_4(ConnectionType.MP_PWM_SINGLE),
+    MP_PWM_SINGLE_5(ConnectionType.MP_PWM_SINGLE),
+    MP_PWM_SINGLE_6(ConnectionType.MP_PWM_SINGLE),
 
     MP_PWM_DUAL_1(ConnectionType.MP_PWM_DUAL),
     MP_PWM_DUAL_2(ConnectionType.MP_PWM_DUAL),
     MP_PWM_DUAL_3(ConnectionType.MP_PWM_DUAL),
     MP_PWM_DUAL_4(ConnectionType.MP_PWM_DUAL),
+    MP_PWM_DUAL_5(ConnectionType.MP_PWM_DUAL),
+    MP_PWM_DUAL_6(ConnectionType.MP_PWM_DUAL),
 
     MP_ANALOG_SINGLE_1(ConnectionType.MP_ANALOG_SINGLE),
     MP_ANALOG_SINGLE_2(ConnectionType.MP_ANALOG_SINGLE),
