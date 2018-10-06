@@ -133,7 +133,11 @@ public class SourcecodeGenerator {
                         // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
                         for (DevicePort devicePort : port) {
                             if (!devicePort.getAlias().isEmpty()) {
-                                args.addAll(devicePort.getAlias());
+                                if (p.isDual()) {
+                                    args.addAll(devicePort.getAlias());
+                                } else if (p.isSingle()) {
+                                    args.add(devicePort.getAlias().get(0));
+                                }
                             } else {
                                 args.add(devicePort.getName());
                             }

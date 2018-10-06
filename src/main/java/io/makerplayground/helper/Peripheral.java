@@ -159,20 +159,41 @@ public enum Peripheral {
         return connectionType;
     }
 
+    public boolean isSingle() {
+        return isMPSingle() || isGroveSingle();
+    }
+
+    public boolean isMPSingle() {
+        switch (this.getConnectionType()) {
+            case MP_GPIO_SINGLE:
+            case MP_PWM_SINGLE:
+            case MP_ANALOG_SINGLE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isGroveSingle() {
+        switch (this.getConnectionType()) {
+            case GROVE_GPIO_SINGLE:
+            case GROVE_PWM_SINGLE:
+            case GROVE_ANALOG_SINGLE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isDual() {
+        return isMPDual() || isGroveDual();
+    }
+
     public boolean isMPDual() {
-       switch (this) {
-           case MP_GPIO_DUAL_1:
-           case MP_GPIO_DUAL_2:
-           case MP_GPIO_DUAL_3:
-           case MP_GPIO_DUAL_4:
-           case MP_GPIO_DUAL_5:
-           case MP_GPIO_DUAL_6:
-           case MP_PWM_DUAL_1:
-           case MP_PWM_DUAL_2:
-           case MP_PWM_DUAL_3:
-           case MP_PWM_DUAL_4:
-           case MP_ANALOG_DUAL_1:
-           case MP_ANALOG_DUAL_2:
+       switch (this.getConnectionType()) {
+           case MP_GPIO_DUAL:
+           case MP_PWM_DUAL:
+           case MP_ANALOG_DUAL:
                return true;
            default:
                return false;
@@ -180,20 +201,10 @@ public enum Peripheral {
     }
 
     public boolean isGroveDual() {
-        switch (this) {
-            case GROVE_GPIO_DUAL_1:
-            case GROVE_GPIO_DUAL_2:
-            case GROVE_GPIO_DUAL_3:
-            case GROVE_GPIO_DUAL_4:
-            case GROVE_GPIO_DUAL_5:
-            case GROVE_GPIO_DUAL_6:
-            case GROVE_GPIO_DUAL_7:
-            case GROVE_GPIO_DUAL_8:
-            case GROVE_GPIO_DUAL_9:
-            case GROVE_PWM_DUAL_1:
-            case GROVE_ANALOG_DUAL_1:
-            case GROVE_ANALOG_DUAL_2:
-            case GROVE_ANALOG_DUAL_3:
+        switch (this.getConnectionType()) {
+            case GROVE_GPIO_DUAL:
+            case GROVE_ANALOG_DUAL:
+            case GROVE_PWM_DUAL:
                 return true;
             default:
                 return false;
