@@ -104,7 +104,7 @@ public enum DeviceLibrary {
                 return genericDevice;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No generic device named " + name);
     }
 
     public List<GenericDevice> getGenericInputDevice() {
