@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum CloudPlatform {
     BLYNK("Blynk", List.of("Auth Key", "Wifi's SSID", "Wifi's Password"), "MP_BLYNK"),
-    NETPIE("Netpie", List.of("App Id", "Key", "Secret", "Alias", "Wifi's SSID", "Wifi's Password"), ""); // TODO: Add netpie
+    NETPIE("NETPIE", List.of("App Id", "Key", "Secret", "Alias", "Wifi's SSID", "Wifi's Password"), "MP_NETPIE");
 
     private final String displayName;
     private final List<String> parameter;
