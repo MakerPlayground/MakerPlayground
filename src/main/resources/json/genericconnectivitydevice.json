@@ -57,19 +57,7 @@
         "name": "On",
         "funcname": "on",
         "type": "Active",
-        "parameter": [
-          {
-            "name": "Brightness",
-            "value": 100.0,
-            "constraint": {
-              "min": 0.0,
-              "max": 100.0,
-              "unit": "PERCENT"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SLIDER"
-          }
-        ]
+        "parameter": []
       },
       {
         "name": "Off",
