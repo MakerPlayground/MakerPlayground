@@ -107,6 +107,12 @@ public class UploadTask extends Task<UploadResult> {
             externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
         }
 
+        // SPECIAL CASE: apply fixed for atmega328pb used in MakerPlayground Baseboard
+        if (project.getController().getPlatformIOBoardId().equals("atmega328pb")) {
+            externalLibraries.add("Wire");
+            externalLibraries.add("SPI");
+        }
+
         Platform.runLater(() -> log.set("List of library used \n"));
         for (String libName : mpLibraries) {
             Platform.runLater(() -> log.set(" - " + libName + "\n"));

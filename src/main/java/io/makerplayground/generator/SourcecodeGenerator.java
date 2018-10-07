@@ -624,7 +624,9 @@ public class SourcecodeGenerator {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            returnValue =  "constrain(" + expression.translateToCCode() + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
+            returnValue = "constrain(" + expression.translateToCCode() + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
+        } else if (expression instanceof SimpleStringExpression) {
+            returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else {
             throw new IllegalStateException();
         }
