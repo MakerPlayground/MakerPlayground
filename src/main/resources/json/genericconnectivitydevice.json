@@ -50,6 +50,38 @@
     ]
   },
   {
+    "name": "Virtual LED",
+    "description": "Virtual LED: displaying number/value in IoT dashboard",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Brightness",
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
+  },
+  {
     "name": "Virtual Gauge",
     "description": "Virtual Gauge: displaying number/value in IoT dashboard",
     "action": [

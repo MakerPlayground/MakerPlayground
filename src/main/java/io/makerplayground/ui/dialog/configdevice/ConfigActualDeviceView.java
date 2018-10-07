@@ -242,68 +242,73 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
             // We only show port combobox when the device has been selected
             Device actualDevice = projectDevice.getActualDevice();
-            if (actualDevice != null && actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
-                // loop for each peripheral
-                for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
-                    if (combo.get(p) == null)
-                        continue;
+            if (actualDevice != null) {
+                if ( !actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty() ) {
+                    viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
+                }
+                else {
+                    // loop for each peripheral
+                    for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
+                        if (combo.get(p) == null)
+                            continue;
 
-                    ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
-                    portComboBox.setId("portComboBox");
-                    portComboBox.setCellFactory(new Callback<>() {
-                        @Override
-                        public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
-                            return new ListCell<>() {
-                                @Override
-                                protected void updateItem(List<DevicePort> item, boolean empty) {
-                                    super.updateItem(item, empty);
-                                    if (empty) {
-                                        setText("");
-                                    } else {
-                                        setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                        ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
+                        portComboBox.setId("portComboBox");
+                        portComboBox.setCellFactory(new Callback<>() {
+                            @Override
+                            public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
+                                return new ListCell<>() {
+                                    @Override
+                                    protected void updateItem(List<DevicePort> item, boolean empty) {
+                                        super.updateItem(item, empty);
+                                        if (empty) {
+                                            setText("");
+                                        } else {
+                                            setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                                        }
                                     }
-                                }
-                            };
-                        }
-                    });
-                    portComboBox.setButtonCell(new ListCell<>() {
-                        @Override
-                        protected void updateItem(List<DevicePort> item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setText("");
-                            } else {
-                                setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                                };
                             }
-                        }
-                    });
-                    if (!projectDevice.getDeviceConnection().isEmpty()) {
-                        // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
-                        portComboBox.getItems().add(1, Collections.emptyList());
-                        portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-                    } else {
-                        // add dummy value to allow the selected port to be cleared
-                        portComboBox.getItems().add(0, Collections.emptyList());
-                        portComboBox.getSelectionModel().select(Collections.emptyList());
-                    }
-                    portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue.isEmpty()) {
-                            viewModel.clearPeripheral(projectDevice, p);
+                        });
+                        portComboBox.setButtonCell(new ListCell<>() {
+                            @Override
+                            protected void updateItem(List<DevicePort> item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setText("");
+                                } else {
+                                    setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+                                }
+                            }
+                        });
+                        if (!projectDevice.getDeviceConnection().isEmpty()) {
+                            // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
+                            portComboBox.getItems().add(1, Collections.emptyList());
+                            portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
                         } else {
-                            viewModel.setPeripheral(projectDevice, p, newValue);
+                            // add dummy value to allow the selected port to be cleared
+                            portComboBox.getItems().add(0, Collections.emptyList());
+                            portComboBox.getSelectionModel().select(Collections.emptyList());
                         }
-                    });
-                    portComboBox.disableProperty().bind(checkBox.selectedProperty());
+                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                            if (newValue.isEmpty()) {
+                                viewModel.clearPeripheral(projectDevice, p);
+                            } else {
+                                viewModel.setPeripheral(projectDevice, p, newValue);
+                            }
+                        });
+                        portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
-                    // TODO: handle other type (UART, SPI, etc.)
-                    String portName;
-                    if (p.getConnectionType() == ConnectionType.I2C) {
-                        portName = "I2C";
-                    } else {
-                        portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                        // TODO: handle other type (UART, SPI, etc.)
+                        String portName;
+                        if (p.getConnectionType() == ConnectionType.I2C) {
+                            portName = "I2C";
+                        } else {
+                            portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                        }
+
+                        portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                     }
-
-                    portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                 }
             }
             entireComboBoxDevice.getChildren().add(portComboBoxHbox);

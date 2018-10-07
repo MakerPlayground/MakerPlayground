@@ -57,7 +57,7 @@ public class GenerateView extends UndecoratedDialog {
         Platform platform = viewModel.getProject().getPlatform();
         if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO || platform == Platform.ESP32) {
             wiringDiagram = new Diagram(viewModel.getProject());
-        } else if (platform == Platform.MP_ARDUINO) {
+        } else if (platform == Platform.MP_ARDUINO || platform == Platform.MP_ESP32) {
             wiringDiagram = new MPDiagram(viewModel.getProject());
         } else {
             throw new IllegalStateException("Found unsupported platform(" + platform + ")");
