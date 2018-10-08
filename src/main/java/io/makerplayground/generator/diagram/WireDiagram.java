@@ -1,4 +1,4 @@
-package io.makerplayground.generator;
+package io.makerplayground.generator.diagram;
 
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by tanyagorn on 7/17/2017.
  */
-public class Diagram extends Pane {
+public class WireDiagram extends Pane {
     private static final double BREADBOARD_TOP_MARGIN = 100;
     private static final double BREADBOARD_LEFT_MARGIN = 30;
     private static final double BREADBOARD_WIDTH = 936.48;
@@ -64,7 +64,7 @@ public class Diagram extends Pane {
     private Position controllerPosition;
     private Map<ProjectDevice, Position> deviceTopLeftPos;
 
-    public Diagram(Project project) {
+    public WireDiagram(Project project) {
         this.project = project;
         initDiagram();
     }

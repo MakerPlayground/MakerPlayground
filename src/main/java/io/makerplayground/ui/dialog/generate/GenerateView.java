@@ -1,8 +1,6 @@
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.generator.Diagram;
-import io.makerplayground.generator.MPDiagram;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.generator.diagram.WiringDiagram;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -53,15 +51,7 @@ public class GenerateView extends UndecoratedDialog {
     }
 
     private void initView() {
-        Pane wiringDiagram;
-        Platform platform = viewModel.getProject().getPlatform();
-        if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO || platform == Platform.ESP32) {
-            wiringDiagram = new Diagram(viewModel.getProject());
-        } else if (platform == Platform.MP_ARDUINO || platform == Platform.MP_ESP32) {
-            wiringDiagram = new MPDiagram(viewModel.getProject());
-        } else {
-            throw new IllegalStateException("Found unsupported platform(" + platform + ")");
-        }
+        Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
 
         diagramScrollPane.setContent(wiringDiagram);
         codeTextArea.setText(viewModel.getCode());

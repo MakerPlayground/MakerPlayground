@@ -1,4 +1,4 @@
-package io.makerplayground.generator;
+package io.makerplayground.generator.diagram;
 
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.FormFactor;
@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-public class MPDiagram extends Pane {
+public class MPArduinoDiagram extends Pane {
     private static final Point2D BASEBOARD_CENTER_POSITION = new Point2D(500, 400);
     private static final Map<String, Point2D> WIRE_POSITION = Map.ofEntries(
             Map.entry("D1", new Point2D(248, 433)),
@@ -55,7 +55,7 @@ public class MPDiagram extends Pane {
     private static final List<String> LEFT_PORT_NAME = List.of("D1", "D2", "D3", "D4", "D5/A1");
     private static final List<String> RIGHT_PORT_NAME = List.of("D6/A2", "I2C (#1)", "I2C (#2)", "I2C (#3)", "I2C (#4)", "D7/A3", "D8/I2C1", "I2C0 (#1)", "I2C0 (#2)");
 
-    public MPDiagram(Project project) {
+    public MPArduinoDiagram(Project project) {
         setPrefSize(1000, 600);
 
         // draw all devices
@@ -82,10 +82,10 @@ public class MPDiagram extends Pane {
 
             // draw wire
             if (!controllerPortName.equals("Internal")) {
-                String wireImageFilaname = "/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png";
-                InputStream wireImageStream = getClass().getResourceAsStream(wireImageFilaname);
+                String wireImageFileName = "/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png";
+                InputStream wireImageStream = getClass().getResourceAsStream(wireImageFileName);
                 if (wireImageStream == null) {
-                    throw new IllegalStateException("Image not found: " + wireImageFilaname);
+                    throw new IllegalStateException("Image not found: " + wireImageFileName);
                 }
                 ImageView wireImageView = new ImageView(new Image(wireImageStream));
                 wireImageView.setLayoutX(WIRE_POSITION.get(controllerPortName).getX());
