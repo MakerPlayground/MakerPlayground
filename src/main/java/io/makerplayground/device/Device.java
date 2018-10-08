@@ -17,6 +17,7 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.makerplayground.generator.diagram.WiringMethod;
 import io.makerplayground.helper.*;
 
 import java.util.*;
@@ -49,6 +50,7 @@ public class Device {
     private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
     private final CloudPlatform cloudPlatform;
     private final String pioBoardId;
+    private final WiringMethod wiringMethod;
 
     private final List<DevicePort> port;     // port names with their function ex. "0" : {"UART1": "RX", "GPIO_1": "INOUT"}
     // and port position and type ex. WIRE, GROOVE_3PIN
@@ -77,7 +79,9 @@ public class Device {
      * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
      * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
      */
-    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType, String pioBoardId
+    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType
+            , String pioBoardId
+            , WiringMethod wiringMethod
             , FormFactor formFactor
             , String mpLibrary
             , List<String> externalLibrary
@@ -102,6 +106,7 @@ public class Device {
         this.height = height;
         this.deviceType = deviceType;
         this.pioBoardId = pioBoardId;
+        this.wiringMethod = wiringMethod;
         this.formFactor = formFactor;
         this.mpLibrary = mpLibrary;
         this.externalLibrary = externalLibrary;
@@ -171,6 +176,10 @@ public class Device {
         return pioBoardId;
     }
 
+    public WiringMethod getWiringMethod() {
+        return wiringMethod;
+    }
+
     public FormFactor getFormFactor() {
         return formFactor;
     }
@@ -201,6 +210,7 @@ public class Device {
         }
         return null;
     }
+
 
     public Set<CloudPlatform> getSupportedCloudPlatform() {
         return supportedCloudPlatform.keySet();

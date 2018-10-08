@@ -2,6 +2,7 @@ package io.makerplayground.generator.diagram;
 
 import io.makerplayground.device.Device;
 import io.makerplayground.device.DevicePort;
+import io.makerplayground.device.IntegratedDevice;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * Created by tanyagorn on 7/17/2017.
  */
-public class WireDiagram extends Pane {
+public class WireAndBreadboardDiagram extends Pane {
     private static final double BREADBOARD_TOP_MARGIN = 100;
     private static final double BREADBOARD_LEFT_MARGIN = 30;
     private static final double BREADBOARD_WIDTH = 936.48;
@@ -64,7 +65,7 @@ public class WireDiagram extends Pane {
     private Position controllerPosition;
     private Map<ProjectDevice, Position> deviceTopLeftPos;
 
-    public WireDiagram(Project project) {
+    public WireAndBreadboardDiagram(Project project) {
         this.project = project;
         initDiagram();
     }
@@ -128,6 +129,9 @@ public class WireDiagram extends Pane {
         int maxHeight = 0;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedDevice) {
+                continue;
+            }
             if (device.getFormFactor() == FormFactor.GROVE) {
                 continue;
             } else if (device.getFormFactor() == FormFactor.NONE) {
@@ -175,6 +179,9 @@ public class WireDiagram extends Pane {
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             lastX = BREADBOARD_LEFT_MARGIN;
             Device device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedDevice) {
+                continue;
+            }
             if (device.getFormFactor() == FormFactor.NONE) {
                 continue; // prevent the image file loading.
             }
@@ -256,6 +263,10 @@ public class WireDiagram extends Pane {
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
+
+            if (device instanceof IntegratedDevice) {
+                continue;
+            }
 
             if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                 for (DevicePort port : powerPort) {
@@ -454,6 +465,9 @@ public class WireDiagram extends Pane {
         // connect SPI, UART, PWM, GPIO, ...
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Device device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedDevice) {
+                continue;
+            }
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
                 // TODO: add description for grove device
                 // skip if this is a grove device

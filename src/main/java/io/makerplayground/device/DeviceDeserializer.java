@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import io.makerplayground.generator.diagram.WiringMethod;
 import io.makerplayground.helper.*;
 
 import java.io.IOException;
@@ -54,12 +55,18 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 new TypeReference<List<String>>() {});
 
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
+        WiringMethod wiringMethod = null;
         String pioBoardId = "";
         if (type == DeviceType.CONTROLLER) {
             if (node.has("pio_boardid")) {
                 pioBoardId = node.get("pio_boardid").asText();
             } else {
                 throw new IllegalStateException("Missing field 'pio_boardid' for device id = " + id);
+            }
+            if (node.has("wiring_method")) {
+                wiringMethod = WiringMethod.valueOf(node.get("wiring_method").asText());
+            } else {
+                throw new IllegalStateException("Missing field 'wiring_method' for device id = " + id);
             }
         }
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
@@ -121,7 +128,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             }
         }
 
-        return new Device(id, brand, model, url, width, height, type, pioBoardId, formFactor, mpLibrary, externalLibrary,
+        return new Device(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, mpLibrary, externalLibrary,
                 platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
                 supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform, integratedDevices);
     }

@@ -12,7 +12,7 @@ public class IntegratedDevice extends Device {
     public IntegratedDevice(String model, String mpLibrary, List<String> externalLibrary, List<DevicePort> port, List<Peripheral> connectivity
             , Map<GenericDevice, Integer> supportedDevice, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition, Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
-        super("", "", model, "", 0, 0, DeviceType.INTEGRATED, "", FormFactor.NONE
+        super("", "", model, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
                 , mpLibrary, externalLibrary, Collections.emptySet(), null, port, connectivity, supportedDevice
                 , supportedAction, supportedCondition, supportedValue, null, null, Collections.emptyList()
                 , Collections.emptyMap(), Collections.emptyList());

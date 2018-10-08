@@ -1,6 +1,5 @@
 package io.makerplayground.generator.diagram;
 
-import io.makerplayground.helper.Platform;
 import io.makerplayground.project.Project;
 import javafx.scene.layout.Pane;
 
@@ -8,13 +7,20 @@ public class WiringDiagram {
 
     public static Pane make(Project project) {
         Pane wiringDiagram;
-        Platform platform = project.getPlatform();
-        if (platform == Platform.ARDUINO || platform == Platform.GROVE_ARDUINO || platform == Platform.ESP32) {
-            wiringDiagram = new WireDiagram(project);
-        } else if (platform == Platform.MP_ARDUINO || platform == Platform.MP_ESP32) {
-            wiringDiagram = new MPArduinoDiagram(project);
-        } else {
-            throw new IllegalStateException("Found unsupported platform(" + platform + ")");
+        switch(project.getController().getWiringMethod()) {
+            case GROVE:
+            case WIRE_AND_BREADBOARD:
+            case KIDBRIGHT:
+                wiringDiagram = new WireAndBreadboardDiagram(project);
+                break;
+            case MP_HEXAGON:
+                wiringDiagram = new MPArduinoDiagram(project);
+                break;
+//            case MP_SQUARE:
+//                wiringDiagram = new MPSquareDiagram(project);
+//                break;
+            default:
+                throw new IllegalStateException("Wiring method not found");
         }
         return wiringDiagram;
     }
