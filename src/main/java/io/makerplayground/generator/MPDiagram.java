@@ -82,9 +82,10 @@ public class MPDiagram extends Pane {
 
             // draw wire
             if (!controllerPortName.equals("Internal")) {
-                InputStream wireImageStream = getClass().getResourceAsStream("/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png");
+                String wireImageFilaname = "/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png";
+                InputStream wireImageStream = getClass().getResourceAsStream(wireImageFilaname);
                 if (wireImageStream == null) {
-                    throw new IllegalStateException("Image not found");
+                    throw new IllegalStateException("Image not found: " + wireImageFilaname);
                 }
                 ImageView wireImageView = new ImageView(new Image(wireImageStream));
                 wireImageView.setLayoutX(WIRE_POSITION.get(controllerPortName).getX());
