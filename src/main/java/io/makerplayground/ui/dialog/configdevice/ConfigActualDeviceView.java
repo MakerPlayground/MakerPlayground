@@ -406,6 +406,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             cloudPlatformParameterSection.setManaged(true);
 
             int currentRow = 0;
+            cloudPlatformParameterPane.getChildren().clear();
             for (CloudPlatform cloudPlatform : viewModel.getCloudPlatformUsed()) {
                 ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + cloudPlatform.getDisplayName() + ".png")));

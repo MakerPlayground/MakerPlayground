@@ -49,7 +49,7 @@
                 <VBox fx:id="cloudPlatformParameterSection" spacing="20">
                     <Separator />
                     <HBox>
-                        <Label id="unusedLabel" text="Additional Settings" />
+                        <Label id="additionalLabel" text="Additional Settings" />
                     </HBox>
                     <GridPane fx:id="cloudPlatformParameterPane" vgap="10" hgap="10">
                     </GridPane>
