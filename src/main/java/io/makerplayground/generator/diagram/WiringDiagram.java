@@ -14,7 +14,7 @@ public class WiringDiagram {
                 wiringDiagram = new WireAndBreadboardDiagram(project);
                 break;
             case MP_HEXAGON:
-                wiringDiagram = new MPArduinoDiagram(project);
+                wiringDiagram = new MPHexagonDiagram(project);
                 break;
 //            case MP_SQUARE:
 //                wiringDiagram = new MPSquareDiagram(project);

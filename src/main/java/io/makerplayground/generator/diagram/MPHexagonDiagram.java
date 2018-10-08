@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-public class MPArduinoDiagram extends Pane {
+public class MPHexagonDiagram extends Pane {
     private static final Point2D BASEBOARD_CENTER_POSITION = new Point2D(500, 400);
     private static final Map<String, Point2D> WIRE_POSITION = Map.ofEntries(
             Map.entry("D1", new Point2D(248, 433)),
@@ -55,7 +55,7 @@ public class MPArduinoDiagram extends Pane {
     private static final List<String> LEFT_PORT_NAME = List.of("D1", "D2", "D3", "D4", "D5/A1");
     private static final List<String> RIGHT_PORT_NAME = List.of("D6/A2", "I2C (#1)", "I2C (#2)", "I2C (#3)", "I2C (#4)", "D7/A3", "D8/I2C1", "I2C0 (#1)", "I2C0 (#2)");
 
-    public MPArduinoDiagram(Project project) {
+    public MPHexagonDiagram(Project project) {
         setPrefSize(1000, 600);
 
         // draw all devices
@@ -82,7 +82,7 @@ public class MPArduinoDiagram extends Pane {
 
             // draw wire
             if (!controllerPortName.equals("Internal")) {
-                String wireImageFileName = "/device/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png";
+                String wireImageFileName = "/wiring/MP_HEXAGON/MP_WIRE_" + controllerPortName.replace('/', '-') + ".png";
                 InputStream wireImageStream = getClass().getResourceAsStream(wireImageFileName);
                 if (wireImageStream == null) {
                     throw new IllegalStateException("Image not found: " + wireImageFileName);
@@ -108,7 +108,7 @@ public class MPArduinoDiagram extends Pane {
                         deviceImageView.setRotate(-90);
                         deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
                     } else {
-                        throw new IllegalStateException("Invalid port");
+//                        throw new IllegalStateException("Invalid port");
                     }
                     deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
                             - deviceImage.getWidth() / 2.0);
