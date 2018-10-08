@@ -16,9 +16,9 @@ public class WiringDiagram {
             case MP_HEXAGON:
                 wiringDiagram = new MPHexagonDiagram(project);
                 break;
-//            case MP_SQUARE:
-//                wiringDiagram = new MPSquareDiagram(project);
-//                break;
+            case MP_RECTANGLE:
+                wiringDiagram = new MPRectangleDiagram(project);
+                break;
             default:
                 throw new IllegalStateException("Wiring method not found");
         }
