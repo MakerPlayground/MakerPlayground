@@ -677,5 +677,38 @@
         }
       }
     ]
+  },
+  {
+    "name": "Flow Sensor",
+    "description": "A sensor that detects the water flow",
+    "action": [],
+    "condition": [
+      {
+        "name": "Detect Water Flow",
+        "funcname": "isWaterFlow",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Total Water Amount",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 1000000.0,
+          "unit": "MILLILITER"
+        }
+      },
+      {
+        "name": "Flow Rate",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "MILLILITERPERSECOND"
+        }
+      }
+    ]
   }
 ]
