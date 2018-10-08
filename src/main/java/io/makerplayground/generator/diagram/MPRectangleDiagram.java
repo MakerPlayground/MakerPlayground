@@ -28,8 +28,8 @@ public class MPRectangleDiagram extends Pane {
             Map.entry("D4", new Point2D(295, 499.5)),
             Map.entry("D5", new Point2D(295, 404.5)),
             Map.entry("D6", new Point2D(295, 308.5)),
-            Map.entry("A1", new Point2D(510, 4)),
-            Map.entry("A2", new Point2D(510, 4)),
+            Map.entry("A1", new Point2D(449.5, 210)),
+            Map.entry("A2", new Point2D(550.5, 210)),
             Map.entry("I2C (#1)", new Point2D(705, 308.5)),
             Map.entry("I2C (#2)", new Point2D(705, 404.5))
     );
@@ -40,8 +40,8 @@ public class MPRectangleDiagram extends Pane {
             Map.entry("D4", new Point2D(250, 509)),
             Map.entry("D5", new Point2D(250, 395)),
             Map.entry("D6", new Point2D(250, 280)),
-            Map.entry("A1", new Point2D(510, 4)),
-            Map.entry("A2", new Point2D(510, 4)),
+            Map.entry("A1", new Point2D(440, 165)),
+            Map.entry("A2", new Point2D(560, 165)),
             Map.entry("I2C (#1)", new Point2D(750, 280)),
             Map.entry("I2C (#2)", new Point2D(750, 395))
     );
@@ -106,18 +106,18 @@ public class MPRectangleDiagram extends Pane {
                     ImageView deviceImageView = new ImageView(deviceImage);
                     if (LEFT_PORT_NAME.contains(controllerPortName)) {
                         deviceImageView.setRotate(90);
-                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2)
+                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
                                 - deviceImage.getHeight());
                         deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
                                 - deviceImage.getWidth() / 2.0);
                     } else if (RIGHT_PORT_NAME.contains(controllerPortName)) {
                         deviceImageView.setRotate(-90);
-                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2 - deviceImage.getWidth() / 2));
+                        deviceImageView.setLayoutX(devicePosition.getX() + (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0));
                         deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
                                 - deviceImage.getWidth() / 2.0);
                     } else if (TOP_PORT_NAME.contains(controllerPortName)) {
-                        deviceImageView.setLayoutX(devicePosition.getX());
-                        deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0));
+                        deviceImageView.setLayoutX(devicePosition.getX() - deviceImage.getWidth() / 2.0);
+                        deviceImageView.setLayoutY(devicePosition.getY() - deviceImage.getHeight());
                     } else {
                         throw new IllegalStateException("Invalid port");
                     }
