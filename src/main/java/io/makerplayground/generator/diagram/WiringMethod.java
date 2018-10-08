@@ -4,6 +4,6 @@ public enum WiringMethod {
     WIRE_AND_BREADBOARD,
     GROVE,
     MP_HEXAGON,
-    MP_SQUARE,
+    MP_RECTANGLE,
     KIDBRIGHT
 }
