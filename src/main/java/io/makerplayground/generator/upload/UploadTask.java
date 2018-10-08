@@ -25,7 +25,12 @@ public class UploadTask extends Task<UploadResult> {
     private final Project project;
     private final ReadOnlyStringWrapper log;
 
+    // workspace directory for storing generated project folder
     private final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
+    // program installation directory
+    private final String MP_INSTALLDIR = new File("").getAbsoluteFile().getParentFile().getPath();
+    // platformio home directory for storing compilers and tools for each platform
+    private final String MP_PLATFORMIO_HOMEDIR = MP_INSTALLDIR + File.separator + "platformio";
 
     public UploadTask(Project project) {
         this.project = project;
@@ -63,12 +68,19 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0.15, 1);
 
         /* check platformio installation */
-        Optional<String> pythonPath = checkPlatformio();
+        Optional<String> pythonPath = getPythonPath();
         if (!pythonPath.isPresent()) {
-            updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
+            updateMessage("Error: Can't find python with valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
         Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
+
+        boolean hasIntegratedPioLibrary = new File(MP_PLATFORMIO_HOMEDIR).exists();
+        if (hasIntegratedPioLibrary) {
+            Platform.runLater(() -> log.set("Using integrated platformio dependencies at " + MP_PLATFORMIO_HOMEDIR + "\n"));
+        } else {
+            Platform.runLater(() -> log.set("Using default platformio dependencies folder (~/.platformio) \n"));
+        }
 
         /* Library List Preparing */
         updateProgress(0.25, 1);
@@ -129,6 +141,9 @@ public class UploadTask extends Task<UploadResult> {
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init"
                     , "--board", project.getController().getPlatformIOBoardId());
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
+            if (hasIntegratedPioLibrary) {
+                builder.environment().put("PLATFORMIO_HOME_DIR", MP_PLATFORMIO_HOMEDIR);
+            }
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -205,6 +220,9 @@ public class UploadTask extends Task<UploadResult> {
         try {
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "upload");
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
+            if (hasIntegratedPioLibrary) {
+                builder.environment().put("PLATFORMIO_HOME_DIR", MP_PLATFORMIO_HOMEDIR);
+            }
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -258,11 +276,11 @@ public class UploadTask extends Task<UploadResult> {
     }
 
     /**
-     * check whether platformio has been install in this system
-     * @return path to valid python or Optional.empty()
+     * Get path to python with usable platformio installation
+     * @return path to valid python installation or Optional.empty()
      */
-    private Optional<String> checkPlatformio() {
-        List<String> path = List.of(MP_WORKSPACE + File.separator + "python-2.7.13" + File.separator + "python"      // integrated python for windows version
+    private Optional<String> getPythonPath() {
+        List<String> path = List.of(MP_INSTALLDIR + File.separator + "python-2.7.13" + File.separator + "python"      // integrated python for windows version
                                     , "python"                  // python in user's system path
                                     , "/usr/bin/python");       // internal python of macOS and Linux which is used by platformio installation script
 
