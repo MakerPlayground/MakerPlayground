@@ -116,6 +116,7 @@ public class MPRectangleDiagram extends Pane {
                         deviceImageView.setLayoutY(devicePosition.getY() - (deviceImage.getHeight() / 2.0 - deviceImage.getWidth() / 2.0)
                                 - deviceImage.getWidth() / 2.0);
                     } else if (TOP_PORT_NAME.contains(controllerPortName)) {
+                        deviceImageView.setRotate(180);
                         deviceImageView.setLayoutX(devicePosition.getX() - deviceImage.getWidth() / 2.0);
                         deviceImageView.setLayoutY(devicePosition.getY() - deviceImage.getHeight());
                     } else {
