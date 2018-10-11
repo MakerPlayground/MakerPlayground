@@ -18,8 +18,8 @@ package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.device.Parameter;
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 

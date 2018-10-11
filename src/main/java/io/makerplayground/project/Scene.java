@@ -17,7 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.Parameter;
+import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.Observable;
 import javafx.beans.property.*;

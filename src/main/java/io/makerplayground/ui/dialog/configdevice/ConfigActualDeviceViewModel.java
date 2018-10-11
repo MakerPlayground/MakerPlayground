@@ -16,12 +16,13 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.CloudPlatform;
-import io.makerplayground.device.ActualDevice;
-import io.makerplayground.device.DevicePort;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.Peripheral;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.device.actual.Peripheral;
+import io.makerplayground.device.actual.Platform;
+import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.dialog.devicepane.devicepanel.Callback;
@@ -37,7 +38,7 @@ public class ConfigActualDeviceViewModel {
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
-    private DeviceMapper.DeviceMapperResult deviceMapperResult;
+    private DeviceMapperResult deviceMapperResult;
     private Callback platformChangedCallback;
     private Callback controllerChangedCallback;
     private Callback deviceConfigChangedCallback;
@@ -51,7 +52,7 @@ public class ConfigActualDeviceViewModel {
 
     private void applyDeviceMapping() {
         deviceMapperResult = DeviceMapper.autoAssignDevices(project);
-        if (deviceMapperResult == DeviceMapper.DeviceMapperResult.OK ) {
+        if (deviceMapperResult == DeviceMapperResult.OK ) {
             compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
             compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
         } else {
@@ -76,7 +77,7 @@ public class ConfigActualDeviceViewModel {
         this.deviceConfigChangedCallback = null;
     }
 
-    DeviceMapper.DeviceMapperResult getDeviceMapperResult() {
+    DeviceMapperResult getDeviceMapperResult() {
         return deviceMapperResult;
     }
 

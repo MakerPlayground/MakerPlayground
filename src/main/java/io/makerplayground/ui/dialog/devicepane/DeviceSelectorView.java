@@ -17,7 +17,7 @@
 package io.makerplayground.ui.dialog.devicepane;
 
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

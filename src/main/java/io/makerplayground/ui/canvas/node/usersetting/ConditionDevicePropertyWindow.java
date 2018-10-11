@@ -16,10 +16,13 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.*;
-import io.makerplayground.helper.ControlType;
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;

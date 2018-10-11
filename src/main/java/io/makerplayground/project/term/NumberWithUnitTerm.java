@@ -16,7 +16,7 @@
 
 package io.makerplayground.project.term;
 
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.NumberWithUnit;
 
 import java.text.DecimalFormat;
 

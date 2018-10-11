@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.NumberWithUnit;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.HBox;
 

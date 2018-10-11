@@ -18,7 +18,9 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.Platform;
+import io.makerplayground.device.generic.GenericDevice;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

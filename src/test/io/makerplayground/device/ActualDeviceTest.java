@@ -1,6 +1,11 @@
 package io.makerplayground.device;
 
-import io.makerplayground.helper.Unit;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -17,8 +17,8 @@
 package io.makerplayground.ui.dialog.devicepane.devicepanel;
 
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
-import io.makerplayground.helper.Platform;
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;

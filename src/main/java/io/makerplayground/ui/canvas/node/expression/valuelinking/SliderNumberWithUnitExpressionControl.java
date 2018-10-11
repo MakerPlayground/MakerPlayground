@@ -16,9 +16,9 @@
 
 package io.makerplayground.ui.canvas.node.expression.valuelinking;
 
-import io.makerplayground.device.Parameter;
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.ui.canvas.node.expression.NumberWithUnitExpressionControl;

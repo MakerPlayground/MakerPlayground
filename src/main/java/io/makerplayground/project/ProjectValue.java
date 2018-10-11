@@ -17,7 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.Value;
+import io.makerplayground.device.shared.Value;
 
 @JsonSerialize(using = ProjectValueSerializer.class)
 public class ProjectValue {

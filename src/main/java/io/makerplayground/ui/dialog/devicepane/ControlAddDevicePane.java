@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui.dialog.devicepane;
 
-import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.generic.GenericDevice;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;

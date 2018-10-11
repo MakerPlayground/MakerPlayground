@@ -16,12 +16,12 @@
 
 package io.makerplayground.generator.diagram;
 
-import io.makerplayground.device.ActualDevice;
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.IntegratedActualDevice;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.FormFactor;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.IntegratedActualDevice;
+import io.makerplayground.device.actual.ConnectionType;
+import io.makerplayground.device.actual.FormFactor;
+import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.image.Image;

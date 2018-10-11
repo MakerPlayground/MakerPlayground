@@ -1,7 +1,7 @@
 package io.makerplayground.project.term;
 
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

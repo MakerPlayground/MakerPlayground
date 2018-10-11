@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui.canvas.node.expression.custom;
 
-import io.makerplayground.helper.NumberWithUnit;
-import io.makerplayground.helper.Unit;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;

@@ -16,10 +16,10 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.Action;
-import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Parameter;
-import io.makerplayground.device.Value;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ObjectProperty;

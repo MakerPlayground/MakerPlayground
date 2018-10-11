@@ -16,9 +16,9 @@
 
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.helper.ConnectionType;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.ConnectionType;
+import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.helper.SingletonDeviceURL;
 import io.makerplayground.project.ProjectDevice;
 import javafx.event.ActionEvent;

@@ -17,11 +17,11 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.ActualDevice;
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.GenericDevice;
-import io.makerplayground.device.Property;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.Peripheral;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

@@ -16,9 +16,11 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.*;
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.helper.*;
+import io.makerplayground.device.actual.*;
+import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
@@ -163,14 +165,14 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     private void initDeviceControl() {
         usedDevice.getChildren().clear();
         unusedDevicePane.getChildren().clear();
-        DeviceMapper.DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
-        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+        DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
+        if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
             usedDevice.getChildren().add(new Label("Controller hasn't been selected"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+        } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
             usedDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+        } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
             usedDevice.getChildren().add(new Label("Can't find any supported device"));
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.OK){
+        } else if (mappingResult == DeviceMapperResult.OK){
             initDeviceControlChildren();
             initUnusedDeviceControl();
             initCloudPlatformPropertyControl();

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.makerplayground.device.Parameter;
-import io.makerplayground.device.Value;
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.term.*;
 import io.makerplayground.project.expression.*;
 

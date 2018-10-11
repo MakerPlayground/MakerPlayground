@@ -20,9 +20,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.Property;
-import io.makerplayground.helper.Peripheral;
+import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.Peripheral;
 
 import java.io.IOException;
 import java.util.List;

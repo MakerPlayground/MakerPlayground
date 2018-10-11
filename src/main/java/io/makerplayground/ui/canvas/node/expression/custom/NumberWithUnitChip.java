@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.expression.custom;
 
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.term.NumberWithUnitTerm;
 import io.makerplayground.project.term.Term;
 import javafx.fxml.FXML;

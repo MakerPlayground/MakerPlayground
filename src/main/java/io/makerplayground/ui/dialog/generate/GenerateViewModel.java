@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.generator.Sourcecode;
+import io.makerplayground.generator.source.SourcecodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.collections.FXCollections;
@@ -27,10 +27,10 @@ import javafx.collections.ObservableList;
  */
 public class GenerateViewModel {
     private final Project project;
-    private final Sourcecode code;
+    private final SourcecodeResult code;
     private final ObservableList<TableDataList> observableTableList;
 
-    public GenerateViewModel(Project project, Sourcecode code) {
+    public GenerateViewModel(Project project, SourcecodeResult code) {
         this.project = project;
         this.code = code;
 

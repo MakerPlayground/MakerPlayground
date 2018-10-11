@@ -17,7 +17,7 @@
 package io.makerplayground.ui.dialog.devicepane;
 
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.GenericDevice;
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.Project;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;

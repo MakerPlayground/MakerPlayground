@@ -17,9 +17,11 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.*;
-import io.makerplayground.helper.DataType;
-import io.makerplayground.helper.NumberWithUnit;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;

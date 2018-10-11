@@ -17,7 +17,18 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
-import io.makerplayground.helper.*;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.IntegratedActualDevice;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.device.actual.ConnectionType;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.actual.DeviceType;
+import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
@@ -231,10 +242,6 @@ public class DeviceMapper {
                         && (device.getSupportedPlatform().contains(project.getPlatform()))
                         && (device.getSupportedCloudPlatform().containsAll(project.getCloudPlatformUsed())))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
-    }
-
-    public enum DeviceMapperResult {
-        OK, NOT_ENOUGH_PORT, NO_SUPPORT_DEVICE, NO_MCU_SELECTED
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {

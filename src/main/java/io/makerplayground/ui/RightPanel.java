@@ -17,9 +17,10 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.Sourcecode;
-import io.makerplayground.generator.SourcecodeGenerator;
-import io.makerplayground.generator.UploadTask;
+import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.source.SourcecodeResult;
+import io.makerplayground.generator.source.SourcecodeGenerator;
+import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.helper.SingletonUploadClick;
 import io.makerplayground.helper.SingletonWiringDiagram;
 import io.makerplayground.project.Project;
@@ -79,25 +80,25 @@ class RightPanel extends VBox {
 
     @FXML
     private void handleGenerateBtn(ActionEvent event) {
-        DeviceMapper.DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-        if (mappingResult == DeviceMapper.DeviceMapperResult.NO_MCU_SELECTED) {
+        DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
+        if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
             ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Controller hasn't been selected");
             errorDialogView.show();
             return;
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NOT_ENOUGH_PORT) {
+        } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
             ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Not enough port");
             errorDialogView.show();
             return;
-        } else if (mappingResult == DeviceMapper.DeviceMapperResult.NO_SUPPORT_DEVICE) {
+        } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
             ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Can't find any support device");
             errorDialogView.show();
             return;
-        } else if (mappingResult != DeviceMapper.DeviceMapperResult.OK) {
+        } else if (mappingResult != DeviceMapperResult.OK) {
             throw new IllegalStateException("Found unknown error!!!");
         }
 
-        Sourcecode code = SourcecodeGenerator.generateCode(project, true);
-        if (code.getError() != null) {
+        SourcecodeResult code = SourcecodeGenerator.generateCode(project, true);
+        if (code.hasError()) {
             ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), code.getError().getDescription());
             errorDialogView.show();
         } else {

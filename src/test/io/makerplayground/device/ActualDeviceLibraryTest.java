@@ -1,7 +1,6 @@
 package io.makerplayground.device;
 
-import io.makerplayground.helper.Platform;
-import org.junit.jupiter.api.BeforeEach;
+import io.makerplayground.device.actual.Platform;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
