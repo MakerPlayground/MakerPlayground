@@ -1,7 +1,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.Device;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Property;
@@ -22,9 +22,9 @@ public class ProjectDevice {
     private StringProperty name;
     private final GenericDevice genericDevice;
     private boolean autoSelectDevice;
-    private Device actualDevice;
+    private ActualDevice actualDevice;
     private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
-    private Device dependentDevice;
+    private ActualDevice dependentDevice;
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
     private Map<Property, String> propertyValue;  // property needed by the actual device
 
@@ -39,8 +39,8 @@ public class ProjectDevice {
         this.propertyValue = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, Device actualDevice, Map<Peripheral
-            , List<DevicePort>> deviceConnection, Device dependentDevice, Map<Peripheral
+    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, ActualDevice actualDevice, Map<Peripheral
+            , List<DevicePort>> deviceConnection, ActualDevice dependentDevice, Map<Peripheral
             , List<DevicePort>> dependentDeviceConnection, Map<Property, String> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
@@ -76,11 +76,11 @@ public class ProjectDevice {
         this.autoSelectDevice = autoSelectDevice;
     }
 
-    public Device getActualDevice() {
+    public ActualDevice getActualDevice() {
         return actualDevice;
     }
 
-    public void setActualDevice(Device actualDevice) {
+    public void setActualDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;
     }
 
@@ -103,11 +103,11 @@ public class ProjectDevice {
         this.deviceConnection.clear();
     }
 
-    public Device getDependentDevice() {
+    public ActualDevice getDependentDevice() {
         return dependentDevice;
     }
 
-//    public void setDependentDevice(Device dependentDevice) {
+//    public void setDependentDevice(ActualDevice dependentDevice) {
 //        this.dependentDevice = dependentDevice;
 //    }
 

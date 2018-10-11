@@ -38,7 +38,7 @@ public enum DeviceLibrary {
     private List<GenericDevice> genericInputDevice;
     private List<GenericDevice> genericOutputDevice;
     private List<GenericDevice> genericConnectivityDevice;
-    private List<Device> actualDevice;
+    private List<ActualDevice> actualDevice;
 
     DeviceLibrary() {
     }
@@ -63,15 +63,15 @@ public enum DeviceLibrary {
         return temp;
     }
 
-    private List<Device> loadActualDeviceList(){
-        List<Device> temp = new ArrayList<>();
+    private List<ActualDevice> loadActualDeviceList(){
+        List<ActualDevice> temp = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("library/devices"))){
             for (Path deviceDirectory : directoryStream) {
                 if(Files.isDirectory(deviceDirectory)){
                     try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
                         for(Path deviceDefinitionFile: dev){
-                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(),new TypeReference<Device>() {}));
+                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(),new TypeReference<ActualDevice>() {}));
                         }
                     }
                 }
@@ -119,17 +119,17 @@ public enum DeviceLibrary {
         return genericConnectivityDevice;
     }
 
-    public List<Device> getActualDevice() {
+    public List<ActualDevice> getActualDevice() {
         return actualDevice;
     }
 
-    public List<Device> getActualDevice(Platform platform) {
+    public List<ActualDevice> getActualDevice(Platform platform) {
         return actualDevice.stream().filter(device -> device.getSupportedPlatform().contains(platform))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
-    public Device getActualDevice(String id) {
-        for (Device device : actualDevice) {
+    public ActualDevice getActualDevice(String id) {
+        for (ActualDevice device : actualDevice) {
             if (device.getId().equals(id)) {
                 return device;
             }
@@ -149,7 +149,7 @@ public enum DeviceLibrary {
 //            tmpInputDevice.put(actualDevice, Collections.emptyList());
 //        }
 
-//        Device d = new Device("Sparkfun", "Sparkdun Redboard", "http://www.ss"
+//        ActualDevice d = new ActualDevice("Sparkfun", "Sparkdun Redboard", "http://www.ss"
 //                , Collections.singletonMap(new GenericDevice("led",
 //                Arrays.asList(new Action("on", Arrays.asList(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER)))), Collections.emptyList())
 //                , Collections.singletonMap(new Action("on", Arrays.asList(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER)))

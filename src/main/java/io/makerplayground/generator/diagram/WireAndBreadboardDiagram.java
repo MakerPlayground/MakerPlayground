@@ -1,8 +1,8 @@
 package io.makerplayground.generator.diagram;
 
-import io.makerplayground.device.Device;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.device.DevicePort;
-import io.makerplayground.device.IntegratedDevice;
+import io.makerplayground.device.IntegratedActualDevice;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.FormFactor;
 import io.makerplayground.helper.Peripheral;
@@ -92,7 +92,7 @@ public class WireAndBreadboardDiagram extends Pane {
 
         // draw controller
         lastY += CONTROLLER_Y_MARGIN;
-        Device controller = project.getController();
+        ActualDevice controller = project.getController();
         ImageView controllerImage = null;
         if(useGrove()){
             String controllerFilename = "/device/Seeed-103030000.png";
@@ -128,8 +128,8 @@ public class WireAndBreadboardDiagram extends Pane {
         int deviceCount = 0;
         int maxHeight = 0;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            Device device = projectDevice.getActualDevice();
-            if (device instanceof IntegratedDevice) {
+            ActualDevice device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedActualDevice) {
                 continue;
             }
             if (device.getFormFactor() == FormFactor.GROVE) {
@@ -178,8 +178,8 @@ public class WireAndBreadboardDiagram extends Pane {
         // draw grove devices
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             lastX = BREADBOARD_LEFT_MARGIN;
-            Device device = projectDevice.getActualDevice();
-            if (device instanceof IntegratedDevice) {
+            ActualDevice device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedActualDevice) {
                 continue;
             }
             if (device.getFormFactor() == FormFactor.NONE) {
@@ -261,10 +261,10 @@ public class WireAndBreadboardDiagram extends Pane {
 
         // connect power for other devices excepts grove
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            Device device = projectDevice.getActualDevice();
+            ActualDevice device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
 
-            if (device instanceof IntegratedDevice) {
+            if (device instanceof IntegratedActualDevice) {
                 continue;
             }
 
@@ -416,7 +416,7 @@ public class WireAndBreadboardDiagram extends Pane {
             }
 
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-                Device device = projectDevice.getActualDevice();
+                ActualDevice device = projectDevice.getActualDevice();
                 double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
                 for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
                     if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlike -> sourcePeripheral.getConnectionType() == ConnectionType.I2C
@@ -464,8 +464,8 @@ public class WireAndBreadboardDiagram extends Pane {
 
         // connect SPI, UART, PWM, GPIO, ...
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            Device device = projectDevice.getActualDevice();
-            if (device instanceof IntegratedDevice) {
+            ActualDevice device = projectDevice.getActualDevice();
+            if (device instanceof IntegratedActualDevice) {
                 continue;
             }
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
@@ -594,7 +594,7 @@ public class WireAndBreadboardDiagram extends Pane {
         return 0;
     }
 
-    private int calculateNumberOfHole(Device device) {
+    private int calculateNumberOfHole(ActualDevice device) {
         DevicePort leftPort = device.getPort().stream().min(Comparator.comparingDouble(DevicePort::getX)).get();
         int leftPaddingHoleCount = (int) Math.ceil(leftPort.getX() / HOLE_SPACE);
         DevicePort rightPort = device.getPort().stream().max(Comparator.comparingDouble(DevicePort::getX)).get();
@@ -602,7 +602,7 @@ public class WireAndBreadboardDiagram extends Pane {
         return leftPaddingHoleCount + device.getPort().size() + rightPaddingHoldCount;
     }
 
-    private double calculateNumberOfHoleBottomWing(Device device) {
+    private double calculateNumberOfHoleBottomWing(ActualDevice device) {
         DevicePort topLeftPort = getTopLeftHole(device);
         int bottomPaddingHoleCount = (int) Math.ceil((device.getHeight() - topLeftPort.getY()) / HOLE_SPACE);
         return (bottomPaddingHoleCount * HOLE_SPACE);
@@ -613,14 +613,14 @@ public class WireAndBreadboardDiagram extends Pane {
         return rightPaddingHoleCount;
     }
 
-    private int calculateNumberOfHoleWithoutLeftWing(Device device) {
+    private int calculateNumberOfHoleWithoutLeftWing(ActualDevice device) {
         DevicePort leftPort = device.getPort().stream().min(Comparator.comparingDouble(DevicePort::getX)).get();
         DevicePort rightPort = device.getPort().stream().max(Comparator.comparingDouble(DevicePort::getX)).get();
         int rightPaddingHoldCount = (int) Math.ceil((device.getWidth() - rightPort.getX()) / HOLE_SPACE);
         return (int) ((rightPort.getX() - leftPort.getX()) / HOLE_SPACE) + 1 + rightPaddingHoldCount;
     }
 
-    private DevicePort getTopLeftHole(Device device) {
+    private DevicePort getTopLeftHole(ActualDevice device) {
         return device.getPort().stream().min((d1, d2) -> {
             if (d1.getX() < d2.getX())
                 return -1;
@@ -635,7 +635,7 @@ public class WireAndBreadboardDiagram extends Pane {
         }).get();
     }
 
-    private DevicePort getBottomLeftHole(Device device) {
+    private DevicePort getBottomLeftHole(ActualDevice device) {
         return device.getPort().stream().min((d1, d2) -> {
 //            if (d1.getX() < d2.getX())
 //                return -1;
@@ -661,7 +661,7 @@ public class WireAndBreadboardDiagram extends Pane {
         }).get();
     }
 
-    private void createLine(ProjectDevice source, DevicePort sourcePort, Device dest, DevicePort destPort) {
+    private void createLine(ProjectDevice source, DevicePort sourcePort, ActualDevice dest, DevicePort destPort) {
         double startX = 0, startY = 0;
         double endX = 0, endY = 0;
 

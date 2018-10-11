@@ -21,14 +21,13 @@ import io.makerplayground.generator.diagram.WiringMethod;
 import io.makerplayground.helper.*;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Represent an actual device/board ex. Arduino UNO, SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
  */
-@JsonDeserialize(using = DeviceDeserializer.class)
-public class Device {
+@JsonDeserialize(using = ActualDeviceDeserializer.class)
+public class ActualDevice {
 
     enum Dependency {
         SPEAKER, AMPLIFIER
@@ -66,7 +65,7 @@ public class Device {
     private final Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform;          // optional value for microcontroller
     private final List<Property> property;
 
-    private final List<IntegratedDevice> integratedDevices;
+    private final List<IntegratedActualDevice> integratedDevices;
 
     //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
     // or an amplifier for a thermistor
@@ -79,7 +78,7 @@ public class Device {
      * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
      * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
      */
-    Device(String id, String brand, String model, String url, double width, double height, DeviceType deviceType
+    ActualDevice(String id, String brand, String model, String url, double width, double height, DeviceType deviceType
             , String pioBoardId
             , WiringMethod wiringMethod
             , FormFactor formFactor
@@ -97,7 +96,7 @@ public class Device {
             , Dependency category
             , List<Property> property
             , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform
-            , List<IntegratedDevice> integratedDevices) {
+            , List<IntegratedActualDevice> integratedDevices) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -285,13 +284,13 @@ public class Device {
         return true;
     }
 
-    public List<IntegratedDevice> getIntegratedDevices() {
+    public List<IntegratedActualDevice> getIntegratedDevices() {
         return integratedDevices;
     }
 
     @Override
     public String toString() {
-        return "Device{" +
+        return "ActualDevice{" +
                 "id='" + id + '\'' +
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +

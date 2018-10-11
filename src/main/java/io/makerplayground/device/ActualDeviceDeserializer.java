@@ -16,18 +16,18 @@ import java.util.*;
 /**
  * Created by Nititorn on 7/7/2017.
  */
-public class DeviceDeserializer extends StdDeserializer<Device> {
+public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
 
-    public DeviceDeserializer() {
+    public ActualDeviceDeserializer() {
         this(null);
     }
 
-    public DeviceDeserializer(Class<Device> t) {
+    public ActualDeviceDeserializer(Class<ActualDevice> t) {
         super(t);
     }
 
     @Override
-    public Device deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
@@ -37,18 +37,18 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         String url = node.get("url").asText();
         double width = node.get("width").asDouble();
         double height = node.get("height").asDouble();
-        Device.Dependency dependency;
-        Device.Dependency category;
+        ActualDevice.Dependency dependency;
+        ActualDevice.Dependency category;
 
         if (node.get("dependency").asText().isEmpty())
             dependency = null;
         else
-            dependency = Device.Dependency.valueOf(node.get("dependency").asText());
+            dependency = ActualDevice.Dependency.valueOf(node.get("dependency").asText());
 
         if (node.get("category").asText().isEmpty())
             category = null;
         else
-            category = Device.Dependency.valueOf(node.get("category").asText());
+            category = ActualDevice.Dependency.valueOf(node.get("category").asText());
 
         String mpLibrary = node.get("classname").asText();
         List<String> externalLibrary = mapper.readValue(node.get("library_dependency").traverse(),
@@ -90,7 +90,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
         readCompatibilityField(mapper, node, supportedDevice, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue);
 
-        List<IntegratedDevice> integratedDevices = new ArrayList<>();
+        List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
         if (node.has("integrated_device")) {
             for (JsonNode deviceNode : node.get("integrated_device")) {
                 String integratedDeviceName = deviceNode.get("name").asText();
@@ -110,7 +110,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 readCompatibilityField(mapper, deviceNode, integratedSupportedDevice, integratedSupportedDeviceaction
                         , integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
 
-                integratedDevices.add(new IntegratedDevice(integratedDeviceName, integratedLibrary, integratedExternalLibrary, integratedPort, integratedConnectivity
+                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary, integratedExternalLibrary, integratedPort, integratedConnectivity
                         , integratedSupportedDevice, integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
             }
         }
@@ -128,7 +128,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
             }
         }
 
-        return new Device(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, mpLibrary, externalLibrary,
+        return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, mpLibrary, externalLibrary,
                 platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
                 supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform, integratedDevices);
     }

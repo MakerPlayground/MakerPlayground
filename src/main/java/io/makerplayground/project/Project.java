@@ -21,8 +21,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.device.CloudPlatform;
-import io.makerplayground.device.Device;
 import io.makerplayground.device.GenericDevice;
 import io.makerplayground.device.Value;
 import io.makerplayground.helper.Platform;
@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 public class Project {
     private StringProperty projectName;
     private ReadOnlyObjectWrapper<Platform> platform;
-    private ObjectProperty<Device> controller;
+    private ObjectProperty<ActualDevice> controller;
     private final ObservableList<ProjectDevice> sensor;
     private final ObservableList<ProjectDevice> actuator;
     private final ObservableList<ProjectDevice> virtual;
@@ -397,15 +397,15 @@ public class Project {
         return value;
     }
 
-    public Device getController() {
+    public ActualDevice getController() {
         return controller.get();
     }
 
-//    public ObjectProperty<Device> controllerProperty() {
+//    public ObjectProperty<ActualDevice> controllerProperty() {
 //        return controller;
 //    }
 
-    public void setController(Device controller) {
+    public void setController(ActualDevice controller) {
         this.controller.set(controller);
         // remove all port and actual device assignment when the controller is changed
         for (ProjectDevice projectDevice : getAllDevice()) {

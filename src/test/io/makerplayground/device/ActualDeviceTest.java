@@ -1,8 +1,6 @@
 package io.makerplayground.device;
 
-import io.makerplayground.helper.Platform;
 import io.makerplayground.helper.Unit;
-import jdk.jshell.spi.ExecutionControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +9,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DeviceTest {
+class ActualDeviceTest {
 
     /*
-        Device{
+        ActualDevice{
             id='MP-0001',
             brand='MakerPlayground',
             model='LED',
@@ -156,7 +154,7 @@ class DeviceTest {
         }
      */
 
-    private Device tester;
+    private ActualDevice tester;
     private DeviceLibrary library;
 
     @BeforeEach

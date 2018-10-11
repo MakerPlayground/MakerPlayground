@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DeviceLibraryTest {
+class ActualDeviceLibraryTest {
 
     private DeviceLibrary library = DeviceLibrary.INSTANCE;
 
-    DeviceLibraryTest() {
+    ActualDeviceLibraryTest() {
         library.loadDeviceFromJSON();
     }
 

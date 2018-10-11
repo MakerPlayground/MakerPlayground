@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Created by tanyagorn on 7/11/2017.
  */
 public class DeviceMapper {
-    public static Map<ProjectDevice, List<Device>> getSupportedDeviceList(Project project) {
+    public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
         for (ProjectDevice projectDevice : project.getAllDevice()) {
@@ -80,17 +80,17 @@ public class DeviceMapper {
 //            }
 //        }
 
-        List<Device> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform()));
+        List<ActualDevice> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform()));
         // append with integrated device of the current controller if existed
         if (project.getController() != null) {
             actualDevice.addAll(project.getController().getIntegratedDevices());
         }
 
         // Get the list of compatible device
-        Map<ProjectDevice, List<Device>> selectableDevice = new HashMap<>();
+        Map<ProjectDevice, List<ActualDevice>> selectableDevice = new HashMap<>();
         for (ProjectDevice device : tempMap.keySet()) {
             selectableDevice.put(device, new ArrayList<>());
-            for (Device d : actualDevice) {
+            for (ActualDevice d : actualDevice) {
                 if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {  // TODO: edit to filter platform
                     selectableDevice.get(device).add(d);
                 }
@@ -169,7 +169,7 @@ public class DeviceMapper {
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                if (projectDevice.getActualDevice() instanceof IntegratedDevice) {
+                if (projectDevice.getActualDevice() instanceof IntegratedActualDevice) {
                     // in case of an integrated device, possible port is only the port with the same name
                     processorPort.stream().filter(devicePort -> devicePort.getName().equals(projectDevice.getActualDevice().getPort(pDevice).get(0).getName()))
                             .findFirst().ifPresent(devicePort -> possibleDevice.get(pDevice).add(Collections.singletonList(devicePort)));
@@ -209,7 +209,7 @@ public class DeviceMapper {
         return result;
     }
 
-    public static List<Device> getSupportedController(Project project) {
+    public static List<ActualDevice> getSupportedController(Project project) {
         return DeviceLibrary.INSTANCE.getActualDevice().stream()
                 .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
                         && (device.getSupportedPlatform().contains(project.getPlatform()))
@@ -224,7 +224,7 @@ public class DeviceMapper {
     public static DeviceMapperResult autoAssignDevices(Project project) {
         // Auto select a controller if it hasn't been selected. If there aren't any supported MCU for the current platform, return error
         if (project.getController() == null) {
-            List<Device> supportController = getSupportedController(project);
+            List<ActualDevice> supportController = getSupportedController(project);
             if (supportController.isEmpty()) {
                 return DeviceMapperResult.NO_MCU_SELECTED;
             } else {
@@ -236,7 +236,7 @@ public class DeviceMapper {
             // Assign this device if only user check auto
             if (projectDevice.isAutoSelectDevice()) {
                 // Set actual device by selecting first element
-                Map<ProjectDevice, List<Device>> deviceList = getSupportedDeviceList(project);
+                Map<ProjectDevice, List<ActualDevice>> deviceList = getSupportedDeviceList(project);
                 if (deviceList.get(projectDevice).isEmpty()) {
                     return DeviceMapperResult.NO_SUPPORT_DEVICE;
                 }
@@ -250,7 +250,7 @@ public class DeviceMapper {
             projectDevice.removeAllDeviceConnection();
         }
 
-        Map<ProjectDevice, List<Device>> supportedDeviceMap = getSupportedDeviceList(project);
+        Map<ProjectDevice, List<ActualDevice>> supportedDeviceMap = getSupportedDeviceList(project);
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // assign this device only if user selects auto
@@ -262,9 +262,9 @@ public class DeviceMapper {
 
                 // try each support device until we find the one that works
                 boolean error = false;
-                for (Device device : supportedDeviceMap.get(projectDevice)) {
+                for (ActualDevice actualDevice : supportedDeviceMap.get(projectDevice)) {
                     projectDevice.removeAllDeviceConnection();
-                    projectDevice.setActualDevice(device);
+                    projectDevice.setActualDevice(actualDevice);
 
                     // set port to the first compatible port
                     error = false;

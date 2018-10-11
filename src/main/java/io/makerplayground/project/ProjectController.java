@@ -1,6 +1,6 @@
 package io.makerplayground.project;
 
-import io.makerplayground.device.Device;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.helper.Platform;
 
@@ -9,7 +9,7 @@ import io.makerplayground.helper.Platform;
  */
 public class ProjectController {
     private Platform platform;
-    private Device controller;
+    private ActualDevice controller;
 
     public ProjectController(Platform platform) {
         this.platform = platform;
@@ -17,7 +17,7 @@ public class ProjectController {
         this.controller = DeviceLibrary.INSTANCE.getActualDevice("MCU_1");
     }
 
-    ProjectController(Platform platform, Device controller) {
+    ProjectController(Platform platform, ActualDevice controller) {
         this.platform = platform;
         //this.controller = DeviceLibrary.INSTANCE.getActualDevice("DEV-13975");;
         this.controller = DeviceLibrary.INSTANCE.getActualDevice("MCU_1");
@@ -31,11 +31,11 @@ public class ProjectController {
         this.platform = platform;
     }
 
-    public Device getController() {
+    public ActualDevice getController() {
         return controller;
     }
 
-    public void setController(Device controller) {
+    public void setController(ActualDevice controller) {
         this.controller = controller;
     }
 }

@@ -4,7 +4,6 @@ import io.makerplayground.device.*;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.*;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.expression.SimpleStringExpression;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,7 +36,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
-    @FXML private ComboBox<Device> controllerComboBox;
+    @FXML private ComboBox<ActualDevice> controllerComboBox;
     @FXML private Label controllerName;
     @FXML private ImageView closeButton;
 
@@ -113,10 +112,10 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     private void initControllerControl() {
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
-            public ListCell<Device> call(ListView<Device> param) {
+            public ListCell<ActualDevice> call(ListView<ActualDevice> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(Device item, boolean empty) {
+                    protected void updateItem(ActualDevice item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText("");
@@ -129,7 +128,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         });
         controllerComboBox.setButtonCell(new ListCell<>() {
             @Override
-            protected void updateItem(Device item, boolean empty) {
+            protected void updateItem(ActualDevice item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
                     setText("");
@@ -186,14 +185,14 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             devicePic.getChildren().addAll(imageView, name);
 
             // combobox of selectable devices
-            ComboBox<Device> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            ComboBox<ActualDevice> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
             deviceComboBox.setId("deviceComboBox");
             deviceComboBox.setCellFactory(new Callback<>() {
                 @Override
-                public ListCell<Device> call(ListView<Device> param) {
+                public ListCell<ActualDevice> call(ListView<ActualDevice> param) {
                     return new ListCell<>() {
                         @Override
-                        protected void updateItem(Device item, boolean empty) {
+                        protected void updateItem(ActualDevice item, boolean empty) {
                             super.updateItem(item, empty);
                             if (empty) {
                                 setText("");
@@ -206,7 +205,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             });
             deviceComboBox.setButtonCell(new ListCell<>() {
                 @Override
-                protected void updateItem(Device item, boolean empty) {
+                protected void updateItem(ActualDevice item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
                         setText("");
@@ -241,7 +240,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
             // We only show port combobox when the device has been selected
-            Device actualDevice = projectDevice.getActualDevice();
+            ActualDevice actualDevice = projectDevice.getActualDevice();
             if (actualDevice != null) {
                 if ( !actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty() ) {
                     viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());

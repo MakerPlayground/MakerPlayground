@@ -1,7 +1,7 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.CloudPlatform;
-import io.makerplayground.device.Device;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.helper.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
@@ -79,7 +79,7 @@ public class UploadTask extends Task<UploadResult> {
         updateMessage("Preparing to generate project");
         String code = sourcecode.getCode();
 
-        List<Device> actualDevicesUsed = project.getAllDeviceUsed().stream()
+        List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
                 .map(projectDevice -> projectDevice.getActualDevice())
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));

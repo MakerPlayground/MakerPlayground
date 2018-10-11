@@ -1,7 +1,7 @@
 package io.makerplayground.ui.dialog.configdevice;
 
 import io.makerplayground.device.CloudPlatform;
-import io.makerplayground.device.Device;
+import io.makerplayground.device.ActualDevice;
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.helper.Peripheral;
@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class ConfigActualDeviceViewModel {
     private final Project project;
-    private final ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceList;
+    private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
     private DeviceMapper.DeviceMapperResult deviceMapperResult;
     private Callback platformChangedCallback;
@@ -64,7 +64,7 @@ public class ConfigActualDeviceViewModel {
         return deviceMapperResult;
     }
 
-    List<Device> getCompatibleDevice(ProjectDevice projectDevice) {
+    List<ActualDevice> getCompatibleDevice(ProjectDevice projectDevice) {
         return compatibleDeviceList.get().get(projectDevice);
     }
 
@@ -72,7 +72,7 @@ public class ConfigActualDeviceViewModel {
         return compatiblePortList.get().get(projectDevice);
     }
 
-    List<Device> getCompatibleControllerDevice() {
+    List<ActualDevice> getCompatibleControllerDevice() {
         return DeviceMapper.getSupportedController(project);
     }
 
@@ -88,7 +88,7 @@ public class ConfigActualDeviceViewModel {
         return project.getPlatform();
     }
 
-    void setController(Device device) {
+    void setController(ActualDevice device) {
         project.setController(device);
         applyDeviceMapping();
         if (controllerChangedCallback != null) {
@@ -96,11 +96,11 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    Device getSelectedController() {
+    ActualDevice getSelectedController() {
         return project.getController();
     }
 
-//    ObjectProperty<Map<ProjectDevice, List<Device>>> compatibleDeviceListProperty() {
+//    ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceListProperty() {
 //        return compatibleDeviceList;
 //    }
 //
@@ -108,7 +108,7 @@ public class ConfigActualDeviceViewModel {
 //        return compatiblePortList;
 //    }
 
-    void setDevice(ProjectDevice projectDevice, Device device) {
+    void setDevice(ProjectDevice projectDevice, ActualDevice device) {
         if (projectDevice.getActualDevice() != null) {
             projectDevice.removeAllDeviceConnection();
         }

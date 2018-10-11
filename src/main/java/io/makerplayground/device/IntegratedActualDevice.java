@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class IntegratedDevice extends Device {
-    public IntegratedDevice(String model, String mpLibrary, List<String> externalLibrary, List<DevicePort> port, List<Peripheral> connectivity
+public class IntegratedActualDevice extends ActualDevice {
+    public IntegratedActualDevice(String model, String mpLibrary, List<String> externalLibrary, List<DevicePort> port, List<Peripheral> connectivity
             , Map<GenericDevice, Integer> supportedDevice, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition, Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
         super("", "", model, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE

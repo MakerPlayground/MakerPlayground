@@ -52,7 +52,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             }
         }
 
-        Device controller = null;
+        ActualDevice controller = null;
         if (!node.get("controller").get("device").asText().isEmpty()) {
             controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
                     device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
@@ -339,13 +339,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 //        return new ProjectValue(device, value);
 //    }
 
-    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, Device controller) {
+    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
         boolean autoSelect = node.get("autoselect").asBoolean();
 
         String actualDeviceId = node.get("actualDevice").asText();
-        Device actualDevice = null;
+        ActualDevice actualDevice = null;
         if (!actualDeviceId.isEmpty()) {
             actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
         }
@@ -363,7 +363,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
 
         String dependentDeviceId = node.get("actualDevice").asText();
-        Device dependentDevice = null;
+        ActualDevice dependentDevice = null;
         if (!dependentDeviceId.isEmpty()) {
             dependentDevice = DeviceLibrary.INSTANCE.getActualDevice(dependentDeviceId);
         }
