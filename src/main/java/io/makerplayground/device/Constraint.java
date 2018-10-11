@@ -17,7 +17,6 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.makerplayground.helper.DataType;
 import io.makerplayground.helper.Unit;
 
 import java.util.List;

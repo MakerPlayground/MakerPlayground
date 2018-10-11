@@ -1,26 +1,36 @@
+/*
+ * Copyright (c) 2018. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.device.DevicePort;
 import io.makerplayground.helper.ConnectionType;
 import io.makerplayground.helper.Peripheral;
 import io.makerplayground.helper.SingletonDeviceURL;
-import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.ProjectDevice;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by USER on 20-Jul-17.
