@@ -1,10 +1,10 @@
 # IntelliJ IDEA Project
 .idea
 *.iml
-target/
+/target/
 
 # Generated project
-upload/
+/upload/
 
 # Compiled class file
 *.class

@@ -35,7 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SourcecodeGenerator {
+public class SourceCodeGenerator {
 
     private static final String INDENT = "    ";
     private static final String NEW_LINE = "\n";
@@ -50,7 +50,7 @@ public class SourcecodeGenerator {
     private final StringBuilder sceneFunctions = new StringBuilder();
     private boolean generateMapFunction;    // use for ValueLinkingExpression as Arduino built-in map function uses integer arithmetic
 
-    private SourcecodeGenerator(Project project, boolean cppMode) {
+    private SourceCodeGenerator(Project project, boolean cppMode) {
         this.project = project;
         this.cppMode = cppMode;
     }
@@ -378,26 +378,26 @@ public class SourcecodeGenerator {
         builder.append(sceneFunctions).append(NEW_LINE);
     }
 
-    public static SourcecodeResult generateCode(Project project, boolean cppMode) {
-        SourcecodeGenerator generator = new SourcecodeGenerator(project, cppMode);
+    public static SourceCodeResult generateCode(Project project, boolean cppMode) {
+        SourceCodeGenerator generator = new SourceCodeGenerator(project, cppMode);
         if (!generator.checkScene(project)) {
-            return new SourcecodeResult(SourceCodeError.SCENE_ERROR, "-");   // TODO: add location
+            return new SourceCodeResult(SourceCodeError.SCENE_ERROR, "-");   // TODO: add location
         }
         if (!generator.checkCondition(project)) {
-            return new SourcecodeResult(SourceCodeError.CONDITION_ERROR, "-");
+            return new SourceCodeResult(SourceCodeError.CONDITION_ERROR, "-");
         }
         if (!generator.checkDeviceProperty(project)) {
-            return new SourcecodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
+            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
         }
         if (!generator.checkDeviceAssignment(project)) {
-            return new SourcecodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
+            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
         }
 
         if (project.getCloudPlatformUsed().size() > 1) {
-            return new SourcecodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
+            return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
 
-        SourcecodeResult sourcecode = generator.generateCodeForSceneFunctions();
+        SourceCodeResult sourcecode = generator.generateCodeForSceneFunctions();
         if (sourcecode.hasError()) {
             return sourcecode;
         }
@@ -415,10 +415,10 @@ public class SourcecodeGenerator {
         generator.appendMapFunction();
         generator.appendExpressionFunction();
 
-        return new SourcecodeResult(generator.builder.toString());
+        return new SourceCodeResult(generator.builder.toString());
     }
 
-    private SourcecodeResult generateCodeForSceneFunctions() {
+    private SourceCodeResult generateCodeForSceneFunctions() {
         Queue<Scene> queue = new ArrayDeque<>();
 
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
@@ -435,15 +435,15 @@ public class SourcecodeGenerator {
                 visitedScene.add(s);
                 queue.add(s);
             } else {
-                return new SourcecodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
+                return new SourceCodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
             }
         } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
             SourceCodeError error = processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
             if (error != SourceCodeError.NONE) {
-                return new SourcecodeResult(error, "beginScene");
+                return new SourceCodeResult(error, "beginScene");
             }
         } else {
-            return new SourcecodeResult(SourceCodeError.NOT_FOUND_SCENE_OR_CONDITION, "beginScene");
+            return new SourceCodeResult(SourceCodeError.NOT_FOUND_SCENE_OR_CONDITION, "beginScene");
         }
         sceneFunctions.append("}").append(NEW_LINE);
 
@@ -524,12 +524,12 @@ public class SourcecodeGenerator {
                         queue.add(s);
                     }
                 } else {
-                    return new SourcecodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
+                    return new SourceCodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
                 }
             } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
                 SourceCodeError error = processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
                 if (error != SourceCodeError.NONE) {
-                    return new SourcecodeResult(error, currentScene.getName().replace(" ", "_"));
+                    return new SourceCodeResult(error, currentScene.getName().replace(" ", "_"));
                 }
             } else {
                 sceneFunctions.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
@@ -538,7 +538,7 @@ public class SourcecodeGenerator {
             // end of scene's function
             sceneFunctions.append("}").append(NEW_LINE);
         }
-        return new SourcecodeResult(SourceCodeError.NONE, "");
+        return new SourceCodeResult(SourceCodeError.NONE, "");
     }
 
     private SourceCodeError processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {

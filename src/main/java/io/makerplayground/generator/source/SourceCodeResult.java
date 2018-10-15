@@ -16,17 +16,17 @@
 
 package io.makerplayground.generator.source;
 
-public class SourcecodeResult {
+public class SourceCodeResult {
 
     private String code;
     private SourceCodeError error;
     private String location;
 
-    SourcecodeResult(String code) {
+    SourceCodeResult(String code) {
         this.code = code;
     }
 
-    SourcecodeResult(SourceCodeError error, String location) {
+    SourceCodeResult(SourceCodeError error, String location) {
         this.error = error;
         this.location = location;
     }
