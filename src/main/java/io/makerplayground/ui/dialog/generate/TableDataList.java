@@ -19,15 +19,9 @@ package io.makerplayground.ui.dialog.generate;
 import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.device.actual.ConnectionType;
 import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.helper.SingletonDeviceURL;
 import io.makerplayground.project.ProjectDevice;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Hyperlink;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,18 +74,18 @@ public class TableDataList {
 
     public Hyperlink getUrl() {
         Hyperlink link = new Hyperlink();
-        link.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                SingletonDeviceURL.getInstance().setAll(url);
-                Desktop desktop = Desktop.getDesktop();
-                try {
-                    desktop.browse(URI.create(url));
-                } catch (IOException ev) {
-                    ev.printStackTrace();
-                }
-            }
-        });
+//        link.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent e) {
+//                SingletonDeviceURL.getInstance().setAll(url);
+//                Desktop desktop = Desktop.getDesktop();
+//                try {
+//                    desktop.browse(URI.create(url));
+//                } catch (IOException ev) {
+//                    ev.printStackTrace();
+//                }
+//            }
+//        });
         link.setText(url);
         return link;
     }

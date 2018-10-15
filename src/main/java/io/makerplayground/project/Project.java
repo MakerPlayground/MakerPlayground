@@ -16,7 +16,6 @@
 
 package io.makerplayground.project;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -26,8 +25,6 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.actual.Platform;
-import io.makerplayground.helper.SingletonAddDevice;
-import io.makerplayground.helper.SingletonDelDevice;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -105,7 +102,6 @@ public class Project {
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         actuator.add(projectDevice);
-        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
     protected void addActuator(ProjectDevice device) {
@@ -130,8 +126,6 @@ public class Project {
         for (Scene s : scene) {
             s.removeDevice(device);
         }
-
-        SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
         return actuator.remove(device);
     }
 
@@ -149,7 +143,6 @@ public class Project {
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         sensor.add(projectDevice);
-        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
     protected void addSensor(ProjectDevice device) {
@@ -163,8 +156,6 @@ public class Project {
         for (Condition c : condition) {
             c.removeDevice(device);
         }
-
-        SingletonDelDevice.getInstance().setAll(device.getGenericDevice().getName(), "456");
         return sensor.remove(device);
     }
 
@@ -182,7 +173,6 @@ public class Project {
                 .orElse(0);
         ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
         virtual.add(projectDevice);
-        SingletonAddDevice.getInstance().setAll(device.getName(), "123");
     }
 
     protected void addVirtual(ProjectDevice device) {

@@ -21,8 +21,6 @@ import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.upload.UploadTask;
-import io.makerplayground.helper.SingletonUploadClick;
-import io.makerplayground.helper.SingletonWiringDiagram;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.ErrorDialogView;
 import io.makerplayground.ui.dialog.UploadDialogView;
@@ -102,7 +100,6 @@ class RightPanel extends VBox {
             ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), code.getError().getDescription());
             errorDialogView.show();
         } else {
-            SingletonWiringDiagram.getInstance().setOpenTime();
             GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
             GenerateView generateView = new GenerateView(getScene().getWindow(), generateViewModel);
             generateView.show();
@@ -111,7 +108,6 @@ class RightPanel extends VBox {
 
     @FXML
     private void handleUploadBtn(ActionEvent event) {
-        SingletonUploadClick.getInstance().click();
         UploadTask uploadTask = new UploadTask(project);
 
         UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);

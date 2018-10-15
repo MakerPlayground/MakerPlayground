@@ -16,9 +16,8 @@
 
 package io.makerplayground.ui.dialog;
 
-import io.makerplayground.generator.upload.UploadTask;
-import io.makerplayground.helper.SingletonError;
 import io.makerplayground.generator.upload.UploadResult;
+import io.makerplayground.generator.upload.UploadTask;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -107,7 +106,6 @@ public class UploadDialogView extends UndecoratedDialog {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Error-uploading.png")));
                 progress.setTextFill(Color.RED);
                 detailPane.setExpanded(true);
-                SingletonError.getInstance().setAll(progress.getText());
                 rt.stop();
             }
         });

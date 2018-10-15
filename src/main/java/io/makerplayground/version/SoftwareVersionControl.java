@@ -53,7 +53,7 @@ public class SoftwareVersionControl {
 
     @JsonCreator
     private SoftwareVersionControl(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version
-            , @JsonProperty("download_url") String downloadURL, @JsonProperty("release_date") Date releaseDate) {
+            , @JsonProperty("download_url") String downloadURL, @JsonProperty("release_date") java.util.Date releaseDate) {
         this.buildName = buildName;
         this.version = version;
         this.downloadURL = downloadURL;

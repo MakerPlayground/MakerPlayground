@@ -19,10 +19,6 @@ package io.makerplayground.ui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.helper.Singleton;
-import io.makerplayground.helper.SingletonConnectDB;
-import io.makerplayground.helper.SingletonTutorial;
-import io.makerplayground.helper.SingletonUtilTools;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UnsavedDialog;
@@ -35,9 +31,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -65,10 +59,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -108,8 +100,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        SingletonConnectDB.getINSTANCE();
-
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
@@ -189,12 +179,6 @@ public class Main extends Application {
             if (flag) {
                 flag = false;
             }
-            else {
-                Singleton.getInstance().setFlagFirstTime(false);
-                SingletonTutorial.getInstance().clickCount();
-                SingletonTutorial.getInstance().setIsClick(1);
-                SingletonTutorial.getInstance().openTime();
-            }
 
             TutorialView tutorialView = new TutorialView(scene.getWindow());
 
@@ -263,21 +247,21 @@ public class Main extends Application {
             });
         }).start();
 
-        hpl.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-
-                SingletonUtilTools.getInstance().setAll("FEEDBACK");
-
-                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
-                Desktop desktop = Desktop.getDesktop();
-                try {
-                    desktop.browse(URI.create(s));
-                } catch (IOException ev) {
-                    ev.printStackTrace();
-                }
-            }
-        });
+//        hpl.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent e) {
+//
+//                SingletonUtilTools.getInstance().setAll("FEEDBACK");
+//
+//                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
+//                Desktop desktop = Desktop.getDesktop();
+//                try {
+//                    desktop.browse(URI.create(s));
+//                } catch (IOException ev) {
+//                    ev.printStackTrace();
+//                }
+//            }
+//        });
 
     }
 

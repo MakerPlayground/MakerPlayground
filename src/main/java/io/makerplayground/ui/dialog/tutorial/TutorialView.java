@@ -18,8 +18,6 @@ package io.makerplayground.ui.dialog.tutorial;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.makerplayground.helper.Singleton;
-import io.makerplayground.helper.SingletonTutorial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -92,11 +90,6 @@ public class TutorialView extends Stage {
         prevBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonTutorial.getInstance().decreaseWhichPage();
-                else
-                    SingletonTutorial.getInstance().decreaseWhichPage();
-
                 currentPosition--;
                 tipImage.setImage(new Image(getClass().getResourceAsStream(tutorial.get(currentPosition).getImg())));
                 if (currentPosition == 0) {
@@ -114,11 +107,6 @@ public class TutorialView extends Stage {
         nextBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (Singleton.getInstance().isFlagFirstTime())
-                    SingletonTutorial.getInstance().increaseWhichPage();
-                else
-                    SingletonTutorial.getInstance().increaseWhichPage();
-
                 currentPosition++;
                 tipImage.setImage(new Image(getClass().getResourceAsStream(tutorial.get(currentPosition).getImg())));
                 if (currentPosition == 0) {
