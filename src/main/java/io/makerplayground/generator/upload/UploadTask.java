@@ -7,7 +7,6 @@ import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -64,12 +63,6 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0.15, 1);
 
         /* check platformio installation */
-        if (OSInfo.OS.WINDOWS == OSInfo.getOs() && !checkPlatformio().isPresent()) {
-            updateMessage("Installing Python");
-            Platform.runLater(() -> log.set("extracting python"));
-            extractPythonFromJar();
-            Platform.runLater(() -> log.set("successfully extract python"));
-        }
         Optional<String> pythonPath = checkPlatformio();
         if (!pythonPath.isPresent()) {
             updateMessage("Error: Can't find platformio see: http://docs.platformio.org/en/latest/installation.html");
@@ -258,12 +251,6 @@ public class UploadTask extends Task<UploadResult> {
                 Files.copy(p,Paths.get(destinationPath,filename),StandardCopyOption.REPLACE_EXISTING);
             }
         }
-    }
-
-    private void extractPythonFromJar() {
-        String zipFilePath = "/python/python-2.7.13.zip";
-        String destinationPath = MP_WORKSPACE;
-        ZipResourceExtractor.extract(getClass(), zipFilePath, destinationPath);
     }
 
     public ReadOnlyStringProperty logProperty() {
