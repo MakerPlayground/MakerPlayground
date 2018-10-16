@@ -596,5 +596,29 @@
       }
     ],
     "value": []
+  },
+  {
+    "name": "Current",
+    "description": "This is a current sensor. You can measure the amount of current used by some electronic devices. \\nRelated project:\\n\\tSmart Meter",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Ampere",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "AMPERE"
+        }
+      }
+    ]
   }
 ]
