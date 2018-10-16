@@ -69,9 +69,16 @@ run {
 }
 
 jlink {
-    launcherName = project.launcherName
-    imageDir = file(imageDirPath)
-    imageZip = file(imageZipPath)
+    launcher {
+        name = project.launcherName
+        jvmArgs = ["--add-modules javafx.controls",
+                "--add-modules javafx.fxml",
+                "--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module"]
+    }
     mergedModule {
         requires 'java.sql';
     }
@@ -85,23 +92,13 @@ tasks.jlink {
             from('library')
             into("$imageDirPath/bin/library")
         }
-    
+
         // append the required vm arguments
-        def scriptName = launcherName.get()
+        def scriptName = project.launcherName
         ["$scriptName", "${scriptName}.bat"].each { script ->
             def scriptFile = new File("$imageDirPath/bin/$script")
             if (scriptFile.file) {
-                def windows = script.endsWith('.bat')
-                def quotes = windows ? '' : '"'
-                def replacement = "JLINK_VM_OPTIONS=${quotes}" +
-                    "--add-modules javafx.controls " +
-                    "--add-modules javafx.fxml " +
-                    "--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls " +
-                    "--add-exports=javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module " +
-                    "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module " + 
-                    "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module " +
-                    "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module${quotes}"
-                def newText = scriptFile.text.replace('JLINK_VM_OPTIONS=', replacement)
+                def newText = scriptFile.text.replace('%DIR%\\java', '%DIR%\\javaw')
                 scriptFile.newWriter().withWriter {w -> w << newText}
             }
         }
