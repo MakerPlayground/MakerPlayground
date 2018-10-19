@@ -85,7 +85,7 @@ public class DeviceSelectorView extends UndecoratedDialog {
             inputPane.getChildren().add(controlDevicePane);
             this.inputDevice.add(controlDevicePane);
         }
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericConnectivityDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericVirtualDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
             virtualPane.getChildren().add(controlDevicePane);
             this.virtualDevice.add(controlDevicePane);

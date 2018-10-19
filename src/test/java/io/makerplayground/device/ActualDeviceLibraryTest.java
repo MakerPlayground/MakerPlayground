@@ -33,8 +33,8 @@ class ActualDeviceLibraryTest {
 
     @Test
     void getGenericConnectivityDevice() {
-        assertNotNull(library.getGenericConnectivityDevice());
-        assertFalse(library.getGenericConnectivityDevice().isEmpty());
+        assertNotNull(library.getGenericVirtualDevice());
+        assertFalse(library.getGenericVirtualDevice().isEmpty());
     }
 
     @Test

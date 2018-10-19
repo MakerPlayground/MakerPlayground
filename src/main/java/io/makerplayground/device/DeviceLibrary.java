@@ -36,10 +36,9 @@ import java.util.stream.Collectors;
 public enum DeviceLibrary {
     INSTANCE;
 
-//    private List<Microcontroller> microcontroller;
     private List<GenericDevice> genericInputDevice;
     private List<GenericDevice> genericOutputDevice;
-    private List<GenericDevice> genericConnectivityDevice;
+    private List<GenericDevice> genericVirtualDevice;
     private List<ActualDevice> actualDevice;
 
     DeviceLibrary() {
@@ -48,7 +47,7 @@ public enum DeviceLibrary {
     public void loadDeviceFromJSON() {
         this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
         this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
-        this.genericConnectivityDevice = loadGenericDeviceFromJSON("/json/genericconnectivitydevice.json");
+        this.genericVirtualDevice = loadGenericDeviceFromJSON("/json/genericvirtualdevice.json");
         this.actualDevice = loadActualDeviceList();
     }
 
@@ -86,10 +85,6 @@ public enum DeviceLibrary {
         return temp;
     }
 
-//    public List<Microcontroller> getMicrocontroller() {
-//        return microcontroller;
-//    }
-
     public GenericDevice getGenericDevice(String name) {
         for (GenericDevice genericDevice : genericInputDevice) {
             if (genericDevice.getName().equals(name)) {
@@ -101,7 +96,7 @@ public enum DeviceLibrary {
                 return genericDevice;
             }
         }
-        for (GenericDevice genericDevice : genericConnectivityDevice) {
+        for (GenericDevice genericDevice : genericVirtualDevice) {
             if (genericDevice.getName().equals(name)) {
                 return genericDevice;
             }
@@ -117,8 +112,8 @@ public enum DeviceLibrary {
         return genericOutputDevice;
     }
 
-    public List<GenericDevice> getGenericConnectivityDevice() {
-        return genericConnectivityDevice;
+    public List<GenericDevice> getGenericVirtualDevice() {
+        return genericVirtualDevice;
     }
 
     public List<ActualDevice> getActualDevice() {
@@ -139,28 +134,3 @@ public enum DeviceLibrary {
         return null;
     }
 }
-
-//        try {
-//            temp = mapper.readValue(getClass().getResourceAsStream("/json/genericinputdevice.json")
-//                    , new TypeReference<List<GenericDevice>>() {});
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for (GenericDevice actualDevice : temp) {
-//            tmpInputDevice.put(actualDevice, Collections.emptyList());
-//        }
-
-//        ActualDevice d = new ActualDevice("Sparkfun", "Sparkdun Redboard", "http://www.ss"
-//                , Collections.singletonMap(new GenericDevice("led",
-//                Arrays.asList(new Action("on", Arrays.asList(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER)))), Collections.emptyList())
-//                , Collections.singletonMap(new Action("on", Arrays.asList(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER)))
-//                    , Collections.singletonMap(new Parameter("brightness", 5, Constraint.NONE, DataType.INTEGER, ControlType.SLIDER), Constraint.NONE)))
-//                , Collections.emptyMap());
-//        try {
-//            mapper.writeValue(new File("actualDevice.json"), d);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println(temp);

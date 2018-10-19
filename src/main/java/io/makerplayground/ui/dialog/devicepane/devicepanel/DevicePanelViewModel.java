@@ -88,7 +88,7 @@ public class DevicePanelViewModel {
                 for (int i = 0; i < device.get(genericDevice); i++) {
                     project.addActuator(genericDevice);
                 }
-            } else if (DeviceLibrary.INSTANCE.getGenericConnectivityDevice().contains(genericDevice)) {
+            } else if (DeviceLibrary.INSTANCE.getGenericVirtualDevice().contains(genericDevice)) {
                 for (int i = 0; i < device.get(genericDevice); i++) {
                     project.addVirtual(genericDevice);
                 }
