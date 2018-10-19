@@ -318,6 +318,82 @@
     ]
   },
   {
+    "name": "Digital Device",
+    "description": "Generic Digital Device is the other digital device that uses HIGH/LOW logic",
+    "action": [
+      {
+        "name": "Set Output HIGH",
+        "funcname": "writeHigh",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Set Output LOW",
+        "funcname": "writeLow",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [
+      {
+        "name": "Receive LOW logic",
+        "funcname": "readLow",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Receive HIGH logic",
+        "funcname": "readHigh",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Analog Device",
+    "description": "Generic Digital Device is the other analog device. The value of the logic could be 0 to 100 percents",
+    "action": [
+      {
+        "name": "Set Output Percent",
+        "funcname": "send",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Percent",
+            "value": 0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Percent",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0,
+          "max": 100,
+          "unit": "PERCENT"
+        }
+      }
+    ]
+  },
+  {
     "name": "Timer",
     "description": "Virtual Timer",
     "action": [
