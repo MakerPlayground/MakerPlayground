@@ -481,6 +481,9 @@ class WireAndBreadboardDiagram extends Pane {
             if (device instanceof IntegratedActualDevice) {
                 continue;
             }
+            if (device.getFormFactor() == FormFactor.NONE) {
+                continue;
+            }
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
                 // TODO: add description for grove device
                 // skip if this is a grove device

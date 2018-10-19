@@ -323,14 +323,14 @@
     "action": [],
     "condition": [
       {
-        "name": "Receive LOW logic",
-        "funcname": "readLow",
+        "name": "Receive HIGH logic",
+        "funcname": "readHigh",
         "type": "Active",
         "parameter": []
       },
       {
-        "name": "Receive HIGH logic",
-        "funcname": "readHigh",
+        "name": "Receive LOW logic",
+        "funcname": "readLow",
         "type": "Active",
         "parameter": []
       }
@@ -358,8 +358,32 @@
     "value": []
   },
   {
-    "name": "Analog Device",
-    "description": "Generic Digital Device is the other analog device. The value of the logic could be 0 to 100 percents",
+    "name": "Analog (In)",
+    "description": "Any Analog Device that sends signal to the controller.",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Percent",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0,
+          "max": 100,
+          "unit": "PERCENT"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Analog (Out)",
+    "description": "Any Analog Device that the controller sends signal to.",
     "action": [
       {
         "name": "Set Output Percent",
@@ -380,25 +404,8 @@
         ]
       }
     ],
-    "condition": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Percent",
-        "dataType": "DOUBLE",
-        "constraint": {
-          "min": 0,
-          "max": 100,
-          "unit": "PERCENT"
-        }
-      }
-    ]
+    "condition": [],
+    "value": []
   },
   {
     "name": "Timer",
