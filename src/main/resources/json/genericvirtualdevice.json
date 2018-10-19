@@ -354,20 +354,7 @@
         "parameter": []
       }
     ],
-    "condition": [
-      {
-        "name": "Receive LOW logic",
-        "funcname": "readLow",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "Receive HIGH logic",
-        "funcname": "readHigh",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
+    "condition": [],
     "value": []
   },
   {
