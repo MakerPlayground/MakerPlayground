@@ -93,14 +93,15 @@ public class Project {
     }
 
     public void addActuator(GenericDevice device) {
-        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        String varName = device.getName().replaceAll("[()]", "");
+        Pattern p = Pattern.compile(varName+"\\d+");
         int id = actuator.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
+        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
         actuator.add(projectDevice);
     }
 
@@ -134,14 +135,15 @@ public class Project {
     }
 
     public void addSensor(GenericDevice device) {
-        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        String varName = device.getName().replaceAll("[()]", "");
+        Pattern p = Pattern.compile(varName+"\\d+");
         int id = sensor.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
+        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
         sensor.add(projectDevice);
     }
 
@@ -164,14 +166,15 @@ public class Project {
     }
 
     public void addVirtual(GenericDevice device) {
-        Pattern p = Pattern.compile(device.getName()+"\\d+");
+        String varName = device.getName().replaceAll("[()]", "");
+        Pattern p = Pattern.compile(varName+"\\d+");
         int id = virtual.stream()
                 .filter(projectDevice -> projectDevice.getGenericDevice() == device)
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
                 .max()
                 .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(device.getName() + (id + 1), device);
+        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
         virtual.add(projectDevice);
     }
 

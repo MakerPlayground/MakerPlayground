@@ -318,8 +318,28 @@
     ]
   },
   {
-    "name": "Digital Device",
-    "description": "Generic Digital Device is the other digital device that uses HIGH/LOW logic",
+    "name": "Digital (In)",
+    "description": "Any Digital Device that sends HIGH/LOW signal to the controller.",
+    "action": [],
+    "condition": [
+      {
+        "name": "Receive LOW logic",
+        "funcname": "readLow",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Receive HIGH logic",
+        "funcname": "readHigh",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Digital (Out)",
+    "description": "Any Digital Device that controller sends HIGH/LOW signal to.",
     "action": [
       {
         "name": "Set Output HIGH",
