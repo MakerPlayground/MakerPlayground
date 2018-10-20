@@ -7,6 +7,7 @@ import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -88,19 +89,21 @@ public class UploadTask extends Task<UploadResult> {
         String code = sourcecode.getCode();
 
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .map(projectDevice -> projectDevice.getActualDevice())
+                .map(ProjectDevice::getActualDevice)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
-                actualDevicesUsed.stream().map(device -> device.getId()).collect(Collectors.toList())) {
+                actualDevicesUsed.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
             Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
         }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
-                .map(device -> device.getMpLibrary())
+                .map(ActualDevice::getMpLibrary)
                 .collect(Collectors.toSet());
+        mpLibraries.add("MP_DEVICE");
+
         Set<String> externalLibraries = actualDevicesUsed.stream()
-                .map(device -> device.getExternalLibrary())
+                .map(ActualDevice::getExternalLibrary)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries
