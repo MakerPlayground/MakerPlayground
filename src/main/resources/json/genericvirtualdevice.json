@@ -387,12 +387,12 @@
     "action": [
       {
         "name": "Set Output Percent",
-        "funcname": "send",
+        "funcname": "sendPercent",
         "type": "Active",
         "parameter": [
           {
             "name": "Percent",
-            "value": 0,
+            "value": 100,
             "constraint": {
               "min": 0.0,
               "max": 100.0,
