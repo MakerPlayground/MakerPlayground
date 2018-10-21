@@ -50,11 +50,6 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
             jsonGenerator.writeStringField("name", entry.getKey().getName());
             jsonGenerator.writeBooleanField("enable", userSetting.getExpressionEnable().get(entry.getKey()));
             jsonGenerator.writeStringField("type", entry.getValue().getClass().getSimpleName());
-//            if (entry.getValue() instanceof NumberInRangeExpression) {
-//                jsonGenerator.writeStringField("type", "numberInRange");
-//            } else {
-//                throw new IllegalStateException("Unknown expression type");
-//            }
             jsonGenerator.writeArrayFieldStart("expression");
             for (Term term : entry.getValue().getTerms()) {
                 jsonGenerator.writeStartObject();

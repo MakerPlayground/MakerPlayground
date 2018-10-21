@@ -208,6 +208,15 @@
     -fx-font-size: 12px;
     -fx-background-insets:0;
 }
+
+.combo-box-base:editable .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .text-input {
+    -fx-border-width: 0;
+}
+
 .combo-box:showing .list-view,.combo-box:armed .list-view {
     -fx-font-size: 12px;
     /*-fx-max-width: 125;*/
@@ -296,7 +305,7 @@
     -fx-cursor: hand;
 }
 .button:pressed , .button:hover{
-    -fx-background-color : #5ac2ab;
+    -fx-background-color : #2673fd;
     -fx-border-color: #cccccc;
     -fx-text-fill: white;
     -fx-border-radius: 3;

@@ -35,4 +35,9 @@ public class StringTerm extends Term {
     public String toCCode(){
         return "\"" + value + "\"";
     }
+
+    @Override
+    public String toString() {
+        return (String) value;
+    }
 }

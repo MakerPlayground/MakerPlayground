@@ -23,6 +23,8 @@ import java.text.DecimalFormat;
 public class NumberWithUnitTerm extends Term {
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
+    public static final NumberWithUnitTerm ZERO = new NumberWithUnitTerm(NumberWithUnit.ZERO);
+
     public NumberWithUnitTerm(NumberWithUnit value) {
         super(Type.NUMBER, value);
     }
@@ -39,6 +41,11 @@ public class NumberWithUnitTerm extends Term {
 
     @Override
     public String toCCode(){
+        return df.format(((NumberWithUnit) value).getValue());
+    }
+
+    @Override
+    public String toString() {
         return df.format(((NumberWithUnit) value).getValue());
     }
 }

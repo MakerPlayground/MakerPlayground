@@ -25,9 +25,9 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.NumberInRangeExpressionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -118,6 +118,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setRowIndex(conditionComboBox, 0);
         GridPane.setColumnIndex(conditionComboBox, 1);
 
+        propertyPane.setHgap(10);
         propertyPane.setVgap(5);
         propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
@@ -237,8 +238,8 @@ public class ConditionDevicePropertyWindow extends PopOver {
         Expression expression = viewModel.getExpression(value);
 
         Node control;
-        if (expression instanceof NumberInRangeExpression) {
-            NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
+        if (expression instanceof ConditionalExpression) {
+            ConditionalExpressionControl expressionControl = new ConditionalExpressionControl((ConditionalExpression) expression, viewModel.getProjectValue());
             expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
             expressionControl.setDisable(!viewModel.isExpressionEnable(value));
             control = expressionControl;

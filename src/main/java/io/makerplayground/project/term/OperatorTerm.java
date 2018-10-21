@@ -37,6 +37,10 @@ public class OperatorTerm extends Term {
         return getValue().getCodeString();
     }
 
+    @Override
+    public String toString() {
+        return ((Operator) value).getDisplayString();
+    }
 }
 
 

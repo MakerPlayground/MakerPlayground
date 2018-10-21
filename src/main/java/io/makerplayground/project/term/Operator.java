@@ -29,7 +29,11 @@ public enum Operator {
     OR(OperatorType.BINARY, "||", "or"),
     NOT(OperatorType.LEFT_UNARY, "!", "not"),
     OPEN_PARENTHESIS(OperatorType.LEFT_UNARY, "("),
-    CLOSE_PARENTHESIS(OperatorType.RIGHT_UNARY, ")");
+    CLOSE_PARENTHESIS(OperatorType.RIGHT_UNARY, ")"),
+    EQUAL(OperatorType.BINARY, "="),
+    NOT_EQUAL(OperatorType.BINARY, "!=", "\u2260"),
+    BETWEEN(OperatorType.BINARY, "", "between"),
+    NOT_BETWEEN(OperatorType.BINARY, "", "not between");
 
     private final OperatorType type;
     private final String codeString;
