@@ -149,3 +149,27 @@
 #headerPane {
     -fx-background-color: transparent;
 }
+
+/* https://bitbucket.org/controlsfx/controlsfx/src/09355e6b74836a8e2281fc4591e449ab36ce30fa/controlsfx/src/main/resources/org/controlsfx/control/toggleswitch.css?at=default&fileviewer=file-view-default */
+
+#codeSwitch .label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #707070;
+}
+
+#codeSwitch .thumb {
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -20%), derive(-fx-text-box-border, -30%)),
+                            -fx-inner-border,
+                            -fx-body-color;
+    /*-fx-background-color: blue;*/
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 1.0em; /* large value to make sure this remains circular */
+    -fx-padding: 0.75em;
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+}
+
+#codeSwitch:selected .thumb-area {
+    -fx-background-color: #2673fd;
+    -fx-background-insets: 0, 1;
+}

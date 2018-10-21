@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
 <?import io.makerplayground.ui.control.AutoResizeTextField?>
 
@@ -24,6 +25,7 @@
             <AnchorPane id="headerPane" maxHeight="30.0" maxWidth="205.0" minHeight="30.0" minWidth="205.0" prefWidth="205.0">
                <children>
                   <AutoResizeTextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" AnchorPane.leftAnchor="15.0" />
+                  <ToggleSwitch id="codeSwitch" prefWidth="65.0" text="code" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="105.0" />
                   <ImageView id="removeSceneBtn" fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" style="-fx-cursor:hand;">
                      <image>
                         <Image url="@../../../icons/cancel-2.png" />
