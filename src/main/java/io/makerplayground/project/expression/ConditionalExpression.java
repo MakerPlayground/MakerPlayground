@@ -10,8 +10,7 @@ import java.util.List;
 public class ConditionalExpression extends Expression {
 
     public static final List<Operator> OPERATORS = List.of(Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL
-            , Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL, Operator.EQUAL, Operator.NOT_EQUAL
-            , Operator.BETWEEN, Operator.NOT_BETWEEN);
+            , Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL, Operator.EQUAL, Operator.NOT_EQUAL);
 
     private final ProjectDevice projectDevice;
     private final Value value;
@@ -34,16 +33,9 @@ public class ConditionalExpression extends Expression {
             if (!(t instanceof OperatorTerm)) {
                 throw new IllegalStateException();
             }
-            Operator operator = ((OperatorTerm) t).getValue();
             t = terms.get(i++);
             if (!(t instanceof NumberWithUnitTerm || t instanceof ValueTerm)) {
                 throw new IllegalStateException();
-            }
-            if (operator == Operator.BETWEEN || operator == Operator.NOT_BETWEEN) {
-                t = terms.get(i++);
-                if (!(t instanceof NumberWithUnitTerm || t instanceof ValueTerm)) {
-                    throw new IllegalStateException();
-                }
             }
         }
     }
@@ -75,18 +67,7 @@ public class ConditionalExpression extends Expression {
 
             Operator operator = ((OperatorTerm) terms.get(i++)).getValue();
             Term lowTerm = terms.get(i++);
-            Term highTerm;
-            if (operator == Operator.BETWEEN) {
-                highTerm = terms.get(i++);
-                sb.append("(").append(valueTerm.toCCode()).append(">=").append(lowTerm.toCCode()).append(") && (")
-                        .append(valueTerm.toCCode()).append("<=").append(highTerm.toCCode()).append(")");
-            } else if (operator == Operator.NOT_BETWEEN) {
-                highTerm = terms.get(i++);
-                sb.append("(").append(valueTerm.toCCode()).append("<").append(lowTerm.toCCode()).append(") && (")
-                        .append(valueTerm.toCCode()).append(">").append(highTerm.toCCode()).append(")");
-            } else {
-                sb.append("(").append(valueTerm.toCCode()).append(operator.getCodeString()).append(lowTerm.toCCode()).append(")");
-            }
+            sb.append("(").append(valueTerm.toCCode()).append(operator.getCodeString()).append(lowTerm.toCCode()).append(")");
         }
 
         return sb.toString();

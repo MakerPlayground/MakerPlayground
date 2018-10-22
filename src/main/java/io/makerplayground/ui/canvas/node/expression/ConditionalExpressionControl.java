@@ -35,8 +35,9 @@ public class ConditionalExpressionControl extends VBox {
         this.expressionRows = new ArrayList<>();
 
         Button addButton = new Button("+");
+        addButton.setMaxWidth(Double.MAX_VALUE);
         addButton.setOnAction(event -> {
-            ExpressionRow expressionRow = new ExpressionRow(Operator.GREATER_THAN, NumberWithUnitTerm.ZERO, NumberWithUnitTerm.ZERO);
+            ExpressionRow expressionRow = new ExpressionRow(Operator.GREATER_THAN, NumberWithUnitTerm.ZERO);
             expressionRows.add(expressionRow);
             createExpressionRowControl(expressionRow);
         });
@@ -47,11 +48,7 @@ public class ConditionalExpressionControl extends VBox {
         while (i < terms.size()) {
             Operator operator = ((OperatorTerm) terms.get(i++)).getValue();
             Term lowTerm = terms.get(i++);
-            Term highTerm = NumberWithUnitTerm.ZERO;
-            if (operator == Operator.BETWEEN || operator == Operator.NOT_BETWEEN) {
-                highTerm = terms.get(i++);
-            }
-            ExpressionRow expressionRow = new ExpressionRow(operator, lowTerm, highTerm);
+            ExpressionRow expressionRow = new ExpressionRow(operator, lowTerm);
             expressionRows.add(expressionRow);
             createExpressionRowControl(expressionRow);
         }
@@ -76,25 +73,11 @@ public class ConditionalExpressionControl extends VBox {
             invalidate();
         });
 
-        ComboBox<Term> highValueCombobox = new ComboBox<>(FXCollections.observableArrayList(projectValueTerm));
-        if (expressionRow.getHighTerm() != null) {
-            highValueCombobox.setValue(expressionRow.getHighTerm());
-        }
-        highValueCombobox.setEditable(true);
-        highValueCombobox.setConverter(termStringConverter);
-        highValueCombobox.setVisible((expressionRow.getOperator() == Operator.BETWEEN) || (expressionRow.getOperator() == Operator.NOT_BETWEEN));
-        highValueCombobox.managedProperty().bind(highValueCombobox.visibleProperty());
-        highValueCombobox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            expressionRow.setHighTerm(newValue);
-            invalidate();
-        });
-
         ComboBox<Operator> operatorComboBox = new ComboBox<>(FXCollections.observableArrayList(ConditionalExpression.OPERATORS));
         if (expressionRow.getOperator() != null) {
             operatorComboBox.setValue(expressionRow.getOperator());
         }
         operatorComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            highValueCombobox.setVisible((newValue == Operator.BETWEEN) || (newValue == Operator.NOT_BETWEEN));
             expressionRow.setOperator(newValue);
             invalidate();
         });
@@ -106,7 +89,7 @@ public class ConditionalExpressionControl extends VBox {
             invalidate();
         });
 
-        hbox.getChildren().addAll(operatorComboBox, lowValueCombobox, highValueCombobox, removeButton);
+        hbox.getChildren().addAll(operatorComboBox, lowValueCombobox, removeButton);
         getChildren().add(getChildren().size() - 1, hbox);
     }
 
@@ -144,12 +127,10 @@ public class ConditionalExpressionControl extends VBox {
     private static class ExpressionRow {
         private Operator operator;
         private Term lowTerm;
-        private Term highTerm;
 
-        public ExpressionRow(Operator operator, Term lowTerm, Term highTerm) {
+        public ExpressionRow(Operator operator, Term lowTerm) {
             this.operator = operator;
             this.lowTerm = lowTerm;
-            this.highTerm = highTerm;
         }
 
         public Operator getOperator() {
@@ -168,20 +149,8 @@ public class ConditionalExpressionControl extends VBox {
             this.lowTerm = lowTerm;
         }
 
-        public Term getHighTerm() {
-            return highTerm;
-        }
-
-        public void setHighTerm(Term highTerm) {
-            this.highTerm = highTerm;
-        }
-
         public List<Term> toTerm() {
-            if (operator == Operator.BETWEEN || operator == Operator.NOT_BETWEEN) {
-                return List.of(new OperatorTerm(operator), lowTerm, highTerm);
-            } else {
-                return List.of(new OperatorTerm(operator), lowTerm);
-            }
+            return List.of(new OperatorTerm(operator), lowTerm);
         }
     }
 }

@@ -31,9 +31,7 @@ public enum Operator {
     OPEN_PARENTHESIS(OperatorType.LEFT_UNARY, "("),
     CLOSE_PARENTHESIS(OperatorType.RIGHT_UNARY, ")"),
     EQUAL(OperatorType.BINARY, "="),
-    NOT_EQUAL(OperatorType.BINARY, "!=", "\u2260"),
-    BETWEEN(OperatorType.BINARY, "", "between"),
-    NOT_BETWEEN(OperatorType.BINARY, "", "not between");
+    NOT_EQUAL(OperatorType.BINARY, "!=", "\u2260");
 
     private final OperatorType type;
     private final String codeString;
