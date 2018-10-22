@@ -225,7 +225,7 @@ public class Main extends Application {
                         button.setOnAction(event -> getHostServices().showDocument(version.getDownloadURL()));
 
                         VBox vBox = new VBox();
-                        vBox.setSpacing(10);
+                        vBox.setSpacing(20);
                         vBox.setAlignment(Pos.TOP_CENTER);
                         vBox.getChildren().addAll(text, button);
 
@@ -233,11 +233,10 @@ public class Main extends Application {
                         mainPane.setPadding(new Insets(10));
                         mainPane.setSpacing(20);
                         mainPane.getStylesheets().add(getClass().getResource("/css/UpdateNotificationDialog.css").toExternalForm());
-                        mainPane.setPrefSize(300, 110);
+                        mainPane.setPrefSize(300, 80);
                         mainPane.getChildren().addAll(icon, vBox);
 
                         Notifications.create()
-                                .hideCloseButton()
                                 .graphic(mainPane)
                                 .owner(mainWindow.getCanvasView())
                                 .hideAfter(Duration.seconds(5))
