@@ -248,6 +248,55 @@
     ]
   },
   {
+    "name": "Timer",
+    "description": "Virtual Timer",
+    "action": [
+      {
+        "name": "Start timer",
+        "funcname": "startTimer",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Stop timer",
+        "funcname": "startTimer",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [
+      {
+        "name": "Time out",
+        "funcname": "isOverTime",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Second",
+            "value": 5,
+            "constraint": {
+              "min": 1,
+              "max": 1000000,
+              "unit": "SECOND"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "value": [
+      {
+        "name": "Second",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 1000000,
+          "unit": "SECOND"
+        }
+      }
+    ]
+  },
+  {
     "name": "Statistics",
     "description": "Simple Data Average and Standard Deviation",
     "action": [
@@ -406,78 +455,5 @@
     ],
     "condition": [],
     "value": []
-  },
-  {
-    "name": "Timer",
-    "description": "Virtual Timer",
-    "action": [
-      {
-        "name": "Start timer",
-        "funcname": "startTimer",
-        "type": "Active",
-        "parameter": []
-      },
-      {
-        "name": "Stop timer",
-        "funcname": "startTimer",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "condition": [
-      {
-        "name": "Time out",
-        "funcname": "isOverTime",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Second",
-            "value": 5,
-            "constraint": {
-              "min": 1,
-              "max": 1000000,
-              "unit": "SECOND"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          }
-        ]
-      }
-    ],
-    "value": [
-      {
-        "name": "Second",
-        "dataType": "INTEGER",
-        "constraint": {
-          "min": 0,
-          "max": 1000000,
-          "unit": "SECOND"
-        }
-      }
-    ]
-  },
-  {
-    "name": "Mobile Sensor",
-    "description": "Sensors from other devices that send the value via IoT platform such as\n- Blynk's Proximity Light\n- Blynk's Accelerometer",
-    "action": [],
-    "condition": [
-      {
-        "name": "Compare",
-        "funcname": "",
-        "type": "Active",
-        "parameter": []
-      }
-    ],
-    "value": [
-      {
-        "name": "Value",
-        "dataType": "DOUBLE",
-        "constraint": {
-          "min": -99999999.0,
-          "max": 99999999.0,
-          "unit": "NOT_SPECIFIED"
-        }
-      }
-    ]
   }
 ]
