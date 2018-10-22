@@ -252,7 +252,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             }
 
             Expression expression;
-            if (ConditionalExpression.class.getName().contains(type)) {
+            if (NumberInRangeExpression.class.getName().contains(type)) {
+                expression = deserializeNumberInRangeExpression(mapper, valueNode.get("expression"), projectDevice, value);
+            } else if (ConditionalExpression.class.getName().contains(type)) {
                 expression = new ConditionalExpression(projectDevice, value, terms);
             } else {
                 throw new IllegalStateException("Unknown expression type");
@@ -296,6 +298,28 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return term;
     }
 
+    public Expression deserializeNumberInRangeExpression(ObjectMapper mapper, JsonNode node, ProjectDevice device, Value value) {
+        if (node.get(0).get("type").asText().equals(Term.Type.VALUE.name())
+            && node.get(1).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && (node.get(1).get("value").asText().equals(Operator.LESS_THAN.name())
+                || node.get(1).get("value").asText().equals(Operator.LESS_THAN_OR_EQUAL.name()))
+                && node.get(2).get("type").asText().equals(Term.Type.NUMBER.name())
+                && node.get(3).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && node.get(3).get("value").asText().equals(Operator.AND.name())
+                && node.get(4).get("type").asText().equals(Term.Type.VALUE.name())
+                && node.get(5).get("type").asText().equals(Term.Type.OPERATOR.name())
+                && (node.get(5).get("value").asText().equals(Operator.GREATER_THAN.name())
+                || node.get(5).get("value").asText().equals(Operator.GREATER_THAN_OR_EQUAL.name()))
+                && node.get(6).get("type").asText().equals(Term.Type.NUMBER.name())) {
+            return new NumberInRangeExpression(device, value)
+                    .setLowValue(node.get(6).get("value").get("value").asDouble())
+                    .setHighValue(node.get(2).get("value").get("value").asDouble())
+                    .setLowOperator(Operator.valueOf(node.get(5).get("value").asText()))
+                    .setHighOperator(Operator.valueOf(node.get(1).get("value").asText()));
+        } else {
+            throw new IllegalStateException("Simple expression parsing fail");
+        }
+    }
     public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());

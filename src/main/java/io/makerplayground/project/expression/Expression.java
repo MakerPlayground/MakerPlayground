@@ -75,7 +75,9 @@ public abstract class Expression {
     }
 
     public static Expression deepCopy(Expression e) {
-        if (e instanceof ConditionalExpression) {
+        if (e instanceof NumberInRangeExpression) {
+            return new NumberInRangeExpression((NumberInRangeExpression) e);
+        } else if (e instanceof ConditionalExpression) {
             return new ConditionalExpression((ConditionalExpression) e);
         } else if (e instanceof CustomNumberExpression) {
             return new CustomNumberExpression((CustomNumberExpression) e);
