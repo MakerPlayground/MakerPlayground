@@ -431,11 +431,11 @@
     ]
   },
   {
-    "name": "Analog (Out)",
-    "description": "Any Analog Device that the controller sends signal to.",
+    "name": "PWM (Out)",
+    "description": "A Pulse Width Modulation Device that the controller sends signal to.",
     "action": [
       {
-        "name": "Set Output Percent",
+        "name": "Set Duty Cycle",
         "funcname": "sendPercent",
         "type": "Active",
         "parameter": [
