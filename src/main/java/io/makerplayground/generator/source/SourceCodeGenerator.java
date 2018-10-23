@@ -254,7 +254,7 @@ public class SourceCodeGenerator {
     }
 
     private void appendTaskVariables() {
-        List<ProjectDevice> devices = getUsedDevicesWithTask();
+        Set<ProjectDevice> devices = getUsedDevicesWithTask();
         if (!devices.isEmpty()) {
             for (ProjectDevice projectDevice : devices) {
                 builder.append("Task ").append(getDeviceTaskVariableName(projectDevice)).append(" = NULL;").append(NEW_LINE);
@@ -321,12 +321,12 @@ public class SourceCodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    private List<ProjectDevice> getUsedDevicesWithTask() {
+    private Set<ProjectDevice> getUsedDevicesWithTask() {
         return project.getScene().stream()
                 .flatMap(scene -> scene.getSetting().stream())
                 .filter(UserSetting::isDataBindingUsed)
                 .map(UserSetting::getDevice)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private void appendExpressionFunction() {
