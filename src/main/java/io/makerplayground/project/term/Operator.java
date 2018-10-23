@@ -16,6 +16,8 @@
 
 package io.makerplayground.project.term;
 
+import java.util.List;
+
 public enum Operator {
     PLUS(OperatorType.BINARY, "+"),
     MINUS(OperatorType.BINARY, "-"),
@@ -57,6 +59,13 @@ public enum Operator {
 
     public String getCodeString() {
         return codeString;
+    }
+
+    private static final List<Operator> OPERATORS = List.of(Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL
+            , Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL, Operator.EQUAL, Operator.NOT_EQUAL);
+
+    public static List<Operator> getComparisonOperator() {
+        return OPERATORS;
     }
 
     @Override

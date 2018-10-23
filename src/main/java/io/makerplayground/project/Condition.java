@@ -17,7 +17,10 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.Expression;
+import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -90,6 +93,21 @@ public class Condition extends NodeElement {
                 setting.remove(i);
             }
         }
+        for (UserSetting userSetting : setting) {
+            for (Parameter parameter : userSetting.getValueMap().keySet()) {
+                Expression expression = userSetting.getValueMap().get(parameter);
+                if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
+                        && (((ProjectValue) term.getValue()).getDevice() == device))) {
+                    userSetting.getValueMap().replace(parameter, Expression.fromDefaultParameter(parameter));
+                }
+            }
+            for (Value value : userSetting.getExpression().keySet()) {
+                Expression expression = userSetting.getExpression().get(value);
+                if (expression.getValueUsed().stream().anyMatch(projectValue -> projectValue.getDevice() == device)) {
+                    userSetting.getExpression().put(value, new NumberInRangeExpression(device, value));
+                }
+            }
+        }
         invalidate();
     }
 
@@ -104,10 +122,13 @@ public class Condition extends NodeElement {
         }
 
         for (UserSetting userSetting : setting) {
-            // at least one expression must be enable when the action is "Compare"
+            // at least one expression must be enable and every expression mush be valid when the action is "Compare"
             if (userSetting.getAction().getName().equals("Compare")) {
                 if (!userSetting.getExpressionEnable().values().contains(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+                }
+                if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
+                    return DiagramError.CONDITION_INVALID_EXPRESSION;
                 }
             } else {    // otherwise value of every parameters should not be null
                 if (userSetting.getValueMap().values().contains(null)) {

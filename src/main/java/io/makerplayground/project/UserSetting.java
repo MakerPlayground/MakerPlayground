@@ -92,7 +92,7 @@ public class UserSetting {
 
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
-            expression.put(v, new ConditionalExpression(device, v));
+            expression.put(v, new NumberInRangeExpression(device, v));
             expressionEnable.put(v, false);
         }
     }

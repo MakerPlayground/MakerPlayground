@@ -77,6 +77,7 @@ public class ChipField extends VBox {
     private final Map<Chip, Term> chipMap = new HashMap<>();
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
+    private final BooleanProperty refreshIntervalAdjustable = new SimpleBooleanProperty(true);
 
     private final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
 
@@ -112,6 +113,8 @@ public class ChipField extends VBox {
 
         HBox refreshIntervalHBox = new HBox(5);
         refreshIntervalHBox.setAlignment(Pos.CENTER_LEFT);
+        refreshIntervalHBox.visibleProperty().bind(refreshIntervalAdjustable);
+        refreshIntervalHBox.managedProperty().bind(refreshIntervalHBox.visibleProperty());
         Label toValueLabel = new Label("to value");
         refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner, toValueLabel);
         getChildren().add(0, refreshIntervalHBox);
@@ -342,4 +345,15 @@ public class ChipField extends VBox {
         return expressionProperty.getReadOnlyProperty();
     }
 
+    public boolean isRefreshIntervalAdjustable() {
+        return refreshIntervalAdjustable.get();
+    }
+
+    public BooleanProperty refreshIntervalAdjustableProperty() {
+        return refreshIntervalAdjustable;
+    }
+
+    public void setRefreshIntervalAdjustable(boolean refreshIntervalAdjustable) {
+        this.refreshIntervalAdjustable.set(refreshIntervalAdjustable);
+    }
 }

@@ -34,14 +34,14 @@ public class ConditionalExpressionControl extends HBox {
     private void initView() {
         getChildren().clear();
 
-        RadioMenuItem simpleRadioButton = new RadioMenuItem("Simple");
-        RadioMenuItem customRadioButton = new RadioMenuItem("Custom");
+        RadioMenuItem basicRadioMenuItem = new RadioMenuItem("Basic");
+        RadioMenuItem customRadioMenuItem = new RadioMenuItem("Custom");
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(simpleRadioButton, customRadioButton);
+        toggleGroup.getToggles().addAll(basicRadioMenuItem, customRadioMenuItem);
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(simpleRadioButton, customRadioButton);
+        contextMenu.getItems().addAll(basicRadioMenuItem, customRadioMenuItem);
 
         ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting-press.png")));
         configButton.setFitWidth(25);
@@ -52,12 +52,11 @@ public class ConditionalExpressionControl extends HBox {
         if (getExpression() instanceof NumberInRangeExpression) {
             SimpleConditionalExpressionControl expressionControl = new SimpleConditionalExpressionControl((NumberInRangeExpression) getExpression(), value);
             expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
-            toggleGroup.selectToggle(simpleRadioButton);
+            toggleGroup.selectToggle(basicRadioMenuItem);
             control = expressionControl;
         } else if (getExpression() instanceof ConditionalExpression) {
             CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues);
-            expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
-            toggleGroup.selectToggle(customRadioButton);
+            toggleGroup.selectToggle(customRadioMenuItem);
             control = expressionControl;
         } else {
             throw new IllegalStateException("Found unsupported expression!!!");
@@ -67,9 +66,9 @@ public class ConditionalExpressionControl extends HBox {
         setSpacing(5);
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == simpleRadioButton) {
+            if (newValue == basicRadioMenuItem) {
                 expression.set(new NumberInRangeExpression(projectDevice, value));
-            } else if (newValue == customRadioButton) {
+            } else if (newValue == customRadioMenuItem) {
                 expression.set(new ConditionalExpression(projectDevice, value));
             }
             initView();
