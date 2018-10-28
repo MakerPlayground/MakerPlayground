@@ -118,8 +118,16 @@ public class DeviceMapper {
         for (ProjectDevice device : tempMap.keySet()) {
             selectableDevice.put(device, new ArrayList<>());
             for (ActualDevice d : actualDevice) {
-                if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {  // TODO: edit to filter platform
-                    selectableDevice.get(device).add(d);
+                if (d.isSupport(device.getGenericDevice(), tempMap.get(device))) {
+                    if (d.getCloudPlatform() != null && project.getController() != null) {
+                        // if this device uses a cloud platform and the controller has been selected, we accept this device
+                        // if and only if the selected controller supports the cloud platform that this device uses
+                        if (project.getController().getSupportedCloudPlatform().contains(d.getCloudPlatform())) {
+                            selectableDevice.get(device).add(d);
+                        }
+                    } else {
+                        selectableDevice.get(device).add(d);
+                    }
                 }
             }
         }
