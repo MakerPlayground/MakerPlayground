@@ -52,10 +52,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChipField extends VBox {
@@ -182,11 +179,24 @@ public class ChipField extends VBox {
         openParenthesisChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.OPEN_PARENTHESIS)));
         closeParenthesisChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.CLOSE_PARENTHESIS)));
 
-        // manually chipFieldFocus to scrollPane and it's children focused property
+        // update chipFieldFocus property by comparing scene's focus owner node to the ChipField(scrollPane) and it's
+        // children because for unknown reason the focused property of the node itself doesn't update after we click
+        // at the other node
         sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.focusOwnerProperty().addListener((observable1, oldFocusOwner, newFocusOwner) -> {
-                    chipFieldFocus.set(scrollPane.isFocused() || isChildFocused(scrollPane));
+                    Queue<Node> queue = new ArrayDeque<>();
+                    queue.add(scrollPane);
+                    while (!queue.isEmpty()) {
+                        Node node = queue.remove();
+                        if (node == newFocusOwner) {
+                            chipFieldFocus.set(true);
+                            return;
+                        } else if (node instanceof Parent) {
+                            queue.addAll(((Parent) node).getChildrenUnmodifiable());
+                        }
+                    }
+                    chipFieldFocus.set(false);
                 });
             }
         });
@@ -231,19 +241,6 @@ public class ChipField extends VBox {
         } else {
             scrollPane.setHvalue(0);
         }
-    }
-
-    private boolean isChildFocused(Parent parent) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            if (node.isFocused()) {
-                return true;
-            } else if (node instanceof Parent) {
-                if (isChildFocused((Parent) node)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void addChip(Term t) {

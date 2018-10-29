@@ -22,6 +22,7 @@ import io.makerplayground.project.term.Term;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 import java.text.DecimalFormat;
@@ -61,6 +62,7 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
                 }
             }
         });
+        input.prefColumnCountProperty().bind(input.textProperty().length());
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
