@@ -26,16 +26,11 @@
      -fx-background-insets: 0;
      -fx-padding: 0;
 }*/
-#toLabel{
-    -fx-font-size: 12px;
-    -fx-min-width: 20;
-}
+
 .label{
     -fx-font-size: 12px;
     -fx-background-color : transparent;
     -fx-text-fill : #333333;
-    -fx-font-weight: bold;
-    -fx-min-width: 90;
 }
 
 .check-box .box {
