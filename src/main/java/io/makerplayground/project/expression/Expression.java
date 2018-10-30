@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CUSTOM_NUMBER, VALUE_LINKING
+        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, VALUE_LINKING
     }
 
     public enum RefreshInterval {
@@ -77,6 +77,8 @@ public abstract class Expression {
     public static Expression deepCopy(Expression e) {
         if (e instanceof NumberInRangeExpression) {
             return new NumberInRangeExpression((NumberInRangeExpression) e);
+        } else if (e instanceof ConditionalExpression) {
+            return new ConditionalExpression((ConditionalExpression) e);
         } else if (e instanceof CustomNumberExpression) {
             return new CustomNumberExpression((CustomNumberExpression) e);
         } else if (e instanceof NumberWithUnitExpression) {

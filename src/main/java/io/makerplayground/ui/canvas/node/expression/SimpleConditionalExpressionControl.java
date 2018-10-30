@@ -25,7 +25,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-public class NumberInRangeExpressionControl extends HBox {
+public class SimpleConditionalExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;
     private final Value value;
 
@@ -33,7 +33,7 @@ public class NumberInRangeExpressionControl extends HBox {
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
 
-    public NumberInRangeExpressionControl(NumberInRangeExpression expression, Value value) {
+    public SimpleConditionalExpressionControl(NumberInRangeExpression expression, Value value) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.value = value;
         initView();

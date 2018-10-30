@@ -25,15 +25,14 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.CustomConditionalExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.SimpleConditionalExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.NumberInRangeExpressionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -118,6 +117,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setRowIndex(conditionComboBox, 0);
         GridPane.setColumnIndex(conditionComboBox, 1);
 
+        propertyPane.setHgap(10);
         propertyPane.setVgap(5);
         propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
@@ -236,28 +236,20 @@ public class ConditionDevicePropertyWindow extends PopOver {
     private void createExpressionControl(int i, Value value) {
         Expression expression = viewModel.getExpression(value);
 
-        Node control;
-        if (expression instanceof NumberInRangeExpression) {
-            NumberInRangeExpressionControl expressionControl = new NumberInRangeExpressionControl((NumberInRangeExpression) expression, value);
-            expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
-            expressionControl.setDisable(!viewModel.isExpressionEnable(value));
-            control = expressionControl;
-        } else {
-            throw new IllegalStateException("Found unsupported expression!!!");
-        }
-        GridPane.setRowIndex(control, i+1);
-        GridPane.setColumnIndex(control, 1);
-
         CheckBox enableCheckbox = new CheckBox(value.getName());
         enableCheckbox.setSelected(viewModel.isExpressionEnable(value));
-        enableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            control.setDisable(!newValue);
-            viewModel.setExpressionEnable(value, newValue);
-        });
+        enableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpressionEnable(value, newValue));
         GridPane.setValignment(enableCheckbox, VPos.TOP);
         GridPane.setRowIndex(enableCheckbox, i+1);
         GridPane.setColumnIndex(enableCheckbox, 0);
 
-        propertyPane.getChildren().addAll(enableCheckbox, control);
+        ConditionalExpressionControl expressionControl = new ConditionalExpressionControl(viewModel.getProjectDevice()
+                , value, viewModel.getProjectValue(), expression/*, viewModel.isExpressionEnable(value)*/);
+        expressionControl.disableProperty().bind(enableCheckbox.selectedProperty().not());
+        expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
+        GridPane.setRowIndex(expressionControl, i+1);
+        GridPane.setColumnIndex(expressionControl, 1);
+
+        propertyPane.getChildren().addAll(enableCheckbox, expressionControl);
     }
 }

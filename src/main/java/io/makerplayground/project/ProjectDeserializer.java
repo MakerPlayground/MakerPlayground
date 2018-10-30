@@ -32,7 +32,6 @@ import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.actual.Platform;
@@ -216,7 +215,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             JsonNode valueNode = parameterNode.get("value");
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(term_node, allProjectDevices, parameter));
+                terms.add(deserializeTerm(term_node, allProjectDevices));
             }
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
@@ -247,10 +246,16 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText());
             boolean enable = valueNode.get("enable").asBoolean();
             String type = valueNode.get("type").asText();
+            List<Term> terms = new ArrayList<>();
+            for (JsonNode term_node : valueNode.get("expression")) {
+                terms.add(deserializeTerm(term_node, allProjectDevices));
+            }
 
             Expression expression;
             if (NumberInRangeExpression.class.getName().contains(type)) {
                 expression = deserializeNumberInRangeExpression(mapper, valueNode.get("expression"), projectDevice, value);
+            } else if (ConditionalExpression.class.getName().contains(type)) {
+                expression = new ConditionalExpression(projectDevice, value, terms);
             } else {
                 throw new IllegalStateException("Unknown expression type");
             }
@@ -263,13 +268,12 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     private Term deserializeTerm(JsonNode term_node,
-                                 Collection<ProjectDevice> allProjectDevices,
-                                 Parameter parameter) {
+                                 Collection<ProjectDevice> allProjectDevices) {
         String term_type = term_node.get("type").asText();
         Term term;
         if (Term.Type.NUMBER.name().equals(term_type)) {
             double num = term_node.get("value").get("value").asDouble();
-            Unit unit = ((NumericConstraint) parameter.getConstraint()).getUnit();
+            Unit unit = Unit.valueOf(term_node.get("value").get("unit").asText());
             NumberWithUnit numberWithUnit = new NumberWithUnit(num, unit);
             term = new NumberWithUnitTerm(numberWithUnit);
         } else if (Term.Type.OPERATOR.name().equals(term_type)) {
@@ -316,57 +320,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             throw new IllegalStateException("Simple expression parsing fail");
         }
     }
-
-//    public Expression deserializeExpression(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-//            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException {
-//        Expression expression = new Expression();
-//
-//        for (JsonNode termNode : node) {
-//            Term term = null;
-//
-//            OP type = OP.valueOf(termNode.get("type").asText());
-//            if (type == OP.NUMBER) {
-//                term = new NumberWithUnitTerm(new NumberWithUnit(termNode.get("value").get("value").asDouble()
-//                        , Unit.valueOf(termNode.get("value").get("unit").asText())));
-//            } else if (type == OP.STRING) {
-//                term = new StringTerm(termNode.get("value").asText());
-//            } else if (type == OP.OPERATOR) {
-//                term = new OperatorTerm(OP.valueOf(termNode.get("value").asText()));
-//            } else if (type == OP.VALUE) {
-//                ProjectValue pv = deserializeProjectValue(mapper, termNode.get("value"), inputDevice, outputDevice, connectivityDevices);
-//                term = new ValueTerm(pv);
-//            } else {
-//                throw new IllegalStateException("Found unknown term " + type);
-//            }
-//
-//            expression.getTerms().add(term);
-//        }
-//
-//        return expression;
-//    }
-//
-//    public ProjectValue deserializeProjectValue(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-//            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices) throws IOException, JsonProcessingException {
-//        String deviceName = node.get("name").asText();
-//        ProjectDevice device = null;
-//        for (ProjectDevice projectDevice : inputDevice) {
-//            if (deviceName.equals(projectDevice.getName()))
-//                device = projectDevice;
-//        }
-//        for (ProjectDevice projectDevice : outputDevice) {
-//            if (deviceName.equals(projectDevice.getName()))
-//                device = projectDevice;
-//        }
-//        for (ProjectDevice projectDevice : connectivityDevices) {
-//            if (deviceName.equals(projectDevice.getName()))
-//                device = projectDevice;
-//        }
-//
-//        Value value = device.getGenericDevice().getValue(node.get("value").asText());
-//
-//        return new ProjectValue(device, value);
-//    }
-
     public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());

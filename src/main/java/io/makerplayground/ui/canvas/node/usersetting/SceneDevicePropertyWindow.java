@@ -116,6 +116,7 @@ public class SceneDevicePropertyWindow extends PopOver {
         GridPane.setRowIndex(actionComboBox, 0);
         GridPane.setColumnIndex(actionComboBox, 1);
 
+        propertyPane.setHgap(10);
         propertyPane.setVgap(5);
         propertyPane.getChildren().addAll(actionLabel, actionComboBox);
 
