@@ -33,6 +33,16 @@ public class SoftwareVersionControl {
 
     private static final String URL = "http://mprepo.azurewebsites.net/current_version"; // or "http://mprepo.azurewebsites.net/devtest/current_version"
 
+    public static boolean isOlderThan(SoftwareVersionControl versionControl) {
+        if (versionControl.version.startsWith("0.2")) {
+            return false;
+        }
+        if (versionControl.version.startsWith("0.3.0")) {
+            return true;
+        }
+        throw new IllegalStateException("");
+    }
+
     public static Optional<SoftwareVersionControl> getLatestVersionInfo() {
         SoftwareVersionControl latestVersion = null;
         ObjectMapper mapper = new ObjectMapper();

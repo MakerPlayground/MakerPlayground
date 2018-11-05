@@ -210,7 +210,7 @@ public class Main extends Application {
 
         new Thread(() -> {
             SoftwareVersionControl.getLatestVersionInfo().ifPresent(version -> {
-                if (!version.getVersionString().equals(SoftwareVersionControl.CURRENT_VERSION)) {
+                if (SoftwareVersionControl.isOlderThan(version)) {
                     Platform.runLater(() -> {
                         ImageView icon = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
                         icon.setFitWidth(50);
