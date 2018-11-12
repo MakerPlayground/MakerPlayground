@@ -27,27 +27,16 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Optional;
 
-public class SoftwareVersionControl {
-    public static final String CURRENT_BUILD_NAME = "Maker Playground v0.3.0-beta1";
-    public static final String CURRENT_VERSION = "0.3.0-beta1";
-
+public class SoftwareVersion implements Comparable<SoftwareVersion> {
+    public static final SoftwareVersion CURRENT_VERSION = new SoftwareVersion("Maker Playground v0.3.0-beta1", "0.3.0-beta1"
+            , "http://makerplayground.io", new Date(1541997990)); // Nov 12, 2018
     private static final String URL = "http://mprepo.azurewebsites.net/current_version"; // or "http://mprepo.azurewebsites.net/devtest/current_version"
 
-    public static boolean isOlderThan(SoftwareVersionControl versionControl) {
-        if (versionControl.version.startsWith("0.2")) {
-            return false;
-        }
-        if (versionControl.version.startsWith("0.3.0")) {
-            return true;
-        }
-        throw new IllegalStateException("");
-    }
-
-    public static Optional<SoftwareVersionControl> getLatestVersionInfo() {
-        SoftwareVersionControl latestVersion = null;
+    public static Optional<SoftwareVersion> getLatestVersionInfo() {
+        SoftwareVersion latestVersion = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            latestVersion = mapper.readValue(new URL(URL), SoftwareVersionControl.class);
+            latestVersion = mapper.readValue(new URL(URL), SoftwareVersion.class);
         } catch (UnknownHostException|ConnectException e) {
             // exception can normally be thrown when there is no internet connectivity
         } catch (IOException e) {
@@ -62,7 +51,7 @@ public class SoftwareVersionControl {
     private Date releaseDate;
 
     @JsonCreator
-    private SoftwareVersionControl(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version
+    private SoftwareVersion(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version
             , @JsonProperty("download_url") String downloadURL, @JsonProperty("release_date") java.util.Date releaseDate) {
         this.buildName = buildName;
         this.version = version;
@@ -84,5 +73,10 @@ public class SoftwareVersionControl {
 
     public Date getReleaseDate() {
         return releaseDate;
+    }
+
+    @Override
+    public int compareTo(SoftwareVersion o) {
+        return new ComparableVersion(version).compareTo(new ComparableVersion(o.version));
     }
 }

@@ -24,7 +24,7 @@ import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.ui.dialog.tutorial.TutorialView;
 import io.makerplayground.version.ProjectVersionControl;
-import io.makerplayground.version.SoftwareVersionControl;
+import io.makerplayground.version.SoftwareVersion;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -123,9 +123,9 @@ public class Main extends Application {
 
         projectPathListener = (observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - Untitled Project");
+                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
             } else {
-                primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - " + project.getFilePath());
+                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
             }
         };
 
@@ -209,8 +209,8 @@ public class Main extends Application {
         primaryStage.show();
 
         new Thread(() -> {
-            SoftwareVersionControl.getLatestVersionInfo().ifPresent(version -> {
-                if (SoftwareVersionControl.isOlderThan(version)) {
+            SoftwareVersion.getLatestVersionInfo().ifPresent(version -> {
+                if (version.compareTo(SoftwareVersion.CURRENT_VERSION) > 0) {
                     Platform.runLater(() -> {
                         ImageView icon = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
                         icon.setFitWidth(50);
@@ -285,9 +285,9 @@ public class Main extends Application {
 
     private void updatePathTextField(Stage primaryStage) {
         if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - Untitled Project");
+            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
         } else {
-            primaryStage.setTitle(SoftwareVersionControl.CURRENT_BUILD_NAME + " - " + project.getFilePath());
+            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
         }
     }
 
