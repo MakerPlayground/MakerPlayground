@@ -204,7 +204,15 @@ public class Main extends Application {
             tutorialView.show();
         });
 
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/icons/logo_taskbar.png")));
+        primaryStage.getIcons().addAll(new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_16.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_20.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_24.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_32.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_40.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_48.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_60.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_72.png"))
+                , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_256.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
 
