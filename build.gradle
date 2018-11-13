@@ -30,7 +30,7 @@ ext {
     imageZipPath = "$buildDir/image-zip/${launcherName}-${launcherVersion}.zip"
 }
 
-defaultTasks 'clean', 'jlinkZip'
+defaultTasks 'clean', 'run'
 
 dependencies {
     compile "org.openjfx:javafx-base:11:${platform}"
@@ -83,26 +83,6 @@ jlink {
         requires 'java.sql';
     }
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-}
-
-tasks.jlink {
-    doLast {
-        // copy the library to the build directory
-        copy {
-            from('library')
-            into("$imageDirPath/bin/library")
-        }
-
-        // append the required vm arguments
-        def scriptName = project.launcherName
-        ["$scriptName", "${scriptName}.bat"].each { script ->
-            def scriptFile = new File("$imageDirPath/bin/$script")
-            if (scriptFile.file) {
-                def newText = scriptFile.text.replace('%DIR%\\java', '%DIR%\\javaw')
-                scriptFile.newWriter().withWriter {w -> w << newText}
-            }
-        }
-    }
 }
 
 mainClassName='io.makerplayground.ui.Main'

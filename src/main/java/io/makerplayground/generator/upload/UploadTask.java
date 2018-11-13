@@ -29,7 +29,7 @@ public class UploadTask extends Task<UploadResult> {
     // workspace directory for storing generated project folder
     private final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
     // program installation directory
-    private final String MP_INSTALLDIR = new File("").getAbsoluteFile().getParentFile().getPath();
+    private final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
     // platformio home directory for storing compilers and tools for each platform
     private final String MP_PLATFORMIO_HOMEDIR = MP_INSTALLDIR + File.separator + "platformio";
 
@@ -67,6 +67,8 @@ public class UploadTask extends Task<UploadResult> {
         }
 
         updateProgress(0.15, 1);
+
+        Platform.runLater(() -> log.set("Install directory is at " + MP_INSTALLDIR + "\n"));
 
         /* check platformio installation */
         Optional<String> pythonPath = getPythonPath();
