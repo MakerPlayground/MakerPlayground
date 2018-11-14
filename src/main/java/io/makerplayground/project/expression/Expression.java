@@ -42,8 +42,8 @@ public abstract class Expression {
         public String toString() {
             switch (this) {
                 case ONCE: return "Set once";
-                case REALTIME: return "Update realtime";
-                case USER_DEFINED: return "Update every";
+                case REALTIME: return "Set once and update realtime";
+                case USER_DEFINED: return "Set once and update every";
                 default: throw new IllegalStateException();
             }
         }
