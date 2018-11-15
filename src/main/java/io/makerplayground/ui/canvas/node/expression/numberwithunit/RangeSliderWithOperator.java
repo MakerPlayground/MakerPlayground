@@ -19,11 +19,13 @@ package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 import io.makerplayground.project.term.Operator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
-import javafx.stage.WindowEvent;
 import org.controlsfx.control.RangeSlider;
 
 import java.util.Map;
@@ -68,19 +70,18 @@ public class RangeSliderWithOperator extends RangeSlider {
                 , Operator.LESS_THAN, lessThanText
                 , Operator.LESS_THAN_OR_EQUAL, lessThanOrEqualText);
 
-        // when this control becomes children of a scene, we attached a listener to look up and keep the instance of thumbs
-        // after the scene has shown (lookup() will return null if the control hasn't become visible)
-        sceneProperty().addListener((observable, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.getWindow().addEventFilter(WindowEvent.WINDOW_SHOWN, event -> {
-                    lowThumb = (Pane) lookup(".range-slider .low-thumb");
-                    lowThumb.getChildren().add(operatorTextMap.get(lowThumbOperator.get()));
+        // when the range slider is drawn, the layout bounds are changed. we then draw the low and high thumbs operator text.
+        layoutBoundsProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                lowThumb = (Pane) RangeSliderWithOperator.this.lookup(".range-slider .low-thumb");
+                lowThumb.getChildren().add(operatorTextMap.get(lowThumbOperator.get()));
 
-                    highThumb = (Pane) lookup(".range-slider .high-thumb");
-                    highThumb.getChildren().add(operatorTextMap.get(highThumbOperator.get()));
+                highThumb = (Pane) RangeSliderWithOperator.this.lookup(".range-slider .high-thumb");
+                highThumb.getChildren().add(operatorTextMap.get(highThumbOperator.get()));
 
-                    initThumbEventHandler();
-                });
+                RangeSliderWithOperator.this.initThumbEventHandler();
+                RangeSliderWithOperator.this.layoutBoundsProperty().removeListener(this);
             }
         });
 
