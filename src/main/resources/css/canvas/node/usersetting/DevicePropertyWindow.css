@@ -1,7 +1,7 @@
 .root{
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-text-fill : black;
+    -fx-text-fill : #333333;
     -fx-font-size: 12px;
 }
 /*.property-sheet .scroll-pane .property-pane {
@@ -35,7 +35,7 @@
 
 .check-box .box {
     -fx-background-color: white;
-    -fx-border-color: #333333;
+    -fx-border-color: #cccccc;
     -fx-border-radius:3px;
 }
 .check-box:selected .mark {

@@ -21,6 +21,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.custom.CustomExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import io.makerplayground.ui.canvas.node.expression.custom.ChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.ValueLinkingControl;
@@ -70,10 +71,10 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
         configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
 
         if (getExpression() instanceof CustomNumberExpression) {
-            ChipField chipField = new ChipField((CustomNumberExpression) getExpression(), projectValues);
-            chipField.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+            CustomExpressionControl customExpressionControl = new CustomExpressionControl((CustomNumberExpression) getExpression(), projectValues);
+            customExpressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
             toggleGroup.selectToggle(customRadioButton);
-            getChildren().add(chipField);
+            getChildren().add(customExpressionControl);
         } else if (getExpression() instanceof NumberWithUnitExpression) {
             NumberWithUnit numberWithUnit = ((NumberWithUnitExpression) getExpression()).getNumberWithUnit();
             NumberWithUnitControl numberWithUnitControl = createNumberWithUnitControl(parameter.getMinimumValue(), parameter.getMaximumValue(), parameter.getUnit(), numberWithUnit);

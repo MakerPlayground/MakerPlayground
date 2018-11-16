@@ -41,9 +41,9 @@ public abstract class Expression {
         @Override
         public String toString() {
             switch (this) {
-                case ONCE: return "Set once";
-                case REALTIME: return "Set once and update realtime";
-                case USER_DEFINED: return "Set once and update every";
+                case ONCE: return "once";
+                case USER_DEFINED: return "once and every";
+                case REALTIME: return "realtime";
                 default: throw new IllegalStateException();
             }
         }

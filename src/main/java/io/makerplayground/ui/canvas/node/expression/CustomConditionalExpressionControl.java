@@ -86,7 +86,6 @@ public class CustomConditionalExpressionControl extends VBox {
             });
 
             ChipField chipField = new ChipField(entry.getExpression(), projectValues);
-            chipField.setRefreshIntervalAdjustable(false);
             chipField.expressionProperty().addListener((observable, oldValue, newValue) -> entry.setExpression(newValue));
 
             operatorLabel = new Label("and");
