@@ -27,8 +27,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,7 +39,10 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends UndecoratedDialog {
@@ -46,7 +50,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     private final ConfigActualDeviceViewModel viewModel;
 
     private final AnchorPane pane = new AnchorPane();
-    @FXML private VBox usedDevice;
+    @FXML private GridPane usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
     @FXML private VBox cloudPlatformParameterSection;
@@ -185,22 +189,20 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
 
     private void initDeviceControlChildren() {
         viewModel.removeDeviceConfigChangedCallback();
+        int currentRow = 0;
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
+            GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             Label name = new Label(projectDevice.getName());
+            name.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
             name.setTextAlignment(TextAlignment.LEFT);
             name.setAlignment(Pos.CENTER_LEFT);
             name.setId("nameLabel");
-
-            HBox devicePic = new HBox();
-            devicePic.setSpacing(10.0);
-            devicePic.setAlignment(Pos.CENTER_LEFT);
-            devicePic.setMaxHeight(25.0);
-            devicePic.getChildren().addAll(imageView, name);
+            GridPane.setConstraints(name, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
             ComboBox<ActualDevice> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
@@ -239,18 +241,21 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                 viewModel.setDevice(projectDevice, newValue);
             });
 
-            CheckBox checkBox = new CheckBox("Auto Select");
+            CheckBox checkBox = new CheckBox("Auto");
+            checkBox.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
             checkBox.setSelected(projectDevice.isAutoSelectDevice());
             deviceComboBox.setDisable(projectDevice.isAutoSelectDevice());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
                 projectDevice.setAutoSelectDevice(new_val);
                 deviceComboBox.setDisable(new_val);
             });
+            GridPane.setConstraints(checkBox, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             VBox entireComboBoxDevice = new VBox();
+            entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
-            entireComboBoxDevice.setPadding(new Insets(0,0,0,30));
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
+            GridPane.setConstraints(entireComboBoxDevice, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             HBox portComboBoxHbox = new HBox();
             portComboBoxHbox.setSpacing(5.0);
@@ -262,8 +267,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             if (actualDevice != null) {
                 if ( !actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty() ) {
                     viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
-                }
-                else {
+                } else {
                     // loop for each peripheral
                     for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
                         if (combo.get(p) == null)
@@ -326,10 +330,9 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
 
                         portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
                     }
+                    entireComboBoxDevice.getChildren().add(portComboBoxHbox);
                 }
             }
-            entireComboBoxDevice.getChildren().add(portComboBoxHbox);
-            entireComboBoxDevice.setSpacing(10.0);
 
             // property
             if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
@@ -370,12 +373,8 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                 entireComboBoxDevice.getChildren().add(propertyGridPane);
             }
 
-            HBox entireDevice = new HBox();
-            entireDevice.setSpacing(10.0);
-            entireDevice.setAlignment(Pos.TOP_LEFT);
-            entireDevice.getChildren().addAll(devicePic, checkBox, entireComboBoxDevice);
-
-            usedDevice.getChildren().add(entireDevice);
+            usedDevice.getChildren().addAll(imageView, name, checkBox, entireComboBoxDevice);
+            currentRow++;
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
@@ -433,7 +432,6 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
                 GridPane.setColumnIndex(cloudPlatformIcon, 0);
 
                 Label cloudPlatformNameLabel = new Label(cloudPlatform.getDisplayName());
-                cloudPlatformNameLabel.setId("nameLabel");
                 GridPane.setRowIndex(cloudPlatformNameLabel, currentRow);
                 GridPane.setColumnIndex(cloudPlatformNameLabel, 1);
 

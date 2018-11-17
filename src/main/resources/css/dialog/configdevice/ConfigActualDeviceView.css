@@ -9,10 +9,83 @@
     -fx-background-color: white;
     -fx-background-radius: 10;
 }
+
+.scroll-pane{
+    -fx-background-color: white;
+    -fx-border-color : white;
+    -fx-border-width : 0px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: white;
+    -fx-border-color : white;
+    -fx-border-width : 0px;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+}
+
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+}
+
+.scroll-bar .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+
+.scroll-bar .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius:0.5em;
+}
+
+.scroll-bar .thumb{
+    -fx-background-color: derive(#707070,45%);
+    -fx-border-radius: 0.5em;
+    -fx-background-insets: 2, 0, 0;
+}
+
+.text-field{
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #2673fd;
+}
+
 #topicConfigDevice{
     -fx-background-color : transparent;
     -fx-text-fill : #707070;
-    -fx-font-size:14px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 .label{
@@ -81,80 +154,12 @@
     -fx-text-fill: black;
     -fx-font-size:12px;
 }
-.scroll-pane{
-    -fx-padding:0;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-}
-
-.scroll-pane > .viewport {
-    -fx-background-color: white;
-}
-
-.scroll-bar:vertical .increment-button {
-    -fx-background-color : transparent;
-    -fx-background-radius: 0em;
-    -fx-padding:0;
-}
-.scroll-bar:vertical .decrement-button {
-    -fx-background-color : transparent;
-    -fx-background-radius: 0em;
-    -fx-padding:0;
-}
-.scroll-bar:vertical .increment-arrow{
-    -fx-shape: " ";
-    -fx-padding:0;
-    -fx-pref-width: 7;
-}
-.scroll-bar:vertical .decrement-arrow{
-    -fx-shape: " ";
-    -fx-padding:0;
-    -fx-pref-width: 7;
-}
-
-.scroll-bar:horizontal .increment-button {
-    -fx-background-color : transparent;
-    -fx-background-radius: 0em;
-    -fx-padding:0;
-}
-.scroll-bar:horizontal .decrement-button {
-    -fx-background-color : transparent;
-    -fx-background-radius: 0em;
-    -fx-padding:0;
-}
-.scroll-bar:horizontal .increment-arrow{
-    -fx-shape: " ";
-    -fx-padding:0;
-    -fx-pref-height: 7;
-}
-.scroll-bar:horizontal .decrement-arrow{
-    -fx-shape: " ";
-    -fx-padding:0;
-    -fx-pref-height: 7;
-}
-.scroll-bar .track{
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-border-radius:2em;
-}
-.scroll-bar .thumb{
-    -fx-background-color: derive(#313644,45%);
-    -fx-border-radius: 2em;
-    -fx-background-insets: 2, 0, 0;
-}
-.scroll-bar {
-    -fx-background-color: transparent;
-}
-.check-box{
-    -fx-min-width:25;
-    -fx-min-height:25;
-}
-.check-box .box{
-    -fx-border-color: #707070;
-    -fx-background-color: white;
-}
 
 #unusedLabel {
+    -fx-font-weight: bold;
+}
+
+#additionalLabel {
     -fx-font-weight: bold;
 }
 
