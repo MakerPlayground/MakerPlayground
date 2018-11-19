@@ -51,7 +51,7 @@ public class Scene extends NodeElement {
     private final ObjectProperty<DelayUnit> delayUnit;
 
     Scene(Project project) {
-        super(20,20,205, 121, project);
+        super(20, 20, 205, 124, project);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed

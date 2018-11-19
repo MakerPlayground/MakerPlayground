@@ -63,7 +63,7 @@ public class Project {
     private final ObservableList<Line> unmodifiableLine;
 
     private final StringProperty filePath;
-    private static final Pattern sceneNameRegex = Pattern.compile("scene\\d+");
+    private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
     public Project() {
@@ -219,7 +219,7 @@ public class Project {
                 .orElse(0);
 
         Scene s = new Scene(this);
-        s.setName("scene" + (id + 1));
+        s.setName("Scene" + (id + 1));
         scene.add(s);
         checkAndInvalidateDiagram();
         return s;
@@ -232,7 +232,7 @@ public class Project {
                 .max()
                 .orElse(0);
 
-        Scene newScene = new Scene(s, "scene" + (id + 1), this);
+        Scene newScene = new Scene(s, "Scene" + (id + 1), this);
         scene.add(newScene);
         checkAndInvalidateDiagram();
         return newScene;

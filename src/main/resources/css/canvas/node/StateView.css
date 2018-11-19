@@ -4,17 +4,21 @@
     -fx-font-size:12px;
 }
 #statePane {
-    -fx-background-radius: 10 10 10 10;
+    -fx-background-radius: 12;
     -fx-background-color: #ffffff;
     /*-fx-border-color: #e3e3e3;
     -fx-border-radius: 10 10 10 10;*/
 }
+
 #nameStateTextField {
     -fx-background-color : transparent;
     -fx-text-fill: #707070;
     -fx-font-weight: bold;
     -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
 }
+
 #numberTextField {
     -fx-background-color : #f6f6f6;
     -fx-background-radius: 5 5 5 5;
@@ -22,7 +26,7 @@
     -fx-border-width : 1px;
     -fx-border-radius: 5 5 5 5;
     -fx-text-fill : #707070;
-    -fx-font-size : 9px;
+    -fx-font-size : 11px;
     /*-fx-font-weight : bold;*/
 }
 #stateBottomHBox{
@@ -30,20 +34,25 @@
     -fx-background-radius: 0 0 10 10;
 }
 #delayText {
-    -fx-text-fill : white;
-    -fx-font-size:9px;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
     -fx-fill: #707070;
-    -fx-strokeType: OUTSIDE;
 }
 .flow-pane{
     -fx-background-color : white;
     -fx-border-color : null;
 }
 
-#scrollPane > .viewport{
+.scroll-pane{
     -fx-background-color: #f6f6f6;
     -fx-border-color : #e3e3e3;
     -fx-border-width : 1px 0px 1px 0px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
 }
 
 .scroll-bar .increment-button {
@@ -96,7 +105,7 @@
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {
     -fx-font-size: 12px;
-    -fx-background-color: #008ef4;
+    -fx-background-color: #2673fd;
     -fx-text-fill: #ffffff;
 }
 #TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
@@ -107,6 +116,8 @@
 
 #TimeUnitComboBox .arrow{
     -fx-background-color: #707070;
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
 }
 #TimeUnitComboBox: pressed .arrow-button {
     -fx-background-color: white;
