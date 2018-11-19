@@ -65,17 +65,8 @@ public class SceneViewModel {
         return scene.getName();
     }
 
-//    public StringProperty nameProperty() {
-//        return scene.nameProperty();
-//    }
-
-    public boolean setName(String name) {
-        if (!isNameDuplicate(name)) {
-            scene.setName(name);
-            return true;
-        } else {
-            return false;
-        }
+    public void setName(String name) {
+        scene.setName(name);
     }
 
     public double getDelay() {
@@ -140,18 +131,6 @@ public class SceneViewModel {
 
     public BooleanProperty hasDeviceToAddProperty() {
         return hasDeviceToAdd;
-    }
-
-    // Check if current scene's name is duplicated with other scenes
-    // return true when this name cannot be used
-    public boolean isNameDuplicate(String newName) {
-        for (Scene scene : project.getScene()) {
-            //System.out.println("name value = " + scene.getName() + " new name = " + newName);
-            if ((this.scene != scene) && scene.getName().equals(newName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean hasConnectionFrom(NodeElement other) {

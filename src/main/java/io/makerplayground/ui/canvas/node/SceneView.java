@@ -106,13 +106,7 @@ public class SceneView extends InteractiveNode {
 
         // bind scene's name to the model
         nameTextField.setText(sceneViewModel.getName());
-        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (sceneViewModel.isNameDuplicate(newValue)) {
-                nameTextField.setText(oldValue);
-            } else {
-                sceneViewModel.setName(newValue);
-            }
-        });
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> sceneViewModel.setName(newValue));
 
         // bind scene's location to the model
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
