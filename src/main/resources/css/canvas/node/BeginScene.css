@@ -1,17 +1,17 @@
 #labelHBox {
     -fx-font-name: System Bold;
     -fx-font-size: 14px;
-    -fx-background-color: #ffffff;
+    -fx-background-color: #6a737d;
     -fx-background-radius: 5px;
     /*-fx-border-color: #e3e3e3;
     -fx-border-radius: 5px;*/
-    -fx-text-fill: #333333;
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
 }
 
 #outPort {
-    -fx-fill: #e3e3e3;
-    -fx-stroke: #e3e3e3;
+    -fx-fill: #4d555b;
+    -fx-stroke: #4d555b;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

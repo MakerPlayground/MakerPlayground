@@ -19,6 +19,7 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.project.DiagramError;
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
+import io.makerplayground.ui.control.AutoResizeTextField;
 import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
@@ -51,7 +52,7 @@ public class SceneView extends InteractiveNode {
     private final HBox parent = new HBox();
     @FXML private VBox statePane;
     @FXML private FlowPane activeIconFlowPane;
-    @FXML private TextField nameTextField;
+    @FXML private AutoResizeTextField nameTextField;
     @FXML private TextField delayTextField;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
@@ -105,13 +106,7 @@ public class SceneView extends InteractiveNode {
 
         // bind scene's name to the model
         nameTextField.setText(sceneViewModel.getName());
-        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (sceneViewModel.isNameDuplicate(newValue)) {
-                nameTextField.setText(oldValue);
-            } else {
-                sceneViewModel.setName(newValue);
-            }
-        });
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> sceneViewModel.setName(newValue));
 
         // bind scene's location to the model
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
@@ -131,6 +126,11 @@ public class SceneView extends InteractiveNode {
                 sceneViewModel.setDelay(delay);
             } else {
                 delayTextField.setText(String.valueOf(oldValue));
+            }
+        });
+        delayTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (delayTextField.getText().isEmpty()) {
+                delayTextField.setText("0");
             }
         });
 

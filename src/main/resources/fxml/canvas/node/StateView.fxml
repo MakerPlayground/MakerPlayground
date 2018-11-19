@@ -14,34 +14,36 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.text.Text?>
 
-<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<?import io.makerplayground.ui.control.AutoResizeTextField?>
+
+<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" />
-      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="205.0" >
+      <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" strokeType="INSIDE" strokeWidth="0.0" />
+      <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="205.0">
          <children>
             <AnchorPane id="headerPane" maxHeight="30.0" maxWidth="205.0" minHeight="30.0" minWidth="205.0" prefWidth="205.0">
                <children>
-                  <TextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" prefWidth="100.0" AnchorPane.leftAnchor="5.0" />
-                  <ImageView fx:id="removeSceneBtn" id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+                  <AutoResizeTextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" AnchorPane.leftAnchor="15.0" />
+                  <ImageView id="removeSceneBtn" fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
                      <image>
                         <Image url="@../../../icons/cancel-2.png" />
                      </image>
                   </ImageView>
                </children>
             </AnchorPane>
-            <ScrollPane id="scrollPane" fitToWidth="true" prefHeight="65.0" prefWidth="205.0">
+            <ScrollPane id="scrollPane" fitToWidth="true" prefWidth="205.0">
                <content>
-                  <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="2.5" maxHeight="65.0" prefHeight="65.0" prefWidth="205.0" vgap="2.5">
-                     <padding>
-                        <Insets bottom="2.5" left="2.5" right="2.5" top="2.5" />
-                     </padding>
+                  <FlowPane fx:id="activeIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="3.0" prefHeight="64.0" prefWidth="205.0" vgap="4.0">
                      <children>
                         <Button id="addOutputButton" fx:id="addOutputButton" alignment="TOP_LEFT" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" />
                      </children>
+                     <padding>
+                        <Insets bottom="2.0" left="3.0" right="3.0" top="2.0" />
+                     </padding>
                   </FlowPane>
                </content>
             </ScrollPane>
-            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="7.0" >
+            <HBox id="stateBottomHBox" alignment="CENTER_LEFT" maxHeight="26.0" minHeight="26.0" spacing="7.0">
                <children>
                   <Text id="delayText" strokeWidth="0.0" text="Delay">
                      <HBox.margin>
@@ -53,7 +55,7 @@
                         <Insets />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="70.0" promptText="sec" />
+                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="60.0" />
                </children>
                <VBox.margin>
                   <Insets left="15.0" />
@@ -61,6 +63,6 @@
             </HBox>
          </children>
       </VBox>
-      <Arc id="arcNode" fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" />
+      <Arc id="arcNode" fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" rotate="180.0" strokeType="INSIDE" strokeWidth="0.0" />
    </children>
 </fx:root>

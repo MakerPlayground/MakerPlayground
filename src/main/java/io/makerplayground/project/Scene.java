@@ -51,7 +51,7 @@ public class Scene extends NodeElement {
     private final ObjectProperty<DelayUnit> delayUnit;
 
     Scene(Project project) {
-        super(20,20,205, 121, project);
+        super(20, 20, 205, 124, project);
 
         this.name = new SimpleStringProperty("");
         // fire update event when actionProperty is invalidated / changed
@@ -110,13 +110,13 @@ public class Scene extends NodeElement {
         return name.get();
     }
 
-    public StringProperty nameProperty() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name.set(name);
         invalidate();
+        // invalidate other scene as every scene needs to check for duplicate name
+        for (Scene s : project.getScene()) {
+            s.invalidate();
+        }
     }
 
     public double getDelay() {
@@ -149,8 +149,16 @@ public class Scene extends NodeElement {
 
     @Override
     protected DiagramError checkError() {
-        if (name.get().isEmpty()) {
+        // name should contain only english alphabets and an underscore and it should not be empty
+        if (!name.get().matches("\\w+")) {
             return DiagramError.SCENE_INVALID_NAME;
+        }
+
+        // name should be unique
+        for (Scene s : project.getScene()) {
+            if ((this != s) && name.get().equals(s.name.get())) {
+                return DiagramError.SCENE_DUPLICATE_NAME;
+            }
         }
 
         // parameter should not be null and should be valid
