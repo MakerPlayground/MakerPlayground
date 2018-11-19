@@ -49,12 +49,12 @@
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 5 0 0;
+    -fx-padding:0 10 0 0;
 }
 .scroll-bar .decrement-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 5 0 0;
+    -fx-padding:0 10 0 0;
 }
 .scroll-bar .increment-arrow{
     -fx-shape: " ";
@@ -67,15 +67,16 @@
 .scroll-bar .track{
     -fx-background-color: transparent;
     -fx-border-color : transparent;
-    -fx-border-radius:2em;
+    -fx-border-radius:0.5em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#333333,45%);
-    -fx-border-radius: 1em;
+    -fx-background-color: derive(#707070,45%);
+    -fx-border-radius: 0.5em;
     -fx-background-insets: 2, 0, 0;
 }
 .scroll-bar {
     -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 #TimeUnitComboBox{
