@@ -62,27 +62,28 @@ public class DeviceMapper {
                         compatibility.put(action, new HashMap<>());
                     }
 
-                    Constraint newConstraint = null;
+                    Constraint newConstraint = Constraint.NONE;
                     if (parameter.getDataType() == DataType.INTEGER || parameter.getDataType() == DataType.DOUBLE) {
                         if (o instanceof NumberWithUnitExpression) {
                             NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                             newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
                         } else if (o instanceof CustomNumberExpression) {
                             // TODO: should be calculated from the expression or use range of parameter value
-                            newConstraint = Constraint.NONE;
                         } else if (o instanceof ValueLinkingExpression) {
                             ValueLinkingExpression exp = (ValueLinkingExpression) o;
                             newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
                         } else if (o instanceof ProjectValueExpression) {
                             ProjectValueExpression exp = (ProjectValueExpression) o;
-                            newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
+                            if (exp.getProjectValue() != null) {
+                                newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
+                            }
                         } else {
                             throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
                     } else {
-                        continue;
+                        throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
                     }
 
                     Map<Parameter, Constraint> parameterMap = compatibility.get(action);
