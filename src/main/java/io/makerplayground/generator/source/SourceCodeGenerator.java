@@ -380,11 +380,8 @@ public class SourceCodeGenerator {
 
     public static SourceCodeResult generateCode(Project project, boolean cppMode) {
         SourceCodeGenerator generator = new SourceCodeGenerator(project, cppMode);
-        if (!generator.checkScene(project)) {
-            return new SourceCodeResult(SourceCodeError.SCENE_ERROR, "-");   // TODO: add location
-        }
-        if (!generator.checkCondition(project)) {
-            return new SourceCodeResult(SourceCodeError.CONDITION_ERROR, "-");
+        if (!generator.checkDiagram(project)) {
+            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
         }
         if (!generator.checkDeviceProperty(project)) {
             return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
@@ -392,15 +389,11 @@ public class SourceCodeGenerator {
         if (!generator.checkDeviceAssignment(project)) {
             return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
         }
-
         if (project.getCloudPlatformUsed().size() > 1) {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
 
-        SourceCodeResult sourcecode = generator.generateCodeForSceneFunctions();
-        if (sourcecode.hasError()) {
-            return sourcecode;
-        }
+        generator.generateCodeForSceneFunctions();
 
         generator.appendHeader();
         generator.appendGlobalVariables();
@@ -418,7 +411,7 @@ public class SourceCodeGenerator {
         return new SourceCodeResult(generator.builder.toString());
     }
 
-    private SourceCodeResult generateCodeForSceneFunctions() {
+    private void generateCodeForSceneFunctions() {
         Queue<Scene> queue = new ArrayDeque<>();
 
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
@@ -435,16 +428,12 @@ public class SourceCodeGenerator {
                 visitedScene.add(s);
                 queue.add(s);
             } else {
-                return new SourceCodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, "beginScene");
+                throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
             }
         } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-            SourceCodeError error = processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
-            if (error != SourceCodeError.NONE) {
-                return new SourceCodeResult(error, "beginScene");
-            }
-        } else {
-            return new SourceCodeResult(SourceCodeError.NOT_FOUND_SCENE_OR_CONDITION, "beginScene");
+            processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
         }
+        // do nothing if there isn't any scene or condition
         sceneFunctions.append("}").append(NEW_LINE);
 
         // generate function for each scene
@@ -524,13 +513,10 @@ public class SourceCodeGenerator {
                         queue.add(s);
                     }
                 } else {
-                    return new SourceCodeResult(SourceCodeError.MULT_DIRECT_CONN_TO_SCENE, currentScene.getName().replace(" ", "_"));
+                    throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                 }
             } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                SourceCodeError error = processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
-                if (error != SourceCodeError.NONE) {
-                    return new SourceCodeResult(error, currentScene.getName().replace(" ", "_"));
-                }
+                processCondition(sceneFunctions, queue, visitedScene, project, adjacentCondition);
             } else {
                 sceneFunctions.append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
             }
@@ -538,10 +524,9 @@ public class SourceCodeGenerator {
             // end of scene's function
             sceneFunctions.append("}").append(NEW_LINE);
         }
-        return new SourceCodeResult(SourceCodeError.NONE, "");
     }
 
-    private SourceCodeError processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
+    private void processCondition(StringBuilder sb, Queue<Scene> queue, Collection<Scene> visitedScene, Project project, List<Condition> adjacentCondition) {
         // gather every value used by every condition connect to the current scene
         Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
         for (Condition condition : adjacentCondition) {
@@ -595,7 +580,7 @@ public class SourceCodeGenerator {
                 sb.append(INDENT).append(INDENT).append("if").append("(");
                 sb.append(String.join(" && ", conditionList)).append(") {").append(NEW_LINE);
             } else {
-                return SourceCodeError.CONDITION_ERROR;
+                throw new IllegalStateException("Found an empty condition block");
             }
 
             List<NodeElement> nextVertices = findAdjacentVertices(project, condition);
@@ -612,10 +597,10 @@ public class SourceCodeGenerator {
                         queue.add(s);
                     }
                 } else {
-                    return SourceCodeError.MULT_DIRECT_CONN_TO_SCENE;
+                    throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                 }
             } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
-                return SourceCodeError.NEST_CONDITION;
+                throw new IllegalStateException("Nested condition is not allowed");
             } else {
                 sb.append(INDENT).append(INDENT).append(INDENT).append("currentScene = beginScene;").append(NEW_LINE);
                 sb.append(INDENT).append(INDENT).append(INDENT).append("break;").append(NEW_LINE);
@@ -624,8 +609,6 @@ public class SourceCodeGenerator {
             sb.append(INDENT).append(INDENT).append("}").append(NEW_LINE); // end of if
         }
         sb.append(INDENT).append("}").append(NEW_LINE); // end of while loop
-
-        return SourceCodeError.NONE;
     }
 
     private String parseExpression(Parameter parameter, Expression expression) {
@@ -668,12 +651,10 @@ public class SourceCodeGenerator {
         }
     }
 
-    private boolean checkScene(Project project) {
-        return project.getScene().stream().noneMatch(scene -> scene.getError() != DiagramError.NONE);
-    }
-
-    private boolean checkCondition(Project project) {
-        return project.getCondition().stream().noneMatch(condition -> condition.getError() != DiagramError.NONE);
+    private boolean checkDiagram(Project project) {
+        return project.getScene().stream().noneMatch(scene -> scene.getError() != DiagramError.NONE)
+                && project.getCondition().stream().noneMatch(condition -> condition.getError() != DiagramError.NONE)
+                && project.getDiagramStatus().isEmpty();
     }
 
     private boolean checkDeviceProperty(Project project) {

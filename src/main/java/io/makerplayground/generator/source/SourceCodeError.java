@@ -18,13 +18,8 @@ package io.makerplayground.generator.source;
 
 public enum SourceCodeError {
     NONE(""),
-    SCENE_ERROR("Missing required parameter in some scenes"),
+    DIAGRAM_ERROR("Found some errors in the diagram"),
     MISSING_PROPERTY("Missing required device's property"),
-    NOT_FOUND_SCENE_OR_CONDITION("Can't find any scene or condition connect to the begin node"),
-    MULT_DIRECT_CONN_TO_SCENE("Found multiple direct connection to the same scene"),
-    NEST_CONDITION("Multiple condition are connected together"),
-    SHORT_CIRCUIT("Some conditions are not reachable"),
-    CONDITION_ERROR("Missing required parameter in some conditions"),
     MORE_THAN_ONE_CLOUD_PLATFORM("Only one cloud platform (e.g. Blynk or NETPIE) is allowed"),
     NOT_SELECT_DEVICE_OR_PORT("Some devices and/or their ports haven't been selected");
 
