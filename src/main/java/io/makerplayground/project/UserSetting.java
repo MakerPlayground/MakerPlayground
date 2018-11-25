@@ -17,11 +17,8 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
@@ -44,46 +41,17 @@ public class UserSetting {
     private final ObservableMap<Value, Expression> expression;
     private final ObservableMap<Value, Boolean> expressionEnable;
 
-    UserSetting(ProjectDevice device, boolean scene ) {  // TODO: Remove boolean field!!!
+    private UserSetting(ProjectDevice device) {
         this.device = device;
         this.action = new SimpleObjectProperty<>();
         this.valueMap = FXCollections.observableHashMap();
         this.expression = FXCollections.observableHashMap();
         this.expressionEnable = FXCollections.observableHashMap();
 
-        // Initialize the map with default action and it's parameters
-        List<Action> actionList;
-        if (scene) {
-            actionList = device.getGenericDevice().getAction();
-        } else {
-            actionList = device.getGenericDevice().getCondition();
-        }
-        if (!actionList.isEmpty()) {
-            Action action = actionList.get(0);
-            this.action.set(action);
-            for (Parameter param : action.getParameter()) {
-                this.valueMap.put(param, Expression.fromDefaultParameter(param));
-            }
-        }
-
-        // Reset value of the valueMap every time that the action is changed
         this.action.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
-            for (Parameter param : action.get().getParameter()) {
-                switch (param.getDataType()) {
-                    case DOUBLE:
-                        valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
-                        break;
-                    case STRING:
-                        valueMap.put(param, new SimpleStringExpression((String) param.getDefaultValue()));
-                        break;
-                    case ENUM:
-                        valueMap.put(param, new SimpleStringExpression((String) param.getDefaultValue()));
-                        break;
-                    case INTEGER:
-                        valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
-                        break;
-                }
+            for (Parameter param : newValue.getParameter()) {
+                valueMap.put(param, Expression.fromDefaultParameter(param));
             }
         });
 
@@ -94,36 +62,33 @@ public class UserSetting {
         }
     }
 
+    UserSetting(ProjectDevice device, Action supportingActionOrCondition) {
+        this(device);
+        this.action.set(supportingActionOrCondition);
+    }
+
     UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this.device = device;
-        this.action = new SimpleObjectProperty<>(action);
-        this.valueMap = FXCollections.observableMap(valueMap);
-        this.expression = FXCollections.observableMap(expression);
-        this.expressionEnable = FXCollections.observableMap(enable);
+        this(device);
+        this.action.set(action);
+
+        // replace all default map values with these maps
+        this.valueMap.putAll(valueMap);
+        this.expression.putAll(expression);
+        this.expressionEnable.putAll(enable);
     }
 
     UserSetting(UserSetting u) {
-        this.device = u.getDevice();
-        this.action = new SimpleObjectProperty<>(u.getAction());
-        this.valueMap = FXCollections.observableHashMap();
-        for (Parameter p : u.getValueMap().keySet()) {
-            Expression o = u.getValueMap().get(p);
-            this.valueMap.put(p, o.deepCopy());
-        }
-        this.expression = FXCollections.observableHashMap();
-        this.expressionEnable = FXCollections.observableHashMap();
-        for (Value v : u.getExpression().keySet()) {
-            this.expression.put(v, u.getExpression().get(v).deepCopy());
-            this.expressionEnable.put(v, u.getExpressionEnable().get(v));
-        }
+        this(u.device);
+        this.action.set(u.action.get());
 
-        // Reset value of the valueMap every time that the action is changed
-        this.action.addListener((observable, oldValue, newValue) -> {
-            valueMap.clear();
-            for (Parameter param : action.get().getParameter()) {
-                valueMap.put(param, Expression.fromDefaultParameter(param));
-            }
-        });
+        // replace values by the deepCopy version
+        for (var entry: u.valueMap.entrySet()) {
+            this.valueMap.put(entry.getKey(), entry.getValue().deepCopy());
+        }
+        for (var entry : u.expression.entrySet()) {
+            this.expression.put(entry.getKey(), entry.getValue().deepCopy());
+        }
+        this.expressionEnable.putAll(u.expressionEnable);
     }
 
     public ProjectDevice getDevice() {

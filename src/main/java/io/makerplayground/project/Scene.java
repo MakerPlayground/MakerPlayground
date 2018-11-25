@@ -84,7 +84,11 @@ public class Scene extends NodeElement {
     }
 
     public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device, true));
+        if (device.getGenericDevice().getAction().isEmpty()) {
+            throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have action.");
+        } else {
+            setting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
+        }
         invalidate();
     }
 

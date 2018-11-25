@@ -83,7 +83,11 @@ public class Condition extends NodeElement {
     }
 
     public void addDevice(ProjectDevice device) {
-        setting.add(new UserSetting(device, false));
+        if (device.getGenericDevice().getCondition().isEmpty()) {
+            throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have condition.");
+        } else {
+            setting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+        }
         invalidate();
     }
 
