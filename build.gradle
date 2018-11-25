@@ -41,6 +41,7 @@ dependencies {
     compile "org.controlsfx:controlsfx:9.0.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.7"
     compile "commons-io:commons-io:2.6"
+    compile "lk.vivoxalabs.customstage:CustomStage:1.3.2"
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
 }
 

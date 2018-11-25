@@ -58,6 +58,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
+import lk.vivoxalabs.customstage.CustomStage;
+import lk.vivoxalabs.customstage.CustomStageBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,7 +101,7 @@ public class Main extends Application {
     private boolean flag = false; // for the first tutorial tracking
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage stage) throws Exception {
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
@@ -108,9 +110,17 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
         borderPane.setCenter(mainWindow);
+        borderPane.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
-        final Scene scene = new Scene(borderPane, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
+//        final Scene scene = new Scene(borderPane, 800, 600);
+//        scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
+
+        CustomStage primaryStage = new CustomStageBuilder()
+                .setWindowTitle("CustomStage example")
+                .setTitleColor("#333333")
+                .setWindowColor("white")
+                .setStyleSheet(getClass().getResource("/css/main.css"))
+                .build();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(borderPane);
@@ -123,9 +133,9 @@ public class Main extends Application {
 
         projectPathListener = (observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
-                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
+                primaryStage.setWindowTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
             } else {
-                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
+                primaryStage.setWindowTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
             }
         };
 
@@ -159,7 +169,7 @@ public class Main extends Application {
         });
 
         // setup keyboard shortcut for new, save and load
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isShortcutDown() && event.getCode() == KeyCode.O) {
                 loadProject(primaryStage);
             } else if (event.isShortcutDown() && event.getCode() == KeyCode.N) {
@@ -175,34 +185,34 @@ public class Main extends Application {
         saveAsButton.setOnAction(event -> saveProjectAs());
         deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
 
-        tutorialButton.setOnAction(event -> {
-            if (flag) {
-                flag = false;
-            }
-
-            TutorialView tutorialView = new TutorialView(scene.getWindow());
-
-            Parent rootPane = scene.getRoot();
-            Effect previousEffect = rootPane.getEffect();
-            //final BoxBlur blur = new BoxBlur(0, 0, 5);
-            final GaussianBlur blur = new GaussianBlur(0);
-            blur.setInput(previousEffect);
-            rootPane.setEffect(blur);
-
-            tutorialView.setOnHidden(t -> rootPane.setEffect(previousEffect));
-
-            // Optional extra: fade the blur and dialog in:
-            //scene.getRoot().setOpacity(0);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(300),
-                    //new KeyValue(blur.widthProperty(), 10),
-                    //new KeyValue(blur.heightProperty(), 10),
-                    new KeyValue(blur.radiusProperty(), 7)
-                    //new KeyValue(scene.getRoot().opacityProperty(), 0.75)
-            ));
-            timeline.play();
-
-            tutorialView.show();
-        });
+//        tutorialButton.setOnAction(event -> {
+//            if (flag) {
+//                flag = false;
+//            }
+//
+//            TutorialView tutorialView = new TutorialView(scene.getWindow());
+//
+//            Parent rootPane = scene.getRoot();
+//            Effect previousEffect = rootPane.getEffect();
+//            //final BoxBlur blur = new BoxBlur(0, 0, 5);
+//            final GaussianBlur blur = new GaussianBlur(0);
+//            blur.setInput(previousEffect);
+//            rootPane.setEffect(blur);
+//
+//            tutorialView.setOnHidden(t -> rootPane.setEffect(previousEffect));
+//
+//            // Optional extra: fade the blur and dialog in:
+//            //scene.getRoot().setOpacity(0);
+//            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(300),
+//                    //new KeyValue(blur.widthProperty(), 10),
+//                    //new KeyValue(blur.heightProperty(), 10),
+//                    new KeyValue(blur.radiusProperty(), 7)
+//                    //new KeyValue(scene.getRoot().opacityProperty(), 0.75)
+//            ));
+//            timeline.play();
+//
+//            tutorialView.show();
+//        });
 
         primaryStage.getIcons().addAll(new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_16.png"))
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_20.png"))
@@ -213,7 +223,8 @@ public class Main extends Application {
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_60.png"))
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_72.png"))
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_256.png")));
-        primaryStage.setScene(scene);
+//        primaryStage.setScene(scene);
+        primaryStage.changeScene(borderPane);
         primaryStage.show();
 
         new Thread(() -> {
@@ -291,11 +302,11 @@ public class Main extends Application {
         }
     }
 
-    private void updatePathTextField(Stage primaryStage) {
+    private void updatePathTextField(CustomStage primaryStage) {
         if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
+            primaryStage.setWindowTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
         } else {
-            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
+            primaryStage.setWindowTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
         }
     }
 
@@ -304,7 +315,7 @@ public class Main extends Application {
         return dialog.showAndGetResponse();
     }
 
-    private void newProject(Stage primaryStage) {
+    private void newProject(CustomStage primaryStage) {
         if (project.hasUnsavedModification()) {
             UnsavedDialog.Response retVal = showConfirmationDialog();
             if (retVal == UnsavedDialog.Response.CANCEL) {
@@ -324,7 +335,7 @@ public class Main extends Application {
         updatePathTextField(primaryStage);
     }
 
-    private void loadProject(Stage primaryStage) {
+    private void loadProject(CustomStage primaryStage) {
         if (project.hasUnsavedModification()) {
             UnsavedDialog.Response retVal = showConfirmationDialog();
             if (retVal == UnsavedDialog.Response.CANCEL) {
