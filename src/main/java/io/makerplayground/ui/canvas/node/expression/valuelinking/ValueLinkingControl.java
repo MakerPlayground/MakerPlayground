@@ -48,13 +48,13 @@ public class ValueLinkingControl extends GridPane {
     private ComboBox<ProjectValue> valueCombobox;
     private RangeSliderWithUnit sourceRange;
     private RangeSliderWithUnit destRange;
-    private ChangeListener<Boolean> booleanChangeListener;
+    private ChangeListener<Boolean> mappingEnabledChangeListener;
 
     public ValueLinkingControl(Expression expression, List<ProjectValue> projectValues, Parameter parameter) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.projectValues = projectValues;
         this.parameter = parameter;
-        this.booleanChangeListener = (observable, oldValue, newValue) -> {
+        this.mappingEnabledChangeListener = (observable, oldValue, newValue) -> {
             if (newValue) {
                 ValueLinkingExpression valueLinkingExpression = new ValueLinkingExpression(parameter)
                         .setSourceValue(((ProjectValueExpression) getExpression()).getProjectValue());
@@ -138,7 +138,7 @@ public class ValueLinkingControl extends GridPane {
         GridPane.setConstraints(valueCombobox, 1, 0);
 
         CheckBox mappingEnableCheckbox = new CheckBox("map range");
-        mappingEnableCheckbox.selectedProperty().addListener(booleanChangeListener);
+        mappingEnableCheckbox.selectedProperty().addListener(mappingEnabledChangeListener);
         GridPane.setConstraints(mappingEnableCheckbox, 2, 0);
 
         setHgap(10);
@@ -173,6 +173,8 @@ public class ValueLinkingControl extends GridPane {
 
         Label fromLabel = new Label("set to");
         GridPane.setConstraints(fromLabel, 0, 0);
+
+        HBox valueSelectionHBox = new HBox(10);
 
         valueCombobox = new ComboBox<>(FXCollections.observableList(projectValues));
         if (valueLinkingExpression.getSourceValue() != null) {
@@ -214,12 +216,22 @@ public class ValueLinkingControl extends GridPane {
             sourceRange.setHighValue(newExpression.getSourceHighValue());
             sourceRange.setLowValue(newExpression.getSourceLowValue());
         });
-        GridPane.setConstraints(valueCombobox, 1, 0);
 
         CheckBox mappingEnableCheckbox = new CheckBox("map range");
+        mappingEnableCheckbox.setMinHeight(25.0);
         mappingEnableCheckbox.setSelected(true);
-        mappingEnableCheckbox.selectedProperty().addListener(booleanChangeListener);
-        GridPane.setConstraints(mappingEnableCheckbox, 2, 0);
+        mappingEnableCheckbox.selectedProperty().addListener(mappingEnabledChangeListener);
+
+        CheckBox inverseEnableCheckbox = new CheckBox("inverse");
+        inverseEnableCheckbox.setMinHeight(25.0);
+        inverseEnableCheckbox.setSelected(valueLinkingExpression.isInverse());
+        inverseEnableCheckbox.disableProperty().bind(mappingEnableCheckbox.selectedProperty().not());
+        inverseEnableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            sourceRange.setInverse(inverseEnableCheckbox.isSelected());
+            expression.set(((ValueLinkingExpression) getExpression()).setInverse(inverseEnableCheckbox.isSelected()));
+        });
+        valueSelectionHBox.getChildren().addAll(valueCombobox, mappingEnableCheckbox, inverseEnableCheckbox);
+        GridPane.setConstraints(valueSelectionHBox, 1, 0, 2, 1);
 
         Label fromRangeLabel = new Label("from range");
         GridPane.setConstraints(fromRangeLabel, 0, 1);
@@ -230,6 +242,7 @@ public class ValueLinkingControl extends GridPane {
             NumericConstraint constraint = (NumericConstraint) valueLinkingExpression.getSourceValue().getValue().getConstraint();
             sourceRange.setMaxValue(new NumberWithUnit(constraint.getMax(), constraint.getUnit()));
             sourceRange.setMinValue(new NumberWithUnit(constraint.getMin(), constraint.getUnit()));
+            sourceRange.setInverse(valueLinkingExpression.isInverse());
             sourceRange.setHighValue(valueLinkingExpression.getSourceHighValue());
             sourceRange.setLowValue(valueLinkingExpression.getSourceLowValue());
         }
@@ -260,7 +273,7 @@ public class ValueLinkingControl extends GridPane {
 
         setHgap(10);
         setVgap(5);
-        getChildren().addAll(fromLabel, valueCombobox, mappingEnableCheckbox, fromRangeLabel, sourceRange, toLabel, destRange, updateLabel, refreshIntervalHBox);
+        getChildren().addAll(fromLabel, valueSelectionHBox, fromRangeLabel, sourceRange, toLabel, destRange, refreshIntervalHBox, updateLabel);
     }
 
     public Expression getExpression() {
