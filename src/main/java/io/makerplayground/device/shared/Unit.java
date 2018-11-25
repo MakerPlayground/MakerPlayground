@@ -16,18 +16,57 @@
 
 package io.makerplayground.device.shared;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * An enum represent unit of a numeric value
  */
 public enum Unit {
     //INPUT DEVICE
-    TIME,METERPERSECSQUARE,HECTOPASCAL,METER,CELSIUS,FAHRENHEIT,KELVIN,RADIUSPERSEC,DEGREEPERSEC,DECIBEL,
-    MICROTESLA,CENTIMETER,LUX,DEGREE,AMPERE,
-    //OUTPUT DEVICE
-    SECOND,MILLISECOND, WAV,NUMBER,
-    //BASIC
-    PERCENT,NOT_SPECIFIED,HERTZ,BPM;
+    TIME(Type.NOT_SPECIFIED),
+    METERPERSECSQUARE(Type.ACCELERATION),
+    HECTOPASCAL(Type.PRESSURE),
+
+    METER(Type.DISTANCE),
+    CENTIMETER(Type.DISTANCE),
+
+    CELSIUS(Type.TEMPERATURE),
+    FAHRENHEIT(Type.TEMPERATURE),
+    KELVIN(Type.TEMPERATURE),
+
+    DEGREE(Type.ANGULAR_DISTANCE),
+    RADIUSPERSEC(Type.ANGULAR_VELOCITY),
+    DEGREEPERSEC(Type.ANGULAR_VELOCITY),
+
+    LUX(Type.LIGHT_INTENSITY),
+    DECIBEL(Type.SOUND_INTENSITY),
+
+    MICROTESLA(Type.MAGNETIC_FIELD),
+    AMPERE(Type.ELECTRIC_CURRENT),
+
+    HERTZ(Type.FREQUENCY),
+    BPM(Type.FREQUENCY),
+
+    SECOND(Type.TIME),
+    MILLISECOND(Type.TIME),
+
+    WAV(Type.NOT_SPECIFIED),
+    NUMBER(Type.NOT_SPECIFIED),
+    PERCENT(Type.NOT_SPECIFIED),
+    NOT_SPECIFIED(Type.NOT_SPECIFIED);
     // TODO: add new unit
+
+    private final Type type;
+
+    public Type getType() {
+        return type;
+    }
+
+    Unit(Type type) {
+        this.type = type;
+    }
 
     @Override
     public String toString() {
@@ -62,4 +101,8 @@ public enum Unit {
         }
     }
 
+    public enum Type {
+        TEMPERATURE, ACCELERATION, DISTANCE, VELOCITY, ANGULAR_VELOCITY, SOUND_INTENSITY, MAGNETIC_FIELD, PRESSURE,
+        LIGHT_INTENSITY, ANGULAR_DISTANCE, ELECTRIC_CURRENT, TIME, FREQUENCY, NOT_SPECIFIED
+    }
 }
