@@ -86,11 +86,9 @@ public abstract class Expression {
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
-            case VALUE:
-                return new ProjectValueExpression();
+            default:
+                throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }
-
-        throw new IllegalStateException("implement the Expression Selection here");
     }
 
     public List<Term> getTerms() {

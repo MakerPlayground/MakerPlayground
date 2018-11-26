@@ -83,9 +83,6 @@ public class UserSetting {
                     case INTEGER:
                         valueMap.put(param, new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue()));
                         break;
-                    case VALUE:
-                        valueMap.put(param, new ProjectValueExpression());
-                        break;
                 }
             }
         });
