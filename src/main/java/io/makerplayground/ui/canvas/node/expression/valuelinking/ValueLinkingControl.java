@@ -236,16 +236,14 @@ public class ValueLinkingControl extends GridPane {
         Label fromRangeLabel = new Label("from range");
         GridPane.setConstraints(fromRangeLabel, 0, 1);
 
-        sourceRange = new RangeSliderWithUnit();
-        sourceRange.disableProperty().bind(valueCombobox.getSelectionModel().selectedItemProperty().isNull());
         if (valueLinkingExpression.getSourceValue() != null) {
             NumericConstraint constraint = (NumericConstraint) valueLinkingExpression.getSourceValue().getValue().getConstraint();
-            sourceRange.setMaxValue(new NumberWithUnit(constraint.getMax(), constraint.getUnit()));
-            sourceRange.setMinValue(new NumberWithUnit(constraint.getMin(), constraint.getUnit()));
-            sourceRange.setInverse(valueLinkingExpression.isInverse());
-            sourceRange.setHighValue(valueLinkingExpression.getSourceHighValue());
-            sourceRange.setLowValue(valueLinkingExpression.getSourceLowValue());
+            sourceRange = new RangeSliderWithUnit(constraint.getMin(), constraint.getMax(), valueLinkingExpression.getSourceLowValue()
+                    , valueLinkingExpression.getSourceHighValue(), valueLinkingExpression.isInverse(), List.of(Unit.NOT_SPECIFIED));
+        } else {
+            sourceRange = new RangeSliderWithUnit();
         }
+        sourceRange.disableProperty().bind(valueCombobox.getSelectionModel().selectedItemProperty().isNull());
         sourceRange.lowValueProperty().addListener((observable, oldValue, newValue) -> {
             expression.set(((ValueLinkingExpression) getExpression()).setSourceLowValue(newValue));
         });
@@ -257,12 +255,9 @@ public class ValueLinkingControl extends GridPane {
         Label toLabel = new Label("to range");
         GridPane.setConstraints(toLabel, 0, 2);
 
-        destRange = new RangeSliderWithUnit();
         Parameter p = valueLinkingExpression.getDestinationParameter();
-        destRange.setMaxValue(new NumberWithUnit(p.getMaximumValue(), p.getUnit().get(0)));
-        destRange.setMinValue(new NumberWithUnit(p.getMinimumValue(), p.getUnit().get(0)));
-        destRange.setHighValue(valueLinkingExpression.getDestinationHighValue());
-        destRange.setLowValue(valueLinkingExpression.getDestinationLowValue());
+        destRange = new RangeSliderWithUnit(p.getMinimumValue(), p.getMaximumValue(), valueLinkingExpression.getDestinationLowValue()
+                , valueLinkingExpression.getDestinationHighValue(), false, List.of(Unit.NOT_SPECIFIED));
         destRange.lowValueProperty().addListener((observable, oldValue, newValue) -> {
             expression.set(((ValueLinkingExpression) getExpression()).setDestinationLowValue(newValue));
         });

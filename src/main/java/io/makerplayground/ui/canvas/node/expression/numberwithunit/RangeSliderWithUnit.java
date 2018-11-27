@@ -18,10 +18,7 @@ package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -48,8 +45,8 @@ public class RangeSliderWithUnit extends HBox {
 
     private final ObjectProperty<NumberWithUnit> minValue;
     private final ObjectProperty<NumberWithUnit> maxValue;
-    private final ObjectProperty<NumberWithUnit> lowValue;  // begin value of the range selected which may be greater than the highValue when the RangeSlider is inverse
-    private final ObjectProperty<NumberWithUnit> highValue; // end value of the range selected which may be less than the lowValue when the RangeSlider is inverse
+    private final ReadOnlyObjectWrapper<NumberWithUnit> lowValue;  // begin value of the range selected which may be greater than the highValue when the RangeSlider is inverse
+    private final ReadOnlyObjectWrapper<NumberWithUnit> highValue; // end value of the range selected which may be less than the lowValue when the RangeSlider is inverse
     private final BooleanProperty inverse;
 
     private static final String inverseRangeBarStyle = "-fx-background-color: red";
@@ -68,26 +65,41 @@ public class RangeSliderWithUnit extends HBox {
     };
 
     public RangeSliderWithUnit() {
-        this(0, 0, List.of(Unit.NOT_SPECIFIED), NumberWithUnit.ZERO);
+        this(0, 0, NumberWithUnit.ZERO, NumberWithUnit.ZERO, false, List.of(Unit.NOT_SPECIFIED));
     }
 
-    public RangeSliderWithUnit(double min, double max, List<Unit> unit, NumberWithUnit initialValue) {
+    public RangeSliderWithUnit(double min, double max, NumberWithUnit low, NumberWithUnit high, boolean inv, List<Unit> unit) {
+        minValue = new SimpleObjectProperty<>(new NumberWithUnit(min, unit.get(0)));
+        maxValue = new SimpleObjectProperty<>(new NumberWithUnit(max, unit.get(0)));
+        lowValue = new ReadOnlyObjectWrapper<>(low);
+        highValue = new ReadOnlyObjectWrapper<>(high);
+
         slider = new RangeSlider();
         slider.setMax(max);
         slider.setMin(min);
+        // we don't actually inverse the RangeSlider so the value set to the slider must be uninverse
+        if (inv) {
+            slider.setHighValue(unInverseNumberWithUnit(high).getValue());
+            slider.setLowValue(unInverseNumberWithUnit(low).getValue());
+            slider.setHighValue(unInverseNumberWithUnit(high).getValue());
+        } else {
+            slider.setHighValue(high.getValue());
+            slider.setLowValue(low.getValue());
+            slider.setHighValue(high.getValue());
+        }
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
 
-        lowSpinner = new Spinner<>(min, max, initialValue.getValue());
+        lowSpinner = new Spinner<>(min, max, low.getValue());
         lowSpinner.setEditable(true);
 
-        highSpinner = new Spinner<>(min, max, initialValue.getValue());
+        highSpinner = new Spinner<>(min, max, high.getValue());
         highSpinner.setEditable(true);
 
-        unitLabel = new Text(initialValue.getUnit().toString());
+        unitLabel = new Text(low.getUnit().toString());     // assume that low and high use the same unit
         unitComboBox = new ComboBox<>(FXCollections.observableArrayList(unit));
-        unitComboBox.getSelectionModel().select(initialValue.getUnit());
-        if (unit.size() == 1 && initialValue.getUnit() == Unit.NOT_SPECIFIED) {
+        unitComboBox.getSelectionModel().select(low.getUnit());
+        if (unit.size() == 1 && low.getUnit() == Unit.NOT_SPECIFIED) {
             unitComboBox.setVisible(false);
             unitComboBox.setManaged(false);
             unitLabel.setVisible(false);
@@ -100,30 +112,29 @@ public class RangeSliderWithUnit extends HBox {
             unitLabel.setManaged(false);
         }
 
-        lowValue = new SimpleObjectProperty<>(initialValue);
-        highValue = new SimpleObjectProperty<>(initialValue);
-        inverse = new SimpleBooleanProperty(false);
+        inverse = new SimpleBooleanProperty(inv);
+        if (inv) {
+            slider.setLabelFormatter(inverseNumberStringConverter);
+            if (rangeBar != null) {
+                rangeBar.setStyle(inverseRangeBarStyle);
+            }
+        } else {
+            slider.setLabelFormatter(defaultNumberStringConverter);
+            if (rangeBar != null) {
+                rangeBar.setStyle("");
+            }
+        }
         inverse.addListener((observable, oldValue, newValue) -> {
             NumberWithUnit lv = lowValue.get();
             NumberWithUnit hv = highValue.get();
+            lowValue.set(hv);
+            highValue.set(lv);
             if (newValue) {
-                // The slider shouldn't be affected by the following method calls (lines 117-118) but due to issue #728 of the ControlsFX project
-                // we also need to set range slider's high value in the lowValue change listener. However, at that time the high value hasn't been set
-                // so when we uninverse it in line 136, slider's high value may be less than slider's low value and caused the slider to break.
-                // The workaround is to set the low/high value to their extreme values based on the inverse property before setting them to their desire values.
-                lowValue.set(getMaxValue());
-                highValue.set(getMinValue());
-                lowValue.set(inverseNumberWithUnit(lv));
-                highValue.set(inverseNumberWithUnit(hv));
                 slider.setLabelFormatter(inverseNumberStringConverter);
                 if (rangeBar != null) {
                     rangeBar.setStyle(inverseRangeBarStyle);
                 }
             } else {
-                lowValue.set(getMinValue());
-                highValue.set(getMaxValue());
-                lowValue.set(unInverseNumberWithUnit(lv));
-                highValue.set(unInverseNumberWithUnit(hv));
                 slider.setLabelFormatter(defaultNumberStringConverter);
                 if (rangeBar != null) {
                     rangeBar.setStyle("");
@@ -150,35 +161,15 @@ public class RangeSliderWithUnit extends HBox {
             unitComboBox.getSelectionModel().select(newValue.getUnit());
         });
 
-        minValue = new SimpleObjectProperty<>(new NumberWithUnit(min, unit.get(0)));
-        maxValue = new SimpleObjectProperty<>(new NumberWithUnit(max, unit.get(0)));
         minValue.addListener((observable, oldValue, newValue) -> {
             slider.setMax(maxValue.get().getValue());
             slider.setMin(newValue.getValue());
-            lowSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(newValue.getValue()
-                    , maxValue.get().getValue()));
-            lowSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                lowValue.set(new NumberWithUnit(newValue1, getLowValue().getUnit()));
-            });
-            highSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(newValue.getValue()
-                    , maxValue.get().getValue()));
-            highSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                highValue.set(new NumberWithUnit(newValue1, getHighValue().getUnit()));
-            });
+            initializeSpinner();
         });
         maxValue.addListener((observable, oldValue, newValue) -> {
             slider.setMax(newValue.getValue());
             slider.setMin(minValue.get().getValue());
-            lowSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue()
-                    , newValue.getValue()));
-            lowSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                lowValue.set(new NumberWithUnit(newValue1, getLowValue().getUnit()));
-            });
-            highSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue()
-                    , newValue.getValue()));
-            highSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-                highValue.set(new NumberWithUnit(newValue1, getHighValue().getUnit()));
-            });
+            initializeSpinner();
         });
 
         // save the actual value (inverse of the slider value when the inverse property is true) to the low/highValue property when the slider's thumb is moved
@@ -197,13 +188,7 @@ public class RangeSliderWithUnit extends HBox {
             }
         }));
 
-        // the spinner always contains the actual value so we don't need to perform any inversion
-        lowSpinner.getValueFactory().valueProperty().addListener(((observable, oldValue, newValue) -> {
-            lowValue.set(new NumberWithUnit(newValue, lowValue.get().getUnit()));
-        }));
-        highSpinner.getValueFactory().valueProperty().addListener(((observable, oldValue, newValue) -> {
-            highValue.set(new NumberWithUnit(newValue, highValue.get().getUnit()));
-        }));
+        initializeSpinner();
 
         unitComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             highValue.set(new NumberWithUnit(highValue.get().getValue(), newValue));
@@ -224,6 +209,26 @@ public class RangeSliderWithUnit extends HBox {
                     rangeBar.setStyle(inverseRangeBarStyle);
                 }
                 layoutBoundsProperty().removeListener(this);
+            }
+        });
+    }
+
+    private void initializeSpinner() {
+        lowSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue(), maxValue.get().getValue(), lowValue.get().getValue()));
+        lowSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            if ((inverse.get() && (newValue1 < highValue.get().getValue())) || (!inverse.get() && (newValue1 > highValue.get().getValue()))) {
+                lowSpinner.getValueFactory().setValue(highValue.get().getValue());
+            } else {
+                // the spinner always contains the actual value so we don't need to perform any inversion
+                lowValue.set(new NumberWithUnit(newValue1, lowValue.get().getUnit()));
+            }
+        });
+        highSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue(), maxValue.get().getValue(), highValue.get().getValue()));
+        highSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            if ((inverse.get() && (newValue1 > lowValue.get().getValue())) || (!inverse.get() && (newValue1 < lowValue.get().getValue()))) {
+                highSpinner.getValueFactory().setValue(lowValue.get().getValue());
+            } else {
+                highValue.set(new NumberWithUnit(newValue1, highValue.get().getUnit()));
             }
         });
     }
@@ -276,8 +281,8 @@ public class RangeSliderWithUnit extends HBox {
         return lowValue.get();
     }
 
-    public ObjectProperty<NumberWithUnit> lowValueProperty() {
-        return lowValue;
+    public ReadOnlyObjectProperty<NumberWithUnit> lowValueProperty() {
+        return lowValue.getReadOnlyProperty();
     }
 
     public void setLowValue(NumberWithUnit lowValue) {
@@ -288,8 +293,8 @@ public class RangeSliderWithUnit extends HBox {
         return highValue.get();
     }
 
-    public ObjectProperty<NumberWithUnit> highValueProperty() {
-        return highValue;
+    public ReadOnlyObjectProperty<NumberWithUnit> highValueProperty() {
+        return highValue.getReadOnlyProperty();
     }
 
     public void setHighValue(NumberWithUnit highValue) {
