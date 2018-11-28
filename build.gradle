@@ -61,6 +61,8 @@ run {
                 '--add-modules', 'javafx.controls',
                 '--add-modules', 'javafx.fxml',
                 '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
+                '--add-exports', 'javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED',
                 '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED',
                 '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED',
                 '--add-exports', 'javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED'
@@ -75,6 +77,8 @@ jlink {
                 "--add-modules javafx.fxml",
                 "--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls",
                 "--add-exports=javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module",
+                "--add-exports=javafx.base/com.sun.javafx.collections=MakerPlayground.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control=MakerPlayground.merged.module",
                 "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module",
                 "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module",
                 "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module"]
