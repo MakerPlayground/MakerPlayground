@@ -226,7 +226,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
             } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)){
-                expression = new ValueLinkingExpression(parameter, terms);
+                boolean inverse = false;
+                if (valueNode.has("inverse")) {
+                    inverse = valueNode.get("inverse").asBoolean();
+                }
+                expression = new ValueLinkingExpression(parameter, terms, inverse);
             } else {
                 throw new IllegalStateException("expression type not supported");
             }

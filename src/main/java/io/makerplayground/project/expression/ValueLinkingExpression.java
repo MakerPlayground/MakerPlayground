@@ -30,6 +30,7 @@ import java.util.List;
 public class ValueLinkingExpression extends Expression {
 
     private final Parameter destParam;
+    private final boolean inverse;
 
     private static final List<Term.Type> termType = List.of(Term.Type.OPERATOR, Term.Type.OPERATOR, Term.Type.OPERATOR
             , Term.Type.VALUE, Term.Type.OPERATOR, Term.Type.NUMBER, Term.Type.OPERATOR, Term.Type.OPERATOR, Term.Type.OPERATOR
@@ -44,7 +45,7 @@ public class ValueLinkingExpression extends Expression {
             , Operator.CLOSE_PARENTHESIS, Operator.PLUS, NumberWithUnit.ZERO);
 
     public ValueLinkingExpression(Parameter destParam) {
-        this(destParam, Collections.emptyList());
+        this(destParam, Collections.emptyList(), false);
     }
 
     /**
@@ -52,9 +53,10 @@ public class ValueLinkingExpression extends Expression {
      * @param t list of {@link Term} in the following format
      *              (((fromValue - fromMinRange)/(fromMaxRange - fromMinRange)) * (toMaxRange - toMinRange)) + toMinRange
      */
-    public ValueLinkingExpression(Parameter destParam, List<Term> t) {
+    public ValueLinkingExpression(Parameter destParam, List<Term> t, boolean inverse) {
         super(Type.VALUE_LINKING);
         this.destParam = destParam;
+        this.inverse = inverse;
 
         if (t.isEmpty()) {
             for (int i=0; i<termType.size(); i++) {
@@ -102,7 +104,8 @@ public class ValueLinkingExpression extends Expression {
 
     public ValueLinkingExpression(ValueLinkingExpression e) {
         super(e);
-        this.destParam = e.destParam;
+        destParam = e.destParam;
+        inverse = e.inverse;
     }
 
     @JsonIgnore
@@ -123,12 +126,18 @@ public class ValueLinkingExpression extends Expression {
             NumericConstraint constraint = (NumericConstraint) v.getValue().getConstraint();
             NumberWithUnitTerm newMinTerm = new NumberWithUnitTerm(new NumberWithUnit(
                     (constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit()));
-            newExpression.terms.set(5, newMinTerm);
-            newExpression.terms.set(11, newMinTerm);
-
             NumberWithUnitTerm newMaxTerm = new NumberWithUnitTerm(new NumberWithUnit(
                     (constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()));
-            newExpression.terms.set(9, newMaxTerm);
+
+            if (!inverse) {
+                newExpression.terms.set(5, newMinTerm);
+                newExpression.terms.set(11, newMinTerm);
+                newExpression.terms.set(9, newMaxTerm);
+            } else {
+                newExpression.terms.set(5, newMaxTerm);
+                newExpression.terms.set(11, newMaxTerm);
+                newExpression.terms.set(9, newMinTerm);
+            }
         }
 
         return newExpression;
@@ -187,6 +196,14 @@ public class ValueLinkingExpression extends Expression {
         NumberWithUnitTerm newMaxTerm = new NumberWithUnitTerm(n);
         newExpression.terms.set(16, newMaxTerm);
         return newExpression;
+    }
+
+    public boolean isInverse() {
+        return inverse;
+    }
+
+    public ValueLinkingExpression setInverse(boolean b) {
+        return new ValueLinkingExpression(destParam, terms, b);
     }
 
     @Override
