@@ -61,6 +61,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private ComboBox<ActualDevice> controllerComboBox;
     @FXML private Label controllerName;
     @FXML private ImageView closeButton;
+    @FXML private Pane errorMsg;
 
     public ConfigActualDeviceView(Window owner, ConfigActualDeviceViewModel viewModel) {
         super(owner);
@@ -171,12 +172,16 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         unusedDevicePane.getChildren().clear();
         DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
         if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
-            usedDevice.getChildren().add(new Label("Controller hasn't been selected"));
+            errorMsg.setVisible(true);
+            errorMsg.getChildren().add(new Label("Controller hasn't been selected"));
         } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
-            usedDevice.getChildren().add(new Label("Controller doesn't have enough ports"));
+            errorMsg.setVisible(true);
+            errorMsg.getChildren().add(new Label("Controller doesn't have enough ports"));
         } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            usedDevice.getChildren().add(new Label("Can't find any supported device"));
+            errorMsg.setVisible(true);
+            errorMsg.getChildren().add(new Label("Can't find any supported device"));
         } else if (mappingResult == DeviceMapperResult.OK){
+            usedDevice.setVisible(true);
             initDeviceControlChildren();
             initUnusedDeviceControl();
             initCloudPlatformPropertyControl();

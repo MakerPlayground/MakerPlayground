@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.Pane?>
 <fx:root stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="AnchorPane"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
@@ -42,7 +43,8 @@
                                 </ImageView>
                             </children>
                         </GridPane>
-                        <GridPane fx:id="usedDevice" hgap="20.0" vgap="10.0">
+                        <Pane fx:id="errorMsg" visible="false" />
+                        <GridPane fx:id="usedDevice" hgap="20.0" vgap="10.0" visible="false">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0"/>
@@ -50,7 +52,7 @@
                                 <ColumnConstraints hgrow="SOMETIMES"/>
                             </columnConstraints>
                         </GridPane>
-                        <VBox fx:id="cloudPlatformParameterSection" spacing="20">
+                        <VBox fx:id="cloudPlatformParameterSection" spacing="20" visible="false">
                             <Separator/>
                             <HBox>
                                 <Label id="additionalLabel" text="Additional Settings"/>
@@ -64,7 +66,7 @@
                                 </columnConstraints>
                             </GridPane>
                         </VBox>
-                        <VBox fx:id="unusedDevice" spacing="20">
+                        <VBox fx:id="unusedDevice" spacing="20" visible="false">
                             <Separator/>
                             <HBox>
                                 <Label id="unusedLabel" text="Unused devices"/>
