@@ -335,6 +335,12 @@
             "controltype": "SPINBOX"
           }
         ]
+      },
+      {
+        "name": "Clear all data",
+        "funcname": "clear",
+        "type": "Active",
+        "parameter": []
       }
     ],
     "condition": [
@@ -359,7 +365,7 @@
         "name": "SD",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -99999999.0,
+          "min": 0,
           "max": 99999999.0,
           "unit": "NOT_SPECIFIED"
         }
@@ -368,7 +374,7 @@
         "name": "Variance",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -99999999.0,
+          "min": 0,
           "max": 99999999.0,
           "unit": "NOT_SPECIFIED"
         }
@@ -376,6 +382,24 @@
       {
         "name": "Count",
         "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Min",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Max",
+        "dataType": "DOUBLE",
         "constraint": {
           "min": -99999999.0,
           "max": 99999999.0,
