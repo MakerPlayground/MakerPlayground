@@ -50,29 +50,19 @@ public class InteractivePane extends ScrollPane {
     private double mouseX, mouseY;
 
     public InteractivePane() {
-        // a pane to add content into
-//        content.setStyle("-fx-background-color: dbdbdb;");
-
         // wrap content in a group to scroll based on visual bounds according to ScrollPane's javadoc
         group.getChildren().add(content);
         setContent(group);
 
         // resize the content pane when the window is resized (viewport's bound of the ScrollPane changed)
-//        viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue.getWidth() > content.getPrefWidth()) {
-//                content.setPrefWidth(newValue.getWidth());
-//            }
-//            if (newValue.getHeight() > content.getPrefHeight()) {
-//                content.setPrefHeight(newValue.getHeight());
-//            }
-//        });
-
-        // group's layout bound will be larger when a child of content pane is dragged out of it's area so we keep track
-        // of this bound and enlarge our content pane respectively
-//        group.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-//            content.setPrefSize(newValue.getWidth() / scale.doubleValue()
-//                    , newValue.getHeight() / scale.doubleValue());
-//        });
+        viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.getWidth() > content.getPrefWidth()) {
+                content.setPrefWidth(newValue.getWidth());
+            }
+            if (newValue.getHeight() > content.getPrefHeight()) {
+                content.setPrefHeight(newValue.getHeight());
+            }
+        });
 
         scale = new SimpleDoubleProperty(1);
         // when scale value changed, we scale content and move scroll position to maintain center
@@ -302,16 +292,9 @@ public class InteractivePane extends ScrollPane {
     // The position calculated is used for example by the copy and paste logic to paste node to the current mouse
     // position on the pane.
     private void updateMousePosition(MouseEvent event) {
-        double viewportWidth = getViewportBounds().getWidth();
-        double viewportHeight = getViewportBounds().getHeight();
-        double extraWidth = group.getLayoutBounds().getWidth() - viewportWidth;
-        double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
-
-        double left = getHvalue() * extraWidth + group.getLayoutBounds().getMinX();
-        double top = getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
-
-        mouseX = (left + event.getX()) / scale.get();
-        mouseY = (top + event.getY()) / scale.get();
+        Point2D point2D = content.screenToLocal(event.getScreenX(), event.getScreenY());
+        mouseX = point2D.getX();
+        mouseY = point2D.getY();
     }
 
     public double getMouseX() {
