@@ -20,7 +20,7 @@
  * The main class to use is {@link io.makerplayground.device.DeviceLibrary} ex.
  * <p>
  * To get a list of generic input device available uses <br>
- * {@code Set<GenericDevice> inputDevice = DeviceLibrary.INSTANCE.getGenericInputDevice(); }
+ * {@code Set<GenericDevice> inputDevice = DeviceLibrary.INSTANCE.getGenericSensorDevice(); }
  *
  */
 package io.makerplayground.device;

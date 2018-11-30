@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.generic.GenericDevice;
@@ -33,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,9 +49,11 @@ public class Project {
     private StringProperty projectName;
     private ReadOnlyObjectWrapper<Platform> platform;
     private ObjectProperty<ActualDevice> controller;
-    private final ObservableList<ProjectDevice> sensor;
-    private final ObservableList<ProjectDevice> actuator;
-    private final ObservableList<ProjectDevice> virtual;
+    private final ObservableList<ProjectDevice> sensorDevice;
+    private final ObservableList<ProjectDevice> actuatorDevice;
+    private final ObservableList<ProjectDevice> utilityDevice;
+    private final ObservableList<ProjectDevice> cloudDevice;
+    private final ObservableList<ProjectDevice> interfaceDevice;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
@@ -57,7 +62,9 @@ public class Project {
 
     private final ObservableList<ProjectDevice> unmodifiableSensor;
     private final ObservableList<ProjectDevice> unmodifiableActuator;
-    private final ObservableList<ProjectDevice> unmodifiableVirtual;
+    private final ObservableList<ProjectDevice> unmodifiableUtility;
+    private final ObservableList<ProjectDevice> unmodifiableCloud;
+    private final ObservableList<ProjectDevice> unmodifiableInterface;
     private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
@@ -70,47 +77,115 @@ public class Project {
         projectName = new SimpleStringProperty("Untitled Project");
         platform = new ReadOnlyObjectWrapper<>(Platform.MP_ARDUINO);
         controller = new SimpleObjectProperty<>();
-        actuator = FXCollections.observableArrayList();
-        sensor = FXCollections.observableArrayList();
-        virtual = FXCollections.observableArrayList();
+
+        actuatorDevice = FXCollections.observableArrayList();
+        sensorDevice = FXCollections.observableArrayList();
+        utilityDevice = FXCollections.observableArrayList();
+        cloudDevice = FXCollections.observableArrayList();
+        interfaceDevice = FXCollections.observableArrayList();
+
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
         begin = new Begin(this);
+
         parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
 
-        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuator);
-        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensor);
-        unmodifiableVirtual = FXCollections.unmodifiableObservableList(virtual);
+        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuatorDevice);
+        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensorDevice);
+        unmodifiableUtility = FXCollections.unmodifiableObservableList(utilityDevice);
+        unmodifiableCloud = FXCollections.unmodifiableObservableList(cloudDevice);
+        unmodifiableInterface = FXCollections.unmodifiableObservableList(interfaceDevice);
+
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
-    public ObservableList<ProjectDevice> getActuator() {
+    public ObservableList<ProjectDevice> getActuatorDevice() {
         return unmodifiableActuator;
     }
 
-    public void addActuator(GenericDevice device) {
-        String varName = device.getName().replaceAll("[()]", "");
-        Pattern p = Pattern.compile(varName+"\\d+");
-        int id = actuator.stream()
-                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
-                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
-                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
-                .max()
-                .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
-        actuator.add(projectDevice);
+    public ObservableList<ProjectDevice> getSensorDevice() {
+        return unmodifiableSensor;
     }
 
-    protected void addActuator(ProjectDevice device) {
-        actuator.add(device);
+    public ObservableList<ProjectDevice> getUtilityDevice() {
+        return unmodifiableUtility;
+    }
+
+    public ObservableList<ProjectDevice> getCloudDevice() {
+        return unmodifiableCloud;
+    }
+
+    public ObservableList<ProjectDevice> getInterfaceDevice() {
+        return unmodifiableInterface;
     }
 
     public Platform getPlatform() {
         return platform.get();
+    }
+
+    private String getDeviceVarName(GenericDevice device) {
+        return device.getName().replaceAll("[()]", "");
+    }
+
+    private int getNextId(GenericDevice device) {
+        String varName = getDeviceVarName(device);
+        Pattern p = Pattern.compile(varName+"\\d+");
+        return getAllDevice().stream()
+                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
+                .mapToInt(value -> Integer.parseInt(value.getName().substring(varName.length())))
+                .max()
+                .orElse(0) + 1;
+    }
+
+    protected void addDevice(ProjectDevice projectDevice) {
+        switch(GenericDeviceType.of(projectDevice.getGenericDevice())) {
+            case SENSOR:
+                sensorDevice.add(projectDevice);
+                break;
+            case ACTUATOR:
+                actuatorDevice.add(projectDevice);
+                break;
+            case UTILITY:
+                utilityDevice.add(projectDevice);
+                break;
+            case CLOUD:
+                cloudDevice.add(projectDevice);
+                break;
+            case INTERFACE:
+                interfaceDevice.add(projectDevice);
+                break;
+            default:
+                throw new IllegalStateException("not support the generic device type");
+        }
+    }
+
+    public void addDevice(GenericDevice device) {
+        String varName = getDeviceVarName(device);
+        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(device), device);
+        addDevice(projectDevice);
+    }
+
+    public boolean removeDevice(ProjectDevice device) {
+        scene.forEach(s->s.removeDevice(device));
+        condition.forEach(c->c.removeDevice(device));
+        switch (GenericDeviceType.of(device.getGenericDevice())) {
+            case SENSOR:
+                return sensorDevice.remove(device);
+            case ACTUATOR:
+                return actuatorDevice.remove(device);
+            case UTILITY:
+                return utilityDevice.remove(device);
+            case CLOUD:
+                return cloudDevice.remove(device);
+            case INTERFACE:
+                return interfaceDevice.remove(device);
+            default:
+                throw new IllegalStateException("not support generic device type");
+        }
     }
 
     public ReadOnlyObjectProperty<Platform> platformProperty() {
@@ -123,84 +198,18 @@ public class Project {
         setController(null);
     }
 
-    public boolean removeActuator(ProjectDevice device) {
-        for (Scene s : scene) {
-            s.removeDevice(device);
-        }
-        return actuator.remove(device);
-    }
-
-    public ObservableList<ProjectDevice> getSensor() {
-        return unmodifiableSensor;
-    }
-
-    public void addSensor(GenericDevice device) {
-        String varName = device.getName().replaceAll("[()]", "");
-        Pattern p = Pattern.compile(varName+"\\d+");
-        int id = sensor.stream()
-                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
-                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
-                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
-                .max()
-                .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
-        sensor.add(projectDevice);
-    }
-
-    protected void addSensor(ProjectDevice device) {
-        sensor.add(device);
-    }
-
-    public boolean removeSensor(ProjectDevice device) {
-        for (Scene s : scene) {
-            s.removeDevice(device);
-        }
-        for (Condition c : condition) {
-            c.removeDevice(device);
-        }
-        return sensor.remove(device);
-    }
-
-    public ObservableList<ProjectDevice> getVirtual() {
-        return unmodifiableVirtual;
-    }
-
-    public void addVirtual(GenericDevice device) {
-        String varName = device.getName().replaceAll("[()]", "");
-        Pattern p = Pattern.compile(varName+"\\d+");
-        int id = virtual.stream()
-                .filter(projectDevice -> projectDevice.getGenericDevice() == device)
-                .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
-                .mapToInt(value -> Integer.parseInt(value.getName().substring(device.getName().length())))
-                .max()
-                .orElse(0);
-        ProjectDevice projectDevice = new ProjectDevice(varName + (id + 1), device);
-        virtual.add(projectDevice);
-    }
-
-    protected void addVirtual(ProjectDevice device) {
-        virtual.add(device);
-    }
-
-    public boolean removeVirtual(ProjectDevice device) {
-        for (Scene s : scene) {
-            s.removeDevice(device);
-        }
-        for (Condition c : condition) {
-            c.removeDevice(device);
-        }
-
-        return virtual.remove(device);
-    }
-
     public List<ProjectDevice> getInputDevice() {
-        return Stream.concat(sensor.stream(), virtual.filtered(device -> !device.getGenericDevice().getCondition().isEmpty()).stream())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
+                .flatMap(Collection::stream)
+                .filter(device -> device.getGenericDevice().hasCondition())
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<ProjectDevice> getOutputDevice() {
-        return Stream.concat(actuator.stream(), virtual.filtered(device -> !device.getGenericDevice().getAction().isEmpty()).stream())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
+                .flatMap(Collection::stream)
+                .filter(device -> device.getGenericDevice().hasAction())
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public ObservableList<Scene> getScene() {
@@ -377,12 +386,12 @@ public class Project {
 
     public List<ProjectValue> getAvailableValue() {
         List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : sensor) {
+        for (ProjectDevice projectDevice : sensorDevice) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 value.add(new ProjectValue(projectDevice, v));
             }
         }
-        for (ProjectDevice projectDevice : virtual) {
+        for (ProjectDevice projectDevice : utilityDevice) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 value.add(new ProjectValue(projectDevice, v));
             }
@@ -409,7 +418,12 @@ public class Project {
     }
 
     public List<ProjectDevice> getAllDevice() {
-        return Stream.concat(Stream.concat(sensor.stream(), actuator.stream()), virtual.stream())
+        return Stream.of(sensorDevice.stream(),
+                    actuatorDevice.stream(),
+                    utilityDevice.stream(),
+                    cloudDevice.stream(),
+                    interfaceDevice.stream())
+                .flatMap(Function.identity())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
@@ -516,7 +530,7 @@ public class Project {
         if (getFilePath().isEmpty()) {
             // A hack way to check for project modification in case that it hasn't been saved
             return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null
-                    && sensor.isEmpty() && actuator.isEmpty() && virtual.isEmpty()
+                    && sensorDevice.isEmpty() && actuatorDevice.isEmpty() && utilityDevice.isEmpty()
                     && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
                     && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
         } else {

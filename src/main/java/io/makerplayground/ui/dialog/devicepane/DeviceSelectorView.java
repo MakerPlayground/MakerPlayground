@@ -30,9 +30,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Window;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -43,22 +41,18 @@ public class DeviceSelectorView extends UndecoratedDialog {
     @FXML private Button okButton;
     @FXML private Button cancelButton;
     @FXML private ImageView closeButton;
-    @FXML private FlowPane outputPane;
-    @FXML private FlowPane inputPane;
-    @FXML private FlowPane virtualPane;
+    @FXML private FlowPane actuatorPane;
+    @FXML private FlowPane sensorPane;
+    @FXML private FlowPane utilityPane;
+    @FXML private FlowPane cloudPane;
+    @FXML private FlowPane interfacePane;
 
     private Map<GenericDevice, Integer> deviceToBeAdded = new HashMap<>();
 
-    private ObservableList<ControlAddDevicePane> outputDevice;
-    private ObservableList<ControlAddDevicePane> inputDevice;
-    private ObservableList<ControlAddDevicePane> virtualDevice;
+    private ObservableList<ControlAddDevicePane> allDevice = FXCollections.observableArrayList();
 
     public DeviceSelectorView(Window owner) {
         super(owner);
-
-        this.inputDevice = FXCollections.observableArrayList();
-        this.outputDevice = FXCollections.observableArrayList();
-        this.virtualDevice = FXCollections.observableArrayList();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/devicepane/DeviceSelectorView.fxml"));
         fxmlLoader.setRoot(anchorPane);
@@ -75,37 +69,38 @@ public class DeviceSelectorView extends UndecoratedDialog {
     }
 
     private void initView() {
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericOutputDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericActuatorDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
-            outputPane.getChildren().add(controlDevicePane);
-            this.outputDevice.add(controlDevicePane);
+            actuatorPane.getChildren().add(controlDevicePane);
+            this.allDevice.add(controlDevicePane);
         }
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericInputDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericSensorDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
-            inputPane.getChildren().add(controlDevicePane);
-            this.inputDevice.add(controlDevicePane);
+            sensorPane.getChildren().add(controlDevicePane);
+            this.allDevice.add(controlDevicePane);
         }
-        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericVirtualDevice()) {
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericUtilityDevice()) {
             ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
-            virtualPane.getChildren().add(controlDevicePane);
-            this.virtualDevice.add(controlDevicePane);
+            utilityPane.getChildren().add(controlDevicePane);
+            this.allDevice.add(controlDevicePane);
+        }
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericCloudDevice()) {
+            ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
+            cloudPane.getChildren().add(controlDevicePane);
+            this.allDevice.add(controlDevicePane);
+        }
+        for (GenericDevice d  : DeviceLibrary.INSTANCE.getGenericInterfaceDevice()) {
+            ControlAddDevicePane controlDevicePane = new ControlAddDevicePane(d);
+            interfacePane.getChildren().add(controlDevicePane);
+            this.allDevice.add(controlDevicePane);
         }
     }
 
     private void initEvent() {
         okButton.setOnAction(event -> {
-            for (ControlAddDevicePane d : outputDevice) {
-                deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
-            }
-            for (ControlAddDevicePane d : inputDevice) {
-                deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
-            }
-            for (ControlAddDevicePane d : virtualDevice) {
-                deviceToBeAdded.put(d.getGenericDevice(), d.getCount());
-            }
+            allDevice.forEach(d->deviceToBeAdded.put(d.getGenericDevice(), d.getCount()));
             hide();
         });
-
         cancelButton.setOnAction(event -> hide());
         closeButton.setOnMouseReleased(event -> hide());
     }

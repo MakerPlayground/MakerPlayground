@@ -21,20 +21,20 @@ class ActualDeviceLibraryTest {
 
     @Test
     void getGenericInputDevice() {
-        assertNotNull(library.getGenericInputDevice());
-        assertFalse(library.getGenericInputDevice().isEmpty());
+        assertNotNull(library.getGenericSensorDevice());
+        assertFalse(library.getGenericSensorDevice().isEmpty());
     }
 
     @Test
     void getGenericOutputDevice() {
-        assertNotNull(library.getGenericOutputDevice());
-        assertFalse(library.getGenericOutputDevice().isEmpty());
+        assertNotNull(library.getGenericActuatorDevice());
+        assertFalse(library.getGenericActuatorDevice().isEmpty());
     }
 
     @Test
     void getGenericConnectivityDevice() {
-        assertNotNull(library.getGenericVirtualDevice());
-        assertFalse(library.getGenericVirtualDevice().isEmpty());
+        assertNotNull(library.getGenericUtilityDevice());
+        assertFalse(library.getGenericUtilityDevice().isEmpty());
     }
 
     @Test

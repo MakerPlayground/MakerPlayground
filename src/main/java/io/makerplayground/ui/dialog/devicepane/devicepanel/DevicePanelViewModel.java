@@ -16,7 +16,6 @@
 
 package io.makerplayground.ui.dialog.devicepane.devicepanel;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.project.Project;
@@ -35,9 +34,11 @@ import java.util.Map;
 public class DevicePanelViewModel {
     private final Project project;
     private final ObjectProperty<Platform> platformProperty;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> inputChildViewModel;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> outputChildViewModel;
-    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> virtualChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> sensorChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> actuatorChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> utilityChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> cloudChildViewModel;
+    private final DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> interfaceChildViewModel;
 
     public DevicePanelViewModel(Project project) {
         this.project = project;
@@ -46,56 +47,44 @@ public class DevicePanelViewModel {
         this.project.platformProperty().addListener((observable, oldValue, newValue) -> platformProperty.set(newValue));
         // write back to project when view changed
         this.platformProperty.addListener((observable, oldValue, newValue) -> project.setPlatform(newValue));
-        this.inputChildViewModel = new DynamicViewModelCreator<>(project.getSensor(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.outputChildViewModel = new DynamicViewModelCreator<>(project.getActuator(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
-        this.virtualChildViewModel = new DynamicViewModelCreator<>(project.getVirtual(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.sensorChildViewModel = new DynamicViewModelCreator<>(project.getSensorDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.actuatorChildViewModel = new DynamicViewModelCreator<>(project.getActuatorDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.utilityChildViewModel = new DynamicViewModelCreator<>(project.getUtilityDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.cloudChildViewModel = new DynamicViewModelCreator<>(project.getCloudDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
+        this.interfaceChildViewModel = new DynamicViewModelCreator<>(project.getInterfaceDevice(), projectDevice -> new DevicePanelIconViewModel(projectDevice, project));
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInputChildViewModel() {
-        return inputChildViewModel;
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getSensorChildViewModel() {
+        return sensorChildViewModel;
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getOutputChildViewModel() {
-        return outputChildViewModel;
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getActuatorChildViewModel() {
+        return actuatorChildViewModel;
     }
 
-    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getVirtualChildViewModel() {
-        return virtualChildViewModel;
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getUtilityChildViewModel() {
+        return utilityChildViewModel;
     }
 
-    public boolean removeOutputDevice(DevicePanelIconViewModel device) {
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getCloudChildViewModel() {
+        return cloudChildViewModel;
+    }
+
+    public DynamicViewModelCreator<ProjectDevice, DevicePanelIconViewModel> getInterfaceChildViewModel() {
+        return interfaceChildViewModel;
+    }
+
+    public boolean removeDevice(DevicePanelIconViewModel device) {
         ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeActuator(deviceToBeRemoved);
-    }
-
-    public boolean removeInputDevice(DevicePanelIconViewModel device) {
-        ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeSensor(deviceToBeRemoved);
-    }
-
-    public boolean removeConnectivityDevice(DevicePanelIconViewModel device) {
-        ProjectDevice deviceToBeRemoved = device.getDevice();
-        return project.removeVirtual(deviceToBeRemoved);
+        return project.removeDevice(deviceToBeRemoved);
     }
 
     public void addDevice(Map<GenericDevice, Integer> device) {
-        for (GenericDevice genericDevice : device.keySet()) {
-            if (DeviceLibrary.INSTANCE.getGenericInputDevice().contains(genericDevice)) {
-                for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addSensor(genericDevice);
-                }
-            } else if (DeviceLibrary.INSTANCE.getGenericOutputDevice().contains(genericDevice)) {
-                for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addActuator(genericDevice);
-                }
-            } else if (DeviceLibrary.INSTANCE.getGenericVirtualDevice().contains(genericDevice)) {
-                for (int i = 0; i < device.get(genericDevice); i++) {
-                    project.addVirtual(genericDevice);
-                }
-            } else {
-                throw new IllegalStateException("We are in great danger!!!");
+        device.forEach((genericDevice, count) -> {
+            for (int i=0; i<count; i++) {
+                project.addDevice(genericDevice);
             }
-        }
+        });
     }
 
     public ObjectProperty<Platform> selectedPlatformProperty() {

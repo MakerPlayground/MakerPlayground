@@ -37,18 +37,28 @@ import java.util.stream.Collectors;
 public enum DeviceLibrary {
     INSTANCE;
 
-    private List<GenericDevice> genericInputDevice;
-    private List<GenericDevice> genericOutputDevice;
-    private List<GenericDevice> genericVirtualDevice;
+    List<GenericDevice> genericSensorDevice;
+    List<GenericDevice> genericActuatorDevice;
+    List<GenericDevice> genericUtilityDevice;
+    List<GenericDevice> genericCloudDevice;
+    List<GenericDevice> genericInterfaceDevice;
+    private List<GenericDevice> allGenericDevice;
     private List<ActualDevice> actualDevice;
 
-    DeviceLibrary() {
-    }
+    DeviceLibrary() {}
 
     public void loadDeviceFromJSON() {
-        this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
-        this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
-        this.genericVirtualDevice = loadGenericDeviceFromJSON("/json/genericvirtualdevice.json");
+        this.genericSensorDevice = loadGenericDeviceFromJSON("/json/genericsensordevice.json");
+        this.genericActuatorDevice = loadGenericDeviceFromJSON("/json/genericactuatordevice.json");
+        this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json");
+        this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json");
+        this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json");
+        this.allGenericDevice = new ArrayList<>();
+        this.allGenericDevice.addAll(genericSensorDevice);
+        this.allGenericDevice.addAll(genericActuatorDevice);
+        this.allGenericDevice.addAll(genericUtilityDevice);
+        this.allGenericDevice.addAll(genericCloudDevice);
+        this.allGenericDevice.addAll(genericInterfaceDevice);
         this.actualDevice = loadActualDeviceList();
     }
 
@@ -96,17 +106,7 @@ public enum DeviceLibrary {
     }
 
     public GenericDevice getGenericDevice(String name) {
-        for (GenericDevice genericDevice : genericInputDevice) {
-            if (genericDevice.getName().equals(name)) {
-                return genericDevice;
-            }
-        }
-        for (GenericDevice genericDevice : genericOutputDevice) {
-            if (genericDevice.getName().equals(name)) {
-                return genericDevice;
-            }
-        }
-        for (GenericDevice genericDevice : genericVirtualDevice) {
+        for (GenericDevice genericDevice : allGenericDevice) {
             if (genericDevice.getName().equals(name)) {
                 return genericDevice;
             }
@@ -114,16 +114,24 @@ public enum DeviceLibrary {
         throw new IllegalArgumentException("No generic device named " + name);
     }
 
-    public List<GenericDevice> getGenericInputDevice() {
-        return genericInputDevice;
+    public List<GenericDevice> getGenericSensorDevice() {
+        return genericSensorDevice;
     }
 
-    public List<GenericDevice> getGenericOutputDevice() {
-        return genericOutputDevice;
+    public List<GenericDevice> getGenericActuatorDevice() {
+        return genericActuatorDevice;
     }
 
-    public List<GenericDevice> getGenericVirtualDevice() {
-        return genericVirtualDevice;
+    public List<GenericDevice> getGenericUtilityDevice() {
+        return genericUtilityDevice;
+    }
+
+    public List<GenericDevice> getGenericCloudDevice() {
+        return genericCloudDevice;
+    }
+
+    public List<GenericDevice> getGenericInterfaceDevice() {
+        return genericInterfaceDevice;
     }
 
     public List<ActualDevice> getActualDevice() {

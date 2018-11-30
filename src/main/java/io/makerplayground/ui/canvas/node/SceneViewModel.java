@@ -48,17 +48,17 @@ public class SceneViewModel {
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
-        // TODO: find a better way (now since only actuator and connectivity can be in the scene so we track these two)
-        this.project.getActuator().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
-        });
-        this.project.getVirtual().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
-        });
+
+        InvalidationListener listener = observable -> hasDeviceToAdd.set(
+                scene.getSetting().size() != project.getOutputDevice().size());
+        // TODO: find a better way
+        this.project.getSensorDevice().addListener(listener);
+        this.project.getActuatorDevice().addListener(listener);
+        this.project.getUtilityDevice().addListener(listener);
+        this.project.getCloudDevice().addListener(listener);
+        this.project.getInterfaceDevice().addListener(listener);
         // when we remove something from the scene
-        this.scene.getSetting().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(scene.getSetting().size() != project.getOutputDevice().size());
-        });
+        this.scene.getSetting().addListener(listener);
     }
 
     public String getName() {

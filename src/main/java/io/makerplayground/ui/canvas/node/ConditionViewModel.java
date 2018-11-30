@@ -40,20 +40,19 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
-        // TODO: find a better way (now since only sensor and connectivity can be in the condition so we track these two)
-        this.project.getSensor().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
-        this.project.getVirtual().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
+        // TODO: find a better way
+        InvalidationListener listener = observable -> hasDeviceToAdd.set(
+                condition.getSetting().size() != project.getInputDevice().size());
+        this.project.getSensorDevice().addListener(listener);
+        this.project.getActuatorDevice().addListener(listener);
+        this.project.getUtilityDevice().addListener(listener);
+        this.project.getCloudDevice().addListener(listener);
+        this.project.getInterfaceDevice().addListener(listener);
         // when we remove something from the condition
-        this.condition.getSetting().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
+        this.condition.getSetting().addListener(listener);
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {

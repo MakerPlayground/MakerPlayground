@@ -18,6 +18,8 @@ package io.makerplayground.device.generic;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Value;
 
@@ -89,6 +91,14 @@ public class GenericDevice {
             }
         }
         return null;
+    }
+
+    public boolean hasAction() {
+        return !action.isEmpty();
+    }
+
+    public boolean hasCondition() {
+        return !condition.isEmpty();
     }
 
     public String getDescription() {

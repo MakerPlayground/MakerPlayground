@@ -17,27 +17,45 @@
           AnchorPane.topAnchor="30.0">
         <children>
             <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0">
-                <TitledPane collapsible="false" text="Sensor">
+                <TitledPane collapsible="true" text="Sensor">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="inputPane" hgap="5.0" vgap="5.0">
+                        <FlowPane fx:id="sensorPane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="false" text="Actuator">
+                <TitledPane collapsible="true" text="Actuator">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="outputPane" hgap="5.0" vgap="5.0">
+                        <FlowPane fx:id="actuatorPane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="false" layoutX="10.0" layoutY="158.0" text="Virtual">
+                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Utility">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
-                        <FlowPane fx:id="virtualPane" hgap="5.0" vgap="5.0">
+                        <FlowPane fx:id="utilityPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </FlowPane>
+                    </ScrollPane>
+                </TitledPane>
+                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Cloud">
+                    <ScrollPane fitToWidth="true" prefHeight="115.0">
+                        <FlowPane fx:id="cloudPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </FlowPane>
+                    </ScrollPane>
+                </TitledPane>
+                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Interface">
+                    <ScrollPane fitToWidth="true" prefHeight="115.0">
+                        <FlowPane fx:id="interfacePane" hgap="5.0" vgap="5.0">
                             <padding>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </padding>
