@@ -270,7 +270,7 @@
     "description": "Virtual Timer",
     "action": [
       {
-        "name": "Start timer",
+        "name": "Initialize timer",
         "funcname": "startTimer",
         "type": "Active",
         "parameter": []
