@@ -34,4 +34,9 @@ public class SimpleStringExpression extends Expression {
     public String getString() {
         return ((StringTerm) terms.get(0)).getValue();
     }
+
+    @Override
+    public SimpleStringExpression deepCopy() {
+        return new SimpleStringExpression(this);
+    }
 }

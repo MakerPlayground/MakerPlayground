@@ -98,6 +98,11 @@ public class NumberInRangeExpression extends Expression {
     }
 
     @Override
+    public NumberInRangeExpression deepCopy() {
+        return new NumberInRangeExpression(this);
+    }
+
+    @Override
     public boolean isValid() {
         return true;    // simple expression is always valid
     }

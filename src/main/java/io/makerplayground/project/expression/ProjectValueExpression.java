@@ -46,4 +46,9 @@ public class ProjectValueExpression extends Expression {
         expression.terms.set(0, new ValueTerm(projectValue));
         return expression;
     }
+
+    @Override
+    public ProjectValueExpression deepCopy() {
+        return new ProjectValueExpression(this);
+    }
 }

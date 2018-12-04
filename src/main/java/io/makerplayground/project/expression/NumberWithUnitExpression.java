@@ -35,4 +35,9 @@ public class NumberWithUnitExpression extends Expression {
     public NumberWithUnit getNumberWithUnit() {
         return ((NumberWithUnitTerm) terms.get(0)).getValue();
     }
+
+    @Override
+    public Expression deepCopy() {
+        return new NumberWithUnitExpression(this);
+    }
 }

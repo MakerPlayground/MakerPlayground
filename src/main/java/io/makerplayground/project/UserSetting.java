@@ -111,12 +111,12 @@ public class UserSetting {
         this.valueMap = FXCollections.observableHashMap();
         for (Parameter p : u.getValueMap().keySet()) {
             Expression o = u.getValueMap().get(p);
-            this.valueMap.put(p, Expression.deepCopy(o));
+            this.valueMap.put(p, o.deepCopy());
         }
         this.expression = FXCollections.observableHashMap();
         this.expressionEnable = FXCollections.observableHashMap();
         for (Value v : u.getExpression().keySet()) {
-            this.expression.put(v, Expression.deepCopy(u.getExpression().get(v)));
+            this.expression.put(v, u.getExpression().get(v).deepCopy());
             this.expressionEnable.put(v, u.getExpressionEnable().get(v));
         }
 
