@@ -21,5 +21,6 @@ public enum WiringMethod {
     GROVE,
     MP_HEXAGON,
     MP_RECTANGLE,
-    KIDBRIGHT
+    KIDBRIGHT,
+    MP_RECTANGLE_TINY
 }

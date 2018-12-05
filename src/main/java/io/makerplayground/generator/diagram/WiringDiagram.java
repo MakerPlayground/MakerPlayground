@@ -19,6 +19,9 @@ public class WiringDiagram {
             case MP_RECTANGLE:
                 wiringDiagram = new MPRectangleDiagram(project);
                 break;
+            case MP_RECTANGLE_TINY:
+                wiringDiagram = new MPRectangleTinyDiagram(project);
+                break;
             default:
                 throw new IllegalStateException("Wiring method not found");
         }
