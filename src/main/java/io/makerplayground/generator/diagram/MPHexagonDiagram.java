@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.diagram;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.device.actual.FormFactor;
 import io.makerplayground.device.actual.Peripheral;
@@ -26,6 +27,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -74,6 +76,8 @@ class MPHexagonDiagram extends Pane {
     public MPHexagonDiagram(Project project) {
         setPrefSize(1000, 600);
 
+        String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
+
         // draw all devices
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.getActualDevice().getFormFactor() == FormFactor.NONE) {
@@ -112,7 +116,7 @@ class MPHexagonDiagram extends Pane {
 
                 // draw device
                 Point2D devicePosition = DEVICE_POSITION.get(controllerPortName);
-                Path deviceImagePath = Paths.get("library/devices",projectDevice.getActualDevice().getId(),"asset","MPdevice.png");
+                Path deviceImagePath = Paths.get(deviceDirectoryPath,projectDevice.getActualDevice().getId(),"asset","MPdevice.png");
                 try (InputStream deviceImageStream = Files.newInputStream(deviceImagePath)){
                     Image deviceImage = new Image(deviceImageStream);
                     ImageView deviceImageView = new ImageView(deviceImage);
@@ -131,13 +135,13 @@ class MPHexagonDiagram extends Pane {
 
                     getChildren().addAll(deviceImageView);
                 } catch (IOException e) {
-                    throw new IllegalStateException("Image not found : " + "library/devices/" + projectDevice.getActualDevice().getId() + "/asset/MPdevice.png");
+                    throw new IllegalStateException("Image not found : " + deviceDirectoryPath + projectDevice.getActualDevice().getId() + "/asset/MPdevice.png");
                 }
             }
         }
 
         // draw controller
-        Path controllerImagePath = Paths.get("library/devices",project.getController().getId(),"asset","MPcontroller.png");
+        Path controllerImagePath = Paths.get(deviceDirectoryPath,project.getController().getId(),"asset","MPcontroller.png");
         try (InputStream controllerImageStream = Files.newInputStream(controllerImagePath)) {
             Image controllerImage = new Image(controllerImageStream);
             ImageView controllerImageView = new ImageView(controllerImage);
@@ -145,7 +149,7 @@ class MPHexagonDiagram extends Pane {
             controllerImageView.setLayoutY(BASEBOARD_CENTER_POSITION.getY() - (controllerImage.getHeight() / 2.0));
             getChildren().add(controllerImageView);
         } catch (IOException e) {
-            throw new IllegalStateException("Image not found : " + "library/devices/" + project.getController().getId() + "asset/MPcontroller.png");
+            throw new IllegalStateException("Image not found : " + deviceDirectoryPath + project.getController().getId() + "asset/MPcontroller.png");
         }
     }
 }

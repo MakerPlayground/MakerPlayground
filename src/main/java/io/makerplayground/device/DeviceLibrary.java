@@ -22,6 +22,7 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -64,25 +65,33 @@ public enum DeviceLibrary {
         return temp;
     }
 
+    private final List<String> libraryPaths = List.of(
+            "library",               // default path for Windows installer and when running from the IDE
+            "../Resources/library"   // default path for macOS installer
+    );
+
+    public Optional<String> getLibraryPath() {
+        return libraryPaths.stream().filter(s -> new File(s).exists()).findFirst();
+    }
+
     private List<ActualDevice> loadActualDeviceList(){
         List<ActualDevice> temp = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("library/devices"))){
-            for (Path deviceDirectory : directoryStream) {
-                if(Files.isDirectory(deviceDirectory)){
-                    try(DirectoryStream<Path> dev = Files.newDirectoryStream(deviceDirectory,"device.json")){
-                        for(Path deviceDefinitionFile: dev){
-                            temp.add(mapper.readValue(deviceDefinitionFile.toFile(),new TypeReference<ActualDevice>() {}));
-                        }
+        Optional<String> libraryPath = getLibraryPath();
+        if (libraryPath.isPresent()) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices"))) {
+                for (Path deviceDirectory : directoryStream) {
+                    Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
+                    if (Files.exists(deviceDefinitionPath)) {
+                        temp.add(mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {}));
                     }
                 }
+                return Collections.unmodifiableList(temp);
+            } catch (IOException e) {
             }
-            temp = Collections.unmodifiableList(temp);
-        }catch (IOException e){
-            e.printStackTrace();
-            temp = Collections.emptyList();
         }
-        return temp;
+        System.err.println("Found some errors when loading the device library!!!");
+        return Collections.emptyList();
     }
 
     public GenericDevice getGenericDevice(String name) {

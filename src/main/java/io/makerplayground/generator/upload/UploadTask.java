@@ -1,5 +1,6 @@
 package io.makerplayground.generator.upload;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.DeviceMapper;
@@ -30,8 +31,6 @@ public class UploadTask extends Task<UploadResult> {
     private final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
     // program installation directory
     private final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
-    // platformio home directory for storing compilers and tools for each platform
-    private final String MP_PLATFORMIO_HOMEDIR = MP_INSTALLDIR + File.separator + "platformio";
 
     public UploadTask(Project project) {
         this.project = project;
@@ -78,9 +77,9 @@ public class UploadTask extends Task<UploadResult> {
         }
         Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
 
-        boolean hasIntegratedPioLibrary = new File(MP_PLATFORMIO_HOMEDIR).exists();
-        if (hasIntegratedPioLibrary) {
-            Platform.runLater(() -> log.set("Using integrated platformio dependencies at " + MP_PLATFORMIO_HOMEDIR + "\n"));
+        Optional<String> pioHomeDirPath = getIntegratedPIOHomeDirectory();
+        if (pioHomeDirPath.isPresent()) {
+            Platform.runLater(() -> log.set("Using integrated platformio dependencies at " + pioHomeDirPath.get() + "\n"));
         } else {
             Platform.runLater(() -> log.set("Using default platformio dependencies folder (~/.platformio) \n"));
         }
@@ -146,9 +145,7 @@ public class UploadTask extends Task<UploadResult> {
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "init"
                     , "--board", project.getController().getPlatformIOBoardId());
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
-            if (hasIntegratedPioLibrary) {
-                builder.environment().put("PLATFORMIO_HOME_DIR", MP_PLATFORMIO_HOMEDIR);
-            }
+            pioHomeDirPath.ifPresent(s -> builder.environment().put("PLATFORMIO_HOME_DIR", s));
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -195,12 +192,20 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.CANT_WRITE_CODE;
         }
 
+        // get path to the library directory
+        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+        if (!libraryPath.isPresent()) {
+            updateMessage("Error: Missing library directory");
+            return UploadResult.MISSING_LIBRARY_DIR;
+        }
+        Platform.runLater(() -> log.set("Using libraries stored at " + libraryPath.get() + "\n"));
+
         // copy mp library
-        for (String x: mpLibraries){
-            String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("library", "lib", project.getPlatform().getLibraryFolderName(), x);
+        for (String libName: mpLibraries) {
+            File source = Paths.get(libraryPath.get(), "lib", project.getPlatform().getLibraryFolderName(), libName).toFile();
+            File destination = Paths.get(projectPath, "lib", libName).toFile();
             try {
-                FileUtils.copyDirectory(libraryPath.toFile(),new File(destinationPath+File.separator+x));
+                FileUtils.copyDirectory(source, destination);
             } catch (IOException e) {
                 Platform.runLater(() -> log.set("Error: Missing some libraries (" + libraryPath + ")\n"));
                 updateMessage("Error: Missing some libraries");
@@ -209,10 +214,10 @@ public class UploadTask extends Task<UploadResult> {
         }
 
         //copy and extract external Libraries
-        for (String x : externalLibraries) {
+        for (String libName : externalLibraries) {
+            Path sourcePath = Paths.get(libraryPath.get(),"lib_ext", libName + ".zip");
             String destinationPath = projectPath + File.separator + "lib";
-            Path libraryPath = Paths.get("library/lib_ext",x+".zip");
-            ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(libraryPath, destinationPath);
+            ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(sourcePath, destinationPath);
             if (extractResult != ZipResourceExtractor.ExtractResult.SUCCESS) {
                 Platform.runLater(() -> log.set("Error: Failed to extract libraries (" + libraryPath + ")\n"));
                 updateMessage("Error: Failed to extract libraries");
@@ -225,9 +230,7 @@ public class UploadTask extends Task<UploadResult> {
         try {
             ProcessBuilder builder = new ProcessBuilder(pythonPath.get(), "-m", "platformio", "run", "--target", "upload");
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
-            if (hasIntegratedPioLibrary) {
-                builder.environment().put("PLATFORMIO_HOME_DIR", MP_PLATFORMIO_HOMEDIR);
-            }
+            pioHomeDirPath.ifPresent(s -> builder.environment().put("PLATFORMIO_HOME_DIR", s));
             builder.redirectErrorStream(true);
             Process p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
@@ -308,5 +311,15 @@ public class UploadTask extends Task<UploadResult> {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Get path to an integrated platformio home directory which is used for storing compilers and tools for each platform
+     * @return path to the integrated platformio home directory or Optional.empty()
+     */
+    private Optional<String> getIntegratedPIOHomeDirectory() {
+        List<String> path = List.of(MP_INSTALLDIR + File.separator + "platformio"   // default path for Windows installer and when running from the IDE
+                , "/Library/Application Support/MakerPlayground/platformio");       // default path for macOS installer
+        return path.stream().filter(s -> new File(s).exists()).findFirst();
     }
 }

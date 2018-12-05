@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.diagram;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.device.actual.IntegratedActualDevice;
@@ -35,6 +36,7 @@ import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -89,6 +91,8 @@ class WireAndBreadboardDiagram extends Pane {
         this.deviceTopLeftPos = new HashMap<>();
         setPrefSize(1000, 4000);
 
+        String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
+
         int currentRow = 0;
         double lastY = 0;
         // draw breadboard
@@ -112,7 +116,7 @@ class WireAndBreadboardDiagram extends Pane {
             controllerImage = new ImageView(new Image(getClass().getResourceAsStream(controllerFilename)));
         }
         else{
-            try (InputStream controllerImageStream = Files.newInputStream(Paths.get("library/devices",controller.getId(),"asset","controller.png"))){
+            try (InputStream controllerImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, controller.getId(), "asset", "controller.png"))){
                 controllerImage = new ImageView(new Image(controllerImageStream));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -150,7 +154,7 @@ class WireAndBreadboardDiagram extends Pane {
             } else if (device.getFormFactor() == FormFactor.NONE) {
                 continue;
             }
-            try (InputStream deviceImageStream = Files.newInputStream(Paths.get("library/devices",device.getId(),"asset","device.png"))){
+            try (InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath,device.getId(), "asset", "device.png"))){
                 ImageView deviceImage = new ImageView(new Image(deviceImageStream));
                 if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                     DevicePort topLeftPort = getTopLeftHole(device);
@@ -198,7 +202,7 @@ class WireAndBreadboardDiagram extends Pane {
             if (device.getFormFactor() == FormFactor.NONE) {
                 continue; // prevent the image file loading.
             }
-            try (InputStream deviceImageStream = Files.newInputStream(Paths.get("library/devices",device.getId(),"asset","device.png"))) {
+            try (InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, device.getId(), "asset", "device.png"))) {
                 ImageView deviceImage = new ImageView(new Image(deviceImageStream));
                 Text text = new Text();
                 text.setFont(Font.font(GROVE_FONT_SIZE));
