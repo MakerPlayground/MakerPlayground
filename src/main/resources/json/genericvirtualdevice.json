@@ -169,8 +169,8 @@
             "name": "Value",
             "value": 0,
             "constraint": {
-              "min": -32768,
-              "max": 32767,
+              "min": -10000,
+              "max": 10000,
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
@@ -179,13 +179,13 @@
         ]
       },
       {
-        "name": "Count up",
+        "name": "Count up by 1",
         "funcname": "increaseValue",
         "type": "Active",
         "parameter": []
       },
       {
-        "name": "Count down",
+        "name": "Count down by 1",
         "funcname": "decreaseValue",
         "type": "Active",
         "parameter": []
@@ -199,8 +199,8 @@
             "name": "Change",
             "value": 0,
             "constraint": {
-              "min": -32768,
-              "max": 32767,
+              "min": -100,
+              "max": 100,
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
@@ -211,16 +211,34 @@
     ],
     "condition": [
       {
-        "name": "Check Value",
-        "funcname": "checkValue",
+        "name": "Value equal to",
+        "funcname": "checkValueEqual",
         "type": "Active",
         "parameter": [
           {
             "name": "Value",
             "value": 5,
             "constraint": {
-              "min": -32768,
-              "max": 32767,
+              "min": -10000,
+              "max": 10000,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Value not equal to",
+        "funcname": "checkValueNotEqual",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 5,
+            "constraint": {
+              "min": -10000,
+              "max": 10000,
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
@@ -240,8 +258,8 @@
         "name": "Value",
         "dataType": "INTEGER",
         "constraint": {
-          "min": -32768,
-          "max": 32767,
+          "min": -10000,
+          "max": 10000,
           "unit": "NOT_SPECIFIED"
         }
       }
@@ -252,7 +270,7 @@
     "description": "Virtual Timer",
     "action": [
       {
-        "name": "Start timer",
+        "name": "Initialize timer",
         "funcname": "startTimer",
         "type": "Active",
         "parameter": []
@@ -274,7 +292,7 @@
             "name": "Second",
             "value": 5,
             "constraint": {
-              "min": 1,
+              "min": 0,
               "max": 1000000,
               "unit": "SECOND"
             },
@@ -292,7 +310,7 @@
             "name": "Second",
             "value": 5,
             "constraint": {
-              "min": 1,
+              "min": 0,
               "max": 1000000,
               "unit": "SECOND"
             },
@@ -335,6 +353,12 @@
             "controltype": "SPINBOX"
           }
         ]
+      },
+      {
+        "name": "Clear all data",
+        "funcname": "clear",
+        "type": "Active",
+        "parameter": []
       }
     ],
     "condition": [
@@ -359,7 +383,7 @@
         "name": "SD",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -99999999.0,
+          "min": 0,
           "max": 99999999.0,
           "unit": "NOT_SPECIFIED"
         }
@@ -368,7 +392,7 @@
         "name": "Variance",
         "dataType": "DOUBLE",
         "constraint": {
-          "min": -99999999.0,
+          "min": 0,
           "max": 99999999.0,
           "unit": "NOT_SPECIFIED"
         }
@@ -376,6 +400,24 @@
       {
         "name": "Count",
         "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Min",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Max",
+        "dataType": "DOUBLE",
         "constraint": {
           "min": -99999999.0,
           "max": 99999999.0,
