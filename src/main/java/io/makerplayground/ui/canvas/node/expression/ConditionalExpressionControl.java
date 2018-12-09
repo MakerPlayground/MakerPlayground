@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas.node.expression;
 
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
@@ -45,12 +46,14 @@ public class ConditionalExpressionControl extends HBox {
 
         ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting-press.png")));
         configButton.setFitWidth(25);
+        configButton.setStyle("-fx-cursor: hand;");
         configButton.setPreserveRatio(true);
         configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
 
         Node control;
         if (getExpression() instanceof NumberInRangeExpression) {
             SimpleConditionalExpressionControl expressionControl = new SimpleConditionalExpressionControl((NumberInRangeExpression) getExpression(), value);
+            expressionControl.useIntegerOnly(value.getType() == DataType.INTEGER);
             expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
             toggleGroup.selectToggle(basicRadioMenuItem);
             control = expressionControl;

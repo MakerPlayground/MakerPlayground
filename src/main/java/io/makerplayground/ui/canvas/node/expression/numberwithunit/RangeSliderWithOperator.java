@@ -75,9 +75,11 @@ public class RangeSliderWithOperator extends RangeSlider {
             @Override
             public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
                 lowThumb = (Pane) RangeSliderWithOperator.this.lookup(".range-slider .low-thumb");
+                lowThumb.setStyle("-fx-cursor: hand;");
                 lowThumb.getChildren().add(operatorTextMap.get(lowThumbOperator.get()));
 
                 highThumb = (Pane) RangeSliderWithOperator.this.lookup(".range-slider .high-thumb");
+                highThumb.setStyle("-fx-cursor: hand;");
                 highThumb.getChildren().add(operatorTextMap.get(highThumbOperator.get()));
 
                 RangeSliderWithOperator.this.initThumbEventHandler();
