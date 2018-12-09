@@ -70,6 +70,9 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case INTEGER_ENUM:
                 defaultValue = node.get("value").asInt();
                 break;
+            case DATETIME:
+                defaultValue = RealTimeClock.getDefault();
+                break;
             default:
                 throw(new IllegalStateException("Format error!!!"));
         }

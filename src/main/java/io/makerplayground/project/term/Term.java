@@ -25,7 +25,7 @@ public abstract class Term {
     public abstract String toCCode();
 
     public enum Type {
-        NUMBER, STRING, VALUE, OPERATOR,
+        NUMBER, STRING, VALUE, OPERATOR, DATETIME
     }
     private final Type type;
     protected final Object value;

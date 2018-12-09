@@ -17,13 +17,13 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.collections.FXCollections;
@@ -180,6 +180,13 @@ public class SceneDevicePropertyWindow extends PopOver {
                         viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.DATETIMEPICKER) {
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new SimpleRTCExpression(RealTimeClock.getDefault()));
+                }
+                RTCExpressionControl expressionControl = new RTCExpressionControl((SimpleRTCExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else {

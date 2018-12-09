@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, VALUE_LINKING
+        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING
     }
 
     public enum RefreshInterval {
@@ -86,6 +88,8 @@ public abstract class Expression {
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
+            case DATETIME:
+                return new SimpleRTCExpression(RealTimeClock.getDefault());
             default:
                 throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }

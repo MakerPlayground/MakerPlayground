@@ -88,6 +88,7 @@ public enum DeviceLibrary {
                 }
                 return Collections.unmodifiableList(temp);
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         System.err.println("Found some errors when loading the device library!!!");
