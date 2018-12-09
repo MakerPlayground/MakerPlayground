@@ -237,6 +237,7 @@ public enum Peripheral {
     public boolean isI2C1() {
         switch (this.getConnectionType()) {
             case MP_I2C1:
+            case I2C1:
                 return true;
             default:
                 return false;

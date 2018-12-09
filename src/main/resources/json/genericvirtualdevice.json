@@ -521,12 +521,12 @@
     "description": "A Real Time Clock (RTC) device with external battery that provides the real date and time.",
     "action": [
       {
-        "name": "Set Time",
-        "funcname": "setTime",
+        "name": "Set DateTime",
+        "funcname": "setDateTime",
         "type": "Active",
         "parameter": [
           {
-            "name": "time",
+            "name": "datetime",
             "value": 0,
             "constraint": [],
             "datatype": "DATETIME",

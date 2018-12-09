@@ -13,7 +13,7 @@ public class RTCTerm extends Term{
     @Override
     public String toCCode() {
         LocalDateTime rtc = getValue().getLocalDateTime();
-        return rtc.getSecond() + "," + rtc.getMinute() + "," + rtc.getHour() + "," + rtc.getDayOfWeek().getValue() + "," + rtc.getDayOfYear() + "," + rtc.getMonth() + "," + rtc.getYear();
+        return "MP_DATETIME(" + rtc.getSecond() + "," + rtc.getMinute() + "," + rtc.getHour() +  "," + rtc.getDayOfMonth() + "," + rtc.getMonth().getValue() + "," + rtc.getYear() + ")";
     }
 
     @Override

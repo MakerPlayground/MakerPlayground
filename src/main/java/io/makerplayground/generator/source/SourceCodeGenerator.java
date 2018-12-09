@@ -634,6 +634,8 @@ public class SourceCodeGenerator {
             returnValue = "constrain(" + expression.translateToCCode() + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
+        } else if (expression instanceof SimpleRTCExpression) {
+            returnValue = expression.translateToCCode();
         } else {
             throw new IllegalStateException();
         }
