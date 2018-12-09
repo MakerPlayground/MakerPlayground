@@ -73,6 +73,11 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case DATETIME:
                 defaultValue = RealTimeClock.getDefault();
                 break;
+            case DOT_MATRIX:
+                int row = node.get("value").get("row").asInt();
+                int column = node.get("value").get("column").asInt();
+                defaultValue = new byte[row][column];
+                break;
             default:
                 throw(new IllegalStateException("Format error!!!"));
         }

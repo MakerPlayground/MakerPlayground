@@ -1,0 +1,5 @@
+.radio-button .dot {
+    -fx-mark-highlight-color: red ;
+    -fx-mark-color: red ;
+    -fx-background-radius: 15px;
+}

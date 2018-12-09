@@ -16,18 +16,19 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.RealTimeClock;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
-import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.project.expression.*;
+import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.project.expression.NumberWithUnitExpression;
+import io.makerplayground.project.expression.SimpleDotMatrixExpression;
+import io.makerplayground.project.expression.SimpleRTCExpression;
+import io.makerplayground.project.expression.SimpleStringExpression;
+import io.makerplayground.ui.canvas.node.expression.DotMatrixExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableList;D
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -188,6 +189,13 @@ public class SceneDevicePropertyWindow extends PopOver {
                 }
                 RTCExpressionControl expressionControl = new RTCExpressionControl((SimpleRTCExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.DOTMATRIX_8x16) {
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new SimpleDotMatrixExpression(new DotMatrix(8, 16)));
+                }
+                DotMatrixExpressionControl expressionControl = new DotMatrixExpressionControl((SimpleDotMatrixExpression) viewModel.getParameterValue(p));
+                expressionControl.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else {
                 throw new IllegalStateException("Found unknown control type " + p);

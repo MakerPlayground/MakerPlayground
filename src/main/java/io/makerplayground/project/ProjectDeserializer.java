@@ -27,6 +27,13 @@ import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
+<<<<<<< HEAD
+=======
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Peripheral;
+import io.makerplayground.device.actual.Platform;
+import io.makerplayground.project.term.*;
+>>>>>>> Implement KidBright's DotMatrix
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.collections.FXCollections;
@@ -212,10 +219,16 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                     inverse = valueNode.get("inverse").asBoolean();
                 }
                 expression = new ValueLinkingExpression(parameter, terms, inverse);
+<<<<<<< HEAD
             } else if (SimpleRTCExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new SimpleRTCExpression(((RTCTerm)(terms.get(0))).getValue());
             }
             else {
+=======
+            } else if (SimpleDotMatrixExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new SimpleDotMatrixExpression(((DotMatrixTerm) terms.get(0)).getValue());
+            } else {
+>>>>>>> Implement KidBright's DotMatrix
                 throw new IllegalStateException("expression type not supported");
             }
 
@@ -291,6 +304,19 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             LocalDateTime localDateTime = LocalDateTime.of(year, month, day, hour, minute, second);
             RealTimeClock.Mode mode = RealTimeClock.Mode.valueOf(term_node.get("value").get("mode").asText());
             term = new RTCTerm(new RealTimeClock(mode, localDateTime));
+        } else if (Term.Type.DOTMATRIX.name().equals(term_type)) {
+            int row = term_node.get("value").get("row").asInt();
+            int column = term_node.get("value").get("column").asInt();
+            Iterator<JsonNode> iterator = term_node.get("value").get("dots").iterator();
+            byte[][] values = new byte[row][];
+            try {
+                for (int i=0; iterator.hasNext(); i++) {
+                    values[i] = iterator.next().binaryValue();
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not deserialize the array of byte", e);
+            }
+            term = new DotMatrixTerm(new DotMatrix(row, column, values));
         } else {
             throw new IllegalStateException("deserialize unsupported term");
         }

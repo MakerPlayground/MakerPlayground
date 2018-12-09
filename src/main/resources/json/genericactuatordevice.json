@@ -278,5 +278,74 @@
     ], 
     "condition": [], 
     "value": []
+  },
+  {
+    "name": "8x16 Matrix LED",
+    "description": "This is a Matrix LED. It can show text or emoticon.",
+    "action": [
+      {
+        "name": "Show text",
+        "funcname": "showText",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "text",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "rotation",
+            "value": "0",
+            "constraint": [
+              "0",
+              "90",
+              "180",
+              "270"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Show pixels",
+        "funcname": "showPixels",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "pixels",
+            "value": {
+              "row": 8,
+              "column": 16
+            },
+            "constraint": [],
+            "datatype": "DOT_MATRIX",
+            "controltype": "DOTMATRIX_8x16"
+          },
+          {
+            "name": "rotation",
+            "value": "0",
+            "constraint": [
+              "0",
+              "90",
+              "180",
+              "270"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]
