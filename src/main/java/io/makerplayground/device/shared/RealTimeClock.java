@@ -1,5 +1,8 @@
 package io.makerplayground.device.shared;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class RealTimeClock {
@@ -12,7 +15,8 @@ public class RealTimeClock {
     private final Mode mode;
     private final LocalDateTime localDateTime;
 
-    public RealTimeClock(Mode mode, LocalDateTime localDateTime) {
+    @JsonCreator
+    public RealTimeClock(@JsonProperty("mode") Mode mode, @JsonProperty("localDateTime") LocalDateTime localDateTime) {
         this.mode = mode;
         this.localDateTime = localDateTime;
     }

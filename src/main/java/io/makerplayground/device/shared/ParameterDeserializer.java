@@ -42,7 +42,7 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
     }
 
     @Override
-    public Parameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Parameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 

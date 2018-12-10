@@ -56,6 +56,7 @@ public class UserSetting {
         });
 
         // Initialize expression list
+        // TODO: Expression is not required to be added in Scene
         for (Value v : device.getGenericDevice().getValue()) {
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
                 expression.put(v, new NumberInRangeExpression(device, v));
