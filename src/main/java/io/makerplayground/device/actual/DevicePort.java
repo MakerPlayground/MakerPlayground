@@ -27,32 +27,41 @@ import java.util.stream.Collectors;
  * Created by Palmn on 7/15/2017.
  */
 public class DevicePort {
-    enum Type {
+    public enum Type {
         WIRE, GROVE, MP, VIRTUAL
+    }
+
+    public enum SubType {
+        STRAIGHT_TOP, STRAIGHT_BOTTOM, RIGHTANGLE_TOP, RIGHTANGLE_BOTTOM
     }
 
     private String name;
     private List<String> alias;
     private Type type;
+    private SubType subType;
     private List<DevicePortFunction> function;
     private double vmin;
     private double vmax;
     private double x;
     private double y;
+    private double angle;
 
     @JsonCreator
     public DevicePort(@JsonProperty("name") String name, @JsonProperty("alias") List<String> alias, @JsonProperty("type")Type type
+            , @JsonProperty("sub_type") SubType subType
             , @JsonProperty("function") List<DevicePortFunction> function
             , @JsonProperty("v_min") double vmin, @JsonProperty("v_max") double vmax
-            , @JsonProperty("x") double x, @JsonProperty("y") double y) {
+            , @JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("angle") double angle) {
         this.name = name;
         this.alias = (alias == null) ? Collections.emptyList() : alias;
         this.type = type;
+        this.subType = subType;
         this.function = function;
         this.vmin = vmin;
         this.vmax = vmax;
         this.x = x;
         this.y = y;
+        this.angle = angle;
 
         // Port shouldn't contain more than one function with identical type e.g. GPIO_1 and GPIO_2 or GROVE_GPIO_SINGLE_1 and GROVE_GPIO_SINGLE_2
         // as it doesn't make sense and break our device mapping logic. Note that port can have multiple functions with different type
@@ -72,6 +81,10 @@ public class DevicePort {
 
     public Type getType() {
         return type;
+    }
+
+    public SubType getSubType() {
+        return subType;
     }
 
     public boolean hasPeripheral(Peripheral peripheral) {
@@ -150,6 +163,10 @@ public class DevicePort {
 
     public double getY() {
         return y;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     private static class DevicePortFunction {
