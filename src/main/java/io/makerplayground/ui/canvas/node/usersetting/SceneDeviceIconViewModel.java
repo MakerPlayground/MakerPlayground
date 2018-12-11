@@ -23,6 +23,7 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.List;
@@ -58,11 +59,13 @@ public class SceneDeviceIconViewModel {
 
     public Action getAction() {
         return userSetting.getAction();
-        //return action.get();
     }
 
-    public ObjectProperty<Action> actionProperty() {
-        //return action;
+    public void setAction(Action action) {
+        userSetting.setAction(action);
+    }
+
+    public ReadOnlyObjectProperty<Action> actionProperty() {
         return userSetting.actionProperty();
     }
 

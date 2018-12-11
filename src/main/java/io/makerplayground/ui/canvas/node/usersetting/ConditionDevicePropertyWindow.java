@@ -112,8 +112,10 @@ public class ConditionDevicePropertyWindow extends PopOver {
             }
         });
         conditionComboBox.getSelectionModel().select(viewModel.getAction());
-        // bind action selected to the view model
-        viewModel.actionProperty().bind(conditionComboBox.getSelectionModel().selectedItemProperty());
+        conditionComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            viewModel.setAction(newValue);
+            redrawProperty();
+        });
         GridPane.setRowIndex(conditionComboBox, 0);
         GridPane.setColumnIndex(conditionComboBox, 1);
 
@@ -121,9 +123,6 @@ public class ConditionDevicePropertyWindow extends PopOver {
         propertyPane.setVgap(5);
         propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
-        // add listener to update property sheet when the condition selected has changed
-        // TODO: jet reassign parameter after change the action
-        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> redrawProperty());
         redrawProperty();
 
         // arrange title and property sheet

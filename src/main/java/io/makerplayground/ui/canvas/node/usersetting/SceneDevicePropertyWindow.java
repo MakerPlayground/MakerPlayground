@@ -111,8 +111,10 @@ public class SceneDevicePropertyWindow extends PopOver {
             }
         });
         actionComboBox.getSelectionModel().select(viewModel.getAction());
-        // bind action selected to the view model
-        viewModel.actionProperty().bind(actionComboBox.getSelectionModel().selectedItemProperty());
+        actionComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            viewModel.setAction(newValue);
+            redrawProperty();
+        });
         GridPane.setRowIndex(actionComboBox, 0);
         GridPane.setColumnIndex(actionComboBox, 1);
 
@@ -120,8 +122,6 @@ public class SceneDevicePropertyWindow extends PopOver {
         propertyPane.setVgap(5);
         propertyPane.getChildren().addAll(actionLabel, actionComboBox);
 
-        // add listener to update property sheet when the condition selected has changed
-        viewModel.actionProperty().addListener((observable, oldValue, newValue) -> redrawProperty());
         redrawProperty();
 
         // arrange title and property sheet
