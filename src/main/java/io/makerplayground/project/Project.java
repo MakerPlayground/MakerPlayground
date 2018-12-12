@@ -72,7 +72,7 @@ public class Project {
 
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        platform = new ReadOnlyObjectWrapper<>(Platform.MP_ARDUINO);
+        platform = new ReadOnlyObjectWrapper<>(Platform.ARDUINO_AVR8);
         controller = new SimpleObjectProperty<>();
 
         device = FXCollections.observableArrayList();
@@ -484,7 +484,7 @@ public class Project {
     public boolean hasUnsavedModification() {
         if (getFilePath().isEmpty()) {
             // A hack way to check for project modification in case that it hasn't been saved
-            return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null && device.isEmpty()
+            return !(platform.get() == Platform.ARDUINO_AVR8 && controller.get() == null && device.isEmpty()
                     && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
                     && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
         } else {

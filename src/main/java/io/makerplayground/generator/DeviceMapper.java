@@ -37,6 +37,8 @@ import io.makerplayground.project.expression.*;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -195,6 +197,24 @@ public class DeviceMapper {
             }
         }
 
+        // get list of split port that each device used along with the sibling ports of that port
+        Map<ProjectDevice, Set<DevicePort>> splitPortMap = new HashMap<>();
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (List<DevicePort> controllerPort : projectDevice.getDeviceConnection().values()) {
+                for (DevicePort port : controllerPort) {
+                    if (port.getParent() != null) {
+                        Set<DevicePort> siblingPort = project.getController().getPort().stream()
+                                .filter(devicePort -> devicePort.getParent() == port.getParent()).collect(Collectors.toSet());
+                        if (splitPortMap.containsKey(projectDevice)) {
+                            splitPortMap.get(projectDevice).addAll(siblingPort);
+                        } else {
+                            splitPortMap.put(projectDevice, siblingPort);
+                        }
+                    }
+                }
+            }
+        }
+
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Map<Peripheral, List<List<DevicePort>>> possibleDevice = new HashMap<>();
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
@@ -202,8 +222,12 @@ public class DeviceMapper {
             }
 
             // bring current selection back to the possible list
-            for (Map.Entry<Peripheral, List<DevicePort>> connectivity : projectDevice.getDeviceConnection().entrySet()) {
-                possibleDevice.get(connectivity.getKey()).add(connectivity.getValue());
+            for (Peripheral peripheral : new HashSet<>(projectDevice.getDeviceConnection().keySet())) {
+                if (possibleDevice.containsKey(peripheral)) {
+                    possibleDevice.get(peripheral).add(projectDevice.getDeviceConnection().get(peripheral));
+                } else {
+                    projectDevice.removeDeviceConnection(peripheral);
+                }
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
@@ -214,9 +238,9 @@ public class DeviceMapper {
                 } else if (pDevice.getConnectionType() == ConnectionType.NONE) {    // TODO: should be removed
                     possibleDevice.get(pDevice).add(Collections.emptyList());
                 } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
-                    DevicePort sclPort = processorPort.stream().filter(DevicePort::isSCL).findAny().get();
-                    DevicePort sdaPort = processorPort.stream().filter(DevicePort::isSDA).findAny().get();
-                    possibleDevice.get(pDevice).add(Arrays.asList(sclPort, sdaPort));
+                    for (List<DevicePort> port : project.getController().getI2CPort()) {
+                        possibleDevice.get(pDevice).add(port);
+                    }
                 } else {
                     Set<DevicePort> possiblePort = new HashSet<>(processorPort);
                     possiblePort.removeAll(usedPort);
@@ -230,6 +254,13 @@ public class DeviceMapper {
                     for (ProjectDevice pd : conflictIfUsedPortMap.keySet()) {
                         if (pd != projectDevice) {
                             possiblePort.removeAll(conflictIfUsedPortMap.get(pd));
+                        }
+                    }
+                    // remove split port that it's sibling has been used by other device as we may not have enough
+                    // power/ground connection for every device without using the breadboard
+                    for (ProjectDevice pd : splitPortMap.keySet()) {
+                        if (pd != projectDevice) {
+                            possiblePort.removeAll(splitPortMap.get(pd));
                         }
                     }
                     // for each port in the possible port list, add to the result if it supported

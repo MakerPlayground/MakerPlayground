@@ -19,8 +19,7 @@ package io.makerplayground.device.actual;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,16 +34,17 @@ public class DevicePort {
         STRAIGHT_TOP, STRAIGHT_BOTTOM, RIGHTANGLE_TOP, RIGHTANGLE_BOTTOM
     }
 
-    private String name;
-    private List<String> alias;
-    private Type type;
-    private SubType subType;
-    private List<DevicePortFunction> function;
-    private double vmin;
-    private double vmax;
-    private double x;
-    private double y;
-    private double angle;
+    private final String name;
+    private final List<String> alias;
+    private final Type type;
+    private final SubType subType;
+    private final List<DevicePortFunction> function;
+    private final double vmin;
+    private final double vmax;
+    private final double x;
+    private final double y;
+    private final double angle;
+    private final DevicePort parent;
 
     @JsonCreator
     public DevicePort(@JsonProperty("name") String name, @JsonProperty("alias") List<String> alias, @JsonProperty("type")Type type
@@ -52,8 +52,12 @@ public class DevicePort {
             , @JsonProperty("function") List<DevicePortFunction> function
             , @JsonProperty("v_min") double vmin, @JsonProperty("v_max") double vmax
             , @JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("angle") double angle) {
+        this(name, alias, type, subType, function, vmin, vmax, x, y, angle, null);
+    }
+
+    public DevicePort(String name, List<String> alias, Type type, SubType subType, List<DevicePortFunction> function, double vmin, double vmax, double x, double y, double angle, DevicePort parent) {
         this.name = name;
-        this.alias = (alias == null) ? Collections.emptyList() : alias;
+        this.alias = Objects.requireNonNullElse(alias, Collections.emptyList());
         this.type = type;
         this.subType = subType;
         this.function = function;
@@ -62,11 +66,12 @@ public class DevicePort {
         this.x = x;
         this.y = y;
         this.angle = angle;
+        this.parent = parent;
 
         // Port shouldn't contain more than one function with identical type e.g. GPIO_1 and GPIO_2 or GROVE_GPIO_SINGLE_1 and GROVE_GPIO_SINGLE_2
         // as it doesn't make sense and break our device mapping logic. Note that port can have multiple functions with different type
         // e.g. GPIO_1 and PWM_1 or GROVE_GPIO_SINGLE_1 and GROVE_ANALOG_SINGLE_1
-        if (function.size() != function.stream().map(DevicePortFunction::getPeripheral).collect(Collectors.toSet()).size()) {
+        if (function.size() != function.stream().map(DevicePortFunction::getPeripheral).map(Peripheral::getConnectionType).distinct().count()) {
             throw new IllegalStateException("Port shouldn't contain more than one function with identical type [port name: " + this.name + "]");
         }
     }
@@ -87,6 +92,21 @@ public class DevicePort {
         return subType;
     }
 
+    public boolean hasConnectionType(ConnectionType connectionType) {
+        return function.stream().map(DevicePortFunction::getPeripheral)
+                .anyMatch(peripheral -> peripheral.getConnectionType() == connectionType);
+    }
+
+    public List<Peripheral> getPeripheral() {
+        return function.stream().map(DevicePortFunction::getPeripheral).collect(Collectors.toList());
+    }
+
+    public Optional<Peripheral> getPeripheral(ConnectionType connectionType) {
+        return function.stream().map(DevicePortFunction::getPeripheral)
+                .filter(peripheral -> peripheral.getConnectionType() == connectionType)
+                .findFirst();
+    }
+
     public boolean hasPeripheral(Peripheral peripheral) {
         return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPeripheral() == peripheral);
     }
@@ -98,6 +118,14 @@ public class DevicePort {
             }
         }
         return Collections.emptyList();
+    }
+
+    public void addConflictPeripheral(Peripheral peripheral, List<Peripheral> conflictPeripheral) {
+        for (DevicePortFunction devicePortFunction : function) {
+            if (devicePortFunction.getPeripheral() == peripheral) {
+                devicePortFunction.getConflict().addAll(conflictPeripheral);
+            }
+        }
     }
 
     public boolean isConflictedTo(DevicePort devicePort) {
@@ -169,7 +197,11 @@ public class DevicePort {
         return angle;
     }
 
-    private static class DevicePortFunction {
+    public DevicePort getParent() {
+        return parent;
+    }
+
+    public static class DevicePortFunction {
         private Peripheral peripheral;
         private List<Peripheral> conflict;
         private PinType pinType;
@@ -177,7 +209,7 @@ public class DevicePort {
         @JsonCreator
         public DevicePortFunction(@JsonProperty("type") Peripheral peripheral, @JsonProperty("conflict") List<Peripheral> conflict, @JsonProperty("pintype") PinType pinType) {
             this.peripheral = peripheral;
-            this.conflict = (conflict == null) ? Collections.emptyList() : conflict;
+            this.conflict = (conflict == null) ? new ArrayList<>() : new ArrayList<>(conflict); // conflict list must be mutable
             this.pinType = pinType;
         }
 

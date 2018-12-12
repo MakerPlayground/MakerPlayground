@@ -16,6 +16,7 @@
 
 package io.makerplayground.device;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import io.makerplayground.device.actual.ActualDevice;
@@ -93,7 +94,11 @@ public enum DeviceLibrary {
                 for (Path deviceDirectory : directoryStream) {
                     Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
                     if (Files.exists(deviceDefinitionPath)) {
-                        temp.add(mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {}));
+                        try {
+                            temp.add(mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {}));
+                        } catch (JsonParseException e) {
+                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
+                        }
                     }
                 }
                 return Collections.unmodifiableList(temp);
@@ -101,7 +106,6 @@ public enum DeviceLibrary {
                 e.printStackTrace();
             }
         }
-        System.err.println("Found some errors when loading the device library!!!");
         return Collections.emptyList();
     }
 

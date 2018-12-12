@@ -45,7 +45,7 @@ class ActualDeviceLibraryTest {
         assertNotNull(library.getActualDevice("MP-0000"));
         assertNull(library.getActualDevice(""));
 
-        assertNotNull(library.getActualDevice(Platform.MP_ARDUINO));
-        assertFalse(library.getActualDevice(Platform.MP_ARDUINO).isEmpty());
+        assertNotNull(library.getActualDevice(Platform.ARDUINO_AVR8));
+        assertFalse(library.getActualDevice(Platform.ARDUINO_AVR8).isEmpty());
     }
 }
