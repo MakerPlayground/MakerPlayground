@@ -82,6 +82,8 @@ public class DeviceMapper {
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
                         newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
+                    } else if (parameter.getDataType() == DataType.DATETIME) {
+                        newConstraint = Constraint.NONE;
                     } else {
                         throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
                     }

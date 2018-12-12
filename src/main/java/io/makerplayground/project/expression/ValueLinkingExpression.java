@@ -207,6 +207,11 @@ public class ValueLinkingExpression extends Expression {
     }
 
     @Override
+    public ValueLinkingExpression deepCopy() {
+        return new ValueLinkingExpression(this);
+    }
+
+    @Override
     public boolean isValid() {
         return super.isValid();
     }

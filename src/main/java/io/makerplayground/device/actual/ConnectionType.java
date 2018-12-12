@@ -25,6 +25,7 @@ public enum ConnectionType {
     INT,
     PWM,
     I2C,
+    I2C1,
     SPI,
     UART,
     POWER,
@@ -48,5 +49,5 @@ public enum ConnectionType {
     GROVE_PWM_DUAL,
     GROVE_ANALOG_SINGLE,
     GROVE_ANALOG_DUAL,
-    GROVE_I2C;
+    GROVE_I2C
 }

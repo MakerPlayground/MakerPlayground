@@ -21,7 +21,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import java.text.DecimalFormat;
 
 public class NumberWithUnitTerm extends Term {
-    private static final DecimalFormat df = new DecimalFormat("0.00");
+    private static final DecimalFormat df = new DecimalFormat("0.0###");
 
     public static final NumberWithUnitTerm ZERO = new NumberWithUnitTerm(NumberWithUnit.ZERO);
 

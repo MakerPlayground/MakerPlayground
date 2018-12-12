@@ -58,7 +58,7 @@ public class DevicePort {
         // as it doesn't make sense and break our device mapping logic. Note that port can have multiple functions with different type
         // e.g. GPIO_1 and PWM_1 or GROVE_GPIO_SINGLE_1 and GROVE_ANALOG_SINGLE_1
         if (function.size() != function.stream().map(DevicePortFunction::getPeripheral).collect(Collectors.toSet()).size()) {
-            throw new IllegalStateException("Port shouldn't contain more than one function with identical type");
+            throw new IllegalStateException("Port shouldn't contain more than one function with identical type [port name: " + this.name + "]");
         }
     }
 

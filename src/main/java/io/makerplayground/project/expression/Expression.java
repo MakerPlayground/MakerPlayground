@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, VALUE_LINKING
+        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING
     }
 
     public enum RefreshInterval {
@@ -55,44 +57,26 @@ public abstract class Expression {
     private NumberWithUnit userDefinedInterval;
 
     public Expression(Type type) {
-        this.type = type;
-        this.refreshInterval = RefreshInterval.ONCE;
-        this.userDefinedInterval = NumberWithUnit.ZERO_SECOND;
+        this(type, RefreshInterval.ONCE, NumberWithUnit.ZERO_SECOND);
     }
 
     @JsonCreator
     private Expression(Type type, RefreshInterval refreshInterval, NumberWithUnit userDefinedInterval) {
+        this(type, refreshInterval, userDefinedInterval, new ArrayList<>());
+    }
+
+    private Expression(Type type, RefreshInterval refreshInterval, NumberWithUnit userDefinedInterval, List<Term> terms) {
         this.type = type;
         this.refreshInterval = refreshInterval;
         this.userDefinedInterval = userDefinedInterval;
+        this.terms.addAll(terms);
     }
 
     protected Expression(Expression e) {
-        this(e.type);
-        terms.addAll(e.terms);  // Term is immutable
-        refreshInterval = e.refreshInterval;
-        userDefinedInterval = e.userDefinedInterval;
+        this(e.type, e.refreshInterval, e.userDefinedInterval, e.terms);
     }
 
-    public static Expression deepCopy(Expression e) {
-        if (e instanceof NumberInRangeExpression) {
-            return new NumberInRangeExpression((NumberInRangeExpression) e);
-        } else if (e instanceof ConditionalExpression) {
-            return new ConditionalExpression((ConditionalExpression) e);
-        } else if (e instanceof CustomNumberExpression) {
-            return new CustomNumberExpression((CustomNumberExpression) e);
-        } else if (e instanceof NumberWithUnitExpression) {
-            return new NumberWithUnitExpression((NumberWithUnitExpression) e);
-        } else if (e instanceof ProjectValueExpression) {
-            return new ProjectValueExpression((ProjectValueExpression) e);
-        } else if (e instanceof SimpleStringExpression) {
-            return new SimpleStringExpression((SimpleStringExpression) e);
-        } else if (e instanceof ValueLinkingExpression) {
-            return new ValueLinkingExpression((ValueLinkingExpression) e);
-        } else {
-            throw new IllegalStateException("Not support type of expression");
-        }
-    }
+    public abstract Expression deepCopy();
 
     public static Expression fromDefaultParameter(Parameter param) {
         switch (param.getDataType()) {
@@ -104,11 +88,11 @@ public abstract class Expression {
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
-            case VALUE:
-                return new ProjectValueExpression();
+            case DATETIME:
+                return new SimpleRTCExpression(RealTimeClock.getDefault());
+            default:
+                throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }
-
-        throw new IllegalStateException("implement the Expression Selection here");
     }
 
     public List<Term> getTerms() {

@@ -23,25 +23,17 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.makerplayground.device.*;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DevicePort;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.project.term.*;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.project.term.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -211,11 +203,10 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             Parameter parameter = action.getParameter(parameterNode.get("name").asText());
             Expression expression = null;
             String expressionType = parameterNode.get("type").asText();
-
             JsonNode valueNode = parameterNode.get("value");
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(term_node, allProjectDevices));
+                terms.add(deserializeTerm(mapper, term_node, allProjectDevices));
             }
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
@@ -231,7 +222,10 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                     inverse = valueNode.get("inverse").asBoolean();
                 }
                 expression = new ValueLinkingExpression(parameter, terms, inverse);
-            } else {
+            } else if (SimpleRTCExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new SimpleRTCExpression(((RTCTerm)(terms.get(0))).getValue());
+            }
+            else {
                 throw new IllegalStateException("expression type not supported");
             }
 
@@ -252,7 +246,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             String type = valueNode.get("type").asText();
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("expression")) {
-                terms.add(deserializeTerm(term_node, allProjectDevices));
+                terms.add(deserializeTerm(mapper, term_node, allProjectDevices));
             }
 
             Expression expression;
@@ -271,8 +265,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
     }
 
-    private Term deserializeTerm(JsonNode term_node,
-                                 Collection<ProjectDevice> allProjectDevices) {
+    private Term deserializeTerm(ObjectMapper mapper, JsonNode term_node, Collection<ProjectDevice> allProjectDevices) {
         String term_type = term_node.get("type").asText();
         Term term;
         if (Term.Type.NUMBER.name().equals(term_type)) {
@@ -296,6 +289,18 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         } else if (Term.Type.STRING.name().equals(term_type)) {
             String word = term_node.get("value").asText();
             term = new StringTerm(word);
+        } else if (Term.Type.DATETIME.name().equals(term_type)) {
+            System.out.println(term_node.get("value"));
+            JsonNode temp_node = term_node.get("value").get("localDateTime");
+            int year = temp_node.get("year").asInt();
+            int month = temp_node.get("monthValue").asInt();
+            int day = temp_node.get("dayOfMonth").asInt();
+            int hour = temp_node.get("hour").asInt();
+            int minute = temp_node.get("minute").asInt();
+            int second = temp_node.get("second").asInt();
+            LocalDateTime localDateTime = LocalDateTime.of(year, month, day, hour, minute, second);
+            RealTimeClock.Mode mode = RealTimeClock.Mode.valueOf(term_node.get("value").get("mode").asText());
+            term = new RTCTerm(new RealTimeClock(mode, localDateTime));
         } else {
             throw new IllegalStateException("deserialize unsupported term");
         }

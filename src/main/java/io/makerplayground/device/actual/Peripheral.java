@@ -64,6 +64,7 @@ public enum Peripheral {
     I2C_2(ConnectionType.I2C),
     I2C_3(ConnectionType.I2C),
     I2C_4(ConnectionType.I2C),
+    I2C1_1(ConnectionType.I2C1),
 
     SPI_1(ConnectionType.SPI),
     SPI_2(ConnectionType.SPI),
@@ -236,6 +237,7 @@ public enum Peripheral {
     public boolean isI2C1() {
         switch (this.getConnectionType()) {
             case MP_I2C1:
+            case I2C1:
                 return true;
             default:
                 return false;

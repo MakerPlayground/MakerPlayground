@@ -117,4 +117,10 @@ public class CustomNumberExpression extends Expression {
     private boolean isNumberOrValueTerm(Term t) {
         return t instanceof ValueTerm || t instanceof NumberWithUnitTerm;
     }
+
+    @Override
+    public CustomNumberExpression deepCopy() {
+        return new CustomNumberExpression(this);
+    }
+
 }

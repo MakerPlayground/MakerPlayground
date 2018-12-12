@@ -17,13 +17,13 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.collections.FXCollections;
@@ -149,37 +149,7 @@ public class SceneDevicePropertyWindow extends PopOver {
             GridPane.setValignment(name, VPos.TOP);
 
             Node control = null;
-            if (p.getDataType() == DataType.VALUE) {
-                ObservableList<ProjectValue> list = FXCollections.observableArrayList(viewModel.getProjectValue());
-                ComboBox<ProjectValue> comboBox = new ComboBox<>(list);
-                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ProjectValueExpression(newValue)));
-                if (viewModel.getParameterValue(p) != null) {
-                    comboBox.setValue(((ProjectValueExpression) viewModel.getParameterValue(p)).getProjectValue());
-                }
-                comboBox.setCellFactory(param -> new ListCell<>() {
-                    @Override
-                    protected void updateItem(ProjectValue item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText("");
-                        } else {
-                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
-                        }
-                    }
-                });
-                comboBox.setButtonCell(new ListCell<>(){
-                    @Override
-                    protected void updateItem(ProjectValue item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setText("");
-                        } else {
-                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
-                        }
-                    }
-                });
-                control = comboBox;
-            } else if (p.getControlType() == ControlType.SLIDER) {
+            if (p.getControlType() == ControlType.SLIDER) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
@@ -210,6 +180,13 @@ public class SceneDevicePropertyWindow extends PopOver {
                         viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.DATETIMEPICKER) {
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new SimpleRTCExpression(RealTimeClock.getDefault()));
+                }
+                RTCExpressionControl expressionControl = new RTCExpressionControl((SimpleRTCExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else {

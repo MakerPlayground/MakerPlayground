@@ -153,4 +153,9 @@ public class ConditionalExpression extends Expression {
             this.expression = expression;
         }
     }
+
+    @Override
+    public ConditionalExpression deepCopy() {
+        return new ConditionalExpression(this);
+    }
 }

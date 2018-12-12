@@ -22,8 +22,14 @@ import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWithOperator;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
+
+import java.text.DecimalFormat;
 
 public class SimpleConditionalExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;
@@ -33,6 +39,21 @@ public class SimpleConditionalExpressionControl extends HBox {
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
 
+    private final DecimalFormat df = new DecimalFormat("0.####");
+
+    private final StringConverter<Number> formatter = new StringConverter<>() {
+        private final DecimalFormat df = new DecimalFormat("0.#");
+        @Override
+        public String toString(Number object) {
+            return df.format(object.doubleValue());
+        }
+
+        @Override
+        public Number fromString(String string) {
+            return Double.parseDouble(string);
+        }
+    };
+
     public SimpleConditionalExpressionControl(NumberInRangeExpression expression, Value value) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.value = value;
@@ -41,7 +62,7 @@ public class SimpleConditionalExpressionControl extends HBox {
 
     private void initView() {
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
-
+        rangeSlider.setLabelFormatter(formatter);
         rangeSlider.setMax(constraint.getMax());
         rangeSlider.setMin(constraint.getMin());
         rangeSlider.setHighValue(expression.get().getHighValue());
@@ -54,17 +75,27 @@ public class SimpleConditionalExpressionControl extends HBox {
         rangeSlider.setShowTickLabels(true);
         rangeSlider.setBlockIncrement(1);
         rangeSlider.lowValueProperty().addListener((observable, oldValue, newValue) -> {
-            lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
+            lowTextField.setText(df.format(rangeSlider.getLowValue()));
             updateExpression();
         });
         rangeSlider.highValueProperty().addListener((observable, oldValue, newValue) -> {
-            highTextField.setText(String.valueOf(rangeSlider.getHighValue()));
+            highTextField.setText(df.format(rangeSlider.getHighValue()));
             updateExpression();
         });
         rangeSlider.lowThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         rangeSlider.highThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
 
         lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
+        lowTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
+                try {
+                    double value = Double.parseDouble(lowTextField.getText());
+                    rangeSlider.setLowValue(value);
+                } catch (NumberFormatException e) {
+                    lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
+                }
+            }
+        });
         lowTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {
@@ -77,6 +108,16 @@ public class SimpleConditionalExpressionControl extends HBox {
         });
 
         highTextField.setText(String.valueOf(rangeSlider.getHighValue()));
+        highTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
+                try {
+                    double value = Double.parseDouble(highTextField.getText());
+                    rangeSlider.setHighValue(value);
+                } catch (NumberFormatException e) {
+                    highTextField.setText(String.valueOf(rangeSlider.getHighValue()));
+                }
+            }
+        });
         highTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 try {
@@ -105,5 +146,30 @@ public class SimpleConditionalExpressionControl extends HBox {
 
     public ReadOnlyObjectProperty<NumberInRangeExpression> expressionProperty() {
         return expression.getReadOnlyProperty();
+    }
+
+    public void useIntegerOnly(boolean b) {
+        if (b) {
+            int lowValue = (int) Math.round(rangeSlider.getLowValue());
+            int highValue = (int) Math.round(rangeSlider.getHighValue());
+            lowValue = lowValue < rangeSlider.getMin() ? (int) Math.ceil(rangeSlider.getMin()) : lowValue;
+            highValue = highValue > rangeSlider.getMax() ? (int) Math.floor(rangeSlider.getMax()) : highValue;
+            rangeSlider.setLowValue(lowValue);
+            rangeSlider.setHighValue(highValue);
+
+            rangeSlider.lowValueProperty().addListener(this::forceLowToInt);
+            rangeSlider.highValueProperty().addListener(this::forceHighToInt);
+        } else {
+            rangeSlider.lowValueProperty().removeListener(this::forceLowToInt);
+            rangeSlider.highValueProperty().removeListener(this::forceHighToInt);
+        }
+    }
+
+    private void forceLowToInt(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        rangeSlider.setLowValue(newValue.intValue());
+    }
+
+    private void forceHighToInt(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        rangeSlider.setHighValue(newValue.intValue());
     }
 }
