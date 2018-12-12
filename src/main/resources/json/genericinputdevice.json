@@ -87,55 +87,55 @@
         }
       }
     ]
-  }, 
+  },
   {
-    "name": "Pressuremeter", 
-    "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector", 
-    "action": [], 
+    "name": "Light",
+    "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Pressure", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -3000.0, 
-          "max": 3000.0, 
-          "unit": "HECTOPASCAL"
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
         }
       }
     ]
-  }, 
+  },
   {
-    "name": "Altimeter", 
-    "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector", 
-    "action": [], 
+    "name": "POT",
+    "description": "This is potentiometer. You can turn to adjust and make some action.\\nRelated project:\\n\\tHelp many projects in selecting action and/or adjusting the sensor value",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Altitude", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": -3000.0, 
-          "max": 3000.0, 
-          "unit": "METER"
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "PERCENT"
         }
       }
     ]
-  }, 
+  },
   {
     "name": "Temperature", 
     "description": "A thermometer. \\nRelated project:\\n\\tSmart fan\\n\\tHeat detector", 
@@ -388,31 +388,31 @@
       }
     ], 
     "value": []
-  }, 
+  },
   {
-    "name": "Light", 
-    "description": "A sensor that detect light. \\nRelated project:\\n\\tAutomatic light", 
-    "action": [], 
+    "name": "Pressuremeter",
+    "description": "Pressuremeter is a sensor to measure pressure. \\nRelated project:\\n\\tAtmosphere detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Pressure",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
-          "unit": "PERCENT"
+          "min": -3000.0,
+          "max": 3000.0,
+          "unit": "HECTOPASCAL"
         }
       }
     ]
-  }, 
+  },
   {
     "name": "Water", 
     "description": "A sensor that detect water level. \\nRelated project:\\n\\tRain detection\\n\\tWater level detector", 
@@ -459,7 +459,7 @@
   }, 
   {
     "name": "LPG", 
-    "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas dectetor", 
+    "description": "A sensor that detect gas LPG. \\nRelated project:\\n\\tGas detector",
     "action": [], 
     "condition": [
       {
@@ -480,31 +480,55 @@
         }
       }
     ]
-  }, 
+  },
   {
-    "name": "POT", 
-    "description": "This is potentiometer. You can turn to adjust and make some action.\\nRelated project:\\n\\tHelp many projects in selecting action and/or adjusting the sensor value", 
-    "action": [], 
+    "name": "Flame",
+    "description": "A sensor that detect flame. \\nRelated project:\\n\\tFlame detector",
+    "action": [],
     "condition": [
       {
-        "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
         "parameter": []
       }
-    ], 
+    ],
     "value": [
       {
-        "name": "Percent", 
-        "dataType": "DOUBLE", 
+        "name": "Percent",
+        "dataType": "DOUBLE",
         "constraint": {
-          "min": 0.0, 
-          "max": 100.0, 
+          "min": 0.0,
+          "max": 100.0,
           "unit": "PERCENT"
         }
       }
     ]
-  }, 
+  },
+  {
+    "name": "Altimeter",
+    "description": "Altimeter is a sensor to measure height. \\nRelated project:\\n\\tHeight detector",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Altitude",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -3000.0,
+          "max": 3000.0,
+          "unit": "METER"
+        }
+      }
+    ]
+  },
   {
     "name": "Soil Moisture", 
     "description": "This is Moisture Sensor. It can detect the moisture of soil or decide whether there is water around the sensor", 

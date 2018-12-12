@@ -30,7 +30,72 @@
     ], 
     "condition": [], 
     "value": []
-  }, 
+  },
+  {
+    "name": "RGB LED",
+    "description": "This is a color LED",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Red",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Green",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Blue",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Brightness",
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
+  },
   {
     "name": "Buzzer", 
     "description": "A kind of speaker that can control frequency of sound", 
@@ -173,72 +238,7 @@
     ], 
     "condition": [], 
     "value": []
-  }, 
-  {
-    "name": "RGB LED", 
-    "description": "This is a color LED", 
-    "action": [
-      {
-        "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
-        "parameter": [
-          {
-            "name": "Red", 
-            "value": 255.0, 
-            "constraint": {
-              "min": 0.0, 
-              "max": 255.0, 
-              "unit": "NOT_SPECIFIED"
-            }, 
-            "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
-          }, 
-          {
-            "name": "Green", 
-            "value": 255.0, 
-            "constraint": {
-              "min": 0.0, 
-              "max": 255.0, 
-              "unit": "NOT_SPECIFIED"
-            }, 
-            "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
-          }, 
-          {
-            "name": "Blue", 
-            "value": 255.0, 
-            "constraint": {
-              "min": 0.0, 
-              "max": 255.0, 
-              "unit": "NOT_SPECIFIED"
-            }, 
-            "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
-          }, 
-          {
-            "name": "Brightness", 
-            "value": 100.0, 
-            "constraint": {
-              "min": 0.0, 
-              "max": 100.0, 
-              "unit": "NOT_SPECIFIED"
-            }, 
-            "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
-          }
-        ]
-      }, 
-      {
-        "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
-        "parameter": []
-      }
-    ], 
-    "condition": [], 
-    "value": []
-  }, 
+  },
   {
     "name": "Relay Module", 
     "description": "This is a relay module. It can act as a digital switch for high voltage.", 
