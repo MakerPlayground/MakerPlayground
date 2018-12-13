@@ -358,7 +358,40 @@
       }
     ], 
     "value": []
-  }, 
+  },
+  {
+    "name": "GPS",
+    "description": "A Geolocation sensor. \\nRelated project:\\n\\tGPS Tracking",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Latitude",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -90.0,
+          "max": 90.0,
+          "unit": "DEGREE"
+        }
+      },
+      {
+        "name": "Longitude",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -180.0,
+          "max": 180.0,
+          "unit": "DEGREE"
+        }
+      }
+    ]
+  },
   {
     "name": "Color", 
     "description": "A sensor that detect color. \\nRelated project:\\n\\tColor detector", 
