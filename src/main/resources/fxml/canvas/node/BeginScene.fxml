@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Arc?>
 
-<fx:root fx:id="beginHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../../css/canvas/node/BeginScene.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="beginHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../../css/canvas/node/BeginScene.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" style="-fx-cursor: move;">
    <children>
       <Label fx:id="labelHBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="95.0" text="Begin" textAlignment="CENTER" />
       <Arc fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="270.0" strokeType="INSIDE" strokeWidth="0.0" />
