@@ -33,11 +33,11 @@ public class NumberInRangeExpression extends Expression {
         NumericConstraint constraint = (NumericConstraint) value.getConstraint();
 
         terms.addAll(List.of(new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(Operator.LESS_THAN)
+                , new OperatorTerm(Operator.LESS_THAN_OR_EQUAL)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.75 + constraint.getMin(), constraint.getUnit()))
                 , new OperatorTerm(Operator.AND)
                 , new ValueTerm(new ProjectValue(device, value))
-                , new OperatorTerm(Operator.GREATER_THAN)
+                , new OperatorTerm(Operator.GREATER_THAN_OR_EQUAL)
                 , new NumberWithUnitTerm(new NumberWithUnit((constraint.getMax() - constraint.getMin()) * 0.25 + constraint.getMin(), constraint.getUnit())))
         );
     }
