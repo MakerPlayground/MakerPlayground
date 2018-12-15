@@ -68,6 +68,7 @@ public abstract class NumberWithUnitExpressionControl extends HBox {
         ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting-press.png")));
         configButton.setFitWidth(25);
         configButton.setPreserveRatio(true);
+        configButton.setStyle("-fx-cursor:hand;");
         configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
 
         if (getExpression() instanceof CustomNumberExpression) {
