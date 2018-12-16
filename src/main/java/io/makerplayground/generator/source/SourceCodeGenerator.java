@@ -18,14 +18,11 @@ package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.device.actual.Property;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.ConnectionType;
 import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 
@@ -310,8 +307,8 @@ public class SourceCodeGenerator {
 
         return new SourceCodeResult(generator.builder.toString());
     }
-
     private void generateCodeForSceneFunctions() {
+
         Queue<Scene> queue = new ArrayDeque<>();
 
         List<NodeElement> adjacentVertices = findAdjacentVertices(project, project.getBegin());
@@ -353,23 +350,23 @@ public class SourceCodeGenerator {
 
                 List<Parameter> parameters = setting.getAction().getParameter();
                 if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
-                    int parameterIndex = 0;
-                    for (Parameter p : parameters) {
+                    int expressionCalculationIndex = 0; // the expressionCalculation index
+                    for(Parameter p : parameters) {
                         Expression e = setting.getValueMap().get(p);
                         if (setting.isDataBindingUsed(p)) {
-                            String expressionVarName = getDeviceExpressionVariableName(device) + "[" + parameterIndex + "]";
-                            parameterIndex++;
+                            String expressionVarName = getDeviceExpressionVariableName(device) + "[" + expressionCalculationIndex + "]";
                             sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
                                     .append("[]()->double{").append("return ").append(parseExpression(p, e)).append(";}, ")
                                     .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
-                            taskParameter.add(expressionVarName + ".value");
+                            expressionCalculationIndex++;
+                            if (p.getDataType() == DataType.INTEGER || p.getDataType() == DataType.DOUBLE) {
+                                taskParameter.add(expressionVarName + ".value");
+                            } else if (p.getDataType() == DataType.STRING) {
+                                taskParameter.add(expressionVarName + ".value_str");
+                            }
                         } else {
                             taskParameter.add(parseExpression(p, e));
                         }
-                    }
-                    for (int i = parameterIndex; i < getMaximumNumberOfExpression(setting.getDevice()); i++) {
-                        sceneFunctions.append(INDENT).append("clearExpression(").append(getDeviceExpressionVariableName(device))
-                                .append("[").append(i).append("]);").append(NEW_LINE);
                     }
                     sceneFunctions.append(INDENT).append("setTask(").append(getDeviceTaskVariableName(device)).append(", []() -> void {")
                             .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")

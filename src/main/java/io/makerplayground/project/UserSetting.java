@@ -183,7 +183,9 @@ public class UserSetting {
     public long getNumberOfDatabindParams() {
         return getValueMap().keySet().stream()
                 .filter(parameter -> (parameter.getDataType() == DataType.DOUBLE)
-                        || (parameter.getDataType() == DataType.INTEGER))
+                        || (parameter.getDataType() == DataType.INTEGER)
+                        || (parameter.getDataType() == DataType.STRING))
+                .filter(this::isDataBindingUsed)
                 .count();
     }
 }
