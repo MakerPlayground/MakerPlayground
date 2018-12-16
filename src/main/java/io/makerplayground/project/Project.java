@@ -424,23 +424,39 @@ public class Project {
     }
 
     public Set<ProjectDevice> getAllDeviceUsed() {
-        Set<ProjectDevice> deviceType = new HashSet<>();
+        Set<ProjectDevice> deviceUsed = new HashSet<>();
 
-        for (Scene s : scene) {
-            for (UserSetting userSetting : s.getSetting()) {
-                deviceType.add(userSetting.getDevice());
-                deviceType.addAll(userSetting.getAllValueUsed().keySet());
+        Set<NodeElement> visited = new HashSet<>();
+        Queue<NodeElement> queue = new LinkedList<>();
+        queue.add(this.begin);
+        while(!queue.isEmpty()) {
+            NodeElement current = queue.remove();
+            if (current instanceof Begin) {
+                // No device in Begin Scene
             }
-        }
-
-        for (Condition c : condition) {
-            for (UserSetting userSetting : c.getSetting()) {
-                deviceType.add(userSetting.getDevice());
-                deviceType.addAll(userSetting.getAllValueUsed().keySet());
+            else if (current instanceof Scene) {
+                Scene temp = (Scene) current;
+                temp.getSetting().forEach(s->{
+                    deviceUsed.add(s.getDevice());
+                    deviceUsed.addAll(s.getAllValueUsed().keySet());
+                });
             }
+            else if (current instanceof Condition) {
+                Condition temp = (Condition) current;
+                temp.getSetting().forEach(s->{
+                    deviceUsed.add(s.getDevice());
+                    deviceUsed.addAll(s.getAllValueUsed().keySet());
+                });
+            }
+            visited.add(current);
+            Set<NodeElement> unvisitedAdj = line.stream()
+                    .filter(l->l.getSource() == current)
+                    .map(Line::getDestination)
+                    .dropWhile(visited::contains)
+                    .collect(Collectors.toSet());
+            queue.addAll(unvisitedAdj);
         }
-
-        return deviceType;
+        return deviceUsed;
     }
 
     public Set<ProjectDevice> getAllDeviceUnused() {
@@ -451,25 +467,35 @@ public class Project {
 
     public Map<ProjectDevice, Set<Value>> getAllValueUsedMap() {
         HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
-        for (Scene s : scene) {
-            for (UserSetting userSetting : s.getSetting())
-                for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
-                    if (!allValueUsed.containsKey(entry.getKey())) {
-                        allValueUsed.put(entry.getKey(), new HashSet<>());
-                    }
-                    allValueUsed.get(entry.getKey()).addAll(entry.getValue());
-                }
-        }
-
-        for (Condition c : condition) {
-            for (UserSetting userSetting : c.getSetting()) {
-                for (Map.Entry<ProjectDevice, Set<Value>> entry : userSetting.getAllValueUsed().entrySet()) {
-                    if (!allValueUsed.containsKey(entry.getKey())) {
-                        allValueUsed.put(entry.getKey(), new HashSet<>());
-                    }
-                    allValueUsed.get(entry.getKey()).addAll(entry.getValue());
-                }
+        Set<NodeElement> visited = new HashSet<>();
+        Queue<NodeElement> queue = new LinkedList<>();
+        queue.add(this.begin);
+        while(!queue.isEmpty()) {
+            NodeElement current = queue.remove();
+            if (current instanceof Begin) {
+                // No Value in Begin Scene
             }
+            else if (current instanceof Scene) {
+                Scene temp = (Scene) current;
+                temp.getSetting().forEach(s-> s.getAllValueUsed().forEach((key, value) -> {
+                    allValueUsed.putIfAbsent(key, new HashSet<>());
+                    allValueUsed.get(key).addAll(value);
+                }));
+            }
+            else if (current instanceof Condition) {
+                Condition temp = (Condition) current;
+                temp.getSetting().forEach(s-> s.getAllValueUsed().forEach((key, value) -> {
+                    allValueUsed.putIfAbsent(key, new HashSet<>());
+                    allValueUsed.get(key).addAll(value);
+                }));
+            }
+            visited.add(current);
+            Set<NodeElement> unvisitedAdj = line.stream()
+                    .filter(l->l.getSource() == current)
+                    .map(Line::getDestination)
+                    .dropWhile(visited::contains)
+                    .collect(Collectors.toSet());
+            queue.addAll(unvisitedAdj);
         }
         return allValueUsed;
     }
