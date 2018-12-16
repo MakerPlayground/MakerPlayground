@@ -91,15 +91,15 @@ public class DeviceMapper {
         });
 
         // Print to see result
-        for (ProjectDevice device : tempMap.keySet()) {
-            System.out.println(device.getName());
-            for (Action action : tempMap.get(device).keySet()) {
-                System.out.println(action.getName());
-                for (Parameter parameter : tempMap.get(device).get(action).keySet()) {
-                    System.out.println(parameter.getName() + tempMap.get(device).get(action).get(parameter));
-                }
-            }
-        }
+//        for (ProjectDevice device : tempMap.keySet()) {
+//            System.out.println(device.getName());
+//            for (Action action : tempMap.get(device).keySet()) {
+//                System.out.println(action.getName());
+//                for (Parameter parameter : tempMap.get(device).get(action).keySet()) {
+//                    System.out.println(parameter.getName() + tempMap.get(device).get(action).get(parameter));
+//                }
+//            }
+//        }
 
         List<ActualDevice> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getActualDevice(project.getPlatform()));
         // append with integrated device of the current controller if existed
