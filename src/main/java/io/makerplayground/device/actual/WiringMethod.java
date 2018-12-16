@@ -16,11 +16,10 @@
 
 package io.makerplayground.device.actual;
 
+// TODO: this enum is deprecated in flavor of the unified connection diagram in next release which uses only DevicePort type
 public enum WiringMethod {
     WIRE_AND_BREADBOARD,
     GROVE,
-    MP_HEXAGON,
-    MP_RECTANGLE,
-    KIDBRIGHT,
-    MP_RECTANGLE_TINY
+    MP,
+    KIDBRIGHT
 }

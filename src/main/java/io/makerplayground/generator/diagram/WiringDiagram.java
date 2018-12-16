@@ -5,6 +5,7 @@ import javafx.scene.layout.Pane;
 
 public class WiringDiagram {
 
+    // TODO: this method and the wiring_method json field are deprecated in flavor of the unified connection diagram in the next release
     public static Pane make(Project project) {
         Pane wiringDiagram;
         switch(project.getController().getWiringMethod()) {
@@ -13,14 +14,8 @@ public class WiringDiagram {
             case KIDBRIGHT:
                 wiringDiagram = new WireAndBreadboardDiagram(project);
                 break;
-            case MP_HEXAGON:
-                wiringDiagram = new MPHexagonDiagram(project);
-                break;
-            case MP_RECTANGLE:
-                wiringDiagram = new MPRectangleDiagram(project);
-                break;
-            case MP_RECTANGLE_TINY:
-                wiringDiagram = new MPRectangleTinyDiagram(project);
+            case MP:
+                wiringDiagram = new MPDiagram(project);
                 break;
             default:
                 throw new IllegalStateException("Wiring method not found");
