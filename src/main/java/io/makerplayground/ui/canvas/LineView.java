@@ -47,13 +47,14 @@ public class LineView extends InteractiveNode {
         removeButton.layoutYProperty().bind(viewModel.centerYProperty().subtract(removeButtonImage.getHeight()/2)
                 .add(viewModel.centerUnitTangentYProperty().multiply(REMOVE_BTN_GAP)));
         removeButton.visibleProperty().bind(selectedProperty());
+        removeButton.setStyle("-fx-cursor: hand;");
         // remove line when press the remove button
         removeButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null
                 , InteractiveNodeEvent.REMOVED, null, null, 0, 0)));
 
         Path path = new Path();
         path.setStrokeWidth(2.25);
-        path.setStyle("-fx-stroke: #707070;");
+        path.setStyle("-fx-stroke: #707070; -fx-cursor: hand;");
         Bindings.bindContentBidirectional(path.getElements(), viewModel.getPoint());
 
         getChildren().addAll(path, removeButton);

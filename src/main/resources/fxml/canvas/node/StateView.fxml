@@ -16,7 +16,7 @@
 
 <?import io.makerplayground.ui.control.AutoResizeTextField?>
 
-<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/StateView.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" style="-fx-cursor:move;">
    <children>
       <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" strokeType="INSIDE" strokeWidth="0.0" />
       <VBox id="statePane" fx:id="statePane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="205.0">
@@ -24,7 +24,7 @@
             <AnchorPane id="headerPane" maxHeight="30.0" maxWidth="205.0" minHeight="30.0" minWidth="205.0" prefWidth="205.0">
                <children>
                   <AutoResizeTextField id="nameStateTextField" fx:id="nameTextField" maxHeight="-Infinity" prefHeight="30.0" AnchorPane.leftAnchor="15.0" />
-                  <ImageView id="removeSceneBtn" fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+                  <ImageView id="removeSceneBtn" fx:id="removeSceneBtn" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" style="-fx-cursor:hand;">
                      <image>
                         <Image url="@../../../icons/cancel-2.png" />
                      </image>
@@ -55,7 +55,7 @@
                         <Insets />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="60.0" />
+                  <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minHeight="24.0" prefWidth="60.0" style="-fx-cursor:hand;"/>
                </children>
                <VBox.margin>
                   <Insets left="15.0" />
