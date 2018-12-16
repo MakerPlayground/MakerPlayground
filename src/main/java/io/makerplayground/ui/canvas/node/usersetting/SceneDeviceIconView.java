@@ -66,12 +66,11 @@ public class SceneDeviceIconView extends VBox {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
-            } else {
-                devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
-                devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-                devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-                devicePropertyWindow.show(SceneDeviceIconView.this);
             }
+            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+            devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }
 

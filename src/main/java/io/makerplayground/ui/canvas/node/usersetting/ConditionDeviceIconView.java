@@ -61,12 +61,11 @@ public class ConditionDeviceIconView extends VBox {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
-            } else {
-                devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
-                devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-                devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-                devicePropertyWindow.show(ConditionDeviceIconView.this);
             }
+            devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
+            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+            devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }
 
