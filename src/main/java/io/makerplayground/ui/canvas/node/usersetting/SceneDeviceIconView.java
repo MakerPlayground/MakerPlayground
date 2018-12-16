@@ -62,17 +62,7 @@ public class SceneDeviceIconView extends VBox {
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" )));
 
-        setOnMouseEntered(e -> {
-            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
-                devicePropertyWindow.hide();
-                devicePropertyWindow = null;
-            }
-            devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
-            devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
-            devicePropertyWindow.show(SceneDeviceIconView.this);
-        });
-        setOnMousePressed(e -> {
+        setOnMouseClicked(e -> {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
                 devicePropertyWindow.hide();
                 devicePropertyWindow = null;
@@ -81,12 +71,6 @@ public class SceneDeviceIconView extends VBox {
                 devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
                 devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
                 devicePropertyWindow.show(SceneDeviceIconView.this);
-            }
-        });
-        setOnMouseDragged(event -> {
-            if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {
-                devicePropertyWindow.hide();
-                devicePropertyWindow = null;
             }
         });
     }

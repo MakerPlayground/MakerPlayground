@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root id="frame" alignment="CENTER" maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" prefWidth="60.0" stylesheets="@../../../../css/canvas/node/usersetting/StateDeviceIcon2View.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="frame" alignment="CENTER" maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" prefWidth="60.0" stylesheets="@../../../../css/canvas/node/usersetting/StateDeviceIcon2View.css" type="VBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" style="-fx-cursor: hand;">
    <children>
       <StackPane prefHeight="30.0" prefWidth="30.0">
          <children>
