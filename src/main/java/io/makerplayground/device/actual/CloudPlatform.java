@@ -19,7 +19,7 @@ package io.makerplayground.device.actual;
 import java.util.List;
 
 public enum CloudPlatform {
-    BLYNK("Blynk", List.of("Auth Key", "Wifi's SSID", "Wifi's Password"), "MP_BLYNK"),
+    BLYNK("Blynk", List.of("Auth Token", "Wifi's SSID", "Wifi's Password"), "MP_BLYNK"),
     NETPIE("NETPIE", List.of("App Id", "Key", "Secret", "Alias", "Wifi's SSID", "Wifi's Password"), "MP_NETPIE");
 
     private final String displayName;
