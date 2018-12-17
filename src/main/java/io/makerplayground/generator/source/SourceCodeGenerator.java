@@ -112,7 +112,7 @@ public class SourceCodeGenerator {
             if (!getUsedDevicesWithTask().isEmpty()) {
                 builder.append("void evaluateExpression(Task task, Expr expr[], int numExpr);").append(NEW_LINE);
                 builder.append("void setExpression(Expr& expr, double (*fn)(void), unsigned int interval);").append(NEW_LINE);
-                builder.append("void setExpression(Expr& expr, double value);").append(NEW_LINE);
+                builder.append("void clearExpression(Expr& expr);").append(NEW_LINE);
                 builder.append("void setTask(Task& task, void (*fn)(void));").append(NEW_LINE);
             }
             builder.append(NEW_LINE);
@@ -355,8 +355,7 @@ public class SourceCodeGenerator {
             builder.append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
 
-            builder.append("void setExpression(Expr& expr, double value) {").append(NEW_LINE);
-            builder.append(INDENT).append("expr.value = value;").append(NEW_LINE);
+            builder.append("void clearExpression(Expr& expr) {").append(NEW_LINE);
             builder.append(INDENT).append("expr.fn = NULL;").append(NEW_LINE);
             builder.append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -456,19 +455,23 @@ public class SourceCodeGenerator {
 
                 List<Parameter> parameters = setting.getAction().getParameter();
                 if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
-                    for (int i = 0; i < parameters.size(); i++) {
-                        Parameter p = parameters.get(i);
+                    int parameterIndex = 0;
+                    for (Parameter p : parameters) {
                         Expression e = setting.getValueMap().get(p);
-                        String expressionVarName = getDeviceExpressionVariableName(device) + "[" + i + "]";
                         if (setting.isDataBindingUsed(p)) {
+                            String expressionVarName = getDeviceExpressionVariableName(device) + "[" + parameterIndex + "]";
+                            parameterIndex++;
                             sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
                                     .append("[]()->double{").append("return ").append(parseExpression(p, e)).append(";}, ")
                                     .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
+                            taskParameter.add(expressionVarName + ".value");
                         } else {
-                            sceneFunctions.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                    .append(parseExpression(p, e)).append(");").append(NEW_LINE);
+                            taskParameter.add(parseExpression(p, e));
                         }
-                        taskParameter.add(expressionVarName + ".value");
+                    }
+                    for (int i = parameterIndex; i < getMaximumNumberOfExpression(setting.getDevice()); i++) {
+                        sceneFunctions.append(INDENT).append("clearExpression(").append(getDeviceExpressionVariableName(device))
+                                .append("[").append(i).append("]);").append(NEW_LINE);
                     }
                     sceneFunctions.append(INDENT).append("setTask(").append(getDeviceTaskVariableName(device)).append(", []() -> void {")
                             .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
