@@ -540,7 +540,7 @@ public class SourceCodeGenerator {
     private int parseRefreshInterval(Expression expression) {
         NumberWithUnit interval = expression.getUserDefinedInterval();
         if (interval.getUnit() == Unit.SECOND) {
-            return (int) interval.getValue() * 1000;    // accurate down to 1 ms
+            return (int) (interval.getValue() * 1000.0);    // accurate down to 1 ms
         } else if (interval.getUnit() == Unit.MILLISECOND) {
             return (int) interval.getValue();   // fraction of a ms is discard
         } else {
