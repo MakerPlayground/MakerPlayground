@@ -29,7 +29,10 @@ import io.makerplayground.device.actual.ConnectionType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.project.*;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.Scene;
+import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.expression.*;
 
 import java.util.*;
@@ -42,53 +45,59 @@ import java.util.stream.Collectors;
 public class DeviceMapper {
     public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
-        project.getAllDevice().forEach(projectDevice -> tempMap.put(projectDevice, new HashMap<>()));
 
-        List<UserSetting> userSettingList = new ArrayList<>();
-        project.getScene().forEach(scene -> userSettingList.addAll(scene.getSetting()));
-        project.getCondition().forEach(condition -> userSettingList.addAll(condition.getSetting()));
+        for (ProjectDevice projectDevice : project.getAllDevice()) {
+            tempMap.put(projectDevice, new HashMap<>());
+        }
 
-        userSettingList.forEach(userSetting -> {
-            Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(userSetting.getDevice());
-            compatibility.putIfAbsent(userSetting.getAction(), new HashMap<>());
-            userSetting.getValueMap().forEach((parameter, expression) -> {
-                Constraint newConstraint = Constraint.NONE;
-                switch (parameter.getDataType()) {
-                    case DOUBLE:
-                    case INTEGER:
-                        if (expression instanceof NumberWithUnitExpression) {
-                            NumberWithUnit n = ((NumberWithUnitExpression) expression).getNumberWithUnit();
+        for (Scene s : project.getScene()) {
+            for (UserSetting u : s.getSetting()) {
+                ProjectDevice projectDevice = u.getDevice();
+                Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
+                for (Parameter parameter : u.getValueMap().keySet()) {
+                    Action action = u.getAction();
+                    Expression o = u.getValueMap().get(parameter);
+
+                    if (!compatibility.containsKey(action)) {
+                        compatibility.put(action, new HashMap<>());
+                    }
+
+                    Constraint newConstraint = Constraint.NONE;
+                    if (parameter.getDataType() == DataType.INTEGER || parameter.getDataType() == DataType.DOUBLE) {
+                        if (o instanceof NumberWithUnitExpression) {
+                            NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
                             newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
-                        } else if (expression instanceof CustomNumberExpression) {
+                        } else if (o instanceof CustomNumberExpression) {
                             // TODO: should be calculated from the expression or use range of parameter value
-                        } else if (expression instanceof ValueLinkingExpression) {
-                            ValueLinkingExpression exp = (ValueLinkingExpression) expression;
+                        } else if (o instanceof ValueLinkingExpression) {
+                            ValueLinkingExpression exp = (ValueLinkingExpression) o;
                             newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
-                        } else if (expression instanceof ProjectValueExpression) {
-                            ProjectValueExpression exp = (ProjectValueExpression) expression;
+                        } else if (o instanceof ProjectValueExpression) {
+                            ProjectValueExpression exp = (ProjectValueExpression) o;
                             if (exp.getProjectValue() != null) {
                                 newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
                             }
                         } else {
-                            throw new IllegalStateException("Constraint is not defined for expression type: " + expression.getClass().getCanonicalName());
+                            throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }
-                        break;
-                    case STRING:
-                    case ENUM:
-                        newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) expression).getString());
-                        break;
-                    case DATETIME:
+                    } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
+                        newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
+                    } else if (parameter.getDataType() == DataType.DATETIME) {
                         newConstraint = Constraint.NONE;
-                        break;
-                    case INTEGER_ENUM:
-                    default:
-                        throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type: " + parameter.getDataType());
+                    } else {
+                        throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
+                    }
+
+                    Map<Parameter, Constraint> parameterMap = compatibility.get(action);
+                    if (parameterMap.containsKey(parameter)) {
+                        Constraint oldConstraint = parameterMap.get(parameter);
+                        parameterMap.replace(parameter, oldConstraint.union(newConstraint));
+                    } else {
+                        parameterMap.put(parameter, newConstraint);
+                    }
                 }
-                Map<Parameter, Constraint> parameterMap = compatibility.get(userSetting.getAction());
-                parameterMap.putIfAbsent(parameter, Constraint.NONE);
-                parameterMap.replace(parameter, parameterMap.get(parameter).union(newConstraint));
-            });
-        });
+            }
+        }
 
         // Print to see result
 //        for (ProjectDevice device : tempMap.keySet()) {
