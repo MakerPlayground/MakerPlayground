@@ -101,6 +101,7 @@ public class UploadTask extends Task<UploadResult> {
         Set<String> mpLibraries = actualDevicesUsed.stream()
                 .map(ActualDevice::getMpLibrary)
                 .collect(Collectors.toSet());
+        mpLibraries.add("MakerPlayground");
         mpLibraries.add("MP_DEVICE");
 
         Set<String> externalLibraries = actualDevicesUsed.stream()
