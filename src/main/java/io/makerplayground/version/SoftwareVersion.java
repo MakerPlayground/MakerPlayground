@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.Optional;
 
 public class SoftwareVersion implements Comparable<SoftwareVersion> {
-    public static final SoftwareVersion CURRENT_VERSION = new SoftwareVersion("Maker Playground v0.3.0", "0.3.0"
-            , "http://makerplayground.io", new Date(1543468859)); // Nov 29, 2018
+    public static final SoftwareVersion CURRENT_VERSION = new SoftwareVersion("Maker Playground v0.3.1", "0.3.1"
+            , "http://makerplayground.io", new Date(1545035435)); // Dec 17, 2018
     private static final String URL = "http://mprepo.azurewebsites.net/current_version"; // or "http://mprepo.azurewebsites.net/devtest/current_version"
 
     public static Optional<SoftwareVersion> getLatestVersionInfo() {
