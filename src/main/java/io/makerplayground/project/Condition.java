@@ -37,7 +37,7 @@ public class Condition extends NodeElement {
     private final ObservableList<UserSetting> unmodifiableSetting;
 
     Condition(Project project) {
-        super(20,20,170,75, project);
+        super(20,20,118,75, project);
 
         this.name = new SimpleStringProperty();
         this.setting = FXCollections.observableArrayList();
@@ -48,7 +48,8 @@ public class Condition extends NodeElement {
 
     public Condition(double top, double left, double width, double height
             , String name, List<UserSetting> setting, Project project) {
-        super(top, left, width, height, project);
+        // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as condition can't be resized anyway
+        super(top, left, 118, 75, project);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);

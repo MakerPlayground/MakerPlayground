@@ -63,7 +63,8 @@ public class Scene extends NodeElement {
 
     Scene(double top, double left, double width, double height
             , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit, Project project) {
-        super(top, left, width, height, project);
+        // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
+        super(top, left, 205, 124, project);
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableList(setting);
         this.delay = new SimpleDoubleProperty(delay);

@@ -26,9 +26,9 @@
             <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" strokeType="INSIDE" strokeWidth="0.0" />
             <HBox id="contentPane">
                <children>
-                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="55.0" prefWidth="170.0" style="-fx-background-color: transparent;">
+                  <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" prefHeight="55.0" prefWidth="118.0" style="-fx-background-color: transparent;">
                      <content>
-                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="2.5" maxHeight="55.0" prefHeight="55.0" prefWidth="170.0" vgap="2.5">
+                        <FlowPane fx:id="deviceIconFlowPane" alignment="CENTER_LEFT" columnHalignment="RIGHT" hgap="2.5" maxHeight="55.0" prefHeight="55.0" prefWidth="106.0" vgap="2.5">
                            <padding>
                               <Insets bottom="2.5" left="2.5" top="2.5" />
                            </padding>
