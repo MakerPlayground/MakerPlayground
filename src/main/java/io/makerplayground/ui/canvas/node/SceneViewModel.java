@@ -19,7 +19,7 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
-import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
@@ -47,18 +47,8 @@ public class SceneViewModel {
 
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
-        hasDeviceToAdd = new SimpleBooleanProperty(scene.getSetting().size() != project.getOutputDevice().size());
-
-        InvalidationListener listener = observable -> hasDeviceToAdd.set(
-                scene.getSetting().size() != project.getOutputDevice().size());
-        // TODO: find a better way
-        this.project.getSensorDevice().addListener(listener);
-        this.project.getActuatorDevice().addListener(listener);
-        this.project.getUtilityDevice().addListener(listener);
-        this.project.getCloudDevice().addListener(listener);
-        this.project.getInterfaceDevice().addListener(listener);
-        // when we remove something from the scene
-        this.scene.getSetting().addListener(listener);
+        hasDeviceToAdd = new SimpleBooleanProperty();
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(Bindings.size(scene.getSetting())));
     }
 
     public String getName() {
@@ -114,7 +104,7 @@ public class SceneViewModel {
     }
 
     public List<ProjectDevice> getProjectOutputDevice() {
-        return project.getOutputDevice();
+        return project.getDeviceWithAction();
     }
 
     public Scene getScene() {

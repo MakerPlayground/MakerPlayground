@@ -20,6 +20,7 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
@@ -42,17 +43,8 @@ public class ConditionViewModel {
 
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
-        hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
-        // TODO: find a better way
-        InvalidationListener listener = observable -> hasDeviceToAdd.set(
-                condition.getSetting().size() != project.getInputDevice().size());
-        this.project.getSensorDevice().addListener(listener);
-        this.project.getActuatorDevice().addListener(listener);
-        this.project.getUtilityDevice().addListener(listener);
-        this.project.getCloudDevice().addListener(listener);
-        this.project.getInterfaceDevice().addListener(listener);
-        // when we remove something from the condition
-        this.condition.getSetting().addListener(listener);
+        hasDeviceToAdd = new SimpleBooleanProperty();
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).greaterThan(Bindings.size(condition.getSetting())));
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
@@ -68,7 +60,7 @@ public class ConditionViewModel {
     public DoubleProperty yProperty() { return condition.topProperty(); }
 
     public List<ProjectDevice> getProjectInputDevice() {
-        return project.getInputDevice();
+        return project.getDeviceWithCondition();
     }
 
     public Condition getCondition() { return condition; }

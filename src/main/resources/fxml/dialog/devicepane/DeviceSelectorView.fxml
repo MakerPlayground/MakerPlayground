@@ -17,7 +17,7 @@
           AnchorPane.topAnchor="30.0">
         <children>
             <VBox id="vBox" alignment="TOP_CENTER" minWidth="550.0">
-                <TitledPane collapsible="true" text="Sensor">
+                <TitledPane text="Sensor">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
                         <FlowPane fx:id="sensorPane" hgap="5.0" vgap="5.0">
                             <padding>
@@ -26,7 +26,7 @@
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="true" text="Actuator">
+                <TitledPane text="Actuator">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
                         <FlowPane fx:id="actuatorPane" hgap="5.0" vgap="5.0">
                             <padding>
@@ -35,7 +35,7 @@
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Utility">
+                <TitledPane text="Utility">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
                         <FlowPane fx:id="utilityPane" hgap="5.0" vgap="5.0">
                             <padding>
@@ -44,7 +44,7 @@
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Cloud">
+                <TitledPane expanded="false" text="Cloud">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
                         <FlowPane fx:id="cloudPane" hgap="5.0" vgap="5.0">
                             <padding>
@@ -53,7 +53,7 @@
                         </FlowPane>
                     </ScrollPane>
                 </TitledPane>
-                <TitledPane collapsible="true" layoutX="10.0" layoutY="158.0" text="Interface">
+                <TitledPane expanded="false" text="Interface">
                     <ScrollPane fitToWidth="true" prefHeight="115.0">
                         <FlowPane fx:id="interfacePane" hgap="5.0" vgap="5.0">
                             <padding>

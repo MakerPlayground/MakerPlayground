@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
@@ -30,15 +29,14 @@ import io.makerplayground.device.actual.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Represent a project
@@ -49,22 +47,21 @@ public class Project {
     private StringProperty projectName;
     private ReadOnlyObjectWrapper<Platform> platform;
     private ObjectProperty<ActualDevice> controller;
-    private final ObservableList<ProjectDevice> sensorDevice;
-    private final ObservableList<ProjectDevice> actuatorDevice;
-    private final ObservableList<ProjectDevice> utilityDevice;
-    private final ObservableList<ProjectDevice> cloudDevice;
-    private final ObservableList<ProjectDevice> interfaceDevice;
+    private final ObservableList<ProjectDevice> device;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
     private final Begin begin;
     private final Map<CloudPlatform, Map<String, String>> parameter;
 
-    private final ObservableList<ProjectDevice> unmodifiableSensor;
-    private final ObservableList<ProjectDevice> unmodifiableActuator;
-    private final ObservableList<ProjectDevice> unmodifiableUtility;
-    private final ObservableList<ProjectDevice> unmodifiableCloud;
-    private final ObservableList<ProjectDevice> unmodifiableInterface;
+    private final FilteredList<ProjectDevice> sensorDevice;
+    private final FilteredList<ProjectDevice> actuatorDevice;
+    private final FilteredList<ProjectDevice> utilityDevice;
+    private final FilteredList<ProjectDevice> cloudDevice;
+    private final FilteredList<ProjectDevice> interfaceDevice;
+    private final FilteredList<ProjectDevice> deviceWithAction;
+    private final FilteredList<ProjectDevice> deviceWithCondition;
+    private final ObservableList<ProjectDevice> unmodifiableDevice;
     private final ObservableList<Scene> unmodifiableScene;
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
@@ -78,11 +75,15 @@ public class Project {
         platform = new ReadOnlyObjectWrapper<>(Platform.MP_ARDUINO);
         controller = new SimpleObjectProperty<>();
 
-        actuatorDevice = FXCollections.observableArrayList();
-        sensorDevice = FXCollections.observableArrayList();
-        utilityDevice = FXCollections.observableArrayList();
-        cloudDevice = FXCollections.observableArrayList();
-        interfaceDevice = FXCollections.observableArrayList();
+        device = FXCollections.observableArrayList();
+        unmodifiableDevice = FXCollections.unmodifiableObservableList(device);
+        actuatorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
+        sensorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
+        utilityDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
+        cloudDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
+        interfaceDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
+        deviceWithAction = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasAction());
+        deviceWithCondition = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasCondition());
 
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
@@ -92,35 +93,41 @@ public class Project {
         parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
 
-        unmodifiableActuator = FXCollections.unmodifiableObservableList(actuatorDevice);
-        unmodifiableSensor = FXCollections.unmodifiableObservableList(sensorDevice);
-        unmodifiableUtility = FXCollections.unmodifiableObservableList(utilityDevice);
-        unmodifiableCloud = FXCollections.unmodifiableObservableList(cloudDevice);
-        unmodifiableInterface = FXCollections.unmodifiableObservableList(interfaceDevice);
-
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
     }
 
+    public ObservableList<ProjectDevice> getDevice() {
+        return unmodifiableDevice;
+    }
+
     public ObservableList<ProjectDevice> getActuatorDevice() {
-        return unmodifiableActuator;
+        return actuatorDevice;
     }
 
     public ObservableList<ProjectDevice> getSensorDevice() {
-        return unmodifiableSensor;
+        return sensorDevice;
     }
 
     public ObservableList<ProjectDevice> getUtilityDevice() {
-        return unmodifiableUtility;
+        return utilityDevice;
     }
 
     public ObservableList<ProjectDevice> getCloudDevice() {
-        return unmodifiableCloud;
+        return cloudDevice;
     }
 
     public ObservableList<ProjectDevice> getInterfaceDevice() {
-        return unmodifiableInterface;
+        return interfaceDevice;
+    }
+
+    public ObservableList<ProjectDevice> getDeviceWithAction() {
+        return deviceWithAction;
+    }
+
+    public ObservableList<ProjectDevice> getDeviceWithCondition() {
+        return deviceWithCondition;
     }
 
     public Platform getPlatform() {
@@ -134,57 +141,28 @@ public class Project {
     private int getNextId(GenericDevice device) {
         String varName = getDeviceVarName(device);
         Pattern p = Pattern.compile(varName+"\\d+");
-        return getAllDevice().stream()
+        return getDevice().stream()
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(varName.length())))
                 .max()
                 .orElse(0) + 1;
     }
 
-    protected void addDevice(ProjectDevice projectDevice) {
-        switch(GenericDeviceType.of(projectDevice.getGenericDevice())) {
-            case SENSOR:
-                sensorDevice.add(projectDevice);
-                break;
-            case ACTUATOR:
-                actuatorDevice.add(projectDevice);
-                break;
-            case UTILITY:
-                utilityDevice.add(projectDevice);
-                break;
-            case CLOUD:
-                cloudDevice.add(projectDevice);
-                break;
-            case INTERFACE:
-                interfaceDevice.add(projectDevice);
-                break;
-            default:
-                throw new IllegalStateException("not support the generic device type");
-        }
+    void addDevice(ProjectDevice projectDevice) {
+        device.add(projectDevice);
     }
 
-    public void addDevice(GenericDevice device) {
-        String varName = getDeviceVarName(device);
-        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(device), device);
-        addDevice(projectDevice);
+    public void addDevice(GenericDevice genericDevice) {
+        String varName = getDeviceVarName(genericDevice);
+        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
+        device.add(projectDevice);
     }
 
-    public boolean removeDevice(ProjectDevice device) {
-        scene.forEach(s->s.removeDevice(device));
-        condition.forEach(c->c.removeDevice(device));
-        switch (GenericDeviceType.of(device.getGenericDevice())) {
-            case SENSOR:
-                return sensorDevice.remove(device);
-            case ACTUATOR:
-                return actuatorDevice.remove(device);
-            case UTILITY:
-                return utilityDevice.remove(device);
-            case CLOUD:
-                return cloudDevice.remove(device);
-            case INTERFACE:
-                return interfaceDevice.remove(device);
-            default:
-                throw new IllegalStateException("not support generic device type");
+    public void removeDevice(ProjectDevice genericDevice) {
+        scene.forEach(s->s.removeDevice(genericDevice));
+        condition.forEach(c->c.removeDevice(genericDevice));
+        if (!device.remove(genericDevice)) {
+            throw new IllegalStateException("");
         }
     }
 
@@ -198,19 +176,19 @@ public class Project {
         setController(null);
     }
 
-    public List<ProjectDevice> getInputDevice() {
-        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
-                .flatMap(Collection::stream)
-                .filter(device -> device.getGenericDevice().hasCondition())
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    public List<ProjectDevice> getOutputDevice() {
-        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
-                .flatMap(Collection::stream)
-                .filter(device -> device.getGenericDevice().hasAction())
-                .collect(Collectors.toUnmodifiableList());
-    }
+//    public List<ProjectDevice> getInputDevice() {
+//        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
+//                .flatMap(Collection::stream)
+//                .filter(device -> device.getGenericDevice().hasCondition())
+//                .collect(Collectors.toUnmodifiableList());
+//    }
+//
+//    public List<ProjectDevice> getOutputDevice() {
+//        return Stream.of(sensorDevice, actuatorDevice, utilityDevice, cloudDevice, interfaceDevice)
+//                .flatMap(Collection::stream)
+//                .filter(device -> device.getGenericDevice().hasAction())
+//                .collect(Collectors.toUnmodifiableList());
+//    }
 
     public ObservableList<Scene> getScene() {
         return unmodifiableScene;
@@ -386,12 +364,7 @@ public class Project {
 
     public List<ProjectValue> getAvailableValue() {
         List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : sensorDevice) {
-            for (Value v : projectDevice.getGenericDevice().getValue()) {
-                value.add(new ProjectValue(projectDevice, v));
-            }
-        }
-        for (ProjectDevice projectDevice : utilityDevice) {
+        for (ProjectDevice projectDevice : device) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 value.add(new ProjectValue(projectDevice, v));
             }
@@ -410,32 +383,14 @@ public class Project {
     public void setController(ActualDevice controller) {
         this.controller.set(controller);
         // remove all port and actual device assignment when the controller is changed
-        for (ProjectDevice projectDevice : getAllDevice()) {
+        for (ProjectDevice projectDevice : getDevice()) {
             projectDevice.removeAllDeviceConnection();
             projectDevice.setActualDevice(null);
             projectDevice.setAutoSelectDevice(true);
         }
     }
 
-    public List<ProjectDevice> getAllDevice() {
-        return Stream.of(sensorDevice.stream(),
-                    actuatorDevice.stream(),
-                    utilityDevice.stream(),
-                    cloudDevice.stream(),
-                    interfaceDevice.stream())
-                .flatMap(Function.identity())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
-    }
-
     public Begin getBegin() { return begin; }
-
-    public Set<GenericDevice> getAllDeviceTypeUsed() {
-        Set<GenericDevice> deviceType = new HashSet<>();
-        for (ProjectDevice projectDevice : getAllDeviceUsed()) {
-            deviceType.add(projectDevice.getGenericDevice());
-        }
-        return deviceType;
-    }
 
     public Set<ProjectDevice> getAllDeviceUsed() {
         Set<ProjectDevice> deviceUsed = new HashSet<>();
@@ -474,7 +429,7 @@ public class Project {
     }
 
     public Set<ProjectDevice> getAllDeviceUnused() {
-        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getAllDevice());
+        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getDevice());
         devicesNotUsed.removeAll(this.getAllDeviceUsed());
         return devicesNotUsed;
     }
@@ -529,8 +484,7 @@ public class Project {
     public boolean hasUnsavedModification() {
         if (getFilePath().isEmpty()) {
             // A hack way to check for project modification in case that it hasn't been saved
-            return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null
-                    && sensorDevice.isEmpty() && actuatorDevice.isEmpty() && utilityDevice.isEmpty()
+            return !(platform.get() == Platform.MP_ARDUINO && controller.get() == null && device.isEmpty()
                     && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
                     && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
         } else {
@@ -553,14 +507,6 @@ public class Project {
         }
     }
 
-    public Set<String> getAllDeviceName(){
-        Set<String> deviceName = new HashSet<>();
-        for (ProjectDevice projectDevice : this.getAllDeviceUsed()){
-            deviceName.add(projectDevice.getName());
-        }
-        return deviceName;
-    }
-
     public static Project loadProject(File f) {
         ObjectMapper mapper = new ObjectMapper();
         Project p = null;
@@ -574,7 +520,7 @@ public class Project {
     }
 
     public boolean isNameDuplicate(String newName) {
-        for (ProjectDevice projectDevice : this.getAllDevice()) {
+        for (ProjectDevice projectDevice : this.getDevice()) {
             if (projectDevice.getName().equals(newName)) {
                 return true;
             }

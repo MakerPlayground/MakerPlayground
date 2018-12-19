@@ -60,7 +60,7 @@ public class DevicePanelIconViewModel {
     // Check if current scene's name is duplicated with other scenes
     // return true when this name cannot be used
     public boolean isNameDuplicate(String newName) {
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (projectDevice.getName().equals(newName)) {
                 return true;
             }
