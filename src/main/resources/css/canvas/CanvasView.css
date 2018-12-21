@@ -11,8 +11,8 @@
     -fx-background-insets: 0;
 }
 .scroll-pane > .viewport {
-   -fx-background-color: #e4e4e4;/*diagram editor area*/
-   -fx-border-color: #e4e4e4;/*diagram editor border*/
+   -fx-background-color: canvas-background-color;/*diagram editor area*/
+   -fx-border-color: canvas-background-color;/*diagram editor border*/
 }
 .scroll-bar .increment-button {
     -fx-background-color : transparent;

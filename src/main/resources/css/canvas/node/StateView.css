@@ -1,18 +1,17 @@
-.root{
+.root {
     -fx-focus-color: transparent;
     -fx-effect: null;
     -fx-font-size:12px;
 }
+
 #statePane {
     -fx-background-radius: 12;
-    -fx-background-color: #ffffff;
-    /*-fx-border-color: #e3e3e3;
-    -fx-border-radius: 10 10 10 10;*/
+    -fx-background-color: scene-header-background-color;
 }
 
 #nameStateTextField {
     -fx-background-color : transparent;
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
     -fx-font-weight: bold;
     -fx-font-size : 14px;
     -fx-padding: 0px;
@@ -20,32 +19,35 @@
 }
 
 #numberTextField {
-    -fx-background-color : #f6f6f6;
+    -fx-background-color : control-background-color;
     -fx-background-radius: 5 5 5 5;
-    -fx-border-color : #e3e3e3;
+    -fx-border-color : border-color;
     -fx-border-width : 1px;
     -fx-border-radius: 5 5 5 5;
-    -fx-text-fill : #707070;
+    -fx-text-fill : text-color;
     -fx-font-size : 11px;
     /*-fx-font-weight : bold;*/
 }
+
 #stateBottomHBox{
-    -fx-background-color : #ffffff;
+    -fx-background-color: scene-header-background-color;
     -fx-background-radius: 0 0 10 10;
 }
+
 #delayText {
-    -fx-text-fill: white;
+    -fx-fill: text-color;
     -fx-font-size: 11px;
-    -fx-fill: #707070;
+    /* -fx-fill: #707070; */
 }
+
 .flow-pane{
-    -fx-background-color : white;
+    -fx-background-color : transparent;
     -fx-border-color : null;
 }
 
 .scroll-pane{
-    -fx-background-color: #f6f6f6;
-    -fx-border-color : #e3e3e3;
+    -fx-background-color: scene-background-color;
+    -fx-border-color : border-color;
     -fx-border-width : 1px 0px 1px 0px;
 }
 
@@ -79,7 +81,7 @@
     -fx-border-radius:0.5em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#707070,45%);
+    -fx-background-color: scrollbar-thumb-color;
     -fx-border-radius: 0.5em;
     -fx-background-insets: 2, 0, 0;
 }
@@ -95,35 +97,35 @@
 }
 #TimeUnitComboBox .list-cell {
     -fx-font-size: 12px;
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
 }
 #TimeUnitComboBox .combo-box-popup .list-cell{
     -fx-font-size: 12px;
-    -fx-text-fill: #707070;
-    -fx-background-color: white;
+    -fx-text-fill: text-color;
+    -fx-background-color: background-color;
 }
 #TimeUnitComboBox .list-view .list-cell:filled:hover
 {
     -fx-font-size: 12px;
-    -fx-background-color: #2673fd;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: accent-color;
+    -fx-text-fill: text-color-invert;
 }
 #TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
-    -fx-background-color: derive(#cccccc,40%);
+    -fx-background-color: control-background-color;
     -fx-background-radius:0;
-    -fx-text-fill: black;
+    -fx-text-fill: text-color-hilight;
 }
 
 #TimeUnitComboBox .arrow{
-    -fx-background-color: #707070;
+    -fx-background-color:  control-background-color-dark;
     -fx-scale-x: 0.9;
     -fx-scale-y: 0.9;
 }
-#TimeUnitComboBox: pressed .arrow-button {
-    -fx-background-color: white;
+#TimeUnitComboBox:pressed .arrow-button {
+    -fx-background-color: background-color;
 }
-#TimeUnitComboBox: pressed .arrow {
-    -fx-background-color: #777677;
+#TimeUnitComboBox:pressed .arrow {
+    -fx-background-color:  control-background-color-dark;
 }
 
 #addOutputButton:pressed{
@@ -140,8 +142,8 @@
     -fx-cursor: hand;
 }
 #arcNode {
-    -fx-fill: #e3e3e3;
-    -fx-stroke: #e3e3e3;
+    -fx-fill: border-color;
+    -fx-stroke: border-color;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

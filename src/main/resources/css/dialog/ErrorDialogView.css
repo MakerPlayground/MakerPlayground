@@ -2,11 +2,11 @@
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-border-radius: 15;
-    -fx-background-color: white;
+    -fx-background-color: background-color;
     -fx-background-radius: 15;
 }
 
 #descriptionLabel {
     -fx-font-size: 14px;
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
 }

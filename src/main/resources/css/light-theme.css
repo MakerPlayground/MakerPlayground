@@ -1,0 +1,37 @@
+.root {
+    background-color: #ffffff;
+    control-background-color: #f6f6f6;
+    control-background-color-dark: #707070;
+    control-hover-background-color: #e3e3e3;
+
+    border-color: #e3e3e3;
+
+    accent-color: #2673fd;
+
+    text-color: #707070;
+    text-color-invert: #ffffff;
+    text-color-hilight: #000000;
+
+    scrollbar-thumb-color: derive(#707070, 45%);
+
+    scene-header-background-color: #ffffff;
+    scene-background-color: #f6f6f6;
+
+    canvas-background-color: #e4e4e4;
+}
+
+/* -fx-base: #ffffff;
+    -fx-background: #ffffff;
+
+    -fx-control-inner-background: #f6f6f6;
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background,-2%);
+
+    -fx-dark-text-color: black;
+    -fx-mid-text-color: #333;
+    -fx-light-text-color: white;
+
+    -fx-accent: #2673fd;
+    -fx-default-button: #2673fd;
+
+    -fx-focus-color: #2673fd;
+    -fx-faint-focus-color: #2673fd; */

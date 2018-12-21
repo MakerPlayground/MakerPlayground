@@ -1,36 +1,32 @@
-.root {
-    -fx-background-color : #313644; /*unknown*/
-}
-
 #vBox {
-    -fx-background-color : #ffffff; /*config--diagram-upload button*/
-    -fx-border-color : #e3e3e3;
+    -fx-background-color : background-color; /*config--diagram-upload button*/
+    -fx-border-color : border-color;
     -fx-border-width : 1 0 1 0;
 }
 
 #button {
     -fx-font-size: 12px;
-    -fx-background-color : #ffffff;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color : background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
 }
 
 #button:hover {
     -fx-font-size: 12px;
-    -fx-background-color: #e3e3e3;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color: control-hover-background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
 }
 
 #button:pressed {
     -fx-font-size: 12px;
-    -fx-background-color : #e3e3e3;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color : control-hover-background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
 }

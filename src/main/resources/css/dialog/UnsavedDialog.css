@@ -1,13 +1,13 @@
 #unsaved-dialog {
-    -fx-background-color: #ffffff;
+    -fx-background-color: background-color;
     -fx-background-radius: 15px;
     -fx-padding: 10px;
 }
 #HBox-header {
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-border-color: #e3e3e3;
+    -fx-border-color: border-color;
     -fx-border-width: 0 0 1 0;
 }
 
@@ -24,38 +24,38 @@
 }
 
 #unsaved-text {
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
     -fx-font-size: 18px;
 }
 
 #unsaved-message {
-    -fx-text-fill: #707070;
+    -fx-text-fill: text-color;
     -fx-font-size: 16px;
     -fx-width: 20px;
 }
 
 #unsaved-button {
     -fx-font-size: 16px;
-    -fx-background-color : #ffffff;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color : background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-padding: 5px;
     -fx-cursor: hand;
 }
 #unsaved-button:hover {
     -fx-font-size: 16px;
-    -fx-background-color: #e3e3e3;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color: control-hover-background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
 }
 #unsaved-button:pressed {
     -fx-font-size: 16px;
-    -fx-background-color : #e3e3e3;
-    -fx-border-color : #e3e3e3;
-    -fx-text-fill: #707070;
+    -fx-background-color : control-hover-background-color;
+    -fx-border-color : border-color;
+    -fx-text-fill: text-color;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
 }

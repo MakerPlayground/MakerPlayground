@@ -97,6 +97,7 @@ public class UndecoratedDialog extends Stage {
     public void setContent(Parent root) {
         Scene scene = new Scene(root);
         scene.setFill(Color.TRANSPARENT);
+        scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         setScene(scene);
     }
 
