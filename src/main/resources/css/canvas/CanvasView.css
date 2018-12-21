@@ -1,5 +1,5 @@
 .scroll-pane{
-    -fx-border-color: blue;
+    -fx-border-color: red;
     -fx-border-width:0;
     -fx-padding: 0;
 }
@@ -45,38 +45,38 @@
 
 #addStateBtn{
      -fx-focus-color: transparent;
-     -fx-background-color : #00cc6a;
+     -fx-background-color : add-scene-background-color;
      -fx-background-radius: 5px;
-     -fx-border-color: #00cc6a;
+     -fx-border-color: add-scene-background-color;
      -fx-border-radius: 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
      -fx-font-weight: bold;
-     -fx-text-fill : #ffffff;
+     -fx-text-fill : add-scene-text-color;
      -fx-min-width: 150;
  }
 
  #addStateBtn:hover {
-    -fx-background-color: #04aa53;
-    -fx-border-color : #04aa53;
+    -fx-background-color: add-scene-background-color-hover;
+    -fx-border-color : add-scene-background-color-hover;
     -fx-cursor: hand;
  }
 
  #addStateBtn:pressed{
-     -fx-background-color: #04aa53;
-     -fx-border-color : #04aa53;
+     -fx-background-color: add-scene-background-color-hover;
+     -fx-border-color : add-scene-background-color-hover;
      -fx-cursor: hand;
  }
 
  #addConditionBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : #00cc6a;
+     -fx-border-color : add-scene-background-color;
      -fx-border-radius: 5px;
-     -fx-background-color : #00cc6a;
+     -fx-background-color : add-scene-background-color;
      -fx-background-radius: 5px;
      -fx-background-insets:0;
      -fx-font-size : 14px;
-     -fx-text-fill : #ffffff;
+     -fx-text-fill : add-scene-text-color;
      -fx-font-weight: bold;
      /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
      -fx-cursor: hand;
@@ -84,14 +84,14 @@
  }
 
   #addConditionBtn:hover {
-     -fx-background-color: #04aa53;
-     -fx-border-color : #04aa53;
+     -fx-background-color: add-scene-background-color-hover;
+     -fx-border-color : add-scene-background-color-hover;
      -fx-cursor: hand;
   }
 
  #addConditionBtn:pressed{
-     -fx-background-color: #04aa53;
-     -fx-border-color : #04aa53;
+     -fx-background-color: add-scene-background-color-hover;
+     -fx-border-color : add-scene-background-color-hover;
      -fx-cursor: hand;
  }
 #zoomInButton:pressed{

@@ -7,43 +7,52 @@
     -fx-background-color : transparent;
 }
 #contentPane{
-    -fx-background-color : #f6f6f6;
+    -fx-background-color : condition-background-color;
+    /*-fx-background-color : #f6f6f6;*/
     -fx-background-radius : 7.5;
     /*-fx-border-color : #e3e3e3;
     -fx-border-radius : 7.5;*/
 }
-#nameStateTextField{
+
+/*----unused----*/
+/*#nameStateTextField{
     -fx-background-color : #313644;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size : 14 px;
-}
-#numberTextField{
+}*/
+
+/*----unused----*/
+/*#numberTextField{
     -fx-background-color : white;
     -fx-border-color : transparent;
     -fx-border-width : 0px;
     -fx-text-fill : black;
     -fx-font-size : 6 px;
     -fx-font-weight : normal;
-}
-#stateBottomHBox{
+}*/
+
+/*----unused----*/
+/*#stateBottomHBox{
     -fx-background-color : #ffffff;
     -fx-border-color: #e3e3e3;
-}
+}*/
 /*.text{
     -fx-text-fill : white;
     -fx-font-size: 9 px;
 }*/
-#deviceIconFlowPane{
+
+/*----doubly to condition-background-color----*/
+/*#deviceIconFlowPane{
     -fx-background-color : transparent;
     -fx-background-radius : 5;
     -fx-border-color : null;
-}
+}*/
 
 #scrollPane > .viewport{
-    -fx-background-color : transparent;
+    -fx-background-color :  condition-scroll-pane-viewport-background-color;
     -fx-background-radius : 7.5;
-    -fx-border-color : transparent;
+    -fx-border-color : condition-scroll-pane-viewport-border-color;
 }
 
 .scroll-bar .increment-button {
@@ -70,54 +79,13 @@
     -fx-border-radius:0.5em;
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#707070,45%);
+    -fx-background-color: scrollbar-thumb-color;
     -fx-border-radius: 0.5em;
     -fx-background-insets: 2, 0, 0;
 }
 .scroll-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-}
-
-#TimeUnitComboBox{
-    -fx-font-size:12px;
-    -fx-background-color: #0768de;
-    -fx-border-color : #0768de;
-    -fx-min-width : 50px;
-}
-#TimeUnitComboBox .list-cell {
-    -fx-font-size:12px;
-    -fx-text-fill: white;
-    -fx-min-width : 50px;
-}
-#TimeUnitComboBox .combo-box-popup .list-cell{
-    -fx-font-size:12px;
-    -fx-text-fill: #313644;
-    -fx-background-color: white;
-    -fx-min-width : 50px;
-}
-#TimeUnitComboBox .list-view .list-cell:filled:hover
-{
-    -fx-font-size:12px;
-    -fx-background-color: #5ac2ab;
-    -fx-text-fill: white;
-    -fx-min-width : 50px;
-}
-#TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
-    -fx-background-color: derive(#cccccc,40%);
-    -fx-background-radius:0;
-    -fx-text-fill: black;
-    -fx-min-width : 50px;
-}
-
-#TimeUnitComboBox .arrow{
-    -fx-background-color: white;
-}
-#TimeUnitComboBox: pressed .arrow-button {
-    -fx-background-color: white;
-}
-#TimeUnitComboBox: pressed .arrow {
-    -fx-background-color: #313644;
 }
 
 #addOutputButton:pressed{
@@ -134,8 +102,8 @@
     -fx-cursor: hand;
 }
 #arcNode {
-    -fx-fill: #e3e3e3;
-    -fx-stroke: #e3e3e3;
+    -fx-fill: condition-port;
+    -fx-stroke: condition-port;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

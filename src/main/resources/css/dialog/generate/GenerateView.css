@@ -4,9 +4,9 @@
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-border-radius: 15;
-    -fx-background-color: white;
+    -fx-background-color: background-color;
     -fx-background-radius: 15;
-    -fx-accent: #2673fd;
+    -fx-accent: accent-color;
 }
 
 .scroll-pane{
@@ -22,8 +22,8 @@
         -fx-border-color: transparent;
 }
 .scroll-pane .corner {
-    -fx-background-color: #f6f6f6;
-    -fx-border-color: red;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
     -fx-border-width: 0;
 }
 .scroll-bar:vertical .increment-button {
@@ -67,18 +67,18 @@
     -fx-pref-height: 10;
 }
 .scroll-bar .track{
-    -fx-background-color: #f6f6f6;
-    -fx-border-color : #f6f6f6;
+    -fx-background-color: scrollbar-background-color;
+    -fx-border-color : scrollbar-background-color;
     /*-fx-border-radius: 2em;*/
 }
 .scroll-bar .thumb{
-    -fx-background-color: derive(#707070,45%);
+    -fx-background-color: scrollbar-thumb-color;
     /*-fx-border-radius: 2em;*/
     /*-fx-background-insets: 2, 0, 0;*/
 }
 .scroll-bar {
-    -fx-background-color: #ffffff;
-    -fx-border: #ffffff;
+    -fx-background-color: scrollbar-background-color;
+    -fx-border: scrollbar-background-color;
 }
 
 .tab-pane .tab
@@ -94,7 +94,7 @@
 }
 .tab:selected .tab-label {
     -fx-alignment: CENTER;
-    -fx-text-fill: #2673fd;
+    -fx-text-fill: accent-color;
     -fx-font-weight: bold;
 }
 .tab-pane *.tab-header-background{
@@ -104,7 +104,7 @@
     -fx-border-color: transparent transparent #e3e3e3 transparent;
 }
 .tab:top{
-    -fx-background-color: -fx-body-color ,white;
+    -fx-background-color: -fx-body-color ,background-color;
     -fx-tab-border-color: red;
     -fx-inner-border : red;
     -fx-outer-border: transparent;
@@ -126,12 +126,12 @@
 }
 
 .text-area {
-    -fx-border-color: #e3e3e3;
+    -fx-border-color: border-color;
     -fx-border-width: 1;
 }
 
 .text-area .content{
-    -fx-background-color: #f6f6f6;
+    -fx-background-color: control-background-color;
 }
 
 /*.text-area .content{
@@ -154,10 +154,10 @@
 .table-view .column-header,
 .table-view .column-header .filler,
 .table-view .column-header-background .filler {
-    -fx-background-color: #2673fd;
+    -fx-background-color: generateview-header-background-color;
 }
 .table-view .column-header .label{
-    -fx-text-fill: white;
+    -fx-text-fill: generateview-text-color;
 }
 
 #close-button {

@@ -7,17 +7,48 @@
     border-color: #e3e3e3;
 
     accent-color: #2673fd;
+    generateview-header-background-color: #2673fd;
+    generateview-text-color: #ffffff;
 
+    /*---Textbox, Checkbox---*/
+    text-fill-color: #313644;
+    text-fill-border-color: #cccccc; 
+    text-fill-background-color: #ffffff;
+
+
+    /*---Typography---*/
     text-color: #707070;
     text-color-invert: #ffffff;
     text-color-hilight: #000000;
 
+    /*---Scrollbar---*/
     scrollbar-thumb-color: derive(#707070, 45%);
+    scrollbar-background-color: #f6f6f6;
 
+    /*---canvas---*/
+    canvas-background-color: #e4e4e4;
+
+    /*Add Scene/Condition button*/
+    add-scene-background-color: #00cc6a;
+    add-scene-background-color-hover: #04aa53;
+    add-scene-text-color: #ffffff;
+    
+    /*---Begin---*/
+    begin-background-color: #6a737d;
+    begin-text-fill: #ffffff;
+    begin-outport: #4d555b;
+
+    /*---condition---*/
+    condition-background-color: #f6f6f6;
+    condition-scroll-pane-viewport-background-color: transparent;
+    condition-scroll-pane-viewport-border-color: transparent;
+    condition-port: #e3e3e3;
+
+
+    /*---Scene---*/
     scene-header-background-color: #ffffff;
     scene-background-color: #f6f6f6;
 
-    canvas-background-color: #e4e4e4;
 }
 
 /* -fx-base: #ffffff;
