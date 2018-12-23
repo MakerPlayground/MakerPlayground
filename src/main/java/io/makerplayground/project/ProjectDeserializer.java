@@ -31,11 +31,12 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Created by USER on 14-Jul-17.
@@ -78,25 +79,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
         project.setController(controller);
 
-        ObservableList<ProjectDevice> inputDevices = FXCollections.observableArrayList();
-        for (JsonNode inputDeviceNode : node.get("inputDevice")) {
-            ProjectDevice projectDevice = deserializeProjectDevice(mapper, inputDeviceNode, controller);
-            inputDevices.add(projectDevice);
-            project.addSensor(projectDevice);
-        }
-
-        ObservableList<ProjectDevice> outputDevices = FXCollections.observableArrayList();
-        for (JsonNode outputDeviceNode : node.get("outputDevice")) {
-            ProjectDevice projectDevice = deserializeProjectDevice(mapper, outputDeviceNode, controller);
-            outputDevices.add(projectDevice);
-            project.addActuator(projectDevice);
-        }
-
-        ObservableList<ProjectDevice> connectivityDevices = FXCollections.observableArrayList();
-        for (JsonNode connectivityDeviceNode : node.get("connectivityDevice")) {
-            ProjectDevice projectDevice = deserializeProjectDevice(mapper, connectivityDeviceNode, controller);
-            connectivityDevices.add(projectDevice);
-            project.addVirtual(projectDevice);
+        ObservableList<ProjectDevice> deviceList = FXCollections.observableArrayList();
+        for (JsonNode deviceNode : node.get("device")) {
+            ProjectDevice projectDevice = deserializeProjectDevice(mapper, deviceNode, controller);
+            deviceList.add(projectDevice);
+            project.addDevice(projectDevice);
         }
 
         Begin begin = project.getBegin();
@@ -104,12 +91,12 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         begin.setTop(node.get("begin").get("top").asDouble());
 
         for (JsonNode sceneNode : node.get("scene")) {
-            Scene scene = deserializeScene(mapper, sceneNode, inputDevices,  outputDevices, connectivityDevices, project);
+            Scene scene = deserializeScene(mapper, sceneNode, deviceList, project);
             project.addScene(scene);
         }
 
         for(JsonNode conditionNode : node.get("condition")) {
-            Condition condition = deserializeCondition(mapper, conditionNode, inputDevices, outputDevices, connectivityDevices, project);
+            Condition condition = deserializeCondition(mapper, conditionNode, deviceList, project);
             project.addCondition(condition);
         }
 
@@ -143,15 +130,20 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return project;
     }
 
-    public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices, Project project) throws IOException {
+    public Scene deserializeScene(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> deviceList, Project project) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
         for (JsonNode sceneSettingNode : node.get("setting")) {
-            ProjectDevice projectDevice = Stream.concat(outputDevice.stream(), connectivityDevices.stream()).filter(projectDevice1 ->
-                    projectDevice1.getName().equals(sceneSettingNode.get("device").asText())).findFirst().get();
-            setting.add(deserializeUserSetting(mapper, sceneSettingNode, projectDevice, inputDevice, outputDevice, connectivityDevices));
+            FilteredList<ProjectDevice> projectDevices = deviceList.filtered(pd -> pd.getName().equals(sceneSettingNode.get("device").asText()));
+            if (projectDevices.isEmpty()) {
+                throw new InvalidObjectException("Cannot parse mp file because no support device.");
+            } else if (projectDevices.size() > 1) {
+                throw new InvalidObjectException("Cannot parse mp file because multiple devices share the same name.");
+            }
+
+            ProjectDevice projectDevice = projectDevices.get(0);
+            setting.add(deserializeUserSetting(mapper, sceneSettingNode, projectDevice, deviceList));
         }
 
         double delay = node.get("delay").asDouble();
@@ -165,15 +157,19 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new Scene(top, left, width, height, name, setting, delay, delayUnit, project);
     }
 
-    public Condition deserializeCondition(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> inputDevice
-            , ObservableList<ProjectDevice> outputDevice, ObservableList<ProjectDevice> connectivityDevices, Project project) throws IOException {
+    public Condition deserializeCondition(ObjectMapper mapper, JsonNode node, ObservableList<ProjectDevice> deviceList, Project project) throws IOException {
         String name = node.get("name").asText();
 
         List<UserSetting> setting = new ArrayList<>();
         for (JsonNode conditionSettingNode : node.get("setting")) {
-            ProjectDevice projectDevice = Stream.concat(inputDevice.stream(), connectivityDevices.stream()).filter(projectDevice1 ->
-                    projectDevice1.getName().equals(conditionSettingNode.get("device").asText())).findFirst().get();
-            setting.add(deserializeUserSetting(mapper, conditionSettingNode, projectDevice, inputDevice, outputDevice, connectivityDevices));
+            FilteredList<ProjectDevice> projectDevices = deviceList.filtered(pd -> pd.getName().equals(conditionSettingNode.get("device").asText()));
+            if (projectDevices.isEmpty()) {
+                throw new InvalidObjectException("Cannot parse mp file because no support device.");
+            } else if (projectDevices.size() > 1) {
+                throw new InvalidObjectException("Cannot parse mp file because multiple devices share the same name.");
+            }
+            ProjectDevice projectDevice = projectDevices.get(0);
+            setting.add(deserializeUserSetting(mapper, conditionSettingNode, projectDevice, deviceList));
         }
 
         double top = node.get("position").get("top").asDouble();
@@ -185,13 +181,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     }
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
-            , ObservableList<ProjectDevice> inputDevice, ObservableList<ProjectDevice> outputDevice
-            , ObservableList<ProjectDevice> connectivityDevices) throws IOException {
-        Set<ProjectDevice> allProjectDevices = new HashSet<>();
-        allProjectDevices.addAll(inputDevice);
-        allProjectDevices.addAll(outputDevice);
-        allProjectDevices.addAll(connectivityDevices);
-
+            , ObservableList<ProjectDevice> allProjectDevices) throws IOException {
         Action action = projectDevice.getGenericDevice().getAction(node.get("action").asText());
         // TODO: find a better way
         if (action == null) {

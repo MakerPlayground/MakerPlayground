@@ -16,7 +16,7 @@ class ValueTermTest {
         DeviceLibrary library = DeviceLibrary.INSTANCE;
         library.loadDeviceFromJSON();
         Project project = new Project();
-        project.addSensor(library.getGenericDevice("Accelerometer"));
+        project.addDevice(library.getGenericDevice("Accelerometer"));
         projectValue = project.getAvailableValue().get(0);
         tester = new ValueTerm(projectValue);
     }

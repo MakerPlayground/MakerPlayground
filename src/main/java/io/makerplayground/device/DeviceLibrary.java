@@ -17,7 +17,7 @@
 package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -37,30 +38,39 @@ import java.util.stream.Collectors;
 public enum DeviceLibrary {
     INSTANCE;
 
-    private List<GenericDevice> genericInputDevice;
-    private List<GenericDevice> genericOutputDevice;
-    private List<GenericDevice> genericVirtualDevice;
+    private List<GenericDevice> genericSensorDevice;
+    private List<GenericDevice> genericActuatorDevice;
+    private List<GenericDevice> genericUtilityDevice;
+    private List<GenericDevice> genericCloudDevice;
+    private List<GenericDevice> genericInterfaceDevice;
+    private List<GenericDevice> allGenericDevice;
     private List<ActualDevice> actualDevice;
 
-    DeviceLibrary() {
-    }
+    DeviceLibrary() {}
 
     public void loadDeviceFromJSON() {
-        this.genericInputDevice = loadGenericDeviceFromJSON("/json/genericinputdevice.json");
-        this.genericOutputDevice = loadGenericDeviceFromJSON("/json/genericoutputdevice.json");
-        this.genericVirtualDevice = loadGenericDeviceFromJSON("/json/genericvirtualdevice.json");
+        this.genericSensorDevice = loadGenericDeviceFromJSON("/json/genericsensordevice.json", GenericDeviceType.SENSOR);
+        this.genericActuatorDevice = loadGenericDeviceFromJSON("/json/genericactuatordevice.json", GenericDeviceType.ACTUATOR);
+        this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json", GenericDeviceType.UTILITY);
+        this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json", GenericDeviceType.CLOUD);
+        this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json", GenericDeviceType.INTERFACE);
+        this.allGenericDevice = new ArrayList<>();
+        this.allGenericDevice.addAll(genericSensorDevice);
+        this.allGenericDevice.addAll(genericActuatorDevice);
+        this.allGenericDevice.addAll(genericUtilityDevice);
+        this.allGenericDevice.addAll(genericCloudDevice);
+        this.allGenericDevice.addAll(genericInterfaceDevice);
         this.actualDevice = loadActualDeviceList();
     }
 
-    private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName){
+    private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName, GenericDeviceType type){
         ObjectMapper mapper = new ObjectMapper();
+        mapper.setInjectableValues(new InjectableValues.Std().addValue(GenericDeviceType.class, type));
         List<GenericDevice> temp;
         try {
             temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
-            temp = Collections.unmodifiableList(temp);
         } catch (IOException e) {
-            e.printStackTrace();
-            temp = Collections.emptyList();
+            throw new IllegalStateException("Can't load generic devices from " + resourceName);
         }
         return temp;
     }
@@ -96,17 +106,7 @@ public enum DeviceLibrary {
     }
 
     public GenericDevice getGenericDevice(String name) {
-        for (GenericDevice genericDevice : genericInputDevice) {
-            if (genericDevice.getName().equals(name)) {
-                return genericDevice;
-            }
-        }
-        for (GenericDevice genericDevice : genericOutputDevice) {
-            if (genericDevice.getName().equals(name)) {
-                return genericDevice;
-            }
-        }
-        for (GenericDevice genericDevice : genericVirtualDevice) {
+        for (GenericDevice genericDevice : allGenericDevice) {
             if (genericDevice.getName().equals(name)) {
                 return genericDevice;
             }
@@ -114,16 +114,24 @@ public enum DeviceLibrary {
         throw new IllegalArgumentException("No generic device named " + name);
     }
 
-    public List<GenericDevice> getGenericInputDevice() {
-        return genericInputDevice;
+    public List<GenericDevice> getGenericSensorDevice() {
+        return genericSensorDevice;
     }
 
-    public List<GenericDevice> getGenericOutputDevice() {
-        return genericOutputDevice;
+    public List<GenericDevice> getGenericActuatorDevice() {
+        return genericActuatorDevice;
     }
 
-    public List<GenericDevice> getGenericVirtualDevice() {
-        return genericVirtualDevice;
+    public List<GenericDevice> getGenericUtilityDevice() {
+        return genericUtilityDevice;
+    }
+
+    public List<GenericDevice> getGenericCloudDevice() {
+        return genericCloudDevice;
+    }
+
+    public List<GenericDevice> getGenericInterfaceDevice() {
+        return genericInterfaceDevice;
     }
 
     public List<ActualDevice> getActualDevice() {

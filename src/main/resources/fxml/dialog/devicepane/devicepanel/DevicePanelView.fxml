@@ -36,7 +36,7 @@
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
-            <FlowPane fx:id="inputPane" hgap="5.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #f6f6f6;" vgap="5.0">
+            <FlowPane id="sensorPane" fx:id="sensorPane" hgap="5.0" maxHeight="1.7976931348623157E308" style="-fx-background-color: #f6f6f6;" vgap="5.0">
                 <!--<children>-->
                 <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
                 <!--</children>-->
@@ -48,19 +48,43 @@
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
-            <FlowPane id="outputPane" fx:id="outputPane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
+            <FlowPane id="actuatorPane" fx:id="actuatorPane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
                 <!--<children>-->
                 <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
                 <!--</children>-->
             </FlowPane>
         </ScrollPane>
     </TitledPane>
-    <TitledPane layoutX="10.0" layoutY="298.0" text="Virtual">
+    <TitledPane layoutX="10.0" layoutY="298.0" text="Utility">
         <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="220.0">
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
-            <FlowPane id="outputPane" fx:id="virtualPane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
+            <FlowPane id="utilityPane" fx:id="utilityPane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
+                <!--<children>-->
+                <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
+                <!--</children>-->
+            </FlowPane>
+        </ScrollPane>
+    </TitledPane>
+    <TitledPane layoutX="10.0" layoutY="298.0" text="Cloud">
+        <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="220.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            <FlowPane id="cloudPane" fx:id="cloudPane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
+                <!--<children>-->
+                <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
+                <!--</children>-->
+            </FlowPane>
+        </ScrollPane>
+    </TitledPane>
+    <TitledPane layoutX="10.0" layoutY="298.0" text="Interface">
+        <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="220.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            <FlowPane id="interfacePane" fx:id="interfacePane" hgap="5.0" maxHeight="1.7976931348623157E308" rowValignment="TOP" style="-fx-background-color: #f6f6f6;" vgap="5.0">
                 <!--<children>-->
                 <!--<Button id="addBtn" alignment="CENTER" maxHeight="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#onAddDeviceClick" style="-fx-cursor: hand;" />-->
                 <!--</children>-->

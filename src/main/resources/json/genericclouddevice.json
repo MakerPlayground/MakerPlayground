@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Virtual Button",
+    "description": "Virtual Button: retrieving click events from your IoT dashboard",
+    "action": [],
+    "condition": [
+      {
+        "name": "Press",
+        "funcname": "isPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press and release",
+        "funcname": "isPressAndRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press",
+        "funcname": "isNotPress",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
+  },
+  {
+    "name": "Virtual Slider",
+    "description": "Virtual Slider: retrieving number/value from your IoT dashboard",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Value",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -99999999.0,
+          "max": 99999999.0,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Virtual LED",
+    "description": "Virtual LED: displaying number/value in IoT dashboard",
+    "action": [
+      {
+        "name": "On",
+        "funcname": "on",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Off",
+        "funcname": "off",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
+  },
+  {
+    "name": "Virtual Gauge",
+    "description": "Virtual Gauge: displaying number/value in IoT dashboard",
+    "action": [
+      {
+        "name": "Display number",
+        "funcname": "setNumber",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Value",
+            "value": 0.0,
+            "constraint": {
+              "min": -99999999.0,
+              "max": 99999999.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
+  }
+]

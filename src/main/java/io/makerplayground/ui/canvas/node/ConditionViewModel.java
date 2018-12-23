@@ -20,6 +20,7 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
@@ -40,20 +41,10 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
-        hasDeviceToAdd = new SimpleBooleanProperty(condition.getSetting().size() != project.getInputDevice().size());
-        // TODO: find a better way (now since only sensor and connectivity can be in the condition so we track these two)
-        this.project.getSensor().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
-        this.project.getVirtual().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
-        // when we remove something from the condition
-        this.condition.getSetting().addListener((InvalidationListener) observable -> {
-            hasDeviceToAdd.set(condition.getSetting().size() != project.getInputDevice().size());
-        });
+        hasDeviceToAdd = new SimpleBooleanProperty();
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).greaterThan(Bindings.size(condition.getSetting())));
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
@@ -69,7 +60,7 @@ public class ConditionViewModel {
     public DoubleProperty yProperty() { return condition.topProperty(); }
 
     public List<ProjectDevice> getProjectInputDevice() {
-        return project.getInputDevice();
+        return project.getDeviceWithCondition();
     }
 
     public Condition getCondition() { return condition; }

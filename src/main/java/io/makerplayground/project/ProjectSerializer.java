@@ -72,21 +72,9 @@ public class ProjectSerializer extends StdSerializer<Project> {
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("inputDevice");
-        for(ProjectDevice inputDevice : project.getSensor()) {
-            mapper.writeValue(jsonGenerator, inputDevice);
-        }
-        jsonGenerator.writeEndArray();
-
-        jsonGenerator.writeArrayFieldStart("outputDevice");
-        for(ProjectDevice outputDevice : project.getActuator()) {
-            mapper.writeValue(jsonGenerator, outputDevice);
-        }
-        jsonGenerator.writeEndArray();
-
-        jsonGenerator.writeArrayFieldStart("connectivityDevice");
-        for(ProjectDevice connectivityDevice : project.getVirtual()) {
-            mapper.writeValue(jsonGenerator, connectivityDevice);
+        jsonGenerator.writeArrayFieldStart("device");
+        for(ProjectDevice device : project.getDevice()) {
+            mapper.writeValue(jsonGenerator, device);
         }
         jsonGenerator.writeEndArray();
 

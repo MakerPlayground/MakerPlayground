@@ -53,30 +53,27 @@ public class DynamicViewModelCreator<T, U> {
                 addController(t);
         }
 
-        model.addListener(new ListChangeListener<T>() {
-            @Override
-            public void onChanged(Change<? extends T> c) {
-                while (c.next()) {
-                    if (c.wasPermutated()) {
-                        throw new UnsupportedOperationException();
-                    } else if (c.wasUpdated()) {
-                        for (T updatedItem : c.getList().subList(c.getFrom(), c.getTo())) {
-                            if (filter != null) {
-                                if (filter.test(updatedItem) && !controllerMap.containsKey(updatedItem))
-                                    addController(updatedItem);
-                                else if (!filter.test(updatedItem) && controllerMap.containsKey(updatedItem))
-                                    removeController(updatedItem);
-                            }
+        model.addListener((ListChangeListener<T>) c -> {
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    throw new UnsupportedOperationException();
+                } else if (c.wasUpdated()) {
+                    for (T updatedItem : c.getList().subList(c.getFrom(), c.getTo())) {
+                        if (filter != null) {
+                            if (filter.test(updatedItem) && !controllerMap.containsKey(updatedItem))
+                                addController(updatedItem);
+                            else if (!filter.test(updatedItem) && controllerMap.containsKey(updatedItem))
+                                removeController(updatedItem);
                         }
-                    } else {
-                        for (T removedItem : c.getRemoved()) {
-                            if (filter == null || filter.test(removedItem))
-                                removeController(removedItem);
-                        }
-                        for (T addedItem : c.getAddedSubList()) {
-                            if (filter == null || filter.test(addedItem))
-                                addController(addedItem);
-                        }
+                    }
+                } else {
+                    for (T removedItem : c.getRemoved()) {
+                        if (filter == null || filter.test(removedItem))
+                            removeController(removedItem);
+                    }
+                    for (T addedItem : c.getAddedSubList()) {
+                        if (filter == null || filter.test(addedItem))
+                            addController(addedItem);
                     }
                 }
             }

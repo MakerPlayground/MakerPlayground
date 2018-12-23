@@ -677,5 +677,111 @@
         }
       }
     ]
+  },
+  {
+    "name": "RTC",
+    "description": "A Real Time Clock (RTC) device with external battery that provides the real date and time.",
+    "action": [
+      {
+        "name": "Set DateTime",
+        "funcname": "setDateTime",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "datetime",
+            "value": 0,
+            "constraint": [],
+            "datatype": "DATETIME",
+            "controltype": "DATETIMEPICKER"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Check Day",
+        "funcname": "checkDayOfWeek",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Day",
+            "value": "Monday",
+            "constraint": [
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      }
+    ],
+    "value": [
+      {
+        "name": "Hour",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 23,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Minute",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 59,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Second",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 59,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Date",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 1,
+          "max": 31,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Month",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 1,
+          "max": 12,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "Year",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 5000,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
   }
 ]

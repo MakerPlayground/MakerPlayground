@@ -75,9 +75,7 @@ public class DevicePanelListCell extends ListCell<ProjectDevice> {
 
     private void deleteHandler() {
         ProjectDevice projectDevice = getItem();
-        project.removeSensor(projectDevice);
-        project.removeVirtual(projectDevice);
-        project.removeActuator(projectDevice);
+        project.removeDevice(projectDevice);
     }
 
     @FXML

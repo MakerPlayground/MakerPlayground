@@ -16,12 +16,13 @@
 
 package io.makerplayground.device.generic;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Value;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ import java.util.List;
 public class GenericDevice {
     private final String name;
     private final String description;
+    @JacksonInject
+    private final GenericDeviceType type;
     private final List<Action> action;
     private final List<Action> condition;
     private final List<Value> value;
@@ -44,13 +47,14 @@ public class GenericDevice {
      *              accel_y and accel_z as it's values
      */
     @JsonCreator
-    GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("action") List<Action> action
-            , @JsonProperty("condition") List<Action> condition, @JsonProperty("value") List<Value> value) {
+    GenericDevice(@JsonProperty("name") String name, @JsonProperty("description") String description, @JsonProperty("type") GenericDeviceType type
+            , @JsonProperty("action") List<Action> action, @JsonProperty("condition") List<Action> condition, @JsonProperty("value") List<Value> value) {
         this.name = name;
         this.description = description;
-        this.action = Collections.unmodifiableList(action);
-        this.condition = Collections.unmodifiableList(condition);
-        this.value = Collections.unmodifiableList(value);
+        this.type = type;
+        this.action = action;
+        this.condition = condition;
+        this.value = value;
     }
 
     /**
@@ -59,6 +63,14 @@ public class GenericDevice {
      */
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public GenericDeviceType getType() {
+        return type;
     }
 
     /**
@@ -78,6 +90,10 @@ public class GenericDevice {
         return null;
     }
 
+    public boolean hasAction() {
+        return !action.isEmpty();
+    }
+
     public List<Action> getCondition() {
         return condition;
     }
@@ -91,8 +107,8 @@ public class GenericDevice {
         return null;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean hasCondition() {
+        return !condition.isEmpty();
     }
 
     /**
@@ -117,6 +133,7 @@ public class GenericDevice {
         return "GenericDevice{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", type=" + type +
                 ", action=" + action +
                 ", condition=" + condition +
                 ", value=" + value +

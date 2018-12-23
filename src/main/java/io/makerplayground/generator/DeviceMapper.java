@@ -46,7 +46,7 @@ public class DeviceMapper {
     public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
-        for (ProjectDevice projectDevice : project.getAllDevice()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             tempMap.put(projectDevice, new HashMap<>());
         }
 
