@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="TabPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <tabs>
+        <Tab text="Project Device">
+            <content>
+                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                    <content>
+                        <VBox>
+                            <children>
+                                <TitledPane animated="false" text="Actuator">
+                                    <content>
+                                        <VBox fx:id="actuatorVBox" spacing="5" />
+                                    </content>
+                                </TitledPane>
+                                <TitledPane animated="false" text="Sensor">
+                                    <content>
+                                        <VBox fx:id="sensorVBox" spacing="5" />
+                                    </content>
+                                </TitledPane>
+                                <TitledPane animated="false" text="Utility">
+                                    <content>
+                                        <VBox fx:id="utilityVBox" spacing="5" />
+                                    </content>
+                                </TitledPane>
+                                <TitledPane animated="false" text="Cloud">
+                                    <content>
+                                        <VBox fx:id="cloudVBox" spacing="5" />
+                                    </content>
+                                </TitledPane>
+                                <TitledPane animated="false" text="Interface">
+                                    <content>
+                                        <VBox fx:id="interfaceVBox" spacing="5" />
+                                    </content>
+                                </TitledPane>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </content>
+        </Tab>
+    </tabs>
+</fx:root>

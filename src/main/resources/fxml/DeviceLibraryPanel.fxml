@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="TabPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <tabs>
+        <Tab text="Device Library">
+            <content>
+                <Accordion>
+                    <panes>
+                        <TitledPane animated="false" text="Actuator">
+                            <content>
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                                    <content>
+                                        <VBox fx:id="actuatorVBox" spacing="5" />
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Sensor">
+                            <content>
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                                    <content>
+                                        <VBox fx:id="sensorVBox" spacing="5" />
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Utility">
+                            <content>
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                                    <content>
+                                        <VBox fx:id="utilityVBox" spacing="5" />
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Cloud">
+                            <content>
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                                    <content>
+                                        <VBox fx:id="cloudVBox" spacing="5" />
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Interface">
+                            <content>
+                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                                    <content>
+                                        <VBox fx:id="interfaceVBox" spacing="5" />
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                    </panes>
+                </Accordion>
+            </content>
+        </Tab>
+    </tabs>
+</fx:root>

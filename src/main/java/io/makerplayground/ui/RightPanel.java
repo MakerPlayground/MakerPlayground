@@ -16,107 +16,21 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
-import io.makerplayground.generator.source.SourceCodeResult;
-import io.makerplayground.generator.source.SourceCodeGenerator;
-import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.dialog.ErrorDialogView;
-import io.makerplayground.ui.dialog.UploadDialogView;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
-import io.makerplayground.ui.dialog.devicepane.devicepanel.DevicePanelView;
-import io.makerplayground.ui.dialog.devicepane.devicepanel.DevicePanelViewModel;
-import io.makerplayground.ui.dialog.generate.GenerateView;
-import io.makerplayground.ui.dialog.generate.GenerateViewModel;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-
-import java.io.IOException;
+import javafx.geometry.Orientation;
+import javafx.scene.control.SplitPane;
 
 /**
  * Created by Mai.Manju on 12-Jun-17.
  */
-class RightPanel extends VBox {
+class RightPanel extends SplitPane {
+    public RightPanel(Project project) {
+        DeviceLibraryPanel deviceLibraryPanel = new DeviceLibraryPanel();
+        deviceLibraryPanel.setOnDevicePressed(project::addDevice);
 
-    private final Project project;
+        ProjectDevicePanel projectDevicePanel = new ProjectDevicePanel(project);
 
-    RightPanel(Project project) {
-        this.project = project;
-        initView();
+        setOrientation(Orientation.VERTICAL);
+        getItems().addAll(projectDevicePanel, deviceLibraryPanel);
     }
-
-    private void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/RightPanel.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        DevicePanelViewModel devicePanelViewModel = new DevicePanelViewModel(project);
-        DevicePanelView devicePanelView = new DevicePanelView(devicePanelViewModel);
-        devicePanelView.setMaxWidth(Double.MAX_VALUE);
-        VBox.setVgrow(devicePanelView, Priority.ALWAYS);
-
-        getChildren().add(0, devicePanelView);
-    }
-
-    @FXML
-    private void handleConfigureBtn(ActionEvent event) {
-        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(getScene().getWindow(), configActualDeviceViewModel);
-        configActualDeviceView.show();
-    }
-
-    @FXML
-    private void handleGenerateBtn(ActionEvent event) {
-        DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-        if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Controller hasn't been selected");
-            errorDialogView.show();
-            return;
-        } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Not enough port");
-            errorDialogView.show();
-            return;
-        } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), "Can't find any support device");
-            errorDialogView.show();
-            return;
-        } else if (mappingResult != DeviceMapperResult.OK) {
-            throw new IllegalStateException("Found unknown error!!!");
-        }
-
-        SourceCodeResult code = SourceCodeGenerator.generateCode(project, true);
-        if (code.hasError()) {
-            ErrorDialogView errorDialogView = new ErrorDialogView(getScene().getWindow(), code.getError().getDescription());
-            errorDialogView.show();
-        } else {
-            GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
-            GenerateView generateView = new GenerateView(getScene().getWindow(), generateViewModel);
-            generateView.show();
-        }
-    }
-
-    @FXML
-    private void handleUploadBtn(ActionEvent event) {
-        UploadTask uploadTask = new UploadTask(project);
-
-        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
-        uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
-        uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
-        uploadDialogView.logProperty().bind(uploadTask.logProperty());
-        uploadDialogView.show();
-
-        new Thread(uploadTask).start();
-    }
-
 }
