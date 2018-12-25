@@ -163,7 +163,7 @@
     -fx-font-weight: bold;
 }
 
-#close-button {
+/*#close-button {
     -fx-image: url('/css/cancel-button.png');
 }
 
@@ -175,4 +175,4 @@
 #close-button:pressed {
     -fx-image: url('/css/cancel-button-press.png');
     -fx-cursor: hand;
-}
+}*/

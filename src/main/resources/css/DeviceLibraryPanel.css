@@ -1,0 +1,69 @@
+.titled-pane > .title {
+    -fx-background-color: background-color;
+    -fx-border-color: transparent transparent border-color transparent;
+    -fx-border-width: 1px;
+}
+
+.titled-pane {
+    -fx-text-fill: text-color;
+}
+
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color: text-color;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: transparent;
+    -fx-box-border: transparent;
+}
+
+.scroll-pane{
+    -fx-background-color: background-color;
+    -fx-border-color : border-color;
+    -fx-border-width : 0px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .increment-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .decrement-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius: 0.5em;
+}
+
+.scroll-bar .thumb{
+    -fx-background-color: scrollbar-thumb-color;
+    -fx-border-radius: 0.5em;
+    -fx-background-insets: 2, 0, 0;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
-<fx:root fx:id="mainPane" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-         dividerPositions="0.8, 0.2" />
+<fx:root type="BorderPane" stylesheets="@../css/MainWindow.css" xmlns="http://javafx.com/javafx/8.0.172-ea"
+         xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <AnchorPane id="subToolbar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+                    minWidth="-Infinity" prefHeight="38.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <RadioButton id="diagramEditorButton" fx:id="diagramEditorButton" mnemonicParsing="false"
+                                     text="Diagram Editor"/>
+                        <RadioButton id="deviceConfigButton" fx:id="deviceConfigButton" mnemonicParsing="false"
+                                     text="Device Config"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="15.0"
+                      AnchorPane.topAnchor="0.0">
+                    <children>
+                        <Button id="uploadButton" fx:id="uploadButton" mnemonicParsing="false" text="Upload"/>
+                        <Button id="deviceMonitorButton" fx:id="deviceMonitorButton" mnemonicParsing="false"
+                                text="Device Monitor"/>
+                    </children>
+                </HBox>
+            </children>
+        </AnchorPane>
+    </top>
+</fx:root>

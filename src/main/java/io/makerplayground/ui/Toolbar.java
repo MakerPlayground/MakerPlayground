@@ -34,13 +34,13 @@ import java.io.IOException;
 
 public class Toolbar extends HBox {
 
-//    @FXML private Button newButton;
-//    @FXML private Button loadButton;
-//    @FXML private Button saveButton;
-//    @FXML private Button saveAsButton;
+    @FXML private Button newButton;
+    @FXML private Button loadButton;
+    @FXML private Button saveButton;
+    @FXML private Button saveAsButton;
 //    @FXML private MenuButton deviceMonitorMenuButton;
     @FXML private Label statusLabel;
-    @FXML private Button diagramEditorButton;
+//    @FXML private Button diagramEditorButton;
 
     public Toolbar() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
@@ -56,47 +56,47 @@ public class Toolbar extends HBox {
     }
 
     public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
-//        newButton.setOnAction(event);
+        newButton.setOnAction(event);
     }
 
     public void setOnLoadButtonPressed(EventHandler<ActionEvent> event) {
-//        loadButton.setOnAction(event);
+        loadButton.setOnAction(event);
     }
 
     public void setOnSaveButtonPressed(EventHandler<ActionEvent> event) {
-//        saveButton.setOnAction(event);
+        saveButton.setOnAction(event);
     }
 
     public void setOnSaveAsButtonPressed(EventHandler<ActionEvent> event) {
-//        saveAsButton.setOnAction(event);
+        saveAsButton.setOnAction(event);
     }
 
     public void setStatusMessage(String message) {
         statusLabel.setText(message);
     }
 
-    private void deviceMonitorMenuShowing(Event e) {
-        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
-        deviceMonitorButton.getItems().clear();
-        SerialPort[] commPorts = SerialPort.getCommPorts();
-        if (commPorts.length > 0) {
-            for (SerialPort port : commPorts) {
-                MenuItem item = new MenuItem(port.getDescriptivePortName());
-                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
-                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
-                deviceMonitorButton.getItems().add(item);
-            }
-        } else {
-            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
-            item.setDisable(true);
-            deviceMonitorButton.getItems().add(item);
-        }
-    }
-
-    private void openDeviceMonitor(String portName){
-        SerialPort port = SerialPort.getCommPort(portName);
-        //TODO: capture error in rare case the port is disconnected
-        DeviceMonitor deviceMonitor = new DeviceMonitor(port);
-        deviceMonitor.showAndWait();
-    }
+//    private void deviceMonitorMenuShowing(Event e) {
+//        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
+//        deviceMonitorButton.getItems().clear();
+//        SerialPort[] commPorts = SerialPort.getCommPorts();
+//        if (commPorts.length > 0) {
+//            for (SerialPort port : commPorts) {
+//                MenuItem item = new MenuItem(port.getDescriptivePortName());
+//                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
+//                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
+//                deviceMonitorButton.getItems().add(item);
+//            }
+//        } else {
+//            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
+//            item.setDisable(true);
+//            deviceMonitorButton.getItems().add(item);
+//        }
+//    }
+//
+//    private void openDeviceMonitor(String portName){
+//        SerialPort port = SerialPort.getCommPort(portName);
+//        //TODO: capture error in rare case the port is disconnected
+//        DeviceMonitor deviceMonitor = new DeviceMonitor(port);
+//        deviceMonitor.showAndWait();
+//    }
 }

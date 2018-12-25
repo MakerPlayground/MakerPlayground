@@ -72,7 +72,7 @@
     -fx-cursor: hand;
 }
 
-#deviceMonitorMenuButton{
+/*#deviceMonitorMenuButton{
     -fx-background-image: url('Device-monitor.png');
     -fx-background-size : 30px;
     -fx-background-color: transparent;
@@ -87,13 +87,13 @@
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}
-
-/*#statusLabel {
-    -fx-text-fill: white;
 }*/
 
-.toolbar-tab-button {
+#statusLabel {
+    -fx-text-fill: text-color;
+}
+
+/*.toolbar-tab-button {
     -fx-text-fill: text-color;
     -fx-pref-height: 34px;
     -fx-background-color: transparent;
@@ -113,4 +113,4 @@
 #overflow-menubutton .arrow {
      -fx-shape: "";
      -fx-padding: 0;
-}
+}*/

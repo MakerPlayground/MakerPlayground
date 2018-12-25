@@ -45,11 +45,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ConfigActualDeviceView extends UndecoratedDialog {
+public class ConfigActualDeviceView extends VBox{
 
     private final ConfigActualDeviceViewModel viewModel;
 
-    private final AnchorPane pane = new AnchorPane();
     @FXML private GridPane usedDevice;
     @FXML private FlowPane unusedDevicePane;
     @FXML private VBox unusedDevice;
@@ -60,15 +59,13 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<ActualDevice> controllerComboBox;
     @FXML private Label controllerName;
-    @FXML private ImageView closeButton;
     @FXML private Pane errorMsg;
 
-    public ConfigActualDeviceView(Window owner, ConfigActualDeviceViewModel viewModel) {
-        super(owner);
+    public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/configdevice/ConfigActualDeviceView.fxml"));
-        fxmlLoader.setRoot(pane);
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -79,8 +76,6 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         initPlatformControl();
         initControllerControl();
         initDeviceControl();
-
-        setContent(pane);
         initEvent();
     }
 
@@ -93,9 +88,6 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         // write change to the viewmodel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
-
-        // allow the dialog to be closed
-        closeButton.setOnMouseReleased(event -> hide());
     }
 
     private void initPlatformControl() {
@@ -188,12 +180,10 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
         } else {
             throw new IllegalStateException("Found unknown error!!!");
         }
-        // resize this stage according to the underlying scene so that the window's size change based on the content of the dialog
-        sizeToScene();
     }
 
     private void initDeviceControlChildren() {
-        viewModel.removeDeviceConfigChangedCallback();
+        viewModel.clearDeviceConfigChangedCallback();
         int currentRow = 0;
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
@@ -247,7 +237,8 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             });
 
             CheckBox checkBox = new CheckBox("Auto");
-            checkBox.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
+            checkBox.setMinHeight(25);  // a hack to center the label to the height of 1 row control when the control spans to multiple rows
+            checkBox.setMinWidth(55);   // a hack to prevent "Auto" from becoming ...
             checkBox.setSelected(projectDevice.isAutoSelectDevice());
             deviceComboBox.setDisable(projectDevice.isAutoSelectDevice());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
@@ -260,7 +251,7 @@ public class ConfigActualDeviceView extends UndecoratedDialog {
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
-            GridPane.setConstraints(entireComboBoxDevice, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+            GridPane.setConstraints(entireComboBoxDevice, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
             HBox portComboBoxHbox = new HBox();
             portComboBoxHbox.setSpacing(5.0);

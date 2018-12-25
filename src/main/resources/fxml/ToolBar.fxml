@@ -2,47 +2,42 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root id="toolBarPane" alignment="CENTER_LEFT" prefHeight="38.0" spacing="15.0" stylesheets="@../css/ToolBar.css" type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <MenuButton id="overflow-menubutton" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
-        <items>
-          <MenuItem mnemonicParsing="false" text="New">
-               <accelerator>
-                  <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-               </accelerator>
-            </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false" />
-          <MenuItem mnemonicParsing="false" text="Open">
-               <accelerator>
-                  <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-               </accelerator>
-            </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Save">
-               <accelerator>
-                  <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-               </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" text="Save As">
-               <accelerator>
-                  <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
-               </accelerator>
-            </MenuItem>
-        </items>
-      </MenuButton>
-      <Button fx:id="diagramEditorButton" mnemonicParsing="false" styleClass="toolbar-tab-button" text="Diagram Editor" />
-      <Button fx:id="diagramEditorButton1" layoutX="80.0" layoutY="12.0" mnemonicParsing="false" styleClass="toolbar-tab-button" text="Device Configuration" />
-      <Button fx:id="diagramEditorButton11" layoutX="190.0" layoutY="12.0" mnemonicParsing="false" styleClass="toolbar-tab-button" text="Device Monitor" />
-      <Label id="statusLabel" fx:id="statusLabel" />
-   </children>
-   <padding>
-      <Insets left="10.0" />
-   </padding>
+<?import javafx.scene.control.Label?>
+<fx:root id="toolBarPane" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" spacing="20.0" stylesheets="@../css/ToolBar.css"
+         type="HBox" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Button id="newFileBtn" fx:id="newButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity"
+                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0"
+                textAlignment="CENTER">
+            <tooltip>
+                <Tooltip text="new"/>
+            </tooltip>
+        </Button>
+        <Button id="loadBtn" fx:id="loadButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+            <tooltip>
+                <Tooltip text="open"/>
+            </tooltip>
+        </Button>
+        <Button id="saveBtn" fx:id="saveButton" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity"
+                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+            <tooltip>
+                <Tooltip text="save"/>
+            </tooltip>
+        </Button>
+        <Button id="saveAsBtn" fx:id="saveAsButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+            <tooltip>
+                <Tooltip text="save as"/>
+            </tooltip>
+        </Button>
+        <Label id="statusLabel" fx:id="statusLabel" />
+    </children>
+    <padding>
+        <Insets left="10.0"/>
+    </padding>
 </fx:root>

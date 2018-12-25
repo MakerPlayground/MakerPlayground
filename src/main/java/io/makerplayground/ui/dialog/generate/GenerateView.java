@@ -32,8 +32,7 @@ import java.io.IOException;
 /**
  * Created by tanyagorn on 7/19/2017.
  */
-public class GenerateView extends UndecoratedDialog {
-    private final AnchorPane anchorPane = new AnchorPane();
+public class GenerateView extends TabPane {
     @FXML private TextArea codeTextArea;
     @FXML private TableView<TableDataList> deviceTable;
     @FXML private TableColumn<TableDataList,String> nameColumn;
@@ -41,18 +40,14 @@ public class GenerateView extends UndecoratedDialog {
     @FXML private TableColumn<TableDataList,String> modelColumn;
     @FXML private TableColumn<TableDataList,String> pinColumn;
     @FXML private ScrollPane diagramScrollPane;
-    @FXML private Tab simulateTab;
-    @FXML private Tab codeDeviceTableTab;
-    @FXML private ImageView closeButton;
 
     private final GenerateViewModel viewModel;
 
-    public GenerateView(Window owner, GenerateViewModel viewModel) {
-        super(owner);
+    public GenerateView(GenerateViewModel viewModel) {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/generate/GenerateView.fxml"));
-        fxmlLoader.setRoot(anchorPane);
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -61,9 +56,6 @@ public class GenerateView extends UndecoratedDialog {
         }
 
         initView();
-        setContent(anchorPane);
-
-        closeButton.setOnMouseReleased(event -> hide());
     }
 
     private void initView() {

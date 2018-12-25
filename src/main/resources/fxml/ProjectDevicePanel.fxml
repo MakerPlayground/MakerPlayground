@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="TabPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root type="TabPane" stylesheets="@../css/ProjectDevicePanel.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
         <Tab text="Project Device">
             <content>

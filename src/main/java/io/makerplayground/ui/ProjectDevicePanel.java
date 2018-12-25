@@ -3,7 +3,6 @@ package io.makerplayground.ui;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.control.AutoResizeTextField;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -79,7 +78,7 @@ public class ProjectDevicePanel extends TabPane {
 
     private final class ProjectDeviceListCell extends HBox {
         @FXML private ImageView deviceIcon;
-        @FXML private AutoResizeTextField nameTextField;
+        @FXML private TextField nameTextField;
         @FXML private Button removeButton;
 
         private final ProjectDevice projectDevice;
