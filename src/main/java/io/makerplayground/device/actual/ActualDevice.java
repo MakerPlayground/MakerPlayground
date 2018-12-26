@@ -24,7 +24,12 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * Represent an actual device/board ex. Arduino UNO, SparkFun 9DoF IMU Breakout, DHT22 temperature/humidity sensor, etc.
@@ -121,6 +126,92 @@ public class ActualDevice {
         this.property = Collections.unmodifiableList(property);
         this.supportedCloudPlatform = supportedCloudPlatform;
         this.integratedDevices = Collections.unmodifiableList(integratedDevices);
+
+        if (deviceType == DeviceType.CONTROLLER) {
+            List<Peripheral> gpioList = new ArrayList<>(Peripheral.values(ConnectionType.GPIO));
+            List<Peripheral> pwmList = new ArrayList<>(Peripheral.values(ConnectionType.PWM));
+            List<Peripheral> analogList = new ArrayList<>(Peripheral.values(ConnectionType.ANALOG));
+
+            Map<DevicePort, Set<Peripheral>> portToPeripheralMap = new HashMap<>();
+            Map<Peripheral, Peripheral> oldToNewPeripheralMap = new HashMap<>();
+//            boolean hasI2C = false;
+            for (DevicePort devicePort : port) {
+                Map<Peripheral, Peripheral> splitMap = new HashMap<>();
+                if (devicePort.hasConnectionType(ConnectionType.MP_PWM_SINGLE)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_PWM_SINGLE).get();
+                    splitMap.put(peripheral, pwmList.remove(0));
+                }
+                if (devicePort.hasConnectionType(ConnectionType.MP_PWM_DUAL)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_PWM_DUAL).get();
+                    splitMap.put(peripheral, pwmList.remove(0));
+                }
+                if (devicePort.hasConnectionType(ConnectionType.MP_GPIO_SINGLE)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_GPIO_SINGLE).get();
+                    splitMap.put(peripheral, gpioList.remove(0));
+                }
+                if (devicePort.hasConnectionType(ConnectionType.MP_GPIO_DUAL)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_GPIO_DUAL).get();
+                    splitMap.put(peripheral, gpioList.remove(0));
+                }
+                if (devicePort.hasConnectionType(ConnectionType.MP_ANALOG_SINGLE)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_ANALOG_SINGLE).get();
+                    splitMap.put(peripheral, analogList.remove(0));
+                }
+                if (devicePort.hasConnectionType(ConnectionType.MP_ANALOG_DUAL)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_ANALOG_DUAL).get();
+                    splitMap.put(peripheral, analogList.remove(0));
+                }
+                if (/*!hasI2C &&*/ devicePort.hasConnectionType(ConnectionType.MP_I2C)) {
+                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_I2C).get();
+                    splitMap.put(peripheral, Peripheral.I2C_1);
+//                    hasI2C = true;
+                }
+                if (!splitMap.isEmpty()) {
+                    portToPeripheralMap.put(devicePort, splitMap.keySet());
+                    oldToNewPeripheralMap.putAll(splitMap);
+                }
+            }
+
+            for (DevicePort originalPort : portToPeripheralMap.keySet()) {
+                List<DevicePort.DevicePortFunction> firstPortFunction = new ArrayList<>();
+                List<DevicePort.DevicePortFunction> secondPortFunction = new ArrayList<>();
+
+                for (Peripheral splitPeripheral : portToPeripheralMap.get(originalPort)) {
+                    Peripheral newPeripheral = oldToNewPeripheralMap.get(splitPeripheral);
+                    connectivity.add(newPeripheral);
+
+                    List<Peripheral> newConflictPeripheral = new ArrayList<>();
+                    for (Peripheral conflictPeripheral : originalPort.getConflictPeripheral(splitPeripheral)) {
+                        newConflictPeripheral.add(conflictPeripheral);                          // add conflict to peripherals that the original peripheral conflicts to
+                        if (oldToNewPeripheralMap.containsKey(conflictPeripheral)) {
+                            newConflictPeripheral.add(oldToNewPeripheralMap.get(conflictPeripheral));   // if that peripheral is converted into new peripheral, we are conflicted to it to
+                        }
+                    }
+                    newConflictPeripheral.addAll(originalPort.getPeripheral());  // add conflict to original peripherals as both can't be used simultaneously
+
+                    if (splitPeripheral.getConnectionType() == ConnectionType.MP_I2C) {
+                        firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SCL));
+                        secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SDA));
+                    } else if (splitPeripheral.isMPSingle()) {
+                        firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
+                    } else if (splitPeripheral.isMPDual()) {
+                        secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
+                    }
+                }
+
+                List<Peripheral> newPeripheral = portToPeripheralMap.get(originalPort).stream().map(oldToNewPeripheralMap::get).collect(Collectors.toList());
+                for (Peripheral originalPeripheral : originalPort.getPeripheral()) {
+                    originalPort.addConflictPeripheral(originalPeripheral, newPeripheral);  // add conflict to the new peripheral as both can't be used simultaneously
+                }
+
+                String name = originalPort.getName() + "_1";
+                port.add(new DevicePort(name, null, DevicePort.Type.WIRE, null, firstPortFunction, 0, 0, 0, 0, 0, originalPort));
+                if (!secondPortFunction.isEmpty()) {
+                    name = originalPort.getName() + "_2";
+                    port.add(new DevicePort(name, null, DevicePort.Type.WIRE, null, secondPortFunction, 0, 0, 0, 0, 0, originalPort));
+                }
+            }
+        }
     }
 
     public Dependency getCategory() {
@@ -236,6 +327,34 @@ public class ActualDevice {
 
     public List<DevicePort> getPort(Peripheral peripheral) {
         return port.stream().filter(devicePort -> devicePort.hasPeripheral(peripheral)).collect(Collectors.toList());
+    }
+
+    public List<List<DevicePort>> getI2CPort() {
+        List<List<DevicePort>> result = new ArrayList<>();
+
+        // consider actual (these are usually connect with a breadboard so we can just pick any port regardless of the distance between port)
+        Optional<DevicePort> sdaPort = port.stream().filter(DevicePort::isSDA)
+                .filter(devicePort -> devicePort.getParent() == null).findFirst();
+        Optional<DevicePort> sclPort = port.stream().filter(DevicePort::isSCL)
+                .filter(devicePort -> devicePort.getParent() == null).findFirst();
+        if (sdaPort.isPresent() && sclPort.isPresent()) {
+            result.add(List.of(sclPort.get(), sdaPort.get()));
+        }
+
+        // consider splited port (we group these type of port by their parent as SDA and SCL pins should come from the same cable)
+        Map<DevicePort, List<DevicePort>> sdaPortMap = port.stream().filter(DevicePort::isSDA)
+                .filter(devicePort -> devicePort.getParent() != null).collect(groupingBy(DevicePort::getParent));
+        Map<DevicePort, List<DevicePort>> sclPortMap = port.stream().filter(DevicePort::isSCL)
+                .filter(devicePort -> devicePort.getParent() != null).collect(groupingBy(DevicePort::getParent));
+        for (DevicePort parent : sclPortMap.keySet()) {
+            if (sclPortMap.get(parent).size() != 1 || !sdaPortMap.containsKey(parent) || sdaPortMap.get(parent).size() != 1) {
+                throw new IllegalStateException();
+            }
+            DevicePort scl = sclPortMap.get(parent).get(0);
+            DevicePort sda = sdaPortMap.get(parent).get(0);
+            result.add(List.of(scl, sda));
+        }
+        return result;
     }
 
     public List<Peripheral> getConnectivity() {

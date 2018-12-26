@@ -18,6 +18,10 @@ package io.makerplayground.device.actual;
 
 import io.makerplayground.device.actual.ConnectionType;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Created by nuntipat on 7/7/2017 AD.
  */
@@ -61,10 +65,10 @@ public enum Peripheral {
     INT_3(ConnectionType.INT),
 
     I2C_1(ConnectionType.I2C),
-    I2C_2(ConnectionType.I2C),
-    I2C_3(ConnectionType.I2C),
-    I2C_4(ConnectionType.I2C),
-    I2C1_1(ConnectionType.I2C1),
+//    I2C_2(ConnectionType.I2C),
+//    I2C_3(ConnectionType.I2C),
+//    I2C_4(ConnectionType.I2C),
+    I2C1_1(ConnectionType.I2C1),    // TODO: should we change I2C1_1 to I2C_2?
 
     SPI_1(ConnectionType.SPI),
     SPI_2(ConnectionType.SPI),
@@ -131,7 +135,7 @@ public enum Peripheral {
     MP_I2C_3(ConnectionType.MP_I2C),
     MP_I2C_4(ConnectionType.MP_I2C),
 
-    MP_I2C1_1(ConnectionType.MP_I2C1),
+//    MP_I2C1_1(ConnectionType.MP_I2C1),
 
     GROVE_GPIO_SINGLE_1(ConnectionType.GROVE_GPIO_SINGLE),
     GROVE_GPIO_SINGLE_2(ConnectionType.GROVE_GPIO_SINGLE),
@@ -180,6 +184,10 @@ public enum Peripheral {
 
     public ConnectionType getConnectionType() {
         return connectionType;
+    }
+
+    public static List<Peripheral> values(ConnectionType connectionType) {
+        return Stream.of(values()).filter(peripheral -> peripheral.getConnectionType() == connectionType).collect(Collectors.toList());
     }
 
     public boolean isSingle() {
