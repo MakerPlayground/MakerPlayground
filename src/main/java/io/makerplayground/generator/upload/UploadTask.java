@@ -9,6 +9,7 @@ import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -139,6 +140,7 @@ public class UploadTask extends Task<UploadResult> {
         updateMessage("Preparing platformio project");
         String projectPath = MP_WORKSPACE + File.separator + "upload";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
+        Process p = null;
         try {
             FileUtils.deleteDirectory(new File(projectPath));
             FileUtils.forceMkdir(new File(projectPath));
@@ -148,13 +150,11 @@ public class UploadTask extends Task<UploadResult> {
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             pioHomeDirPath.ifPresent(s -> builder.environment().put("PLATFORMIO_HOME_DIR", s));
             builder.redirectErrorStream(true);
-            Process p = builder.start();
+            p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
                 while (s.hasNextLine()) {
                     if (isCancelled()) {
-                        updateMessage("Canceling upload...");
-                        p.destroy();
-                        break;
+                        throw new InterruptedException();
                     }
                     String line = s.nextLine();
                     Platform.runLater(() -> log.set(line + "\n"));
@@ -166,6 +166,8 @@ public class UploadTask extends Task<UploadResult> {
             }
         } catch (InterruptedException e) {
             if (isCancelled()) {
+                updateMessage("Canceling upload...");
+                killProcess(p);
                 updateMessage("Upload has been canceled");
                 return UploadResult.USER_CANCEL;
             }
@@ -233,13 +235,11 @@ public class UploadTask extends Task<UploadResult> {
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             pioHomeDirPath.ifPresent(s -> builder.environment().put("PLATFORMIO_HOME_DIR", s));
             builder.redirectErrorStream(true);
-            Process p = builder.start();
+            p = builder.start();
             try (Scanner s = new Scanner(p.getInputStream())) {
                 while (s.hasNextLine()) {
                     if (isCancelled()) {
-                        updateMessage("Canceling upload...");
-                        p.destroy();
-                        break;
+                        throw new InterruptedException();
                     }
                     String line = s.nextLine();
                     Platform.runLater(() -> log.set(line + "\n"));
@@ -252,6 +252,8 @@ public class UploadTask extends Task<UploadResult> {
             }
         } catch (InterruptedException e) {
             if (isCancelled()) {
+                updateMessage("Canceling upload...");
+                killProcess(p);
                 updateMessage("Upload has been canceled");
                 return UploadResult.USER_CANCEL;
             }
@@ -268,15 +270,17 @@ public class UploadTask extends Task<UploadResult> {
         return UploadResult.OK;
     }
 
-    private void addSourcesFromDirectory(Path sourcePath,String destinationPath) throws IOException {
-        //List<Path> possiblePath;
-        int sourcePathStringLength = sourcePath.toString().length();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(sourcePath,"*.{cpp,h}");){
-            for(Path p: directoryStream){
-                String filename = p.toString().substring(sourcePathStringLength);
-                Path targetPath = Paths.get(destinationPath,filename);
-                Files.copy(p,Paths.get(destinationPath,filename),StandardCopyOption.REPLACE_EXISTING);
+    private void killProcess(Process p) {
+        try {
+            if (OSInfo.getOs() == OSInfo.OS.WINDOWS) {
+                Process killerProcess = Runtime.getRuntime().exec("taskkill /f /t /pid " + p.pid());
+                killerProcess.waitFor();
+            } else {
+                p.destroy();
             }
+            p.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
