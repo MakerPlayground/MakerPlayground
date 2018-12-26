@@ -5,45 +5,130 @@
 }
 
 #diagramEditorButton {
-    -fx-graphic: url('config-project.png');
+    -fx-graphic: url('diagram-editor.png');
     /*-fx-graphic-text-gap: 0px;*/
     -fx-background-color: background-color;
     -fx-border-color: transparent;
-    -fx-border-width: 0 0 0 0;
-    -fx-padding: 0px 0px 0px 0px;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
     -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#diagramEditorButton:hover {
+    -fx-graphic: url('diagram-editor-select.png');
+    /*-fx-graphic-text-gap: 0px;*/
+    -fx-background-color: control-background-color;
+    -fx-border-color: sub-menubar-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
 }
 
 #diagramEditorButton:selected {
-    -fx-graphic: url('config-project.png');
+    -fx-graphic: url('diagram-editor-select.png');
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: background-color;
-    -fx-border-color: red;
-    -fx-border-width: 1 0 0 0;
-    -fx-padding: 0px 0px 0px 0px;
+    -fx-background-color: control-background-color;
+    -fx-border-color: sub-menubar-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
     -fx-pref-height: 38px;
+    -fx-cursor: hand;
 }
 
 #deviceConfigButton {
-    -fx-graphic: url('config-project.png');
+    -fx-graphic: url('device-config.png');
     /*-fx-graphic-text-gap: 0px;*/
     -fx-background-color: background-color;
     -fx-border-color: transparent;
-    -fx-border-width: 0 0 0 0;
-    -fx-padding: 0px 0px 0px 0px;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
     -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#deviceConfigButton:hover {
+    -fx-graphic: url('device-config-select.png');
+    /*-fx-graphic-text-gap: 0px;*/
+    -fx-background-color: control-background-color;
+    -fx-border-color: sub-menubar-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
 }
 
 #deviceConfigButton:selected {
-    -fx-graphic: url('config-project.png');
+    -fx-graphic: url('device-config-select.png');
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: background-color;
-    -fx-border-color: red;
-    -fx-border-width: 1 0 0 0;
-    -fx-padding: 0px 0px 0px 0px;
+    -fx-background-color: control-background-color;
+    -fx-border-color: sub-menubar-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
     -fx-pref-height: 38px;
+    -fx-cursor: hand;
 }
 
+#uploadButton {
+    -fx-graphic: url('upload-program.png');
+    -fx-background-color: background-color;
+    -fx-border-color: transparent;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#uploadButton:hover {
+    -fx-graphic: url('upload-program-select.png');
+    -fx-background-color: control-background-color;
+    -fx-border-color: upload-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#uploadButton:selected {
+    -fx-graphic: url('upload-program-select.png');
+    -fx-background-color: control-background-color;
+    -fx-border-color: upload-accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#deviceMonitorButton {
+    -fx-graphic: url('serial-monitor.png');
+    -fx-background-color: background-color;
+    -fx-border-color: transparent;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#deviceMonitorButton:hover {
+    -fx-graphic: url('serial-monitor-select.png');
+    -fx-background-color: control-background-color;
+    -fx-border-color: accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+#deviceMonitorButton:selected {
+    -fx-graphic: url('serial-monitor-select.png');
+    -fx-background-color: control-background-color;
+    -fx-border-color: accent-color;
+    -fx-border-width: 3 0 0 0;
+    -fx-padding: 0px 30px 0px 10px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
 /* hide the dot of the diagramEditorButton and deviceConfigButton as it is actually a RadioButton */
 .radio-button > .radio,
 .radio-button:focused > .radio  {

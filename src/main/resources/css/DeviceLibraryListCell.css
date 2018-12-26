@@ -1,7 +1,14 @@
-/*#addButton {
-    -fx-background-image: url('new-press.png');
-    -fx-background-size : 30px;
+#addButton {
+    -fx-background-image: url('add-device-project.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size : 25px 25px;
+    -fx-background-position: center;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
-}*/
+}
+
+#DeviceListCell {
+    -fx-border-color: border-color;
+    -fx-border-width: 0.25px 0px 0.25px 0px;
+}

@@ -67,3 +67,7 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
+
+#tabPanel {
+     -fx-background-color: background-color;
+}

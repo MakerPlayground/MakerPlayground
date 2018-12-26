@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.HBox?>
 
 <fx:root alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-         prefHeight="27.0" spacing="10.0" stylesheets="@../css/DeviceLibraryListCell.css" type="HBox"
+         prefHeight="40.0" spacing="10.0" stylesheets="@../css/DeviceLibraryListCell.css" type="HBox" id="DeviceListCell"
          xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <ImageView id="imageView" fx:id="imageView" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
                    preserveRatio="true" HBox.hgrow="NEVER"/>
         <Label id="nameLabel" fx:id="nameLabel" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS"/>
-        <Button id="addButton" fx:id="addButton" mnemonicParsing="false" text="+" HBox.hgrow="NEVER"/>
+        <Button id="addButton" fx:id="addButton" maxHeight="27.0" minHeight="27.0" maxWidth="27.0" minWidth="27.0" mnemonicParsing="false" HBox.hgrow="NEVER"/>
     </children>
     <padding>
         <Insets left="10.0" right="10.0"/>

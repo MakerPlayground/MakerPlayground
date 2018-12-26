@@ -3,3 +3,18 @@
     -fx-text-fill: text-color;
     -fx-padding: 0px;
 }
+
+#removeButton {
+    -fx-background-image: url('remove-project-device.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size : 25px 25px;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+
+#DeviceListCell {
+    -fx-border-color: border-color;
+    -fx-border-width: 0.25px 0px 0.25px 0px;
+}

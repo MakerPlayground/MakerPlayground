@@ -9,7 +9,7 @@
 
 <fx:root type="TabPane" stylesheets="@../css/DeviceLibraryPanel.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab text="Device Library">
+        <Tab text="Device Library" closable="false">
             <content>
                 <Accordion>
                     <panes>
@@ -17,7 +17,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
                                     <content>
-                                        <VBox fx:id="actuatorVBox" spacing="5" />
+                                        <VBox fx:id="actuatorVBox" spacing="0" />
                                     </content>
                                 </ScrollPane>
                             </content>
@@ -26,7 +26,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
                                     <content>
-                                        <VBox fx:id="sensorVBox" spacing="5" />
+                                        <VBox fx:id="sensorVBox" spacing="0" />
                                     </content>
                                 </ScrollPane>
                             </content>
@@ -35,7 +35,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
                                     <content>
-                                        <VBox fx:id="utilityVBox" spacing="5" />
+                                        <VBox fx:id="utilityVBox" spacing="0" />
                                     </content>
                                 </ScrollPane>
                             </content>
@@ -44,7 +44,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
                                     <content>
-                                        <VBox fx:id="cloudVBox" spacing="5" />
+                                        <VBox fx:id="cloudVBox" spacing="0" />
                                     </content>
                                 </ScrollPane>
                             </content>
@@ -53,7 +53,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
                                     <content>
-                                        <VBox fx:id="interfaceVBox" spacing="5" />
+                                        <VBox fx:id="interfaceVBox" spacing="0" />
                                     </content>
                                 </ScrollPane>
                             </content>

@@ -8,7 +8,7 @@
 
 <fx:root type="TabPane" stylesheets="@../css/ProjectDevicePanel.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab text="Project Device">
+        <Tab text="Project Device" closable="false" id="tabPanel">
             <content>
                 <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
                     <content>
@@ -16,27 +16,27 @@
                             <children>
                                 <TitledPane animated="false" text="Actuator">
                                     <content>
-                                        <VBox fx:id="actuatorVBox" spacing="5" />
+                                        <VBox fx:id="actuatorVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
                                 <TitledPane animated="false" text="Sensor">
                                     <content>
-                                        <VBox fx:id="sensorVBox" spacing="5" />
+                                        <VBox fx:id="sensorVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
                                 <TitledPane animated="false" text="Utility">
                                     <content>
-                                        <VBox fx:id="utilityVBox" spacing="5" />
+                                        <VBox fx:id="utilityVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
                                 <TitledPane animated="false" text="Cloud">
                                     <content>
-                                        <VBox fx:id="cloudVBox" spacing="5" />
+                                        <VBox fx:id="cloudVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
                                 <TitledPane animated="false" text="Interface">
                                     <content>
-                                        <VBox fx:id="interfaceVBox" spacing="5" />
+                                        <VBox fx:id="interfaceVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
                             </children>
