@@ -342,7 +342,15 @@ public class DeviceMapper {
                                 error = true;
                                 break;
                             }
-                            projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
+                            // I2C port of Maker Playground, Grove and INEX platform can be shared by using an external
+                            // hub so we try to assign to a free port first before forcing user to add a hub
+                            if (devicePeripheral.isI2C()) {
+                                List<DevicePort> unusedPort = port.stream().filter(dp -> !hasPortUsed(project, dp))
+                                        .findFirst().orElse(port.get(0));
+                                projectDevice.setDeviceConnection(devicePeripheral, unusedPort);
+                            } else {
+                                projectDevice.setDeviceConnection(devicePeripheral, port.get(0));
+                            }
                         }
                     }
 
@@ -357,5 +365,18 @@ public class DeviceMapper {
             }
         }
         return DeviceMapperResult.OK;
+    }
+
+    private static boolean hasPortUsed(Project project, List<DevicePort> portList) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            List<DevicePort> portUsed = projectDevice.getDeviceConnection().values().stream()
+                    .flatMap(Collection::stream).collect(Collectors.toList());
+            for (DevicePort port : portList) {
+                if (portUsed.contains(port)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
