@@ -10,8 +10,8 @@
     -fx-background-color: background-color;
     -fx-border-color: transparent;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -21,8 +21,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: sub-menubar-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -32,8 +32,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: sub-menubar-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -43,8 +43,8 @@
     -fx-background-color: background-color;
     -fx-border-color: transparent;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -54,8 +54,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: sub-menubar-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -65,8 +65,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: sub-menubar-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -75,8 +75,8 @@
     -fx-background-color: background-color;
     -fx-border-color: transparent;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -85,8 +85,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: upload-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -95,8 +95,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: upload-accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -105,8 +105,8 @@
     -fx-background-color: background-color;
     -fx-border-color: transparent;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -115,8 +115,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
@@ -125,8 +125,8 @@
     -fx-background-color: control-background-color;
     -fx-border-color: accent-color;
     -fx-border-width: 3 0 0 0;
-    -fx-padding: 0px 30px 0px 10px;
-    -fx-pref-height: 38px;
+    -fx-padding: 3px 30px 3px 10px;
+    -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 /* hide the dot of the diagramEditorButton and deviceConfigButton as it is actually a RadioButton */

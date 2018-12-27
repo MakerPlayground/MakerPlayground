@@ -10,7 +10,7 @@
          xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <AnchorPane id="subToolbar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-                    minWidth="-Infinity" prefHeight="42.0" BorderPane.alignment="CENTER">
+                    minWidth="-Infinity" prefHeight="40.0" BorderPane.alignment="CENTER">
             <children>
                 <HBox alignment="CENTER" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
