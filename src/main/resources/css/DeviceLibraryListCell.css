@@ -9,6 +9,12 @@
 }
 
 #DeviceListCell {
+    -fx-background-color: background-color;
     -fx-border-color: border-color;
     -fx-border-width: 0.25px 0px 0.25px 0px;
+}
+
+#nameLabel {
+    -fx-font-size: font-size-list-cell;
+    -fx-text-fill: text-color-hilight;
 }

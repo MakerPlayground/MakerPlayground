@@ -1,26 +1,73 @@
-.titled-pane > .title {
+#deviceLibraryTab {
     -fx-background-color: background-color;
-    -fx-border-color: transparent transparent border-color transparent;
-    -fx-border-width: 1px;
+    -fx-border-color: border-color;
+    -fx-padding: 5px 10px 5px 5px;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-size-tab;
+}
+
+/*Vbox inside Project Device Panel*/
+#actuatorVBox {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width : 0.5px;
+}
+
+#sensorVBox {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width : 0.5px;
+}
+
+#utilityVBox {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width : 0.5px;
+}
+
+#cloudVBox {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width : 0.5px;
+}
+
+#interfaceVBox {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width : 0.5px;
+}
+/*----------------------------------------------------*/
+*.tab-header-background {
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width : 1px;
+    -fx-padding: 0px;
 }
 
 .titled-pane {
-    -fx-text-fill: text-color;
+    -fx-text-fill: text-color-hilight;
+}
+
+.titled-pane > .title {
+    -fx-background-color: background-color;
+    -fx-border-color: transparent transparent border-color transparent;
+    -fx-border-width: 0px;
+    -fx-font-size: font-size-tab;
 }
 
 .titled-pane > .title > .arrow-button .arrow{
-    -fx-background-color: text-color;
+    -fx-background-color: text-color-hilight;
 }
 
 .titled-pane > *.content {
-    -fx-background-color: transparent;
+    -fx-background-color: background-color;
     -fx-box-border: transparent;
 }
 
 .scroll-pane{
-    -fx-background-color: background-color;
-    -fx-border-color : border-color;
-    -fx-border-width : 0px;
+    -fx-background-color: scrollbar-background-color;
+    -fx-border-color : scrollbar-border-color;
+    -fx-border-width : 1px;
 }
 
 .scroll-pane > .viewport{
@@ -66,8 +113,4 @@
 .scroll-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-}
-
-#tabPanel {
-     -fx-background-color: background-color;
 }

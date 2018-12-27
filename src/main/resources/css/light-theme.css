@@ -12,6 +12,10 @@
     generateview-header-background-color: #2673fd;
     generateview-text-color: #ffffff;
 
+    /*Text size*/
+    font-size-tab: 1em;
+    font-size-list-cell: 0.75em;
+
     /*---Textbox, Checkbox---*/
     text-fill-color: #313644;
     text-fill-border-color: #cccccc; 
@@ -21,11 +25,13 @@
     /*---Typography---*/
     text-color: #707070;
     text-color-invert: #ffffff;
-    text-color-hilight: #000000;
+    text-color-hilight: #333333;
 
     /*---Scrollbar---*/
-    scrollbar-thumb-color: derive(#707070, 45%);
-    scrollbar-background-color: #f6f6f6;
+    scrollbar-thumb-color: #c2c2c2;
+    /*scrollbar-thumb-color: derive(#707070, 45%);*/
+    scrollbar-background-color: #e5e5e5;
+    scrollbar-border-color: #c2c2c2;
 
     /*---canvas---*/
     canvas-background-color: #e4e4e4;

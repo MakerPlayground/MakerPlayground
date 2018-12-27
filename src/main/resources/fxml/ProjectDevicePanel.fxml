@@ -4,11 +4,13 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="TabPane" stylesheets="@../css/ProjectDevicePanel.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root stylesheets="@../css/ProjectDevicePanel.css" type="TabPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab text="Project Device" closable="false" id="tabPanel">
+        <Tab id="deviceLibraryTab" closable="false" text="Project Device">
             <content>
                 <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
                     <content>
@@ -44,6 +46,13 @@
                     </content>
                 </ScrollPane>
             </content>
+         <graphic>
+            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../css/device-list-icon.png" />
+               </image>
+            </ImageView>
+         </graphic>
         </Tab>
     </tabs>
 </fx:root>

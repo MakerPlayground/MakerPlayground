@@ -21,7 +21,7 @@
                                      text="Device Config"/>
                     </children>
                 </HBox>
-                <HBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="15.0"
+                <HBox alignment="CENTER" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="15.0"
                       AnchorPane.topAnchor="0.0">
                     <children>
                         <Button id="uploadButton" fx:id="uploadButton" mnemonicParsing="false" text="Upload"/>
