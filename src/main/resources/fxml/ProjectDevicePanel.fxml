@@ -12,7 +12,7 @@
     <tabs>
         <Tab id="deviceLibraryTab" closable="false" text="Project Device">
             <content>
-                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" id="ProjectDevicePanelPane">
                     <content>
                         <VBox>
                             <children>

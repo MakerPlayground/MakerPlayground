@@ -6,6 +6,12 @@
     -fx-font-size: font-size-tab;
 }
 
+#ProjectDevicePanelPane {
+    -fx-background-color: background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0px;
+}
+
 /*Vbox inside Project Device Panel*/
 #actuatorVBox {
     -fx-background-color: background-color;
