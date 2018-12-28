@@ -3,132 +3,170 @@
     -fx-border-color: border-color;
     -fx-border-width: 0 0 1 0;
 }
-
+/*------------------------------------------------------------------------*/
+/*------------------------Diagram Editor Button---------------------------*/
 #diagramEditorButton {
-    -fx-graphic: url('diagram-editor.png');
+    /*-fx-graphic: url('diagram-editor.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: background-color;
+    -fx-text-fill: text-color;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
 
 #diagramEditorButton:hover {
-    -fx-graphic: url('diagram-editor-select.png');
+    /*-fx-graphic: url('diagram-editor-select.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: control-background-color;
-    -fx-border-color: sub-menubar-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
 
 #diagramEditorButton:selected {
-    -fx-graphic: url('diagram-editor-select.png');
+    /*-fx-graphic: url('diagram-editor-select.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: control-background-color;
-    -fx-border-color: sub-menubar-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: text-color-hilight;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
-
+/*-----------------------------------------------------------------------*/
+/*------------------------Device Config Button---------------------------*/
 #deviceConfigButton {
-    -fx-graphic: url('device-config.png');
+    /*-fx-graphic: url('device-config.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: background-color;
+    -fx-text-fill: text-color;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
 
 #deviceConfigButton:hover {
-    -fx-graphic: url('device-config-select.png');
+    /*-fx-graphic: url('device-config-select.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: control-background-color;
-    -fx-border-color: sub-menubar-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
 
 #deviceConfigButton:selected {
-    -fx-graphic: url('device-config-select.png');
+    /*-fx-graphic: url('device-config-select.png');*/
     /*-fx-graphic-text-gap: 0px;*/
-    -fx-background-color: control-background-color;
-    -fx-border-color: sub-menubar-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
-    -fx-pref-height: 25px;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: text-color-hilight;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 10px 10px 10px 10px;
+    -fx-pref-height: 35px;
     -fx-cursor: hand;
 }
-
+}
+/*----------------------------------------------------------------*/
+/*------------------------Upload Button---------------------------*/
 #uploadButton {
-    -fx-graphic: url('upload-program.png');
+    /*-fx-graphic: url('upload-program.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
     -fx-background-color: background-color;
-    -fx-border-color: transparent;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    -fx-border-color: border-color;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
 #uploadButton:hover {
-    -fx-graphic: url('upload-program-select.png');
-    -fx-background-color: control-background-color;
-    -fx-border-color: upload-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    /*-fx-graphic: url('upload-program-select.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
+    -fx-background-color: background-color;
+    -fx-border-color: text-color-hilight;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
 #uploadButton:selected {
-    -fx-graphic: url('upload-program-select.png');
-    -fx-background-color: control-background-color;
-    -fx-border-color: upload-accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    /*-fx-graphic: url('upload-program-select.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
+    -fx-background-color: background-color;
+    -fx-border-color: text-color-hilight;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
+/*------------------------------------------------------------------------*/
+/*------------------------Device Monitor Button---------------------------*/
+
 #deviceMonitorButton {
-    -fx-graphic: url('serial-monitor.png');
+    /*-fx-graphic: url('serial-monitor.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
     -fx-background-color: background-color;
-    -fx-border-color: transparent;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    -fx-border-color: border-color;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
 #deviceMonitorButton:hover {
-    -fx-graphic: url('serial-monitor-select.png');
-    -fx-background-color: control-background-color;
-    -fx-border-color: accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    /*-fx-graphic: url('serial-monitor-select.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
+    -fx-background-color: background-color;
+    -fx-border-color: text-color-hilight;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
 
 #deviceMonitorButton:selected {
-    -fx-graphic: url('serial-monitor-select.png');
-    -fx-background-color: control-background-color;
-    -fx-border-color: accent-color;
-    -fx-border-width: 3 0 0 0;
-    -fx-padding: 3px 30px 3px 10px;
+    /*-fx-graphic: url('serial-monitor-select.png');*/
+    -fx-text-fill: text-color-hilight;
+        -fx-font-size: font-sub-menu;
+    -fx-background-color: background-color;
+    -fx-border-color: text-color-hilight;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1 1 1 1;
+    -fx-padding: 5px 15px 5px 15px;
     -fx-pref-height: 25px;
     -fx-cursor: hand;
 }
+/*------------------------------------------------------------------------*/
 /* hide the dot of the diagramEditorButton and deviceConfigButton as it is actually a RadioButton */
 .radio-button > .radio,
 .radio-button:focused > .radio  {

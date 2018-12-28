@@ -13,7 +13,7 @@
          xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
         <Tab closable="false" text="Connection Diagram">
-            <HBox>
+            <HBox id="TabHBox">
                 <children>
                     <ScrollPane fx:id="diagramScrollPane" HBox.hgrow="ALWAYS"/>
                 </children>
@@ -44,7 +44,7 @@
             </HBox>
         </Tab>
         <Tab closable="false" text="Sourcecode">
-            <HBox>
+            <HBox id="TabHBox">
                 <children>
                     <TextArea fx:id="codeTextArea" HBox.hgrow="ALWAYS"/>
                 </children>

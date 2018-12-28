@@ -4,14 +4,18 @@
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-background-color: background-color;
+    -fx-padding: 10px 10px 10px 10px;
     -fx-accent: accent-color;
 }
-
+#TabHBox {
+    -fx-background-color: background-color;
+}
 .scroll-pane{
     -fx-padding:0;
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
+    -fx-background-color: background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
 }
 .scroll-pane:focused {
     -fx-padding: 0;
@@ -25,12 +29,12 @@
     -fx-border-width: 0;
 }
 .scroll-bar:vertical .increment-button {
-    -fx-background-color : green;
+    -fx-background-color : scrollbar-background-color;
     -fx-background-radius: 0em;
     -fx-padding:0;
 }
 .scroll-bar:vertical .decrement-button {
-    -fx-background-color : pink;
+    -fx-background-color : scrollbar-background-color;
     -fx-background-radius: 0em;
     -fx-padding:0;
 }
@@ -79,38 +83,46 @@
     -fx-border: scrollbar-background-color;
 }
 
+/*--------------------tab pane: Connection diagram, Device list, Sourcecode---------------------*/
 .tab-pane .tab
 {
-    -fx-background-color: transparent;
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-border-radius: 3px 3px 0px 0px;
     -fx-padding: 5 15 5 15;
     -fx-cursor: hand;
 }
+
 .tab-pane .tab:selected
 {
-    -fx-background-color: transparent;
+    -fx-background-color: background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-border-radius: 3px 3px 0px 0px;
     -fx-padding: 5 15 5 15;
 }
 .tab:selected .tab-label {
     -fx-alignment: CENTER;
     -fx-text-fill: accent-color;
-    -fx-font-weight: bold;
+    /*-fx-font-weight: bold;*/
 }
 .tab-pane *.tab-header-background{
     /*-fx-background-color: , -fx-inner-border, white;*/
-    -fx-background-color: transparent;
+    -fx-background-color: background-color;
     /*-fx-background-insets: 0 0 1;*/
     -fx-border-color: transparent transparent #e3e3e3 transparent;
 }
 .tab:top{
-    -fx-background-color: -fx-body-color ,background-color;
-    -fx-tab-border-color: red;
-    -fx-inner-border : red;
+    -fx-background-color: background-color;
+    -fx-tab-border-color: border-color;
+    /*-fx-inner-border : border-color;*/
     -fx-outer-border: transparent;
 }
 .tab:top:selected{
-    -fx-background-color: -fx-body-color, red;
-    -fx-tab-border-color: red;
-    -fx-inner-border : red;
+    -fx-background-color: background-color;
+    -fx-tab-border-color: border-color;
+    /*-fx-inner-border : border-color;*/
     -fx-outer-border: transparent;
 }
 /*.tab-pane:top *.tab-header-area{
@@ -125,6 +137,7 @@
 .text-area {
     -fx-border-color: border-color;
     -fx-border-width: 1;
+    -fx-border-radius: 3px;
 }
 
 .text-area .content{

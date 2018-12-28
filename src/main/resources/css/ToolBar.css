@@ -1,12 +1,13 @@
 #toolBarPane {
-    -fx-background-color: background-color;
+    -fx-background-color: control-background-color;
     -fx-border-color: border-color;
     -fx-border-width: 0 0 1 0;
+    -fx-padding: 15px 10px 10px 10px;
 }
 
 #saveBtn{
-    -fx-background-image: url('save.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('save-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
@@ -14,16 +15,16 @@
 }
 
 #saveBtn:pressed{
-    -fx-background-image: url('save-press.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('save-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
 #saveAsBtn{
-    -fx-background-image: url('save-as.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('save-as-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
@@ -31,16 +32,16 @@
 }
 
 #saveAsBtn:pressed{
-    -fx-background-image: url('save-as-press.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('save-as-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
 #loadBtn{
-    -fx-background-image: url('open.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('open-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
@@ -48,16 +49,16 @@
 }
 
 #loadBtn:pressed{
-    -fx-background-image: url('open-press.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('open-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
 #newFileBtn{
-    -fx-background-image: url('new.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('new-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
@@ -65,8 +66,8 @@
 }
 
 #newFileBtn:pressed{
-    -fx-background-image: url('new-press.png');
-    -fx-background-size : 30px;
+    -fx-background-image: url('new-line.png');
+    -fx-background-size : 25px;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;

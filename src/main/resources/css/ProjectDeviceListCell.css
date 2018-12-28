@@ -17,7 +17,7 @@
 
 #DeviceListCell {
     -fx-border-color: background-color;
-    -fx-border-width: 0;
-    -fx-padding: 5px 30px 5px 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 0px 30px 0px 10px;
 }
 

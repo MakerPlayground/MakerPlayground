@@ -12,7 +12,7 @@
     <tabs>
         <Tab id="deviceLibraryTab" closable="false" text="Project Device">
             <content>
-                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" id="ProjectDevicePanelPane">
+                <ScrollPane id="ProjectDevicePanelPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
                     <content>
                         <VBox>
                             <children>
@@ -47,7 +47,7 @@
                 </ScrollPane>
             </content>
          <graphic>
-            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../css/device-list-icon.png" />
                </image>

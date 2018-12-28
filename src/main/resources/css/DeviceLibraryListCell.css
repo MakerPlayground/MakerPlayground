@@ -1,13 +1,33 @@
 #addButton {
-    -fx-background-image: url('add-device-project.png');
+    -fx-background-image: url('add-device-project-2.png');
     -fx-background-repeat: no-repeat;
-    -fx-background-size : 25px 25px;
+    -fx-background-size : 20px 20px;
     -fx-background-position: center;
     -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-cursor: hand;
 }
 
+#addButton:hover {
+    -fx-background-image: url('add-device-project-focus.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size : 20px 20px;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+
+#addButton:selected {
+    -fx-background-image: url('add-device-project-focus.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size : 20px 20px;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+/*----------------------------------------------------------*/
 #DeviceListCell {
     -fx-background-color: background-color;
     -fx-border-color: border-color;

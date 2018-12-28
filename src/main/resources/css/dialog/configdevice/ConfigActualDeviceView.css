@@ -1,40 +1,52 @@
 .root{
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-text-fill : black;
+    /*-fx-text-fill : black;*/
     -fx-font-size: 12px;
-    -fx-border-color: transparent;
+    -fx-border-color: border-color;
     -fx-border-width: 0;
     -fx-border-radius: 10;
-    -fx-background-color: white;
-    -fx-background-radius: 10;
+    -fx-background-color: background-color;
+    /*-fx-background-radius: 10;*/
+}
+
+#configVBox{
+    -fx-background-color: background-color;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: 12px;
+}
+
+#topicConfigDevice {
+    -fx-padding: 7px;
 }
 
 .scroll-pane{
     -fx-background-color: background-color;
-    -fx-border-color : background-color;
-    -fx-border-width : 0px;
+    -fx-border-color : border-color;
+    -fx-border-width : 0.5px;
+    -fx-padding: 20px 20px 20px 20px;
 }
 
 .scroll-pane > .viewport{
     -fx-background-color: background-color;
     -fx-border-color : background-color;
     -fx-border-width : 0px;
+    -fx-padding: 20px 20px 20px 20px;
 }
 
 .scroll-bar {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+    -fx-background-color: scrollbar-background-color;
+    -fx-border-color: scrollbar-background-color;
 }
 
 .scroll-bar .increment-button {
-    -fx-background-color : transparent;
+    -fx-background-color : scrollbar-background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
 
 .scroll-bar .decrement-button {
-    -fx-background-color : transparent;
+    -fx-background-color : scrollbar-background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
@@ -50,9 +62,9 @@
 }
 
 .scroll-bar .track{
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-border-radius:0.5em;
+    -fx-background-color: scrollbar-background-color;
+    -fx-border-color : scrollbar-background-color;
+    -fx-border-radius: 0.5em;
 }
 
 .scroll-bar .thumb{
@@ -156,6 +168,8 @@
 }
 
 #unusedLabel {
+    -fx-background-color: border-color;
+    -fx-border-color: border-color;
     -fx-font-weight: bold;
 }
 

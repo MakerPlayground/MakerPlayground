@@ -13,11 +13,12 @@
     generateview-text-color: #ffffff;
 
     /*Text size*/
-    font-size-tab: 1.15em;
-    font-size-list-cell: 0.75em;
+    font-sub-menu: 28;
+    font-size-tab: 24;
+    font-size-list-cell: 16;
 
     /*---Textbox, Checkbox---*/
-    text-fill-color: #313644;
+    text-fill-color: #707070;
     text-fill-border-color: #cccccc; 
     text-fill-background-color: #ffffff;
 

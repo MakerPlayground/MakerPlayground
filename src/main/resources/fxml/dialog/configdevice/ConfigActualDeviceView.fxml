@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root alignment="CENTER" maxWidth="600.0" minWidth="400.0" spacing="15.0" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" maxWidth="600.0" minWidth="400.0" spacing="0.0" stylesheets="@../../../css/dialog/configdevice/ConfigActualDeviceView.css" type="VBox" id="configVBox" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
                 <Label id="topicConfigDevice" fx:id="topicConfigDevice" text="Device Configuration" textAlignment="CENTER" VBox.vgrow="NEVER" />
                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
