@@ -3,9 +3,9 @@
     -fx-faint-focus-color: transparent;
     /*-fx-text-fill : black;*/
     -fx-font-size: 12px;
-    -fx-border-color: border-color;
+    -fx-border-color: transparent;
     -fx-border-width: 0;
-    -fx-border-radius: 10;
+    /*-fx-border-radius: 10;*/
     -fx-background-color: background-color;
     /*-fx-background-radius: 10;*/
 }
@@ -22,9 +22,9 @@
 
 .scroll-pane{
     -fx-background-color: background-color;
-    -fx-border-color : border-color;
+    -fx-border-color : transparent;
     -fx-border-width : 0.5px;
-    -fx-padding: 20px 20px 20px 20px;
+    -fx-padding: 20px 15px 20px 15px;
 }
 
 .scroll-pane > .viewport{
@@ -35,18 +35,18 @@
 }
 
 .scroll-bar {
-    -fx-background-color: scrollbar-background-color;
-    -fx-border-color: scrollbar-background-color;
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
 }
 
 .scroll-bar .increment-button {
-    -fx-background-color : scrollbar-background-color;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
 
 .scroll-bar .decrement-button {
-    -fx-background-color : scrollbar-background-color;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
@@ -62,8 +62,8 @@
 }
 
 .scroll-bar .track{
-    -fx-background-color: scrollbar-background-color;
-    -fx-border-color : scrollbar-background-color;
+    -fx-background-color: background-color;
+    -fx-border-color : background-color;
     -fx-border-radius: 0.5em;
 }
 
@@ -168,8 +168,8 @@
 }
 
 #unusedLabel {
-    -fx-background-color: border-color;
-    -fx-border-color: border-color;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
     -fx-font-weight: bold;
 }
 

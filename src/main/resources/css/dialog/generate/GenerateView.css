@@ -1,19 +1,59 @@
 .root{
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+    /*-fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;*/
     -fx-border-color: transparent;
     -fx-border-width: 0;
     -fx-background-color: background-color;
-    -fx-padding: 10px 10px 10px 10px;
+    -fx-padding: 25px 25px 25px 25px;
     -fx-accent: accent-color;
 }
+
+#ConnectionDiagramTab {
+     -fx-focus-color: transparent;
+     -fx-faint-focus-color: transparent;
+}
+#DeviceListTab {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+#SourceCodeTab {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
 #TabHBox {
     -fx-background-color: background-color;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
+
+#diagramScrollPane {
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+#deviceTableScrollPane {
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+#codeTextScrollPane {
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
 .scroll-pane{
     -fx-padding:0;
     -fx-background-color: background-color;
-    -fx-border-color: border-color;
+    -fx-border-color: background-color;
     -fx-border-width: 1px;
     -fx-border-radius: 3px;
 }
@@ -29,12 +69,12 @@
     -fx-border-width: 0;
 }
 .scroll-bar:vertical .increment-button {
-    -fx-background-color : scrollbar-background-color;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0;
 }
 .scroll-bar:vertical .decrement-button {
-    -fx-background-color : scrollbar-background-color;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0;
 }
@@ -69,8 +109,8 @@
     -fx-pref-height: 10;
 }
 .scroll-bar .track{
-    -fx-background-color: scrollbar-background-color;
-    -fx-border-color : scrollbar-background-color;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
     /*-fx-border-radius: 2em;*/
 }
 .scroll-bar .thumb{
@@ -79,8 +119,8 @@
     /*-fx-background-insets: 2, 0, 0;*/
 }
 .scroll-bar {
-    -fx-background-color: scrollbar-background-color;
-    -fx-border: scrollbar-background-color;
+    -fx-background-color: control-background-color;
+    -fx-border: control-background-color;
 }
 
 /*--------------------tab pane: Connection diagram, Device list, Sourcecode---------------------*/
@@ -88,9 +128,9 @@
 {
     -fx-background-color: control-background-color;
     -fx-border-color: border-color;
-    -fx-border-width: 0.5px;
-    -fx-border-radius: 3px 3px 0px 0px;
-    -fx-padding: 5 15 5 15;
+    -fx-border-width: 0px 1px 0px 0px;
+    /*-fx-border-radius: 0px 0px 0px 0px;*/
+    -fx-padding: 5 25 5 25;
     -fx-cursor: hand;
 }
 
@@ -98,9 +138,9 @@
 {
     -fx-background-color: background-color;
     -fx-border-color: border-color;
-    -fx-border-width: 0.5px;
-    -fx-border-radius: 3px 3px 0px 0px;
-    -fx-padding: 5 15 5 15;
+    -fx-border-width: 0px 1px 0px 0px;
+    /*-fx-border-radius: 0px 0px 0px 0px;*/
+    -fx-padding: 5 25 5 25;
 }
 .tab:selected .tab-label {
     -fx-alignment: CENTER;
@@ -109,9 +149,13 @@
 }
 .tab-pane *.tab-header-background{
     /*-fx-background-color: , -fx-inner-border, white;*/
-    -fx-background-color: background-color;
+    -fx-background-color: border-color;
     /*-fx-background-insets: 0 0 1;*/
-    -fx-border-color: transparent transparent #e3e3e3 transparent;
+    /*-fx-border-color: transparent transparent transparent transparent;*/
+}
+.tab-pane:top > .tab-header-area {
+    /*-fx-padding: 0.416667em 0.166667em 0.0em 0.416667em; *//* 5 2 0 5 */
+    -fx-padding: 0; /* 5 2 0 5 */
 }
 .tab:top{
     -fx-background-color: background-color;

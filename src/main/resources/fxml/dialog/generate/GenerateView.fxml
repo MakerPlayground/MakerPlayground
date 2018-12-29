@@ -12,20 +12,20 @@
 <fx:root stylesheets="@../../../css/dialog/generate/GenerateView.css" type="TabPane"
          xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab closable="false" text="Connection Diagram">
+        <Tab id="ConnectionDiagramTab" closable="false" text="Connection Diagram">
             <HBox id="TabHBox">
                 <children>
-                    <ScrollPane fx:id="diagramScrollPane" HBox.hgrow="ALWAYS"/>
+                    <ScrollPane fx:id="diagramScrollPane" id="diagramScrollPane" HBox.hgrow="ALWAYS"/>
                 </children>
                 <padding>
                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                 </padding>
             </HBox>
         </Tab>
-        <Tab closable="false" text="Device list">
-            <HBox>
+        <Tab id="DeviceListTab" closable="false" text="Device list">
+            <HBox id="TabHBox">
                 <children>
-                    <TableView fx:id="deviceTable" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="deviceTable" id="deviceTableScrollPane" HBox.hgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Name"/>
                             <TableColumn fx:id="brandColumn" prefWidth="75.0" text="Brand"/>
@@ -43,10 +43,10 @@
                 </padding>
             </HBox>
         </Tab>
-        <Tab closable="false" text="Sourcecode">
+        <Tab id="SourceCodeTab" closable="false" text="Sourcecode">
             <HBox id="TabHBox">
                 <children>
-                    <TextArea fx:id="codeTextArea" HBox.hgrow="ALWAYS"/>
+                    <TextArea fx:id="codeTextArea" id="codeTextScrollPane" HBox.hgrow="ALWAYS"/>
                 </children>
                 <padding>
                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>

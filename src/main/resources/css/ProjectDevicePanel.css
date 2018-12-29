@@ -5,6 +5,8 @@
     -fx-padding: 5px 10px 5px 5px;
     -fx-text-fill: text-color-hilight;
     -fx-font-size: font-size-tab;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 #ProjectDevicePanelPane {
