@@ -27,56 +27,55 @@ import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.generate.GenerateView;
 import io.makerplayground.ui.dialog.generate.GenerateViewModel;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 
-import java.io.IOException;
-
 public class MainWindow extends BorderPane {
-
-    @FXML private RadioButton diagramEditorButton;
-    @FXML private RadioButton deviceConfigButton;
-    @FXML private Button uploadButton;
-    @FXML private Button deviceMonitorButton;
 
     private final Project project;
     private final Node diagramEditor;
     private GenerateView generateView;
 
-    public MainWindow(Project project) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
+    private final BooleanProperty diagramEditorShowing;
+    private final BooleanProperty deviceConfigShowing;
 
+    public MainWindow(Project project) {
         this.project = project;
         this.diagramEditor = initDiagramEditor();
-        setCenter(diagramEditor);
 
-        diagramEditorButton.setSelected(true);
-        diagramEditorButton.setOnAction(event -> {
-            generateView = null;    // clear to prevent memory leak
-            setCenter(diagramEditor);
+        diagramEditorShowing = new SimpleBooleanProperty();
+        diagramEditorShowing.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                generateView = null;    // clear to prevent memory leak
+                setCenter(diagramEditor);
+            }
         });
-        deviceConfigButton.setOnAction(event -> {
-            setCenter(initConfigDevice());
+        deviceConfigShowing = new SimpleBooleanProperty();
+        deviceConfigShowing.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                setCenter(initConfigDevice());
+            }
         });
+    }
 
-        ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+    public boolean isDiagramEditorShowing() {
+        return diagramEditorShowing.get();
+    }
 
-//        uploadButton.setOnAction();
+    public BooleanProperty diagramEditorShowingProperty() {
+        return diagramEditorShowing;
+    }
+
+    public boolean isDeviceConfigShowing() {
+        return deviceConfigShowing.get();
+    }
+
+    public BooleanProperty deviceConfigShowingProperty() {
+        return deviceConfigShowing;
     }
 
     private Node initDiagramEditor() {
@@ -143,16 +142,4 @@ public class MainWindow extends BorderPane {
 
         return mainLayout;
     }
-
-//    private void handleUploadBtn(ActionEvent event) {
-//        UploadTask uploadTask = new UploadTask(project);
-//
-//        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
-//        uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
-//        uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
-//        uploadDialogView.logProperty().bind(uploadTask.logProperty());
-//        uploadDialogView.show();
-//
-//        new Thread(uploadTask).start();
-//    }
 }

@@ -30,7 +30,7 @@
                           prefHeight="100.0" prefWidth="370.0" wrapText="true"/>
             </TitledPane>
         </VBox>
-        <ImageView id="close-button" fx:id="closeButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"
-                   preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
+        <!--<ImageView id="close-button" fx:id="closeButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true"-->
+                   <!--preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>-->
     </children>
 </fx:root>

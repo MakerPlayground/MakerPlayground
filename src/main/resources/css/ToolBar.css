@@ -1,112 +1,14 @@
 #toolBarPane {
-    -fx-background-color: control-background-color;
+    -fx-background-color: background-color;
     -fx-border-color: border-color;
     -fx-border-width: 0 0 1 0;
-    -fx-padding: 15px 10px 10px 10px;
-}
-
-#saveBtn{
-    -fx-background-image: url('save-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-
-#saveBtn:pressed{
-    -fx-background-image: url('save-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-
-#saveAsBtn{
-    -fx-background-image: url('save-as-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-
-#saveAsBtn:pressed{
-    -fx-background-image: url('save-as-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-
-#loadBtn{
-    -fx-background-image: url('open-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-
-#loadBtn:pressed{
-    -fx-background-image: url('open-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-
-#newFileBtn{
-    -fx-background-image: url('new-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-
-#newFileBtn:pressed{
-    -fx-background-image: url('new-line.png');
-    -fx-background-size : 25px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-
-/*#deviceMonitorMenuButton{
-    -fx-background-image: url('Device-monitor.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-
-#deviceMonitorMenuButton:showing{
-    -fx-background-image: url('Device-monitor-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}*/
-
-#statusLabel {
-    -fx-text-fill: text-color;
-}
-
-/*.toolbar-tab-button {
-    -fx-text-fill: text-color;
-    -fx-pref-height: 34px;
-    -fx-background-color: transparent;
-    -fx-border-width: 0px 0px 2px 0px;
-    -fx-border-color: border-color;
 }
 
 #overflow-menubutton {
     -fx-background-image: url('overflow-menu.png');
-    -fx-background-size : 30px;
+    -fx-background-size: 30px;
     -fx-background-color: transparent;
-    -fx-border-color : transparent;
+    -fx-border-color: transparent;
     -fx-background-repeat: no-repeat;
     -fx-pref-height: 30px;
 }
@@ -114,4 +16,63 @@
 #overflow-menubutton .arrow {
      -fx-shape: "";
      -fx-padding: 0;
-}*/
+}
+
+/* style a radio button into a tab liked control */
+
+.radio-button {
+    -fx-text-fill: text-color;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-label-padding: 0 0 0 0;
+    -fx-cursor: hand;
+}
+
+.radio-button:hover {
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-label-padding: 0 0 0 0;
+    -fx-cursor: hand;
+}
+
+.radio-button:selected {
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: font-sub-menu;
+    -fx-background-color: transparent;
+    -fx-border-color: text-color-hilight;
+    -fx-border-width: 0 0 3 0;
+    -fx-label-padding: 0 0 0 0;
+    -fx-cursor: hand;
+}
+
+.radio-button > .radio,
+.radio-button:focused > .radio  {
+   -fx-background-radius: 0em;
+   -fx-padding: 0em;
+}
+
+.radio-button > .radio > .dot {
+   -fx-background-color: transparent;
+   -fx-background-radius: 0em;
+   -fx-padding: 0em;
+}
+
+/* icon of upload button is set in Toolbar.java as we can't set icon size in css */
+#uploadButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: text-fill-color;
+    -fx-cursor: hand;
+}
+
+#uploadStatusButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: text-fill-color;
+    -fx-cursor: hand;
+}

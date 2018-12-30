@@ -16,33 +16,50 @@
 
 package io.makerplayground.ui;
 
-import com.fazecast.jSerialComm.SerialPort;
-import io.makerplayground.ui.dialog.DeviceMonitor;
-import javafx.application.Platform;
+import io.makerplayground.generator.upload.UploadResult;
+import io.makerplayground.generator.upload.UploadTask;
+import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.UploadDialogView;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
+import java.util.Optional;
 
-public class Toolbar extends HBox {
+public class Toolbar extends AnchorPane {
 
-    @FXML private Button newButton;
-    @FXML private Button loadButton;
-    @FXML private Button saveButton;
-    @FXML private Button saveAsButton;
-//    @FXML private MenuButton deviceMonitorMenuButton;
+    private final Project project;
+
+    @FXML private MenuItem newMenuItem;
+    @FXML private MenuItem openMenuItem;
+    @FXML private MenuItem saveMenuItem;
+    @FXML private MenuItem saveAsMenuItem;
+
+    @FXML private RadioButton diagramEditorButton;
+    @FXML private RadioButton deviceConfigButton;
     @FXML private Label statusLabel;
-//    @FXML private Button diagramEditorButton;
+    @FXML private Button uploadButton;
+    @FXML private Separator separator;
+    @FXML private Button uploadStatusButton;
 
-    public Toolbar() {
+    private UploadTask uploadTask;
+    private StringProperty logProperty;
+    private ImageView uploadStartImageView;
+    private ImageView uploadStopImageView;
+
+    public Toolbar(Project project) {
+        this.project = project;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -52,27 +69,114 @@ public class Toolbar extends HBox {
             e.printStackTrace();
         }
 
-//        deviceMonitorMenuButton.setOnAction(this::deviceMonitorMenuShowing);
+        ToggleGroup toggleGroup = new ToggleGroup();
+        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+
+        diagramEditorButton.setSelected(true);
+
+        initUploadButton();
     }
 
     public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
-        newButton.setOnAction(event);
+        newMenuItem.setOnAction(event);
     }
 
     public void setOnLoadButtonPressed(EventHandler<ActionEvent> event) {
-        loadButton.setOnAction(event);
+        openMenuItem.setOnAction(event);
     }
 
     public void setOnSaveButtonPressed(EventHandler<ActionEvent> event) {
-        saveButton.setOnAction(event);
+        saveMenuItem.setOnAction(event);
     }
 
     public void setOnSaveAsButtonPressed(EventHandler<ActionEvent> event) {
-        saveAsButton.setOnAction(event);
+        saveAsMenuItem.setOnAction(event);
+    }
+
+    public BooleanProperty diagramEditorSelectProperty() {
+        return diagramEditorButton.selectedProperty();
+    }
+
+    public BooleanProperty deviceConfigSelectProperty() {
+        return deviceConfigButton.selectedProperty();
     }
 
     public void setStatusMessage(String message) {
         statusLabel.setText(message);
+    }
+
+    private void initUploadButton() {
+        uploadStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-start.png")));
+        uploadStartImageView.setFitWidth(20);
+        uploadStartImageView.setFitHeight(20);
+
+        uploadStopImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-stop.png")));
+        uploadStopImageView.setFitWidth(20);
+        uploadStopImageView.setFitHeight(20);
+
+        uploadButton.setText("Upload");
+        uploadButton.setGraphic(uploadStartImageView);
+        uploadStatusButton.setVisible(false);
+
+        uploadStatusButton.managedProperty().bind(uploadStatusButton.visibleProperty());
+        separator.visibleProperty().bind(uploadStatusButton.visibleProperty());
+        separator.managedProperty().bind(separator.visibleProperty());
+
+        uploadButton.setOnAction(event -> {
+            if (uploadTask == null || !uploadTask.isRunning()) {
+                uploadButton.setText("Cancel");
+                uploadButton.setGraphic(uploadStopImageView);
+                uploadStatusButton.setVisible(true);
+                createUploadTask();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() != ButtonType.OK) {
+                    return;
+                }
+                uploadTask.cancel();
+                uploadButton.setText("Upload");
+                uploadButton.setGraphic(uploadStartImageView);
+                uploadStatusButton.setVisible(false);
+            }
+        });
+
+        uploadStatusButton.setOnAction(event -> {
+            UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
+            uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
+            uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
+            uploadDialogView.logProperty().bind(logProperty);
+            uploadDialogView.show();
+        });
+    }
+
+    private void createUploadTask() {
+        StringBuilder log = new StringBuilder();
+        logProperty = new SimpleStringProperty();
+
+        uploadTask = new UploadTask(project);
+        uploadTask.progressProperty().addListener((observable, oldValue, newValue) -> {
+            if (Double.compare(newValue.doubleValue(), 1.0) == 0) {
+                uploadStatusButton.setText("Upload done");
+            } else {
+                uploadStatusButton.setText("Uploading (" + (newValue.doubleValue() * 100.0) + "%)");
+            }
+        });
+        uploadTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event1 -> {
+            if (uploadTask.getValue() == UploadResult.OK) {
+                uploadStatusButton.setText("Upload done");
+            } else {
+                uploadStatusButton.setText("Upload failed");
+            }
+            uploadButton.setText("Upload");
+            uploadButton.setGraphic(uploadStartImageView);
+        });
+        uploadTask.logProperty().addListener((observable, oldValue, newValue) -> {
+            log.append(newValue);
+            logProperty.set(log.toString());
+        });
+
+        new Thread(uploadTask).start();
     }
 
 //    private void deviceMonitorMenuShowing(Event e) {

@@ -74,18 +74,17 @@ public class UndecoratedDialog extends Stage {
             }
             event.consume();
         };
-        rootPane.addEventFilter(MouseEvent.ANY, mouseEventFilter);
 
-        // dim the parent window after the dialog is shown on the screen
         Effect previousEffect = rootPane.getEffect();
-
         ColorAdjust colorAdjust = new ColorAdjust(0, 0, 0, 0);
-        rootPane.setEffect(colorAdjust);
-
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(750),
                 new KeyValue(colorAdjust.brightnessProperty(), -0.25)
         ));
+
         addEventHandler(WindowEvent.WINDOW_SHOWING, event -> {
+            // dim the parent window after the dialog is shown on the screen
+            rootPane.addEventFilter(MouseEvent.ANY, mouseEventFilter);
+            rootPane.setEffect(colorAdjust);
             timeline.play();
         });
         addEventHandler(WindowEvent.WINDOW_HIDDEN, t -> {

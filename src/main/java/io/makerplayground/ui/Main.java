@@ -57,17 +57,21 @@ public class Main extends Application {
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
-        toolbar = new Toolbar();
+        project = new SimpleObjectProperty<>(new Project());
+
+        toolbar = new Toolbar(project.get());
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getOwner()));
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getOwner()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getOwner()));
         toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getOwner()));
 
-        project = new SimpleObjectProperty<>(new Project());
+        MainWindow mainWindow = new MainWindow(project.get());
+        mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
+        mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);
-        borderPane.setCenter(new MainWindow(project.get()));
+        borderPane.setCenter(mainWindow);
 
         final Scene scene = new Scene(borderPane, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());

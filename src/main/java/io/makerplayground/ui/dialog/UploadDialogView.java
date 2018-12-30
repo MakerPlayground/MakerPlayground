@@ -35,8 +35,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Window;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.function.BooleanSupplier;
 
 public class UploadDialogView extends UndecoratedDialog {
     private final AnchorPane anchorPane = new AnchorPane();
@@ -45,12 +43,15 @@ public class UploadDialogView extends UndecoratedDialog {
     @FXML private TextArea textArea;
     @FXML private ImageView imgView;
     @FXML private TitledPane detailPane;
-    @FXML private ImageView closeButton;
+//    @FXML private ImageView closeButton;
 
+    private final UploadTask uploadTask;
+    private final RotateTransition rt;
     private final StringProperty logProperty;
 
     public UploadDialogView(Window owner, UploadTask uploadTask) {
         super(owner);
+        this.uploadTask = uploadTask;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/UploadDialogView.fxml"));
         fxmlLoader.setRoot(anchorPane);
@@ -61,34 +62,18 @@ public class UploadDialogView extends UndecoratedDialog {
             throw new RuntimeException(exception);
         }
 
-        RotateTransition rt = new RotateTransition();
+        rt = new RotateTransition();
         rt.setNode(imgView);
         rt.setByAngle(360);
         rt.setCycleCount(Animation.INDEFINITE);
         rt.setInterpolator(Interpolator.LINEAR);
-        rt.play();
 
-        // Ask for confirmation to cancel when user close this dialog before upload complete
-        BooleanSupplier closingConfirm = () -> {
-            if (uploadTask.isDone()) {
-                return true;
-            } else {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    uploadTask.cancel();
-                }
-                return false;
-            }
-        };
-        setClosingPredicate(closingConfirm);
-
-        // allow the dialog to be closed with the close button at the top right corner
-        closeButton.setOnMouseReleased(event -> {
-            if (closingConfirm.getAsBoolean()) {
-                hide();
-            }
-        });
+        // initialize ui based on the current state of the task
+        if (uploadTask.isRunning()) {
+            rt.play();
+        } else if (uploadTask.isDone()) {
+            updateUI();
+        }
 
         // Cancel the rotation effect when the upload task is cancelled
         uploadTask.setOnCancelled(event -> {
@@ -97,23 +82,14 @@ public class UploadDialogView extends UndecoratedDialog {
 
         // Change image to success or error
         uploadTask.setOnSucceeded(event1 -> {
-            UploadResult result = uploadTask.getValue();
-            if (result == UploadResult.OK) {
-                imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Success.png")));
-                rt.stop();
-                imgView.setRotate(0);
-            } else {
-                imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Error-uploading.png")));
-                progress.setTextFill(Color.RED);
-                detailPane.setExpanded(true);
-                rt.stop();
-            }
+            updateUI();
         });
 
-        // append text to the textarea when new log is coming
+        // update text in the textarea when log is updated
         logProperty = new SimpleStringProperty();
         logProperty.addListener((observable, oldValue, newValue) -> {
-            textArea.appendText(newValue);
+            textArea.setText(newValue);
+            textArea.setScrollTop(Double.MAX_VALUE);
         });
 
         // resize the dialog after the detailPane is expanded or collapsed
@@ -125,6 +101,20 @@ public class UploadDialogView extends UndecoratedDialog {
         });
 
         setContent(anchorPane);
+    }
+
+    private void updateUI() {
+        UploadResult result = uploadTask.getValue();
+        if (result == UploadResult.OK) {
+            imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Success.png")));
+            rt.stop();
+            imgView.setRotate(0);
+        } else {
+            imgView.setImage(new Image(getClass().getResourceAsStream("/icons/Error-uploading.png")));
+            progress.setTextFill(Color.RED);
+            detailPane.setExpanded(true);
+            rt.stop();
+        }
     }
 
     public StringProperty descriptionProperty() {
