@@ -5,12 +5,13 @@
 }
 
 #overflow-menubutton {
-    -fx-background-image: url('overflow-menu.png');
+    -fx-background-image: url('hamburger-icon.png');
     -fx-background-size: 30px;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-background-repeat: no-repeat;
     -fx-pref-height: 30px;
+    -fx-cursor: hand;
 }
 
 #overflow-menubutton .arrow {
