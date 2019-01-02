@@ -1,7 +1,7 @@
 #nameTextField {
     -fx-background-color : transparent;
     -fx-text-fill: text-color-hilight;
-    -fx-font-size: font-size-list-cell;
+    -fx-font-size: 11px; /* font-size-list-cell */
     -fx-padding: 0px;
 }
 

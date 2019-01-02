@@ -116,6 +116,11 @@ public class Main extends Application {
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_256.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
+        // prevent the window from being too small (primaryStage.setMinWidth(800) doesn't work as this function take
+        // into account the title bar which is platform dependent so the window is actually a little bit larger than
+        // 800x600 initially so we use primaryStage.getWidth/Height() to get the actual size and lock it)
+        primaryStage.setMinWidth(primaryStage.getWidth());
+        primaryStage.setMinHeight(primaryStage.getHeight());
 
         new UpdateNotifier(scene.getWindow(), getHostServices()).start();
     }

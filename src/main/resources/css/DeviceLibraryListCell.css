@@ -35,6 +35,6 @@
 }
 
 #nameLabel {
-    -fx-font-size: font-size-list-cell;
+    -fx-font-size: 11px; /* font-size-list-cell */
     -fx-text-fill: text-color-hilight;
 }

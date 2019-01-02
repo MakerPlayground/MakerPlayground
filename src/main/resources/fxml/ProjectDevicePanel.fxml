@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -10,37 +12,50 @@
 
 <fx:root stylesheets="@../css/ProjectDevicePanel.css" type="TabPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab id="deviceLibraryTab" closable="false" text="Project Device">
+        <Tab id="projectDeviceTab" closable="false" text="Project Device">
             <content>
                 <ScrollPane id="ProjectDevicePanelPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
                     <content>
                         <VBox>
                             <children>
-                                <TitledPane animated="false" text="Actuator">
+                                <TitledPane fx:id="actuatorTitledPane" animated="false" text="Actuator">
                                     <content>
                                         <VBox fx:id="actuatorVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
-                                <TitledPane animated="false" text="Sensor">
+                                <TitledPane fx:id="sensorTitledPane" animated="false" text="Sensor">
                                     <content>
                                         <VBox fx:id="sensorVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
-                                <TitledPane animated="false" text="Utility">
+                                <TitledPane fx:id="utilityTitledPane" animated="false" text="Utility">
                                     <content>
                                         <VBox fx:id="utilityVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
-                                <TitledPane animated="false" text="Cloud">
+                                <TitledPane fx:id="cloudTitledPane" animated="false" text="Cloud">
                                     <content>
                                         <VBox fx:id="cloudVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
-                                <TitledPane animated="false" text="Interface">
+                                <TitledPane fx:id="interfaceTitledPane" animated="false" text="Interface">
                                     <content>
                                         <VBox fx:id="interfaceVBox" spacing="0" />
                                     </content>
                                 </TitledPane>
+                                <VBox fx:id="warningPane" alignment="CENTER" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../css/dialog/warning-gray.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Label id="warningLabel" text="Add devices from Device Library to get started" textAlignment="CENTER" wrapText="true" />
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" />
+                                    </padding>
+                                </VBox>
                             </children>
                         </VBox>
                     </content>

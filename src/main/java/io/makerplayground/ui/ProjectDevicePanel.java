@@ -3,6 +3,7 @@ package io.makerplayground.ui;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,11 +19,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ProjectDevicePanel extends TabPane {
+    @FXML private TitledPane actuatorTitledPane;
     @FXML private VBox actuatorVBox;
+    @FXML private TitledPane sensorTitledPane;
     @FXML private VBox sensorVBox;
+    @FXML private TitledPane utilityTitledPane;
     @FXML private VBox utilityVBox;
+    @FXML private TitledPane cloudTitledPane;
     @FXML private VBox cloudVBox;
+    @FXML private TitledPane interfaceTitledPane;
     @FXML private VBox interfaceVBox;
+    @FXML private VBox warningPane;
 
     private final Project project;
     private final FilteredList<ProjectDevice> actuatorList;
@@ -54,6 +61,19 @@ public class ProjectDevicePanel extends TabPane {
         initView(utilityVBox, utilityList);
         initView(cloudVBox, cloudList);
         initView(interfaceVBox, interfaceList);
+
+        actuatorTitledPane.visibleProperty().bind(Bindings.isNotEmpty(actuatorList));
+        actuatorTitledPane.managedProperty().bind(actuatorTitledPane.visibleProperty());
+        sensorTitledPane.visibleProperty().bind(Bindings.isNotEmpty(sensorList));
+        sensorTitledPane.managedProperty().bind(sensorTitledPane.visibleProperty());
+        utilityTitledPane.visibleProperty().bind(Bindings.isNotEmpty(utilityList));
+        utilityTitledPane.managedProperty().bind(utilityTitledPane.visibleProperty());
+        cloudTitledPane.visibleProperty().bind(Bindings.isNotEmpty(cloudList));
+        cloudTitledPane.managedProperty().bind(cloudTitledPane.visibleProperty());
+        interfaceTitledPane.visibleProperty().bind(Bindings.isNotEmpty(interfaceList));
+        interfaceTitledPane.managedProperty().bind(interfaceTitledPane.visibleProperty());
+        warningPane.visibleProperty().bind(Bindings.isEmpty(project.getDevice()));
+        warningPane.managedProperty().bind(warningPane.visibleProperty());
     }
 
     private void initView(VBox parent, ObservableList<ProjectDevice> model) {

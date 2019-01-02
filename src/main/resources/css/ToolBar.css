@@ -25,7 +25,7 @@
     -fx-text-fill: text-color;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-border-width: 0 0 0 0;
+    -fx-border-width: 0 0 2 0;
     -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
 }
@@ -34,7 +34,7 @@
     -fx-text-fill: text-color-hilight;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-border-width: 0 0 3 0;
+    -fx-border-width: 0 0 2 0;
     -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
 }
@@ -43,7 +43,7 @@
     -fx-text-fill: text-color-hilight;
     -fx-background-color: transparent;
     -fx-border-color: text-color-hilight;
-    -fx-border-width: 0 0 3 0;
+    -fx-border-width: 0 0 2 0;
     -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
 }
@@ -58,6 +58,10 @@
    -fx-background-color: transparent;
    -fx-background-radius: 0em;
    -fx-padding: 0em;
+}
+
+#statusLabel {
+    -fx-text-fill: text-fill-color;
 }
 
 /* icon of upload button is set in Toolbar.java as we can't set icon size in css */

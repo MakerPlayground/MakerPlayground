@@ -4,16 +4,11 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
 
 <fx:root id="DeviceListCell" alignment="CENTER_LEFT" maxHeight="30.0" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" stylesheets="@../css/ProjectDeviceListCell.css" type="HBox" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <ImageView fx:id="deviceIcon" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
-        <TextField id="nameTextField" fx:id="nameTextField" prefWidth="100.0" HBox.hgrow="ALWAYS">
-         <font>
-            <Font size="10.0" />
-         </font></TextField>
-        <!--<Pane maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="20.0" HBox.hgrow="ALWAYS" />-->
+        <TextField id="nameTextField" fx:id="nameTextField" prefWidth="100.0" HBox.hgrow="ALWAYS" />
         <Button fx:id="removeButton" mnemonicParsing="false" HBox.hgrow="NEVER" />
     </children>
 </fx:root>
