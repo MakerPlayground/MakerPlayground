@@ -124,59 +124,35 @@
 }
 
 /*--------------------tab pane: Connection diagram, Device list, Sourcecode---------------------*/
-.tab-pane .tab
-{
+.tab {
     -fx-background-color: control-background-color;
-    -fx-border-color: border-color;
-    -fx-border-width: 0px 1px 0px 0px;
-    /*-fx-border-radius: 0px 0px 0px 0px;*/
-    -fx-padding: 5 25 5 25;
-    -fx-cursor: hand;
+    -fx-border-color: background-color;
+    /*-fx-border-radius: 5px 5px 0px 0px;*/
+    -fx-padding: 5px 10px 5px 10px;
+    -fx-text-fill: text-color;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
-
-.tab-pane .tab:selected
-{
+.tab:selected {
     -fx-background-color: background-color;
-    -fx-border-color: border-color;
-    -fx-border-width: 0px 1px 0px 0px;
-    /*-fx-border-radius: 0px 0px 0px 0px;*/
-    -fx-padding: 5 25 5 25;
+    -fx-border-color: background-color;
+    /*-fx-border-radius: 5px 5px 0px 0px;*/
+    -fx-padding: 5px 10px 5px 10px;
+    -fx-text-fill: text-color-hilight;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
-.tab:selected .tab-label {
-    -fx-alignment: CENTER;
-    -fx-text-fill: accent-color;
-    /*-fx-font-weight: bold;*/
-}
-.tab-pane *.tab-header-background{
-    /*-fx-background-color: , -fx-inner-border, white;*/
-    -fx-background-color: border-color;
-    /*-fx-background-insets: 0 0 1;*/
-    /*-fx-border-color: transparent transparent transparent transparent;*/
+*.tab-header-background {
+    -fx-background-color: control-background-color;
+    -fx-border-color: control-background-color;
+    -fx-border-width : 1px;
+    -fx-padding: 0px;
 }
 .tab-pane:top > .tab-header-area {
     /*-fx-padding: 0.416667em 0.166667em 0.0em 0.416667em; *//* 5 2 0 5 */
     -fx-padding: 0; /* 5 2 0 5 */
 }
-.tab:top{
-    -fx-background-color: background-color;
-    -fx-tab-border-color: border-color;
-    /*-fx-inner-border : border-color;*/
-    -fx-outer-border: transparent;
-}
-.tab:top:selected{
-    -fx-background-color: background-color;
-    -fx-tab-border-color: border-color;
-    /*-fx-inner-border : border-color;*/
-    -fx-outer-border: transparent;
-}
-/*.tab-pane:top *.tab-header-area{
-    -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: 1.5em 1.5em 1.0em 0.0em;
-}
-.tab-pane:top:selected *.tab-header-area{
-    -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: 1.5em 1.5em 1.0em 0.0em;
-}*/
+/*----------------------------------------------------*/
 
 .text-area {
     -fx-border-color: border-color;

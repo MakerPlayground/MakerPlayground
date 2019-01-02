@@ -59,13 +59,13 @@ public class Main extends Application {
 
         project = new SimpleObjectProperty<>(new Project());
 
-        toolbar = new Toolbar(project.get());
-        toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getOwner()));
-        toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getOwner()));
-        toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getOwner()));
-        toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getOwner()));
+        toolbar = new Toolbar(project);
+        toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
 
-        MainWindow mainWindow = new MainWindow(project.get());
+        MainWindow mainWindow = new MainWindow(project);
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
 
@@ -86,7 +86,6 @@ public class Main extends Application {
             }
             newValue.filePathProperty().addListener(projectPathListener);
             updatePath(primaryStage, newValue.getFilePath());
-            borderPane.setCenter(new MainWindow(newValue));
         });
 
         // close program
@@ -104,17 +103,6 @@ public class Main extends Application {
             primaryStage.close();
             Platform.exit();
             System.exit(0);
-        });
-
-        // setup keyboard shortcut for new, save and load
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isShortcutDown() && event.getCode() == KeyCode.O) {
-                loadProject(scene.getWindow());
-            } else if (event.isShortcutDown() && event.getCode() == KeyCode.N) {
-                newProject(scene.getWindow());
-            } else if (event.isShortcutDown() && event.getCode() == KeyCode.S) {
-                saveProject(scene.getWindow());
-            }
         });
 
         primaryStage.getIcons().addAll(new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_16.png"))

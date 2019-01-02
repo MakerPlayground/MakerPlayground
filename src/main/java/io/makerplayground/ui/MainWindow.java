@@ -28,35 +28,52 @@ import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.generate.GenerateView;
 import io.makerplayground.ui.dialog.generate.GenerateViewModel;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 public class MainWindow extends BorderPane {
 
-    private final Project project;
-    private final Node diagramEditor;
-    private GenerateView generateView;
+    private Project currentProject;
+    private Node diagramEditor;
 
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
 
-    public MainWindow(Project project) {
-        this.project = project;
-        this.diagramEditor = initDiagramEditor();
+    public MainWindow(ObjectProperty<Project> project) {
+        currentProject = project.get();
+        diagramEditor = initDiagramEditor();
 
         diagramEditorShowing = new SimpleBooleanProperty();
         diagramEditorShowing.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                generateView = null;    // clear to prevent memory leak
                 setCenter(diagramEditor);
             }
         });
         deviceConfigShowing = new SimpleBooleanProperty();
         deviceConfigShowing.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
+                setCenter(initConfigDevice());
+            }
+        });
+
+        project.addListener((observable, oldValue, newValue) -> {
+            currentProject = newValue;
+            diagramEditor = initDiagramEditor();
+            if (diagramEditorShowing.get()) {
+                setCenter(diagramEditor);
+            } else {    // deviceConfigShowing must be true
                 setCenter(initConfigDevice());
             }
         });
@@ -80,9 +97,9 @@ public class MainWindow extends BorderPane {
 
     private Node initDiagramEditor() {
         DeviceLibraryPanel deviceLibraryPanel = new DeviceLibraryPanel();
-        deviceLibraryPanel.setOnDevicePressed(project::addDevice);
+        deviceLibraryPanel.setOnDevicePressed(currentProject::addDevice);
 
-        ProjectDevicePanel projectDevicePanel = new ProjectDevicePanel(project);
+        ProjectDevicePanel projectDevicePanel = new ProjectDevicePanel(currentProject);
 
         SplitPane panelSplitPane = new SplitPane();
         panelSplitPane.setMinWidth(200);
@@ -90,7 +107,7 @@ public class MainWindow extends BorderPane {
         panelSplitPane.setOrientation(Orientation.VERTICAL);
         panelSplitPane.getItems().addAll(projectDevicePanel, deviceLibraryPanel);
 
-        CanvasViewModel canvasViewModel = new CanvasViewModel(project);
+        CanvasViewModel canvasViewModel = new CanvasViewModel(currentProject);
         CanvasView canvasView = new CanvasView(canvasViewModel);
 
         SplitPane mainSplitPane = new SplitPane();
@@ -102,44 +119,51 @@ public class MainWindow extends BorderPane {
     }
 
     private Node initConfigDevice() {
-        SplitPane mainLayout = new SplitPane();
-        mainLayout.setDividerPositions(0.5);
-        mainLayout.setOrientation(Orientation.HORIZONTAL);
+        StackPane rightView = new StackPane();
 
         Runnable generateViewCreator = () -> {
-            if (generateView != null) {
-                mainLayout.getItems().remove(generateView);
+            rightView.getChildren().clear();
+
+            DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(currentProject);
+            SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generateCode(currentProject, true);
+
+            GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);
+            GenerateView generateView = new GenerateView(generateViewModel);
+            rightView.getChildren().add(generateView);
+
+            String errorMessage = null;
+            if (mappingResult != DeviceMapperResult.OK) {
+                errorMessage = mappingResult.getErrorMessage();
+            } else if (codeGeneratorResult.hasError()) {
+                errorMessage = codeGeneratorResult.getError().getDescription();
             }
-            DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-            if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
-//                "Controller hasn't been selected"
-            } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
-//                "Not enough port"
-            } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
-//                "Can't find any support device"
-            } else if (mappingResult != DeviceMapperResult.OK) {
-//                "Found unknown error!!!"
-            } else if (mappingResult == DeviceMapperResult.OK) {
-                SourceCodeResult code = SourceCodeGenerator.generateCode(project, true);
-                if (code.hasError()) {
-//                code.getError().getDescription()
-                } else {
-                    GenerateViewModel generateViewModel = new GenerateViewModel(project, code);
-                    generateView = new GenerateView(generateViewModel);
-                    mainLayout.getItems().add(generateView);
-                }
+            if (errorMessage != null) {
+                generateView.setDisable(true);
+                // overlay the generate view with a warning icon and an error message
+                ImageView warningIcon = new ImageView(new Image(getClass().getResourceAsStream("/css/dialog/warning.png")));
+                Label warningMessage = new Label(errorMessage);
+                warningMessage.setTextAlignment(TextAlignment.CENTER);
+                warningMessage.setWrapText(true);
+                VBox errorPane = new VBox();
+                errorPane.setPadding(new Insets(20, 20, 20, 20));
+                errorPane.setAlignment(Pos.CENTER);
+                errorPane.getChildren().addAll(warningIcon, warningMessage);
+                rightView.getChildren().add(errorPane);
             }
         };
 
         // device config
-        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(project);
+        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-        mainLayout.getItems().add(configActualDeviceView);
 
         // generate view
         generateViewCreator.run();
 
+        SplitPane mainLayout = new SplitPane();
+        mainLayout.setDividerPositions(0.5);
+        mainLayout.setOrientation(Orientation.HORIZONTAL);
+        mainLayout.getItems().addAll(configActualDeviceView, rightView);
         return mainLayout;
     }
 }

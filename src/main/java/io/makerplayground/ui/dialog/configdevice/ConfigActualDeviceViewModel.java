@@ -101,8 +101,12 @@ public class ConfigActualDeviceViewModel {
     void setPlatform(Platform platform) {
         project.setPlatform(platform);
         applyDeviceMapping();
-        platformChangedCallback.run();
-        configChangedCallback.run();
+        if (platformChangedCallback != null) {
+            platformChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     Platform getSelectedPlatform() {
@@ -112,8 +116,12 @@ public class ConfigActualDeviceViewModel {
     void setController(ActualDevice device) {
         project.setController(device);
         applyDeviceMapping();
-        controllerChangedCallback.run();
-        configChangedCallback.run();
+        if (controllerChangedCallback != null) {
+            controllerChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     ActualDevice getSelectedController() {
@@ -134,23 +142,35 @@ public class ConfigActualDeviceViewModel {
         }
         projectDevice.setActualDevice(device);
         applyDeviceMapping();
-        deviceConfigChangedCallback.run();
-        configChangedCallback.run();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
         // TODO: assume a device only has 1 peripheral
         projectDevice.setDeviceConnection(peripheral, port);
         applyDeviceMapping();
-        deviceConfigChangedCallback.run();
-        configChangedCallback.run();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     void clearPeripheral(ProjectDevice projectDevice, Peripheral peripheral) {
         projectDevice.removeDeviceConnection(peripheral);
         applyDeviceMapping();
-        deviceConfigChangedCallback.run();
-        configChangedCallback.run();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     Set<CloudPlatform> getCloudPlatformUsed() {

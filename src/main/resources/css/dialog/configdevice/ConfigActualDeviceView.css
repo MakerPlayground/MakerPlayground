@@ -17,21 +17,25 @@
 }
 
 #topicConfigDevice {
-    -fx-padding: 7px;
+    -fx-background-color: transparent;
+    -fx-text-fill: text-color;
+    /*-fx-font-size: 14px;*/
+    -fx-font-weight: bold;
+    -fx-padding: 15 0 0 0;
 }
 
 .scroll-pane{
     -fx-background-color: background-color;
     -fx-border-color : transparent;
-    -fx-border-width : 0.5px;
-    -fx-padding: 20px 15px 20px 15px;
+    /*-fx-border-width : 0.5px;*/
+    -fx-padding: 20px 20px 20px 20px;
 }
 
 .scroll-pane > .viewport{
     -fx-background-color: background-color;
     -fx-border-color : background-color;
-    -fx-border-width : 0px;
-    -fx-padding: 20px 20px 20px 20px;
+    /*-fx-border-width : 0px;
+    -fx-padding: 20px 20px 20px 20px;*/
 }
 
 .scroll-bar {
@@ -94,12 +98,6 @@
     -fx-background-color: accent-color;
 }
 
-#topicConfigDevice{
-    -fx-background-color : transparent;
-    -fx-text-fill : text-color;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-}
 .label{
     -fx-background-color : transparent;
     -fx-text-fill : text-color;

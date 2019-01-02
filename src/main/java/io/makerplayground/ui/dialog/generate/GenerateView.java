@@ -25,6 +25,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
 import java.io.IOException;
@@ -55,7 +57,9 @@ public class GenerateView extends TabPane {
             e.printStackTrace();
         }
 
-        initView();
+        if (!viewModel.hasError()) {
+            initView();
+        }
     }
 
     private void initView() {

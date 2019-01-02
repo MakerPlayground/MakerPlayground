@@ -21,6 +21,7 @@ import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.UploadDialogView;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.WorkerStateEvent;
@@ -38,7 +39,7 @@ import java.util.Optional;
 
 public class Toolbar extends AnchorPane {
 
-    private final Project project;
+    private final ObjectProperty<Project> project;
 
     @FXML private MenuItem newMenuItem;
     @FXML private MenuItem openMenuItem;
@@ -57,7 +58,7 @@ public class Toolbar extends AnchorPane {
     private ImageView uploadStartImageView;
     private ImageView uploadStopImageView;
 
-    public Toolbar(Project project) {
+    public Toolbar(ObjectProperty<Project> project) {
         this.project = project;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
@@ -154,7 +155,9 @@ public class Toolbar extends AnchorPane {
         StringBuilder log = new StringBuilder();
         logProperty = new SimpleStringProperty();
 
-        uploadTask = new UploadTask(project);
+        // we MUST deep copy the project because user can modified the project in the UI thread while the upload thread
+        // access the project
+        uploadTask = new UploadTask(Project.newInstance(project.get()));
         uploadTask.progressProperty().addListener((observable, oldValue, newValue) -> {
             if (Double.compare(newValue.doubleValue(), 1.0) == 0) {
                 uploadStatusButton.setText("Upload done");

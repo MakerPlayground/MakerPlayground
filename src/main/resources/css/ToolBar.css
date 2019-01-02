@@ -1,7 +1,7 @@
 #toolBarPane {
     -fx-background-color: background-color;
     -fx-border-color: border-color;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-width: 0 0 2 0;
 }
 
 #overflow-menubutton {
@@ -23,7 +23,6 @@
 
 .radio-button {
     -fx-text-fill: text-color;
-    -fx-font-size: font-sub-menu;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 0 0;
@@ -33,7 +32,6 @@
 
 .radio-button:hover {
     -fx-text-fill: text-color-hilight;
-    -fx-font-size: font-sub-menu;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 3 0;
@@ -43,7 +41,6 @@
 
 .radio-button:selected {
     -fx-text-fill: text-color-hilight;
-    -fx-font-size: font-sub-menu;
     -fx-background-color: transparent;
     -fx-border-color: text-color-hilight;
     -fx-border-width: 0 0 3 0;

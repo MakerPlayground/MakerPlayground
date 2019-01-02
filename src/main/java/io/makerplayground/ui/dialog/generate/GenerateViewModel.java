@@ -33,10 +33,12 @@ public class GenerateViewModel {
     public GenerateViewModel(Project project, SourceCodeResult code) {
         this.project = project;
         this.code = code;
-
         this.observableTableList = FXCollections.observableArrayList();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            observableTableList.add(new TableDataList(projectDevice));
+
+        if (!code.hasError()) {
+            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+                observableTableList.add(new TableDataList(projectDevice));
+            }
         }
     }
 
@@ -46,6 +48,14 @@ public class GenerateViewModel {
 
     public String getCode() {
         return code.getCode();
+    }
+
+    public boolean hasError() {
+        return code.hasError();
+    }
+
+    public String getErrorMessage() {
+        return code.getError().getDescription();
     }
 
     public ObservableList<TableDataList> getObservableTableList() { return observableTableList; }
