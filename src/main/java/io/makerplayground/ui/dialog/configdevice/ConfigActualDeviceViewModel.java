@@ -183,6 +183,9 @@ public class ConfigActualDeviceViewModel {
 
     void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
         project.setCloudPlatformParameter(cloudPlatform, parameterName, value);
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     Set<ProjectDevice> getUsedDevice() {
