@@ -98,13 +98,13 @@ public class UploadTask extends Task<UploadResult> {
         }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
-                .map(ActualDevice::getMpLibrary)
+                .map(actualDevice -> actualDevice.getMpLibrary(project.getPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
         mpLibraries.add("MP_DEVICE");
 
         Set<String> externalLibraries = actualDevicesUsed.stream()
-                .map(ActualDevice::getExternalLibrary)
+                .map(actualDevice -> actualDevice.getExternalLibrary(project.getPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries

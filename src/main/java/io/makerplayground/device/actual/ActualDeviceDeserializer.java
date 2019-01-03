@@ -70,9 +70,16 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
         else
             category = Dependency.valueOf(node.get("category").asText());
 
-        String mpLibrary = node.get("classname").asText();
-        List<String> externalLibrary = mapper.readValue(node.get("library_dependency").traverse(),
-                new TypeReference<List<String>>() {});
+        Map<Platform, String> classnames = new HashMap<>();
+        Map<Platform, List<String>> externalLibraries = new HashMap<>();
+        for (JsonNode platform_node: node.get("platforms")) {
+            Platform platform = Platform.valueOf(platform_node.get("platform").asText());
+            String classname = platform_node.get("classname").asText();
+            List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
+                    , new TypeReference<List<String>>() {});
+            classnames.put(platform, classname);
+            externalLibraries.put(platform, externalLibraryList);
+        }
 
         DeviceType type = DeviceType.valueOf(node.get("type").asText());
         WiringMethod wiringMethod = null;
@@ -90,8 +97,6 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
             }
         }
         FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
-        Set<Platform> platform = mapper.readValue(node.get("platform").traverse()
-                , new TypeReference<Set<Platform>>() {});
         CloudPlatform cloudPlatform = null;
         if (node.has("cloud_platform")) {
             cloudPlatform = CloudPlatform.valueOf(node.get("cloud_platform").asText());
@@ -114,9 +119,16 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
         if (node.has("integrated_device")) {
             for (JsonNode deviceNode : node.get("integrated_device")) {
                 String integratedDeviceName = deviceNode.get("name").asText();
-                String integratedLibrary = deviceNode.get("classname").asText();
-                List<String> integratedExternalLibrary = mapper.readValue(deviceNode.get("library_dependency").traverse(),
-                        new TypeReference<List<String>>() {});
+                Map<Platform, String> integratedLibrary = new HashMap<>();
+                Map<Platform, List<String>> integratedExternalLibrary = new HashMap<>();
+                for (JsonNode platform_node: deviceNode.get("platforms")) {
+                    Platform platform = Platform.valueOf(platform_node.get("platform").asText());
+                    String classname = platform_node.get("classname").asText();
+                    List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
+                            , new TypeReference<List<String>>() {});
+                    integratedLibrary.put(platform, classname);
+                    integratedExternalLibrary.put(platform, externalLibraryList);
+                }
 
                 List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse()
                         , new TypeReference<List<DevicePort>>() {});
@@ -148,8 +160,8 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
             }
         }
 
-        return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, mpLibrary, externalLibrary,
-                platform, cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
+        return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, classnames, externalLibraries,
+                cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
                 supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform, integratedDevices);
     }
 

@@ -63,7 +63,7 @@ public class SourceCodeGenerator {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().map(projectDevice -> projectDevice.getActualDevice().getMpLibrary());
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs)
@@ -100,7 +100,7 @@ public class SourceCodeGenerator {
 
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            builder.append(projectDevice.getActualDevice().getMpLibrary())
+            builder.append(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()))
                     .append(" ").append(getDeviceVariableName(projectDevice));
             List<String> args = new ArrayList<>();
             if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {

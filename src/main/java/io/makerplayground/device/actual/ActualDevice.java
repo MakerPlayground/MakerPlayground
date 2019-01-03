@@ -24,9 +24,6 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -45,12 +42,11 @@ public class ActualDevice {
     private final double height;
     private final Dependency dependency;
     private final Dependency category;
-    private final String mpLibrary;
-    private final List<String> externalLibrary;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
-    private final Set<Platform> supportedPlatform;          // ARDUINO, ARM, RPI_LINUX, RPI_WIN10, GROOVE_ARDUINO
+    private final Map<Platform, String> classnames;
+    private final Map<Platform, List<String>> externalLibraries;
     private final CloudPlatform cloudPlatform;
     private final String pioBoardId;
     private final WiringMethod wiringMethod;
@@ -86,9 +82,8 @@ public class ActualDevice {
             , String pioBoardId
             , WiringMethod wiringMethod
             , FormFactor formFactor
-            , String mpLibrary
-            , List<String> externalLibrary
-            , Set<Platform> supportedPlatform
+            , Map<Platform, String> classnames
+            , Map<Platform, List<String>> externalLibraries
             , CloudPlatform cloudPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
@@ -111,9 +106,8 @@ public class ActualDevice {
         this.pioBoardId = pioBoardId;
         this.wiringMethod = wiringMethod;
         this.formFactor = formFactor;
-        this.mpLibrary = mpLibrary;
-        this.externalLibrary = externalLibrary;
-        this.supportedPlatform = supportedPlatform;
+        this.classnames = classnames;
+        this.externalLibraries = externalLibraries;
         this.cloudPlatform = cloudPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
@@ -274,19 +268,20 @@ public class ActualDevice {
     }
 
     public Set<Platform> getSupportedPlatform() {
-        return supportedPlatform;
+//        return supportedPlatform;
+        return classnames.keySet();
     }
 
     public CloudPlatform getCloudPlatform() {
         return cloudPlatform;
     }
 
-    public String getMpLibrary() {
-        return mpLibrary;
+    public String getMpLibrary(Platform p) {
+        return classnames.get(p);
     }
 
-    public List<String> getExternalLibrary() {
-        return externalLibrary;
+    public List<String> getExternalLibrary(Platform p) {
+        return externalLibraries.get(p);
     }
 
     public List<Property> getProperty() { return property; }
@@ -415,7 +410,7 @@ public class ActualDevice {
                 ", url='" + url + '\'' +
                 ", deviceType=" + deviceType +
                 ", formFactor=" + formFactor +
-                ", supportedPlatform=" + supportedPlatform +
+                ", supportedPlatform=" + getSupportedPlatform() +
                 ", cloudPlatform=" + cloudPlatform +
                 ", port=" + port +
                 ", connectivity=" + connectivity +
