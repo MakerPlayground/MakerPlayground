@@ -57,18 +57,6 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
         String url = node.get("url").asText();
         double width = node.get("width").asDouble();
         double height = node.get("height").asDouble();
-        Dependency dependency;
-        Dependency category;
-
-        if (node.get("dependency").asText().isEmpty())
-            dependency = null;
-        else
-            dependency = Dependency.valueOf(node.get("dependency").asText());
-
-        if (node.get("category").asText().isEmpty())
-            category = null;
-        else
-            category = Dependency.valueOf(node.get("category").asText());
 
         Map<Platform, String> classnames = new HashMap<>();
         Map<Platform, List<String>> externalLibraries = new HashMap<>();
@@ -162,7 +150,7 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
 
         return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, classnames, externalLibraries,
                 cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
-                supportedDeviceCondition, supportedDeviceValue, dependency, category, property, supportedCloudPlatform, integratedDevices);
+                supportedDeviceCondition, supportedDeviceValue, property, supportedCloudPlatform, integratedDevices);
     }
 
     private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Integer> supportedDevice, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {

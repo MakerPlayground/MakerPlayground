@@ -32,7 +32,7 @@ public class IntegratedActualDevice extends ActualDevice {
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition, Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
         super("", "", model, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
                 , classnames, externalLibraries, null, port, connectivity, supportedDevice
-                , supportedAction, supportedCondition, supportedValue, null, null, Collections.emptyList()
+                , supportedAction, supportedCondition, supportedValue, Collections.emptyList()
                 , Collections.emptyMap(), Collections.emptyList());
     }
 }

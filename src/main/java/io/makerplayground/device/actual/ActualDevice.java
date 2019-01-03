@@ -40,8 +40,6 @@ public class ActualDevice {
     private final String url;
     private final double width;
     private final double height;
-    private final Dependency dependency;
-    private final Dependency category;
 
     private final DeviceType deviceType;    // CONTROLLER, PERIPHERAL, DEVICE (MOTOR, SPEAKER)
     private final FormFactor formFactor;    // BREAKOUT_BOARD, SHIELD, STANDALONE
@@ -91,8 +89,6 @@ public class ActualDevice {
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
-            , Dependency dependency
-            , Dependency category
             , List<Property> property
             , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform
             , List<IntegratedActualDevice> integratedDevices) {
@@ -115,8 +111,6 @@ public class ActualDevice {
         this.supportedAction = supportedAction;
         this.supportedCondition = supportedCondition;
         this.supportedValue = supportedValue;
-        this.dependency = dependency;
-        this.category = category;
         this.property = Collections.unmodifiableList(property);
         this.supportedCloudPlatform = supportedCloudPlatform;
         this.integratedDevices = Collections.unmodifiableList(integratedDevices);
@@ -206,10 +200,6 @@ public class ActualDevice {
                 }
             }
         }
-    }
-
-    public Dependency getCategory() {
-        return category;
     }
 
     public String getId() {
@@ -364,10 +354,6 @@ public class ActualDevice {
         return supportedValue;
     }
 
-    public Dependency getDependency() {
-        return dependency;
-    }
-
     public Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> getSupportedAction() {
         return supportedAction;
     }
@@ -430,7 +416,6 @@ public class ActualDevice {
                 ", supportedDevice=" + supportedDevice +
                 ", supportedAction=" + supportedAction +
                 ", supportedValue=" + supportedValue +
-                ", dependency=" + dependency +
                 ", property=" + property +
                 '}';
     }
