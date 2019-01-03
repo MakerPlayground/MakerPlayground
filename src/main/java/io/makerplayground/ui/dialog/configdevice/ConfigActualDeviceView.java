@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
@@ -163,7 +164,11 @@ public class ConfigActualDeviceView extends VBox{
 
     private void initDeviceControl() {
         usedDevice.getChildren().clear();
-        unusedDevicePane.getChildren().clear();
+        unusedDevice.setVisible(false);
+        unusedDevice.setManaged(false);
+        cloudPlatformParameterSection.setVisible(false);
+        cloudPlatformParameterSection.setManaged(false);
+
         DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
         if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
             errorMsg.setVisible(true);
@@ -387,6 +392,7 @@ public class ConfigActualDeviceView extends VBox{
         } else {
             unusedDevice.setVisible(true);
             unusedDevice.setManaged(true);
+            unusedDevicePane.getChildren().clear();
             for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
                 ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + projectDevice.getGenericDevice().getName() + ".png")));
