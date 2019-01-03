@@ -281,9 +281,8 @@ public class DeviceMapper {
     public static List<ActualDevice> getSupportedController(Project project) {
         return DeviceLibrary.INSTANCE.getActualDevice().stream()
                 .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
-                        && (device.getSupportedPlatform().contains(project.getPlatform()))
-                        && (device.getSupportedCloudPlatform().containsAll(project.getCloudPlatformUsed())))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+                        && device.getSupportedPlatform().contains(project.getPlatform()))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {
