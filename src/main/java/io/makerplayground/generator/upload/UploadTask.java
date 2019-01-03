@@ -43,6 +43,15 @@ public class UploadTask extends Task<UploadResult> {
         updateProgress(0, 1);
         updateMessage("Checking project");
 
+        // wait for 500ms so that when the upload failed very early, user can see that the upload has started (progress is at 0%)
+        // for a short period of time before seeing the error message
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            updateMessage("Upload has been canceled");
+            return UploadResult.USER_CANCEL;
+        }
+
         DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
         if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
             updateMessage("Error: not enough port available");
