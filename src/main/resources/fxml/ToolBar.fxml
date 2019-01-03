@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.control.Tooltip?>
 <fx:root id="toolBarPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
          minWidth="-Infinity" prefHeight="38.0" stylesheets="@../css/ToolBar.css" type="AnchorPane"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
@@ -67,6 +68,11 @@
               AnchorPane.topAnchor="0.0">
             <children>
                 <Label id="statusLabel" fx:id="statusLabel" />
+                <MenuButton id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0">
+                    <tooltip>
+                        <Tooltip text="device monitor" />
+                    </tooltip>
+                </MenuButton>
                 <Button id="uploadButton" fx:id="uploadButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
                 <Separator fx:id="separator" orientation="VERTICAL" prefHeight="200.0">
                     <padding>

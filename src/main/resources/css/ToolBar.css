@@ -78,3 +78,20 @@
     -fx-text-fill: text-fill-color;
     -fx-cursor: hand;
 }
+
+#deviceMonitorMenuButton{
+    -fx-background-image: url('Device-monitor.png');
+    -fx-background-size : 30px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+}
+
+#deviceMonitorMenuButton:showing{
+    -fx-background-image: url('Device-monitor-press.png');
+    -fx-background-size : 30px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}

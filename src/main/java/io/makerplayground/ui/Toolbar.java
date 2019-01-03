@@ -16,16 +16,20 @@
 
 package io.makerplayground.ui;
 
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.generator.upload.UploadResult;
 import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UploadDialogView;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,6 +53,7 @@ public class Toolbar extends AnchorPane {
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
     @FXML private Label statusLabel;
+    @FXML private MenuButton deviceMonitorMenuButton;
     @FXML private Button uploadButton;
     @FXML private Separator separator;
     @FXML private Button uploadStatusButton;
@@ -74,6 +79,8 @@ public class Toolbar extends AnchorPane {
         toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
 
         diagramEditorButton.setSelected(true);
+
+        deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
 
         initUploadButton();
     }
@@ -182,28 +189,28 @@ public class Toolbar extends AnchorPane {
         new Thread(uploadTask).start();
     }
 
-//    private void deviceMonitorMenuShowing(Event e) {
-//        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
-//        deviceMonitorButton.getItems().clear();
-//        SerialPort[] commPorts = SerialPort.getCommPorts();
-//        if (commPorts.length > 0) {
-//            for (SerialPort port : commPorts) {
-//                MenuItem item = new MenuItem(port.getDescriptivePortName());
-//                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
-//                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
-//                deviceMonitorButton.getItems().add(item);
-//            }
-//        } else {
-//            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
-//            item.setDisable(true);
-//            deviceMonitorButton.getItems().add(item);
-//        }
-//    }
-//
-//    private void openDeviceMonitor(String portName){
-//        SerialPort port = SerialPort.getCommPort(portName);
-//        //TODO: capture error in rare case the port is disconnected
-//        DeviceMonitor deviceMonitor = new DeviceMonitor(port);
-//        deviceMonitor.showAndWait();
-//    }
+    private void deviceMonitorMenuShowing(Event e) {
+        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
+        deviceMonitorButton.getItems().clear();
+        SerialPort[] commPorts = SerialPort.getCommPorts();
+        if (commPorts.length > 0) {
+            for (SerialPort port : commPorts) {
+                MenuItem item = new MenuItem(port.getDescriptivePortName());
+                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
+                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
+                deviceMonitorButton.getItems().add(item);
+            }
+        } else {
+            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
+            item.setDisable(true);
+            deviceMonitorButton.getItems().add(item);
+        }
+    }
+
+    private void openDeviceMonitor(String portName){
+        SerialPort port = SerialPort.getCommPort(portName);
+        //TODO: capture error in rare case the port is disconnected
+        DeviceMonitor deviceMonitor = new DeviceMonitor(port);
+        deviceMonitor.showAndWait();
+    }
 }
