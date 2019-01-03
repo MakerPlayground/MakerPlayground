@@ -73,6 +73,7 @@ public enum DeviceLibrary {
         } catch (IOException e) {
             throw new IllegalStateException("Can't load generic devices from " + resourceName);
         }
+        temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));
         return temp;
     }
 
