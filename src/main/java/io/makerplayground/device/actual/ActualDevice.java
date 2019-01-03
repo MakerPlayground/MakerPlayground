@@ -372,7 +372,20 @@ public class ActualDevice {
         return supportedAction;
     }
 
-    public boolean isSupport(GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
+    public boolean isSupport(ActualDevice controller, GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
+        // every controller can be connected to a virtual device so we skip this test
+        if (deviceType != DeviceType.VIRTUAL) {
+            Set<DevicePort.Type> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePort.Type.class)));
+            Set<DevicePort.Type> devicePortType = getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePort.Type.class)));
+            // this device is supported if and only if its ports has the same type as some ports of the controller
+            devicePortType.retainAll(controllerPortType);
+            if (devicePortType.isEmpty()) {
+                return false;
+            }
+        }
+
         if (!supportedAction.containsKey(genericDevice)) {
             return false;
         }
