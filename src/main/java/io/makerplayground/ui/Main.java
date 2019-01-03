@@ -37,6 +37,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +65,7 @@ public class Main extends Application {
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
+        toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
         MainWindow mainWindow = new MainWindow(project);
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
