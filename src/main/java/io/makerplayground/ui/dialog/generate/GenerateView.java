@@ -20,6 +20,7 @@ import io.makerplayground.generator.diagram.WiringDiagram;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -49,7 +50,22 @@ public class GenerateView extends TabPane {
     @FXML private Button zoomOutButton;
     @FXML private Button zoomDefaultButton;
 
+    public static final double DEFAULT_ZOOM_SCALE = 0.5;
+    public static final int DEFAULT_TAB_INDEX = 0;
+
     private final GenerateViewModel viewModel;
+
+    private DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
+    private OnZoomChanged onZoomChanged = null;
+    private OnTabIndexChanged onTabIndexChanged = null;
+
+    public interface OnZoomChanged {
+        void onChanged(double newScale);
+    }
+
+    public interface OnTabIndexChanged {
+        void onChanged(int newTabIndex);
+    }
 
     public GenerateView(GenerateViewModel viewModel) {
         this.viewModel = viewModel;
@@ -69,10 +85,20 @@ public class GenerateView extends TabPane {
     }
 
     private void initView() {
-        DoubleProperty scale = new SimpleDoubleProperty(0.5);
+        scale.addListener((observable, oldValue, newValue) -> {
+            if (onZoomChanged != null) {
+                onZoomChanged.onChanged(newValue.doubleValue());
+            }
+        });
         zoomInButton.setOnAction(event -> scale.set(scale.get() + 0.1));
         zoomOutButton.setOnAction(event -> scale.set(Math.max(0.1, scale.get() - 0.1)));
         zoomDefaultButton.setOnAction(event -> scale.set(0.5));
+
+        this.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (onTabIndexChanged != null) {
+                onTabIndexChanged.onChanged(newValue.intValue());
+            }
+        });
 
         Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
         wiringDiagram.scaleXProperty().bind(scale);
@@ -90,5 +116,19 @@ public class GenerateView extends TabPane {
         deviceTable.setItems(viewModel.getObservableTableList());
     }
 
+    public void setZoomLevel(double scale) {
+        this.scale.set(scale);
+    }
 
+    public void setTabIndex(int tabIndex) {
+        this.getSelectionModel().select(tabIndex);
+    }
+
+    public void setOnZoomLevelChanged(OnZoomChanged onZoomChanged) {
+        this.onZoomChanged = onZoomChanged;
+    }
+
+    public void setOnTabIndexChanged(OnTabIndexChanged onTabIndexChanged) {
+        this.onTabIndexChanged = onTabIndexChanged;
+    }
 }

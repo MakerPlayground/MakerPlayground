@@ -27,9 +27,7 @@ import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.generate.GenerateView;
 import io.makerplayground.ui.dialog.generate.GenerateViewModel;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -51,6 +49,9 @@ public class MainWindow extends BorderPane {
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
 
+    private final IntegerProperty currentTabIndex;
+    private final DoubleProperty deviceDiagramZoomLevel;
+
     public MainWindow(ObjectProperty<Project> project) {
         currentProject = project.get();
         diagramEditor = initDiagramEditor();
@@ -67,6 +68,9 @@ public class MainWindow extends BorderPane {
                 setCenter(initConfigDevice());
             }
         });
+
+        currentTabIndex = new SimpleIntegerProperty(GenerateView.DEFAULT_TAB_INDEX);
+        deviceDiagramZoomLevel = new SimpleDoubleProperty(GenerateView.DEFAULT_ZOOM_SCALE);
 
         project.addListener((observable, oldValue, newValue) -> {
             currentProject = newValue;
@@ -129,6 +133,11 @@ public class MainWindow extends BorderPane {
 
             GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);
             GenerateView generateView = new GenerateView(generateViewModel);
+            generateView.setZoomLevel(deviceDiagramZoomLevel.get());
+            generateView.setTabIndex(currentTabIndex.get());
+            generateView.setOnZoomLevelChanged(deviceDiagramZoomLevel::set);
+            generateView.setOnTabIndexChanged(currentTabIndex::set);
+
             rightView.getChildren().add(generateView);
 
             String errorMessage = null;
