@@ -20,7 +20,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
-import io.makerplayground.project.Project;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -58,7 +57,8 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     @FXML private Label tagLabel;
     @FXML private GridPane gridPane;
     @FXML private CheckBox onStatus;
-    public DeviceMonitor(Project project, SerialPort comPort) {
+
+    public DeviceMonitor(SerialPort comPort) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
         fxmlLoader.setRoot(this.getDialogPane());
         fxmlLoader.setController(this);

@@ -89,7 +89,6 @@ class WireAndBreadboardDiagram extends Pane {
         powerUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
         groundUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
         this.deviceTopLeftPos = new HashMap<>();
-        setPrefSize(1000, 4000);
 
         String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
 

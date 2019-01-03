@@ -1,8 +1,7 @@
-/*******************Notification Update button***********************/
 #UpdateButton {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #e3e3e3;
-    -fx-text-fill: #333333;
+    -fx-background-color: background-color;
+    -fx-border-color: border-color;
+    -fx-text-fill: text-color;
     -fx-font-size: 1.13em;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
@@ -11,9 +10,9 @@
 }
 
 #UpdateButton:hover {
-    -fx-background-color: #e3e3e3;
-    -fx-border-color: #e3e3e3;
-    -fx-text-fill: #333333;
+    -fx-background-color: control-hover-background-color;
+    -fx-border-color: border-color;
+    -fx-text-fill: text-color;
     -fx-font-size: 1.13em;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
@@ -22,9 +21,9 @@
 }
 
 #UpdateButton:pressed {
-    -fx-background-color: #2673fd;
-    -fx-border-color: #2673fd;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: accent-color;
+    -fx-border-color: accent-color;
+    -fx-text-fill: text-color-invert;
     -fx-font-size: 1.13em;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
@@ -32,42 +31,7 @@
     -fx-cursor: hand;
 }
 
-
-/*******************Notification Cancel button***********************/
-#CancelButton {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #e3e3e3;
-    -fx-text-fill: #333333;
-    -fx-font-size: 1.13em;
-    -fx-background-radius: 3px;
-    -fx-border-radius: 3px;
-    -fx-padding: 2.5 2.5 2.5 2.5;
-    -fx-cursor: hand;
-}
-
-#CancelButton:hover {
-    -fx-background-color: #e3e3e3;
-    -fx-border-color: #e3e3e3;
-    -fx-text-fill: #333333;
-    -fx-font-size: 1.13em;
-    -fx-background-radius: 3px;
-    -fx-border-radius: 3px;
-    -fx-padding: 2.5 2.5 2.5 2.5;
-    -fx-cursor: hand;
-}
-
-#CancelButton:pressed {
-    -fx-background-color: #ff8b01;
-    -fx-border-color: #ff8b01;
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 1.13em;
-    -fx-background-radius: 3px;
-    -fx-border-radius: 3px;
-    -fx-padding: 2.5 2.5 2.5 2.5;
-    -fx-cursor: hand;
-}
-
 #text {
-    -fx-fill: #333333;
+    -fx-fill: text-color;
     -fx-font-size: 14;
 }

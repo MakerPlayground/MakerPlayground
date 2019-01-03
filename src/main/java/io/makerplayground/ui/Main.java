@@ -17,47 +17,26 @@
 package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UnsavedDialog;
-import io.makerplayground.ui.dialog.tutorial.TutorialView;
 import io.makerplayground.version.ProjectVersionControl;
 import io.makerplayground.version.SoftwareVersion;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.event.Event;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.GaussianBlur;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.controlsfx.control.Notifications;
+import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,140 +47,62 @@ import java.util.TimerTask;
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
  */
 public class Main extends Application {
-    @FXML
-    private TextField projectNameTextField;
-    @FXML
-    private Label statusLabel;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button saveAsButton;
-    @FXML
-    private Button loadButton;
-    @FXML
-    private Button newButton;
-    @FXML
-    private MenuButton deviceMonitorMenuButton;
-    @FXML
-    private Button tutorialButton;
-    @FXML
-    private AnchorPane toolBarPane;
-    @FXML
-    private Button hpl;
 
-    private Project project;
-    private BorderPane borderPane;
-    private Timer timer = new Timer();
-    private ObjectMapper mapper = new ObjectMapper();
-    private ChangeListener<String> projectPathListener;
+    private Toolbar toolbar;
+    private ObjectProperty<Project> project;
     private File latestProjectDirectory;
-
-    private boolean flag = false; // for the first tutorial tracking
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
-        project = new Project();
-        MainWindow mainWindow = new MainWindow(project);
+        project = new SimpleObjectProperty<>(new Project());
 
-        borderPane = new BorderPane();
+        toolbar = new Toolbar(project);
+        toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
+        toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
+
+        MainWindow mainWindow = new MainWindow(project);
+        mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
+        mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(toolbar);
         borderPane.setCenter(mainWindow);
 
         final Scene scene = new Scene(borderPane, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
-        fxmlLoader.setRoot(borderPane);
-        fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        projectPathListener = (observable, oldValue, newValue) -> {
-            if (newValue.isEmpty()) {
-                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
-            } else {
-                primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
+        ChangeListener<String> projectPathListener = (observable, oldValue, newValue) -> updatePath(primaryStage, newValue);
+        project.get().filePathProperty().addListener(projectPathListener);
+        updatePath(primaryStage, project.get().getFilePath());
+        project.addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.filePathProperty().removeListener(projectPathListener);
             }
-        };
-
-        project.filePathProperty().addListener(projectPathListener);
-        updatePathTextField(primaryStage);
+            newValue.filePathProperty().addListener(projectPathListener);
+            updatePath(primaryStage, newValue.getFilePath());
+        });
 
         // close program
         primaryStage.setOnCloseRequest(event -> {
-            if (project.hasUnsavedModification()) {
-                UnsavedDialog.Response retVal = showConfirmationDialog();
+            if (project.get().hasUnsavedModification()) {
+                UnsavedDialog.Response retVal = new UnsavedDialog(scene.getWindow()).showAndGetResponse();
                 if (retVal == UnsavedDialog.Response.CANCEL) {
                     event.consume();
                     return;
                 } else if (retVal == UnsavedDialog.Response.SAVE) {
-                    saveProject();
+                    saveProject(scene.getWindow());
                 }
             }
 
             primaryStage.close();
             Platform.exit();
             System.exit(0);
-        });
-
-        projectNameTextField.setText(project.getProjectName());
-        projectNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                project.setProjectName(projectNameTextField.getText());
-            } else {
-                projectNameTextField.setText(project.getProjectName());
-            }
-        });
-
-        // setup keyboard shortcut for new, save and load
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isShortcutDown() && event.getCode() == KeyCode.O) {
-                loadProject(primaryStage);
-            } else if (event.isShortcutDown() && event.getCode() == KeyCode.N) {
-                newProject(primaryStage);
-            } else if (event.isShortcutDown() && event.getCode() == KeyCode.S) {
-                saveProject();
-            }
-        });
-
-        newButton.setOnAction(event -> newProject(primaryStage));
-        loadButton.setOnAction(event -> loadProject(primaryStage));
-        saveButton.setOnAction(event -> saveProject());
-        saveAsButton.setOnAction(event -> saveProjectAs());
-        deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
-
-        tutorialButton.setOnAction(event -> {
-            if (flag) {
-                flag = false;
-            }
-
-            TutorialView tutorialView = new TutorialView(scene.getWindow());
-
-            Parent rootPane = scene.getRoot();
-            Effect previousEffect = rootPane.getEffect();
-            //final BoxBlur blur = new BoxBlur(0, 0, 5);
-            final GaussianBlur blur = new GaussianBlur(0);
-            blur.setInput(previousEffect);
-            rootPane.setEffect(blur);
-
-            tutorialView.setOnHidden(t -> rootPane.setEffect(previousEffect));
-
-            // Optional extra: fade the blur and dialog in:
-            //scene.getRoot().setOpacity(0);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(300),
-                    //new KeyValue(blur.widthProperty(), 10),
-                    //new KeyValue(blur.heightProperty(), 10),
-                    new KeyValue(blur.radiusProperty(), 7)
-                    //new KeyValue(scene.getRoot().opacityProperty(), 0.75)
-            ));
-            timeline.play();
-
-            tutorialView.show();
         });
 
         primaryStage.getIcons().addAll(new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_16.png"))
@@ -215,122 +116,42 @@ public class Main extends Application {
                 , new Image(Main.class.getResourceAsStream("/icons/taskbar/logo_taskbar_256.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
+        // prevent the window from being too small (primaryStage.setMinWidth(800) doesn't work as this function take
+        // into account the title bar which is platform dependent so the window is actually a little bit larger than
+        // 800x600 initially so we use primaryStage.getWidth/Height() to get the actual size and lock it)
+        primaryStage.setMinWidth(primaryStage.getWidth());
+        primaryStage.setMinHeight(primaryStage.getHeight());
 
-        new Thread(() -> {
-            SoftwareVersion.getLatestVersionInfo().ifPresent(version -> {
-                if (version.compareTo(SoftwareVersion.CURRENT_VERSION) > 0) {
-                    Platform.runLater(() -> {
-                        ImageView icon = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
-                        icon.setFitWidth(50);
-                        icon.setPreserveRatio(true);
-
-                        Text text = new Text(version.getBuildName() + " has been released");
-                        text.setId("text");
-                        text.setWrappingWidth(250);
-
-                        Button button = new Button("Download Now");
-                        button.setId("UpdateButton");
-                        button.setOnAction(event -> getHostServices().showDocument(version.getDownloadURL()));
-
-                        VBox vBox = new VBox();
-                        vBox.setSpacing(20);
-                        vBox.setAlignment(Pos.TOP_CENTER);
-                        vBox.getChildren().addAll(text, button);
-
-                        HBox mainPane = new HBox();
-                        mainPane.setPadding(new Insets(10));
-                        mainPane.setSpacing(20);
-                        mainPane.getStylesheets().add(getClass().getResource("/css/UpdateNotificationDialog.css").toExternalForm());
-                        mainPane.setPrefSize(300, 80);
-                        mainPane.getChildren().addAll(icon, vBox);
-
-                        Notifications.create()
-                                .graphic(mainPane)
-                                .owner(mainWindow.getCanvasView())
-                                .hideAfter(Duration.seconds(5))
-                                .show();
-                    });
-                }
-            });
-        }).start();
-
-//        hpl.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent e) {
-//
-//                SingletonUtilTools.getInstance().setAll("FEEDBACK");
-//
-//                String s = "https://goo.gl/forms/NrXDr2z1Q3RwdSU92";
-//                Desktop desktop = Desktop.getDesktop();
-//                try {
-//                    desktop.browse(URI.create(s));
-//                } catch (IOException ev) {
-//                    ev.printStackTrace();
-//                }
-//            }
-//        });
-
+        new UpdateNotifier(scene.getWindow(), getHostServices()).start();
     }
 
-    private void deviceMonitorMenuShowing(Event e) {
-        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
-        deviceMonitorButton.getItems().clear();
-        SerialPort[] commPorts = SerialPort.getCommPorts();
-        if (commPorts.length > 0) {
-            for ( SerialPort port: commPorts){
-                MenuItem item = new MenuItem(port.getDescriptivePortName());
-                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
-                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
-                deviceMonitorButton.getItems().add(item);
-            }
-        }
-        else {
-            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
-            item.setDisable(true);
-            deviceMonitorButton.getItems().add(item);
-        }
-    }
-
-    private void updatePathTextField(Stage primaryStage) {
-        if (project.getFilePath().isEmpty()) {
-            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
+    private void updatePath(Stage stage, String path) {
+        if (path.isEmpty()) {
+            stage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
         } else {
-            primaryStage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + project.getFilePath());
+            stage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + path);
         }
     }
 
-    private UnsavedDialog.Response showConfirmationDialog() {
-        UnsavedDialog dialog = new UnsavedDialog(borderPane.getScene().getWindow());
-        return dialog.showAndGetResponse();
-    }
-
-    private void newProject(Stage primaryStage) {
-        if (project.hasUnsavedModification()) {
-            UnsavedDialog.Response retVal = showConfirmationDialog();
+    public void newProject(Window window) {
+        if (project.get().hasUnsavedModification()) {
+            UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
             if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
             } else if (retVal == UnsavedDialog.Response.SAVE) {
-                saveProject();
+                saveProject(window);
             }
         }
-
-        projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
-        project.filePathProperty().removeListener(projectPathListener);
-        project = new Project();
-        project.filePathProperty().addListener(projectPathListener);
-        projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-        MainWindow mw = new MainWindow(project);
-        borderPane.setCenter(mw);
-        updatePathTextField(primaryStage);
+        project.set(new Project());
     }
 
-    private void loadProject(Stage primaryStage) {
-        if (project.hasUnsavedModification()) {
-            UnsavedDialog.Response retVal = showConfirmationDialog();
+    public void loadProject(Window window) {
+        if (project.get().hasUnsavedModification()) {
+            UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
             if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
             } else if (retVal == UnsavedDialog.Response.SAVE) {
-                saveProject();
+                saveProject(window);
             }
         }
 
@@ -339,42 +160,24 @@ public class Main extends Application {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+        File selectedFile = fileChooser.showOpenDialog(window);
         if (selectedFile != null) {
-//            read projectVersion from selectedFile
-            boolean canLoad = false;
             String projectVersion = ProjectVersionControl.readProjectVersion(selectedFile);
-            if (ProjectVersionControl.CURRENT_VERSION.equals(projectVersion)) {
-                canLoad = true;
+            if (ProjectVersionControl.CURRENT_VERSION.equals(projectVersion)
+                    || ProjectVersionControl.isConvertibleToCurrentVersion(projectVersion)) {
+                project.set(Project.loadProject(selectedFile));
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
+                alert.showAndWait();
             }
-            else if (ProjectVersionControl.isConvertibleToCurrentVersion(projectVersion)) {
-                /* TODO: ask user to convert file */
-                ProjectVersionControl.convertToCurrentVersion(selectedFile);
-                canLoad = true;
-            }
-            if (!canLoad){
-                (new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK)).showAndWait();
-                return;
-            }
-            else {
-                projectNameTextField.textProperty().unbindBidirectional(project.projectNameProperty());
-                project.filePathProperty().removeListener(projectPathListener);
-                project = Project.loadProject(selectedFile);
-                project.filePathProperty().addListener(projectPathListener);
-                projectNameTextField.textProperty().bindBidirectional(project.projectNameProperty());
-                MainWindow mw = new MainWindow(project);
-                borderPane.setCenter(mw);
-                updatePathTextField(primaryStage);
-            }
-
         }
     }
 
-    private void saveProject() {
-        statusLabel.setText("Saving...");
+    public void saveProject(Window window) {
+        toolbar.setStatusMessage("Saving...");
         try {
             File selectedFile;
-            if (project.getFilePath().isEmpty()) {
+            if (project.get().getFilePath().isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Save File");
                 if (latestProjectDirectory != null) {
@@ -382,32 +185,33 @@ public class Main extends Application {
                 }
                 fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"));
                 fileChooser.setInitialFileName("*.mp");
-                selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+                selectedFile = fileChooser.showSaveDialog(window);
             } else {
-                selectedFile = new File(project.getFilePath());
+                selectedFile = new File(project.get().getFilePath());
             }
 
             if (selectedFile != null) {
                 latestProjectDirectory = selectedFile.getParentFile();
-                mapper.writeValue(selectedFile, project);
-                project.setFilePath(selectedFile.getAbsolutePath());
-                statusLabel.setText("Saved");
-                timer.schedule(new TimerTask() {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(selectedFile, project.get());
+                project.get().setFilePath(selectedFile.getAbsolutePath());
+                toolbar.setStatusMessage("Saved");
+                new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        Platform.runLater(() -> statusLabel.setText(""));
+                        Platform.runLater(() -> toolbar.setStatusMessage(""));
                     }
                 }, 3000);
             } else {
-                statusLabel.setText("");
+                toolbar.setStatusMessage("");
             }
         } catch (IOException x) {
             x.printStackTrace();
         }
     }
 
-    private void saveProjectAs() {
-        statusLabel.setText("Saving...");
+    public void saveProjectAs(Window window) {
+        toolbar.setStatusMessage("Saving...");
         try {
             File selectedFile;
             FileChooser fileChooser = new FileChooser();
@@ -417,34 +221,27 @@ public class Main extends Application {
             }
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"));
             fileChooser.setInitialFileName("*.mp");
-            selectedFile = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+            selectedFile = fileChooser.showSaveDialog(window);
 
             if (selectedFile != null) {
                 latestProjectDirectory = selectedFile.getParentFile();
-                mapper.writeValue(selectedFile, project);
-                project.setFilePath(selectedFile.getAbsolutePath());
-                statusLabel.setText("Saved");
-                timer.schedule(new TimerTask() {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(selectedFile, project.get());
+                project.get().setFilePath(selectedFile.getAbsolutePath());
+                toolbar.setStatusMessage("Saved");
+                new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        Platform.runLater(() -> statusLabel.setText(""));
+                        Platform.runLater(() -> toolbar.setStatusMessage(""));
                     }
                 }, 3000);
             } else {
-                statusLabel.setText("");
+                toolbar.setStatusMessage("");
             }
         } catch (IOException x) {
             x.printStackTrace();
         }
     }
-
-    private void openDeviceMonitor(String portName){
-        SerialPort port = SerialPort.getCommPort(portName);
-        //TODO: capture error in rare case the port is disconnected
-        DeviceMonitor deviceMonitor = new DeviceMonitor(project, port);
-        deviceMonitor.showAndWait();
-    }
-
 
     public static void main(String[] args) {
         launch(args);

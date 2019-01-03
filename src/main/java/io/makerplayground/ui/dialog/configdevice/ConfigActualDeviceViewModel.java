@@ -39,9 +39,10 @@ public class ConfigActualDeviceViewModel {
     private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
     private DeviceMapperResult deviceMapperResult;
-    private Callback platformChangedCallback;
-    private Callback controllerChangedCallback;
-    private Callback deviceConfigChangedCallback;
+    private Runnable platformChangedCallback;
+    private Runnable controllerChangedCallback;
+    private Runnable deviceConfigChangedCallback;
+    private Runnable configChangedCallback;
 
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
@@ -61,20 +62,24 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    void setPlatformChangedCallback(Callback platformChangedCallback) {
-        this.platformChangedCallback = platformChangedCallback;
+    public void setPlatformChangedCallback(Runnable callback) {
+        platformChangedCallback = callback;
     }
 
-    void setControllerChangedCallback(Callback controllerChangedCallback) {
-        this.controllerChangedCallback = controllerChangedCallback;
+    public void setControllerChangedCallback(Runnable callback) {
+        controllerChangedCallback = callback;
     }
 
-    void setDeviceConfigChangedCallback(Callback deviceConfigChangedCallback) {
-        this.deviceConfigChangedCallback = deviceConfigChangedCallback;
+    public void setDeviceConfigChangedCallback(Runnable callback) {
+        deviceConfigChangedCallback = callback;
     }
 
-    void removeDeviceConfigChangedCallback() {
-        this.deviceConfigChangedCallback = null;
+    public void clearDeviceConfigChangedCallback() {
+        deviceConfigChangedCallback = null;
+    }
+
+    public void setConfigChangedCallback(Runnable callback) {
+        configChangedCallback = callback;
     }
 
     DeviceMapperResult getDeviceMapperResult() {
@@ -97,7 +102,10 @@ public class ConfigActualDeviceViewModel {
         project.setPlatform(platform);
         applyDeviceMapping();
         if (platformChangedCallback != null) {
-            platformChangedCallback.call();
+            platformChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
         }
     }
 
@@ -109,7 +117,10 @@ public class ConfigActualDeviceViewModel {
         project.setController(device);
         applyDeviceMapping();
         if (controllerChangedCallback != null) {
-            controllerChangedCallback.call();
+            controllerChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
         }
     }
 
@@ -132,7 +143,10 @@ public class ConfigActualDeviceViewModel {
         projectDevice.setActualDevice(device);
         applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.call();
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
         }
     }
 
@@ -141,7 +155,10 @@ public class ConfigActualDeviceViewModel {
         projectDevice.setDeviceConnection(peripheral, port);
         applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.call();
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
         }
     }
 
@@ -149,7 +166,10 @@ public class ConfigActualDeviceViewModel {
         projectDevice.removeDeviceConnection(peripheral);
         applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.call();
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
         }
     }
 

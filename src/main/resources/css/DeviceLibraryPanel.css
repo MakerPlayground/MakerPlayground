@@ -1,0 +1,103 @@
+#deviceLibraryTab {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    /*-fx-border-radius: 5px 5px 0px 0px;*/
+    -fx-padding: 5px 10px 5px 5px;
+    -fx-text-fill: text-color-hilight;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/*----------------------------------------------------*/
+*.tab-header-background {
+    -fx-background-color: control-background-color;
+    -fx-border-color: control-background-color;
+    -fx-border-width : 1px;
+    -fx-padding: 0px;
+}
+.tab-pane:top > .tab-header-area {
+    /*-fx-padding: 0.416667em 0.166667em 0.0em 0.416667em; *//* 5 2 0 5 */
+    -fx-padding: 0; /* 5 2 0 5 */
+}
+/*----------------------------------------------------*/
+
+.titled-pane {
+    -fx-text-fill: text-color-hilight;
+}
+
+.titled-pane > .title {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-padding: 5px 10px 5px 5px;
+    -fx-text-fill: text-color-hilight;
+}
+
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color: text-color-hilight;
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow{
+    -fx-background-color: text-color-hilight;
+    /* remove the scale effect by setting the same insets and padding when it is not focused
+     * (value from modena.css from JDK 10.0.1)
+     */
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.25em 0.3125em 0.25em 0.3125em;
+    -fx-effect: null;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: background-color;
+    -fx-box-border: transparent;
+}
+
+.scroll-pane{
+    -fx-background-color: background-color;
+    -fx-border-color : background-color;
+    -fx-border-width : 1px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .increment-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .decrement-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius: 0.5em;
+}
+
+.scroll-bar .thumb{
+    -fx-background-color: scrollbar-thumb-color;
+    -fx-border-radius: 0.5em;
+    -fx-background-insets: 2, 0, 0;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

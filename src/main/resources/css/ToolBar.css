@@ -1,144 +1,80 @@
-.root{
-    -fx-font-size:12px;
-}
-/*.titled-pane > .title{
-    -fx-font-size:12px;
-    -fx-background-color : #313644;
-    -fx-border-color: #313644;
-    -fx-border-width : 2px;
-}*/
-
 #toolBarPane {
-    -fx-background-color: #ffffff; /*toolbar background area*/
-    -fx-border-color: #e3e3e3;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0 0 2 0;
 }
-#menuHBox {
+
+#overflow-menubutton {
+    -fx-background-image: url('hamburger-icon.png');
+    -fx-background-size: 30px;
     -fx-background-color: transparent;
-}
-/*#projectNameTextField{
-    -fx-font-size: 12px;
-    -fx-text-fill: white;
     -fx-border-color: transparent;
-    -fx-background-color: #313644;
+    -fx-background-repeat: no-repeat;
+    -fx-pref-height: 30px;
+    -fx-cursor: hand;
 }
-#projectNameTextField .text{
-    -fx-underline:true;
+
+#overflow-menubutton .arrow {
+     -fx-shape: "";
+     -fx-padding: 0;
 }
-#projectNameTextField:focus{
-    -fx-text-fill: white;
+
+/* style a radio button into a tab liked control */
+
+.radio-button {
+    -fx-text-fill: text-color;
+    -fx-background-color: transparent;
     -fx-border-color: transparent;
-}*/
-/*#tutorialBtn{
-    -fx-background-color : transparent;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #5ac2ab;
-    -fx-cursor: hand;
-    -fx-font-size: 12px;
-}
-#tutorialBtn:pressed{
-    -fx-background-color : #5ac2ab;
-    -fx-border-color : #5ac2ab;
-    -fx-text-fill: #231f20;
-    -fx-cursor: hand;
-}*/
-
-.split-pane{
-    -fx-border-width:0;
-    -fx-border-insets:0;
-    -fx-background-insets:0;
-    -fx-padding: 0;
-}
-
-.split-pane *.split-pane-divider {
-    -fx-padding: 0 0 0 0;
-}
-
-#saveBtn{
-    -fx-background-image: url('save.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-#saveBtn:pressed{
-    -fx-background-image: url('save-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
 }
 
-#saveAsBtn{
-    -fx-background-image: url('save-as.png');
-    -fx-background-size : 30px;
+.radio-button:hover {
+    -fx-text-fill: text-color-hilight;
     -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-#saveAsBtn:pressed{
-    -fx-background-image: url('save-as-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
 }
 
-#loadBtn{
-    -fx-background-image: url('open.png');
-    -fx-background-size : 30px;
+.radio-button:selected {
+    -fx-text-fill: text-color-hilight;
     -fx-background-color: transparent;
-    -fx-border-color : transparent;
+    -fx-border-color: text-color-hilight;
+    -fx-border-width: 0 0 2 0;
+    -fx-label-padding: 0 0 0 0;
     -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-#loadBtn:pressed{
-    -fx-background-image: url('open-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-#newFileBtn{
-    -fx-background-image: url('new.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
-}
-#newFileBtn:pressed{
-    -fx-background-image: url('new-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-}
-#deviceMonitorMenuButton{
-    -fx-background-image: url('Device-monitor.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
-    -fx-background-repeat: no-repeat;
 }
 
-#deviceMonitorMenuButton:showing{
-    -fx-background-image: url('Device-monitor-press.png');
-    -fx-background-size : 30px;
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-cursor: hand;
+.radio-button > .radio,
+.radio-button:focused > .radio  {
+   -fx-background-radius: 0em;
+   -fx-padding: 0em;
+}
+
+.radio-button > .radio > .dot {
+   -fx-background-color: transparent;
+   -fx-background-radius: 0em;
+   -fx-padding: 0em;
 }
 
 #statusLabel {
-    -fx-text-fill: white;
+    -fx-text-fill: text-fill-color;
 }
 
-#feedback {
-    -fx-border-color: #5ac2ab;
-    -fx-background-color: none;
-    -fx-text-fill: #5ac2ab;
+/* icon of upload button is set in Toolbar.java as we can't set icon size in css */
+#uploadButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: text-fill-color;
+    -fx-cursor: hand;
+}
+
+#uploadStatusButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: text-fill-color;
+    -fx-cursor: hand;
 }

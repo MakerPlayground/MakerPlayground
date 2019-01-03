@@ -1,0 +1,79 @@
+.root {
+    -fx-accent: #2673fd;
+
+    background-color: #ffffff;
+    control-background-color: #f6f6f6;
+    control-background-color-dark: #707070;
+    control-hover-background-color: #e3e3e3;
+
+    border-color: #e3e3e3;
+
+    accent-color: #2673fd;
+    upload-accent-color: #00cc6a;
+    sub-menubar-accent-color: #ff8b00;
+    generateview-header-background-color: #2673fd;
+    generateview-text-color: #ffffff;
+
+    /* Text size can be set by css look up parameter but we keep them here for manual find/replace */
+    /*font-sub-menu: 13;*/
+    /*font-size-tab: 24;*/
+    font-size-list-cell: 11;
+
+    /*---Textbox, Checkbox---*/
+    text-fill-color: #707070;
+    text-fill-border-color: #cccccc; 
+    text-fill-background-color: #ffffff;
+
+
+    /*---Typography---*/
+    text-color: #707070;
+    text-color-invert: #ffffff;
+    text-color-hilight: #333333;
+
+    /*---Scrollbar---*/
+    scrollbar-thumb-color: #c2c2c2;
+    /*scrollbar-thumb-color: derive(#707070, 45%);*/
+    scrollbar-background-color: #e5e5e5;
+    scrollbar-border-color: #c2c2c2;
+
+    /*---canvas---*/
+    canvas-background-color: #e4e4e4;
+
+    /*Add Scene/Condition button*/
+    add-scene-background-color: #00cc6a;
+    add-scene-background-color-hover: #04aa53;
+    add-scene-text-color: #ffffff;
+    
+    /*---Begin---*/
+    begin-background-color: #6a737d;
+    begin-text-fill: #ffffff;
+    begin-outport: #4d555b;
+
+    /*---condition---*/
+    condition-background-color: #f6f6f6;
+    condition-scroll-pane-viewport-background-color: transparent;
+    condition-scroll-pane-viewport-border-color: transparent;
+    condition-port: #e3e3e3;
+
+
+    /*---Scene---*/
+    scene-header-background-color: #ffffff;
+    scene-background-color: #f6f6f6;
+
+}
+
+/* -fx-base: #ffffff;
+    -fx-background: #ffffff;
+
+    -fx-control-inner-background: #f6f6f6;
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background,-2%);
+
+    -fx-dark-text-color: black;
+    -fx-mid-text-color: #333;
+    -fx-light-text-color: white;
+
+    -fx-accent: #2673fd;
+    -fx-default-button: #2673fd;
+
+    -fx-focus-color: #2673fd;
+    -fx-faint-focus-color: #2673fd; */

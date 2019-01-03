@@ -14,6 +14,7 @@ public class AutoResizeTextField extends TextField {
         textProperty().addListener((observable, oldValue, newValue) -> adjustPreferredWidth());
     }
 
+    // TODO: this calculation only works when -fx-padding: 0px is set in the CSS
     private void adjustPreferredWidth() {
         // update the width of the nameTextField based on it's content by measuring the width of the text using Text
         // instance with the same content. 'W' is added to reserved space for the next character and to prevent the

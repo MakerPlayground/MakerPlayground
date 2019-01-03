@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -96,6 +97,19 @@ public class Project {
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+    }
+
+    // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
+    // reference to ProjectDevice which need to be updated to the cloned ProjectDevice (complex mapping and searching)
+    public static Project newInstance(Project project) {
+        ObjectMapper mapper = new ObjectMapper();
+        Project newProject = null;
+        try {
+            newProject = mapper.treeToValue(mapper.valueToTree(project), Project.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();    // this should not happen as we're parsing an in-memory stream
+        }
+        return newProject;
     }
 
     public ObservableList<ProjectDevice> getDevice() {

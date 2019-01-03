@@ -1,40 +1,56 @@
 .root{
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-text-fill : black;
+    /*-fx-text-fill : black;*/
     -fx-font-size: 12px;
     -fx-border-color: transparent;
     -fx-border-width: 0;
-    -fx-border-radius: 10;
-    -fx-background-color: white;
-    -fx-background-radius: 10;
+    /*-fx-border-radius: 10;*/
+    -fx-background-color: background-color;
+    /*-fx-background-radius: 10;*/
+}
+
+#configVBox{
+    -fx-background-color: background-color;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: 12px;
+}
+
+#topicConfigDevice {
+    -fx-background-color: transparent;
+    -fx-text-fill: text-color;
+    /*-fx-font-size: 14px;*/
+    -fx-font-weight: bold;
+    -fx-padding: 15 0 0 0;
 }
 
 .scroll-pane{
-    -fx-background-color: white;
-    -fx-border-color : white;
-    -fx-border-width : 0px;
+    -fx-background-color: background-color;
+    -fx-border-color : transparent;
+    /*-fx-border-width : 0.5px;*/
+    -fx-padding: 20px 20px 20px 20px;
 }
 
 .scroll-pane > .viewport{
-    -fx-background-color: white;
-    -fx-border-color : white;
-    -fx-border-width : 0px;
+    -fx-background-color: background-color;
+    -fx-border-color : background-color;
+    /*-fx-border-width : 0px;
+    -fx-padding: 20px 20px 20px 20px;*/
 }
 
 .scroll-bar {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
 }
 
 .scroll-bar .increment-button {
-    -fx-background-color : transparent;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
 
 .scroll-bar .decrement-button {
-    -fx-background-color : transparent;
+    -fx-background-color : background-color;
     -fx-background-radius: 0em;
     -fx-padding:0 10 0 0;
 }
@@ -50,47 +66,41 @@
 }
 
 .scroll-bar .track{
-    -fx-background-color: transparent;
-    -fx-border-color : transparent;
-    -fx-border-radius:0.5em;
+    -fx-background-color: background-color;
+    -fx-border-color : background-color;
+    -fx-border-radius: 0.5em;
 }
 
 .scroll-bar .thumb{
-    -fx-background-color: derive(#707070,45%);
+    -fx-background-color: scrollbar-thumb-color;
     -fx-border-radius: 0.5em;
     -fx-background-insets: 2, 0, 0;
 }
 
 .text-field{
     -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
-    -fx-background-color: white;
-    -fx-text-fill: #313644;
+    -fx-background-color: text-fill-background-color;
+    -fx-text-fill: text-fill-color;
     -fx-font-size: 12px;
     -fx-font-weight: normal;
-    -fx-border-color : #cccccc;
+    -fx-border-color : text-fill-border-color;
     -fx-border-width: 1px;
     -fx-border-radius: 3;
 }
 
 .check-box .box {
-    -fx-background-color: white;
-    -fx-border-color: #cccccc;
+    -fx-background-color: text-fill-background-color;
+    -fx-border-color: text-fill-border-color;
     -fx-border-radius: 3px;
 }
 
 .check-box:selected .mark {
-    -fx-background-color: #2673fd;
+    -fx-background-color: accent-color;
 }
 
-#topicConfigDevice{
-    -fx-background-color : transparent;
-    -fx-text-fill : #707070;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-}
 .label{
     -fx-background-color : transparent;
-    -fx-text-fill : #707070;
+    -fx-text-fill : text-color;
     -fx-font-size: 12px;
 }
 #portComboBox{
@@ -124,7 +134,7 @@
     -fx-padding: 0; /* 4 8 4 8 */
     -fx-alignment: CENTER;
     -fx-content-display: LEFT;
-    -fx-border-color : #cccccc;
+    -fx-border-color : text-fill-border-color;
     -fx-border-radius:3px;
     -fx-background-color: white;
     -fx-background-insets:0;
@@ -135,15 +145,15 @@
     -fx-min-width: 320;
 }*/
 .combo-box.list-cell {
-    -fx-background-color: white;
+    -fx-background-color: text-fill-background-color;
     -fx-background-radius: 3px;
-    -fx-text-fill: #313644;
+    -fx-text-fill: text-fill-color;
     -fx-padding: 3 0 2 7;
     -fx-cell-size: 1.66667em;
     -fx-font-size:12px;
 }
 .combo-box-popup .list-view .list-cell:filled:hover{
-    -fx-background-color: #2673fd;
+    -fx-background-color: accent-color;
     -fx-background-radius:0;
     -fx-text-fill: white;
     -fx-font-size:12px;
@@ -156,6 +166,8 @@
 }
 
 #unusedLabel {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
     -fx-font-weight: bold;
 }
 
@@ -163,7 +175,7 @@
     -fx-font-weight: bold;
 }
 
-#close-button {
+/*#close-button {
     -fx-image: url('/css/cancel-button.png');
 }
 
@@ -175,4 +187,4 @@
 #close-button:pressed {
     -fx-image: url('/css/cancel-button-press.png');
     -fx-cursor: hand;
-}
+}*/

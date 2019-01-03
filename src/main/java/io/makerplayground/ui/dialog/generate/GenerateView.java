@@ -18,13 +18,18 @@ package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.generator.diagram.WiringDiagram;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
 import java.io.IOException;
@@ -32,8 +37,7 @@ import java.io.IOException;
 /**
  * Created by tanyagorn on 7/19/2017.
  */
-public class GenerateView extends UndecoratedDialog {
-    private final AnchorPane anchorPane = new AnchorPane();
+public class GenerateView extends TabPane {
     @FXML private TextArea codeTextArea;
     @FXML private TableView<TableDataList> deviceTable;
     @FXML private TableColumn<TableDataList,String> nameColumn;
@@ -41,18 +45,17 @@ public class GenerateView extends UndecoratedDialog {
     @FXML private TableColumn<TableDataList,String> modelColumn;
     @FXML private TableColumn<TableDataList,String> pinColumn;
     @FXML private ScrollPane diagramScrollPane;
-    @FXML private Tab simulateTab;
-    @FXML private Tab codeDeviceTableTab;
-    @FXML private ImageView closeButton;
+    @FXML private Button zoomInButton;
+    @FXML private Button zoomOutButton;
+    @FXML private Button zoomDefaultButton;
 
     private final GenerateViewModel viewModel;
 
-    public GenerateView(Window owner, GenerateViewModel viewModel) {
-        super(owner);
+    public GenerateView(GenerateViewModel viewModel) {
         this.viewModel = viewModel;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/generate/GenerateView.fxml"));
-        fxmlLoader.setRoot(anchorPane);
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
@@ -60,16 +63,22 @@ public class GenerateView extends UndecoratedDialog {
             e.printStackTrace();
         }
 
-        initView();
-        setContent(anchorPane);
-
-        closeButton.setOnMouseReleased(event -> hide());
+        if (!viewModel.hasError()) {
+            initView();
+        }
     }
 
     private void initView() {
-        Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
+        DoubleProperty scale = new SimpleDoubleProperty(0.5);
+        zoomInButton.setOnAction(event -> scale.set(scale.get() + 0.1));
+        zoomOutButton.setOnAction(event -> scale.set(Math.max(0.1, scale.get() - 0.1)));
+        zoomDefaultButton.setOnAction(event -> scale.set(0.5));
 
-        diagramScrollPane.setContent(wiringDiagram);
+        Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
+        wiringDiagram.scaleXProperty().bind(scale);
+        wiringDiagram.scaleYProperty().bind(scale);
+
+        diagramScrollPane.setContent(new Group(wiringDiagram));
         codeTextArea.setText(viewModel.getCode());
         codeTextArea.setEditable(false);
 

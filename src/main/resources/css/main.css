@@ -1,9 +1,18 @@
-.root {
-    -fx-accent: #2673fd;
+.menu-item:focused {
+    -fx-background-color: accent-color;
 }
 
-.menu-item:focused {
-    -fx-background-color: #2673fd;
+.split-pane{
+    -fx-border-width:0;
+    -fx-border-insets:0;
+    -fx-background-insets:0;
+    -fx-padding: 0;
+
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 1 1 1 1;
+    -fx-background-color: border-color;
 }
 
 /******************************************************************************
@@ -66,34 +75,3 @@
 .notification-bar>.pane .close-button:pressed>.graphic {
      -fx-background-color: #333333;
 }
-
-/*.notification-bar>.pane . button {
-    -fx-background-color: white;
-    -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 5px;
-    -fx-text-fill: #333333;
-    -fx-padding: 7.5 7.5 7.5 7.5;
-}
-
-.notification-bar>.pane . button:hover {
-    -fx-background-color: #e3e3e3;
-    -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
-    -fx-border-radius: 5px;
-    -fx-text-fill: #333333;
-    -fx-padding: 7.5 7.5 7.5 7.5;
-    -fx-cursor: hand;
-}
-
-.notification-bar>.pane . button:pressed {
-    -fx-background-color: #2673fd;
-    -fx-background-radius: 5px;
-    -fx-border-color: #2673fd;
-    -fx-border-radius: 5px;
-    -fx-text-fill: #ffffff;
-    -fx-padding: 7.5 7.5 7.5 7.5;
-    -fx-cursor: hand;
-}
-*/
-

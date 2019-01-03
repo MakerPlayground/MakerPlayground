@@ -180,7 +180,7 @@ public class UploadTask extends Task<UploadResult> {
             try {
                 FileUtils.copyDirectory(source, destination);
             } catch (IOException e) {
-                Platform.runLater(() -> log.set("Error: Missing some libraries (" + libraryPath + ")\n"));
+                Platform.runLater(() -> log.set("Error: Missing some libraries (" + libraryPath.get() + ")\n"));
                 updateMessage("Error: Missing some libraries");
                 return UploadResult.CANT_FIND_LIBRARY;
             }
@@ -192,7 +192,7 @@ public class UploadTask extends Task<UploadResult> {
             String destinationPath = projectPath + File.separator + "lib";
             ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(sourcePath, destinationPath);
             if (extractResult != ZipResourceExtractor.ExtractResult.SUCCESS) {
-                Platform.runLater(() -> log.set("Error: Failed to extract libraries (" + libraryPath + ")\n"));
+                Platform.runLater(() -> log.set("Error: Failed to extract libraries (" + libraryPath.get() + ")\n"));
                 updateMessage("Error: Failed to extract libraries");
                 return UploadResult.CANT_FIND_LIBRARY;
             }

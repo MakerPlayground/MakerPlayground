@@ -1,6 +1,6 @@
 #pane {
-    -fx-background-color: #ffffff;
+    -fx-background-color: background-color;
     -fx-background-radius: 5px;
-    -fx-border-color: #e3e3e3;
+    -fx-border-color: border-color;
     -fx-border-radius: 5px;
 }

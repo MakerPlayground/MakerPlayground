@@ -1,0 +1,23 @@
+#nameTextField {
+    -fx-background-color : transparent;
+    -fx-text-fill: text-color-hilight;
+    -fx-font-size: 11px; /* font-size-list-cell */
+    -fx-padding: 0px;
+}
+
+#removeButton {
+    -fx-background-image: url('remove-project-device.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size : 20px 20px;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-cursor: hand;
+}
+
+#DeviceListCell {
+    -fx-border-color: background-color;
+    -fx-border-width: 1px;
+    -fx-padding: 0px 30px 0px 10px;
+}
+
