@@ -287,11 +287,11 @@ public class SourceCodeGenerator {
         if (!generator.checkDiagram(project)) {
             return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
         }
-        if (!generator.checkDeviceProperty(project)) {
-            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
-        }
         if (!generator.checkDeviceAssignment(project)) {
             return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
+        }
+        if (!generator.checkDeviceProperty(project)) {
+            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
         }
         if (project.getCloudPlatformUsed().size() > 1) {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
