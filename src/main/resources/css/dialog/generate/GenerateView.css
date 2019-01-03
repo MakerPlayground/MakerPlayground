@@ -203,3 +203,59 @@
     -fx-image: url('/css/cancel-button-press.png');
     -fx-cursor: hand;
 }*/
+
+
+/* zoom control */
+
+#zoomInButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-in-toggle.png');
+    -fx-background-size : 25px;
+    -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomInButton{
+    -fx-background-image: url('../../canvas/zoom-in.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomOutButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-out-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomOutButton{
+    -fx-background-image: url('../../canvas/zoom-out.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomDefaultButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-default-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
+ }
+#zoomDefaultButton{
+    -fx-background-image: url('../../canvas/zoom-default.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
+ }

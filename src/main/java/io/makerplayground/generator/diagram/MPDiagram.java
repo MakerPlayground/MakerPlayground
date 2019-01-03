@@ -46,6 +46,8 @@ class MPDiagram extends Pane {
         TOP, RIGHT, BOTTOM, LEFT
     }
 
+    private static final double PADDING_X = 20;
+    private static final double PADDING_Y = 20;
     private static final double DEVICE_TO_BOARD_SPACING = 100;
     private static final double DEVICE_SPACING = 20;
     private static final double PIN_PITCH = 11.34;   // 144 pixel per inch / 25.4 mm per inch * 2 mm (pitch of maker playground connector)
@@ -61,8 +63,6 @@ class MPDiagram extends Pane {
     private double controllerOffsetX, controllerOffsetY;
 
     public MPDiagram(Project project) {
-        setPrefSize(1000, 1000);
-
         for (Side s :  Side.values()) {
             deviceMap.put(s, new ArrayList<>());
         }
@@ -105,9 +105,9 @@ class MPDiagram extends Pane {
         try (InputStream controllerImageStream = Files.newInputStream(controllerImagePath)) {
             // left offset is equal to the max height of all devices on the left hand side not the max width because the image
             // need to be rotate CW by 90 degree
-            controllerOffsetX = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)
+            controllerOffsetX = PADDING_X + deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)
                     .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
-            controllerOffsetY = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
+            controllerOffsetY = PADDING_Y + deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
                     .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
             Image controllerImage = new Image(controllerImageStream);
             ImageView controllerImageView = new ImageView(controllerImage);
@@ -121,10 +121,10 @@ class MPDiagram extends Pane {
         double left = 0, right = 0, top = 0, bottom = 0;
 
         // draw top device
-        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)   // left offset is equal to the max height of all devices on the left hand side
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0);           // not the max width because the image need to be rotate CW by 90 degree
+        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)        // left offset is equal to the max height of all devices on the left hand side
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
         bottom = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0);
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_Y;
         List<ProjectDevice> topDevice = deviceMap.get(Side.TOP);
         topDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getX()));
         for (ProjectDevice device : topDevice) {
@@ -134,10 +134,10 @@ class MPDiagram extends Pane {
         }
 
         // draw left device
-        right = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)   // left offset is equal to the max height of all devices on the left hand side
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0);            // not the max width because the image need to be rotate CW by 90 degree
+        right = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)       // left offset is equal to the max height of all devices on the left hand side
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
         top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y;
         List<ProjectDevice> leftDevice = deviceMap.get(Side.LEFT);
         leftDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getY()));
         for (ProjectDevice device : leftDevice) {
@@ -148,10 +148,10 @@ class MPDiagram extends Pane {
         }
 
         // draw bottom device
-        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)    // left offset is equal to the max height of all devices on the left hand side
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0);            // not the max width because the image need to be rotate CW by 90 degree
+        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)        // left offset is equal to the max height of all devices on the left hand side
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
         top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y
                 + controller.getHeight() + DEVICE_TO_BOARD_SPACING;
         List<ProjectDevice> bottomDevice = deviceMap.get(Side.BOTTOM);
         bottomDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getX()));
@@ -165,9 +165,9 @@ class MPDiagram extends Pane {
         // draw right device
         left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getActualDevice)   // left offset is equal to the max height of all devices on the left hand side
                 .mapToDouble(ActualDevice::getHeight).max().orElse(0)            // not the max width because the image need to be rotate CW by 90 degree
-                + DEVICE_TO_BOARD_SPACING + controller.getWidth() + DEVICE_TO_BOARD_SPACING;
+                + DEVICE_TO_BOARD_SPACING + controller.getWidth() + DEVICE_TO_BOARD_SPACING + PADDING_X;
         top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getActualDevice)
-                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
+                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y;
         List<ProjectDevice> rightDevice = deviceMap.get(Side.RIGHT);
         rightDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getY()));
         for (ProjectDevice device : deviceMap.get(Side.RIGHT)) {
@@ -201,7 +201,7 @@ class MPDiagram extends Pane {
     }
 
     private Point2D getTransformPortLocation(ProjectDevice device, DevicePort port) {
-        drawCircle(devicePositionMap.get(device).getX(), devicePositionMap.get(device).getY(), Color.PINK);
+//        drawCircle(devicePositionMap.get(device).getX(), devicePositionMap.get(device).getY(), Color.PINK);
         if (deviceSideMap.get(device) == Side.TOP) {
             return devicePositionMap.get(device).add(port.getX(), port.getY());
         } else if (deviceSideMap.get(device) == Side.LEFT) {

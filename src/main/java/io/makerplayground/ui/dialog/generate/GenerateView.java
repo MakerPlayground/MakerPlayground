@@ -18,8 +18,11 @@ package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.generator.diagram.WiringDiagram;
 import io.makerplayground.ui.dialog.UndecoratedDialog;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -42,6 +45,9 @@ public class GenerateView extends TabPane {
     @FXML private TableColumn<TableDataList,String> modelColumn;
     @FXML private TableColumn<TableDataList,String> pinColumn;
     @FXML private ScrollPane diagramScrollPane;
+    @FXML private Button zoomInButton;
+    @FXML private Button zoomOutButton;
+    @FXML private Button zoomDefaultButton;
 
     private final GenerateViewModel viewModel;
 
@@ -63,9 +69,16 @@ public class GenerateView extends TabPane {
     }
 
     private void initView() {
-        Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
+        DoubleProperty scale = new SimpleDoubleProperty(0.5);
+        zoomInButton.setOnAction(event -> scale.set(scale.get() + 0.1));
+        zoomOutButton.setOnAction(event -> scale.set(Math.max(0.1, scale.get() - 0.1)));
+        zoomDefaultButton.setOnAction(event -> scale.set(0.5));
 
-        diagramScrollPane.setContent(wiringDiagram);
+        Pane wiringDiagram = WiringDiagram.make(viewModel.getProject());
+        wiringDiagram.scaleXProperty().bind(scale);
+        wiringDiagram.scaleYProperty().bind(scale);
+
+        diagramScrollPane.setContent(new Group(wiringDiagram));
         codeTextArea.setText(viewModel.getCode());
         codeTextArea.setEditable(false);
 
