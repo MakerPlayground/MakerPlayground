@@ -98,6 +98,9 @@ public enum DeviceLibrary {
                             temp.add(mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {}));
                         } catch (JsonParseException e) {
                             System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
+                        } catch (NullPointerException e) {
+                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
+                            throw new IllegalStateException(e);
                         }
                     }
                 }
