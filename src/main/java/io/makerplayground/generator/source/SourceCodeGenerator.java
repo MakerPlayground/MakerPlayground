@@ -119,7 +119,7 @@ public class SourceCodeGenerator {
                             if (!devicePort.getAlias().isEmpty()) {
                                 if (p.isDual()) {
                                     args.addAll(devicePort.getAlias());
-                                } else if (p.isSingle()) {
+                                } else {
                                     args.add(devicePort.getAlias().get(0));
                                 }
                             } else {

@@ -193,10 +193,21 @@ public class ActualDevice {
                 }
 
                 String name = originalPort.getName() + "_1";
-                port.add(new DevicePort(name, null, DevicePort.Type.WIRE, null, firstPortFunction, 0, 0, 0, 0, 0, originalPort));
+                List<String> alias;
+                if (!originalPort.getAlias().isEmpty()) {
+                    alias = List.of(originalPort.getAlias().get(0));
+                } else {
+                    alias = Collections.emptyList();
+                }
+                port.add(new DevicePort(name, alias, DevicePort.Type.WIRE, null, firstPortFunction, 0, 0, 0, 0, 0, originalPort));
                 if (!secondPortFunction.isEmpty()) {
                     name = originalPort.getName() + "_2";
-                    port.add(new DevicePort(name, null, DevicePort.Type.WIRE, null, secondPortFunction, 0, 0, 0, 0, 0, originalPort));
+                    if (!originalPort.getAlias().isEmpty()) {
+                        alias = List.of(originalPort.getAlias().get(1));
+                    } else {
+                        alias = Collections.emptyList();
+                    }
+                    port.add(new DevicePort(name, alias, DevicePort.Type.WIRE, null, secondPortFunction, 0, 0, 0, 0, 0, originalPort));
                 }
             }
         }
