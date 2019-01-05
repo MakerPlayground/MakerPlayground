@@ -21,5 +21,6 @@ public enum WiringMethod {
     WIRE_AND_BREADBOARD,
     GROVE,
     MP,
-    KIDBRIGHT
+    KIDBRIGHT,
+    INEX
 }

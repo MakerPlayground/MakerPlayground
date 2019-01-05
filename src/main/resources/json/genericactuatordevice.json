@@ -278,5 +278,80 @@
     ], 
     "condition": [], 
     "value": []
+  },
+  {
+    "name": "Display",
+    "description": "An lcd/oled display which can display character and graphic",
+    "action": [
+      {
+        "name": "Show Text",
+        "funcname": "showText",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Line",
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 10.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Text",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          }
+        ]
+      },
+      {
+        "name": "Show Number",
+        "funcname": "showNumber",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Line",
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 10.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Label",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Value",
+            "value": 1234.0,
+            "constraint": {
+              "min": -99999.0,
+              "max": 99999.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Clear Screen",
+        "funcname": "clearScreen",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]

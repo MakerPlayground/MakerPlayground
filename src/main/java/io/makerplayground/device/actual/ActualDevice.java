@@ -199,7 +199,7 @@ public class ActualDevice {
                 } else {
                     alias = Collections.emptyList();
                 }
-                port.add(new DevicePort(name, alias, DevicePort.Type.WIRE, null, firstPortFunction, 0, 0, 0, 0, 0, originalPort));
+                port.add(new DevicePort(name, alias, DevicePortType.WIRE, null, firstPortFunction, 0, 0, 0, 0, 0, originalPort));
                 if (!secondPortFunction.isEmpty()) {
                     name = originalPort.getName() + "_2";
                     if (!originalPort.getAlias().isEmpty()) {
@@ -207,7 +207,7 @@ public class ActualDevice {
                     } else {
                         alias = Collections.emptyList();
                     }
-                    port.add(new DevicePort(name, alias, DevicePort.Type.WIRE, null, secondPortFunction, 0, 0, 0, 0, 0, originalPort));
+                    port.add(new DevicePort(name, alias, DevicePortType.WIRE, null, secondPortFunction, 0, 0, 0, 0, 0, originalPort));
                 }
             }
         }
@@ -372,10 +372,10 @@ public class ActualDevice {
     public boolean isSupport(ActualDevice controller, GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
         // every controller can be connected to a virtual device so we skip this test
         if (deviceType != DeviceType.VIRTUAL) {
-            Set<DevicePort.Type> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePort.Type.class)));
-            Set<DevicePort.Type> devicePortType = getPort().stream().map(DevicePort::getType)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePort.Type.class)));
+            Set<DevicePortType> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
+            Set<DevicePortType> devicePortType = getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
             // this device is supported if and only if its ports has the same type as some ports of the controller
             devicePortType.retainAll(controllerPortType);
             if (devicePortType.isEmpty()) {

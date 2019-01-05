@@ -174,6 +174,28 @@ public enum Peripheral {
     GROVE_I2C_1(ConnectionType.GROVE_I2C),
     GROVE_I2C_2(ConnectionType.GROVE_I2C),
 
+    INEX_GPIO_1(ConnectionType.INEX_GPIO),
+    INEX_GPIO_2(ConnectionType.INEX_GPIO),
+    INEX_GPIO_3(ConnectionType.INEX_GPIO),
+    INEX_GPIO_4(ConnectionType.INEX_GPIO),
+    INEX_GPIO_5(ConnectionType.INEX_GPIO),
+    INEX_GPIO_6(ConnectionType.INEX_GPIO),
+
+    INEX_PWM_1(ConnectionType.INEX_PWM),
+    INEX_PWM_2(ConnectionType.INEX_PWM),
+    INEX_PWM_3(ConnectionType.INEX_PWM),
+    INEX_PWM_4(ConnectionType.INEX_PWM),
+    INEX_PWM_5(ConnectionType.INEX_PWM),
+    INEX_PWM_6(ConnectionType.INEX_PWM),
+
+    INEX_ANALOG_1(ConnectionType.INEX_ANALOG),
+
+    INEX_UART_1(ConnectionType.INEX_UART),
+
+    INEX_I2C_1(ConnectionType.INEX_I2C),
+
+    INEX_WS2812_1(ConnectionType.INEX_WS2812),
+
     POWER(ConnectionType.POWER);
 
     private ConnectionType connectionType;
@@ -191,7 +213,7 @@ public enum Peripheral {
     }
 
     public boolean isSingle() {
-        return isMPSingle() || isGroveSingle();
+        return isMPSingle() || isGroveSingle() || isInexSingle();
     }
 
     public boolean isMPSingle() {
@@ -210,6 +232,20 @@ public enum Peripheral {
             case GROVE_GPIO_SINGLE:
             case GROVE_PWM_SINGLE:
             case GROVE_ANALOG_SINGLE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isInexSingle() {
+        switch (this.getConnectionType()) {
+            case INEX_GPIO:
+            case INEX_PWM:
+            case INEX_ANALOG:
+            case INEX_WS2812:
+            case INEX_I2C:
+            case INEX_UART:
                 return true;
             default:
                 return false;
@@ -257,6 +293,7 @@ public enum Peripheral {
             case I2C:
             case MP_I2C:
             case GROVE_I2C:
+            case INEX_I2C:
                 return true;
             default:
                 return false;

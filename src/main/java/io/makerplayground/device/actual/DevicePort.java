@@ -26,18 +26,10 @@ import java.util.stream.Collectors;
  * Created by Palmn on 7/15/2017.
  */
 public class DevicePort {
-    public enum Type {
-        WIRE, GROVE, MP, VIRTUAL
-    }
-
-    public enum SubType {
-        STRAIGHT_TOP, STRAIGHT_BOTTOM, RIGHTANGLE_TOP, RIGHTANGLE_BOTTOM
-    }
-
     private final String name;
     private final List<String> alias;
-    private final Type type;
-    private final SubType subType;
+    private final DevicePortType type;
+    private final DevicePortSubType subType;
     private final List<DevicePortFunction> function;
     private final double vmin;
     private final double vmax;
@@ -47,15 +39,15 @@ public class DevicePort {
     private final DevicePort parent;
 
     @JsonCreator
-    public DevicePort(@JsonProperty("name") String name, @JsonProperty("alias") List<String> alias, @JsonProperty("type")Type type
-            , @JsonProperty("sub_type") SubType subType
+    public DevicePort(@JsonProperty("name") String name, @JsonProperty("alias") List<String> alias, @JsonProperty("type") DevicePortType type
+            , @JsonProperty("sub_type") DevicePortSubType subType
             , @JsonProperty("function") List<DevicePortFunction> function
             , @JsonProperty("v_min") double vmin, @JsonProperty("v_max") double vmax
             , @JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("angle") double angle) {
         this(name, alias, type, subType, function, vmin, vmax, x, y, angle, null);
     }
 
-    public DevicePort(String name, List<String> alias, Type type, SubType subType, List<DevicePortFunction> function, double vmin, double vmax, double x, double y, double angle, DevicePort parent) {
+    public DevicePort(String name, List<String> alias, DevicePortType type, DevicePortSubType subType, List<DevicePortFunction> function, double vmin, double vmax, double x, double y, double angle, DevicePort parent) {
         this.name = name;
         this.alias = Objects.requireNonNullElse(alias, Collections.emptyList());
         this.type = type;
@@ -84,11 +76,11 @@ public class DevicePort {
         return alias;
     }
 
-    public Type getType() {
+    public DevicePortType getType() {
         return type;
     }
 
-    public SubType getSubType() {
+    public DevicePortSubType getSubType() {
         return subType;
     }
 

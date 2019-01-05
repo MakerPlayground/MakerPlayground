@@ -15,7 +15,8 @@ public class WiringDiagram {
                 wiringDiagram = new WireAndBreadboardDiagram(project);
                 break;
             case MP:
-                wiringDiagram = new MPDiagram(project);
+            case INEX:
+                wiringDiagram = new JSTDiagram(project);
                 break;
             default:
                 throw new IllegalStateException("Wiring method not found");
