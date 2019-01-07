@@ -115,6 +115,8 @@ public class ActualDevice {
         this.supportedCloudPlatform = supportedCloudPlatform;
         this.integratedDevices = Collections.unmodifiableList(integratedDevices);
 
+        // TODO: check for duplicate peripheral between port
+
         if (deviceType == DeviceType.CONTROLLER) {
             List<Peripheral> gpioList = new ArrayList<>(Peripheral.values(ConnectionType.GPIO));
             List<Peripheral> pwmList = new ArrayList<>(Peripheral.values(ConnectionType.PWM));
@@ -370,8 +372,8 @@ public class ActualDevice {
     }
 
     public boolean isSupport(ActualDevice controller, GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
-        // every controller can be connected to a virtual device so we skip this test
-        if (deviceType != DeviceType.VIRTUAL) {
+        // skip port type test for virtual and integrated device
+        if (deviceType != DeviceType.VIRTUAL && deviceType != DeviceType.INTEGRATED) {
             Set<DevicePortType> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
             Set<DevicePortType> devicePortType = getPort().stream().map(DevicePort::getType)

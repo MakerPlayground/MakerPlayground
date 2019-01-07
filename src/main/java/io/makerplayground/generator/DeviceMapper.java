@@ -17,18 +17,13 @@
 package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DevicePort;
-import io.makerplayground.device.actual.IntegratedActualDevice;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
-import io.makerplayground.device.actual.ConnectionType;
 import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.actual.DeviceType;
-import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.Scene;
@@ -231,17 +226,13 @@ public class DeviceMapper {
             }
 
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
-                if (projectDevice.getActualDevice() instanceof IntegratedActualDevice) {
-                    // in case of an integrated device, possible port is only the port with the same name
-                    processorPort.stream().filter(devicePort -> devicePort.getName().equals(projectDevice.getActualDevice().getPort(pDevice).get(0).getName()))
-                            .findFirst().ifPresent(devicePort -> possibleDevice.get(pDevice).add(Collections.singletonList(devicePort)));
-                } else if (pDevice.getConnectionType() == ConnectionType.NONE) {    // TODO: should be removed
+                if (pDevice.getConnectionType() == ConnectionType.NONE) {    // TODO: should be removed
                     possibleDevice.get(pDevice).add(Collections.emptyList());
-                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {
+                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {    // I2C can be shared so we handle it separately
                     for (List<DevicePort> port : project.getController().getI2CPort()) {
                         possibleDevice.get(pDevice).add(port);
                     }
-                } else {
+                } else {    // normal port that can be used once including GPIO/PWM/ANALOG, MP_GPIO/PWM/ANALOG/I2C, INEX_GPIO/PWM/ANALOG/WS2812, ...
                     Set<DevicePort> possiblePort = new HashSet<>(processorPort);
                     possiblePort.removeAll(usedPort);
                     // remove port that the used port conflict to i.e. port that can't be used if this used port is being used
@@ -263,11 +254,45 @@ public class DeviceMapper {
                             possiblePort.removeAll(splitPortMap.get(pd));
                         }
                     }
-                    // for each port in the possible port list, add to the result if it supported
-                    for (DevicePort pPort : possiblePort) {
-                        if (pPort.isSupport(pDevice)) {
-                            possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
+
+                    boolean integratedDevice = projectDevice.getActualDevice() instanceof IntegratedActualDevice;
+                    if (!integratedDevice) {
+                        if (pDevice.getConnectionType() == ConnectionType.INEX_I2C) {           // order must be preserved (scl before sda)
+                            Optional<DevicePort> sclPort = possiblePort.stream().filter(DevicePort::isSCL).findAny();
+                            Optional<DevicePort> sdaPort = possiblePort.stream().filter(DevicePort::isSDA).findAny();
+                            if (sclPort.isPresent() && sdaPort.isPresent()) {
+                                possibleDevice.get(pDevice).add(List.of(sclPort.get(), sdaPort.get()));
+                            }
+                        } else if (pDevice.getConnectionType() == ConnectionType.INEX_UART) {   // order must be preserved
+                            throw new UnsupportedOperationException();
+                        } else {
+                            // for each port in the possible port list, add to the result if it supported
+                            for (DevicePort pPort : possiblePort) {
+                                if (pPort.getType() != DevicePortType.INTERNAL && pPort.isSupport(pDevice)) {
+                                    possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
+                                }
+                            }
                         }
+                    } else {    // in case of an integrated device, possible port is only the port with the same peripheral
+                        List<DevicePort> mappedIntegratedPort = possiblePort.stream()
+                                .filter(devicePort1 -> devicePort1.hasPeripheral(pDevice))
+                                .collect(Collectors.toList());
+                        if (pDevice.getConnectionType() == ConnectionType.INEX_I2C) {           // order must be preserved (scl before sda)
+                            Optional<DevicePort> sclPort = mappedIntegratedPort.stream().filter(DevicePort::isSCL).findAny();
+                            Optional<DevicePort> sdaPort = mappedIntegratedPort.stream().filter(DevicePort::isSDA).findAny();
+                            if (sclPort.isPresent() && sdaPort.isPresent()) {
+                                possibleDevice.get(pDevice).add(List.of(sclPort.get(), sdaPort.get()));
+                            }
+                        } else if (pDevice.getConnectionType() == ConnectionType.INEX_UART) {   // order must be preserved
+                            throw new UnsupportedOperationException();
+                        } else if (mappedIntegratedPort.size() > 1) {
+                            // normal peripheral should use only 1 port except I2C, INEX_I2C and INEX_UART that we have handled
+                            // so if we reach here, someone may have added new type without handle it properly
+                            throw new IllegalStateException();
+                        } else if (mappedIntegratedPort.size() == 1) {
+                            possibleDevice.get(pDevice).add(mappedIntegratedPort);
+                        }
+                        // else port may have been used by other devices
                     }
                 }
             }

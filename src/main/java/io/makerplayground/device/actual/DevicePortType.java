@@ -10,7 +10,8 @@ public enum DevicePortType {
     GROVE(List.of(Color.web("#FEE600"), Color.WHITE, Color.web("#EB2427"), Color.BLACK), 4, 2), // yellow, white, red, black
     MP(List.of(Color.web("#FEE600"), Color.WHITE, Color.web("#EB2427"), Color.BLACK), 4, 2),    // yellow, white, red, black
     INEX_JST3(List.of(Color.BLACK, Color.WHITE, Color.web("#EB2427")), 3, 2),                   // black, white, red
-    VIRTUAL(Collections.emptyList(), 0, 0);
+    INTERNAL(Collections.emptyList(), 0, 0),
+    VIRTUAL(Collections.emptyList(), 0, 0);     // TODO: this field is deprecated and will be removed after the device mapping algorithm is fixed to accept device without any port
 
     private List<Color> wireColor;  // default color of wire
     private int pinCount;           // number of pin in the connector
