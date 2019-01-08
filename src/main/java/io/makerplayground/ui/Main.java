@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.UnsavedDialog;
+import io.makerplayground.util.LocalStorage;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -58,6 +59,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // TODO: show progress indicator while loading if need
+        LocalStorage.getInstance();
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
         // try to load a project file passed as a command line argument if existed

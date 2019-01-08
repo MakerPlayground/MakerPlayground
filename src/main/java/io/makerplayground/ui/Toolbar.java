@@ -24,6 +24,7 @@ import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UploadDialogView;
+import io.makerplayground.util.LocalStorage;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -43,7 +44,7 @@ import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 import java.util.Optional;
 
-public class Toolbar extends AnchorPane {
+class Toolbar extends AnchorPane {
 
     private final ObjectProperty<Project> project;
 
@@ -51,6 +52,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
+    @FXML private CheckMenuItem developerMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
@@ -66,7 +68,7 @@ public class Toolbar extends AnchorPane {
     private ImageView uploadStartImageView;
     private ImageView uploadStopImageView;
 
-    public Toolbar(ObjectProperty<Project> project) {
+    Toolbar(ObjectProperty<Project> project) {
         this.project = project;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
@@ -78,6 +80,8 @@ public class Toolbar extends AnchorPane {
             e.printStackTrace();
         }
 
+        developerMenuItem.selectedProperty().bindBidirectional(LocalStorage.getInstance().developerToolEnabledProperty());
+
         ToggleGroup toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
 
@@ -88,35 +92,39 @@ public class Toolbar extends AnchorPane {
         initUploadButton();
     }
 
-    public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
+    void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
         newMenuItem.setOnAction(event);
     }
 
-    public void setOnLoadButtonPressed(EventHandler<ActionEvent> event) {
+    void setOnLoadButtonPressed(EventHandler<ActionEvent> event) {
         openMenuItem.setOnAction(event);
     }
 
-    public void setOnSaveButtonPressed(EventHandler<ActionEvent> event) {
+    void setOnSaveButtonPressed(EventHandler<ActionEvent> event) {
         saveMenuItem.setOnAction(event);
     }
 
-    public void setOnSaveAsButtonPressed(EventHandler<ActionEvent> event) {
+    void setOnSaveAsButtonPressed(EventHandler<ActionEvent> event) {
         saveAsMenuItem.setOnAction(event);
     }
 
-    public void setOnCloseButtonPressed(EventHandler<ActionEvent> event) {
+    void setOnCloseButtonPressed(EventHandler<ActionEvent> event) {
         closeMenuItem.setOnAction(event);
     }
 
-    public BooleanProperty diagramEditorSelectProperty() {
+    public BooleanProperty developerToolEnabledProperty() {
+        return developerMenuItem.selectedProperty();
+    }
+
+    BooleanProperty diagramEditorSelectProperty() {
         return diagramEditorButton.selectedProperty();
     }
 
-    public BooleanProperty deviceConfigSelectProperty() {
+    BooleanProperty deviceConfigSelectProperty() {
         return deviceConfigButton.selectedProperty();
     }
 
-    public void setStatusMessage(String message) {
+    void setStatusMessage(String message) {
         statusLabel.setText(message);
     }
 

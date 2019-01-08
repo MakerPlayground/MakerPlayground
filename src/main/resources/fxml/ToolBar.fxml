@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.CheckMenuItem?>
 <fx:root id="toolBarPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
          minWidth="-Infinity" prefHeight="38.0" stylesheets="@../css/ToolBar.css" type="AnchorPane"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
@@ -47,6 +48,13 @@
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <CheckMenuItem fx:id="developerMenuItem" mnemonicParsing="false" text="Developer Tool">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP"
+                                                    shortcut="UP" />
+                            </accelerator>
+                        </CheckMenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
