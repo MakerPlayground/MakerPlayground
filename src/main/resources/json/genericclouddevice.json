@@ -94,5 +94,27 @@
     ],
     "condition": [],
     "value": []
+  },
+  {
+    "name": "Notification",
+    "description": "Notify to mobile app",
+    "action": [
+      {
+        "name": "Notify",
+        "funcname": "notify",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Message",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]
