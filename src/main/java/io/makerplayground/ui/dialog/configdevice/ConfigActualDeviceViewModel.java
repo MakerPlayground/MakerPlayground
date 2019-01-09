@@ -52,14 +52,8 @@ public class ConfigActualDeviceViewModel {
     }
 
     private void applyDeviceMapping() {
-        deviceMapperResult = DeviceMapper.autoAssignDevices(project);
-        if (deviceMapperResult == DeviceMapperResult.OK ) {
-            compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
-            compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
-        } else {
-            compatibleDeviceList.set(null);
-            compatiblePortList.set(null);
-        }
+        compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
+        compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
     }
 
     public void setPlatformChangedCallback(Runnable callback) {
@@ -80,10 +74,6 @@ public class ConfigActualDeviceViewModel {
 
     public void setConfigChangedCallback(Runnable callback) {
         configChangedCallback = callback;
-    }
-
-    DeviceMapperResult getDeviceMapperResult() {
-        return deviceMapperResult;
     }
 
     List<ActualDevice> getCompatibleDevice(ProjectDevice projectDevice) {
@@ -111,6 +101,10 @@ public class ConfigActualDeviceViewModel {
 
     Platform getSelectedPlatform() {
         return project.getPlatform();
+    }
+
+    ActualDevice getController() {
+        return project.getController();
     }
 
     void setController(ActualDevice device) {

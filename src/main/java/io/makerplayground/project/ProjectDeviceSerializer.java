@@ -43,7 +43,6 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 
         jsonGenerator.writeStringField("name", projectDevice.getName());
         jsonGenerator.writeStringField("genericDevice", projectDevice.getGenericDevice().getName());
-        jsonGenerator.writeBooleanField("autoselect", projectDevice.isAutoSelectDevice());
 
         if (projectDevice.getActualDevice() != null) {
             jsonGenerator.writeStringField("actualDevice", projectDevice.getActualDevice().getId());

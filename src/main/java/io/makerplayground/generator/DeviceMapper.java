@@ -115,18 +115,23 @@ public class DeviceMapper {
 
         // Get the list of compatible device
         Map<ProjectDevice, List<ActualDevice>> selectableDevice = new HashMap<>();
-        for (ProjectDevice device : tempMap.keySet()) {
+        for (ProjectDevice device : project.getDevice()) {
             selectableDevice.put(device, new ArrayList<>());
-            for (ActualDevice d : actualDevice) {
-                if (d.isSupport(project.getController(), device.getGenericDevice(), tempMap.get(device))) {
-                    if (d.getCloudPlatform() != null && project.getController() != null) {
-                        // if this device uses a cloud platform and the controller has been selected, we accept this device
-                        // if and only if the selected controller supports the cloud platform that this device uses
-                        if (project.getController().getSupportedCloudPlatform().contains(d.getCloudPlatform())) {
+        }
+
+        if (project.getController() != null) {
+            for (ProjectDevice device : tempMap.keySet()) {
+                for (ActualDevice d : actualDevice) {
+                    if (d.isSupport(project.getController(), device.getGenericDevice(), tempMap.get(device))) {
+                        if (d.getCloudPlatform() != null && project.getController() != null) {
+                            // if this device uses a cloud platform and the controller has been selected, we accept this device
+                            // if and only if the selected controller supports the cloud platform that this device uses
+                            if (project.getController().getSupportedCloudPlatform().contains(d.getCloudPlatform())) {
+                                selectableDevice.get(device).add(d);
+                            }
+                        } else {
                             selectableDevice.get(device).add(d);
                         }
-                    } else {
-                        selectableDevice.get(device).add(d);
                     }
                 }
             }
@@ -141,8 +146,10 @@ public class DeviceMapper {
         if (project.getController() == null) {
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
                 result.put(projectDevice, new HashMap<>());
-                for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
-                    result.get(projectDevice).put(peripheral, Collections.emptyList());
+                if (projectDevice.getActualDevice() != null) {
+                    for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
+                        result.get(projectDevice).put(peripheral, Collections.emptyList());
+                }
             }
             return result;
         }
@@ -212,6 +219,14 @@ public class DeviceMapper {
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             Map<Peripheral, List<List<DevicePort>>> possibleDevice = new HashMap<>();
+            result.put(projectDevice, possibleDevice);
+
+            // skip if device hasn't been selected
+            if (projectDevice.getActualDevice() == null) {
+                continue;
+            }
+
+            // initialize result map
             for (Peripheral pDevice : projectDevice.getActualDevice().getConnectivity()) {
                 possibleDevice.put(pDevice, new ArrayList<>());
             }
@@ -296,8 +311,6 @@ public class DeviceMapper {
                     }
                 }
             }
-
-            result.put(projectDevice, possibleDevice);
         }
 
         return result;
@@ -308,6 +321,27 @@ public class DeviceMapper {
                 .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
                         && device.getSupportedPlatform().contains(project.getPlatform()))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public static DeviceMapperResult checkDeviceAssignment(Project project) {
+        if (project.getController() == null) {
+            return DeviceMapperResult.NO_MCU_SELECTED;
+        }
+
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.getActualDevice() == null) {
+                return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
+            }
+
+            // for each connectivity required, check if it has been connected and indicate error if it hasn't
+            for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
+                if (devicePeripheral != Peripheral.NOT_CONNECTED && !projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
+                    return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
+                }
+            }
+        }
+
+        return DeviceMapperResult.OK;
     }
 
     public static DeviceMapperResult autoAssignDevices(Project project) {
@@ -322,8 +356,8 @@ public class DeviceMapper {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            // Assign this device if only user check auto
-            if (projectDevice.isAutoSelectDevice()) {
+            // Assign this device if user hasn't selected a device
+            if (projectDevice.getActualDevice() == null) {
                 // Set actual device by selecting first element
                 Map<ProjectDevice, List<ActualDevice>> deviceList = getSupportedDeviceList(project);
                 if (deviceList.get(projectDevice).isEmpty()) {
@@ -335,16 +369,14 @@ public class DeviceMapper {
 
         // reclaim ports from unused devices
         for (ProjectDevice projectDevice : project.getAllDeviceUnused()) {
-            projectDevice.setAutoSelectDevice(true);
             projectDevice.removeAllDeviceConnection();
         }
 
         Map<ProjectDevice, List<ActualDevice>> supportedDeviceMap = getSupportedDeviceList(project);
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> portList;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            // assign this device only if user selects auto
-            if (projectDevice.isAutoSelectDevice()) {
-                //
+            // Assign this device if user hasn't selected a device
+            if (projectDevice.getActualDevice() == null) {
                 if (supportedDeviceMap.get(projectDevice).isEmpty()) {
                     return DeviceMapperResult.NO_SUPPORT_DEVICE;
                 }
@@ -384,7 +416,7 @@ public class DeviceMapper {
                     }
                 }
                 if (error) {
-                    return DeviceMapperResult.NOT_ENOUGH_PORT;
+                    return DeviceMapperResult.CANT_ASSIGN_PORT;
                 }
             }
         }

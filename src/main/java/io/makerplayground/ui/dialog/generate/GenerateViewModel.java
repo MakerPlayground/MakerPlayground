@@ -54,9 +54,5 @@ public class GenerateViewModel {
         return code.hasError();
     }
 
-    public String getErrorMessage() {
-        return code.getError().getDescription();
-    }
-
     public ObservableList<TableDataList> getObservableTableList() { return observableTableList; }
 }

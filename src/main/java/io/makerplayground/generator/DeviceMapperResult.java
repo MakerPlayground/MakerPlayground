@@ -18,9 +18,10 @@ package io.makerplayground.generator;
 
 public enum DeviceMapperResult {
     OK(""),
-    NOT_ENOUGH_PORT("Can't find support device or the controller selected doesn't have enough port"),
+    NO_MCU_SELECTED("Controller hasn't been selected"),
+    NOT_SELECT_DEVICE_OR_PORT("Device or port hasn't been selected"),
     NO_SUPPORT_DEVICE("Can't find support device"),
-    NO_MCU_SELECTED("Controller hasn't been selected");
+    CANT_ASSIGN_PORT("Can't automatically assigned port for some devices");
 
     private final String errorMessage;
 

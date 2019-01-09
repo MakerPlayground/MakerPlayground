@@ -37,7 +37,6 @@ import java.util.Map;
 public class ProjectDevice {
     private StringProperty name;
     private final GenericDevice genericDevice;
-    private boolean autoSelectDevice;
     private ActualDevice actualDevice;
     private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
     private ActualDevice dependentDevice;
@@ -47,7 +46,6 @@ public class ProjectDevice {
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
-        this.autoSelectDevice = true;
         this.actualDevice = null;
         this.deviceConnection = new HashMap<>();
         this.dependentDevice = null;
@@ -55,12 +53,11 @@ public class ProjectDevice {
         this.propertyValue = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, boolean autoSelectDevice, ActualDevice actualDevice, Map<Peripheral
+    ProjectDevice(String name, GenericDevice genericDevice, ActualDevice actualDevice, Map<Peripheral
             , List<DevicePort>> deviceConnection, ActualDevice dependentDevice, Map<Peripheral
             , List<DevicePort>> dependentDeviceConnection, Map<Property, String> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
-        this.autoSelectDevice = autoSelectDevice;
         this.actualDevice = actualDevice;
         this.deviceConnection = deviceConnection;
         this.dependentDevice = dependentDevice;
@@ -84,14 +81,6 @@ public class ProjectDevice {
         return genericDevice;
     }
 
-    public boolean isAutoSelectDevice() {
-        return autoSelectDevice;
-    }
-
-    public void setAutoSelectDevice(boolean autoSelectDevice) {
-        this.autoSelectDevice = autoSelectDevice;
-    }
-
     public ActualDevice getActualDevice() {
         return actualDevice;
     }
@@ -101,6 +90,7 @@ public class ProjectDevice {
     }
 
     public Map<Peripheral, List<DevicePort>> getDeviceConnection() {
+        // TODO: we should return an immutable copy for safety
         return deviceConnection;
     }
 
