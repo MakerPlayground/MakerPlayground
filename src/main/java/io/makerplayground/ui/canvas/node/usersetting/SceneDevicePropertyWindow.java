@@ -23,9 +23,11 @@ import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.NumericTextFieldWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
+import io.makerplayground.ui.control.AutoResizeCombobox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -36,11 +38,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.controlsfx.control.PopOver;
 
 import java.util.List;
@@ -48,14 +48,12 @@ import java.util.List;
 /**
  * Created by tanyagorn on 6/20/2017.
  */
-public class SceneDevicePropertyWindow extends PopOver {
+public class SceneDevicePropertyWindow extends GridPane {
     private final SceneDeviceIconViewModel viewModel;
 
-    // Create a grid pane as a main layout for this property sheet
-    private final GridPane propertyPane = new GridPane();
-
     private Label actionLabel;
-    private ComboBox<Action> actionComboBox;
+    private AutoResizeCombobox<Action> actionComboBox;
+    private static final RowConstraints rowConstraints = new RowConstraints(16, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
 
     public SceneDevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
@@ -63,26 +61,23 @@ public class SceneDevicePropertyWindow extends PopOver {
     }
 
     private void initView() {
-        // Create title layout
-        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png"));
-        ImageView imageView = new ImageView(img);
-        imageView.setFitHeight(30);
-        imageView.setPreserveRatio(true);
-
-        Label customName = new Label(viewModel.getName());
-        customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
-
-        HBox titleHBox = new HBox();
-        titleHBox.getChildren().addAll(imageView, customName);
-        titleHBox.setAlignment(Pos.CENTER_LEFT);
-        titleHBox.setSpacing(10);
-
         // Create ComboBox for user to select a condition
         actionLabel = new Label("Action");
         GridPane.setRowIndex(actionLabel, 0);
         GridPane.setColumnIndex(actionLabel, 0);
 
-        actionComboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getAction()));
+        actionComboBox = new AutoResizeCombobox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getAction()));
+        actionComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Action action) {
+                return action.getName();
+            }
+
+            @Override
+            public Action fromString(String string) {
+                throw new UnsupportedOperationException();
+            }
+        });
         actionComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Action> call(ListView<Action> param) {
@@ -117,71 +112,75 @@ public class SceneDevicePropertyWindow extends PopOver {
         });
         GridPane.setRowIndex(actionComboBox, 0);
         GridPane.setColumnIndex(actionComboBox, 1);
+        GridPane.setHalignment(actionComboBox, HPos.LEFT);
+        GridPane.setFillWidth(actionComboBox, false);
 
-        propertyPane.setHgap(10);
-        propertyPane.setVgap(5);
-        propertyPane.getChildren().addAll(actionLabel, actionComboBox);
+//        getChildren().addAll(actionLabel, actionComboBox);
+//        getRowConstraints().add(rowConstraints);
+
+        // try to align the label on the first column of every device while allowing a long label to enlarge
+        ColumnConstraints labelColumn = new ColumnConstraints();
+        labelColumn.setMinWidth(60);
+        getColumnConstraints().add(labelColumn);
+
+        setHgap(10);
+        setVgap(5);
+        setPadding(new Insets(4, 6, 4, 10));
 
         redrawProperty();
-
-        // arrange title and property sheet
-        VBox mainPane = new VBox();
-        mainPane.getStylesheets().add(this.getClass().getResource("/css/canvas/node/usersetting/DevicePropertyWindow.css").toExternalForm());
-        mainPane.getChildren().addAll(titleHBox, propertyPane);
-        mainPane.setSpacing(5.0);
-        mainPane.setPadding(new Insets(20, 20, 20, 20));
-
-        setDetachable(false);
-        setContentNode(mainPane);
     }
 
     private void redrawProperty() {
-        propertyPane.getChildren().retainAll(actionLabel, actionComboBox);
+        getChildren().clear();
+        getRowConstraints().clear();
+
+        getChildren().addAll(actionLabel, actionComboBox);
+        getRowConstraints().add(rowConstraints);
 
         List<Parameter> params = viewModel.getAction().getParameter();
         for (int i=0; i<params.size(); i++) {
             Parameter p = params.get(i);
 
             Label name = new Label(p.getName());
-            name.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
+            name.setMinHeight(16);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
             GridPane.setRowIndex(name, i+1);
             GridPane.setColumnIndex(name, 0);
             GridPane.setValignment(name, VPos.TOP);
 
             Node control = null;
-            if (p.getControlType() == ControlType.SLIDER) {
+            if (p.getControlType() == ControlType.SLIDER || p.getControlType() == ControlType.SPINBOX) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
+                NumericTextFieldWithUnitExpressionControl expressionControl = new NumericTextFieldWithUnitExpressionControl(
                         p,
                         viewModel.getProjectValue(),
                         viewModel.getParameterValue(p)
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
-            } else if (p.getControlType() == ControlType.TEXTBOX) {
-                TextField textField = new TextField();
-                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
-                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
-                control = textField;
+//            } else if (p.getControlType() == ControlType.TEXTBOX) {
+//                TextField textField = new TextField();
+//                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
+//                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
+//                control = textField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                ComboBox<String> comboBox = new ComboBox<>(list);
+                AutoResizeCombobox<String> comboBox = new AutoResizeCombobox<>(list);
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
-            } else if (p.getControlType() == ControlType.SPINBOX) {
-                if (viewModel.getParameterValue(p) == null) {
-                    viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
-                }
-                SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
-                        p,
-                        viewModel.getProjectValue(),
-                        viewModel.getParameterValue(p)
-                );
-                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
-                control = expressionControl;
+//            } else if (p.getControlType() == ControlType.SPINBOX) {
+//                if (viewModel.getParameterValue(p) == null) {
+//                    viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
+//                }
+//                SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
+//                        p,
+//                        viewModel.getProjectValue(),
+//                        viewModel.getParameterValue(p)
+//                );
+//                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+//                control = expressionControl;
             } else if (p.getControlType() == ControlType.DATETIMEPICKER) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new SimpleRTCExpression(RealTimeClock.getDefault()));
@@ -196,7 +195,9 @@ public class SceneDevicePropertyWindow extends PopOver {
             GridPane.setColumnIndex(control, 1);
             GridPane.setHalignment(control, HPos.LEFT);
             GridPane.setFillWidth(control, false);
-            propertyPane.getChildren().addAll(name, control);
+
+            getChildren().addAll(name, control);
+            getRowConstraints().add(rowConstraints);
         }
     }
 }

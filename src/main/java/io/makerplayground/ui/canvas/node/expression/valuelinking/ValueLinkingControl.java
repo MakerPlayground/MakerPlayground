@@ -24,25 +24,32 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.ProjectValueExpression;
 import io.makerplayground.project.expression.ValueLinkingExpression;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumericTextFieldWithUnit;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWithUnit;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
+import io.makerplayground.ui.control.AutoResizeCombobox;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
+import javafx.util.StringConverter;
 
 import java.util.List;
 
 public class ValueLinkingControl extends GridPane {
 
     private final ReadOnlyObjectWrapper<Expression> expression;
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final Parameter parameter;
 
     private ComboBox<ProjectValue> valueCombobox;
@@ -50,7 +57,7 @@ public class ValueLinkingControl extends GridPane {
     private RangeSliderWithUnit destRange;
     private ChangeListener<Boolean> mappingEnabledChangeListener;
 
-    public ValueLinkingControl(Expression expression, List<ProjectValue> projectValues, Parameter parameter) {
+    public ValueLinkingControl(Expression expression, ObservableList<ProjectValue> projectValues, Parameter parameter) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.projectValues = projectValues;
         this.parameter = parameter;
@@ -86,30 +93,46 @@ public class ValueLinkingControl extends GridPane {
         Label updateLabel = new Label("update");
         GridPane.setConstraints(updateLabel, 0, 1);
 
-        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
+        AutoResizeCombobox<Expression.RefreshInterval> refreshIntervalComboBox = new AutoResizeCombobox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
         refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getExpression().setRefreshInterval(newValue);
         });
 
-        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
-        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+        NumericTextFieldWithUnit customIntervalTextField = new NumericTextFieldWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
+        customIntervalTextField.valueProperty().addListener((observable, oldValue, newValue) -> {
             getExpression().setUserDefinedInterval(newValue);
         });
-        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
-        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
+        customIntervalTextField.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
+        customIntervalTextField.managedProperty().bind(customIntervalTextField.visibleProperty());
 
         HBox refreshIntervalHBox = new HBox(5);
-        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalTextField);
         GridPane.setConstraints(refreshIntervalHBox, 1, 1, 2, 1);
 
         Label fromLabel = new Label("set to");
         GridPane.setConstraints(fromLabel, 0, 0);
 
-        valueCombobox = new ComboBox<>(FXCollections.observableList(projectValues));
+        valueCombobox = new AutoResizeCombobox<>(projectValues);
         if (projectValueExpression.getProjectValue() != null) {
             valueCombobox.getSelectionModel().select(projectValueExpression.getProjectValue());
         }
+        valueCombobox.setPromptText("-");
+        valueCombobox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ProjectValue projectValue) {
+                if (projectValue != null) {
+                    return projectValue.getDevice().getName() + "'s " + projectValue.getValue().getName();
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public ProjectValue fromString(String string) {
+                throw new UnsupportedOperationException();
+            }
+        });
         valueCombobox.setCellFactory(param -> new ListCell<>(){
             @Override
             protected void updateItem(ProjectValue item, boolean empty) {
@@ -154,32 +177,49 @@ public class ValueLinkingControl extends GridPane {
         Label updateLabel = new Label("update");
         GridPane.setConstraints(updateLabel, 0, 3);
 
-        ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
+        AutoResizeCombobox<Expression.RefreshInterval> refreshIntervalComboBox = new AutoResizeCombobox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
         refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getExpression().setRefreshInterval(newValue);
         });
 
-        SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
-        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+        NumericTextFieldWithUnit customIntervalTextField = new NumericTextFieldWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
+        customIntervalTextField.valueProperty().addListener((observable, oldValue, newValue) -> {
             getExpression().setUserDefinedInterval(newValue);
         });
-        customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
-        customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
+        customIntervalTextField.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
+        customIntervalTextField.managedProperty().bind(customIntervalTextField.visibleProperty());
 
         HBox refreshIntervalHBox = new HBox(5);
-        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalSpinner);
+        refreshIntervalHBox.getChildren().addAll(refreshIntervalComboBox, customIntervalTextField);
         GridPane.setConstraints(refreshIntervalHBox, 1, 3, 2, 1);
 
         Label fromLabel = new Label("set to");
         GridPane.setConstraints(fromLabel, 0, 0);
 
         HBox valueSelectionHBox = new HBox(10);
+        valueSelectionHBox.setAlignment(Pos.CENTER_LEFT);
 
-        valueCombobox = new ComboBox<>(FXCollections.observableList(projectValues));
+        valueCombobox = new AutoResizeCombobox<>(projectValues);
         if (valueLinkingExpression.getSourceValue() != null) {
             valueCombobox.getSelectionModel().select(valueLinkingExpression.getSourceValue());
         }
+        valueCombobox.setPromptText("-");
+        valueCombobox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ProjectValue projectValue) {
+                if (projectValue != null) {
+                    return projectValue.getDevice().getName() + "'s " + projectValue.getValue().getName();
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public ProjectValue fromString(String string) {
+                throw new UnsupportedOperationException();
+            }
+        });
         valueCombobox.setCellFactory(param -> new ListCell<>(){
             @Override
             protected void updateItem(ProjectValue item, boolean empty) {
@@ -218,12 +258,10 @@ public class ValueLinkingControl extends GridPane {
         });
 
         CheckBox mappingEnableCheckbox = new CheckBox("map range");
-        mappingEnableCheckbox.setMinHeight(25.0);
         mappingEnableCheckbox.setSelected(true);
         mappingEnableCheckbox.selectedProperty().addListener(mappingEnabledChangeListener);
 
         CheckBox inverseEnableCheckbox = new CheckBox("inverse");
-        inverseEnableCheckbox.setMinHeight(25.0);
         inverseEnableCheckbox.setSelected(valueLinkingExpression.isInverse());
         inverseEnableCheckbox.disableProperty().bind(mappingEnableCheckbox.selectedProperty().not());
         inverseEnableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> {

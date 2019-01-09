@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Arc?>
+
+<?import io.makerplayground.ui.control.AutoResizeTextField?>
+
+<fx:root id="mainPane" stylesheets="@../../../css/canvas/node/SceneView.css" type="GridPane" vgap="7.0"
+         xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <Arc fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0" stroke="BLACK"
+             strokeType="INSIDE" strokeWidth="0.0" styleClass="connectionPort" type="ROUND" GridPane.rowIndex="1"/>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
+            <children>
+                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../../icons/scene-icon.png"/>
+                    </image>
+                </ImageView>
+                <AutoResizeTextField id="nameTextField" fx:id="nameTextField" HBox.hgrow="ALWAYS"/>
+                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                    <children>
+                        <ImageView fx:id="addDeviceButton" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@../../../icons/expand-button.png"/>
+                            </image>
+                        </ImageView>
+                        <ImageView fx:id="expandButton" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@../../../icons/expand-button.png"/>
+                            </image>
+                        </ImageView>
+                        <ImageView fx:id="deleteButton" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@../../../icons/scene-delete-icon.png"/>
+                            </image>
+                        </ImageView>
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets left="5.0" right="10.0"/>
+            </padding>
+        </HBox>
+        <VBox id="contentPane" fx:id="contentPane" minHeight="35" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Arc fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" rotate="180.0" startAngle="90.0"
+             stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="connectionPort" type="ROUND"
+             GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+    </children>
+</fx:root>

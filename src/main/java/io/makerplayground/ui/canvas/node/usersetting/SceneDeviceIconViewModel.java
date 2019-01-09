@@ -25,6 +25,7 @@ import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getValue();
     }
 
-    public List<ProjectValue> getProjectValue() {
+    public ObservableList<ProjectValue> getProjectValue() {
         return project.getAvailableValue();
     }
 

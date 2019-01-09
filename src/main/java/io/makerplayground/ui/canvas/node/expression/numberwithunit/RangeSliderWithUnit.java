@@ -18,12 +18,15 @@ package io.makerplayground.ui.canvas.node.expression.numberwithunit;
 
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.ui.control.AutoResizeCombobox;
+import io.makerplayground.ui.control.AutoResizeNumericTextField;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -37,8 +40,8 @@ import java.util.List;
 
 public class RangeSliderWithUnit extends HBox {
     private final RangeSlider slider;
-    private final Spinner<Double> lowSpinner;
-    private final Spinner<Double> highSpinner;
+    private final AutoResizeNumericTextField lowTextField;
+    private final AutoResizeNumericTextField highTextField;
     private final ComboBox<Unit> unitComboBox;
     private final Text unitLabel;  // TODO: Text is used here instead of Label as CSS from property window leak to their underlying control and mess up our layout
     private Pane rangeBar;  // the area between the two thumbs of the RangeSlider which we will need to change its color when the RangeSlider is inverse
@@ -87,17 +90,14 @@ public class RangeSliderWithUnit extends HBox {
             slider.setLowValue(low.getValue());
             slider.setHighValue(high.getValue());
         }
-        slider.setShowTickMarks(true);
-        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(false);
+        slider.setShowTickLabels(false);
 
-        lowSpinner = new Spinner<>(min, max, low.getValue());
-        lowSpinner.setEditable(true);
-
-        highSpinner = new Spinner<>(min, max, high.getValue());
-        highSpinner.setEditable(true);
+        lowTextField = new AutoResizeNumericTextField(min, max, low.getValue());
+        highTextField = new AutoResizeNumericTextField(min, max, high.getValue());
 
         unitLabel = new Text(low.getUnit().toString());     // assume that low and high use the same unit
-        unitComboBox = new ComboBox<>(FXCollections.observableArrayList(unit));
+        unitComboBox = new AutoResizeCombobox<>(FXCollections.observableArrayList(unit));
         unitComboBox.getSelectionModel().select(low.getUnit());
         if (unit.size() == 1 && low.getUnit() == Unit.NOT_SPECIFIED) {
             unitComboBox.setVisible(false);
@@ -148,7 +148,7 @@ public class RangeSliderWithUnit extends HBox {
             slider.setHighValue(sliderHighValue);
             slider.setLowValue(sliderLowValue);
             slider.setHighValue(sliderHighValue);
-            lowSpinner.getValueFactory().setValue(newValue.getValue());
+            lowTextField.setValue(newValue.getValue());
             unitComboBox.getSelectionModel().select(newValue.getUnit());
         });
         highValue.addListener((observable, oldValue, newValue) -> {
@@ -157,7 +157,7 @@ public class RangeSliderWithUnit extends HBox {
             slider.setHighValue(sliderHighValue);
             slider.setLowValue(sliderLowValue);
             slider.setHighValue(sliderHighValue);
-            highSpinner.getValueFactory().setValue(newValue.getValue());
+            highTextField.setValue(newValue.getValue());
             unitComboBox.getSelectionModel().select(newValue.getUnit());
         });
 
@@ -198,37 +198,42 @@ public class RangeSliderWithUnit extends HBox {
         setSpacing(5);
         setAlignment(Pos.CENTER);
         setMaxSize(USE_PREF_SIZE, USE_PREF_SIZE);
-        getChildren().addAll(lowSpinner, slider, highSpinner, unitLabel, unitComboBox);
+        getChildren().addAll(lowTextField, slider, highTextField, unitLabel, unitComboBox);
 
         // get the instance of the rangeBar after the slider is drawn on the screen by detecting when the layoutBound changed
         layoutBoundsProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
                 rangeBar = (Pane) lookup(".range-slider .range-bar");
-                if (inverse.get()) {
-                    rangeBar.setStyle(inverseRangeBarStyle);
+                // lookup can failed when the node is drawn on the screen while manage property is set to false, in this case
+                // we do nothing and wait until the manage property become true which will change the layout bound and trigger
+                // this listener again
+                if (rangeBar != null) {
+                    if (inverse.get()) {
+                        rangeBar.setStyle(inverseRangeBarStyle);
+                    }
+                    layoutBoundsProperty().removeListener(this);
                 }
-                layoutBoundsProperty().removeListener(this);
             }
         });
     }
 
     private void initializeSpinner() {
-        lowSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue(), maxValue.get().getValue(), lowValue.get().getValue()));
-        lowSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            if ((inverse.get() && (newValue1 < highValue.get().getValue())) || (!inverse.get() && (newValue1 > highValue.get().getValue()))) {
-                lowSpinner.getValueFactory().setValue(highValue.get().getValue());
+        lowTextField.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            if ((inverse.get() && (newValue1.doubleValue() < highValue.get().getValue()))
+                    || (!inverse.get() && (newValue1.doubleValue() > highValue.get().getValue()))) {
+                lowTextField.setValue(highValue.get().getValue());
             } else {
                 // the spinner always contains the actual value so we don't need to perform any inversion
-                lowValue.set(new NumberWithUnit(newValue1, lowValue.get().getUnit()));
+                lowValue.set(new NumberWithUnit(newValue1.doubleValue(), lowValue.get().getUnit()));
             }
         });
-        highSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(minValue.get().getValue(), maxValue.get().getValue(), highValue.get().getValue()));
-        highSpinner.getValueFactory().valueProperty().addListener((observable1, oldValue1, newValue1) -> {
-            if ((inverse.get() && (newValue1 > lowValue.get().getValue())) || (!inverse.get() && (newValue1 < lowValue.get().getValue()))) {
-                highSpinner.getValueFactory().setValue(lowValue.get().getValue());
+        highTextField.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+            if ((inverse.get() && (newValue1.doubleValue() > lowValue.get().getValue()))
+                    || (!inverse.get() && (newValue1.doubleValue() < lowValue.get().getValue()))) {
+                highTextField.setValue(lowValue.get().getValue());
             } else {
-                highValue.set(new NumberWithUnit(newValue1, highValue.get().getUnit()));
+                highValue.set(new NumberWithUnit(newValue1.doubleValue(), highValue.get().getUnit()));
             }
         });
     }

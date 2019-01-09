@@ -24,12 +24,13 @@ import io.makerplayground.project.expression.Expression;
 import io.makerplayground.ui.canvas.node.expression.NumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SliderWithUnit;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
 public class SliderNumberWithUnitExpressionControl extends NumberWithUnitExpressionControl {
 
-    public SliderNumberWithUnitExpressionControl(Parameter p, List<ProjectValue> projectValues, Expression expression) {
+    public SliderNumberWithUnitExpressionControl(Parameter p, ObservableList<ProjectValue> projectValues, Expression expression) {
         super(p, projectValues, expression);
     }
 

@@ -37,6 +37,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
@@ -49,19 +50,16 @@ import java.util.List;
  *
  */
 public class SceneView extends InteractiveNode {
-    private final HBox parent = new HBox();
-    @FXML private VBox statePane;
-    @FXML private FlowPane activeIconFlowPane;
-    @FXML private AutoResizeTextField nameTextField;
-    @FXML private TextField delayTextField;
-    @FXML private Arc inPort;
-    @FXML private Arc outPort;
-    @FXML private ImageView removeSceneBtn;
-    @FXML private ComboBox<Scene.DelayUnit> timeUnitComboBox;
-    @FXML private Button addOutputButton;
 
-    private static final ObservableList<Scene.DelayUnit> delayUnitList =
-            FXCollections.observableArrayList(List.of(Scene.DelayUnit.values()));
+    private final GridPane mainPane = new GridPane();
+
+    @FXML private Arc inPort;
+    @FXML private AutoResizeTextField nameTextField;
+    @FXML private ImageView addDeviceButton;
+    @FXML private ImageView expandButton;
+    @FXML private ImageView deleteButton;
+    @FXML private VBox contentPane;
+    @FXML private Arc outPort;
 
     private final SceneViewModel sceneViewModel;
     private OutputDeviceSelector outputDeviceSelector = null;
@@ -75,34 +73,30 @@ public class SceneView extends InteractiveNode {
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/StateView.fxml"));
-        fxmlLoader.setRoot(parent);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/SceneView.fxml"));
+        fxmlLoader.setRoot(mainPane);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getChildren().add(parent);
+        getChildren().add(mainPane);
 
         // dynamically create device configuration icons
-        DynamicViewCreator<FlowPane, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator =
-                new DynamicViewCreatorBuilder<FlowPane, SceneDeviceIconViewModel, SceneDeviceIconView>()
-                        .setParent(activeIconFlowPane)
+        DynamicViewCreator<VBox, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator =
+                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, SceneDeviceIconView>()
+                        .setParent(contentPane)
                         .setModelLoader(sceneViewModel.getDynamicViewModelCreator())
                         .setViewFactory(sceneDeviceIconViewModel -> {
                             SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
-                            sceneDeviceIconView.setOnRemoved(event ->
+                            sceneDeviceIconView.setOnRemoved(() ->
                                     sceneViewModel.removeStateDevice(sceneDeviceIconViewModel.getProjectDevice()));
                             return sceneDeviceIconView;
                         })
-                        .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
+                        .setNodeAdder((parent, node) -> parent.getChildren().add(node))
                         .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                         .createDynamicViewCreator();
-
-        // initialize delay's unit combobox
-        timeUnitComboBox.getItems().addAll(delayUnitList);
-        timeUnitComboBox.getSelectionModel().selectFirst();
 
         // bind scene's name to the model
         nameTextField.setText(sceneViewModel.getName());
@@ -112,37 +106,11 @@ public class SceneView extends InteractiveNode {
         translateXProperty().bindBidirectional(sceneViewModel.xProperty());
         translateYProperty().bindBidirectional(sceneViewModel.yProperty());
 
-        // bind delay amount to the model (revert to old value if new value is invalid)
-        if (sceneViewModel.getDelay() == 0) {
-            delayTextField.setText("0");
-        } else {
-            delayTextField.setText(String.valueOf(sceneViewModel.getDelay()));
-        }
-        delayTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.isEmpty()) {
-                sceneViewModel.setDelay(0);
-            } else if (newValue.matches("\\d+\\.?\\d*")) {
-                double delay = Double.parseDouble(newValue);
-                sceneViewModel.setDelay(delay);
-            } else {
-                delayTextField.setText(String.valueOf(oldValue));
-            }
-        });
-        delayTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (delayTextField.getText().isEmpty()) {
-                delayTextField.setText("0");
-            }
-        });
-
-        // bind delay unit (bindBidirectional is not available)
-        // TODO: combobox won't change if unit is changed elsewhere
-        timeUnitComboBox.getSelectionModel().select(sceneViewModel.getDelayUnit());
-        sceneViewModel.delayUnitProperty().bind(timeUnitComboBox.getSelectionModel().selectedItemProperty());
-
         // show add output device button when there are devices left to be added
-        addOutputButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
-        addOutputButton.managedProperty().bind(addOutputButton.visibleProperty());
+        addDeviceButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
+        addDeviceButton.managedProperty().bind(addDeviceButton.visibleProperty());
 
+        setHilightNode(contentPane);
         showHilight(false);
 
         // update hilight when error property of the condition is changed
@@ -175,22 +143,21 @@ public class SceneView extends InteractiveNode {
         });
 
         // show device selector dialog to add device to this scene
-        addOutputButton.setOnAction(e -> {
+        addDeviceButton.setOnMouseClicked(e -> {
             if (outputDeviceSelector != null) {
                 outputDeviceSelector.hide();
             }
             OutputDeviceSelector outputDeviceSel = new OutputDeviceSelector(sceneViewModel);
-            outputDeviceSel.show(addOutputButton, 0);
+            outputDeviceSel.show(addDeviceButton, 0);
             outputDeviceSelector = outputDeviceSel;
         });
 
         // remove scene when press the remove button
-        removeSceneBtn.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
+        deleteButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
                 , null, null, 0, 0)));
 
         // allow node to be dragged
-        makeMovable(statePane);
-        makeMovable(activeIconFlowPane);
+        makeMovable(contentPane);
 
         // TODO: refactor into InteractiveNode
         // allow node to connect with other node

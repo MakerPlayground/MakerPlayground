@@ -21,6 +21,7 @@
 
     /*---Textbox, Checkbox---*/
     text-fill-color: #707070;
+    text-accent-fill-color: #2673fd;
     text-fill-border-color: #cccccc; 
     text-fill-background-color: #ffffff;
 
@@ -57,8 +58,9 @@
 
 
     /*---Scene---*/
-    scene-header-background-color: #ffffff;
-    scene-background-color: #f6f6f6;
+    /*scene-header-background-color: #ffffff;*/
+    /*scene-background-color: #f6f6f6;*/
+    scene-port-color: #4d555b;
 
 }
 

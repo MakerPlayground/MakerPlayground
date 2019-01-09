@@ -24,6 +24,7 @@ import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUn
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.ComboBox;
@@ -36,9 +37,9 @@ import java.util.List;
 public class CustomExpressionControl extends GridPane {
 
     private final ReadOnlyObjectWrapper<CustomNumberExpression> expression;
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
 
-    public CustomExpressionControl(CustomNumberExpression expression, List<ProjectValue> projectValues) {
+    public CustomExpressionControl(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.projectValues = projectValues;
 

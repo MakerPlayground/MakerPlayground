@@ -27,6 +27,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -63,7 +64,7 @@ public class ChipField extends VBox {
     @FXML private StackPane openParenthesisChip;
     @FXML private StackPane closeParenthesisChip;
 
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<CustomNumberExpression> expressionProperty;
 
     private final List<Chip> chipList = new ArrayList<>();
@@ -73,7 +74,7 @@ public class ChipField extends VBox {
 
     private final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
 
-    public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
+    public ChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
         this.projectValues = projectValues;
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
         initView();

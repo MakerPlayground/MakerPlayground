@@ -20,6 +20,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -39,7 +40,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     private static final String TEXT_CSS = "-fx-font-size: 10; -fx-fill: white; -fx-font-weight: bold; -fx-text-alignment: center;";
     private static final String COMBOBOX_LISTVIEW_TEXT_CSS = "-fx-font-size: 10; -fx-text-alignment: center;";
 
-    public ProjectValueChip(ProjectValue initialValue, List<ProjectValue> projectValues) {
+    public ProjectValueChip(ProjectValue initialValue, ObservableList<ProjectValue> projectValues) {
         super(initialValue, Term.Type.VALUE, projectValues);
     }
 
@@ -55,7 +56,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             e.printStackTrace();
         }
 
-        comboBox.getItems().addAll(FXCollections.observableArrayList(getChoices()));
+        comboBox.getItems().addAll(getChoices());
         if (getValue() != null) {
             comboBox.setValue(getValue());
         }

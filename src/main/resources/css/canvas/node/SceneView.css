@@ -1,0 +1,29 @@
+.root {
+    -fx-font-size: 11px;
+}
+
+/* left and right port */
+.connectionPort {
+    -fx-fill: scene-port-color;
+}
+
+#nameTextField {
+    -fx-background-color: transparent;
+    /* -fx-text-fill: text-color; */
+    -fx-padding: 0 0 0 0;
+    -fx-font-size: 14px;
+}
+
+/*#nameTextField:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: background-color;
+    -fx-border-radius: 0px;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 2 0;
+}*/
+
+#contentPane {
+    -fx-background-color: background-color;
+    -fx-background-radius: 12px;
+    -fx-padding: 6px;
+}

@@ -6,6 +6,7 @@ import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.Operator;
 import io.makerplayground.ui.canvas.node.expression.custom.ChipField;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -21,10 +22,10 @@ import java.util.List;
 public class CustomConditionalExpressionControl extends VBox {
 
     private final ConditionalExpression expression;
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final List<EntryView> entryViewList;
 
-    public CustomConditionalExpressionControl(ConditionalExpression expression, List<ProjectValue> projectValues) {
+    public CustomConditionalExpressionControl(ConditionalExpression expression, ObservableList<ProjectValue> projectValues) {
         this.expression = expression;
         this.projectValues = projectValues;
         this.entryViewList = new ArrayList<>();
@@ -76,7 +77,7 @@ public class CustomConditionalExpressionControl extends VBox {
         private Button removeButton;
         private Label operatorLabel;
 
-        public EntryView(ConditionalExpression.Entry entry, List<ProjectValue> projectValues) {
+        public EntryView(ConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues) {
             ComboBox<Operator> operatorComboBox = new ComboBox<>(FXCollections.observableArrayList(Operator.getComparisonOperator()));
             if (entry.getOperator() != null) {
                 operatorComboBox.setValue(entry.getOperator());

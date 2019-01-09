@@ -26,6 +26,7 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.actual.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -67,6 +68,9 @@ public class Project {
     private final ObservableList<Condition> unmodifiableCondition;
     private final ObservableList<Line> unmodifiableLine;
 
+    private final ObservableList<ProjectValue> valueList;
+    private final ObservableList<ProjectValue> unmodifiableValueList;
+
     private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
@@ -85,6 +89,17 @@ public class Project {
         interfaceDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
         deviceWithAction = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasAction());
         deviceWithCondition = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasCondition());
+
+        valueList = FXCollections.observableArrayList();
+        unmodifiableValueList = FXCollections.unmodifiableObservableList(valueList);
+        device.addListener((InvalidationListener)  e -> {
+            valueList.clear();
+            for (ProjectDevice projectDevice : device) {
+                for (Value v : projectDevice.getGenericDevice().getValue()) {
+                    valueList.add(new ProjectValue(projectDevice, v));
+                }
+            }
+        });
 
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
@@ -376,14 +391,8 @@ public class Project {
         this.projectName.set(projectName);
     }
 
-    public List<ProjectValue> getAvailableValue() {
-        List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : device) {
-            for (Value v : projectDevice.getGenericDevice().getValue()) {
-                value.add(new ProjectValue(projectDevice, v));
-            }
-        }
-        return value;
+    public ObservableList<ProjectValue> getAvailableValue() {
+        return unmodifiableValueList;
     }
 
     public ActualDevice getController() {

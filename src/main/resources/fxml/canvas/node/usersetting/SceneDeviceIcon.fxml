@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<?import io.makerplayground.ui.control.AutoResizeTextField?>
+
+<fx:root type="TitledPane" stylesheets="@../../../../css/canvas/node/usersetting/SceneDeviceIcon.css"
+         xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+    </content>
+    <graphic>
+        <HBox maxWidth="1.7976931348623157E308" maxHeight="16.0" spacing="5.0">
+            <children>
+                <ImageView fx:id="deviceIcon" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                           preserveRatio="true"/>
+                <AutoResizeTextField fx:id="deviceName" id="deviceName" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS"/>
+                <ImageView fx:id="removeButton" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@../../../../css/canvas/node/usersetting/delete-button.png"/>
+                    </image>
+                </ImageView>
+            </children>
+        </HBox>
+    </graphic>
+</fx:root>

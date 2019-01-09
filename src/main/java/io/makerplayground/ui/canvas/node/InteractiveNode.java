@@ -28,6 +28,7 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
     protected final InteractivePane interactivePane;
     private final BooleanProperty select = new SimpleBooleanProperty();
+    private Node hilightNode;
 
     private double mouseAnchorX;
     private double mouseAnchorY;
@@ -37,6 +38,8 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
     public InteractiveNode(InteractivePane interactivePane) {
         this.interactivePane = interactivePane;
+        // node to show hilight to indicate selection or error
+        this.hilightNode = this;
 
         // allow this node to be selected (use event filter without consuming the event to allow children of this
         // node to process mouse press event)
@@ -116,13 +119,13 @@ public abstract class InteractiveNode extends Group implements Selectable {
      */
     protected void showHilight(boolean forceHilight) {
         if (forceHilight || isSelected()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #008ef4, 5.0 , 0.5, 0.0 , 0.0);");
+            hilightNode.setStyle("-fx-effect: dropshadow(gaussian, #008ef4, 5.0 , 0.5, 0.0 , 0.0);");
             /*setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");*/
         } else if (isError()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
+            hilightNode.setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
             /*setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");*/
         } else {
-            setStyle("-fx-effect: dropshadow(gaussian, derive(black,85%), 5.0 , 0.0, 0.0 , 0.0);");
+            hilightNode.setStyle("-fx-effect: dropshadow(gaussian, derive(black,85%), 5.0 , 0.0, 0.0 , 0.0);");
             /*setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");*/
         }
     }
@@ -140,6 +143,14 @@ public abstract class InteractiveNode extends Group implements Selectable {
     @Override
     public void setSelected(boolean b) {
         select.set(b);
+    }
+
+    public Node getHilightNode() {
+        return hilightNode;
+    }
+
+    public void setHilightNode(Node hilightNode) {
+        this.hilightNode = hilightNode;
     }
 
     protected abstract boolean isError();
