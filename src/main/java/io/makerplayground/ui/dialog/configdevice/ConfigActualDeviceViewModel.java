@@ -38,7 +38,6 @@ public class ConfigActualDeviceViewModel {
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
-    private DeviceMapperResult deviceMapperResult;
     private Runnable platformChangedCallback;
     private Runnable controllerChangedCallback;
     private Runnable deviceConfigChangedCallback;
@@ -188,5 +187,18 @@ public class ConfigActualDeviceViewModel {
 
     Set<ProjectDevice> getUnusedDevice() {
         return  project.getAllDeviceUnused();
+    }
+
+    DeviceMapperResult autoAssignDevice() {
+        DeviceMapperResult result = DeviceMapper.autoAssignDevices(project);
+        System.out.println(result);
+        applyDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+        return result;
     }
 }

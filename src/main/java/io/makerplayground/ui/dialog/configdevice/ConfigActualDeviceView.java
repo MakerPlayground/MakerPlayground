@@ -22,6 +22,7 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.dialog.WarningDialogView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -47,9 +48,11 @@ public class ConfigActualDeviceView extends VBox{
 
     private final ConfigActualDeviceViewModel viewModel;
 
-    @FXML private GridPane usedDevice;
-    @FXML private FlowPane unusedDevicePane;
+    @FXML private VBox usedDevice;
+    @FXML private GridPane usedDeviceSettingPane;
+    @FXML private Button autoButton;
     @FXML private VBox unusedDevice;
+    @FXML private FlowPane unusedDevicePane;
     @FXML private VBox cloudPlatformParameterSection;
     @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
@@ -85,6 +88,14 @@ public class ConfigActualDeviceView extends VBox{
         // write change to the viewmodel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
+
+        autoButton.setOnAction(event -> {
+            DeviceMapperResult result = viewModel.autoAssignDevice();
+            if (result != DeviceMapperResult.OK) {
+                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
+                warningDialogView.showAndWait();
+            }
+        });
     }
 
     private void initPlatformControl() {
@@ -157,7 +168,8 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControl() {
-        usedDevice.getChildren().clear();
+        usedDevice.setVisible(false);
+        usedDevice.setManaged(false);
         unusedDevice.setVisible(false);
         unusedDevice.setManaged(false);
         cloudPlatformParameterSection.setVisible(false);
@@ -168,6 +180,15 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControlChildren() {
+        if (viewModel.getUsedDevice().isEmpty()) {
+            usedDevice.setVisible(false);
+            usedDevice.setManaged(false);
+        } else {
+            usedDevice.setVisible(true);
+            usedDevice.setManaged(true);
+        }
+
+        usedDeviceSettingPane.getChildren().clear();
         viewModel.clearDeviceConfigChangedCallback();
         int currentRow = 0;
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
@@ -344,7 +365,7 @@ public class ConfigActualDeviceView extends VBox{
                 }
             }
 
-            usedDevice.getChildren().addAll(imageView, name, entireComboBoxDevice);
+            usedDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
             currentRow++;
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);

@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.VBox?>
 
 <fx:root alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-         stylesheets="@../../css/dialog/ErrorDialogView.css" prefHeight="175.0" prefWidth="400.0" type="VBox"
-         xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+         prefHeight="175.0" prefWidth="400.0" stylesheets="@../../css/dialog/WarningDialogView.css" type="VBox"
+         xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <opaqueInsets>
         <Insets left="25.0" right="25.0"/>
     </opaqueInsets>
     <ImageView fitHeight="100.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-        <Image url="@../../icons/Error.png"/>
+        <Image url="@../../css/dialog/warning.png"/>
     </ImageView>
     <Label id="descriptionLabel" fx:id="descriptionLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="300.0"
            text="Label" textAlignment="CENTER" wrapText="true">
