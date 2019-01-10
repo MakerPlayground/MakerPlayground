@@ -341,19 +341,19 @@ public class ConfigActualDeviceView extends VBox{
                         propertyGridPane.getChildren().add(propertyLabel);
 
                         if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
-                            TextField textField = new TextField(projectDevice.getPropertyValue(p));
-                            textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
+                            TextField textField = new TextField(viewModel.getPropertyValue(projectDevice, p));
+                            textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(textField, i);
                             GridPane.setColumnIndex(textField, 1);
                             propertyGridPane.getChildren().add(textField);
                         } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
-                            if (projectDevice.getPropertyValue(p) == null) {
-                                projectDevice.setPropertyValue(p, p.getDefaultValue().toString());
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            if (viewModel.getPropertyValue(projectDevice, p) == null) {
+                                viewModel.setPropertyValue(projectDevice, p, p.getDefaultValue().toString());
                             }
-                            comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
+                            comboBox.getSelectionModel().select(viewModel.getPropertyValue(projectDevice, p));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
                             propertyGridPane.getChildren().add(comboBox);

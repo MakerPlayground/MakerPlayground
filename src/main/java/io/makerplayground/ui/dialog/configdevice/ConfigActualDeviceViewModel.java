@@ -16,12 +16,8 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -161,6 +157,17 @@ public class ConfigActualDeviceViewModel {
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();
         }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+    }
+
+    String getPropertyValue(ProjectDevice projectDevice, Property p) {
+        return projectDevice.getPropertyValue(p);
+    }
+
+    void setPropertyValue(ProjectDevice projectDevice, Property p, String value) {
+        projectDevice.setPropertyValue(p, value);
         if (configChangedCallback != null) {
             configChangedCallback.run();
         }
