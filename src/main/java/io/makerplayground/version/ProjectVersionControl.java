@@ -25,15 +25,11 @@ import java.util.List;
 
 public class ProjectVersionControl {
 
-    public static final String CURRENT_VERSION = "0.3.0";
+    public static final String CURRENT_VERSION = "0.4.0";
 
     public static boolean isConvertibleToCurrentVersion(String projectVersion) {
-        List<String> incompatibleList = List.of("0.2", "0.2.3");
         if (CURRENT_VERSION.equals(projectVersion)) {
             return true;
-        }
-        else if (incompatibleList.contains(projectVersion)) {
-            return false;
         }
         return false;
     }
@@ -44,8 +40,7 @@ public class ProjectVersionControl {
             JsonNode node = mapper.readTree(selectedFile);
             if (node.has("projectVersion")) {
                 return node.get("projectVersion").asText("0.2");
-            }
-            else {
+            } else {
                 return "0.2";
             }
         } catch (IOException e) {
