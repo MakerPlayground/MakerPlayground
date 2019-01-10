@@ -26,6 +26,8 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.ConnectionType;
 import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.generator.DeviceMapper;
+import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 
@@ -287,7 +289,7 @@ public class SourceCodeGenerator {
         if (!generator.checkDiagram(project)) {
             return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
         }
-        if (!generator.checkDeviceAssignment(project)) {
+        if (DeviceMapper.checkDeviceAssignment(project) != DeviceMapperResult.OK) {
             return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
         }
         if (!generator.checkDeviceProperty(project)) {
@@ -564,22 +566,6 @@ public class SourceCodeGenerator {
                     if (value == null || value.isEmpty()) {
                         return false;
                     }
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean checkDeviceAssignment(Project project) {
-        for (ProjectDevice device : project.getAllDeviceUsed()) {
-            // indicate error immediately if an actual device hasn't been selected
-            if (device.getActualDevice() == null) {
-                return false;
-            }
-            // for each connectivity required, check if it has been connected and indicate error if it hasn't
-            for (Peripheral peripheral : device.getActualDevice().getConnectivity()) {
-                if (!device.getDeviceConnection().containsKey(peripheral)) {
-                    return false;
                 }
             }
         }

@@ -3,9 +3,7 @@ package io.makerplayground.generator.upload;
 public enum UploadResult {
     OK,
     CANT_FIND_PIO,
-    NOT_ENOUGH_PORT,
-    NO_SUPPORT_DEVICE,
-    NO_MCU_SELECTED,
+    DEVICE_OR_PORT_MISSING,
     CANT_CREATE_PROJECT,
     CANT_GENERATE_CODE,
     CODE_ERROR,

@@ -52,19 +52,10 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.autoAssignDevices(project);
-        if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
-            updateMessage("Error: not enough port available");
-            return UploadResult.NOT_ENOUGH_PORT;
-        } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            updateMessage("Error: can't find support device");
-            return UploadResult.NO_SUPPORT_DEVICE;
-        } else if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
-            updateMessage("Error: please select a mcu");
-            return UploadResult.NO_MCU_SELECTED;
-        } else if (mappingResult != DeviceMapperResult.OK) {
-            updateMessage("Error: found unknown error");
-            return UploadResult.UNKNOWN_ERROR;
+        DeviceMapperResult mappingResult = DeviceMapper.checkDeviceAssignment(project);
+        if (mappingResult != DeviceMapperResult.OK) {
+            updateMessage(mappingResult.getErrorMessage());
+            return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
         SourceCodeResult sourcecode = SourceCodeGenerator.generateCode(project, true);

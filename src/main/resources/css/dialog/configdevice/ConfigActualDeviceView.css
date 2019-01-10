@@ -28,7 +28,7 @@
     -fx-background-color: background-color;
     -fx-border-color : transparent;
     /*-fx-border-width : 0.5px;*/
-    -fx-padding: 20px 20px 20px 20px;
+    /*-fx-padding: 20px 20px 20px 20px;*/
 }
 
 .scroll-pane > .viewport{
@@ -188,3 +188,10 @@
     -fx-image: url('/css/cancel-button-press.png');
     -fx-cursor: hand;
 }*/
+
+#autoButton {
+    -fx-background-color: background-color;
+    -fx-border-color: text-fill-border-color;
+    -fx-border-radius: 5px;
+    -fx-text-fill: text-fill-color;
+}

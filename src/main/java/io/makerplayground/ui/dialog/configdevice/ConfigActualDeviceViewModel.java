@@ -16,12 +16,8 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -38,7 +34,6 @@ public class ConfigActualDeviceViewModel {
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
-    private DeviceMapperResult deviceMapperResult;
     private Runnable platformChangedCallback;
     private Runnable controllerChangedCallback;
     private Runnable deviceConfigChangedCallback;
@@ -52,14 +47,8 @@ public class ConfigActualDeviceViewModel {
     }
 
     private void applyDeviceMapping() {
-        deviceMapperResult = DeviceMapper.autoAssignDevices(project);
-        if (deviceMapperResult == DeviceMapperResult.OK ) {
-            compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
-            compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
-        } else {
-            compatibleDeviceList.set(null);
-            compatiblePortList.set(null);
-        }
+        compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
+        compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
     }
 
     public void setPlatformChangedCallback(Runnable callback) {
@@ -80,10 +69,6 @@ public class ConfigActualDeviceViewModel {
 
     public void setConfigChangedCallback(Runnable callback) {
         configChangedCallback = callback;
-    }
-
-    DeviceMapperResult getDeviceMapperResult() {
-        return deviceMapperResult;
     }
 
     List<ActualDevice> getCompatibleDevice(ProjectDevice projectDevice) {
@@ -111,6 +96,10 @@ public class ConfigActualDeviceViewModel {
 
     Platform getSelectedPlatform() {
         return project.getPlatform();
+    }
+
+    ActualDevice getController() {
+        return project.getController();
     }
 
     void setController(ActualDevice device) {
@@ -173,6 +162,17 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
+    String getPropertyValue(ProjectDevice projectDevice, Property p) {
+        return projectDevice.getPropertyValue(p);
+    }
+
+    void setPropertyValue(ProjectDevice projectDevice, Property p, String value) {
+        projectDevice.setPropertyValue(p, value);
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+    }
+
     Set<CloudPlatform> getCloudPlatformUsed() {
         return project.getCloudPlatformUsed();
     }
@@ -194,5 +194,18 @@ public class ConfigActualDeviceViewModel {
 
     Set<ProjectDevice> getUnusedDevice() {
         return  project.getAllDeviceUnused();
+    }
+
+    DeviceMapperResult autoAssignDevice() {
+        DeviceMapperResult result = DeviceMapper.autoAssignDevices(project);
+        System.out.println(result);
+        applyDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+        return result;
     }
 }

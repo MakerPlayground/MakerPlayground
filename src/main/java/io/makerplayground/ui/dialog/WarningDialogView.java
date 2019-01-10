@@ -24,15 +24,15 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 
-public class ErrorDialogView extends UndecoratedDialog {
+public class WarningDialogView extends UndecoratedDialog {
 
     private VBox mainPane = new VBox();
     @FXML private Label descriptionLabel;
 
-    public ErrorDialogView(Window owner, String error) {
+    public WarningDialogView(Window owner, String error) {
         super(owner);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/ErrorDialogView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/WarningDialogView.fxml"));
         fxmlLoader.setRoot(mainPane);
         fxmlLoader.setController(this);
         try {

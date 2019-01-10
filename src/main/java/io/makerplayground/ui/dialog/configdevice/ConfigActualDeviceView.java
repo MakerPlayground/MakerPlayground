@@ -16,14 +16,13 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.dialog.UndecoratedDialog;
+import io.makerplayground.ui.dialog.WarningDialogView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,7 +35,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -50,9 +48,11 @@ public class ConfigActualDeviceView extends VBox{
 
     private final ConfigActualDeviceViewModel viewModel;
 
-    @FXML private GridPane usedDevice;
-    @FXML private FlowPane unusedDevicePane;
+    @FXML private VBox usedDevice;
+    @FXML private GridPane usedDeviceSettingPane;
+    @FXML private Button autoButton;
     @FXML private VBox unusedDevice;
+    @FXML private FlowPane unusedDevicePane;
     @FXML private VBox cloudPlatformParameterSection;
     @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
@@ -60,7 +60,6 @@ public class ConfigActualDeviceView extends VBox{
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<ActualDevice> controllerComboBox;
     @FXML private Label controllerName;
-    @FXML private Label errorMsg;
 
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
@@ -73,8 +72,6 @@ public class ConfigActualDeviceView extends VBox{
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-
-        errorMsg.managedProperty().bind(errorMsg.visibleProperty());
 
         initPlatformControl();
         initControllerControl();
@@ -91,6 +88,14 @@ public class ConfigActualDeviceView extends VBox{
         // write change to the viewmodel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
+
+        autoButton.setOnAction(event -> {
+            DeviceMapperResult result = viewModel.autoAssignDevice();
+            if (result != DeviceMapperResult.OK) {
+                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
+                warningDialogView.showAndWait();
+            }
+        });
     }
 
     private void initPlatformControl() {
@@ -163,35 +168,27 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControl() {
-        usedDevice.getChildren().clear();
+        usedDevice.setVisible(false);
+        usedDevice.setManaged(false);
         unusedDevice.setVisible(false);
         unusedDevice.setManaged(false);
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
-
-        DeviceMapperResult mappingResult = viewModel.getDeviceMapperResult();
-        if (mappingResult == DeviceMapperResult.NO_MCU_SELECTED) {
-            errorMsg.setVisible(true);
-            errorMsg.setText("Controller hasn't been selected");
-        } else if (mappingResult == DeviceMapperResult.NOT_ENOUGH_PORT) {
-            errorMsg.setVisible(true);
-            errorMsg.setText("Controller doesn't have enough ports");
-        } else if (mappingResult == DeviceMapperResult.NO_SUPPORT_DEVICE) {
-            errorMsg.setVisible(true);
-            errorMsg.setText("Can't find any supported device");
-        } else if (mappingResult == DeviceMapperResult.OK){
-            errorMsg.setVisible(false);
-            initDeviceControlChildren();
-            initUnusedDeviceControl();
-            initCloudPlatformPropertyControl();
-        } else {
-            errorMsg.setVisible(true);
-            errorMsg.setText("Found an unknown error. Please contact the development team.");
-            throw new IllegalStateException("Found unknown error!!!");
-        }
+        initDeviceControlChildren();
+        initUnusedDeviceControl();
+        initCloudPlatformPropertyControl();
     }
 
     private void initDeviceControlChildren() {
+        if (viewModel.getUsedDevice().isEmpty()) {
+            usedDevice.setVisible(false);
+            usedDevice.setManaged(false);
+        } else {
+            usedDevice.setVisible(true);
+            usedDevice.setManaged(true);
+        }
+
+        usedDeviceSettingPane.getChildren().clear();
         viewModel.clearDeviceConfigChangedCallback();
         int currentRow = 0;
         for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
@@ -246,32 +243,22 @@ public class ConfigActualDeviceView extends VBox{
                 viewModel.setDevice(projectDevice, newValue);
             });
 
-            CheckBox checkBox = new CheckBox("Auto");
-            checkBox.setMinHeight(25);  // a hack to center the label to the height of 1 row control when the control spans to multiple rows
-            checkBox.setMinWidth(55);   // a hack to prevent "Auto" from becoming ...
-            checkBox.setSelected(projectDevice.isAutoSelectDevice());
-            deviceComboBox.setDisable(projectDevice.isAutoSelectDevice());
-            checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
-                projectDevice.setAutoSelectDevice(new_val);
-                deviceComboBox.setDisable(new_val);
-            });
-            GridPane.setConstraints(checkBox, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
-
             VBox entireComboBoxDevice = new VBox();
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
+            entireComboBoxDevice.setDisable(viewModel.getController() == null);
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
-            GridPane.setConstraints(entireComboBoxDevice, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
+            GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
             HBox portComboBoxHbox = new HBox();
             portComboBoxHbox.setSpacing(5.0);
             portComboBoxHbox.setAlignment(Pos.CENTER_LEFT);
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
-            // We only show port combobox when the device has been selected
+            // We only show port combobox and property textfield when the device has been selected
             ActualDevice actualDevice = projectDevice.getActualDevice();
             if (actualDevice != null) {
-                if ( !actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty() ) {
+                if (!actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
                     viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
                 } else {
                     // loop for each peripheral
@@ -324,7 +311,6 @@ public class ConfigActualDeviceView extends VBox{
                                 viewModel.setPeripheral(projectDevice, p, newValue);
                             }
                         });
-                        portComboBox.disableProperty().bind(checkBox.selectedProperty());
 
                         // TODO: handle other type (UART, SPI, etc.)
                         String portName;
@@ -338,48 +324,48 @@ public class ConfigActualDeviceView extends VBox{
                     }
                     entireComboBoxDevice.getChildren().add(portComboBoxHbox);
                 }
-            }
 
-            // property
-            if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
-                GridPane propertyGridPane = new GridPane();
-                propertyGridPane.setHgap(10);
-                propertyGridPane.setVgap(10);
+                // property
+                if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
+                    GridPane propertyGridPane = new GridPane();
+                    propertyGridPane.setHgap(10);
+                    propertyGridPane.setVgap(10);
 
-                List<Property> propertyList = projectDevice.getActualDevice().getProperty();
-                for (int i=0; i<propertyList.size(); i++) {
-                    Property p = propertyList.get(i);
+                    List<Property> propertyList = projectDevice.getActualDevice().getProperty();
+                    for (int i=0; i<propertyList.size(); i++) {
+                        Property p = propertyList.get(i);
 
-                    Label propertyLabel = new Label(p.getName());
-                    GridPane.setRowIndex(propertyLabel, i);
-                    GridPane.setColumnIndex(propertyLabel, 0);
-                    propertyGridPane.getChildren().add(propertyLabel);
+                        Label propertyLabel = new Label(p.getName());
+                        GridPane.setRowIndex(propertyLabel, i);
+                        GridPane.setColumnIndex(propertyLabel, 0);
+                        propertyGridPane.getChildren().add(propertyLabel);
 
-                    if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
-                        TextField textField = new TextField(projectDevice.getPropertyValue(p));
-                        textField.textProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
-                        GridPane.setRowIndex(textField, i);
-                        GridPane.setColumnIndex(textField, 1);
-                        propertyGridPane.getChildren().add(textField);
-                    } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
-                        ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                        ComboBox<String> comboBox = new ComboBox<>(list);
-                        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> projectDevice.setPropertyValue(p, newValue));
-                        if (projectDevice.getPropertyValue(p) == null) {
-                            projectDevice.setPropertyValue(p, p.getDefaultValue().toString());
+                        if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
+                            TextField textField = new TextField(viewModel.getPropertyValue(projectDevice, p));
+                            textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(textField, i);
+                            GridPane.setColumnIndex(textField, 1);
+                            propertyGridPane.getChildren().add(textField);
+                        } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                            ComboBox<String> comboBox = new ComboBox<>(list);
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            if (viewModel.getPropertyValue(projectDevice, p) == null) {
+                                viewModel.setPropertyValue(projectDevice, p, p.getDefaultValue().toString());
+                            }
+                            comboBox.getSelectionModel().select(viewModel.getPropertyValue(projectDevice, p));
+                            GridPane.setRowIndex(comboBox, i);
+                            GridPane.setColumnIndex(comboBox, 1);
+                            propertyGridPane.getChildren().add(comboBox);
+                        } else {    // TODO: add support for new property type
+                            throw new IllegalStateException("Found unknown property type");
                         }
-                        comboBox.getSelectionModel().select(projectDevice.getPropertyValue(p));
-                        GridPane.setRowIndex(comboBox, i);
-                        GridPane.setColumnIndex(comboBox, 1);
-                        propertyGridPane.getChildren().add(comboBox);
-                    } else {    // TODO: add support for new property type
-                        throw new IllegalStateException("Found unknown property type");
                     }
+                    entireComboBoxDevice.getChildren().add(propertyGridPane);
                 }
-                entireComboBoxDevice.getChildren().add(propertyGridPane);
             }
 
-            usedDevice.getChildren().addAll(imageView, name, checkBox, entireComboBoxDevice);
+            usedDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
             currentRow++;
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);

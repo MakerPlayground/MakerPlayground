@@ -322,7 +322,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
     public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
-        boolean autoSelect = node.get("autoselect").asBoolean();
 
         String actualDeviceId = node.get("actualDevice").asText();
         ActualDevice actualDevice = null;
@@ -368,7 +367,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             property.put(p, propertyNode.get("value").asText());
         }
 
-        return new ProjectDevice(name, genericDevice, autoSelect, actualDevice, actualDeviceConnection
+        return new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);
     }
 }

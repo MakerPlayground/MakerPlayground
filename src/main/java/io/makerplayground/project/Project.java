@@ -400,7 +400,6 @@ public class Project {
         for (ProjectDevice projectDevice : getDevice()) {
             projectDevice.removeAllDeviceConnection();
             projectDevice.setActualDevice(null);
-            projectDevice.setAutoSelectDevice(true);
         }
     }
 
