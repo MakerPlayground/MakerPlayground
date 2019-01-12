@@ -7,6 +7,7 @@ import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
+import io.makerplayground.util.OSInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
@@ -71,6 +72,18 @@ public class CanvasView extends AnchorPane {
         copyMenuItem.disableProperty().bind(selectionGroupEmpty);
         pasteMenuItem.disableProperty().bind(Bindings.size(clipboard).isEqualTo(0));
         deleteMenuItem.disableProperty().bind(selectionGroupEmpty);
+
+        // macos uses both backspace and delete as to delete something and there isn't any platform independent way to handle this in javafx
+        if (OSInfo.getOs() == OSInfo.OS.MAC) {
+            deleteMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE));
+            addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.DELETE) {
+                    deleteHandler();
+                }
+            });
+        } else {
+            deleteMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        }
 
         BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
         addConnectionEvent(beginSceneView);

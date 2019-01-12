@@ -27,8 +27,7 @@
                <MenuItem id="pasteMenuItem" fx:id="pasteMenuItem" text="Paste" onAction="#pasteHandler"
                          accelerator="Shortcut+V"/>
                <SeparatorMenuItem/>
-               <MenuItem id="deleteMenuItem" fx:id="deleteMenuItem" text="Delete" onAction="#deleteHandler"
-                         accelerator="Delete"/>
+               <MenuItem id="deleteMenuItem" fx:id="deleteMenuItem" text="Delete" onAction="#deleteHandler" />
             </items>
          </ContextMenu>
       </contextMenu>
