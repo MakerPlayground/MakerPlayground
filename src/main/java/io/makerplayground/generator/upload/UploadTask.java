@@ -52,13 +52,13 @@ public class UploadTask extends Task<UploadResult> {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.checkDeviceAssignment(project);
+        DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
         if (mappingResult != DeviceMapperResult.OK) {
             updateMessage(mappingResult.getErrorMessage());
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
-        SourceCodeResult sourcecode = SourceCodeGenerator.generateCode(project, true);
+        SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;

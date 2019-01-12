@@ -128,8 +128,8 @@ public class MainWindow extends BorderPane {
         Runnable generateViewCreator = () -> {
             rightView.getChildren().clear();
 
-            DeviceMapperResult mappingResult = DeviceMapper.checkDeviceAssignment(currentProject);
-            SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generateCode(currentProject, true);
+            DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(currentProject);
+            SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generate(currentProject);
 
             GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);
             GenerateView generateView = new GenerateView(generateViewModel);
