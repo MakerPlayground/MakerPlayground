@@ -438,7 +438,8 @@ class ArduinoCodeGenerator {
                         }
                     }
                 }
-
+                
+                builder.append(NEW_LINE);
                 builder.append("void ").append(parseConditionFunctionName(node)).append("() {").append(NEW_LINE);
 
                 // call the update function
