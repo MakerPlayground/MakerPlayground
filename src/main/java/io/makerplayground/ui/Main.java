@@ -81,6 +81,7 @@ public class Main extends Application {
         MainWindow mainWindow = new MainWindow(project);
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
+        mainWindow.developerToolShowingProperty().bind(toolbar.developerToolSelectProperty());
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);

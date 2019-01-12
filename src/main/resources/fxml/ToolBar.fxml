@@ -49,7 +49,7 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <CheckMenuItem fx:id="developerMenuItem" mnemonicParsing="false" text="Developer Tool">
+                        <CheckMenuItem fx:id="developerMenuItem" mnemonicParsing="false" text="Developer Tools">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP"
                                                     shortcut="UP" />
@@ -72,6 +72,12 @@
                 </RadioButton>
                 <RadioButton id="deviceConfigButton" fx:id="deviceConfigButton" mnemonicParsing="false"
                              prefHeight="35.0" text="Circuit &amp; Sourcecode" textAlignment="CENTER">
+                    <padding>
+                        <Insets left="10.0" right="10.0"/>
+                    </padding>
+                </RadioButton>
+                <RadioButton id="developerToolButton" fx:id="developerToolButton" mnemonicParsing="false"
+                             prefHeight="35.0" text="Developer Tools" textAlignment="CENTER">
                     <padding>
                         <Insets left="10.0" right="10.0"/>
                     </padding>

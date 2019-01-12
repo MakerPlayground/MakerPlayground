@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<fx:root stylesheets="@../css/DeveloperTool.css" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.1">
+    <VBox id="leftPane" fx:id="leftPane" spacing="5" SplitPane.resizableWithParent="true" minWidth="250" prefWidth="250">
+        <Label text="System"/>
+        <HBox spacing="5">
+            <Button id="existingDeviceButton" fx:id="existingDeviceButton" text="Devices"/>
+            <Button id="existingLibButton" fx:id="existingLibButton" text="Libraries"/>
+            <Button id="existingExtLibButton" fx:id="existingExtLibButton" text="Ext. Libraries"/>
+        </HBox>
+
+        <Label text="User"/>
+        <HBox spacing="5">
+            <Button id="userDeviceButton" fx:id="userDeviceButton" text="Devices"/>
+            <Button id="userLibButton" fx:id="userLibButton" text="Libraries"/>
+            <Button id="userExtLibButton" fx:id="userExtLibButton" text="Ext. Libraries"/>
+        </HBox>
+
+        <Label text="User Devices"/>
+        <HBox spacing="5">
+            <TextField id="deviceIdTextField" fx:id="deviceIdTextField" promptText="Device ID" HBox.hgrow="ALWAYS"/>
+            <Button id="createDeviceButton" fx:id="createDeviceButton" text="Create"/>
+        </HBox>
+        <ListView id="deviceListView" fx:id="deviceListView"/>
+
+        <Label text="User Libraries"/>
+        <HBox spacing="5">
+            <TextField id="libNameTextField" fx:id="libNameTextField" promptText="Library name" HBox.hgrow="ALWAYS"/>
+            <Button id="createLibButton" fx:id="createLibButton" text="Create"/>
+        </HBox>
+        <ListView id="libListView" fx:id="libListView"/>
+    </VBox>
+    <TabPane id="rightPane" fx:id="rightPane" SplitPane.resizableWithParent="true"/>
+</fx:root>

@@ -49,6 +49,7 @@ public class MainWindow extends BorderPane {
 
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
+    private final BooleanProperty developerToolShowing;
 
     private final IntegerProperty currentTabIndex;
 
@@ -66,6 +67,13 @@ public class MainWindow extends BorderPane {
         deviceConfigShowing.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 setCenter(initConfigDevice());
+            }
+        });
+
+        developerToolShowing = new SimpleBooleanProperty();
+        developerToolShowing.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                setCenter(initDeveloperTool());
             }
         });
 
@@ -96,6 +104,14 @@ public class MainWindow extends BorderPane {
 
     public BooleanProperty deviceConfigShowingProperty() {
         return deviceConfigShowing;
+    }
+
+    public boolean isDeveloperToolShowing() {
+        return developerToolShowing.get();
+    }
+
+    public BooleanProperty developerToolShowingProperty() {
+        return developerToolShowing;
     }
 
     private Node initDiagramEditor() {
@@ -173,5 +189,9 @@ public class MainWindow extends BorderPane {
         mainLayout.setOrientation(Orientation.HORIZONTAL);
         mainLayout.getItems().addAll(configActualDeviceView, rightView);
         return mainLayout;
+    }
+
+    private Node initDeveloperTool() {
+        return new DeveloperTool();
     }
 }

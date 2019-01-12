@@ -75,7 +75,7 @@ public class ActualDevice {
      * @param model           model of this device ex. SparkFun 9DoF IMU Breakout
      * @param url             url to produce description page ex. https://www.sparkfun.com/products/13284
      */
-    ActualDevice(String id, String brand, String model, String url, double width, double height, DeviceType deviceType
+     ActualDevice(String id, String brand, String model, String url, double width, double height, DeviceType deviceType
             , String pioBoardId
             , WiringMethod wiringMethod
             , FormFactor formFactor
@@ -278,6 +278,10 @@ public class ActualDevice {
 
     public String getMpLibrary(Platform p) {
         return classnames.get(p);
+    }
+
+    public Set<String> getMpLibrary() {
+        return new HashSet<>(classnames.values());
     }
 
     public List<String> getExternalLibrary(Platform p) {

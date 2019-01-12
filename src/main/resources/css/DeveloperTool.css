@@ -1,0 +1,19 @@
+#leftPane {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    /*-fx-border-radius: 5px 5px 0px 0px;*/
+    -fx-padding: 5px 5px 5px 5px;
+    -fx-text-fill: text-color-hilight;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+#rightPane {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    /*-fx-border-radius: 5px 5px 0px 0px;*/
+    /*-fx-padding: 5px 10px 5px 5px; */
+    -fx-text-fill: text-color-hilight;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}

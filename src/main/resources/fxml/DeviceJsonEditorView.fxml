@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<fx:root stylesheets="@../css/DeviceJsonEditorView.css" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <HBox maxHeight="45" prefHeight="45">
+            <padding>
+                <Insets topRightBottomLeft="10"/>
+            </padding>
+            <Button id="saveButton" fx:id="saveButton" text="Save"/>
+            <Button id="discardButton" fx:id="discardButton" text="Discard"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane>
+            <GridPane hgap="10" vgap="15">
+                <padding>
+                    <Insets top="10" bottom="10" right="20" left="20"/>
+                </padding>
+                <Label text="Device ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField id="deviceIDTextField" disable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Brand" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField id="brandTextField" fx:id="brandTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Model" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField id="modelTextField" fx:id="modelTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Url" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField id="urlTextField" fx:id="urlTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Device Type" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <ComboBox id="deviceTypeCombo" fx:id="deviceTypeCombo" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Form Factor" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <ComboBox id="formFactorCombo" fx:id="formFactorCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                <Label text="PNG Image" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <Button id="pngImageButton" fx:id="pngImageButton" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                <ImageView id="pngImageView" fx:id="pngImageView" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                <Label text="SVG Image (Optional)" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                <Button id="svgImageButton" fx:id="svgImageButton" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                <Label id="svgImageLabel" fx:id="svgImageLabel" GridPane.rowIndex="8" GridPane.columnIndex="2"/>
+
+                <VBox GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Port"/>
+                        <Button id="newPortButton" fx:id="newPortButton" text="New"/>
+                    </HBox>
+                </VBox>
+
+                <VBox GridPane.rowIndex="10" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Connectivity"/>
+                    </HBox>
+                </VBox>
+
+                <VBox GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Compatibility"/>
+                    </HBox>
+                    <VBox id="compatibilityVBox" fx:id="compatibilityVBox"/>
+                </VBox>
+
+                <VBox GridPane.rowIndex="12" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Platforms"/>
+                    </HBox>
+                    <VBox id="platformVBox" fx:id="platformVBox"/>
+                </VBox>
+
+                <VBox GridPane.rowIndex="13" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Cloud Platform"/>
+                    </HBox>
+                    <VBox id="cloudPlatformVBox" fx:id="cloudPlatformVBox"/>
+                </VBox>
+            </GridPane>
+        </ScrollPane>
+    </center>
+</fx:root>

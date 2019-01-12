@@ -57,6 +57,7 @@ class Toolbar extends AnchorPane {
 
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
+    @FXML private RadioButton developerToolButton;
     @FXML private Label statusLabel;
     @FXML private MenuButton deviceMonitorMenuButton;
     @FXML private Button uploadButton;
@@ -81,9 +82,10 @@ class Toolbar extends AnchorPane {
         }
 
         developerMenuItem.selectedProperty().bindBidirectional(LocalStorage.getInstance().developerToolEnabledProperty());
+        developerToolButton.visibleProperty().bind(LocalStorage.getInstance().developerToolEnabledProperty());
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton, developerToolButton);
 
         diagramEditorButton.setSelected(true);
 
@@ -122,6 +124,10 @@ class Toolbar extends AnchorPane {
 
     BooleanProperty deviceConfigSelectProperty() {
         return deviceConfigButton.selectedProperty();
+    }
+
+    BooleanProperty developerToolSelectProperty() {
+        return developerToolButton.selectedProperty();
     }
 
     void setStatusMessage(String message) {
