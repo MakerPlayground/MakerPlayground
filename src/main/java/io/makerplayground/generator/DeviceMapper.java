@@ -323,7 +323,7 @@ public class DeviceMapper {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public static DeviceMapperResult checkDeviceAssignment(Project project) {
+    public static DeviceMapperResult validateDeviceAssignment(Project project) {
         if (project.getController() == null) {
             return DeviceMapperResult.NO_MCU_SELECTED;
         }
