@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <fx:root stylesheets="@../css/DeveloperTool.css" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.1">
-    <VBox id="leftPane" fx:id="leftPane" spacing="5" SplitPane.resizableWithParent="true" minWidth="250" prefWidth="250">
+    <VBox id="leftPane" fx:id="leftPane" spacing="5" SplitPane.resizableWithParent="true" minWidth="250" prefWidth="250" maxWidth="250">
         <Label text="System"/>
         <HBox spacing="5">
             <Button id="existingDeviceButton" fx:id="existingDeviceButton" text="Devices"/>

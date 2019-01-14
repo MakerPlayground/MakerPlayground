@@ -8,6 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import org.apache.commons.io.FileUtils;
@@ -163,12 +167,12 @@ class DeviceJsonEditorViewModel {
     private FormFactor formFactor;
     private double width;
     private double height;
-    private List<Property> property;
-    private List<Port> port;
-    private List<Peripheral> connectivity;
-    private List<Compatibility> compatibility;
-    private List<PlatformCompatibility> platforms;
-    private List<CloudPlatformCompatibility> support_cloudplatform;
+    private ObservableList<Property> property;
+    private ObservableList<Port> port;
+    private ObservableList<Peripheral> connectivity;
+    private ObservableList<Compatibility> compatibility;
+    private ObservableList<PlatformCompatibility> platforms;
+    private ObservableList<CloudPlatformCompatibility> support_cloudplatform;
 
     DeviceJsonEditorViewModel(String deviceId) {
         this.deviceId = deviceId;
@@ -219,12 +223,12 @@ class DeviceJsonEditorViewModel {
         this.formFactor = formFactor;
         this.width = width;
         this.height = height;
-        this.property = property;
-        this.port = port;
-        this.connectivity = connectivity;
-        this.compatibility = compatibility;
-        this.platforms = platforms;
-        this.support_cloudplatform = support_cloudplatform;
+        this.property = new SimpleListProperty<>(FXCollections.observableArrayList(property));
+        this.port = FXCollections.observableArrayList(port);
+        this.connectivity = FXCollections.observableArrayList(connectivity);
+        this.compatibility = FXCollections.observableArrayList(compatibility);
+        this.platforms = FXCollections.observableArrayList(platforms);
+        this.support_cloudplatform = FXCollections.observableArrayList(support_cloudplatform);
 
         this.deviceJsonFile = new File(USER_DEVICE_PATH + File.separator + deviceId + File.separator + "device.json");
         this.assetFolder = new File(USER_DEVICE_PATH + File.separator + deviceId + File.separator + "asset");
@@ -244,12 +248,12 @@ class DeviceJsonEditorViewModel {
         this.formFactor = FormFactor.BREAKOUT_BOARD_ONESIDE;
         this.width = 0.0;
         this.height = 0.0;
-        this.property = Collections.emptyList();
-        this.port = Collections.emptyList();
-        this.connectivity = Collections.emptyList();
-        this.compatibility = Collections.emptyList();
-        this.platforms = Collections.emptyList();
-        this.support_cloudplatform = Collections.emptyList();
+        this.property = FXCollections.emptyObservableList();
+        this.port = FXCollections.emptyObservableList();
+        this.connectivity = FXCollections.emptyObservableList();
+        this.compatibility = FXCollections.emptyObservableList();
+        this.platforms = FXCollections.emptyObservableList();
+        this.support_cloudplatform = FXCollections.emptyObservableList();
     }
 
     void saveDevicePng(File file){
@@ -311,7 +315,7 @@ class DeviceJsonEditorViewModel {
         }
     }
 
-    public void discard() {
+    public void discardSave() {
         this.restoreBackupImages();
         this.load();
     }
@@ -422,27 +426,27 @@ class DeviceJsonEditorViewModel {
         return height;
     }
 
-    public List<Property> getProperty() {
+    public ObservableList<Property> getProperty() {
         return property;
     }
 
-    public List<Port> getPort() {
+    public ObservableList<Port> getPort() {
         return port;
     }
 
-    public List<Peripheral> getConnectivity() {
+    public ObservableList<Peripheral> getConnectivity() {
         return connectivity;
     }
 
-    public List<Compatibility> getCompatibility() {
+    public ObservableList<Compatibility> getCompatibility() {
         return compatibility;
     }
 
-    public List<PlatformCompatibility> getPlatforms() {
+    public ObservableList<PlatformCompatibility> getPlatforms() {
         return platforms;
     }
 
-    public List<CloudPlatformCompatibility> getSupport_cloudplatform() {
+    public ObservableList<CloudPlatformCompatibility> getSupport_cloudplatform() {
         return support_cloudplatform;
     }
 
@@ -471,27 +475,31 @@ class DeviceJsonEditorViewModel {
     }
 
     public void setProperty(List<Property> property) {
-        this.property = property;
+        this.property = FXCollections.observableList(property);
     }
 
     public void setPort(List<Port> port) {
-        this.port = port;
+        this.port = FXCollections.observableList(port);
     }
 
     public void setConnectivity(List<Peripheral> connectivity) {
-        this.connectivity = connectivity;
+        this.connectivity.clear();
+        this.connectivity.addAll(connectivity);
     }
 
     public void setCompatibility(List<Compatibility> compatibility) {
-        this.compatibility = compatibility;
+        this.compatibility.clear();
+        this.compatibility.addAll(compatibility);
     }
 
     public void setPlatforms(List<PlatformCompatibility> platforms) {
-        this.platforms = platforms;
+        this.platforms.clear();
+        this.platforms.addAll(platforms);
     }
 
     public void setSupport_cloudplatform(List<CloudPlatformCompatibility> support_cloudplatform) {
-        this.support_cloudplatform = support_cloudplatform;
+        this.support_cloudplatform.clear();
+        this.support_cloudplatform.addAll(support_cloudplatform);
     }
 
     @JsonIgnore
@@ -500,7 +508,12 @@ class DeviceJsonEditorViewModel {
     }
 
     @JsonIgnore
-    public File getSvgImage() {
+    public File getPngImageFile() {
+        return this.devicePngFile;
+    }
+
+    @JsonIgnore
+    public File getSvgImageFile() {
         return this.deviceSvgFile;
     }
 }

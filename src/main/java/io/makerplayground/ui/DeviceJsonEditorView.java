@@ -3,6 +3,7 @@ package io.makerplayground.ui;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.actual.FormFactor;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,8 +34,8 @@ public class DeviceJsonEditorView extends BorderPane {
     @FXML ComboBox<DeviceType> deviceTypeCombo;
     @FXML ComboBox<FormFactor> formFactorCombo;
     @FXML Button pngImageButton;
-    @FXML ImageView pngImageView;
     @FXML Button pngImageDeleteButton;
+    @FXML Label pngImageLabel;
     @FXML Button svgImageButton;
     @FXML Button svgImageDeleteButton;
     @FXML Label svgImageLabel;
@@ -43,6 +44,11 @@ public class DeviceJsonEditorView extends BorderPane {
     @FXML VBox compatibilityVBox;
     @FXML VBox platformVBox;
     @FXML VBox cloudPlatformVBox;
+
+    @FXML VBox rightColumn;
+    @FXML ImageView pngImageView;
+    @FXML Label portLabel;
+    @FXML VBox portVBox;
 
     DeviceJsonEditorViewModel viewModel;
 
@@ -73,8 +79,11 @@ public class DeviceJsonEditorView extends BorderPane {
         formFactorCombo.setItems(FXCollections.observableArrayList(FormFactor.values()));
         formFactorCombo.getSelectionModel().select(viewModel.getFormFactor());
         pngImageView.setImage(viewModel.getPngImage());
-        if (viewModel.getSvgImage().exists()) {
-            svgImageLabel.setText(viewModel.getSvgImage().getName() + "(" + FileUtils.byteCountToDisplaySize(viewModel.getSvgImage().length()) + ")");
+        if (viewModel.getPngImageFile().exists()) {
+            pngImageLabel.setText(viewModel.getPngImageFile().getName() + " (" + FileUtils.byteCountToDisplaySize(viewModel.getPngImageFile().length()) + ")");
+        }
+        if (viewModel.getSvgImageFile().exists()) {
+            svgImageLabel.setText(viewModel.getSvgImageFile().getName() + " (" + FileUtils.byteCountToDisplaySize(viewModel.getSvgImageFile().length()) + ")");
         }
     }
 
@@ -97,7 +106,7 @@ public class DeviceJsonEditorView extends BorderPane {
             alert.setHeaderText("You are going to remove all changes you have made for this device.");
             alert.setContentText("Continue?");
             if (ButtonType.OK == alert.showAndWait().orElse(ButtonType.CANCEL)){
-                viewModel.discard();
+                viewModel.discardSave();
                 initComponents();
                 this.showDisappearingStatusMessage("Discarded");
             }
@@ -110,6 +119,7 @@ public class DeviceJsonEditorView extends BorderPane {
             if (file != null) {
                 viewModel.saveDevicePng(file);
                 pngImageView.setImage(new Image(file.toURI().toString()));
+                pngImageLabel.setText(file.getName() + " (" + FileUtils.byteCountToDisplaySize(file.length()) + ")");
             }
         });
 
@@ -121,16 +131,18 @@ public class DeviceJsonEditorView extends BorderPane {
             if (ButtonType.OK == alert.showAndWait().orElse(ButtonType.CANCEL)){
                 viewModel.deleteDevicePng();
                 pngImageView.setImage(null);
+                pngImageLabel.setText("");
             }
         });
 
         pngImageDeleteButton.visibleProperty().bind(pngImageView.imageProperty().isNotNull());
+        rightColumn.visibleProperty().bind(pngImageView.imageProperty().isNotNull());
 
         svgImageButton.setOnAction(actionEvent -> {
             File file = fileChooser.showOpenDialog(this.getScene().getWindow());
             if (file != null) {
                 viewModel.saveDeviceSvg(file);
-                svgImageLabel.setText(file.getName() + "(" + FileUtils.byteCountToDisplaySize(file.length()) + ")");
+                svgImageLabel.setText(file.getName() + " (" + FileUtils.byteCountToDisplaySize(file.length()) + ")");
             }
         });
 
@@ -146,6 +158,13 @@ public class DeviceJsonEditorView extends BorderPane {
         });
 
         svgImageDeleteButton.visibleProperty().bind(svgImageLabel.textProperty().isNotEmpty());
+
+        portLabel.visibleProperty().bind(new BooleanBinding() {
+            @Override
+            protected boolean computeValue() {
+                return viewModel.getPort().size() > 0;
+            }
+        });
     }
 
     private void showDisappearingStatusMessage(String text) {

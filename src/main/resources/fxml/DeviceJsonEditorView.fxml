@@ -1,93 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 <fx:root stylesheets="@../css/DeviceJsonEditorView.css" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <top>
-        <HBox maxHeight="45" prefHeight="45" alignment="CENTER_LEFT" spacing="5">
+        <HBox alignment="CENTER_LEFT" maxHeight="45" prefHeight="45" spacing="5">
             <padding>
-                <Insets topRightBottomLeft="10"/>
+                <Insets topRightBottomLeft="10" />
             </padding>
-            <Button id="saveButton" fx:id="saveButton" text="Save"/>
-            <Button id="discardButton" fx:id="discardButton" text="Discard"/>
-            <Label id="statusLabel" fx:id="statusLabel"/>
+            <Button id="saveButton" fx:id="saveButton" text="Save" />
+            <Button id="discardButton" fx:id="discardButton" text="Discard" />
+            <Label id="statusLabel" fx:id="statusLabel" />
         </HBox>
     </top>
     <center>
         <ScrollPane>
             <GridPane hgap="10" vgap="15">
                 <padding>
-                    <Insets top="10" bottom="10" right="20" left="20"/>
+                    <Insets bottom="10" left="20" right="20" top="10" />
                 </padding>
-                <Label text="Device ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField id="deviceIDTextField" fx:id="deviceIDTextField" disable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints minWidth="300" />
+                </columnConstraints>
 
-                <Label text="Brand" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField id="brandTextField" fx:id="brandTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Basic Information" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-                <Label text="Model" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <TextField id="modelTextField" fx:id="modelTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="Device ID" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField id="deviceIDTextField" fx:id="deviceIDTextField" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Label text="Url" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <TextField id="urlTextField" fx:id="urlTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="Brand" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField id="brandTextField" fx:id="brandTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <Label text="Device Type" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <ComboBox id="deviceTypeCombo" fx:id="deviceTypeCombo" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="Model" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <TextField id="modelTextField" fx:id="modelTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                <Label text="Form Factor" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <ComboBox id="formFactorCombo" fx:id="formFactorCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                <Label text="Url" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <TextField id="urlTextField" fx:id="urlTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                <Label text="PNG Image" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                <HBox GridPane.rowIndex="6" GridPane.columnIndex="1" spacing="5">
-                    <Button id="pngImageButton" fx:id="pngImageButton" maxWidth="300" text="Browse"/>
-                    <Button id="pngImageDeleteButton" fx:id="pngImageDeleteButton" visible="false" text="Remove Image"/>
-                </HBox>
+                <Label text="Device Type" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <ComboBox id="deviceTypeCombo" fx:id="deviceTypeCombo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                <ImageView id="pngImageView" fx:id="pngImageView" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                <Label text="Form Factor" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <ComboBox id="formFactorCombo" fx:id="formFactorCombo" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-                <Label text="SVG Image (Optional)" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                <HBox  GridPane.rowIndex="8" GridPane.columnIndex="1" alignment="CENTER_LEFT" spacing="5">
-                    <Button id="svgImageButton" fx:id="svgImageButton" text="Browse"/>
-                    <Button id="svgImageDeleteButton" fx:id="svgImageDeleteButton" visible="false" text="Remove Image"/>
-                    <Label id="svgImageLabel" fx:id="svgImageLabel"/>
-                </HBox>
-
-                <VBox GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Port"/>
-                        <Button id="newPortButton" fx:id="newPortButton" text="New"/>
+                <Label text="PNG Image" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Button id="pngImageButton" fx:id="pngImageButton" maxWidth="300" text="Browse" />
+                        <Label id="pngImageLabel" fx:id="pngImageLabel" />
+                        <Button id="pngImageDeleteButton" fx:id="pngImageDeleteButton" text="X" visible="false" />
                     </HBox>
                 </VBox>
 
-                <VBox GridPane.rowIndex="10" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Connectivity"/>
+                <Label text="SVG Image (Optional)" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="8">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Button id="svgImageButton" fx:id="svgImageButton" text="Browse" />
+                        <Label id="svgImageLabel" fx:id="svgImageLabel" />
+                        <Button id="svgImageDeleteButton" fx:id="svgImageDeleteButton" text="X" visible="false" />
                     </HBox>
-                    <VBox id="connectivityVBox" fx:id="connectivityVBox"/>
                 </VBox>
 
-                <VBox GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Compatibility"/>
-                    </HBox>
-                    <VBox id="compatibilityVBox" fx:id="compatibilityVBox"/>
+                <Label text="Port &amp; Connectivity" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                <VBox id="rightColumn" fx:id="rightColumn" spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="10" GridPane.columnSpan="2">
+                    <ImageView id="pngImageView" fx:id="pngImageView" />
+                    <Label id="portLabel" fx:id="portLabel" text="Port" />
+                    <VBox id="portVBox" fx:id="portVBox" />
+                    <Label id="connectivityLabel" fx:id="connectivityLabel" text="Connectivity" />
+                    <VBox id="connectivityVBox" fx:id="connectivityVBox" />
                 </VBox>
 
-                <VBox GridPane.rowIndex="12" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Platforms"/>
-                    </HBox>
+                <Label text="Properties" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                <VBox id="propertyVBox" fx:id="propertyVBox" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+
+                <Label text="Compatibility" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                <VBox id="compatibilityVBox" fx:id="compatibilityVBox" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="14" />
+
+                <Label text="Platforms &amp; Clouds" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                <VBox GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="16">
                     <VBox id="platformVBox" fx:id="platformVBox"/>
-                </VBox>
-
-                <VBox GridPane.rowIndex="13" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Cloud Platform"/>
-                    </HBox>
                     <VBox id="cloudPlatformVBox" fx:id="cloudPlatformVBox"/>
                 </VBox>
+
             </GridPane>
         </ScrollPane>
     </center>
