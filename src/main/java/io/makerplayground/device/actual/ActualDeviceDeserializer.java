@@ -97,11 +97,10 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                 , new TypeReference<List<Property>>() {});
 
 
-        Map<GenericDevice, Integer> supportedDevice = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition = new HashMap<>();
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
-        readCompatibilityField(mapper, node, supportedDevice, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue);
+        readCompatibilityField(mapper, node, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue);
 
         List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
         if (node.has("integrated_device")) {
@@ -118,20 +117,20 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                     integratedExternalLibrary.put(platform, externalLibraryList);
                 }
 
-                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse()
-                        , new TypeReference<List<DevicePort>>() {});
-                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse()
-                        , new TypeReference<List<Peripheral>>() {});
+                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse(),
+                        new TypeReference<List<DevicePort>>() {});
+                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse(),
+                        new TypeReference<List<Peripheral>>() {});
 
-                Map<GenericDevice, Integer> integratedSupportedDevice = new HashMap<>();
                 Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
                 Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceCondition = new HashMap<>();
                 Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
-                readCompatibilityField(mapper, deviceNode, integratedSupportedDevice, integratedSupportedDeviceaction
-                        , integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
+                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction,
+                        integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
 
-                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary, integratedExternalLibrary, integratedPort, integratedConnectivity
-                        , integratedSupportedDevice, integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
+                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
+                        integratedExternalLibrary, integratedPort, integratedConnectivity,
+                        integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
             }
         }
 
@@ -149,11 +148,11 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
         }
 
         return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, classnames, externalLibraries,
-                cloudPlatform, port, connectivity, supportedDevice, supportedDeviceaction,
+                cloudPlatform, port, connectivity, supportedDeviceaction,
                 supportedDeviceCondition, supportedDeviceValue, property, supportedCloudPlatform, integratedDevices);
     }
 
-    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Integer> supportedDevice, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
+    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
         for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
@@ -204,8 +203,6 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                 supportedValue.put(value, constraint);
             }
             supportedDeviceValue.put(genericDevice, supportedValue);
-
-            supportedDevice.put(genericDevice, deviceNode.get("count").asInt());
         }
     }
 }

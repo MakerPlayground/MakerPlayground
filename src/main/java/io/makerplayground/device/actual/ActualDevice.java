@@ -55,7 +55,6 @@ public class ActualDevice {
     // or list of connection available for controller.
     // shield will contain empty list as every pin must be connected
 
-    private final Map<GenericDevice, Integer> supportedDevice;                                  // generic device(s) supported and number of instance available
     //private final Map<GenericDevice, Action> supportedAction;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition;  // action support for each generic device
@@ -85,7 +84,6 @@ public class ActualDevice {
             , CloudPlatform cloudPlatform
             , List<DevicePort> port
             , List<Peripheral> connectivity
-            , Map<GenericDevice, Integer> supportedDevice
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
@@ -107,7 +105,6 @@ public class ActualDevice {
         this.cloudPlatform = cloudPlatform;
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
-        this.supportedDevice = supportedDevice;
         this.supportedAction = supportedAction;
         this.supportedCondition = supportedCondition;
         this.supportedValue = supportedValue;
@@ -359,10 +356,6 @@ public class ActualDevice {
         return connectivity;
     }
 
-    public Map<GenericDevice, Integer> getSupportedDevice() {
-        return supportedDevice;
-    }
-
     public Map<GenericDevice, Map<Value, Constraint>> getSupportedValue() {
         return supportedValue;
     }
@@ -426,7 +419,6 @@ public class ActualDevice {
                 ", cloudPlatform=" + cloudPlatform +
                 ", port=" + port +
                 ", connectivity=" + connectivity +
-                ", supportedDevice=" + supportedDevice +
                 ", supportedAction=" + supportedAction +
                 ", supportedValue=" + supportedValue +
                 ", property=" + property +
