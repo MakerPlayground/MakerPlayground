@@ -52,7 +52,7 @@ class DeveloperTool extends SplitPane {
 
     private final Map<File, Tab> openTabMap;
 
-    public DeveloperTool() {
+    public DeveloperTool() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DeveloperTool.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -63,11 +63,15 @@ class DeveloperTool extends SplitPane {
         }
 
         File userDeviceDir = new File(USER_DEVICE_PATH);
-        devicePathList = FXCollections.observableArrayList(userDeviceDir.listFiles(File::isDirectory));
-
         File userLibraryDir = new File(USER_LIB_PATH);
+        if (!userDeviceDir.exists()) {
+            FileUtils.forceMkdir(userDeviceDir);
+        }
+        if (!userLibraryDir.exists()) {
+            FileUtils.forceMkdir(userLibraryDir);
+        }
+        devicePathList = FXCollections.observableArrayList(userDeviceDir.listFiles(File::isDirectory));
         libraryList = FXCollections.observableArrayList(userLibraryDir.listFiles(File::isDirectory));
-
         openTabMap = new HashMap<>();
 
         initEvents();
@@ -251,7 +255,7 @@ class DeveloperTool extends SplitPane {
                 } else {
                     Tab newTab = new Tab();
                     newTab.setText("Library: " + file.getName());
-                    newTab.setContent(new DeviceJsonEditorView(new DeviceJsonEditorViewModel(file.getName())));
+                    newTab.setContent(new LibraryEditorView(new LibraryEditorViewModel(file.getName())));
                     rightPane.getTabs().add(newTab);
                     rightPane.getSelectionModel().select(newTab);
                     openTabMap.put(file, newTab);

@@ -6,12 +6,13 @@
 <?import javafx.geometry.Insets?>
 <fx:root stylesheets="@../css/DeviceJsonEditorView.css" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <top>
-        <HBox maxHeight="45" prefHeight="45">
+        <HBox maxHeight="45" prefHeight="45" alignment="CENTER_LEFT" spacing="5">
             <padding>
                 <Insets topRightBottomLeft="10"/>
             </padding>
             <Button id="saveButton" fx:id="saveButton" text="Save"/>
             <Button id="discardButton" fx:id="discardButton" text="Discard"/>
+            <Label id="statusLabel" fx:id="statusLabel"/>
         </HBox>
     </top>
     <center>
@@ -21,7 +22,7 @@
                     <Insets top="10" bottom="10" right="20" left="20"/>
                 </padding>
                 <Label text="Device ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField id="deviceIDTextField" disable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <TextField id="deviceIDTextField" fx:id="deviceIDTextField" disable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
                 <Label text="Brand" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <TextField id="brandTextField" fx:id="brandTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
@@ -39,13 +40,19 @@
                 <ComboBox id="formFactorCombo" fx:id="formFactorCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
                 <Label text="PNG Image" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                <Button id="pngImageButton" fx:id="pngImageButton" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                <HBox GridPane.rowIndex="6" GridPane.columnIndex="1" spacing="5">
+                    <Button id="pngImageButton" fx:id="pngImageButton" maxWidth="300" text="Browse"/>
+                    <Button id="pngImageDeleteButton" fx:id="pngImageDeleteButton" visible="false" text="Remove Image"/>
+                </HBox>
 
                 <ImageView id="pngImageView" fx:id="pngImageView" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
 
                 <Label text="SVG Image (Optional)" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                <Button id="svgImageButton" fx:id="svgImageButton" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-                <Label id="svgImageLabel" fx:id="svgImageLabel" GridPane.rowIndex="8" GridPane.columnIndex="2"/>
+                <HBox  GridPane.rowIndex="8" GridPane.columnIndex="1" alignment="CENTER_LEFT" spacing="5">
+                    <Button id="svgImageButton" fx:id="svgImageButton" text="Browse"/>
+                    <Button id="svgImageDeleteButton" fx:id="svgImageDeleteButton" visible="false" text="Remove Image"/>
+                    <Label id="svgImageLabel" fx:id="svgImageLabel"/>
+                </HBox>
 
                 <VBox GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
                     <HBox spacing="10" alignment="CENTER_LEFT">
@@ -58,6 +65,7 @@
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Connectivity"/>
                     </HBox>
+                    <VBox id="connectivityVBox" fx:id="connectivityVBox"/>
                 </VBox>
 
                 <VBox GridPane.rowIndex="11" GridPane.columnIndex="0" GridPane.columnSpan="2">

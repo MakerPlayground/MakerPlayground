@@ -38,9 +38,12 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+
+import java.io.IOException;
 
 public class MainWindow extends BorderPane {
 
@@ -192,6 +195,11 @@ public class MainWindow extends BorderPane {
     }
 
     private Node initDeveloperTool() {
-        return new DeveloperTool();
+        try {
+            return new DeveloperTool();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Pane();
+        }
     }
 }
