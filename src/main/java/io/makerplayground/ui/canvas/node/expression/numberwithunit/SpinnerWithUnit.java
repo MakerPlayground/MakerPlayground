@@ -25,7 +25,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -36,10 +39,39 @@ public class SpinnerWithUnit extends NumberWithUnitControl {
     private final ComboBox<Unit> unitComboBox;
     private final Text unitLabel; // TODO: Text is used here instead of Label as CSS from property window leak to their underlying control and mess up our layout
     private final ObjectProperty<NumberWithUnit> numberWithUnit;
+    private final StringConverter<Double> doubleStringConverter = new StringConverter<>() {
+        private final DecimalFormat df = new DecimalFormat("#.######");
+        @Override
+        public String toString(Double value) {
+            // If the specified value is null, return a zero-length String
+            if (value == null) {
+                return "";
+            }
+            return df.format(value);
+        }
+        @Override
+        public Double fromString(String value) {
+            try {
+                // If the specified value is null or zero-length, return null
+                if (value == null) {
+                    return null;
+                }
+                value = value.trim();
+                if (value.length() < 1) {
+                    return null;
+                }
+                // Perform the requested parsing
+                return df.parse(value).doubleValue();
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    };
 
     public SpinnerWithUnit(double min, double max, List<Unit> unit, NumberWithUnit initialValue) {
         spinner = new Spinner<>(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max));
         spinner.setEditable(true);
+        spinner.getValueFactory().setConverter(doubleStringConverter);
         spinner.getValueFactory().setValue(initialValue.getValue());
 
         unitLabel = new Text(initialValue.getUnit().toString());

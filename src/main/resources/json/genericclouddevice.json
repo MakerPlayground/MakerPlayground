@@ -116,5 +116,48 @@
     ],
     "condition": [],
     "value": []
+  },
+  {
+    "name": "Map",
+    "description": "Map: pin the location on your map widget",
+    "action": [
+      {
+        "name": "Pin Location",
+        "funcname": "pinLocation",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Latitude",
+            "value": "",
+            "constraint": {
+              "min": -90.0,
+              "max": 90.0,
+              "unit": "DEGREE"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Longitude",
+            "value": "",
+            "constraint": {
+              "min": -180.0,
+              "max": 180.0,
+              "unit": "DEGREE"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Clear Pin",
+        "funcname": "clearPin",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]
