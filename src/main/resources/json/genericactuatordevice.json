@@ -146,7 +146,7 @@
       {
         "name": "Show Number", 
         "funcname": "showData", 
-        "type": "Inactive", 
+        "type": "Active",
         "parameter": [
           {
             "name": "Number", 
@@ -160,11 +160,40 @@
             "controltype": "SPINBOX"
           }
         ]
-      }, 
+      },
+      {
+        "name": "Show Two Numbers with Comma",
+        "funcname": "showTwoIntWithComma",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Before comma",
+            "value": 0,
+            "constraint": {
+              "min": -9,
+              "max": 99,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "After comma",
+            "value": 0,
+            "constraint": {
+              "min": -9,
+              "max": 99,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
       {
         "name": "Off", 
         "funcname": "off", 
-        "type": "Inactive", 
+        "type": "Active",
         "parameter": []
       }
     ], 
