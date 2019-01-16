@@ -162,12 +162,12 @@
         ]
       },
       {
-        "name": "Show Two Numbers with Comma",
-        "funcname": "showTwoIntWithComma",
+        "name": "Show Two Numbers with Colon",
+        "funcname": "showTwoIntWithColon",
         "type": "Active",
         "parameter": [
           {
-            "name": "Before comma",
+            "name": "Before colon",
             "value": 0,
             "constraint": {
               "min": -9,
@@ -178,7 +178,7 @@
             "controltype": "SPINBOX"
           },
           {
-            "name": "After comma",
+            "name": "After colon",
             "value": 0,
             "constraint": {
               "min": -9,
