@@ -369,6 +369,18 @@
         "funcname": "",
         "type": "Active",
         "parameter": []
+      },
+      {
+        "name": "Data is valid",
+        "funcname": "isDataValid",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Data is not valid",
+        "funcname": "isDataInvalid",
+        "type": "Active",
+        "parameter": []
       }
     ],
     "value": [
