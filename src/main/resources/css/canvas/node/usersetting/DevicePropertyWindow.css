@@ -114,7 +114,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 3;
     -fx-background-inset : 0 0 0;
-    -fx-max-width: 50;
+    -fx-max-width: 120;
     -fx-min-width: 40;
     -fx-min-height: 25;
     -fx-max-height: 25;
@@ -129,7 +129,7 @@
     -fx-border-color : #cccccc;
     -fx-border-width: 1px;
     -fx-border-radius: 3;
-    -fx-max-width: 50;
+    -fx-max-width: 120;
     -fx-min-width: 40;
     -fx-min-height: 25;
     -fx-max-height: 25;
