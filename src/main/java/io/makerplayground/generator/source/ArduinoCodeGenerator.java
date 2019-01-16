@@ -79,12 +79,18 @@ class ArduinoCodeGenerator {
         // generate function declaration for begin scene
         builder.append("void beginScene();").append(NEW_LINE);
 
+        // generate function declaration for first level condition(s) connected to the begin block
+        List<Condition> conditions = Utility.findAdjacentConditions(project, project.getBegin());
+        if (!conditions.isEmpty()) {
+            builder.append("void ").append(parseConditionFunctionName(project.getBegin())).append("();").append(NEW_LINE);
+        }
+
         // generate function declaration for each scene and their conditions
         for (Scene scene : allSceneUsed) {
             builder.append("void ").append(parseSceneFunctionName(scene)).append("();").append(NEW_LINE);
             List<Condition> adjacentCondition = Utility.findAdjacentConditions(project, scene);
             if (!adjacentCondition.isEmpty()) {
-                builder.append("void ").append(parseSceneFunctionName(scene)).append("_conditions").append("();").append(NEW_LINE);
+                builder.append("void ").append(parseConditionFunctionName(scene)).append("();").append(NEW_LINE);
             }
         }
         builder.append(NEW_LINE);
