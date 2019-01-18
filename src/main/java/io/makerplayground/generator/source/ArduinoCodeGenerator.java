@@ -320,14 +320,18 @@ class ArduinoCodeGenerator {
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
+            // There can be the node that already visited after we add to traversing list.
+            if(visitedNodes.contains(node)) {
+                continue;
+            }
             // Add to visited set
             visitedNodes.add(node);
             // Add next unvisited node to queue
             adjacentNodes = Utility.findAdjacentNodes(project, node);
             adjacentScene = Utility.takeScene(adjacentNodes);
             adjacentCondition = Utility.takeCondition(adjacentNodes);
-            nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toList()));
-            nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
+            nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toSet()));
+            nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toSet()));
 
             // Generate code for node
             if (node instanceof Scene) {
@@ -421,6 +425,10 @@ class ArduinoCodeGenerator {
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
+            // There can be the node that already visited after we add to traversing list.
+            if(visitedNodes.contains(node)) {
+                continue;
+            }
             // Add to visited set
             visitedNodes.add(node);
             // Add next unvisited node to queue
