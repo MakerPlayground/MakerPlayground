@@ -29,6 +29,8 @@ public class NumericConstraint implements Constraint {
     private final double max;
     private final Unit unit;
 
+    public static final NumericConstraint NONE = new NumericConstraint(Double.MIN_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED);
+
     /**
      * Construct a constraint based on the specify min, max and unit. The constructor should only
      * be invoked by the DeviceLibrary in order to rebuild the library from file.

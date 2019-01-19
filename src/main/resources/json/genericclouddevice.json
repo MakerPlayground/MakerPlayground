@@ -304,5 +304,27 @@
         "constraint": []
       }
     ]
+  },
+  {
+    "name": "Database",
+    "description": "Store the data into the database",
+    "action": [
+      {
+        "name": "Insert Data",
+        "funcname": "insertData",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "data",
+            "value": "",
+            "constraint": [],
+            "datatype": "RECORD",
+            "controltype": "RECORD"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]

@@ -534,6 +534,8 @@ class ArduinoCodeGenerator {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(projectValue.getDevice()) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
+        } else if (expression instanceof RecordExpression) {
+            returnValue = expression.translateToCCode();
         } else {
             throw new IllegalStateException();
         }

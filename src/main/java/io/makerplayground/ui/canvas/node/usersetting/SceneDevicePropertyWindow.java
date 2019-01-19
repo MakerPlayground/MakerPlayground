@@ -20,8 +20,10 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -145,7 +147,7 @@ public class SceneDevicePropertyWindow extends PopOver {
 
             Label name = new Label(p.getName());
             name.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
-            GridPane.setRowIndex(name, i+1);
+            GridPane.setRowIndex(name, i + 1);
             GridPane.setColumnIndex(name, 0);
             GridPane.setValignment(name, VPos.TOP);
 
@@ -226,6 +228,14 @@ public class SceneDevicePropertyWindow extends PopOver {
                         viewModel.getProjectValue(Set.of(DataType.STRING)),
                         viewModel.getParameterValue(p)
                 );
+            } else if (p.getControlType() == ControlType.RECORD) {
+                if (viewModel.getParameterValue(p) == null) {
+                    viewModel.setParameterValue(p, new RecordExpression(new Record()));
+                }
+                // a fake parameter to make value linking works as expect
+                Parameter fieldParameter = new Parameter("Field", NumberWithUnit.ZERO, NumericConstraint.NONE, DataType.DOUBLE, ControlType.SPINBOX);
+                RecordExpressionControl expressionControl = new RecordExpressionControl(fieldParameter, viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
+                        , (RecordExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else {

@@ -76,6 +76,9 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case IMAGE:
                 defaultValue = null;
                 break;
+            case RECORD:
+                defaultValue = new Record();
+                break;
             default:
                 throw new IllegalStateException("Error: found unknown datatype!!!");
         }

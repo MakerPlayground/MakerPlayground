@@ -81,7 +81,8 @@ public class DeviceMapper {
                         } else if (o instanceof ProjectValueExpression) {
                             newConstraint = Constraint.NONE;
                         }
-                    } else if (parameter.getDataType() == DataType.DATETIME || parameter.getDataType() == DataType.IMAGE) {
+                    } else if (parameter.getDataType() == DataType.DATETIME || parameter.getDataType() == DataType.RECORD
+                            || parameter.getDataType() == DataType.IMAGE) {
                         newConstraint = Constraint.NONE;
                     } else {
                         throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
