@@ -262,7 +262,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Expression expression = null;
         String expressionType = parameterNode.get("type").asText();
         JsonNode valueNode = parameterNode.get("value");
-        System.out.println(parameterNode);
         List<Term> terms = new ArrayList<>();
         for (JsonNode term_node : valueNode.get("terms")) {
             terms.add(deserializeTerm(mapper, parameter, parameterNode, term_node, allProjectDevices));
