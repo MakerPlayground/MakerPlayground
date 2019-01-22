@@ -85,6 +85,7 @@ public class SimpleConditionalExpressionControl extends HBox {
         rangeSlider.lowThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         rangeSlider.highThumbOperatorProperty().addListener((observable, oldValue, newValue) -> updateExpression());
 
+        lowTextField.getStyleClass().add("rangeSliderTextField");
         lowTextField.setText(String.valueOf(rangeSlider.getLowValue()));
         lowTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
@@ -107,6 +108,7 @@ public class SimpleConditionalExpressionControl extends HBox {
             }
         });
 
+        highTextField.getStyleClass().add("rangeSliderTextField");
         highTextField.setText(String.valueOf(rangeSlider.getHighValue()));
         highTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {

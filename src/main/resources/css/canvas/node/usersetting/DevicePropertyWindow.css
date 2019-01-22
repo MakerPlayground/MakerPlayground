@@ -134,6 +134,15 @@
     -fx-min-height: 25;
     -fx-max-height: 25;
 }
+
+.rangeSliderTextField {
+    -fx-max-width: 50;
+}
+
+.rangeSliderTextField:focused {
+    -fx-max-width: 50;
+}
+
 .spinner{
     -fx-border-color : #cccccc;
     -fx-border-radius : 3;
