@@ -27,7 +27,7 @@ public class ProjectVersionControl {
 
     public static final String CURRENT_VERSION = "0.4.0";
 
-    public static boolean isConvertibleToCurrentVersion(String projectVersion) {
+    public static boolean canOpen(String projectVersion) {
         if (CURRENT_VERSION.equals(projectVersion)) {
             return true;
         }
@@ -47,9 +47,5 @@ public class ProjectVersionControl {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public static void convertToCurrentVersion(File selectedFile) {
-        throw new UnsupportedOperationException("Implementation needed");
     }
 }

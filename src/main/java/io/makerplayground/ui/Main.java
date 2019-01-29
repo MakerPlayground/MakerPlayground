@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.UnsavedDialog;
-import io.makerplayground.version.ProjectVersionControl;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -31,8 +30,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -41,8 +38,11 @@ import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -58,7 +58,15 @@ public class Main extends Application {
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
-        project = new SimpleObjectProperty<>(new Project());
+        String parameter = String.join(" ", getParameters().getUnnamed());
+        Pattern pattern = Pattern.compile("\\s*-classpath\\s*io\\.makerplayground\\.frontend/io\\.makerplayground\\.ui\\.Main\\s+(.+)");
+        Matcher matcher = pattern.matcher(parameter);
+        if (matcher.matches() && matcher.groupCount() == 1) {
+            String path = matcher.group(1);
+            project = new SimpleObjectProperty<>(Project.loadProject(new File(path)).orElseGet(Project::new));
+        } else {
+            project = new SimpleObjectProperty<>(new Project());
+        }
 
         toolbar = new Toolbar(project);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
@@ -164,10 +172,9 @@ public class Main extends Application {
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         File selectedFile = fileChooser.showOpenDialog(window);
         if (selectedFile != null) {
-            String projectVersion = ProjectVersionControl.readProjectVersion(selectedFile);
-            if (ProjectVersionControl.CURRENT_VERSION.equals(projectVersion)
-                    || ProjectVersionControl.isConvertibleToCurrentVersion(projectVersion)) {
-                project.set(Project.loadProject(selectedFile));
+            Optional<Project> p = Project.loadProject(selectedFile);
+            if (p.isPresent()) {
+                project.set(p.get());
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
                 alert.showAndWait();

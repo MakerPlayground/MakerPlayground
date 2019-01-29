@@ -26,6 +26,7 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.actual.Platform;
+import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -520,16 +521,19 @@ public class Project {
         }
     }
 
-    public static Project loadProject(File f) {
+    public static Optional<Project> loadProject(File f) {
         ObjectMapper mapper = new ObjectMapper();
-        Project p = null;
         try {
-            p = mapper.readValue(f, Project.class);
-        } catch (IOException e) {
+            String projectVersion = ProjectVersionControl.readProjectVersion(f);
+            if (ProjectVersionControl.canOpen(projectVersion)) {
+                Project p = mapper.readValue(f, Project.class);
+                p.setFilePath(f.getAbsolutePath());
+                return Optional.of(p);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        p.setFilePath(f.getAbsolutePath());
-        return p;
+        return Optional.empty();
     }
 
     public boolean isNameDuplicate(String newName) {
