@@ -268,25 +268,9 @@ public class DeviceMapper {
                         }
                     }
 
+                    boolean shield = projectDevice.getActualDevice().getFormFactor() == FormFactor.SHIELD;
                     boolean integratedDevice = projectDevice.getActualDevice() instanceof IntegratedActualDevice;
-                    if (!integratedDevice) {
-                        if (pDevice.getConnectionType() == ConnectionType.INEX_I2C) {           // order must be preserved (scl before sda)
-                            Optional<DevicePort> sclPort = possiblePort.stream().filter(DevicePort::isSCL).findAny();
-                            Optional<DevicePort> sdaPort = possiblePort.stream().filter(DevicePort::isSDA).findAny();
-                            if (sclPort.isPresent() && sdaPort.isPresent()) {
-                                possibleDevice.get(pDevice).add(List.of(sclPort.get(), sdaPort.get()));
-                            }
-                        } else if (pDevice.getConnectionType() == ConnectionType.INEX_UART) {   // order must be preserved
-                            throw new UnsupportedOperationException();
-                        } else {
-                            // for each port in the possible port list, add to the result if it supported
-                            for (DevicePort pPort : possiblePort) {
-                                if (pPort.getType() != DevicePortType.INTERNAL && pPort.isSupport(pDevice)) {
-                                    possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
-                                }
-                            }
-                        }
-                    } else {    // in case of an integrated device, possible port is only the port with the same peripheral
+                    if (integratedDevice || shield) {   // in case of an integrated device or shield, possible port is only the port with the same peripheral
                         List<DevicePort> mappedIntegratedPort = possiblePort.stream()
                                 .filter(devicePort1 -> devicePort1.hasPeripheral(pDevice))
                                 .collect(Collectors.toList());
@@ -306,6 +290,23 @@ public class DeviceMapper {
                             possibleDevice.get(pDevice).add(mappedIntegratedPort);
                         }
                         // else port may have been used by other devices
+                    } else {
+                        if (pDevice.getConnectionType() == ConnectionType.INEX_I2C) {           // order must be preserved (scl before sda)
+                            Optional<DevicePort> sclPort = possiblePort.stream().filter(DevicePort::isSCL).findAny();
+                            Optional<DevicePort> sdaPort = possiblePort.stream().filter(DevicePort::isSDA).findAny();
+                            if (sclPort.isPresent() && sdaPort.isPresent()) {
+                                possibleDevice.get(pDevice).add(List.of(sclPort.get(), sdaPort.get()));
+                            }
+                        } else if (pDevice.getConnectionType() == ConnectionType.INEX_UART) {   // order must be preserved
+                            throw new UnsupportedOperationException();
+                        } else {
+                            // for each port in the possible port list, add to the result if it supported
+                            for (DevicePort pPort : possiblePort) {
+                                if (pPort.getType() != DevicePortType.INTERNAL && pPort.isSupport(pDevice)) {
+                                    possibleDevice.get(pDevice).add(Collections.singletonList(pPort));
+                                }
+                            }
+                        }
                     }
                 }
             }
