@@ -189,6 +189,36 @@ public class SceneDevicePropertyWindow extends PopOver {
                 RTCExpressionControl expressionControl = new RTCExpressionControl((SimpleRTCExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
+            } else if (p.getControlType() == ControlType.IMAGE_SELECTOR) {
+                ComboBox<ProjectValue> comboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getProjectValue(EnumSet.of(DataType.IMAGE))));
+                comboBox.setCellFactory(param -> new ListCell<>(){
+                    @Override
+                    protected void updateItem(ProjectValue item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText("");
+                        } else {
+                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+                        }
+                    }
+                });
+                comboBox.setButtonCell(new ListCell<>(){
+                    @Override
+                    protected void updateItem(ProjectValue item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText("");
+                        } else {
+                            setText(item.getDevice().getName() + "'s " + item.getValue().getName());
+                        }
+                    }
+                });
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new ImageExpression(newValue)));
+                ProjectValue projectValue = ((ImageExpression) viewModel.getParameterValue(p)).getProjectValue();
+                if (projectValue != null) {
+                    comboBox.getSelectionModel().select(projectValue);
+                }
+                control = comboBox;
             } else {
                 throw new IllegalStateException("Found unknown control type " + p);
             }

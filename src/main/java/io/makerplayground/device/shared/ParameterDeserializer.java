@@ -73,8 +73,11 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
             case DATETIME:
                 defaultValue = RealTimeClock.getDefault();
                 break;
+            case IMAGE:
+                defaultValue = null;
+                break;
             default:
-                throw(new IllegalStateException("Format error!!!"));
+                throw new IllegalStateException("Error: found unknown datatype!!!");
         }
 
         return new Parameter(name, defaultValue, constraint, dataType, controlType);

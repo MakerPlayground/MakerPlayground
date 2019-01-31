@@ -159,5 +159,45 @@
     ],
     "condition": [],
     "value": []
+  },
+  {
+    "name": "Image Recognizer",
+    "description": "",
+    "action": [],
+    "condition": [
+      {
+        "name": "Classify Image",
+        "funcname": "classifiedImage",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Image",
+            "value": "",
+            "constraint": [],
+            "datatype": "IMAGE",
+            "controltype": "IMAGE_SELECTOR"
+          },
+          {
+            "name": "Class",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Minimum Probability",
+            "value": 80.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "value": []
   }
 ]

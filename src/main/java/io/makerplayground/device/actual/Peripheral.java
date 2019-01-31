@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 public enum Peripheral {
     NOT_CONNECTED(ConnectionType.NONE),
 
-    GPIO_0(ConnectionType.GPIO),
     GPIO_1(ConnectionType.GPIO),
     GPIO_2(ConnectionType.GPIO),
     GPIO_3(ConnectionType.GPIO),
@@ -45,6 +44,10 @@ public enum Peripheral {
     GPIO_14(ConnectionType.GPIO),
     GPIO_15(ConnectionType.GPIO),
     GPIO_16(ConnectionType.GPIO),
+    GPIO_17(ConnectionType.GPIO),
+    GPIO_18(ConnectionType.GPIO),
+    GPIO_19(ConnectionType.GPIO),
+    GPIO_20(ConnectionType.GPIO),
 
     PWM_1(ConnectionType.PWM),
     PWM_2(ConnectionType.PWM),
@@ -59,28 +62,28 @@ public enum Peripheral {
     PWM_11(ConnectionType.PWM),
     PWM_12(ConnectionType.PWM),
     PWM_13(ConnectionType.PWM),
+    PWM_14(ConnectionType.PWM),
+    PWM_15(ConnectionType.PWM),
+    PWM_16(ConnectionType.PWM),
+    PWM_17(ConnectionType.PWM),
+    PWM_18(ConnectionType.PWM),
+    PWM_19(ConnectionType.PWM),
+    PWM_20(ConnectionType.PWM),
 
     INT_1(ConnectionType.INT),
     INT_2(ConnectionType.INT),
     INT_3(ConnectionType.INT),
 
     I2C_1(ConnectionType.I2C),
-//    I2C_2(ConnectionType.I2C),
-//    I2C_3(ConnectionType.I2C),
-//    I2C_4(ConnectionType.I2C),
     I2C1_1(ConnectionType.I2C1),    // TODO: should we change I2C1_1 to I2C_2?
 
     SPI_1(ConnectionType.SPI),
-    SPI_2(ConnectionType.SPI),
-    SPI_3(ConnectionType.SPI),
-    SPI_4(ConnectionType.SPI),
 
     UART_1(ConnectionType.UART),
     UART_2(ConnectionType.UART),
     UART_3(ConnectionType.UART),
     UART_4(ConnectionType.UART),
 
-    ANALOG_0(ConnectionType.ANALOG),
     ANALOG_1(ConnectionType.ANALOG),
     ANALOG_2(ConnectionType.ANALOG),
     ANALOG_3(ConnectionType.ANALOG),

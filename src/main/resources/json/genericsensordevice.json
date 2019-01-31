@@ -795,5 +795,25 @@
         }
       }
     ]
+  },
+  {
+    "name": "Camera",
+    "description": "",
+    "action": [
+      {
+        "name": "Capture Image",
+        "funcname": "captureImage",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": [
+      {
+        "name": "Image",
+        "dataType": "IMAGE",
+        "constraint": []
+      }
+    ]
   }
 ]

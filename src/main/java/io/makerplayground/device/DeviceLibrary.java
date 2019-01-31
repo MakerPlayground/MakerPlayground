@@ -71,6 +71,7 @@ public enum DeviceLibrary {
         try {
             temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
         } catch (IOException e) {
+            e.printStackTrace();
             throw new IllegalStateException("Can't load generic devices from " + resourceName);
         }
         temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));

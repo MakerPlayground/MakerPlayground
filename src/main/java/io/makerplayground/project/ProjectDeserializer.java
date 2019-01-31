@@ -206,16 +206,17 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
             } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
-            } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)){
+            } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)) {
                 boolean inverse = false;
                 if (valueNode.has("inverse")) {
                     inverse = valueNode.get("inverse").asBoolean();
                 }
                 expression = new ValueLinkingExpression(parameter, terms, inverse);
             } else if (SimpleRTCExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new SimpleRTCExpression(((RTCTerm)(terms.get(0))).getValue());
-            }
-            else {
+                expression = new SimpleRTCExpression(((RTCTerm) (terms.get(0))).getValue());
+            } else if (ImageExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
+            } else {
                 throw new IllegalStateException("expression type not supported");
             }
 

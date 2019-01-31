@@ -20,6 +20,6 @@ package io.makerplayground.device.shared;
  * An enum represent type of data
  */
 public enum DataType {
-    DOUBLE,STRING,ENUM,INTEGER,INTEGER_ENUM,DATETIME
+    DOUBLE, STRING, ENUM, INTEGER, INTEGER_ENUM, DATETIME, IMAGE;
     // TODO: add new data type
 }

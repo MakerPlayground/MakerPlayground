@@ -7,6 +7,7 @@ import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
+import javafx.scene.image.Image;
 
 import java.util.*;
 import java.util.function.Function;
@@ -436,20 +437,6 @@ class ArduinoCodeGenerator {
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
 
             if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
-                for (Condition condition : adjacentCondition) {
-                    for (UserSetting setting : condition.getSetting()) {
-                        Map<ProjectDevice, Set<Value>> tmp = setting.getAllValueUsed();
-                        // merge tmp into valueUsed
-                        for (ProjectDevice projectDevice : tmp.keySet()) {
-                            if (!valueUsed.containsKey(projectDevice)) {
-                                valueUsed.put(projectDevice, new HashSet<>());
-                            }
-                            valueUsed.get(projectDevice).addAll(tmp.get(projectDevice));
-                        }
-                    }
-                }
-                
                 builder.append(NEW_LINE);
                 builder.append("void ").append(parseConditionFunctionName(node)).append("() {").append(NEW_LINE);
 
@@ -529,6 +516,10 @@ class ArduinoCodeGenerator {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
             returnValue = expression.translateToCCode();
+        } else if (expression instanceof ImageExpression) {
+            ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
+            returnValue = parseDeviceVariableName(projectValue.getDevice()) + ".get"
+                    + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else {
             throw new IllegalStateException();
         }
