@@ -60,7 +60,7 @@ public class UserSetting {
         // Initialize expression list
         // TODO: Expression is not required to be added in Scene
         for (Value v : device.getGenericDevice().getValue()) {
-            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+            if (v.getType() == DataType.DOUBLE) {
                 expression.put(v, new NumberInRangeExpression(device, v));
             }
             expressionEnable.put(v, false);
@@ -132,7 +132,7 @@ public class UserSetting {
         return expressionEnable;
     }
 
-    public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
+    public Map<ProjectDevice, Set<Value>> getAllValueUsed(Set<DataType> dataType) {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
         // list value use in parameters ex. show value of 7-Segment / LCD
@@ -141,7 +141,7 @@ public class UserSetting {
             for (Term term: exp.getTerms()) {
                 if (term instanceof ValueTerm) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
-                    if (projectValue != null) {
+                    if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
                         if (result.containsKey(projectDevice)) {
                             result.get(projectDevice).add(projectValue.getValue());

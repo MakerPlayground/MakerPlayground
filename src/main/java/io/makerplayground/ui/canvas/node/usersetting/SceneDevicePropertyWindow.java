@@ -19,6 +19,8 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
@@ -40,6 +42,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -152,7 +155,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                 }
                 SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
                         p,
-                        viewModel.getProjectValue(),
+                        viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
                         viewModel.getParameterValue(p)
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
@@ -174,7 +177,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                 }
                 SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
                         p,
-                        viewModel.getProjectValue(),
+                        viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
                         viewModel.getParameterValue(p)
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));

@@ -18,6 +18,7 @@ package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
@@ -27,6 +28,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tanyagorn on 6/12/2017.
@@ -108,8 +110,8 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getValue();
     }
 
-    public List<ProjectValue> getProjectValue() {
-        return project.getAvailableValue();
+    public List<ProjectValue> getProjectValue(Set<DataType> dataType) {
+        return project.getAvailableValue(dataType);
     }
 
     public NodeElement getNodeElement() {

@@ -23,7 +23,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.version.ProjectVersionControl;
@@ -377,11 +379,13 @@ public class Project {
         this.projectName.set(projectName);
     }
 
-    public List<ProjectValue> getAvailableValue() {
+    public List<ProjectValue> getAvailableValue(Set<DataType> dataType) {
         List<ProjectValue> value = new ArrayList<>();
         for (ProjectDevice projectDevice : device) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
-                value.add(new ProjectValue(projectDevice, v));
+                if (dataType.contains(v.getType())) {
+                    value.add(new ProjectValue(projectDevice, v));
+                }
             }
         }
         return value;
@@ -421,14 +425,14 @@ public class Project {
                 Scene temp = (Scene) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsed().keySet());
+                    deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
             }
             else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsed().keySet());
+                    deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
             }
             visited.add(current);
@@ -448,7 +452,7 @@ public class Project {
         return devicesNotUsed;
     }
 
-    public Map<ProjectDevice, Set<Value>> getAllValueUsedMap() {
+    public Map<ProjectDevice, Set<Value>> getAllValueUsedMap(Set<DataType> dataType) {
         HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
         Set<NodeElement> visited = new HashSet<>();
         Queue<NodeElement> queue = new LinkedList<>();
@@ -460,14 +464,14 @@ public class Project {
             }
             else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsed().forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
             }
             else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsed().forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));

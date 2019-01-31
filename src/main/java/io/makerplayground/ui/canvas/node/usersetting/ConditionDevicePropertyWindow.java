@@ -16,18 +16,13 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.CustomConditionalExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.SimpleConditionalExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.collections.FXCollections;
@@ -44,6 +39,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -156,7 +152,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 }
                 SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
                         p,
-                        viewModel.getProjectValue(),
+                        viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
                         viewModel.getParameterValue(p)
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
@@ -178,7 +174,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 }
                 SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
                         p,
-                        viewModel.getProjectValue(),
+                        viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
                         viewModel.getParameterValue(p)
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
@@ -213,7 +209,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setColumnIndex(enableCheckbox, 0);
 
         ConditionalExpressionControl expressionControl = new ConditionalExpressionControl(viewModel.getProjectDevice()
-                , value, viewModel.getProjectValue(), expression/*, viewModel.isExpressionEnable(value)*/);
+                , value, viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)), expression/*, viewModel.isExpressionEnable(value)*/);
         expressionControl.disableProperty().bind(enableCheckbox.selectedProperty().not());
         expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setExpression(value, newValue));
         GridPane.setRowIndex(expressionControl, i+1);

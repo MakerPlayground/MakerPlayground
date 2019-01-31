@@ -1,10 +1,7 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
@@ -179,7 +176,7 @@ class ArduinoCodeGenerator {
     }
 
     private void appendProjectValue() {
-        Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap();
+        Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
         for (ProjectDevice projectDevice : variableMap.keySet()) {
             for (Value v : variableMap.get(projectDevice)) {
                 builder.append("double ").append(parseValueVariableName(projectDevice, v)).append(";").append(NEW_LINE);
@@ -246,7 +243,7 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
 
         // retrieve all project values
-        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap();
+        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
                 builder.append(INDENT).append(parseValueVariableName(projectDevice, v)).append(" = ")
