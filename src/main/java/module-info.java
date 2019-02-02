@@ -9,4 +9,6 @@ open module io.makerplayground.frontend {
     requires com.fasterxml.jackson.core;
     requires org.apache.commons.io;
     requires jackson.annotations;
+    requires org.apache.httpcomponents.httpclient;
+    requires org.apache.httpcomponents.httpcore;
 }
