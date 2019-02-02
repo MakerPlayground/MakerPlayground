@@ -41,11 +41,6 @@ public class NumberWithUnitTerm extends Term {
     }
 
     @Override
-    public String toCCode(){
-        return df.format(((NumberWithUnit) value).getValue());
-    }
-
-    @Override
     public String toString() {
         return df.format(((NumberWithUnit) value).getValue());
     }

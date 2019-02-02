@@ -21,31 +21,26 @@ import java.util.List;
 public enum Operator {
     PLUS(OperatorType.BINARY, "+"),
     MINUS(OperatorType.BINARY, "-"),
-    MULTIPLY(OperatorType.BINARY, "*", "x"),
+    MULTIPLY(OperatorType.BINARY, "x"),
     DIVIDE(OperatorType.BINARY, "/"),
+    MOD(OperatorType.BINARY, "%"),
     GREATER_THAN(OperatorType.BINARY, ">"),
     LESS_THAN(OperatorType.BINARY, "<"),
-    GREATER_THAN_OR_EQUAL(OperatorType.BINARY, ">=", "\u2265"),
-    LESS_THAN_OR_EQUAL(OperatorType.BINARY, "<=", "\u2264"),
-    AND(OperatorType.BINARY, "&&", "and"),
-    OR(OperatorType.BINARY, "||", "or"),
-    NOT(OperatorType.LEFT_UNARY, "!", "not"),
+    GREATER_THAN_OR_EQUAL(OperatorType.BINARY, "\u2265"),
+    LESS_THAN_OR_EQUAL(OperatorType.BINARY, "\u2264"),
+    AND(OperatorType.BINARY, "and"),
+    OR(OperatorType.BINARY, "or"),
+    NOT(OperatorType.LEFT_UNARY, "not"),
     OPEN_PARENTHESIS(OperatorType.LEFT_UNARY, "("),
     CLOSE_PARENTHESIS(OperatorType.RIGHT_UNARY, ")"),
     EQUAL(OperatorType.BINARY, "="),
-    NOT_EQUAL(OperatorType.BINARY, "!=", "\u2260");
+    NOT_EQUAL(OperatorType.BINARY, "\u2260");
 
     private final OperatorType type;
-    private final String codeString;
     private final String displayString;
 
-    Operator(OperatorType type, String codeString) {
-        this(type, codeString, codeString);
-    }
-
-    Operator(OperatorType type, String codeString, String displayString) {
+    Operator(OperatorType type, String displayString) {
         this.type = type;
-        this.codeString = codeString;
         this.displayString = displayString;
     }
 
@@ -55,10 +50,6 @@ public enum Operator {
 
     public String getDisplayString() {
         return displayString;
-    }
-
-    public String getCodeString() {
-        return codeString;
     }
 
     private static final List<Operator> OPERATORS = List.of(Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL

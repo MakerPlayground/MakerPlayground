@@ -26,6 +26,8 @@ public class SourceCodeGenerator {
             case ARDUINO_ESP8266:
             case ARDUINO_ESP32:
                 return ArduinoCodeGenerator.generateCode(project);
+            case RASPBERRYPI:
+                return RaspberryPiCodeGenerator.generateCode(project);
             default:
                 throw new IllegalStateException("Not Support code for platform: " + project.getPlatform());
         }

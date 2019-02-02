@@ -19,7 +19,8 @@ package io.makerplayground.device.actual;
 public enum Platform {
     ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino"),
     ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino"),
-    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino");
+    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino"),
+    RASPBERRYPI("Raspberry Pi", "raspberrypi");
 
     private String displayName;
     private String libFolderName;

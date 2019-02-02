@@ -81,11 +81,6 @@ public class ConditionalExpression extends Expression {
         return !entries.isEmpty() && entries.stream().allMatch(entry -> entry.getExpression().isValid());
     }
 
-    @Override
-    public String translateToCCode() {
-        return getTerms().stream().map(Term::toCCode).collect(Collectors.joining());
-    }
-
     // this method need to be overridden as term need to be regenerated from the entries list as detected change in the
     // entries list to update terms automatically is difficult
     @Override

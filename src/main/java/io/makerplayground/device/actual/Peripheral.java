@@ -16,8 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-import io.makerplayground.device.actual.ConnectionType;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +46,13 @@ public enum Peripheral {
     GPIO_18(ConnectionType.GPIO),
     GPIO_19(ConnectionType.GPIO),
     GPIO_20(ConnectionType.GPIO),
+    GPIO_21(ConnectionType.GPIO),
+    GPIO_22(ConnectionType.GPIO),
+    GPIO_23(ConnectionType.GPIO),
+    GPIO_24(ConnectionType.GPIO),
+    GPIO_25(ConnectionType.GPIO),
+    GPIO_26(ConnectionType.GPIO),
+    GPIO_27(ConnectionType.GPIO),
 
     PWM_1(ConnectionType.PWM),
     PWM_2(ConnectionType.PWM),
@@ -69,16 +74,26 @@ public enum Peripheral {
     PWM_18(ConnectionType.PWM),
     PWM_19(ConnectionType.PWM),
     PWM_20(ConnectionType.PWM),
+    PWM_21(ConnectionType.PWM),
+    PWM_22(ConnectionType.PWM),
+    PWM_23(ConnectionType.PWM),
+    PWM_24(ConnectionType.PWM),
+    PWM_25(ConnectionType.PWM),
+    PWM_26(ConnectionType.PWM),
+    PWM_27(ConnectionType.PWM),
 
     INT_1(ConnectionType.INT),
     INT_2(ConnectionType.INT),
     INT_3(ConnectionType.INT),
 
+    I2C_0(ConnectionType.I2C),
     I2C_1(ConnectionType.I2C),
     I2C1_1(ConnectionType.I2C1),    // TODO: should we change I2C1_1 to I2C_2?
 
+    SPI_0(ConnectionType.SPI),
     SPI_1(ConnectionType.SPI),
 
+    UART_0(ConnectionType.UART),
     UART_1(ConnectionType.UART),
     UART_2(ConnectionType.UART),
     UART_3(ConnectionType.UART),

@@ -11,12 +11,6 @@ public class RTCTerm extends Term{
     }
 
     @Override
-    public String toCCode() {
-        LocalDateTime rtc = getValue().getLocalDateTime();
-        return "MP_DATETIME(" + rtc.getSecond() + "," + rtc.getMinute() + "," + rtc.getHour() +  "," + rtc.getDayOfMonth() + "," + rtc.getMonth().getValue() + "," + rtc.getYear() + ")";
-    }
-
-    @Override
     public RealTimeClock getValue() {
         return (RealTimeClock) value;
     }

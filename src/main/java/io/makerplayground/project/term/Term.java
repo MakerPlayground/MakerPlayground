@@ -22,8 +22,6 @@ import java.util.Objects;
 
 public abstract class Term {
 
-    public abstract String toCCode();
-
     public enum Type {
         NUMBER, STRING, VALUE, OPERATOR, DATETIME
     }

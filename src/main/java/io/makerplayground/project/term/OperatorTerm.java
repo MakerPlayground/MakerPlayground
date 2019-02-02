@@ -33,11 +33,6 @@ public class OperatorTerm extends Term {
     }
 
     @Override
-    public String toCCode() {
-        return getValue().getCodeString();
-    }
-
-    @Override
     public String toString() {
         return ((Operator) value).getDisplayString();
     }

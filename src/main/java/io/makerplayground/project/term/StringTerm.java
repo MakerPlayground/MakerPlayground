@@ -32,11 +32,6 @@ public class StringTerm extends Term {
     }
 
     @Override
-    public String toCCode(){
-        return "\"" + value + "\"";
-    }
-
-    @Override
     public String toString() {
         return (String) value;
     }

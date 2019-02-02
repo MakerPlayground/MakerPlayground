@@ -33,13 +33,6 @@ public class ValueTerm extends Term {
         return value != null;
     }
 
-    @Override
-    public String toCCode(){
-        return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + "_"
-                + ((ProjectValue) value).getValue().getName().replace(" ", "_").replace(".", "_") ;
-    }
-
-    @Override
     public String toString() {
         return ((ProjectValue) value).getDevice().getName() + "'s " + ((ProjectValue) value).getValue().getName();
     }

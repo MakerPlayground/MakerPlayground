@@ -132,9 +132,4 @@ public abstract class Expression {
     public boolean isValid() {
         return !terms.isEmpty() && terms.stream().allMatch(Term::isValid);
     }
-
-    public String translateToCCode() {
-        List<String> termStr = getTerms().stream().map(Term::toCCode).collect(Collectors.toList());
-        return String.join(" ", termStr);
-    }
 }

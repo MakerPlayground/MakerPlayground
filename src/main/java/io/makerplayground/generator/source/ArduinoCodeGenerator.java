@@ -7,9 +7,11 @@ import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
-import javafx.scene.image.Image;
 
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,7 +75,7 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    /* Beware!! this function need the result from appendSceneFunctions() before run */
+
     private void appendFunctionDeclaration() {
         // generate function declaration for begin scene
         builder.append("void beginScene();").append(NEW_LINE);
@@ -360,11 +362,11 @@ class ArduinoCodeGenerator {
                                 String expressionVarName = parseDeviceExpressionVariableName(device) + "[" + parameterIndex + "]";
                                 parameterIndex++;
                                 builder.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
-                                        .append("[]()->double{").append("return ").append(parseExpression(p, e)).append(";}, ")
+                                        .append("[]()->double{").append("return ").append(parseExpressionForParameter(p, e)).append(";}, ")
                                         .append(parseRefreshInterval(e)).append(");").append(NEW_LINE);
                                 taskParameter.add(expressionVarName + ".value");
                             } else {
-                                taskParameter.add(parseExpression(p, e));
+                                taskParameter.add(parseExpressionForParameter(p, e));
                             }
                         }
                         for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
@@ -381,7 +383,7 @@ class ArduinoCodeGenerator {
                         }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpression(p, setting.getValueMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(p, setting.getValueMap().get(p)));
                         }
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
@@ -458,14 +460,14 @@ class ArduinoCodeGenerator {
                         }
                         else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpression(parameter, setting.getValueMap().get(parameter))));
+                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + expression.translateToCCode() + ")");
+                                    booleanExpressions.add("(" + parseExpression(expression) + ")");
                                 }
                             }
                         }
@@ -499,12 +501,17 @@ class ArduinoCodeGenerator {
         }
     }
 
-    private String parseExpression(Parameter parameter, Expression expression) {
+    private String parseExpression(Expression expression) {
+        return expression.getTerms().stream().map(ArduinoCodeGenerator::parseTerm).collect(Collectors.joining(" "));
+    }
+
+    private String parseExpressionForParameter(Parameter parameter, Expression expression) {
         String returnValue;
+        String exprStr = parseExpression(expression);
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            returnValue =  "constrain(" + expression.translateToCCode() + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
+            returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
             double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
@@ -518,11 +525,11 @@ class ArduinoCodeGenerator {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            returnValue = "constrain(" + expression.translateToCCode() + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
+            returnValue = "constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
-            returnValue = expression.translateToCCode();
+            returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(projectValue.getDevice()) + ".get"
@@ -541,6 +548,67 @@ class ArduinoCodeGenerator {
             return (int) interval.getValue();   // fraction of a ms is discard
         } else {
             throw new IllegalStateException();
+        }
+    }
+
+    // The required digits is at least 6 for GPS's lat, lon values.
+    private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
+    private static String parseTerm(Term term) {
+        if (term instanceof NumberWithUnitTerm) {
+            NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
+            return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
+        } else if (term instanceof OperatorTerm) {
+            OperatorTerm term1 = (OperatorTerm) term;
+            switch (term1.getValue()) {
+                case PLUS:
+                    return "+";
+                case MINUS:
+                    return "-";
+                case MULTIPLY:
+                    return "*";
+                case DIVIDE:
+                    return "/";
+                case MOD:
+                    return "%";
+                case GREATER_THAN:
+                    return ">";
+                case LESS_THAN:
+                    return "<";
+                case GREATER_THAN_OR_EQUAL:
+                    return ">=";
+                case LESS_THAN_OR_EQUAL:
+                    return "<=";
+                case AND:
+                    return "&&";
+                case OR:
+                    return "||";
+                case NOT:
+                    return "!";
+                case OPEN_PARENTHESIS:
+                    return "(";
+                case CLOSE_PARENTHESIS:
+                    return ")";
+                case EQUAL:
+                    return "==";
+                case NOT_EQUAL:
+                    return "!=";
+                default:
+                    throw new IllegalStateException("Operator [" + term1.getValue() + "] not supported");
+            }
+        } else if (term instanceof RTCTerm) {
+            RTCTerm term1 = (RTCTerm) term;
+            LocalDateTime rtc = term1.getValue().getLocalDateTime();
+            return "MP_DATETIME(" + rtc.getSecond() + "," + rtc.getMinute() + "," + rtc.getHour() +  "," + rtc.getDayOfMonth() + "," + rtc.getMonth().getValue() + "," + rtc.getYear() + ")";
+        } else if (term instanceof StringTerm) {
+            StringTerm term1 = (StringTerm) term;
+            return "\"" + term1.getValue() + "\"";
+        } else if (term instanceof ValueTerm) {
+            ValueTerm term1 = (ValueTerm) term;
+            ProjectValue value = term1.getValue();
+            return  "_" + value.getDevice().getName().replace(" ", "_") + "_"
+                    + value.getValue().getName().replace(" ", "_").replace(".", "_") ;;
+        } else {
+            throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
     }
 
