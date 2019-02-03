@@ -17,6 +17,8 @@
 package io.makerplayground.ui;
 
 import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.generator.upload.ArduinoUploadTask;
+import io.makerplayground.generator.upload.RaspberryPiUploadTask;
 import io.makerplayground.generator.upload.UploadResult;
 import io.makerplayground.generator.upload.UploadTask;
 import io.makerplayground.project.Project;
@@ -137,10 +139,11 @@ public class Toolbar extends AnchorPane {
 
         uploadButton.setOnAction(event -> {
             if (uploadTask == null || !uploadTask.isRunning()) {
-                uploadButton.setText("Cancel");
-                uploadButton.setGraphic(uploadStopImageView);
-                uploadStatusButton.setVisible(true);
-                createUploadTask();
+                if (createUploadTask()) {
+                    uploadButton.setText("Cancel");
+                    uploadButton.setGraphic(uploadStopImageView);
+                    uploadStatusButton.setVisible(true);
+                }
             } else {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
                 Optional<ButtonType> result = alert.showAndWait();
@@ -163,13 +166,34 @@ public class Toolbar extends AnchorPane {
         });
     }
 
-    private void createUploadTask() {
+    private boolean createUploadTask() {
         StringBuilder log = new StringBuilder();
         logProperty = new SimpleStringProperty();
 
         // we MUST deep copy the project because user can modified the project in the UI thread while the upload thread
         // access the project
-        uploadTask = new UploadTask(Project.newInstance(project.get()));
+        switch (project.get().getPlatform()) {
+            case ARDUINO_AVR8:
+            case ARDUINO_ESP32:
+            case ARDUINO_ESP8266:
+                uploadTask = new ArduinoUploadTask(Project.newInstance(project.get()));
+                break;
+            case RASPBERRYPI:
+                String initialIpValue = "192.168.1.100";
+                TextInputDialog textInputDialog = new TextInputDialog(initialIpValue);
+                textInputDialog.setTitle("Connect Raspberry Pi");
+                textInputDialog.setHeaderText("Connect Raspberry Pi in Network: ");
+                textInputDialog.setContentText("IP Address:");
+                Optional<String> ip = textInputDialog.showAndWait();
+                if (ip.isPresent()) {
+                    uploadTask = new RaspberryPiUploadTask(Project.newInstance(project.get()), ip.get());
+                } else {
+                    return false;
+                }
+                break;
+            default:
+                throw new IllegalStateException("No upload method for current platform");
+        }
         uploadTask.progressProperty().addListener((observable, oldValue, newValue) -> {
             if (Double.compare(newValue.doubleValue(), 1.0) == 0) {
                 uploadStatusButton.setText("Upload done");
@@ -192,6 +216,7 @@ public class Toolbar extends AnchorPane {
         });
 
         new Thread(uploadTask).start();
+        return true;
     }
 
     private void deviceMonitorMenuShowing(Event e) {

@@ -53,9 +53,7 @@ class RaspberryPiCodeGenerator {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
         generator.appendHeader();
-        generator.appendInstanceVariables();
         generator.appendTaskVariables();
-        generator.appendSetupFunction();
         generator.appendBeginFunction();
         generator.appendSceneFunctions();
         generator.appendConditionFunctions();
@@ -72,109 +70,6 @@ class RaspberryPiCodeGenerator {
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
-        builder.append(NEW_LINE);
-    }
-
-    private void appendInstanceVariables() {
-        // TODO: create cloud singleton variables
-//        for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
-//            String cloudPlatformLibName = cloudPlatform.getLibName();
-//            String specificCloudPlatformLibName = project.getController().getCloudPlatformLibraryName(cloudPlatform);
-//
-//            List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
-//                    .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
-//            builder.append(cloudPlatformLibName).append("* ").append(parseCloudPlatformVariableName(cloudPlatform))
-//                    .append(" = new ").append(specificCloudPlatformLibName)
-//                    .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
-//        }
-
-        // instantiate object(s) for each device
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            builder.append(parseDeviceVariableName(projectDevice)).append(" = ").append(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
-            List<String> args = new ArrayList<>();
-            if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
-                // port
-                for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
-                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-                        if (port == null) {
-                            throw new IllegalStateException("Port hasn't been selected!!!");
-                        }
-                        // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
-                        for (DevicePort devicePort : port) {
-                            if (p.isI2C1() || p.isI2C()) {
-                                continue;
-                            }
-                            if (!devicePort.getAlias().isEmpty()) {
-                                if (p.isDual()) {
-                                    args.addAll(devicePort.getAlias());
-                                } else {
-                                    // TODO: addAll should be used here, so we can avoid the if statement. (Must be checked)
-                                    args.add(devicePort.getAlias().get(0));
-                                }
-                            } else {
-                                args.add(devicePort.getName());
-                            }
-                        }
-                    }
-                }
-            }
-            // property for the generic device
-            for (Property p : projectDevice.getActualDevice().getProperty()) {
-                String value = projectDevice.getPropertyValue(p);
-                if (value == null) {
-                    throw new IllegalStateException("Property hasn't been set");
-                }
-                switch (p.getDataType()) {
-                    case INTEGER:
-                    case INTEGER_ENUM:
-                    case DOUBLE:
-                        args.add(value);
-                        break;
-                    case STRING:
-                    case ENUM:
-                        args.add("\"" + value + "\"");
-                        break;
-                    case DATETIME:
-                    default:
-                        throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
-                }
-            }
-
-            // TODO: Cloud Platform instance
-//            CloudPlatform cloudPlatform = projectDevice.getActualDevice().getCloudPlatform();
-//            if (cloudPlatform != null) {
-//                args.add(parseCloudPlatformVariableName(cloudPlatform));
-//            }
-
-            builder.append("(").append(String.join(", ", args)).append(")").append(NEW_LINE);
-        }
-        builder.append(NEW_LINE);
-    }
-
-    private void appendSetupFunction() {
-        // generate setup function
-        builder.append("def setup():").append(NEW_LINE);
-        // TODO: add logging system such as Serial communication
-//        builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
-
-        // TODO: add cloud platform instantiation
-//        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-//            String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
-//            builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
-//            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-//            builder.append(INDENT).append(INDENT).append("MP_ERR_P(").append(cloudPlatformVariableName).append(", \"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
-//            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
-//            builder.append(INDENT).append("}").append(NEW_LINE);
-//            builder.append(NEW_LINE);
-//        }
-
-        builder.append(INDENT).append("for device_name, device in MP.devices.items():").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("status_code = device.init()").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("if status_code != 0:").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("print('error initializing', device_name, 'with error code', status_code)").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("exit(0)").append(NEW_LINE);
-        builder.append(INDENT).append("MP.currentNode = beginScene").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
@@ -410,11 +305,93 @@ class RaspberryPiCodeGenerator {
 
     private void appendMainCode() {
         builder.append("if __name__ == '__main__':").append(NEW_LINE);
-        builder.append(INDENT).append("MP.setup()").append(NEW_LINE);
-        builder.append(INDENT).append("MP.currentScene = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
+        builder.append(INDENT).append("MP.unsetAllPins()").append(NEW_LINE);
+
+        // TODO: instantiate cloud platform
+//            for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+//                String cloudPlatformLibName = cloudPlatform.getLibName();
+//                String specificCloudPlatformLibName = project.getController().getCloudPlatformLibraryName(cloudPlatform);
+//
+//                List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
+//                        .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
+//                builder.append(cloudPlatformLibName).append("* ").append(parseCloudPlatformVariableName(cloudPlatform))
+//                        .append(" = new ").append(specificCloudPlatformLibName)
+//                        .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
+//            }
+
+        Map<ProjectDevice, String> deviceNameMap = project.getAllDeviceUsed().stream()
+                .collect(Collectors.toMap(Function.identity(), this::parseConstructorCall));
+
+        deviceNameMap.forEach((key, value) ->
+                builder.append(INDENT).append(parseDeviceVariableName(key))
+                        .append(" = ").append(value).append(NEW_LINE)
+        );
+
+        builder.append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
         builder.append(INDENT).append("while True:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("MP.currentNode()").append(NEW_LINE);
+    }
+
+    private String parseConstructorCall(ProjectDevice projectDevice) {
+        StringBuilder text = new StringBuilder(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
+
+        List<String> args = new ArrayList<>();
+        if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+            // port
+            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
+                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                    if (port == null) {
+                        throw new IllegalStateException("Port hasn't been selected!!!");
+                    }
+                    // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
+                    for (DevicePort devicePort : port) {
+                        if (p.isI2C1() || p.isI2C()) {
+                            continue;
+                        }
+                        if (!devicePort.getAlias().isEmpty()) {
+                            if (p.isDual()) {
+                                args.addAll(devicePort.getAlias());
+                            } else {
+                                // TODO: addAll should be used here, so we can avoid the if statement. (Must be checked)
+                                args.add(devicePort.getAlias().get(0));
+                            }
+                        } else {
+                            args.add(devicePort.getName());
+                        }
+                    }
+                }
+            }
+        }
+        // property for the generic device
+        for (Property p : projectDevice.getActualDevice().getProperty()) {
+            String value = projectDevice.getPropertyValue(p);
+            if (value == null) {
+                throw new IllegalStateException("Property hasn't been set");
+            }
+            switch (p.getDataType()) {
+                case INTEGER:
+                case INTEGER_ENUM:
+                case DOUBLE:
+                    args.add(value);
+                    break;
+                case STRING:
+                case ENUM:
+                    args.add("\"" + value + "\"");
+                    break;
+                case DATETIME:
+                default:
+                    throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+            }
+        }
+            // TODO: add Cloud Platform instance to arg list
+//            CloudPlatform cloudPlatform = projectDevice.getActualDevice().getCloudPlatform();
+//            if (cloudPlatform != null) {
+//                args.add(parseCloudPlatformVariableName(cloudPlatform));
+//            }
+        text.append("(").append(String.join(", ", args)).append(")");
+        return text.toString();
     }
 
     // The required digits is at least 6 for GPS's lat, lon values.
