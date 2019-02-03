@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.actual.DevicePort;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.actual.Peripheral;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 
 import java.io.IOException;
 import java.util.List;
@@ -87,10 +89,28 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeArrayFieldStart("property");
         if (projectDevice.getActualDevice() != null) {
             for (Property property : projectDevice.getActualDevice().getProperty()) {
-                String value = projectDevice.getPropertyValue(property);
+                Object value = projectDevice.getPropertyValue(property);
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("name", property.getName());
-                jsonGenerator.writeStringField("value", value);
+                switch (property.getDataType()) {
+                    case STRING:
+                    case ENUM:
+                        jsonGenerator.writeStringField("value", (String) value);
+                        break;
+                    case INTEGER:
+                    case DOUBLE:
+                        NumberWithUnit numberWithUnit = (NumberWithUnit) value;
+                        jsonGenerator.writeObjectFieldStart("value");
+                        jsonGenerator.writeStringField("value", String.valueOf(numberWithUnit.getValue()));
+                        jsonGenerator.writeStringField("unit", numberWithUnit.getUnit().name());
+                        jsonGenerator.writeEndObject();
+                        break;
+                    case INTEGER_ENUM:
+                        jsonGenerator.writeNumberField("value", (Integer) value);
+                        break;
+                    default:
+                        throw new IllegalStateException("Found invalid datatype while deserialize property");
+                }
                 jsonGenerator.writeEndObject();
             }
         }

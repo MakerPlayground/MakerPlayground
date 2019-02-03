@@ -41,7 +41,7 @@ public class ProjectDevice {
     private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
     private ActualDevice dependentDevice;
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
-    private Map<Property, String> propertyValue;  // property needed by the actual device
+    private Map<Property, Object> propertyValue;  // property needed by the actual device
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = new SimpleStringProperty(name);
@@ -55,7 +55,7 @@ public class ProjectDevice {
 
     ProjectDevice(String name, GenericDevice genericDevice, ActualDevice actualDevice, Map<Peripheral
             , List<DevicePort>> deviceConnection, ActualDevice dependentDevice, Map<Peripheral
-            , List<DevicePort>> dependentDeviceConnection, Map<Property, String> propertyValue) {
+            , List<DevicePort>> dependentDeviceConnection, Map<Property, Object> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
         this.actualDevice = actualDevice;
@@ -87,6 +87,13 @@ public class ProjectDevice {
 
     public void setActualDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;
+        // initialize device properties with their default value (we don't clear the map so that it looks like we save
+        // the old property value when user switch back and forth between device)
+        if (actualDevice != null) {
+            for (Property property : actualDevice.getProperty()) {
+                propertyValue.put(property, property.getDefaultValue());
+            }
+        }
     }
 
     public Map<Peripheral, List<DevicePort>> getDeviceConnection() {
@@ -125,11 +132,11 @@ public class ProjectDevice {
 //        this.dependentDeviceConnection.put(device, processor);
 //    }
 
-    public String getPropertyValue(Property p) {
+    public Object getPropertyValue(Property p) {
         return propertyValue.get(p);
     }
 
-    public void setPropertyValue(Property p, String value) {
+    public void setPropertyValue(Property p, Object value) {
         propertyValue.put(p, value);
     }
 

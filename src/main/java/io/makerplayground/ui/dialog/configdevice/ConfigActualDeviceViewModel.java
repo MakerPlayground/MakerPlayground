@@ -162,11 +162,11 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    String getPropertyValue(ProjectDevice projectDevice, Property p) {
+    Object getPropertyValue(ProjectDevice projectDevice, Property p) {
         return projectDevice.getPropertyValue(p);
     }
 
-    void setPropertyValue(ProjectDevice projectDevice, Property p, String value) {
+    void setPropertyValue(ProjectDevice projectDevice, Property p, Object value) {
         projectDevice.setPropertyValue(p, value);
         if (configChangedCallback != null) {
             configChangedCallback.run();

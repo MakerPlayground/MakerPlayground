@@ -19,9 +19,12 @@ package io.makerplayground.ui.dialog.configdevice;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -340,24 +343,38 @@ public class ConfigActualDeviceView extends VBox{
                         GridPane.setColumnIndex(propertyLabel, 0);
                         propertyGridPane.getChildren().add(propertyLabel);
 
+                        Object currentValue = viewModel.getPropertyValue(projectDevice, p);
                         if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
-                            TextField textField = new TextField(viewModel.getPropertyValue(projectDevice, p));
+                            TextField textField = new TextField((String) currentValue);
                             textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(textField, i);
                             GridPane.setColumnIndex(textField, 1);
                             propertyGridPane.getChildren().add(textField);
-                        } else if ((p.getDataType() == DataType.ENUM || p.getDataType() == DataType.INTEGER_ENUM)
-                                && p.getControlType() == ControlType.DROPDOWN) {
+                        } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
+                            comboBox.getSelectionModel().select((String) currentValue);
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
-                            if (viewModel.getPropertyValue(projectDevice, p) == null) {
-                                viewModel.setPropertyValue(projectDevice, p, p.getDefaultValue().toString());
-                            }
-                            comboBox.getSelectionModel().select(viewModel.getPropertyValue(projectDevice, p));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
                             propertyGridPane.getChildren().add(comboBox);
+                        } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                            // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
+                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                            ComboBox<String> comboBox = new ComboBox<>(list);
+                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Integer.parseInt(newValue)));
+                            GridPane.setRowIndex(comboBox, i);
+                            GridPane.setColumnIndex(comboBox, 1);
+                            propertyGridPane.getChildren().add(comboBox);
+                        } else if ((p.getDataType() == DataType.INTEGER || p.getDataType() == DataType.DOUBLE)
+                                && p.getControlType() == ControlType.SPINBOX) {
+                            SpinnerWithUnit spinner = new SpinnerWithUnit(p.getMinimumValue(), p.getMaximumValue()
+                                    , List.of(p.getUnit()), (NumberWithUnit) currentValue);
+                            spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(spinner, i);
+                            GridPane.setColumnIndex(spinner, 1);
+                            propertyGridPane.getChildren().add(spinner);
                         } else {    // TODO: add support for new property type
                             throw new IllegalStateException("Found unknown property type");
                         }

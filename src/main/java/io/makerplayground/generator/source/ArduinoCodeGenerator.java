@@ -141,21 +141,22 @@ class ArduinoCodeGenerator {
             }
             // property for the generic device
             for (Property p : projectDevice.getActualDevice().getProperty()) {
-                String value = projectDevice.getPropertyValue(p);
+                Object value = projectDevice.getPropertyValue(p);
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");
                 }
                 switch (p.getDataType()) {
                     case INTEGER:
-                    case INTEGER_ENUM:
                     case DOUBLE:
-                        args.add(value);
+                        args.add(String.valueOf(((NumberWithUnit) value).getValue()));
+                        break;
+                    case INTEGER_ENUM:
+                        args.add(String.valueOf(value));
                         break;
                     case STRING:
                     case ENUM:
                         args.add("\"" + value + "\"");
                         break;
-                    case DATETIME:
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
                 }

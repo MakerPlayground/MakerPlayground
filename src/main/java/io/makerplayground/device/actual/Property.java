@@ -17,6 +17,7 @@
 package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.generic.ControlType;
@@ -58,6 +59,8 @@ public class Property {
 
     /**
      * Get the default value of this parameter
+     * The default value is String for datatype STRING and ENUM, NumberWithUnit for datatype DOUBLE and INTEGER
+     * , int for datatype INTEGER_ENUM
      * @return the default value of this parameter
      */
     public Object getDefaultValue() {
@@ -78,6 +81,10 @@ public class Property {
 
     public double getMaximumValue() {
         return ((NumericConstraint) constraint).getMax();
+    }
+
+    public Unit getUnit() {
+        return ((NumericConstraint) constraint).getUnit();
     }
 
     /**

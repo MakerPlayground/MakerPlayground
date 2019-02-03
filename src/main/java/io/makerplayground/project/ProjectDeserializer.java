@@ -361,11 +361,29 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             dependentDeviceConnection.put(source, port);
         }
 
-        Map<Property, String> property = new HashMap<>();
+        Map<Property, Object> property = new HashMap<>();
         for (JsonNode propertyNode : node.get("property")) {
             String propertyName = propertyNode.get("name").asText();
             Property p = actualDevice.getProperty(propertyName);
-            property.put(p, propertyNode.get("value").asText());
+            Object value;
+            switch (p.getDataType()) {
+                case STRING:
+                case ENUM:
+                    value = propertyNode.get("value").asText();
+                    break;
+                case INTEGER:
+                case DOUBLE:
+                    double num = propertyNode.get("value").get("value").asDouble();
+                    Unit unit = Unit.valueOf(propertyNode.get("value").get("unit").asText());
+                    value = new NumberWithUnit(num, unit);
+                    break;
+                case INTEGER_ENUM:
+                    value = propertyNode.get("value").asInt();
+                    break;
+                default:
+                    throw new IllegalStateException("Found invalid datatype while deserialize property");
+            }
+            property.put(p, value);
         }
 
         return new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
