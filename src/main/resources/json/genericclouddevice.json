@@ -199,5 +199,48 @@
       }
     ],
     "value": []
+  },
+  {
+    "name": "TTS",
+    "description": "Text-To-Speech: translate the text to speech. output to file or speak the text",
+    "action": [
+      {
+        "name": "text to sound file",
+        "funcname": "toSoundFile",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "text",
+            "value": "Hello world",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "save file name",
+            "value": "temp.wav",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          }
+        ]
+      },
+      {
+        "name": "play sound",
+        "funcname": "speak",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "text",
+            "value": "Hello world",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]

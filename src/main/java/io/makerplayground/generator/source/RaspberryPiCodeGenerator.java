@@ -1,10 +1,7 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
@@ -242,7 +239,7 @@ class RaspberryPiCodeGenerator {
                 Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
                 for (Condition condition : adjacentCondition) {
                     for (UserSetting setting : condition.getSetting()) {
-                        Map<ProjectDevice, Set<Value>> tmp = setting.getAllValueUsed();
+                        Map<ProjectDevice, Set<Value>> tmp = setting.getAllValueUsed(EnumSet.allOf(DataType.class));
                         // merge tmp into valueUsed
                         for (ProjectDevice projectDevice : tmp.keySet()) {
                             if (!valueUsed.containsKey(projectDevice)) {
@@ -366,7 +363,7 @@ class RaspberryPiCodeGenerator {
         }
         // property for the generic device
         for (Property p : projectDevice.getActualDevice().getProperty()) {
-            String value = projectDevice.getPropertyValue(p);
+            Object value = projectDevice.getPropertyValue(p);
             if (value == null) {
                 throw new IllegalStateException("Property hasn't been set");
             }
@@ -374,11 +371,11 @@ class RaspberryPiCodeGenerator {
                 case INTEGER:
                 case INTEGER_ENUM:
                 case DOUBLE:
-                    args.add(value);
+                    args.add(value.toString());
                     break;
                 case STRING:
                 case ENUM:
-                    args.add("\"" + value + "\"");
+                    args.add("\"" + value.toString() + "\"");
                     break;
                 case DATETIME:
                 default:
