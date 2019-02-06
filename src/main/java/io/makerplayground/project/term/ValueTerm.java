@@ -36,7 +36,7 @@ public class ValueTerm extends Term {
     @Override
     public String toCCode(){
         return  "_" + ((ProjectValue) value).getDevice().getName().replace(" ", "_") + "_"
-                + ((ProjectValue) value).getValue().getName().replace(" ", "_") ;
+                + ((ProjectValue) value).getValue().getName().replace(" ", "_").replace(".", "_") ;
     }
 
     @Override

@@ -808,5 +808,29 @@
         "constraint": []
       }
     ]
+  },
+  {
+    "name": "Dust",
+    "description": "A sensor to measure dust. \\nRelated project:\\n\\tMeasure PM 2.5",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "PM 2.5",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 300.0,
+          "unit": "MICROGRAMS_PER_CUBIC_METER"
+        }
+      }
+    ]
   }
 ]

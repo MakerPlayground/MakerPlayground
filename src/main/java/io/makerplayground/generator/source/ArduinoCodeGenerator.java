@@ -256,7 +256,7 @@ class ArduinoCodeGenerator {
             for (Value v : valueUsed.get(projectDevice)) {
                 builder.append(INDENT).append(parseValueVariableName(projectDevice, v)).append(" = ")
                         .append(parseDeviceVariableName(projectDevice)).append(".get")
-                        .append(v.getName().replace(" ", "_")).append("();").append(NEW_LINE);
+                        .append(v.getName().replace(" ", "_").replace(".", "_")).append("();").append(NEW_LINE);
             }
         }
         if (!valueUsed.isEmpty()) {
@@ -573,11 +573,11 @@ class ArduinoCodeGenerator {
     }
 
     private static String parseDeviceVariableName(ProjectDevice projectDevice) {
-        return "_" + projectDevice.getName().replace(" ", "_");
+        return "_" + projectDevice.getName().replace(" ", "_").replace(".","_");
     }
 
     private static String parseValueVariableName(ProjectDevice projectDevice, Value value) {
-        return parseDeviceVariableName(projectDevice) + "_" + value.getName().replace(" ", "_");
+        return parseDeviceVariableName(projectDevice) + "_" + value.getName().replace(" ", "_").replace(".","_");
     }
 
     private String parseDeviceTaskVariableName(ProjectDevice device) {
