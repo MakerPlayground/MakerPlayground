@@ -606,7 +606,7 @@ class ArduinoCodeGenerator {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
             return  "_" + value.getDevice().getName().replace(" ", "_") + "_"
-                    + value.getValue().getName().replace(" ", "_").replace(".", "_") ;;
+                    + value.getValue().getName().replace(" ", "_").replace(".", "_") ;
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
