@@ -356,8 +356,7 @@ public class ConfigActualDeviceView extends VBox{
                             GridPane.setRowIndex(textField, i);
                             GridPane.setColumnIndex(textField, 1);
                             propertyGridPane.getChildren().add(textField);
-                        } else if ((p.getDataType() == DataType.INTEGER_ENUM || p.getDataType() == DataType.ENUM)
-                                && p.getControlType() == ControlType.DROPDOWN) {
+                        } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
                             comboBox.getSelectionModel().select((String) currentValue);
