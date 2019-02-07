@@ -8,17 +8,26 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class AzureManagement {
+
+    private static List<String> buildCommand(String... cmd){
+        List<String> cli = new ArrayList<>();
+        if(OSInfo.getOs() == OSInfo.OS.WINDOWS){
+            cli.add("cmd.exe");
+            cli.add("/C");
+        }
+        cli.addAll(List.of(cmd));
+        return cli;
+    }
+
     public static class LogInTask extends Task<List<AzureSubscription>> {
         @Override
         protected List<AzureSubscription> call() {
             try {
-                Process p = new ProcessBuilder("az", "login"/*, "--use-device-code"*/).start();
+                List<String> command = buildCommand("az", "login"/*, "--use-device-code"*/);
+                Process p = new ProcessBuilder(command).start();
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(p.getInputStream());
                 List<AzureSubscription> subscription = new ArrayList<>();
@@ -41,7 +50,8 @@ public class AzureManagement {
         @Override
         protected Void call() {
             try {
-                Process p = new ProcessBuilder("az", "logout").start();
+                List<String> command = buildCommand("az", "logout");
+                Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -50,7 +60,8 @@ public class AzureManagement {
                 }
                 p.waitFor();
 
-                p = new ProcessBuilder("az", "account", "clear").start();
+                command = buildCommand("az", "account", "clear");
+                p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -117,7 +128,8 @@ public class AzureManagement {
         @Override
         protected List<AzureSubscription> call() {
             try {
-                Process p = new ProcessBuilder("az", "account", "list").start();
+                List<String> command = buildCommand("az", "account", "list");
+                Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -159,7 +171,8 @@ public class AzureManagement {
         @Override
         protected List<AzureResourceGroup> call() {
             try {
-                Process p = new ProcessBuilder("az", "group", "list", "--subscription", subscription.getId()).start();
+                List<String> command = buildCommand("az", "group", "list", "--subscription",subscription.getId());
+                Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -336,8 +349,9 @@ public class AzureManagement {
         @Override
         protected List<AzureCognitiveServices> call() {
             try {
-                Process p = new ProcessBuilder("az", "cognitiveservices", "account", "list", "--subscription"
-                        , subscription.getId(), "--resource-group", resourceGroup.getName()).start();
+                List<String> command = buildCommand("az", "cognitiveservices", "account", "list", "--subscription"
+                        , subscription.getId(), "--resource-group", resourceGroup.getName());
+                Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -380,8 +394,9 @@ public class AzureManagement {
         @Override
         protected AzureCognitiveServices call() {
             try {
-                Process p = new ProcessBuilder("az", "cognitiveservices", "account", "keys", "list"
-                        , "--resource-group", resourceGroup.getName(), "--name", cognitive.getName()).start();
+                List<String> command = buildCommand("az", "cognitiveservices", "account", "keys", "list"
+                        , "--resource-group", resourceGroup.getName(), "--name", cognitive.getName());
+                Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
