@@ -253,9 +253,10 @@ public class ConfigActualDeviceView extends VBox{
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
-            HBox portComboBoxHbox = new HBox();
-            portComboBoxHbox.setSpacing(5.0);
-            portComboBoxHbox.setAlignment(Pos.CENTER_LEFT);
+            FlowPane portPane = new FlowPane();
+            portPane.setHgap(5.0);
+            portPane.setVgap(5.0);
+            portPane.setAlignment(Pos.CENTER_LEFT);
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
             // We only show port combobox and property textfield when the device has been selected
@@ -323,9 +324,15 @@ public class ConfigActualDeviceView extends VBox{
                             portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
                         }
 
-                        portComboBoxHbox.getChildren().addAll(new Label(portName), portComboBox);
+                        Label portLabel = new Label(portName);
+
+                        HBox portHBox = new HBox();
+                        portHBox.getChildren().addAll(portLabel, portComboBox);
+                        portHBox.setSpacing(5);
+
+                        portPane.getChildren().addAll(portHBox);
                     }
-                    entireComboBoxDevice.getChildren().add(portComboBoxHbox);
+                    entireComboBoxDevice.getChildren().add(portPane);
                 }
 
                 // property
