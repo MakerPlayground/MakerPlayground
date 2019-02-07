@@ -135,8 +135,8 @@ public class Condition extends NodeElement {
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
                     return DiagramError.CONDITION_INVALID_EXPRESSION;
                 }
-            } else {    // otherwise value of every parameters should not be null
-                if (userSetting.getValueMap().values().contains(null)) {
+            } else {    // otherwise value of every parameters should not be null and should be valid
+                if (userSetting.getValueMap().values().stream().anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
                     return DiagramError.CONDITION_INVALID_PARAM;
                 }
             }
