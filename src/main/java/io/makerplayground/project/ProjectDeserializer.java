@@ -325,12 +325,28 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
 
-        String actualDeviceId = node.get("actualDevice").asText();
+        String temp = node.get("actualDevice").asText();
         ActualDevice actualDevice = null;
-        if (!actualDeviceId.isEmpty()) {
-            actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
+        if (!temp.isEmpty()) {
+            String[] tokens = temp.split("#");
+            if (tokens.length == 1) {
+                String actualDeviceId = tokens[0];
+                actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
+            } else if (tokens.length == 2) {
+                String parentActualDeviceId = tokens[0];
+                String actualDeviceName = tokens[1];
+                ActualDevice parent = DeviceLibrary.INSTANCE.getActualDevice(parentActualDeviceId);
+                if (parent == null) {
+                    throw new IllegalStateException("The actual device field could have the format of parentDeviceId#integratedDeviceName");
+                }
+                Optional<IntegratedActualDevice> deviceOptional = parent.getIntegratedDevices(actualDeviceName);
+                if (deviceOptional.isPresent()) {
+                    actualDevice = deviceOptional.get();
+                }
+            } else {
+                throw new IllegalStateException("The actual device id could not has more than one # symbol.");
+            }
         }
-
         Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
         for  (JsonNode connection : node.get("actualDeviceConnection")) {
             Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());

@@ -406,6 +406,10 @@ public class ActualDevice {
         return integratedDevices;
     }
 
+    public Optional<IntegratedActualDevice> getIntegratedDevices(String actualDeviceName) {
+        return integratedDevices.stream().filter(integratedActualDevice -> integratedActualDevice.getName()
+                .equals(actualDeviceName)).findFirst();
+    }
     @Override
     public String toString() {
         return "ActualDevice{" +

@@ -27,14 +27,29 @@ import java.util.List;
 import java.util.Map;
 
 public class IntegratedActualDevice extends ActualDevice {
-    IntegratedActualDevice(String model, Map<Platform, String> classnames, Map<Platform, List<String>> externalLibraries,
+    String name;
+    ActualDevice parent;
+    IntegratedActualDevice(String name, Map<Platform, String> classnames, Map<Platform, List<String>> externalLibraries,
                            List<DevicePort> port, List<Peripheral> connectivity,
                            Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction,
                            Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition,
                            Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
-        super("", "", model, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
+        super("", "", name, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
                 , classnames, externalLibraries, null, port, connectivity
                 , supportedAction, supportedCondition, supportedValue, Collections.emptyList()
                 , Collections.emptyMap(), Collections.emptyList());
+        this.name = name;
+    }
+
+    public void setParent(ActualDevice parent) {
+        this.parent = parent;
+    }
+
+    public ActualDevice getParent() {
+        return this.parent;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

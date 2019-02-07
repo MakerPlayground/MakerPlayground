@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.actual.DevicePort;
+import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.shared.NumberWithUnit;
@@ -48,7 +49,14 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeStringField("genericDevice", projectDevice.getGenericDevice().getName());
 
         if (projectDevice.getActualDevice() != null) {
-            jsonGenerator.writeStringField("actualDevice", projectDevice.getActualDevice().getId());
+            if (projectDevice.getActualDevice() instanceof IntegratedActualDevice) {
+                IntegratedActualDevice device = (IntegratedActualDevice) projectDevice.getActualDevice();
+                String id = device.getParent().getId() + "#" + device.getName();
+                jsonGenerator.writeStringField("actualDevice", id);
+            } else {
+                jsonGenerator.writeStringField("actualDevice", projectDevice.getActualDevice().getId());
+            }
+
         } else {
             jsonGenerator.writeStringField("actualDevice", "");
         }

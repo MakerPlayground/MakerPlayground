@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
 
@@ -97,7 +98,11 @@ public enum DeviceLibrary {
                     Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
                     if (Files.exists(deviceDefinitionPath)) {
                         try {
-                            temp.add(mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {}));
+                            ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {});
+                            for (IntegratedActualDevice integratedActualDevice: actualDevice.getIntegratedDevices()) {
+                                integratedActualDevice.setParent(actualDevice);
+                            }
+                            temp.add(actualDevice);
                         } catch (JsonParseException e) {
                             System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
                         } catch (NullPointerException e) {
