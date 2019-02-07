@@ -1,0 +1,52 @@
+.root {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 15;
+    -fx-background-color: background-color;
+    -fx-background-radius: 15;
+}
+
+#statusLabel {
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color: background-color;
+    -fx-border-color: text-fill-border-color;
+    -fx-border-radius: 5px;
+    -fx-text-fill: text-fill-color;
+}
+
+.combo-box-base {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px;
+    -fx-padding: 0; /* 4 8 4 8 */
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+    -fx-border-color : text-fill-border-color;
+    -fx-border-radius:3px;
+    -fx-background-color: white;
+    -fx-background-insets:0;
+    -fx-font-size:12px;
+}
+.combo-box.list-cell {
+    -fx-background-color: text-fill-background-color;
+    -fx-background-radius: 3px;
+    -fx-text-fill: text-fill-color;
+    -fx-padding: 3 0 2 7;
+    -fx-cell-size: 1.66667em;
+    -fx-font-size:12px;
+}
+.combo-box-popup .list-view .list-cell:filled:hover{
+    -fx-background-color: accent-color;
+    -fx-background-radius:0;
+    -fx-text-fill: white;
+    -fx-font-size:12px;
+}
+.combo-box-popup .list-view .list-cell:filled:selected{
+    -fx-background-color: derive(#cccccc,40%);
+    -fx-background-radius:0;
+    -fx-text-fill: black;
+    -fx-font-size:12px;
+}

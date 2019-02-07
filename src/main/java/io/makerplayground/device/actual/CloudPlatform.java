@@ -21,7 +21,8 @@ import java.util.List;
 public enum CloudPlatform {
     BLYNK("Blynk", List.of("Auth Token", "Wifi's SSID", "Wifi's Password"), "MP_BLYNK"),
     NETPIE("NETPIE", List.of("App Id", "Key", "Secret", "Alias", "Wifi's SSID", "Wifi's Password"), "MP_NETPIE"),
-    REST("Rest API", List.of("Wifi's SSID", "Wifi's Password"), "MP_REST");
+    REST("Rest API", List.of("Wifi's SSID", "Wifi's Password"), "MP_REST"),
+    AZURE("Azure", List.of("Wifi's SSID", "Wifi's Password"), "MP_AZURE");
 
     private final String displayName;
     private final List<String> parameter;

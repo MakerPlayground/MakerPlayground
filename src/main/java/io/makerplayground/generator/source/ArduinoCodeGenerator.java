@@ -7,6 +7,7 @@ import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.util.AzureCognitiveServices;
 import javafx.scene.image.Image;
 
 import java.util.*;
@@ -156,6 +157,11 @@ class ArduinoCodeGenerator {
                     case STRING:
                     case ENUM:
                         args.add("\"" + value + "\"");
+                        break;
+                    case AZURE_COGNITIVE_KEY:
+                        AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                        args.add("\"" + acs.getLocation().toLowerCase() + "\"");
+                        args.add("\"" + acs.getKey1() + "\"");
                         break;
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");

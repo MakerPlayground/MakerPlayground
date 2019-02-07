@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,26 +14,18 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AzureManagement {
-    public static class LogIn extends Task<List<String>> {
-        private StringProperty code = new SimpleStringProperty();
-
+    public static class LogInTask extends Task<List<AzureSubscription>> {
         @Override
-        protected List<String> call() {
+        protected List<AzureSubscription> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C", "az login --use-device-code");
-                Process p = pb.start();
-
-                try (Scanner s = new Scanner(p.getErrorStream())) {
-                    String line = s.nextLine();
-                    Platform.runLater(() -> code.set(line));
-                }
+                Process p = new ProcessBuilder("az", "login"/*, "--use-device-code"*/).start();
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
-                List<String> subscription = new ArrayList<>();
-                for (int i = 0; i < node.size(); i++) {
-                    subscription.add(node.get(i).get("id").asText());
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureSubscription> subscription = new ArrayList<>();
+                for (JsonNode node : root) {
+                    subscription.add(new AzureSubscription(node.get("name").asText(), node.get("id").asText()
+                            , node.get("tenantId").asText(), node.get("user").get("name").asText()));
                 }
-
                 p.waitFor();
                 return subscription;
             } catch (InterruptedException | IOException e) {
@@ -41,25 +33,15 @@ public class AzureManagement {
             }
             return Collections.emptyList();
         }
-
-        public String getCode() {
-            return code.get();
-        }
-
-        public StringProperty codeProperty() {
-            return code;
-        }
     }
 
-    public static class LogOut extends Task<List<String>> {
-        private StringProperty error = new SimpleStringProperty();
+    public static class LogOutTask extends Task<Void> {
+        private StringProperty error = new SimpleStringProperty("");
 
         @Override
-        protected List<String> call() {
+        protected Void call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C", "az logout");
-                Process p = pb.start();
-
+                Process p = new ProcessBuilder("az", "logout").start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -67,22 +49,29 @@ public class AzureManagement {
                     }
                 }
                 p.waitFor();
-                return  Collections.emptyList();
+
+                p = new ProcessBuilder("az", "account", "clear").start();
+                try (Scanner s = new Scanner(p.getErrorStream())) {
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
+                    }
+                }
+                p.waitFor();
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
-            return Collections.emptyList();
+            return null;
         }
 
-        public String getCode() {
+        public String getErrorMessage() {
             return error.get();
         }
 
-        public StringProperty codeProperty() {
+        public StringProperty errorMessageProperty() {
             return error;
         }
     }
-
 
     public static class ServicePrinciple extends Task<List<String>> {
         private StringProperty error = new SimpleStringProperty();
@@ -122,15 +111,13 @@ public class AzureManagement {
         }
     }
 
-    public static class Subscription extends Task<List<String>> {
-        private StringProperty error = new SimpleStringProperty();
+    public static class ListSubscriptionTask extends Task<List<AzureSubscription>> {
+        private StringProperty error = new SimpleStringProperty("");
 
         @Override
-        protected List<String> call() {
+        protected List<AzureSubscription> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "account", "list")));
-                Process p = pb.start();
+                Process p = new ProcessBuilder("az", "account", "list").start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -138,12 +125,13 @@ public class AzureManagement {
                     }
                 }
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
-                p.waitFor();
-                List<String> subscription = new ArrayList<>();
-                for (int i = 0; i < node.size(); i++) {
-                    subscription.add(node.get(i).get("id").asText());
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureSubscription> subscription = new ArrayList<>();
+                for (JsonNode node : root) {
+                    subscription.add(new AzureSubscription(node.get("name").asText(), node.get("id").asText()
+                            , node.get("tenantId").asText(), node.get("user").get("name").asText()));
                 }
+                p.waitFor();
                 return subscription;
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -151,24 +139,27 @@ public class AzureManagement {
             return Collections.emptyList();
         }
 
-        public String getError() {
+        public String getErrorMessage() {
             return error.get();
         }
 
-        public StringProperty errorProperty() {
+        public StringProperty errorMessageProperty() {
             return error;
         }
     }
 
-    public static class ResourceGroupList extends Task<List<String>> {
-        private StringProperty error = new SimpleStringProperty();
+    public static class ResourceGroupListTask extends Task<List<AzureResourceGroup>> {
+        private final AzureSubscription subscription;
+        private StringProperty error = new SimpleStringProperty("");
+
+        public ResourceGroupListTask(AzureSubscription subscription) {
+            this.subscription = subscription;
+        }
 
         @Override
-        protected List<String> call() {
+        protected List<AzureResourceGroup> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "group", "list")));
-                Process p = pb.start();
+                Process p = new ProcessBuilder("az", "group", "list", "--subscription", subscription.getId()).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
                         String line = s.nextLine();
@@ -176,24 +167,24 @@ public class AzureManagement {
                     }
                 }
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
-                p.waitFor();
-                List<String> name = new ArrayList<>();
-                for (int i = 0; i < node.size(); i++) {
-                    name.add(node.get(i).get("name").asText());
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureResourceGroup> resourceGroups = new ArrayList<>();
+                for (JsonNode node : root) {
+                    resourceGroups.add(new AzureResourceGroup(node.get("name").asText(), node.get("location").asText()));
                 }
-                return name;
+                p.waitFor();
+                return resourceGroups;
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
             return Collections.emptyList();
         }
 
-        public String getError() {
+        public String getErrorMessage() {
             return error.get();
         }
 
-        public StringProperty errorProperty() {
+        public StringProperty errorMessageProperty() {
             return error;
         }
     }
@@ -332,32 +323,34 @@ public class AzureManagement {
         }
     }
 
-    public static class CognitiveList extends Task<List<String>> {
+    public static class CognitiveListTask extends Task<List<AzureCognitiveServices>> {
+        private final AzureSubscription subscription;
+        private final AzureResourceGroup resourceGroup;
         private StringProperty error = new SimpleStringProperty();
 
+        public CognitiveListTask(AzureSubscription subscription, AzureResourceGroup resourceGroup) {
+            this.subscription = subscription;
+            this.resourceGroup = resourceGroup;
+        }
+
         @Override
-        protected List<String> call() {
+        protected List<AzureCognitiveServices> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "cognitiveservices", "account", "list")));
-                Process p = pb.start();
+                Process p = new ProcessBuilder("az", "cognitiveservices", "account", "list", "--subscription"
+                        , subscription.getId(), "--resource-group", resourceGroup.getName()).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
-                    if (s.hasNextLine()) {
-                        StringBuilder sb = new StringBuilder();
-                        while (s.hasNextLine()) {
-                            sb.append(s.nextLine());
-                            System.out.println(sb);
-                        }
-                        Platform.runLater(() -> error.set(String.valueOf(sb)));
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
                     }
                 }
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
-                p.waitFor();
-                List<String> cognitiveName = new ArrayList<>();
-                for (int i = 0; i < node.size(); i++) {
-                    cognitiveName.add(node.get(i).get("name").asText());
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureCognitiveServices> cognitiveName = new ArrayList<>();
+                for (JsonNode node : root) {
+                    cognitiveName.add(new AzureCognitiveServices(node.get("name").asText(), node.get("location").asText()));
                 }
+                p.waitFor();
                 return cognitiveName;
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -365,57 +358,51 @@ public class AzureManagement {
             return Collections.emptyList();
         }
 
-        public String getError() {
+        public String getErrorMesage() {
             return error.get();
         }
 
-        public StringProperty errorProperty() {
+        public StringProperty errorMesageProperty() {
             return error;
         }
     }
 
-    public static class CognitiveKeyList extends Task<List<String>> {
+    public static class CognitiveKeyListTask extends Task<AzureCognitiveServices> {
         private StringProperty error = new SimpleStringProperty();
-        private final String cognitiveName;
-        private final String resourceGroupName;
+        private final AzureCognitiveServices cognitive;
+        private final AzureResourceGroup resourceGroup;
 
-        public CognitiveKeyList(String cognitiveName, String resourceGroupName) {
-            this.cognitiveName = cognitiveName;
-            this.resourceGroupName = resourceGroupName;
+        public CognitiveKeyListTask(AzureCognitiveServices cognitive, AzureResourceGroup resourceGroup) {
+            this.cognitive = cognitive;
+            this.resourceGroup = resourceGroup;
         }
 
         @Override
-        protected List<String> call() {
+        protected AzureCognitiveServices call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "cognitiveservices", "account", "keys", "list", "-g", resourceGroupName, "-n", cognitiveName)));
-                Process p = pb.start();
-
+                Process p = new ProcessBuilder("az", "cognitiveservices", "account", "keys", "list"
+                        , "--resource-group", resourceGroup.getName(), "--name", cognitive.getName()).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
-                    if (s.hasNextLine()) {
-                        StringBuilder sb = new StringBuilder();
-                        while (s.hasNextLine()) {
-                            sb.append(s.nextLine());
-                            System.out.println(sb);
-                        }
-                        Platform.runLater(() -> error.set(String.valueOf(sb)));
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
                     }
                 }
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
+                JsonNode root = mapper.readTree(p.getInputStream());
                 p.waitFor();
-                return List.of(node.get("key1").asText());
+                return new AzureCognitiveServices(cognitive.getName(), cognitive.getLocation(), root.get("key1").asText(), root.get("key2").asText());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
-            return Collections.emptyList();
+            return null;
         }
 
-        public String getError() {
+        public String getErrorMesage() {
             return error.get();
         }
 
-        public StringProperty errorProperty() {
+        public StringProperty errorMesageProperty() {
             return error;
         }
     }

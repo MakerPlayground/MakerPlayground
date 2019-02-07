@@ -189,9 +189,59 @@
     -fx-cursor: hand;
 }*/
 
-#autoButton {
+.button {
     -fx-background-color: background-color;
     -fx-border-color: text-fill-border-color;
     -fx-border-radius: 5px;
     -fx-text-fill: text-fill-color;
+}
+
+.spinner{
+    -fx-border-color : #cccccc;
+    -fx-border-radius : 3;
+    -fx-background-color: white;
+    -fx-background-radius: 3;
+    /*-fx-max-width: 70;*/
+    -fx-pref-width:70;
+    -fx-min-width: 50;
+    -fx-min-height: 25;
+    -fx-max-height: 25;
+}
+.spinner:focused{
+    -fx-border-color : #cccccc;
+    -fx-border-radius : 3;
+    -fx-background-color: white;
+    -fx-background-radius: 3;
+    /*-fx-max-width: 85;
+    -fx-min-width: 50;
+    -fx-min-height: 25;
+    -fx-max-height: 25;*/
+}
+.spinner > .text-field{
+    -fx-padding:0;
+    -fx-text-fill: #333333;
+    -fx-border-color: white;
+    -fx-border-radius: 5;
+    -fx-background-color: white;
+    -fx-background-radius : 5;
+}
+.spinner > .text-field:focused{
+    -fx-focus-color: transparent;
+    -fx-padding:0;
+    -fx-text-fill: #333333;
+    -fx-border-color: white;
+    -fx-border-radius: 5;
+    -fx-background-color: white;
+    -fx-background-radius : 5;
+}
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+}
+.spinner .increment-arrow-button:hover:pressed .arrow,
+.spinner .decrement-arrow-button:hover:pressed .arrow,
+.spinner .increment-arrow-button:pressed .arrow,
+.spinner .decrement-arrow-button:pressed .arrow {
+    -fx-background-color: derive(black,30%);
 }

@@ -69,6 +69,9 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
                 defaultValue = new NumberWithUnit(node.get("value").asInt()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));
                 break;
+            case AZURE_COGNITIVE_KEY:
+                defaultValue = null;
+                break;
             default:
                 throw(new IllegalStateException("Format error!!!"));
         }

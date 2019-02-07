@@ -20,12 +20,14 @@ import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
+import io.makerplayground.ui.control.AzurePropertyControl;
+import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
+import io.makerplayground.util.AzureCognitiveServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -41,10 +43,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends VBox{
@@ -382,6 +381,13 @@ public class ConfigActualDeviceView extends VBox{
                             GridPane.setRowIndex(spinner, i);
                             GridPane.setColumnIndex(spinner, 1);
                             propertyGridPane.getChildren().add(spinner);
+                        } else if (p.getDataType() == DataType.AZURE_COGNITIVE_KEY && p.getControlType() == ControlType.AZURE_WIZARD) {
+                            AzurePropertyControl<AzureCognitiveServices> control = new AzurePropertyControl<>(AzureSettingDialog.Service.COGNITIVE_SERVICE
+                                    , (AzureCognitiveServices) currentValue);
+                            control.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(control, i);
+                            GridPane.setColumnIndex(control, 1);
+                            propertyGridPane.getChildren().add(control);
                         } else {    // TODO: add support for new property type
                             throw new IllegalStateException("Found unknown property type");
                         }

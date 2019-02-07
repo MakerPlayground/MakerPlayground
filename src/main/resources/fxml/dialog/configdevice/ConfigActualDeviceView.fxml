@@ -48,7 +48,7 @@
                     <HBox alignment="CENTER">
                         <Label id="usedLabel" text="Used devices"/>
                         <Pane HBox.hgrow="ALWAYS"/>
-                        <Button id="autoButton" fx:id="autoButton" text="Auto Select"/>
+                        <Button fx:id="autoButton" text="Auto Select"/>
                     </HBox>
                     <GridPane fx:id="usedDeviceSettingPane" hgap="20.0" vgap="10.0">
                         <columnConstraints>

@@ -25,6 +25,7 @@ import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.util.AzureCognitiveServices;
 
 import java.io.IOException;
 import java.util.List;
@@ -107,6 +108,19 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
                         break;
                     case INTEGER_ENUM:
                         jsonGenerator.writeNumberField("value", (Integer) value);
+                        break;
+                    case AZURE_COGNITIVE_KEY:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                            jsonGenerator.writeObjectFieldStart("value");
+                            jsonGenerator.writeStringField("name", acs.getName());
+                            jsonGenerator.writeStringField("location", acs.getLocation());
+                            jsonGenerator.writeStringField("key1", acs.getKey1());
+                            jsonGenerator.writeStringField("key2", acs.getKey2());
+                            jsonGenerator.writeEndObject();
+                        }
                         break;
                     default:
                         throw new IllegalStateException("Found invalid datatype while deserialize property");

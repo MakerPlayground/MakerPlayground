@@ -29,6 +29,7 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
+import io.makerplayground.util.AzureCognitiveServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -379,6 +380,16 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                     break;
                 case INTEGER_ENUM:
                     value = propertyNode.get("value").asInt();
+                    break;
+                case AZURE_COGNITIVE_KEY:
+                    if (propertyNode.get("value").has("name")) {
+                        value = new AzureCognitiveServices(propertyNode.get("value").get("name").asText()
+                                , propertyNode.get("value").get("location").asText()
+                                , propertyNode.get("value").get("key1").asText()
+                                , propertyNode.get("value").get("key2").asText());
+                    } else {
+                        value = null;
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Found invalid datatype while deserialize property");

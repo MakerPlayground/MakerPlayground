@@ -21,6 +21,7 @@ import io.makerplayground.device.shared.Unit;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -91,6 +92,7 @@ public class SpinnerWithUnit extends NumberWithUnitControl {
         }
 
         setSpacing(5);
+        setAlignment(Pos.CENTER_LEFT);
 
         numberWithUnit = new SimpleObjectProperty<>(initialValue);
         numberWithUnit.addListener((observable, oldValue, newValue) -> {
