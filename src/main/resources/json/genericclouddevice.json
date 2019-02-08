@@ -201,20 +201,20 @@
     "value": []
   },
   {
-    "name": "TTS",
+    "name": "Text to Speech",
     "description": "Text-To-Speech: translate the text to speech. output to file or speak the text",
     "action": [
       {
-        "name": "text to sound file",
-        "funcname": "toSoundFile",
+        "name": "Convert to sound file",
+        "funcname": "convertToSoundFile",
         "type": "Active",
         "parameter": [
           {
             "name": "text",
-            "value": "Hello world",
+            "value": "Maker playground",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
           },
           {
             "name": "save file name",
@@ -226,13 +226,56 @@
         ]
       },
       {
-        "name": "play sound",
-        "funcname": "speak",
+        "name": "Convert and play sound",
+        "funcname": "convertAndPlaySound",
         "type": "Active",
         "parameter": [
           {
             "name": "text",
-            "value": "Hello world",
+            "value": "Maker playground",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
+  },
+  {
+    "name": "Image to Text",
+    "description": "Image to Text: find all text in image using OCR technology.",
+    "action": [
+      {
+        "name": "Convert to Text",
+        "funcname": "convertToText",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Image",
+            "value": "",
+            "constraint": [],
+            "datatype": "IMAGE",
+            "controltype": "IMAGE_SELECTOR"
+          }
+        ]
+      },
+      {
+        "name": "Convert to Text File",
+        "funcname": "convertToTextFile",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Image",
+            "value": "",
+            "constraint": [],
+            "datatype": "IMAGE",
+            "controltype": "IMAGE_SELECTOR"
+          },
+          {
+            "name": "File name",
+            "value": "dummy.txt",
             "constraint": [],
             "datatype": "STRING",
             "controltype": "TEXTBOX"
@@ -240,7 +283,26 @@
         ]
       }
     ],
-    "condition": [],
-    "value": []
+    "condition": [
+      {
+        "name": "Has Text",
+        "funcname": "hasText",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Has No Text",
+        "funcname": "hasNoText",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Text",
+        "dataType": "STRING",
+        "constraint": []
+      }
+    ]
   }
 ]

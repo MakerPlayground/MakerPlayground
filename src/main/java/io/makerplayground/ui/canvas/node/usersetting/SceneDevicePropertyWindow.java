@@ -19,12 +19,12 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -44,6 +44,7 @@ import org.controlsfx.control.PopOver;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tanyagorn on 6/20/2017.
@@ -219,6 +220,14 @@ public class SceneDevicePropertyWindow extends PopOver {
                     comboBox.getSelectionModel().select(projectValue);
                 }
                 control = comboBox;
+            } else if (p.getControlType() == ControlType.TEXTBOX_WITH_TEXT_SELECTOR) {
+                StringExpressionControl expressionControl = new StringExpressionControl(
+                        p,
+                        viewModel.getProjectValue(Set.of(DataType.STRING)),
+                        viewModel.getParameterValue(p)
+                );
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
             } else {
                 throw new IllegalStateException("Found unknown control type " + p);
             }

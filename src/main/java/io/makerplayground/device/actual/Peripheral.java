@@ -214,7 +214,10 @@ public enum Peripheral {
 
     INEX_WS2812_1(ConnectionType.INEX_WS2812),
 
+    RPI_CAMERA(ConnectionType.RPI_CAMERA),
+
     POWER(ConnectionType.POWER);
+
 
     private ConnectionType connectionType;
 

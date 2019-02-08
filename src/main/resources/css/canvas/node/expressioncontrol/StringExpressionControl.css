@@ -1,0 +1,6 @@
+#configButton{
+    -fx-background-color : transparent;
+    -fx-background-image: url('advance-setting.png');
+    -fx-background-repeat: no-repeat;
+    -fx-cursor: hand;
+}

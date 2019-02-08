@@ -57,5 +57,8 @@ public enum ConnectionType {
     INEX_ANALOG,
     INEX_I2C,
     INEX_UART,
-    INEX_WS2812
+    INEX_WS2812,
+
+    /* RPI */
+    RPI_CAMERA
 }

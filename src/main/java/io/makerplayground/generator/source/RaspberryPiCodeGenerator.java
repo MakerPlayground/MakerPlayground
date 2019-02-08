@@ -344,7 +344,7 @@ class RaspberryPiCodeGenerator {
                     }
                     // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
                     for (DevicePort devicePort : port) {
-                        if (p.isI2C1() || p.isI2C()) {
+                        if (p.isI2C1() || p.isI2C() || p == Peripheral.RPI_CAMERA) {
                             continue;
                         }
                         if (!devicePort.getAlias().isEmpty()) {
@@ -369,9 +369,11 @@ class RaspberryPiCodeGenerator {
             }
             switch (p.getDataType()) {
                 case INTEGER:
-                case INTEGER_ENUM:
                 case DOUBLE:
-                    args.add(value.toString());
+                    args.add(String.valueOf(((NumberWithUnit) value).getValue()));
+                    break;
+                case INTEGER_ENUM:
+                    args.add(String.valueOf(value));
                     break;
                 case STRING:
                 case ENUM:
@@ -474,14 +476,27 @@ class RaspberryPiCodeGenerator {
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
-            NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
-            NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            returnValue = "MP.constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
+            ProjectValue projectValue = projectValueExpression.getProjectValue();
+            DataType dataType = projectValue.getValue().getType();
+            if (dataType == DataType.STRING) {
+                returnValue = parseProjectValue(projectValue.getDevice(), projectValue.getValue());
+            } else if (dataType == DataType.DOUBLE || dataType == DataType.INTEGER) {
+                // TODO: separate the datatype for double and integer
+                NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
+                NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
+                returnValue = "MP.constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
+            } else {
+                throw new IllegalStateException("ProjectValueExpression other than INTEGER, DOUBLE and STRING is not support.");
+            }
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
             returnValue = exprStr;
-        } else {
+        } else if (expression instanceof ImageExpression) {
+            ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
+            returnValue = parseProjectValue(projectValue.getDevice(), projectValue.getValue());
+        }
+        else {
             throw new IllegalStateException();
         }
         return returnValue;

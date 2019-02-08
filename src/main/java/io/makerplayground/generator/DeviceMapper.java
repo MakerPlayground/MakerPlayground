@@ -76,8 +76,12 @@ public class DeviceMapper {
                             throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
                         }
                     } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
-                        newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
-                    } else if (parameter.getDataType() == DataType.DATETIME) {
+                        if (o instanceof SimpleStringExpression) {
+                            newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
+                        } else if (o instanceof ProjectValueExpression) {
+                            newConstraint = Constraint.NONE;
+                        }
+                    } else if (parameter.getDataType() == DataType.DATETIME || parameter.getDataType() == DataType.IMAGE) {
                         newConstraint = Constraint.NONE;
                     } else {
                         throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
