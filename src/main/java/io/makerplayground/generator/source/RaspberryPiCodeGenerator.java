@@ -264,7 +264,7 @@ class RaspberryPiCodeGenerator {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
-                                    setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
+                                    setting.getAction().getFunctionName() + String.join(",", params));
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
@@ -277,7 +277,7 @@ class RaspberryPiCodeGenerator {
                     if (booleanExpressions.isEmpty()) {
                         throw new IllegalStateException("Found an empty condition block: " + condition);
                     }
-                    builder.append(INDENT).append("if ").append(String.join(" and ", booleanExpressions)).append("):").append(NEW_LINE);
+                    builder.append(INDENT).append("if ").append(String.join(" and ", booleanExpressions)).append(":").append(NEW_LINE);
 
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, condition);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
@@ -447,8 +447,7 @@ class RaspberryPiCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return "MP.devices['" + value.getDevice().getName().replace(" ", "_") + "'].get" +
-                    value.getValue().getName().replace(" ", "_") + "()";
+            return parseProjectValue(value.getDevice(), value.getValue());
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
@@ -464,7 +463,7 @@ class RaspberryPiCodeGenerator {
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
+            returnValue =  "MP.constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
             double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
