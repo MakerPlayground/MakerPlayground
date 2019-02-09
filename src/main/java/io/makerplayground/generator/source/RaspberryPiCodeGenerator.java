@@ -8,6 +8,7 @@ import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
+import io.makerplayground.util.AzureCognitiveServices;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -264,7 +265,7 @@ class RaspberryPiCodeGenerator {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
-                                    setting.getAction().getFunctionName() + String.join(",", params));
+                                    setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
@@ -378,6 +379,12 @@ class RaspberryPiCodeGenerator {
                 case STRING:
                 case ENUM:
                     args.add("\"" + value.toString() + "\"");
+                    break;
+                case AZURE_COGNITIVE_KEY:
+                    AzureCognitiveServices service = (AzureCognitiveServices) value;
+                    args.add("\"" + service.getLocation() + "\"");
+                    args.add("\"" + service.getName() + "\"");
+                    args.add("\"" + service.getKey1() + "\"");
                     break;
                 case DATETIME:
                 default:

@@ -205,6 +205,20 @@
     "description": "Text-To-Speech: translate the text to speech. output to file or speak the text",
     "action": [
       {
+        "name": "Convert and play sound",
+        "funcname": "convertAndPlaySound",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "text",
+            "value": "Maker playground",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
+          }
+        ]
+      },
+      {
         "name": "Convert to sound file",
         "funcname": "convertToSoundFile",
         "type": "Active",
@@ -222,20 +236,6 @@
             "constraint": [],
             "datatype": "STRING",
             "controltype": "TEXTBOX"
-          }
-        ]
-      },
-      {
-        "name": "Convert and play sound",
-        "funcname": "convertAndPlaySound",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "text",
-            "value": "Maker playground",
-            "constraint": [],
-            "datatype": "STRING",
-            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
           }
         ]
       }
