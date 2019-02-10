@@ -151,6 +151,19 @@ public class UserSetting {
                     }
                 }
             }
+            if (exp instanceof RecordExpression) {
+                ((RecordExpression) exp).getRecord().getEntryList().stream().flatMap(recordEntry -> recordEntry.getValue().getTerms().stream()).filter(term -> term instanceof ValueTerm).forEach(term -> {
+                    ProjectValue projectValue = ((ValueTerm) term).getValue();
+                    if (projectValue != null) {
+                        ProjectDevice projectDevice = projectValue.getDevice();
+                        if (result.containsKey(projectDevice)) {
+                            result.get(projectDevice).add(projectValue.getValue());
+                        } else {
+                            result.put(projectDevice, new HashSet<>(Collections.singletonList(projectValue.getValue())));
+                        }
+                    }
+                });
+            }
         }
 
         // list value use in every enable expression in a condition

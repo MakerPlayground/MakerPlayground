@@ -383,19 +383,22 @@ public class AzureManagement {
 
     public static class CognitiveKeyListTask extends Task<AzureCognitiveServices> {
         private StringProperty error = new SimpleStringProperty();
-        private final AzureCognitiveServices cognitive;
+        private final AzureSubscription subscription;
         private final AzureResourceGroup resourceGroup;
+        private final AzureCognitiveServices cognitive;
 
-        public CognitiveKeyListTask(AzureCognitiveServices cognitive, AzureResourceGroup resourceGroup) {
-            this.cognitive = cognitive;
+        public CognitiveKeyListTask(AzureSubscription subscription, AzureResourceGroup resourceGroup, AzureCognitiveServices cognitive) {
+            this.subscription = subscription;
             this.resourceGroup = resourceGroup;
+            this.cognitive = cognitive;
         }
 
         @Override
         protected AzureCognitiveServices call() {
             try {
                 List<String> command = buildCommand("az", "cognitiveservices", "account", "keys", "list"
-                        , "--resource-group", resourceGroup.getName(), "--name", cognitive.getName());
+                        , "--subscription", subscription.getId(), "--resource-group", resourceGroup.getName()
+                        , "--name", cognitive.getName());
                 Process p = new ProcessBuilder(command).start();
                 try (Scanner s = new Scanner(p.getErrorStream())) {
                     if (s.hasNext()) {
@@ -475,33 +478,38 @@ public class AzureManagement {
         }
     }
 
-    public static class IotHubList extends Task<List<String>> {
+    public static class IotHubListTask extends Task<List<AzureIoTHub>> {
         private StringProperty error = new SimpleStringProperty();
+        private final AzureSubscription subscription;
+        private final AzureResourceGroup resourceGroup;
+
+        public IotHubListTask(AzureSubscription subscription, AzureResourceGroup resourceGroup) {
+            this.subscription = subscription;
+            this.resourceGroup = resourceGroup;
+        }
 
         @Override
-        protected List<String> call() {
+        protected List<AzureIoTHub> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "iot", "hub", "list")));
-                Process p = pb.start();
+                List<String> command = buildCommand("az", "iot", "hub", "list", "--subscription", subscription.getId()
+                        , "--resource-group", resourceGroup.getName());
+                Process p = new ProcessBuilder(command).start();
 
                 try (Scanner s = new Scanner(p.getErrorStream())) {
-                    StringBuilder sb = new StringBuilder();
-                    if (s.hasNextLine()) {
-                        while (s.hasNextLine()) {
-                            sb.append(s.nextLine()).append("\n");
-                        }
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
                     }
-                    Platform.runLater(() -> error.set(String.valueOf(sb)));
                 }
 
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(p.getInputStream());
-                p.waitFor();
-                List<String> status = new ArrayList<>();
-                for (int i = 0; i < node.size(); i++) {
-                    status.add(node.get(i).get("name").asText());
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureIoTHub> status = new ArrayList<>();
+                for (JsonNode node : root)
+                {
+                    status.add(new AzureIoTHub(node.get("name").asText()));
                 }
+                p.waitFor();
                 return status;
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -509,48 +517,104 @@ public class AzureManagement {
             return Collections.emptyList();
         }
 
-        public String getError() {
+        public String getErrorMessage() {
             return error.get();
         }
 
-        public StringProperty errorProperty() {
+        public StringProperty errorMessageProperty() {
             return error;
         }
     }
 
-    public static class IotHubShowConnectionString extends Task<List<String>> {
+    public static class IotHubDeviceListTask extends Task<List<AzureIoTHubDevice>> {
         private StringProperty error = new SimpleStringProperty();
-        private final String iotHubName;
+        private final AzureIoTHub iotHub;
+        private final AzureSubscription subscription;
+        private final AzureResourceGroup resourceGroup;
 
-        public IotHubShowConnectionString(String iotHubName) {
-            this.iotHubName = iotHubName;
+        public IotHubDeviceListTask(AzureIoTHub iotHub, AzureSubscription subscription, AzureResourceGroup resourceGroup) {
+            this.iotHub = iotHub;
+            this.subscription = subscription;
+            this.resourceGroup = resourceGroup;
         }
 
         @Override
-        protected List<String> call() {
+        protected List<AzureIoTHubDevice> call() {
             try {
-                ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/C",
-                        ("az " + String.join(" ", "iot", "hub", "show-connection-string", "-n", iotHubName)));
-                Process p = pb.start();
+                List<String> command = buildCommand("az", "iot", "hub", "device-identity", "list"
+                        , "--subscription", subscription.getId(), "--resource-group", resourceGroup.getName()
+                        , "--hub-name", iotHub.getName());
+                Process p = new ProcessBuilder(command).start();
 
                 try (Scanner s = new Scanner(p.getErrorStream())) {
-                    StringBuilder sb = new StringBuilder();
-                    if (s.hasNextLine()) {
-                        while (s.hasNextLine()) {
-                            sb.append(s.nextLine()).append("\n");
-                        }
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
                     }
-                    Platform.runLater(() -> error.set(String.valueOf(sb)));
+                }
+
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(p.getInputStream());
+                List<AzureIoTHubDevice> status = new ArrayList<>();
+                for (JsonNode node : root)
+                {
+                    status.add(new AzureIoTHubDevice(node.get("deviceId").asText()));
+                }
+                p.waitFor();
+                return status;
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            }
+            return Collections.emptyList();
+        }
+
+        public String getErrorMessage() {
+            return error.get();
+        }
+
+        public StringProperty errorMessageProperty() {
+            return error;
+        }
+    }
+
+    public static class IotHubShowConnectionString extends Task<AzureIoTHubDevice> {
+        private StringProperty error = new SimpleStringProperty();
+        private final AzureSubscription azureSubscription;
+        private final AzureResourceGroup resourceGroup;
+        private final AzureIoTHub iotHub;
+        private final AzureIoTHubDevice iotHubDevice;
+
+        public IotHubShowConnectionString(AzureSubscription azureSubscription, AzureResourceGroup resourceGroup, AzureIoTHub iotHub, AzureIoTHubDevice iotHubDevice) {
+            this.azureSubscription = azureSubscription;
+            this.resourceGroup = resourceGroup;
+            this.iotHub = iotHub;
+            this.iotHubDevice = iotHubDevice;
+        }
+
+        @Override
+        protected AzureIoTHubDevice call() {
+            try {
+                List<String> command = buildCommand("az", "iot", "hub", "device-identity", "show-connection-string"
+                        , "--hub-name", iotHub.getName(), "--device-id", iotHubDevice.getName()
+                        , "--subscription", azureSubscription.getId(), "--resource-group", resourceGroup.getName());
+                Process p = new ProcessBuilder(command).start();
+
+                try (Scanner s = new Scanner(p.getErrorStream())) {
+                    if (s.hasNext()) {
+                        String line = s.nextLine();
+                        Platform.runLater(() -> error.set(line));
+                    }
                 }
 
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readTree(p.getInputStream());
                 p.waitFor();
-                return List.of(node.get("cs").asText());
+                System.out.println(node.get("cs").asText());
+                return new AzureIoTHubDevice(iotHubDevice.getName(), node.get("cs").asText());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
-            return Collections.emptyList();
+            return null;
         }
 
         public String getError() {

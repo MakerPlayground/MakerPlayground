@@ -304,5 +304,27 @@
         "constraint": []
       }
     ]
+  },
+  {
+    "name": "Telemetry",
+    "description": "Send telemetry from device to the cloud",
+    "action": [
+      {
+        "name": "Send Telemetry",
+        "funcname": "sendTelemetry",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "data",
+            "value": "",
+            "constraint": [],
+            "datatype": "RECORD",
+            "controltype": "RECORD"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": []
   }
 ]

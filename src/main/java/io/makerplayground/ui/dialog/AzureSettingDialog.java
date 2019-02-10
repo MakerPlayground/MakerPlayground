@@ -26,11 +26,14 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
     @FXML private Button signInButton;
     @FXML private ComboBox<AzureSubscription> subscriptionCombobox;
     @FXML private ComboBox<AzureResourceGroup> resourceGroupCombobox;
+    @FXML private Label iotHubLabel;
+    @FXML private ComboBox<AzureIoTHub> iotHubCombobox;
     @FXML private Label resultLabel;
     @FXML private ComboBox<T> resultCombobox;
 
     private ObservableList<AzureSubscription> subscriptions = FXCollections.observableArrayList();
     private ObservableList<AzureResourceGroup> resourceGroups = FXCollections.observableArrayList();
+    private ObservableList<AzureIoTHub> iotHubs = FXCollections.observableArrayList();
     private ObservableList<T> results = FXCollections.observableArrayList();
     private State state = State.NOT_LOGIN;
 
@@ -41,7 +44,8 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
         NOT_LOGIN,
         LOGIN,
         SUBSCRIPTION_SELECTED,
-        RESOUCRGROUP_SELECTED
+        RESOUCRGROUP_SELECTED,
+        IOTHUB_SELECTED
     }
 
     public enum Service {
@@ -64,6 +68,8 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
 
         statusPane.managedProperty().bind(statusPane.visibleProperty());
         settingPane.managedProperty().bind(settingPane.visibleProperty());
+        iotHubLabel.managedProperty().bind(iotHubLabel.visibleProperty());
+        iotHubCombobox.managedProperty().bind(iotHubCombobox.visibleProperty());
 
         initUI();
 
@@ -144,7 +150,16 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
             if (newValue != null) {
                 state = State.RESOUCRGROUP_SELECTED;
                 if (service == Service.IOT_HUB) {
-                    // TODO: implemented
+                    // update list of cognitive service
+                    showProgressIndicator("Listing IoT Hub...");
+                    AzureManagement.IotHubListTask iotHubListTask = new AzureManagement.IotHubListTask(subscriptionCombobox.getValue()
+                            , resourceGroupCombobox.getValue());
+                    iotHubListTask.setOnSucceeded(event -> {
+                        iotHubs.setAll(iotHubListTask.getValue());
+                        hideProgressIndicator();
+                        updateUI();
+                    });
+                    new Thread(iotHubListTask).start();
                 } else if (service == Service.COGNITIVE_SERVICE) {
                     // update list of cognitive service
                     showProgressIndicator("Listing cognitive services...");
@@ -162,10 +177,30 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
         });
 
         if (service == Service.IOT_HUB) {
-            resultLabel.setText("IoT Hub");
+            iotHubLabel.setText("IoT Hub");
+            resultLabel.setText("IoT Hub Device");
         } else if (service == Service.COGNITIVE_SERVICE) {
+            iotHubLabel.setVisible(false);
+            iotHubCombobox.setVisible(false);
             resultLabel.setText("Cognitive Services");
         }
+
+        iotHubCombobox.setItems(iotHubs);
+        setComboboxDisplay(iotHubCombobox, AzureIoTHub::getName);
+        iotHubCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            // update list of cognitive service
+            state = State.IOTHUB_SELECTED;
+            showProgressIndicator("Listing IoT Hub Devices...");
+            AzureManagement.IotHubDeviceListTask iotHubDeviceListTask = new AzureManagement.IotHubDeviceListTask(iotHubCombobox.getValue()
+                    , subscriptionCombobox.getValue(), resourceGroupCombobox.getValue());
+            iotHubDeviceListTask.setOnSucceeded(event -> {
+                results.clear();
+                iotHubDeviceListTask.getValue().forEach(ioTHubDevice -> results.add((T) ioTHubDevice));    // this is a necessary safe unchecked cast
+                hideProgressIndicator();
+                updateUI();
+            });
+            new Thread(iotHubDeviceListTask).start();
+        });
 
         resultCombobox.setItems(results);
         setComboboxDisplay(resultCombobox, T::getName);
@@ -173,13 +208,22 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
             if (newValue == null) {
                 result = null;
             } else if (service == Service.IOT_HUB) {
-                // TODO: implemented
+                AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) newValue;
+                // get list of device of the selected iot hub
+                showProgressIndicator("Getting settings for the selected services...");
+                AzureManagement.IotHubShowConnectionString showConnectionStringTask = new AzureManagement.IotHubShowConnectionString(
+                        subscriptionCombobox.getValue(), resourceGroupCombobox.getValue(), iotHubCombobox.getValue(), azureIoTHubDevice);
+                showConnectionStringTask.setOnSucceeded(event -> {
+                    result = (T) showConnectionStringTask.getValue();
+                    hideProgressIndicator();
+                });
+                new Thread(showConnectionStringTask).start();
             } else if (service == Service.COGNITIVE_SERVICE) {
                 AzureCognitiveServices azureCognitiveServices = (AzureCognitiveServices) newValue;
                 // get key for the selected cognitive service
                 showProgressIndicator("Getting settings for the selected services...");
                 AzureManagement.CognitiveKeyListTask cognitiveKeyListTask = new AzureManagement.CognitiveKeyListTask(
-                        azureCognitiveServices, resourceGroupCombobox.getValue());
+                        subscriptionCombobox.getValue(), resourceGroupCombobox.getValue(), azureCognitiveServices);
                 cognitiveKeyListTask.setOnSucceeded(event -> {
                     result = (T) cognitiveKeyListTask.getValue();
                     hideProgressIndicator();
@@ -198,6 +242,8 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
             subscriptionCombobox.setDisable(true);
             resourceGroupCombobox.getSelectionModel().clearSelection();
             resourceGroupCombobox.setDisable(true);
+            iotHubCombobox.getSelectionModel().clearSelection();
+            iotHubCombobox.setDisable(true);
             resultCombobox.getSelectionModel().clearSelection();
             resultCombobox.setDisable(true);
         } else if (state == State.LOGIN) {
@@ -208,14 +254,28 @@ public class AzureSettingDialog<T extends AzureResource> extends UndecoratedDial
             subscriptionCombobox.setDisable(false);
             resourceGroupCombobox.getSelectionModel().clearSelection();
             resourceGroupCombobox.setDisable(true);
+            iotHubCombobox.getSelectionModel().clearSelection();
+            iotHubCombobox.setDisable(true);
             resultCombobox.getSelectionModel().clearSelection();
             resultCombobox.setDisable(true);
         } else if (state == State.SUBSCRIPTION_SELECTED) {
             resourceGroupCombobox.getSelectionModel().clearSelection();
             resourceGroupCombobox.setDisable(false);
+            iotHubCombobox.getSelectionModel().clearSelection();
+            iotHubCombobox.setDisable(true);
             resultCombobox.getSelectionModel().clearSelection();
             resultCombobox.setDisable(true);
         } else if (state == State.RESOUCRGROUP_SELECTED) {
+            if (service == Service.IOT_HUB) {
+                iotHubCombobox.getSelectionModel().clearSelection();
+                iotHubCombobox.setDisable(false);
+                resultCombobox.getSelectionModel().clearSelection();
+                resultCombobox.setDisable(true);
+            } else {
+                resultCombobox.getSelectionModel().clearSelection();
+                resultCombobox.setDisable(false);
+            }
+        } else if (state == State.IOTHUB_SELECTED) {
             resultCombobox.getSelectionModel().clearSelection();
             resultCombobox.setDisable(false);
         } else {

@@ -72,6 +72,9 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
             case AZURE_COGNITIVE_KEY:
                 defaultValue = null;
                 break;
+            case AZURE_IOTHUB_KEY:
+                defaultValue = null;
+                break;
             default:
                 throw(new IllegalStateException("Format error!!!"));
         }

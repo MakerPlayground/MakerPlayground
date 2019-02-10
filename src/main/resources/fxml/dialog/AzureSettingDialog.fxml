@@ -33,6 +33,7 @@
                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="Account" />
@@ -46,8 +47,10 @@
                   <ComboBox fx:id="subscriptionCombobox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Resource Group" GridPane.rowIndex="2" />
                   <ComboBox fx:id="resourceGroupCombobox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label fx:id="resultLabel" GridPane.rowIndex="3" />
-                  <ComboBox fx:id="resultCombobox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="iotHubLabel" GridPane.rowIndex="3" />
+                  <ComboBox fx:id="iotHubCombobox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="resultLabel" GridPane.rowIndex="4" />
+                  <ComboBox fx:id="resultCombobox" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
             </GridPane>
          </children>

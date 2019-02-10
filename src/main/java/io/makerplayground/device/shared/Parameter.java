@@ -44,7 +44,7 @@ public class Parameter {
      * @param dataType an enumerated value ({@link DataType}) indicating type of this parameter
      * @param controlType an enumerated value ({@link ControlType}) indicating type of a UI control to be used
      */
-    Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, ControlType controlType) {
+    public Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, ControlType controlType) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.constraint = constraint;

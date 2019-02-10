@@ -9,6 +9,8 @@ import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -164,6 +166,10 @@ class ArduinoCodeGenerator {
                         AzureCognitiveServices acs = (AzureCognitiveServices) value;
                         args.add("\"" + acs.getLocation().toLowerCase() + "\"");
                         args.add("\"" + acs.getKey1() + "\"");
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
                         break;
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
@@ -502,7 +508,7 @@ class ArduinoCodeGenerator {
     }
 
     private String parseExpression(Expression expression) {
-        return expression.getTerms().stream().map(ArduinoCodeGenerator::parseTerm).collect(Collectors.joining(" "));
+        return expression.getTerms().stream().map(this::parseTerm).collect(Collectors.joining(" "));
     }
 
     private String parseExpressionForParameter(Parameter parameter, Expression expression) {
@@ -534,6 +540,8 @@ class ArduinoCodeGenerator {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(projectValue.getDevice()) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
+        } else if (expression instanceof RecordExpression) {
+            returnValue = exprStr;
         } else {
             throw new IllegalStateException();
         }
@@ -553,7 +561,7 @@ class ArduinoCodeGenerator {
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
-    private static String parseTerm(Term term) {
+    private String parseTerm(Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
@@ -605,8 +613,13 @@ class ArduinoCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return  "_" + value.getDevice().getName().replace(" ", "_") + "_"
-                    + value.getValue().getName().replace(" ", "_").replace(".", "_") ;
+            return "_" + value.getDevice().getName().replace(" ", "_") + "_"
+                    + value.getValue().getName().replace(" ", "_").replace(".", "_");
+        } else if (term instanceof RecordTerm) {
+            RecordTerm term1 = (RecordTerm) term;
+            return "Record(" + term1.getValue().getEntryList().stream()
+                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseExpression(entry.getValue()) + ")")
+                    .collect(Collectors.joining(",")) + ")";
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }

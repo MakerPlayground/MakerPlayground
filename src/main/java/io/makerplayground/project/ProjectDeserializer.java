@@ -30,6 +30,8 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by USER on 14-Jul-17.
@@ -197,7 +200,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             JsonNode valueNode = parameterNode.get("value");
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(mapper, term_node, allProjectDevices));
+                terms.add(deserializeTerm(mapper, parameter, parameterNode, term_node, allProjectDevices));
             }
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
@@ -217,6 +220,8 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 expression = new SimpleRTCExpression(((RTCTerm) (terms.get(0))).getValue());
             } else if (ImageExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
+            } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
             } else {
                 throw new IllegalStateException("expression type not supported");
             }
@@ -226,7 +231,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                     , new TypeReference<NumberWithUnit>(){});
             expression.setRefreshInterval(refreshInterval);
             expression.setUserDefinedInterval(interval);
-
             valueMap.put(parameter, expression);
         }
 
@@ -238,7 +242,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             String type = valueNode.get("type").asText();
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("expression")) {
-                terms.add(deserializeTerm(mapper, term_node, allProjectDevices));
+                terms.add(deserializeTerm(mapper, null, null, term_node, allProjectDevices));
             }
 
             Expression expression;
@@ -257,7 +261,46 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
     }
 
-    private Term deserializeTerm(ObjectMapper mapper, JsonNode term_node, Collection<ProjectDevice> allProjectDevices) {
+    private Expression deserializeExpression(ObjectMapper mapper, Parameter parameter, JsonNode parameterNode
+            , Collection<ProjectDevice> allProjectDevices) throws IOException {
+        Expression expression = null;
+        String expressionType = parameterNode.get("type").asText();
+        JsonNode valueNode = parameterNode.get("value");
+        List<Term> terms = new ArrayList<>();
+        for (JsonNode term_node : valueNode.get("terms")) {
+            terms.add(deserializeTerm(mapper, parameter, parameterNode, term_node, allProjectDevices));
+        }
+        if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
+        } else if (CustomNumberExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new CustomNumberExpression(terms);
+        } else if (NumberWithUnitExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
+        } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
+        } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)){
+            boolean inverse = false;
+            if (valueNode.has("inverse")) {
+                inverse = valueNode.get("inverse").asBoolean();
+            }
+            expression = new ValueLinkingExpression(parameter, terms, inverse);
+        } else if (SimpleRTCExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new SimpleRTCExpression(((RTCTerm)(terms.get(0))).getValue());
+        } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new RecordExpression(((RecordTerm)(terms.get(0))).getValue());
+        } else {
+            throw new IllegalStateException("expression type not supported");
+        }
+
+        Expression.RefreshInterval refreshInterval = Expression.RefreshInterval.valueOf(valueNode.get("refreshInterval").asText());
+        NumberWithUnit interval = mapper.readValue(valueNode.get("userDefinedInterval").traverse()
+                , new TypeReference<NumberWithUnit>(){});
+        expression.setRefreshInterval(refreshInterval);
+        expression.setUserDefinedInterval(interval);
+        return expression;
+    }
+
+    private Term deserializeTerm(ObjectMapper mapper, Parameter parameter, JsonNode parameterNode, JsonNode term_node, Collection<ProjectDevice> allProjectDevices) throws IOException {
         String term_type = term_node.get("type").asText();
         Term term;
         if (Term.Type.NUMBER.name().equals(term_type)) {
@@ -282,7 +325,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             String word = term_node.get("value").asText();
             term = new StringTerm(word);
         } else if (Term.Type.DATETIME.name().equals(term_type)) {
-            System.out.println(term_node.get("value"));
             JsonNode temp_node = term_node.get("value").get("localDateTime");
             int year = temp_node.get("year").asInt();
             int month = temp_node.get("monthValue").asInt();
@@ -293,6 +335,15 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             LocalDateTime localDateTime = LocalDateTime.of(year, month, day, hour, minute, second);
             RealTimeClock.Mode mode = RealTimeClock.Mode.valueOf(term_node.get("value").get("mode").asText());
             term = new RTCTerm(new RealTimeClock(mode, localDateTime));
+        } else if (Term.Type.RECORD.name().equals(term_type)) {
+            List<RecordEntry> recordEntryList = new ArrayList<>();
+            for (JsonNode entryNode : term_node.get("value").get("entryList")) {
+                String fieldName = entryNode.get("field").asText();
+                Expression expression = deserializeExpression(mapper, parameter, entryNode, allProjectDevices);
+                recordEntryList.add(new RecordEntry(fieldName, expression));
+            }
+            term = new RecordTerm(new Record(recordEntryList));
+
         } else {
             throw new IllegalStateException("deserialize unsupported term");
         }
@@ -403,6 +454,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                                 , propertyNode.get("value").get("location").asText()
                                 , propertyNode.get("value").get("key1").asText()
                                 , propertyNode.get("value").get("key2").asText());
+                    } else {
+                        value = null;
+                    }
+                    break;
+                case AZURE_IOTHUB_KEY:
+                    if (propertyNode.get("value").has("deviceId")) {
+                        value = new AzureIoTHubDevice(propertyNode.get("value").get("deviceId").asText()
+                                , propertyNode.get("value").get("connectionString").asText());
                     } else {
                         value = null;
                     }

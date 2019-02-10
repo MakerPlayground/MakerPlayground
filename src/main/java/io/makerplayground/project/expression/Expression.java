@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.RealTimeClock;
+import io.makerplayground.device.shared.Record;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE
+        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
     }
 
     public enum RefreshInterval {
@@ -92,9 +93,15 @@ public abstract class Expression {
                 return new SimpleRTCExpression(RealTimeClock.getDefault());
             case IMAGE:
                 return new ImageExpression();
+            case RECORD:
+                return new RecordExpression(new Record());
             default:
                 throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public List<Term> getTerms() {
