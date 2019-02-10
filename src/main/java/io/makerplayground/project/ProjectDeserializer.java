@@ -30,6 +30,8 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -452,6 +454,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                                 , propertyNode.get("value").get("location").asText()
                                 , propertyNode.get("value").get("key1").asText()
                                 , propertyNode.get("value").get("key2").asText());
+                    } else {
+                        value = null;
+                    }
+                    break;
+                case AZURE_IOTHUB_KEY:
+                    if (propertyNode.get("value").has("deviceId")) {
+                        value = new AzureIoTHubDevice(propertyNode.get("value").get("deviceId").asText()
+                                , propertyNode.get("value").get("connectionString").asText());
                     } else {
                         value = null;
                     }

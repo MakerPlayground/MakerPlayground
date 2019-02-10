@@ -28,6 +28,8 @@ import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -384,6 +386,13 @@ public class ConfigActualDeviceView extends VBox{
                         } else if (p.getDataType() == DataType.AZURE_COGNITIVE_KEY && p.getControlType() == ControlType.AZURE_WIZARD) {
                             AzurePropertyControl<AzureCognitiveServices> control = new AzurePropertyControl<>(AzureSettingDialog.Service.COGNITIVE_SERVICE
                                     , (AzureCognitiveServices) currentValue);
+                            control.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(control, i);
+                            GridPane.setColumnIndex(control, 1);
+                            propertyGridPane.getChildren().add(control);
+                        } else if (p.getDataType() == DataType.AZURE_IOTHUB_KEY && p.getControlType() == ControlType.AZURE_WIZARD) {
+                            AzurePropertyControl<AzureIoTHubDevice> control = new AzurePropertyControl<>(AzureSettingDialog.Service.IOT_HUB
+                                    , (AzureIoTHubDevice) currentValue);
                             control.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(control, i);
                             GridPane.setColumnIndex(control, 1);

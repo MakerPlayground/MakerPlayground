@@ -27,6 +27,8 @@ import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +67,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getDeviceId());
             jsonGenerator.writeArrayFieldStart("controllerPeripheral");
             for (DevicePort devicePort : connection.getValue()) {
                 mapper.writeValue(jsonGenerator, devicePort.getName());
@@ -85,7 +87,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getName());
+            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getDeviceId());
             jsonGenerator.writeArrayFieldStart("controllerPeripheral");
             for (DevicePort devicePort : connection.getValue()) {
                 mapper.writeValue(jsonGenerator, devicePort.getName());
@@ -127,6 +129,17 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
                             jsonGenerator.writeStringField("location", acs.getLocation());
                             jsonGenerator.writeStringField("key1", acs.getKey1());
                             jsonGenerator.writeStringField("key2", acs.getKey2());
+                            jsonGenerator.writeEndObject();
+                        }
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                            jsonGenerator.writeObjectFieldStart("value");
+                            jsonGenerator.writeStringField("deviceId", azureIoTHubDevice.getName());
+                            jsonGenerator.writeStringField("connectionString", azureIoTHubDevice.getConnectionString());
                             jsonGenerator.writeEndObject();
                         }
                         break;

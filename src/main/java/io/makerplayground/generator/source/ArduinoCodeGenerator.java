@@ -9,6 +9,8 @@ import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHub;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -164,6 +166,10 @@ class ArduinoCodeGenerator {
                         AzureCognitiveServices acs = (AzureCognitiveServices) value;
                         args.add("\"" + acs.getLocation().toLowerCase() + "\"");
                         args.add("\"" + acs.getKey1() + "\"");
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
                         break;
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
