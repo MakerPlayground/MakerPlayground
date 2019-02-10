@@ -198,7 +198,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             JsonNode valueNode = parameterNode.get("value");
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(mapper, term_node, allProjectDevices));
+                terms.add(deserializeTerm(mapper, parameter, parameterNode, term_node, allProjectDevices));
             }
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
@@ -218,6 +218,8 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 expression = new SimpleRTCExpression(((RTCTerm) (terms.get(0))).getValue());
             } else if (ImageExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
+            } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
             } else {
                 throw new IllegalStateException("expression type not supported");
             }

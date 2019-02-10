@@ -10,14 +10,6 @@ public class RecordTerm extends Term {
     }
 
     @Override
-    public String toCCode() {
-        Record record = (Record) value;
-        return "Record(" + record.getEntryList().stream()
-                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + entry.getValue().translateToCCode() + ")")
-                    .collect(Collectors.joining(",")) + ")";
-    }
-
-    @Override
     public Record getValue() {
         return (Record) this.value;
     }
