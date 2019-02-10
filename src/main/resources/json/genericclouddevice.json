@@ -306,12 +306,12 @@
     ]
   },
   {
-    "name": "Database",
-    "description": "Store the data into the database",
+    "name": "Telemetry",
+    "description": "Send telemetry from device to the cloud",
     "action": [
       {
-        "name": "Insert Data",
-        "funcname": "insertData",
+        "name": "Send Telemetry",
+        "funcname": "sendTelemetry",
         "type": "Active",
         "parameter": [
           {
