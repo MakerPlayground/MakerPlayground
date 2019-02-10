@@ -166,7 +166,7 @@
     "action": [],
     "condition": [
       {
-        "name": "Classify Image",
+        "name": "Found",
         "funcname": "classifiedImage",
         "type": "Active",
         "parameter": [
@@ -195,6 +195,38 @@
             "datatype": "DOUBLE",
             "controltype": "SPINBOX"
           }
+        ]
+      },
+          {
+            "name": "Not Found",
+            "funcname": "noDetectedImage",
+            "type": "Active",
+            "parameter": [
+              {
+                "name": "Image",
+                "value": "",
+                "constraint": [],
+                "datatype": "IMAGE",
+                "controltype": "IMAGE_SELECTOR"
+              },
+              {
+                "name": "Class",
+                "value": "",
+                "constraint": [],
+                "datatype": "STRING",
+                "controltype": "TEXTBOX"
+              },
+              {
+                "name": "Minimum Probability",
+                "value": 80.0,
+                "constraint": {
+                  "min": 0.0,
+                  "max": 100.0,
+                  "unit": "PERCENT"
+                },
+                "datatype": "DOUBLE",
+                "controltype": "SPINBOX"
+              }
         ]
       }
     ],
