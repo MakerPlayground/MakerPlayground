@@ -228,6 +228,8 @@ public class SceneDevicePropertyWindow extends PopOver {
                         viewModel.getProjectValue(Set.of(DataType.STRING)),
                         viewModel.getParameterValue(p)
                 );
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = expressionControl;
             } else if (p.getControlType() == ControlType.RECORD) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new RecordExpression(new Record()));
