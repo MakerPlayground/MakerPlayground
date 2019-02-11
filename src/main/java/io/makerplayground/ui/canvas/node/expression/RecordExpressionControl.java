@@ -1,12 +1,13 @@
 package io.makerplayground.ui.canvas.node.expression;
 
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Record;
-import io.makerplayground.device.shared.RecordEntry;
+import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitNoBindingExpressionControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Pos;
@@ -20,14 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecordExpressionControl extends VBox {
-    private final Parameter parameter;
+    private static final Parameter parameter = new Parameter("Field", NumberWithUnit.ZERO, NumericConstraint.NONE, DataType.DOUBLE, ControlType.SPINBOX);
     private final List<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<RecordExpression> expression;
 
     private List<RecordExpressionControlEntry> entryList;
 
-    public RecordExpressionControl(Parameter parameter, List<ProjectValue> projectValues, RecordExpression expression) {
-        this.parameter = parameter;
+    public RecordExpressionControl(List<ProjectValue> projectValues, RecordExpression expression) {
         this.projectValues = projectValues;
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         initControl();
@@ -43,7 +43,7 @@ public class RecordExpressionControl extends VBox {
         });
 
         setSpacing(5.0);
-        setAlignment(Pos.CENTER);
+        setAlignment(Pos.TOP_LEFT);
         getChildren().addAll(addButton);
 
         entryList = expression.get().getRecord().getEntryList().stream().map(RecordExpressionControlEntry::new).collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class RecordExpressionControl extends VBox {
         TextField textField = new TextField();
         textField.setPromptText("Field name");
         textField.setText(entry.field);
-        NumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(parameter, projectValues, entry.value);
+        NumberWithUnitNoBindingExpressionControl expressionControl = new SpinnerNumberWithUnitNoBindingExpressionControl(parameter, projectValues, entry.value);
         Button removeButton = new Button("-");
         removeButton.setOnAction(actionEvent -> {
             entryList.remove(entry);
@@ -77,7 +77,7 @@ public class RecordExpressionControl extends VBox {
         });
 
         hbox.setSpacing(5.0);
-        hbox.setAlignment(Pos.TOP_CENTER);
+        hbox.setAlignment(Pos.TOP_LEFT);
         hbox.getChildren().addAll(textField, expressionControl, removeButton);
         getChildren().add(getChildren().size() - 1, hbox);
     }

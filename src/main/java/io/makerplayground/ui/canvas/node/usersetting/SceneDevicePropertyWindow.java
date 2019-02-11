@@ -233,8 +233,7 @@ public class SceneDevicePropertyWindow extends PopOver {
                     viewModel.setParameterValue(p, new RecordExpression(new Record()));
                 }
                 // a fake parameter to make value linking works as expect
-                Parameter fieldParameter = new Parameter("Field", NumberWithUnit.ZERO, NumericConstraint.NONE, DataType.DOUBLE, ControlType.SPINBOX);
-                RecordExpressionControl expressionControl = new RecordExpressionControl(fieldParameter, viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
+                RecordExpressionControl expressionControl = new RecordExpressionControl(viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
                         , (RecordExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
