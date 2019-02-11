@@ -50,6 +50,7 @@ public enum ConnectionType {
     GROVE_ANALOG_SINGLE,
     GROVE_ANALOG_DUAL,
     GROVE_I2C,
+    GROVE_UART,
 
     /* INEX */
     INEX_GPIO,

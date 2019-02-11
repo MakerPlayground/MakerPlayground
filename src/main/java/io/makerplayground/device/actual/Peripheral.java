@@ -184,13 +184,18 @@ public enum Peripheral {
     GROVE_ANALOG_SINGLE_1(ConnectionType.GROVE_ANALOG_SINGLE),
     GROVE_ANALOG_SINGLE_2(ConnectionType.GROVE_ANALOG_SINGLE),
     GROVE_ANALOG_SINGLE_3(ConnectionType.GROVE_ANALOG_SINGLE),
-
+    GROVE_ANALOG_SINGLE_4(ConnectionType.GROVE_ANALOG_SINGLE),
+    
     GROVE_ANALOG_DUAL_1(ConnectionType.GROVE_ANALOG_DUAL),
     GROVE_ANALOG_DUAL_2(ConnectionType.GROVE_ANALOG_DUAL),
     GROVE_ANALOG_DUAL_3(ConnectionType.GROVE_ANALOG_DUAL),
+    GROVE_ANALOG_DUAL_4(ConnectionType.GROVE_ANALOG_DUAL),
+
+    GROVE_UART_1(ConnectionType.GROVE_UART),
 
     GROVE_I2C_1(ConnectionType.GROVE_I2C),
     GROVE_I2C_2(ConnectionType.GROVE_I2C),
+    GROVE_I2C_3(ConnectionType.GROVE_I2C),
 
     INEX_GPIO_1(ConnectionType.INEX_GPIO),
     INEX_GPIO_2(ConnectionType.INEX_GPIO),
