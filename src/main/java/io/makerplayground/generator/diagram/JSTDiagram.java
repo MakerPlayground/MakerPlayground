@@ -109,7 +109,7 @@ class JSTDiagram extends Pane {
             controllerImageView.setLayoutY(controllerOffsetY);
             getChildren().add(controllerImageView);
         } catch (IOException e) {
-            throw new IllegalStateException("Image not found : " + deviceDirectoryPath + project.getController().getId() + "asset/MPcontroller.png");
+            throw new IllegalStateException("Image not found : " + controllerImagePath);
         }
 
         double left = 0, right = 0, top = 0, bottom = 0;
@@ -304,7 +304,7 @@ class JSTDiagram extends Pane {
         double wireWidth = pinPitch * PITCH_TO_WIDTH;
 
         for (int i = 0; i < pinCount; i++) {
-            double centerOffset = pinPitch * (i - 1.5);
+            double centerOffset = pinPitch * (i - (pinCount-1) / 2.0);
             double startFlip = (startType == DevicePortSubType.RIGHTANGLE_BOTTOM) ? 1 : -1;
             double sx = startX + (centerOffset * Math.cos(Math.toRadians(startAngle)) * startFlip);
             double sy = startY + (centerOffset * Math.sin(Math.toRadians(startAngle)) * startFlip);
