@@ -50,6 +50,7 @@ class WireAndBreadboardDiagram extends Pane {
     private static final double BREADBOARD_WIDTH = 936.48;
     private static final double BREADBOARD_HEIGHT = 302.4;
     private static final int    BREADBOARD_NUM_COLUMN = 5;
+    private static final int    BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE = 11;
     private static final double BREADBOARD_GND_BOT_X = 50.769;
     private static final double BREADBOARD_GND_BOT_Y = 274.145;
     private static final double BREADBOARD_PWR_BOT_X = 50.769;
@@ -129,8 +130,9 @@ class WireAndBreadboardDiagram extends Pane {
         } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
             int heightHole = (int) ((getBottomLeftHole(controller).getY() - getTopLeftHole(controller).getY()) / HOLE_SPACE);
+            double offsetY = getTopLeftHole(controller).getY();
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(controller).getX()
-                                            , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE));
+                                            , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((Math.floor(BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0)) * HOLE_SPACE - offsetY);
         } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN, lastY);
             lastY = lastY + controller.getHeight();
@@ -162,7 +164,7 @@ class WireAndBreadboardDiagram extends Pane {
                             , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
 
                     currentRow += calculateNumberOfHoleWithoutLeftWing(device);
-                } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
+                } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
                     int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE) + 1;
                     deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
                             , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
@@ -249,6 +251,7 @@ class WireAndBreadboardDiagram extends Pane {
         if(useBreadboard()) {
             // connect power
             boolean connectGnd = false;
+            boolean connectVcc = false;
 
             // connect power to both side of breadboard
             createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X, BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
@@ -259,17 +262,49 @@ class WireAndBreadboardDiagram extends Pane {
                     BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_TOP_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_TOP_Y);
             numberOfGndPinUsed++;
 
-            // connect the first hole of breadboard to Arduino board 
-            for (DevicePort p : controller.getPort()) {
-                if (p.isVcc()) {
-                    createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
-                            BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
-                    numberOfPwrPinUsed++;
-                } else if ((p.isGnd()) && (!connectGnd)) {
-                    createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
-                            BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
-                    numberOfGndPinUsed++;
-                    connectGnd = true;
+            if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE || controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+                // connect the first hole of breadboard to Arduino board
+                for (DevicePort p : controller.getPort(Peripheral.POWER)) {
+                    if (!connectVcc && p.isVcc()) {
+                        // TODO: there is a case that use multiple voltages in the same project.
+                        double farFromTop = Math.abs(p.getY() - getTopLeftHole(controller).getY());
+                        double farFromBottom = Math.abs(p.getY() - getBottomLeftHole(controller).getY());
+                        double startX = controllerPosition.getX() + p.getX();
+                        // ((Math.floor(BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0)) * HOLE_SPACE - offsetY
+                        double startY = controllerPosition.getY() + p.getY() + (farFromTop < farFromBottom ? (-HOLE_SPACE) : HOLE_SPACE); // go up or down one hole
+                        double endX = BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE);
+                        double endY = BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y;
+                        createPowerLine(startX, startY, endX, endY);
+                        numberOfPwrPinUsed++;
+                        connectVcc = true;
+                    } else if (!connectGnd && p.isGnd()) {
+                        double farFromTop = Math.abs(p.getY() - getTopLeftHole(controller).getY());
+                        double farFromBottom = Math.abs(p.getY() - getBottomLeftHole(controller).getY());
+                        double startX = controllerPosition.getX() + p.getX();
+                        double startY = controllerPosition.getY() + p.getY() + (farFromTop < farFromBottom ? (-HOLE_SPACE) : HOLE_SPACE); // go up or down one hole
+                        double endX = BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE);
+                        double endY = BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y;
+                        createGndLine(startX, startY, endX, endY);
+                        numberOfGndPinUsed++;
+                        connectGnd = true;
+                    }
+                }
+            }
+            else {
+                // connect the first hole of breadboard to Arduino board
+                for (DevicePort p : controller.getPort(Peripheral.POWER)) {
+                    if (!connectVcc && p.isVcc()) {
+                        // TODO: there is a case that use multiple voltages in the same project.
+                        createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
+                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                        numberOfPwrPinUsed++;
+                        connectVcc = true;
+                    } else if (!connectGnd && p.isGnd()) {
+                        createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
+                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                        numberOfGndPinUsed++;
+                        connectGnd = true;
+                    }
                 }
             }
         }
@@ -281,6 +316,10 @@ class WireAndBreadboardDiagram extends Pane {
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
 
             if (device instanceof IntegratedActualDevice) {
+                continue;
+            }
+
+            if (device.getFormFactor() == FormFactor.SHIELD) {
                 continue;
             }
 
@@ -433,6 +472,9 @@ class WireAndBreadboardDiagram extends Pane {
 
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
                 ActualDevice device = projectDevice.getActualDevice();
+                if (device.getFormFactor() == FormFactor.SHIELD) {
+                    continue;
+                }
                 double calculatedYPadding = calculateNumberOfHoleBottomWing(device);
                 for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
                     if (sourcePeripheral == Peripheral.I2C_1) { // TODO: bug if device has more than 1 I2C which is unlike -> sourcePeripheral.getConnectionType() == ConnectionType.I2C
@@ -485,6 +527,9 @@ class WireAndBreadboardDiagram extends Pane {
                 continue;
             }
             if (device.getFormFactor() == FormFactor.NONE) {
+                continue;
+            }
+            if (device.getFormFactor() == FormFactor.SHIELD) {
                 continue;
             }
             for (Peripheral sourcePeripheral : projectDevice.getDeviceConnection().keySet()) {
