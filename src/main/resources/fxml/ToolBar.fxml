@@ -48,6 +48,10 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export as IoT Edge deployment module">
+
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
                                 <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP"

@@ -18,8 +18,17 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.generator.DeviceMapper;
+import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.source.SourceCodeGenerator;
+import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.dialog.UnsavedDialog;
+import io.makerplayground.ui.dialog.WarningDialogView;
+import io.makerplayground.util.ZipResourceExtractor;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -31,20 +40,18 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
+import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -74,6 +81,7 @@ public class Main extends Application {
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
+        toolbar.setOnExportButtonPressed(event -> exportIotEdge(primaryStage.getScene().getWindow()));
         toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
         MainWindow mainWindow = new MainWindow(project);
@@ -129,6 +137,256 @@ public class Main extends Application {
         primaryStage.setMinHeight(primaryStage.getHeight());
 
         new UpdateNotifier(scene.getWindow(), getHostServices()).start();
+    }
+
+    private void exportIotEdge(Window window) {
+        Project project = this.project.get();
+        if (project.getPlatform() != io.makerplayground.device.actual.Platform.RASPBERRYPI) {
+            (new WarningDialogView(window, "IoT Edge deployment module is not support for the current platform.")).showAndWait();
+            return;
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Export to");
+        File selectedFile = directoryChooser.showDialog(window);
+        if (selectedFile != null) {
+            DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
+            if (mappingResult != DeviceMapperResult.OK) {
+                (new WarningDialogView(window, mappingResult.getErrorMessage())).showAndWait();
+                return;
+            }
+
+            SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
+            if (sourcecode.getError() != null) {
+                (new WarningDialogView(window, sourcecode.getError().getDescription())).showAndWait();
+                return;
+            }
+            List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
+                    .map(ProjectDevice::getActualDevice)
+                    .collect(Collectors.toList());
+            Set<String> mpLibraries = actualDevicesUsed.stream()
+                    .map(actualDevice -> actualDevice.getMpLibrary(project.getPlatform()))
+                    .collect(Collectors.toSet());
+            mpLibraries.add("MakerPlayground");
+            Set<String> externalLibraries = actualDevicesUsed.stream()
+                    .map(actualDevice -> actualDevice.getExternalLibrary(project.getPlatform()))
+                    .flatMap(Collection::stream).collect(Collectors.toSet());
+
+            // Add Cloud Platform libraries
+            for(CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+                // add abstract .h library for the cloudPlatform.
+                mpLibraries.add(cloudPlatform.getLibName());
+
+                // add controller-specific library when using cloudPlatform.
+                mpLibraries.add(project.getController().getCloudPlatformLibraryName(cloudPlatform));
+
+                // add controller-specific external dependency when using cloudPlatform.
+                externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+            String projectPath = selectedFile.getAbsolutePath() + File.separator + dateFormat.format(new Date());
+            String modulePath = projectPath + File.separator + "modules" + File.separator + "makerplayground";
+            try {
+                FileUtils.deleteDirectory(new File(modulePath));
+                FileUtils.forceMkdir(new File(modulePath));
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Cannot create project directory (permission denied)")).showAndWait();
+                return;
+            }
+
+            // get path to the library directory
+            Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+            if (!libraryPath.isPresent()) {
+                (new WarningDialogView(window, "Error: Missing library directory")).showAndWait();
+                return;
+            }
+
+            // generate source file
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(modulePath + File.separator + "main.py"))){
+                bw.write(sourcecode.getCode());
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot write code to project directory")).showAndWait();
+                return;
+            }
+
+            // copy mp library
+            for (String libName: mpLibraries) {
+                File source = Paths.get(libraryPath.get(), "lib", project.getPlatform().getLibraryFolderName(), libName).toFile();
+                File destination = Paths.get(modulePath, libName).toFile();
+                try {
+                    FileUtils.copyDirectory(source, destination);
+                } catch (IOException e) {
+                    (new WarningDialogView(window, "Error: Missing some libraries")).showAndWait();
+                    return;
+                }
+            }
+
+            //copy and extract external Libraries
+            for (String libName : externalLibraries) {
+                Path sourcePath = Paths.get(libraryPath.get(),"lib_ext", libName + ".zip");
+                ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(sourcePath, modulePath);
+                if (extractResult != ZipResourceExtractor.ExtractResult.SUCCESS) {
+                    (new WarningDialogView(window, "Error: Failed to extract libraries")).showAndWait();
+                    return;
+                }
+            }
+
+            // create Dockerfile
+            String dockerFileFormat = "FROM resin/rpi-raspbian:stretch\n" +
+                    "\n" +
+                    "RUN [ \"cross-build-start\" ]\n" +
+                    "\n" +
+                    "# Install dependencies\n" +
+                    "RUN apt-get update && apt-get install -y \\\n" +
+                    "        python3 \\\n" +
+                    "        python3-dev \\\n" +
+                    "        python3-pip \\\n" +
+                    "        wget \\\n" +
+                    "        build-essential \\\n" +
+                    "        i2c-tools \\\n" +
+                    "        libboost-python1.62.0\n" +
+                    "\n" +
+                    "COPY requirements.txt ./\n" +
+                    "\n" +
+                    "RUN pip3 install --upgrade pip \n" +
+                    "RUN pip3 install --upgrade setuptools \n" +
+                    "\n" +
+                    "WORKDIR /app\n" +
+                    "\n" +
+                    "COPY *.py ./\n" +
+                    "\n" +
+                    "RUN [ \"cross-build-end\" ]  \n" +
+                    "\n" +
+                    "ENTRYPOINT [ \"python3\", \"-u\", \"./main.py\" ]\n";
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(modulePath + File.separator + "Dockerfile.arm32v7"))){
+                bw.write(dockerFileFormat);
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot create Dockerfile.arm32v7")).showAndWait();
+                return;
+            }
+
+            // create module.json
+            String moduleJsonFormat = "{\n" +
+                    "    \"$schema-version\": \"0.0.1\",\n" +
+                    "    \"description\": \"\",\n" +
+                    "    \"image\": {\n" +
+                    "        \"repository\": \"<YOUR-REPOSITORY>\",\n" +
+                    "        \"tag\": {\n" +
+                    "            \"version\": \"1.0\",\n" +
+                    "            \"platforms\": {\n" +
+                    "                \"arm32v7\": \"./Dockerfile.arm32v7\"\n" +
+                    "            }\n" +
+                    "        }\n" +
+                    "    },\n" +
+                    "    \"language\": \"python\"\n" +
+                    "}";
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(modulePath + File.separator + "module.json"))){
+                bw.write(moduleJsonFormat);
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot create module.json")).showAndWait();
+                return;
+            }
+
+            String dotEnvFileFormat = "# Replace the value of these variables with your own container registry\n" +
+                    "\n" +
+                    "CONTAINER_REGISTRY_ADDRESS=\"makerplaygroundtest1.azurecr.io\"\n" +
+                    "CONTAINER_REGISTRY_USERNAME=\"makerplaygroundtest1\"\n" +
+                    "CONTAINER_REGISTRY_PASSWORD=\"K==3Tt09TiLXJ71wQmWIXkOpC3wPklDt\"\n";
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + ".env"))){
+                bw.write(dotEnvFileFormat);
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot create .env")).showAndWait();
+                return;
+            }
+
+            String dotGitIgnoreFormat  = "config/\n" +
+                    ".env";
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + ".gitignore"))){
+                bw.write(dotGitIgnoreFormat);
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot create .gitignore")).showAndWait();
+                return;
+            }
+
+            String deploymentTemplateFileFormat = "{\n" +
+                    "  \"moduleContent\": {\n" +
+                    "    \"$edgeAgent\": {\n" +
+                    "      \"properties.desired\": {\n" +
+                    "        \"schemaVersion\": \"1.0\",\n" +
+                    "        \"runtime\": {\n" +
+                    "          \"type\": \"docker\",\n" +
+                    "          \"settings\": {\n" +
+                    "            \"minDockerVersion\": \"v1.25\",\n" +
+                    "            \"loggingOptions\": \"\"\n" +
+                    "          }\n" +
+                    "        },\n" +
+                    "        \"systemModules\": {\n" +
+                    "          \"edgeAgent\": {\n" +
+                    "            \"type\": \"docker\",\n" +
+                    "            \"settings\": {\n" +
+                    "              \"image\": \"microsoft/azureiotedge-agent:1.0-preview\",\n" +
+                    "              \"createOptions\": \"\"\n" +
+                    "            }\n" +
+                    "          },\n" +
+                    "          \"edgeHub\": {\n" +
+                    "            \"type\": \"docker\",\n" +
+                    "            \"status\": \"running\",\n" +
+                    "            \"restartPolicy\": \"always\",\n" +
+                    "            \"settings\": {\n" +
+                    "              \"image\": \"microsoft/azureiotedge-hub:1.0-preview\",\n" +
+                    "              \"createOptions\": \"\"\n" +
+                    "            }\n" +
+                    "          }\n" +
+                    "        },\n" +
+                    "        \"modules\": {\n" +
+                    "          \"makerplayground\": {\n" +
+                    "            \"version\": \"1.0\",\n" +
+                    "            \"type\": \"docker\",\n" +
+                    "            \"status\": \"running\",\n" +
+                    "            \"restartPolicy\": \"always\",\n" +
+                    "            \"settings\": {\n" +
+                    "              \"image\": \"${MODULES.makerplayground.arm32v7}\",\n" +
+                    "              \"createOptions\": \"{\\\"HostConfig\\\":{\\\"Devices\\\":[{\\\"PathOnHost\\\":\\\"/dev/i2c-1\\\",\\\"PathInContainer\\\":\\\"/dev/i2c-1\\\",\\\"CgroupPermissions\\\":\\\"mrw\\\"}]}}\"\n" +
+                    "            }\n" +
+                    "          }\n" +
+                    "        }\n" +
+                    "      }\n" +
+                    "    },\n" +
+                    "    \"$edgeHub\": {\n" +
+                    "      \"properties.desired\": {\n" +
+                    "        \"schemaVersion\": \"1.0\",\n" +
+                    "        \"routes\": {\n" +
+                    "          \"aiToCloud\": \"FROM /messages/modules/* INTO $upstream\"\n" +
+                    "        },\n" +
+                    "        \"storeAndForwardConfiguration\": {\n" +
+                    "          \"timeToLiveSecs\": 7200\n" +
+                    "        }\n" +
+                    "      }\n" +
+                    "    },\n" +
+                    "    \"makerplayground\": {\n" +
+                    "      \"properties.desired\": {\n" +
+                    "        \n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}";
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + "deployment.template.json"))){
+                bw.write(deploymentTemplateFileFormat);
+            } catch (IOException e) {
+                (new WarningDialogView(window, "Error: Cannot create deplotment.template.json")).showAndWait();
+                return;
+            }
+
+            toolbar.setStatusMessage("Exported");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> toolbar.setStatusMessage(""));
+                }
+            }, 3000);
+        } else {
+            toolbar.setStatusMessage("");
+        }
     }
 
     private void updatePath(Stage stage, String path) {
