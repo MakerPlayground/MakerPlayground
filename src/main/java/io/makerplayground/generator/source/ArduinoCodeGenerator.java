@@ -294,9 +294,9 @@ class ArduinoCodeGenerator {
         }
         builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
-        builder.append("#ifdef ESP8266").append(NEW_LINE);
-        builder.append(INDENT).append("yield();").append(NEW_LINE);
-        builder.append("#endif").append(NEW_LINE);
+        if (project.getPlatform() == Platform.ARDUINO_ESP8266) {
+            builder.append(INDENT).append("yield();").append(NEW_LINE);
+        }
         builder.append("}").append(NEW_LINE);
     }
 
