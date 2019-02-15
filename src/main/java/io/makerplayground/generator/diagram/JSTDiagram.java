@@ -58,11 +58,9 @@ class JSTDiagram extends Pane {
     private final Map<ProjectDevice, Point2D> devicePositionMap = new HashMap<>();
     private final Map<ProjectDevice, DevicePort> deviceControllerPortMap = new HashMap<>();
     private double controllerOffsetX, controllerOffsetY;
-    private static final List<Color> colorSet = Arrays.asList(Color.BLUE, Color.HOTPINK, Color.ORANGE, Color.GRAY
-            , Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN);
 
     public JSTDiagram(Project project) {
-        for (Side s : Side.values()) {
+        for (Side s :  Side.values()) {
             deviceMap.put(s, new ArrayList<>());
         }
 
@@ -95,7 +93,7 @@ class JSTDiagram extends Pane {
         }
 
         // draw controller
-        Path controllerImagePath = Paths.get(deviceDirectoryPath, project.getController().getId(), "asset", "device.png");
+        Path controllerImagePath = Paths.get(deviceDirectoryPath,project.getController().getId(), "asset", "device.png");
         try (InputStream controllerImageStream = Files.newInputStream(controllerImagePath)) {
             // left offset is equal to the max height of all devices on the left hand side not the max width because the image
             // need to be rotate CW by 90 degree
@@ -172,7 +170,7 @@ class JSTDiagram extends Pane {
 
         // draw wire
         for (ProjectDevice device : devicePositionMap.keySet()) {
-            drawCable(device, controller);
+            drawCable(device);
         }
     }
 
@@ -212,8 +210,8 @@ class JSTDiagram extends Pane {
         double top = devicePositionMap.get(device).getY();
         double angle = ANGLE_MAP.get(deviceSideMap.get(device));
 
-        Path deviceImagePath = Paths.get(deviceDirectoryPath, device.getActualDevice().getId(), "asset", "device.png");
-        try (InputStream deviceImageStream = Files.newInputStream(deviceImagePath)) {
+        Path deviceImagePath = Paths.get(deviceDirectoryPath,device.getActualDevice().getId(), "asset", "device.png");
+        try (InputStream deviceImageStream = Files.newInputStream(deviceImagePath)){
             Image deviceImage = new Image(deviceImageStream);
             ImageView deviceImageView = new ImageView(deviceImage);
             deviceImageView.setRotate(angle);
@@ -238,8 +236,7 @@ class JSTDiagram extends Pane {
         }
     }
 
-    private void drawCable(ProjectDevice device, ActualDevice controller) {
-//        boolean deviceHasWire = deviceConnectivity.stream().flatMap(p -> device.getActualDevice().getPort(p).stream()).anyMatch(p -> p.getType() == DevicePortType.WIRE);
+    private void drawCable(ProjectDevice device) {
         List<Peripheral> deviceConnectivity = device.getActualDevice().getConnectivity();
         Map<Peripheral, List<DevicePort>> deviceConnection = device.getDeviceConnection();
         boolean hasConnectedPower = false;
@@ -255,28 +252,14 @@ class JSTDiagram extends Pane {
                     && devicePort.get(0).getType().getPinCount() > 1 && controllerPort.get(0).getType().getPinCount() > 1
                     && devicePort.get(0).getType() == controllerPort.get(0).getType()) {   // JST to JST device (works with MP, GROVE and INEX)
                 drawJSTToJSTConnector(device, devicePort.get(0), controllerPort.get(0));
-            } else if (devicePort.size() == 1 && controllerPort.size() == 1
-                    && devicePort.get(0).getType().getPinCount() == 1 && controllerPort.get(0).getType().getPinCount() == 1
-                    && devicePort.get(0).getType() == controllerPort.get(0).getType()) {
-                drawWireToWire(device, devicePort.get(0), controllerPort.get(0));
-                if (!hasConnectedPower) {
-                    drawPinHeaderToWirePower(device, controller.getPort(Peripheral.POWER));
-                    hasConnectedPower = true;
-                }
-            } else if (devicePort.size() == 2 && controllerPort.size() == 2
-                    && devicePort.get(0).getType().getPinCount() == 1 && controllerPort.get(0).getType().getPinCount() == 3
-                    && devicePort.get(1).getType().getPinCount() == 1 && controllerPort.get(1).getType().getPinCount() == 3
-                    && devicePort.get(0).getType() != controllerPort.get(0).getType()
-                    && devicePort.get(1).getType() != controllerPort.get(1).getType()) {   // JST-INEX I2C and WIRE I2C
-                // TODO: JST-INEX I2C and WIRE I2C Connector
             } else if ((devicePort.size() == controllerPort.size()) && controllerPort.stream().allMatch(port -> (port.getParent() != null)
                     && (port.getParent().getType() == DevicePortType.MP))) {   // MP to breakout board (Note that size is usually equal to 1 except when peripheral is I2C
                 drawPinHeaderToMPSignal(device, devicePort, controllerPort);
                 // connect power/gnd for device connected to split port only once in case that the signal wires come from different ports
                 if (!hasConnectedPower) {
                     drawPinHeaderToMPPower(device, controllerPort);
-                    hasConnectedPower = true;
                 }
+                hasConnectedPower = true;
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -303,8 +286,8 @@ class JSTDiagram extends Pane {
         double pinPitch = controllerPort.getType().getPinPitch() * MM_TO_PX;
         double wireWidth = pinPitch * PITCH_TO_WIDTH;
 
-        for (int i = 0; i < pinCount; i++) {
-            double centerOffset = pinPitch * (i - (pinCount-1) / 2.0);
+        for (int i=0; i<pinCount; i++) {
+            double centerOffset = pinPitch * (i - ((pinCount-1)/2.0));
             double startFlip = (startType == DevicePortSubType.RIGHTANGLE_BOTTOM) ? 1 : -1;
             double sx = startX + (centerOffset * Math.cos(Math.toRadians(startAngle)) * startFlip);
             double sy = startY + (centerOffset * Math.sin(Math.toRadians(startAngle)) * startFlip);
@@ -320,7 +303,7 @@ class JSTDiagram extends Pane {
     }
 
     private void drawPinHeaderToMPSignal(ProjectDevice device, List<DevicePort> devicePortList, List<DevicePort> controllerPortList) {
-        for (int i = 0; i < devicePortList.size(); i++) {
+        for (int i=0; i<devicePortList.size(); i++) {
             DevicePort controllerPort = controllerPortList.get(i);
             int cableIndex = (controllerPort.getName().charAt(controllerPort.getName().length() - 1) - '0') - 1;  // TODO: broken
             drawPinHeaderToMPConnector(device, devicePortList.get(i), controllerPort, cableIndex);
@@ -363,41 +346,6 @@ class JSTDiagram extends Pane {
         drawWire(sx, sy, startAngle, ex, ey, color, wireWidth);
     }
 
-    private void drawPinHeaderToWirePower(ProjectDevice device, List<DevicePort> controllerPortList) {
-        // controllerPortList should contains only one DevicePort except when the port is an I2C port in this case
-        // the parent of those ports should be the same because we only let them use SCL and SDA from the same connector
-
-        Optional<DevicePort> deviceVccPort = device.getActualDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isVcc).findAny();
-        Optional<DevicePort> controllerVccPort = controllerPortList.stream().filter(DevicePort::isVcc).findAny();
-        if (deviceVccPort.isPresent() && controllerVccPort.isPresent()) {
-            drawWireToWire(device, deviceVccPort.get(), controllerVccPort.get(),Color.RED);
-        }
-
-        Optional<DevicePort> deviceGndPort = device.getActualDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isGnd).findAny();
-        Optional<DevicePort> controllerGndPort = controllerPortList.stream().filter(DevicePort::isGnd).findAny();
-        if (deviceGndPort.isPresent() && controllerGndPort.isPresent()) {
-            drawWireToWire(device, deviceGndPort.get(), controllerGndPort.get(),Color.BLACK);
-        }
-    }
-
-    private static final Random random = new Random();
-    private void drawWireToWire(ProjectDevice device, DevicePort devicePort,  DevicePort controllerPort) {
-        Color randomColor = colorSet.get(random.nextInt(colorSet.size()));
-        drawWireToWire(device,devicePort,controllerPort, randomColor);
-    }
-
-    private void drawWireToWire(ProjectDevice device, DevicePort devicePort,  DevicePort controllerPort,Color color) {
-
-        double sx = getTransformPortLocation(device, devicePort).getX();
-        double sy = getTransformPortLocation(device, devicePort).getY();
-        double startAngle = ANGLE_MAP.get(deviceSideMap.get(device));
-
-        double endX = controllerOffsetX + controllerPort.getX();
-        double endY = controllerOffsetY + controllerPort.getY();
-
-        drawWire(sx, sy, startAngle, endX, endY, color, 3);
-    }
-
     private void drawWire(double sx, double sy, double startAngle, double ex, double ey, Color color, double wireWidth) {
         Polyline line1 = new Polyline();
         line1.setStroke(color);
@@ -410,11 +358,11 @@ class JSTDiagram extends Pane {
         line2.setStrokeLineJoin(StrokeLineJoin.ROUND);
         line2.setStrokeWidth(wireWidth);
         if (Double.compare(startAngle, 0) == 0 || Double.compare(startAngle, 180) == 0) {
-            line1.getPoints().addAll(sx, sy, sx, (ey - sy) / 2 + sy, (ex - sx) / 2 + sx, (ey - sy) / 2 + sy);
-            line2.getPoints().addAll((ex - sx) / 2 + sx, (ey - sy) / 2 + sy, ex, (ey - sy) / 2 + sy, ex, ey);
+            line1.getPoints().addAll(sx, sy, sx, (ey-sy)/2+sy, (ex-sx)/2+sx, (ey-sy)/2+sy);
+            line2.getPoints().addAll((ex-sx)/2+sx, (ey-sy)/2+sy, ex, (ey-sy)/2+sy, ex, ey);
         } else {
-            line1.getPoints().addAll(sx, sy, (ex - sx) / 2 + sx, sy, (ex - sx) / 2 + sx, (ey - sy) / 2 + sy);
-            line2.getPoints().addAll((ex - sx) / 2 + sx, (ey - sy) / 2 + sy, (ex - sx) / 2 + sx, ey, ex, ey);
+            line1.getPoints().addAll(sx, sy, (ex-sx)/2+sx, sy, (ex-sx)/2+sx, (ey-sy)/2+sy);
+            line2.getPoints().addAll((ex-sx)/2+sx, (ey-sy)/2+sy, (ex-sx)/2+sx, ey, ex, ey);
         }
         getChildren().addAll(line1, line2);
     }
