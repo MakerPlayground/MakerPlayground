@@ -129,6 +129,11 @@ public class DevicePort {
         return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPeripheral().getConnectionType() == p.getConnectionType());
     }
 
+    public boolean isSplittedPort()
+    {
+        return parent != null;
+    }
+
     public boolean isVcc() {
         return function.stream().anyMatch(devicePortFunction -> devicePortFunction.getPinType() == PinType.VCC);
     }

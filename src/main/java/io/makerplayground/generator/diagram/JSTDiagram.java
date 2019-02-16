@@ -50,6 +50,11 @@ class JSTDiagram extends Pane {
     private static final double DEVICE_SPACING = 20;
     private static final double MM_TO_PX = 144 / 25.4;  // 144 pixel per inch / 25.4 mm per inch
     private static final double PITCH_TO_WIDTH = 0.5;   // constant to multiply to pin pitch to calculate each wire width in px
+    private static final double WIRE_WIDTH = 4;
+    private static final List<Color> WIRE_COLOR = Arrays.asList(Color.BLUE, Color.HOTPINK, Color.ORANGE, Color.GRAY
+            , Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN);
+    private static final Color POWER_WIRE_COLOR = Color.RED;
+    private static final Color GND_WIRE_COLOR = Color.BLACK;
     private static final Map<Side, Double> ANGLE_MAP = new EnumMap<>(Map.of(Side.TOP, 0.0, Side.LEFT, -90.0, Side.BOTTOM, 180.0, Side.RIGHT, 90.0));
     private static final String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
 
@@ -57,7 +62,9 @@ class JSTDiagram extends Pane {
     private final Map<ProjectDevice, Side> deviceSideMap = new HashMap<>();
     private final Map<ProjectDevice, Point2D> devicePositionMap = new HashMap<>();
     private final Map<ProjectDevice, DevicePort> deviceControllerPortMap = new HashMap<>();
+    private final List<DevicePort> usedPowerPort = new ArrayList<>();   // list of used power/gnd port when connecting from wire to wire
     private double controllerOffsetX, controllerOffsetY;
+    private final Random random = new Random();
 
     public JSTDiagram(Project project) {
         for (Side s :  Side.values()) {
@@ -170,7 +177,7 @@ class JSTDiagram extends Pane {
 
         // draw wire
         for (ProjectDevice device : devicePositionMap.keySet()) {
-            drawCable(device);
+            drawCable(device, controller);
         }
     }
 
@@ -236,7 +243,7 @@ class JSTDiagram extends Pane {
         }
     }
 
-    private void drawCable(ProjectDevice device) {
+    private void drawCable(ProjectDevice device, ActualDevice controller) {
         List<Peripheral> deviceConnectivity = device.getActualDevice().getConnectivity();
         Map<Peripheral, List<DevicePort>> deviceConnection = device.getDeviceConnection();
         boolean hasConnectedPower = false;
@@ -252,12 +259,17 @@ class JSTDiagram extends Pane {
                     && devicePort.get(0).getType().getPinCount() > 1 && controllerPort.get(0).getType().getPinCount() > 1
                     && devicePort.get(0).getType() == controllerPort.get(0).getType()) {   // JST to JST device (works with MP, GROVE and INEX)
                 drawJSTToJSTConnector(device, devicePort.get(0), controllerPort.get(0));
-            } else if ((devicePort.size() == controllerPort.size()) && controllerPort.stream().allMatch(port -> (port.getParent() != null)
-                    && (port.getParent().getType() == DevicePortType.MP))) {   // MP to breakout board (Note that size is usually equal to 1 except when peripheral is I2C
+            } else if (controllerPort.stream().allMatch(port -> port.isSplittedPort() && (port.getParent().getType() == DevicePortType.MP))) {   // MP to breakout board (only MP port can be split)
                 drawPinHeaderToMPSignal(device, devicePort, controllerPort);
                 // connect power/gnd for device connected to split port only once in case that the signal wires come from different ports
                 if (!hasConnectedPower) {
                     drawPinHeaderToMPPower(device, controllerPort);
+                }
+                hasConnectedPower = true;
+            } else if (controllerPort.stream().noneMatch(DevicePort::isSplittedPort)) { // wire to wire
+                drawWireToWireSignal(device, devicePort, controllerPort);
+                if (!hasConnectedPower) {
+                    drawWireToWirePower(device, controller);
                 }
                 hasConnectedPower = true;
             } else {
@@ -344,6 +356,43 @@ class JSTDiagram extends Pane {
         double ey = endY + (centerOffset * Math.cos(Math.toRadians(endAngle)) * endFlip);
 
         drawWire(sx, sy, startAngle, ex, ey, color, wireWidth);
+    }
+
+    private void drawWireToWireSignal(ProjectDevice device, List<DevicePort> devicePort, List<DevicePort> controllerPort) {
+        for (int i=0; i<devicePort.size(); i++) {
+            DevicePort dp = devicePort.get(i);
+            DevicePort cp = controllerPort.get(i);
+            drawWire(getTransformPortLocation(device, dp).getX(), getTransformPortLocation(device, dp).getY(), ANGLE_MAP.get(deviceSideMap.get(device))
+                    , controllerOffsetX + cp.getX(), controllerOffsetY + cp.getY()
+                    , WIRE_COLOR.get(random.nextInt(WIRE_COLOR.size())), WIRE_WIDTH);
+        }
+    }
+
+    private void drawWireToWirePower(ProjectDevice device, ActualDevice controller) {
+        List<DevicePort> unusedPowerPort = controller.getPort(Peripheral.POWER);
+        unusedPowerPort.removeAll(usedPowerPort);
+        Optional<DevicePort> controllerVccPort = unusedPowerPort.stream().filter(DevicePort::isVcc).findAny();
+        Optional<DevicePort> controllerGroundPort = unusedPowerPort.stream().filter(DevicePort::isGnd).findAny();
+
+        List<DevicePort> devicePowerPort = device.getActualDevice().getPort(Peripheral.POWER);
+        Optional<DevicePort> deviceVccPort = devicePowerPort.stream().filter(DevicePort::isVcc).findAny();
+        Optional<DevicePort> deviceGroundPort = devicePowerPort.stream().filter(DevicePort::isGnd).findAny();
+
+        if (controllerVccPort.isPresent() && controllerGroundPort.isPresent()
+                && deviceVccPort.isPresent() && deviceGroundPort.isPresent()) {
+            drawWire(getTransformPortLocation(device, deviceVccPort.get()).getX(), getTransformPortLocation(device, deviceVccPort.get()).getY()
+                    , ANGLE_MAP.get(deviceSideMap.get(device))
+                    , controllerOffsetX + controllerVccPort.get().getX(), controllerOffsetY + controllerVccPort.get().getY()
+                    , POWER_WIRE_COLOR, WIRE_WIDTH);
+            drawWire(getTransformPortLocation(device, deviceGroundPort.get()).getX(), getTransformPortLocation(device, deviceGroundPort.get()).getY()
+                    , ANGLE_MAP.get(deviceSideMap.get(device))
+                    , controllerOffsetX + controllerGroundPort.get().getX(), controllerOffsetY + controllerGroundPort.get().getY()
+                    , GND_WIRE_COLOR, WIRE_WIDTH);
+            usedPowerPort.add(controllerVccPort.get());
+            usedPowerPort.add(controllerGroundPort.get());
+        } else {
+            throw new IllegalStateException("The controller has insufficient power/ground port");
+        }
     }
 
     private void drawWire(double sx, double sy, double startAngle, double ex, double ey, Color color, double wireWidth) {
