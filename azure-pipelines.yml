@@ -8,7 +8,7 @@ trigger:
 - develop
 
 pool:
-  vmImage: Hosted VS2019
+  vmImage: Hosted VS2017
 
 steps:
 - task: Gradle@2
