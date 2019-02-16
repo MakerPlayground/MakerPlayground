@@ -8,7 +8,7 @@ trigger:
 - develop
 
 pool:
-  vmImage: Hosted VS2017
+  vmImage: 'vs2017-win2016'
 
 steps:
 - task: Gradle@2
