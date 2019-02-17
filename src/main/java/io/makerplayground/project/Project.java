@@ -526,16 +526,18 @@ public class Project {
     }
 
     public static Optional<Project> loadProject(File f) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String projectVersion = ProjectVersionControl.readProjectVersion(f);
-            if (ProjectVersionControl.canOpen(projectVersion)) {
-                Project p = mapper.readValue(f, Project.class);
-                p.setFilePath(f.getAbsolutePath());
-                return Optional.of(p);
+        if (f.exists()) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String projectVersion = ProjectVersionControl.readProjectVersion(f);
+                if (ProjectVersionControl.canOpen(projectVersion)) {
+                    Project p = mapper.readValue(f, Project.class);
+                    p.setFilePath(f.getAbsolutePath());
+                    return Optional.of(p);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return Optional.empty();
     }

@@ -38,6 +38,8 @@ import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,12 +60,11 @@ public class Main extends Application {
         // TODO: show progress indicator while loading if need
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
-        String parameter = String.join(" ", getParameters().getUnnamed());
-        Pattern pattern = Pattern.compile("\\s*-classpath\\s*io\\.makerplayground\\.frontend/io\\.makerplayground\\.ui\\.Main\\s+(.+)");
-        Matcher matcher = pattern.matcher(parameter);
-        if (matcher.matches() && matcher.groupCount() == 1) {
-            String path = matcher.group(1);
-            project = new SimpleObjectProperty<>(Project.loadProject(new File(path)).orElseGet(Project::new));
+        // try to load a project file passed as a command line argument if existed
+        List<String> parameters = getParameters().getUnnamed();
+        if (!parameters.isEmpty()) {
+            File f = new File(parameters.get(parameters.size() - 1));
+            project = new SimpleObjectProperty<>(Project.loadProject(f).orElseGet(Project::new));
         } else {
             project = new SimpleObjectProperty<>(new Project());
         }
@@ -132,9 +133,9 @@ public class Main extends Application {
 
     private void updatePath(Stage stage, String path) {
         if (path.isEmpty()) {
-            stage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - Untitled Project");
+            stage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - Untitled Project");
         } else {
-            stage.setTitle(SoftwareVersion.CURRENT_VERSION.getBuildName() + " - " + path);
+            stage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - " + path);
         }
     }
 
