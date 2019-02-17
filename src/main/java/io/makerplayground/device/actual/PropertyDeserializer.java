@@ -65,6 +65,9 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
             case INTEGER_ENUM:
                 defaultValue = node.get("value").asInt();
                 break;
+            case BOOLEAN_ENUM:
+                defaultValue = node.get("value").asBoolean();
+                break;
             case INTEGER:
                 defaultValue = new NumberWithUnit(node.get("value").asInt()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));

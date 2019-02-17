@@ -448,6 +448,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 case INTEGER_ENUM:
                     value = propertyNode.get("value").asInt();
                     break;
+                case BOOLEAN_ENUM:
+                    value = propertyNode.get("value").asBoolean();
+                    break;
                 case AZURE_COGNITIVE_KEY:
                     if (propertyNode.get("value").has("name")) {
                         value = new AzureCognitiveServices(propertyNode.get("value").get("name").asText()

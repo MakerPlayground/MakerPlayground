@@ -156,6 +156,7 @@ class ArduinoCodeGenerator {
                         args.add(String.valueOf(((NumberWithUnit) value).getValue()));
                         break;
                     case INTEGER_ENUM:
+                    case BOOLEAN_ENUM:
                         args.add(String.valueOf(value));
                         break;
                     case STRING:

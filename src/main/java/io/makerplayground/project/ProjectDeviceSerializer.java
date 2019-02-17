@@ -119,6 +119,9 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
                     case INTEGER_ENUM:
                         jsonGenerator.writeNumberField("value", (Integer) value);
                         break;
+                    case BOOLEAN_ENUM:
+                        jsonGenerator.writeBooleanField("value", (Boolean) value);
+                        break;
                     case AZURE_COGNITIVE_KEY:
                         if (value == null) {
                             jsonGenerator.writeStringField("value", "");

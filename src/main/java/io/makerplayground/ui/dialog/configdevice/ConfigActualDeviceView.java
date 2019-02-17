@@ -375,6 +375,14 @@ public class ConfigActualDeviceView extends VBox{
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
                             propertyGridPane.getChildren().add(comboBox);
+                        } else if (p.getDataType() == DataType.BOOLEAN_ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                            ComboBox<String> comboBox = new ComboBox<>(list);
+                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Boolean.parseBoolean(newValue)));
+                            GridPane.setRowIndex(comboBox, i);
+                            GridPane.setColumnIndex(comboBox, 1);
+                            propertyGridPane.getChildren().add(comboBox);
                         } else if ((p.getDataType() == DataType.INTEGER || p.getDataType() == DataType.DOUBLE)
                                 && p.getControlType() == ControlType.SPINBOX) {
                             SpinnerWithUnit spinner = new SpinnerWithUnit(p.getMinimumValue(), p.getMaximumValue()
