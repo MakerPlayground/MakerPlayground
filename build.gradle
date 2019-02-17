@@ -35,16 +35,16 @@ run {
 
 jlink {
     launcher {
-        name = 'MakerPlayground'
+        name = project.name
         jvmArgs = ['--add-modules javafx.controls',
                 '--add-modules javafx.fxml',
-                '--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls',
-                '--add-exports=javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module',
-                '--add-exports=javafx.base/com.sun.javafx.collections=MakerPlayground.merged.module',
-                '--add-exports=javafx.controls/com.sun.javafx.scene.control=MakerPlayground.merged.module',
-                '--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module',
-                '--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module',
-                '--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module']
+                "--add-reads ${project.name}.merged.module=javafx.base,javafx.graphics,javafx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.runtime=${project.name}.merged.module",
+                "--add-exports=javafx.base/com.sun.javafx.collections=${project.name}.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control=${project.name}.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=${project.name}.merged.module",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=${project.name}.merged.module",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=${project.name}.merged.module"]
     }
     mergedModule {
         requires 'java.sql'
@@ -68,27 +68,28 @@ task createBundle(type: Exec) {
             '--module', "${moduleName}",
             '--jvm-args', '--add-modules javafx.controls',
             '--jvm-args', '--add-modules javafx.fxml',
-            '--jvm-args', '--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls',
-            '--jvm-args', '--add-exports javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module',
-            '--jvm-args', '--add-exports javafx.base/com.sun.javafx.collections=MakerPlayground.merged.module',
-            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control=MakerPlayground.merged.module',
-            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module',
-            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module',
-            '--jvm-args', '--add-exports javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module',
-            '--jvm-args', "-m ${moduleName}/io.makerplayground.ui.Main",
+            '--jvm-args', "--add-reads ${project.name}.merged.module=javafx.base,javafx.graphics,javafx.controls",
+            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=${project.name}.merged.module",
+            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=${project.name}.merged.module",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control=${project.name}.merged.module",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=${project.name}.merged.module",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=${project.name}.merged.module",
+            '--jvm-args', "--add-exports javafx.graphics/com.sun.javafx.scene.traversal=${project.name}.merged.module",
+            '--jvm-args', "-m ${mainClassName}",
             '--verbose'
     ]
     doLast {
-        def versionFilePath
         def os = org.gradle.internal.os.OperatingSystem.current()
         if (os.isWindows()) {
-            versionFilePath = "${buildDir}/native-image/${project.name}/app"
+            copy {
+                from 'version.txt'
+                into "${buildDir}/native-image/${project.name}/app"
+            }
+            exec {
+                commandLine 'cmd', '/c', "cd .\\package\\windows && create-installer.bat ${version}"
+            }
         } else {
             throw new GradleException("Found unsupported operating system: ${os}")
-        }
-        copy {
-            from 'version.txt'
-            into versionFilePath
         }
     }
 }
