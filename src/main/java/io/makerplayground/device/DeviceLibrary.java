@@ -19,6 +19,7 @@ package io.makerplayground.device;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Platform;

@@ -145,8 +145,13 @@ public class ConditionDevicePropertyWindow extends PopOver {
             GridPane.setColumnIndex(name, 0);
             GridPane.setValignment(name, VPos.TOP);
 
+            if (p.getControlType().isEmpty()) {
+                throw new IllegalStateException("Parameter must be at least one control type");
+            }
+
             Node control = null;
-            if (p.getControlType() == ControlType.SLIDER) {
+            ControlType controlType = p.getControlType().get(0);
+            if (controlType == ControlType.SLIDER) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
@@ -157,18 +162,18 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
-            } else if (p.getControlType() == ControlType.TEXTBOX) {
+            } else if (controlType == ControlType.TEXTBOX) {
                 TextField textField = new TextField();
                 textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = textField;
-            } else if (p.getControlType() == ControlType.DROPDOWN) {
+            } else if (controlType == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
                 comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
-            } else if (p.getControlType() == ControlType.SPINBOX) {
+            } else if (controlType == ControlType.SPINBOX) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
@@ -179,14 +184,14 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
-            } else if (p.getControlType() == ControlType.DATETIMEPICKER) {
+            } else if (controlType == ControlType.DATETIMEPICKER) {
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new SimpleRTCExpression(RealTimeClock.getDefault()));
                 }
                 RTCExpressionControl expressionControl = new RTCExpressionControl((SimpleRTCExpression) viewModel.getParameterValue(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
-            } else if (p.getControlType() == ControlType.IMAGE_SELECTOR) {
+            } else if (controlType == ControlType.IMAGE_SELECTOR) {
                 ComboBox<ProjectValue> comboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getProjectValue(EnumSet.of(DataType.IMAGE))));
                 comboBox.setCellFactory(param -> new ListCell<>(){
                     @Override

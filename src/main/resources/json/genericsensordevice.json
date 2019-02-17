@@ -7,19 +7,16 @@
       {
         "name": "Press",
         "funcname": "isPress",
-        "type": "Active", 
         "parameter": []
       }, 
       {
         "name": "Press and release",
         "funcname": "isPressAndRelease",
-        "type": "Active", 
         "parameter": []
       },
       {
         "name": "Not press",
         "funcname": "isNotPress",
-        "type": "Active",
         "parameter": []
       }
     ], 
@@ -32,20 +29,17 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }, 
       {
         "name": "Tap", 
-        "funcname": "isTapped", 
-        "type": "Active", 
+        "funcname": "isTapped",
         "parameter": []
       }, 
       {
         "name": "Free Fall", 
-        "funcname": "isFallen", 
-        "type": "Active", 
+        "funcname": "isFallen",
         "parameter": []
       }
     ], 
@@ -96,7 +90,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -120,7 +113,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -143,8 +135,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -167,8 +158,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -209,8 +199,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -233,8 +222,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -257,14 +245,12 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }, 
       {
         "name": "Direction", 
-        "funcname": "checkDirection", 
-        "type": "Active", 
+        "funcname": "checkDirection",
         "parameter": [
           {
             "name": "Direction", 
@@ -280,7 +266,9 @@
               "SouthWest"
             ], 
             "datatype": "ENUM", 
-            "controltype": "DROPDOWN"
+            "controltype": [
+              "DROPDOWN"
+            ]
           }
         ]
       }
@@ -322,8 +310,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -346,14 +333,12 @@
     "condition": [
       {
         "name": "Detect Human", 
-        "funcname": "isDetected", 
-        "type": "Active", 
+        "funcname": "isDetected",
         "parameter": []
       }, 
       {
         "name": "No Human", 
-        "funcname": "isNotDetected", 
-        "type": "Active", 
+        "funcname": "isNotDetected",
         "parameter": []
       }
     ], 
@@ -367,19 +352,16 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Data is valid",
         "funcname": "isDataValid",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Data is not valid",
         "funcname": "isDataInvalid",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -411,8 +393,7 @@
     "condition": [
       {
         "name": "Detect Color", 
-        "funcname": "isColor", 
-        "type": "Active", 
+        "funcname": "isColor",
         "parameter": [
           {
             "name": "Color", 
@@ -427,7 +408,9 @@
               "White"
             ], 
             "datatype": "ENUM", 
-            "controltype": "DROPDOWN"
+            "controltype": [
+              "DROPDOWN"
+            ]
           }
         ]
       }
@@ -442,7 +425,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -465,14 +447,12 @@
     "condition": [
       {
         "name": "Detect Water", 
-        "funcname": "isWet", 
-        "type": "Active", 
+        "funcname": "isWet",
         "parameter": []
       }, 
       {
         "name": "No Water", 
-        "funcname": "isDry", 
-        "type": "Active", 
+        "funcname": "isDry",
         "parameter": []
       }
     ], 
@@ -485,8 +465,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -509,8 +488,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -534,7 +512,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -558,7 +535,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -581,8 +557,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -606,61 +581,51 @@
       {
         "name": "Swipe Up",
         "funcname": "isSwipeUp",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Down",
         "funcname": "isSwipeDown",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Left",
         "funcname": "isSwipeLeft",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Right",
         "funcname": "isSwipeRight",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Move Forward",
         "funcname": "isMoveForward",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Move Backward",
         "funcname": "isMoveBackward",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Spin Clockwise",
         "funcname": "isSpinClockwise",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Spin Counter Clockwise",
         "funcname": "isSpinCounterClockwise",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Waving",
         "funcname": "isWave",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not Detected",
         "funcname": "isNotDetected",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -674,7 +639,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -697,14 +661,15 @@
       {
         "name": "Set DateTime",
         "funcname": "setDateTime",
-        "type": "Active",
         "parameter": [
           {
             "name": "datetime",
             "value": 0,
             "constraint": [],
             "datatype": "DATETIME",
-            "controltype": "DATETIMEPICKER"
+            "controltype": [
+              "DATETIMEPICKER"
+            ]
           }
         ]
       }
@@ -713,13 +678,11 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Check Day",
         "funcname": "checkDayOfWeek",
-        "type": "Active",
         "parameter": [
           {
             "name": "Day",
@@ -734,7 +697,9 @@
               "Saturday"
             ],
             "datatype": "ENUM",
-            "controltype": "DROPDOWN"
+            "controltype": [
+              "DROPDOWN"
+            ]
           }
         ]
       }
@@ -817,7 +782,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],

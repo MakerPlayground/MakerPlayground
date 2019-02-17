@@ -33,7 +33,7 @@ public class Parameter {
     private final Object defaultValue;
     private final Constraint constraint;
     private final DataType dataType;
-    private final ControlType controlType;
+    private final List<ControlType> controlType;
 
     /**
      * The constructor should only be invoked by the DeviceLibrary
@@ -44,7 +44,7 @@ public class Parameter {
      * @param dataType an enumerated value ({@link DataType}) indicating type of this parameter
      * @param controlType an enumerated value ({@link ControlType}) indicating type of a UI control to be used
      */
-    public Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, ControlType controlType) {
+    public Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, List<ControlType> controlType) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.constraint = constraint;
@@ -100,7 +100,7 @@ public class Parameter {
      * Get the suggest control type of this parameter as an instance of {@link ControlType}
      * @return the type of control to be used to adjust this parameter in the GUI
      */
-    public ControlType getControlType() {
+    public List<ControlType> getControlType() {
         return controlType;
     }
 

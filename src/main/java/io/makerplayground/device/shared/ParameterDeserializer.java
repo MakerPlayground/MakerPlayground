@@ -18,6 +18,7 @@ package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.generic.ControlType;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A helper class used by jackson's {@link ObjectMapper} to deserialize a {@link Parameter}
@@ -49,7 +51,11 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
         String name = node.get("name").asText();
         Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
         DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
-        ControlType controlType = mapper.treeToValue(node.get("controltype"), ControlType.class);
+        List<ControlType> controlType = mapper.readValue(node.get("controltype").traverse(), new TypeReference<List<ControlType>>() {});
+
+        if (controlType.isEmpty()) {
+            throw new IllegalStateException("controltype is not specified.");
+        }
 
         Object defaultValue = null;
         switch (dataType) {

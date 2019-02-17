@@ -5,8 +5,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Brightness", 
@@ -17,14 +16,15 @@
               "unit": "PERCENT"
             }, 
             "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           }
         ]
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -38,7 +38,6 @@
       {
         "name": "On",
         "funcname": "on",
-        "type": "Active",
         "parameter": [
           {
             "name": "Red",
@@ -49,7 +48,9 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           },
           {
             "name": "Green",
@@ -60,7 +61,9 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           },
           {
             "name": "Blue",
@@ -71,7 +74,9 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           },
           {
             "name": "Brightness",
@@ -82,14 +87,15 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           }
         ]
       },
       {
         "name": "Off",
         "funcname": "off",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -102,14 +108,12 @@
     "action": [
       {
         "name": "Beep", 
-        "funcname": "beep", 
-        "type": "Active", 
+        "funcname": "beep",
         "parameter": []
       }, 
       {
         "name": "Play Tone", 
-        "funcname": "play", 
-        "type": "Active", 
+        "funcname": "play",
         "parameter": [
           {
             "name": "Tone Frequency", 
@@ -120,7 +124,9 @@
               "unit": "HERTZ"
             }, 
             "datatype": "INTEGER", 
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }, 
           {
             "name": "Duration", 
@@ -131,7 +137,9 @@
               "unit": "SECOND"
             }, 
             "datatype": "INTEGER", 
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       }
@@ -145,8 +153,7 @@
     "action": [
       {
         "name": "Show Number", 
-        "funcname": "showData", 
-        "type": "Active",
+        "funcname": "showData",
         "parameter": [
           {
             "name": "Number", 
@@ -157,14 +164,15 @@
               "unit": "NOT_SPECIFIED"
             }, 
             "datatype": "INTEGER", 
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       },
       {
         "name": "Show Two Numbers with Colon",
         "funcname": "showTwoIntWithColon",
-        "type": "Active",
         "parameter": [
           {
             "name": "Before colon",
@@ -175,7 +183,9 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           },
           {
             "name": "After colon",
@@ -186,14 +196,15 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       },
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active",
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -206,8 +217,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Direction", 
@@ -217,7 +227,9 @@
               "Backward"
             ], 
             "datatype": "ENUM", 
-            "controltype": "DROPDOWN"
+            "controltype": [
+              "DROPDOWN"
+            ]
           }, 
           {
             "name": "Speed", 
@@ -228,14 +240,15 @@
               "unit": "PERCENT"
             }, 
             "datatype": "DOUBLE", 
-            "controltype": "SLIDER"
+            "controltype": [
+              "SLIDER"
+            ]
           }
         ]
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -248,8 +261,7 @@
     "action": [
       {
         "name": "Move To", 
-        "funcname": "moveto", 
-        "type": "Active", 
+        "funcname": "moveto",
         "parameter": [
           {
             "name": "Degree", 
@@ -260,7 +272,9 @@
               "unit": "DEGREE"
             }, 
             "datatype": "INTEGER", 
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       }
@@ -274,14 +288,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -294,14 +306,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -315,7 +325,6 @@
       {
         "name": "Show Text",
         "funcname": "showText",
-        "type": "Active",
         "parameter": [
           {
             "name": "Line",
@@ -326,21 +335,24 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           },
           {
             "name": "Text",
             "value": "",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           }
         ]
       },
       {
         "name": "Show Number",
         "funcname": "showNumber",
-        "type": "Active",
         "parameter": [
           {
             "name": "Line",
@@ -351,14 +363,18 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           },
           {
             "name": "Label",
             "value": "",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           },
           {
             "name": "Value",
@@ -369,14 +385,15 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       },
       {
         "name": "Clear Screen",
         "funcname": "clearScreen",
-        "type": "Inactive",
         "parameter": []
       }
     ],

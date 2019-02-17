@@ -7,19 +7,16 @@
       {
         "name": "Press",
         "funcname": "isPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press and release",
         "funcname": "isPressAndRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press",
         "funcname": "isNotPress",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -33,7 +30,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -56,13 +52,11 @@
       {
         "name": "On",
         "funcname": "on",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Off",
         "funcname": "off",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -76,7 +70,6 @@
       {
         "name": "Display number",
         "funcname": "setNumber",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -87,7 +80,9 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       }
@@ -102,14 +97,15 @@
       {
         "name": "Notify",
         "funcname": "notify",
-        "type": "Active",
         "parameter": [
           {
             "name": "Message",
             "value": "",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           }
         ]
       }
@@ -124,7 +120,6 @@
       {
         "name": "Pin Location",
         "funcname": "pinLocation",
-        "type": "Active",
         "parameter": [
           {
             "name": "Latitude",
@@ -135,7 +130,9 @@
               "unit": "DEGREE"
             },
             "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           },
           {
             "name": "Longitude",
@@ -146,14 +143,15 @@
               "unit": "DEGREE"
             },
             "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       },
       {
         "name": "Clear Pin",
         "funcname": "clearPin",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -168,21 +166,24 @@
       {
         "name": "Found",
         "funcname": "classifiedImage",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
             "value": "",
             "constraint": [],
             "datatype": "IMAGE",
-            "controltype": "IMAGE_SELECTOR"
+            "controltype": [
+              "IMAGE_SELECTOR"
+            ]
           },
           {
             "name": "Class",
             "value": "",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           },
           {
             "name": "Minimum Probability",
@@ -193,40 +194,47 @@
               "unit": "PERCENT"
             },
             "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
+            "controltype": [
+              "SPINBOX"
+            ]
           }
         ]
       },
+      {
+        "name": "Not Found",
+        "funcname": "noDetectedImage",
+        "parameter": [
           {
-            "name": "Not Found",
-            "funcname": "noDetectedImage",
-            "type": "Active",
-            "parameter": [
-              {
-                "name": "Image",
-                "value": "",
-                "constraint": [],
-                "datatype": "IMAGE",
-                "controltype": "IMAGE_SELECTOR"
-              },
-              {
-                "name": "Class",
-                "value": "",
-                "constraint": [],
-                "datatype": "STRING",
-                "controltype": "TEXTBOX"
-              },
-              {
-                "name": "Minimum Probability",
-                "value": 80.0,
-                "constraint": {
-                  "min": 0.0,
-                  "max": 100.0,
-                  "unit": "PERCENT"
-                },
-                "datatype": "DOUBLE",
-                "controltype": "SPINBOX"
-              }
+            "name": "Image",
+            "value": "",
+            "constraint": [],
+            "datatype": "IMAGE",
+            "controltype": [
+              "IMAGE_SELECTOR"
+            ]
+          },
+          {
+            "name": "Class",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": [
+              "TEXTBOX"
+            ]
+          },
+          {
+            "name": "Minimum Probability",
+            "value": 80.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": [
+              "SPINBOX"
+            ]
+          }
         ]
       }
     ],
@@ -239,35 +247,39 @@
       {
         "name": "Convert and play sound",
         "funcname": "convertAndPlaySound",
-        "type": "Active",
         "parameter": [
           {
             "name": "text",
             "value": "Maker playground",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
+            "controltype": [
+              "TEXTBOX_WITH_TEXT_SELECTOR"
+            ]
           }
         ]
       },
       {
         "name": "Convert to sound file",
         "funcname": "convertToSoundFile",
-        "type": "Active",
         "parameter": [
           {
             "name": "text",
             "value": "Maker playground",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX_WITH_TEXT_SELECTOR"
+            "controltype": [
+              "TEXTBOX_WITH_TEXT_SELECTOR"
+            ]
           },
           {
             "name": "save file name",
             "value": "temp.wav",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           }
         ]
       }
@@ -282,35 +294,39 @@
       {
         "name": "Convert to Text",
         "funcname": "convertToText",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
             "value": "",
             "constraint": [],
             "datatype": "IMAGE",
-            "controltype": "IMAGE_SELECTOR"
+            "controltype": [
+              "IMAGE_SELECTOR"
+            ]
           }
         ]
       },
       {
         "name": "Convert to Text File",
         "funcname": "convertToTextFile",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
             "value": "",
             "constraint": [],
             "datatype": "IMAGE",
-            "controltype": "IMAGE_SELECTOR"
+            "controltype": [
+              "IMAGE_SELECTOR"
+            ]
           },
           {
             "name": "File name",
             "value": "dummy.txt",
             "constraint": [],
             "datatype": "STRING",
-            "controltype": "TEXTBOX"
+            "controltype": [
+              "TEXTBOX"
+            ]
           }
         ]
       }
@@ -319,13 +335,11 @@
       {
         "name": "Has Text",
         "funcname": "hasText",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Has No Text",
         "funcname": "hasNoText",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -344,14 +358,15 @@
       {
         "name": "Send Telemetry",
         "funcname": "sendTelemetry",
-        "type": "Active",
         "parameter": [
           {
             "name": "data",
             "value": "",
             "constraint": [],
             "datatype": "RECORD",
-            "controltype": "RECORD"
+            "controltype": [
+              "RECORD"
+            ]
           }
         ]
       }

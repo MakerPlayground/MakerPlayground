@@ -28,7 +28,6 @@ import java.util.List;
 public class Action {
     private final String name;
     private final String functionName;
-    private final ActionType type;
     private final List<Parameter> parameter;
 
     /**
@@ -38,10 +37,9 @@ public class Action {
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator
-    Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("type") ActionType type, @JsonProperty("parameter") List<Parameter> parameter) {
+    Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
         this.functionName = functionName;
-        this.type = type;
         this.parameter = Collections.unmodifiableList(parameter);
     }
 
@@ -55,10 +53,6 @@ public class Action {
 
     public String getFunctionName() {
         return functionName;
-    }
-
-    public ActionType getType() {
-        return type;
     }
 
     /**
