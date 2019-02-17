@@ -1,7 +1,7 @@
 plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.5'
-    id 'org.beryx.jlink' version '2.1.6-gradle4'
+    id 'org.beryx.jlink' version '2.3.1'
 }
 
 repositories {
@@ -53,3 +53,62 @@ jlink {
 }
 
 mainClassName = "$moduleName/io.makerplayground.ui.Main"
+version = getVersionName()
+
+task createBundle(type: Exec) {
+    description 'Build the installable bundle'
+    dependsOn 'jlink'
+    commandLine = [
+            'jpackager',
+            'create-image',
+            '--name', project.name,
+            '--version', version,
+            '--output', "${buildDir}/native-image",
+            '--runtime-image', "${buildDir}/image",
+            '--module', "${moduleName}",
+            '--jvm-args', '--add-modules javafx.controls',
+            '--jvm-args', '--add-modules javafx.fxml',
+            '--jvm-args', '--add-reads MakerPlayground.merged.module=javafx.base,javafx.graphics,javafx.controls',
+            '--jvm-args', '--add-exports javafx.base/com.sun.javafx.runtime=MakerPlayground.merged.module',
+            '--jvm-args', '--add-exports javafx.base/com.sun.javafx.collections=MakerPlayground.merged.module',
+            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control=MakerPlayground.merged.module',
+            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=MakerPlayground.merged.module',
+            '--jvm-args', '--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=MakerPlayground.merged.module',
+            '--jvm-args', '--add-exports javafx.graphics/com.sun.javafx.scene.traversal=MakerPlayground.merged.module',
+            '--jvm-args', "-m ${moduleName}/io.makerplayground.ui.Main",
+            '--verbose'
+    ]
+    doLast {
+        def versionFilePath
+        def os = org.gradle.internal.os.OperatingSystem.current()
+        if (os.isWindows()) {
+            versionFilePath = "${buildDir}/native-image/${project.name}/app"
+        } else {
+            throw new GradleException("Found unsupported operating system: ${os}")
+        }
+        copy {
+            from 'version.txt'
+            into versionFilePath
+        }
+    }
+}
+
+task versionName {
+    getVersionName()
+}
+
+def getVersionName() {
+    // use human readable name build from git commit hash or tag
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    def versionName = stdout.toString().trim()
+
+    // write version.txt file
+    def file = new File('version.txt')
+    file.write "version=${versionName}\nrelease-date=${new Date().format('yyyy-MM-dd')}"
+
+    return versionName
+}

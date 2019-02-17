@@ -45,7 +45,7 @@ public class UpdateNotifier extends Thread {
     @Override
     public void run() {
         SoftwareVersion.getLatestVersionInfo().ifPresent(version -> {
-            if (version.compareTo(SoftwareVersion.CURRENT_VERSION) > 0) {
+            if (version.compareTo(SoftwareVersion.getCurrentVersion()) > 0) {
                 Platform.runLater(() -> {
                     ImageView icon = new ImageView(new Image(getClass().getResource("/icons/download-2.png").toExternalForm()));
                     icon.setFitWidth(50);
