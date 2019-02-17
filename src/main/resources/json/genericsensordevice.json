@@ -823,11 +823,29 @@
     ],
     "value": [
       {
-        "name": "PM 2.5",
+        "name": "Atmospheric PM 1.0",
         "dataType": "DOUBLE",
         "constraint": {
           "min": 0.0,
-          "max": 300.0,
+          "max": 1000.0,
+          "unit": "MICROGRAMS_PER_CUBIC_METER"
+        }
+      },
+      {
+        "name": "Atmospheric PM 2.5",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 1000.0,
+          "unit": "MICROGRAMS_PER_CUBIC_METER"
+        }
+      },
+      {
+        "name": "Atmospheric PM 10",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 1000.0,
           "unit": "MICROGRAMS_PER_CUBIC_METER"
         }
       }
