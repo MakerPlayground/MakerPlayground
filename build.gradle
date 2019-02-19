@@ -79,14 +79,43 @@ task createBundle(type: Exec) {
             '--verbose'
     ]
     doLast {
-        def os = org.gradle.internal.os.OperatingSystem.current()
-        if (os.isWindows()) {
+        def os = System.getProperty("os.name").toLowerCase()
+        if (os.contains("win")) {
             copy {
                 from 'version.txt'
                 into "${buildDir}/native-image/${project.name}/app"
             }
             exec {
                 commandLine 'cmd', '/c', "cd .\\package\\windows && create-installer.bat ${version}"
+            }
+        } else if (os.contains("mac")) {
+            copy {
+                from 'version.txt'
+                into "${buildDir}/native-image/${project.name}.app/Contents/Java"
+            }
+            copy {
+                from 'library'
+                into "${buildDir}/native-image/${project.name}.app/Contents/Java/library"
+            }
+            copy {
+                from 'package/macosx/mp.icns'
+                into "${buildDir}/native-image/${project.name}.app/Contents/Resources"
+            }
+            // replace version number in Info.plist file
+            def plistFile = file("${buildDir}/native-image/${project.name}.app/Contents/Info.plist")
+            plistFile.write(plistFile.text.replaceAll('MP_BUILD_VERSION', version.toString()))
+            // rename app bundle
+            def macBundleName = 'Maker Playground'
+            delete "${buildDir}/native-image/${macBundleName}.app"
+            ant.move(file: "${buildDir}/native-image/${project.name}.app" , tofile: "${buildDir}/native-image/${macBundleName}.app")
+            // copy the app bundle to the package directory
+            copy {
+                from "${buildDir}/native-image/${macBundleName}.app"
+                into "package/macosx/${macBundleName}.app"
+            }
+            // create pkg installer
+            exec {
+                commandLine '/bin/sh', '-c', "cd package/macosx && ./createappbundle.sh ${version}"
             }
         } else {
             throw new GradleException("Found unsupported operating system: ${os}")
