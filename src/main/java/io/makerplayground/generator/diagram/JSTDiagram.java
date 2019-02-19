@@ -378,20 +378,24 @@ class JSTDiagram extends Pane {
         Optional<DevicePort> deviceVccPort = devicePowerPort.stream().filter(DevicePort::isVcc).findAny();
         Optional<DevicePort> deviceGroundPort = devicePowerPort.stream().filter(DevicePort::isGnd).findAny();
 
-        if (controllerVccPort.isPresent() && controllerGroundPort.isPresent()
-                && deviceVccPort.isPresent() && deviceGroundPort.isPresent()) {
+        boolean drawPower = controllerVccPort.isPresent() && deviceVccPort.isPresent();
+        boolean drawGround = controllerGroundPort.isPresent() && deviceGroundPort.isPresent();
+        if (!drawPower && !drawGround) {
+            throw new IllegalStateException("The controller has insufficient power/ground port or the device doesn't define both power and ground port.");
+        }
+        if (drawPower) {
+            usedPowerPort.add(controllerVccPort.get());
             drawWire(getTransformPortLocation(device, deviceVccPort.get()).getX(), getTransformPortLocation(device, deviceVccPort.get()).getY()
                     , ANGLE_MAP.get(deviceSideMap.get(device))
                     , controllerOffsetX + controllerVccPort.get().getX(), controllerOffsetY + controllerVccPort.get().getY()
                     , POWER_WIRE_COLOR, WIRE_WIDTH);
+        }
+        if (drawGround) {
+            usedPowerPort.add(controllerGroundPort.get());
             drawWire(getTransformPortLocation(device, deviceGroundPort.get()).getX(), getTransformPortLocation(device, deviceGroundPort.get()).getY()
                     , ANGLE_MAP.get(deviceSideMap.get(device))
                     , controllerOffsetX + controllerGroundPort.get().getX(), controllerOffsetY + controllerGroundPort.get().getY()
                     , GND_WIRE_COLOR, WIRE_WIDTH);
-            usedPowerPort.add(controllerVccPort.get());
-            usedPowerPort.add(controllerGroundPort.get());
-        } else {
-            throw new IllegalStateException("The controller has insufficient power/ground port");
         }
     }
 
