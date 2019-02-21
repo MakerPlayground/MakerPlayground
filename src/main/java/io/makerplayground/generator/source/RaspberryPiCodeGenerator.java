@@ -303,7 +303,8 @@ class RaspberryPiCodeGenerator {
 
     private void appendMainCode() {
         builder.append("if __name__ == '__main__':").append(NEW_LINE);
-        builder.append(INDENT).append("MP.unsetAllPins()").append(NEW_LINE);
+        builder.append(INDENT).append("try:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("MP.unsetAllPins()").append(NEW_LINE);
 
         // TODO: instantiate cloud platform
 //            for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
@@ -321,14 +322,16 @@ class RaspberryPiCodeGenerator {
                 .collect(Collectors.toMap(Function.identity(), this::parseConstructorCall));
 
         deviceNameMap.forEach((key, value) ->
-                builder.append(INDENT).append(parseDeviceVariableName(key))
+                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(key))
                         .append(" = ").append(value).append(NEW_LINE)
         );
 
-        builder.append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
-        builder.append(INDENT).append("while True:").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("MP.currentNode()").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("while True:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MP.currentNode()").append(NEW_LINE);
+        builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
     }
 
     private String parseConstructorCall(ProjectDevice projectDevice) {

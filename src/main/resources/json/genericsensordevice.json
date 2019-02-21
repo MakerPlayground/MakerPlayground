@@ -850,5 +850,79 @@
         }
       }
     ]
+  },
+  {
+    "name": "Joystick",
+    "description": "This is a joystick. You can detect the up, down, left, right and middle push from joystick",
+    "action": [],
+    "condition": [
+      {
+        "name": "Press up",
+        "funcname": "isUpPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press down",
+        "funcname": "isDownPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press left",
+        "funcname": "isLeftPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press right",
+        "funcname": "isRightPress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Press middle",
+        "funcname": "isMiddlePress",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press up",
+        "funcname": "isUpRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press down",
+        "funcname": "isDownRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press left",
+        "funcname": "isLeftRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press right",
+        "funcname": "isRightRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press middle",
+        "funcname": "isMiddleRelease",
+        "type": "Active",
+        "parameter": []
+      },
+      {
+        "name": "Not press all",
+        "funcname": "isAllRelease",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": []
   }
 ]

@@ -93,6 +93,8 @@ public enum Peripheral {
     SPI_0(ConnectionType.SPI),
     SPI_1(ConnectionType.SPI),
 
+    ONE_WIRE_1(ConnectionType.ONE_WIRE),
+
     UART_0(ConnectionType.UART),
     UART_1(ConnectionType.UART),
     UART_2(ConnectionType.UART),
@@ -213,6 +215,17 @@ public enum Peripheral {
     INEX_GPIO_4(ConnectionType.INEX_GPIO),
     INEX_GPIO_5(ConnectionType.INEX_GPIO),
     INEX_GPIO_6(ConnectionType.INEX_GPIO),
+    INEX_GPIO_13(ConnectionType.INEX_GPIO),
+    INEX_GPIO_14(ConnectionType.INEX_GPIO),
+    INEX_GPIO_15(ConnectionType.INEX_GPIO),
+    INEX_GPIO_17(ConnectionType.INEX_GPIO),
+    INEX_GPIO_18(ConnectionType.INEX_GPIO),
+    INEX_GPIO_22(ConnectionType.INEX_GPIO),
+    INEX_GPIO_23(ConnectionType.INEX_GPIO),
+    INEX_GPIO_24(ConnectionType.INEX_GPIO),
+    INEX_GPIO_25(ConnectionType.INEX_GPIO),
+    INEX_GPIO_26(ConnectionType.INEX_GPIO),
+    INEX_GPIO_27(ConnectionType.INEX_GPIO),
 
     INEX_PWM_1(ConnectionType.INEX_PWM),
     INEX_PWM_2(ConnectionType.INEX_PWM),
@@ -220,10 +233,19 @@ public enum Peripheral {
     INEX_PWM_4(ConnectionType.INEX_PWM),
     INEX_PWM_5(ConnectionType.INEX_PWM),
     INEX_PWM_6(ConnectionType.INEX_PWM),
+    INEX_PWM_13(ConnectionType.INEX_PWM),
+    INEX_PWM_14(ConnectionType.INEX_PWM),
+    INEX_PWM_15(ConnectionType.INEX_PWM),
+    INEX_PWM_24(ConnectionType.INEX_PWM),
+    INEX_PWM_25(ConnectionType.INEX_PWM),
+    INEX_PWM_26(ConnectionType.INEX_PWM),
+    INEX_PWM_27(ConnectionType.INEX_PWM),
+
+    INEX_ONE_WIRE_1(ConnectionType.INEX_ONE_WIRE),
 
     INEX_ANALOG_1(ConnectionType.INEX_ANALOG),
 
-    INEX_UART_1(ConnectionType.INEX_UART),
+    INEX_UART_0(ConnectionType.INEX_UART),
 
     INEX_I2C_1(ConnectionType.INEX_I2C),
 

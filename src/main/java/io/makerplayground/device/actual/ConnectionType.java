@@ -29,6 +29,7 @@ public enum ConnectionType {
     SPI,
     UART,
     POWER,
+    ONE_WIRE,
     NONE,
 
     /* Maker Playground */
@@ -59,6 +60,7 @@ public enum ConnectionType {
     INEX_I2C,
     INEX_UART,
     INEX_WS2812,
+    INEX_ONE_WIRE,
 
     /* RPI */
     RPI_CAMERA
