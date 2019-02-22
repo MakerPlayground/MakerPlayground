@@ -25,9 +25,7 @@ import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Unit;
 import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHub;
 import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
@@ -50,18 +48,28 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeStringField("name", projectDevice.getName());
         jsonGenerator.writeStringField("genericDevice", projectDevice.getGenericDevice().getName());
 
-        if (projectDevice.getActualDevice() != null) {
+        jsonGenerator.writeObjectFieldStart("actualDevice");
+        if (projectDevice.isMergeToOtherDevice()) {
+            jsonGenerator.writeStringField("type", "share");
+            jsonGenerator.writeStringField("parent", projectDevice.getParentDevice().getName());
+        } else if (projectDevice.isActualDeviceSelected()) {
             if (projectDevice.getActualDevice() instanceof IntegratedActualDevice) {
                 IntegratedActualDevice device = (IntegratedActualDevice) projectDevice.getActualDevice();
-                String id = device.getParent().getId() + "#" + device.getName();
-                jsonGenerator.writeStringField("actualDevice", id);
+//                String id = device.getParent().getId() + "#" + device.getName();
+//                jsonGenerator.writeStringField("actualDevice", id);
+                jsonGenerator.writeStringField("type", "integrated");
+                jsonGenerator.writeStringField("id", device.getParent().getId());
+                jsonGenerator.writeStringField("name", device.getModel());
             } else {
-                jsonGenerator.writeStringField("actualDevice", projectDevice.getActualDevice().getId());
+//                jsonGenerator.writeStringField("actualDevice", projectDevice.getActualDevice().getId());
+                jsonGenerator.writeStringField("type", "single");
+                jsonGenerator.writeStringField("id", projectDevice.getActualDevice().getId());
             }
 
         } else {
             jsonGenerator.writeStringField("actualDevice", "");
         }
+        jsonGenerator.writeEndObject();
 
         jsonGenerator.writeArrayFieldStart("actualDeviceConnection");
         for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDeviceConnection().entrySet()) {
@@ -98,7 +106,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("property");
-        if (projectDevice.getActualDevice() != null) {
+        if (projectDevice.isActualDeviceSelected()) {
             for (Property property : projectDevice.getActualDevice().getProperty()) {
                 Object value = projectDevice.getPropertyValue(property);
                 jsonGenerator.writeStartObject();

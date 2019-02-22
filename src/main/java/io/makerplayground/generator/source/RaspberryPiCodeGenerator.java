@@ -64,7 +64,8 @@ class RaspberryPiCodeGenerator {
         builder.append("from MakerPlayground import MP").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(ProjectDevice::isActualDeviceSelected)
+                .map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
@@ -335,7 +336,7 @@ class RaspberryPiCodeGenerator {
         StringBuilder text = new StringBuilder(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
 
         List<String> args = new ArrayList<>();
-        if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+        if (projectDevice.isActualDeviceSelected() && !projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
             // port
             for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
                 if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
@@ -548,7 +549,13 @@ class RaspberryPiCodeGenerator {
 //    }
 
     private static String parseDeviceName(ProjectDevice projectDevice) {
-        return "_" + projectDevice.getName().replace(" ", "_");
+        if (projectDevice.isActualDeviceSelected()) {
+            return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
+        } else if (projectDevice.isMergeToOtherDevice()) {
+            return "_" + projectDevice.getParentDevice().getName().replace(" ", "_").replace(".", "_");
+        } else {
+            throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
+        }
     }
 
     private static String parseProjectValue(ProjectDevice projectDevice, Value value) {

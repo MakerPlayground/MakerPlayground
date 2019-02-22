@@ -21,11 +21,11 @@ import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.dialog.devicepane.devicepanel.Callback;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by tanyagorn on 7/11/2017.
@@ -33,6 +33,7 @@ import java.util.*;
 public class ConfigActualDeviceViewModel {
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
+    private final ObjectProperty<Map<ProjectDevice, List<ProjectDevice>>> compatibleShareDeviceList;
     private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
     private Runnable platformChangedCallback;
     private Runnable controllerChangedCallback;
@@ -43,11 +44,13 @@ public class ConfigActualDeviceViewModel {
         this.project = project;
         this.compatibleDeviceList = new SimpleObjectProperty<>();
         this.compatiblePortList = new SimpleObjectProperty<>();
+        this.compatibleShareDeviceList = new SimpleObjectProperty<>();
         applyDeviceMapping();
     }
 
     private void applyDeviceMapping() {
         compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
+        compatibleShareDeviceList.set(DeviceMapper.getSupportedShareDeviceList(project));
         compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
     }
 
@@ -71,8 +74,11 @@ public class ConfigActualDeviceViewModel {
         configChangedCallback = callback;
     }
 
-    List<ActualDevice> getCompatibleDevice(ProjectDevice projectDevice) {
-        return compatibleDeviceList.get().get(projectDevice);
+    List<CompatibleDevice> getCompatibleDevice(ProjectDevice projectDevice) {
+        List<CompatibleDevice> compatibleDevices = new ArrayList<>();
+        compatibleDevices.addAll(compatibleShareDeviceList.get().get(projectDevice).stream().map(CompatibleDevice::new).collect(Collectors.toList()));
+        compatibleDevices.addAll(compatibleDeviceList.get().get(projectDevice).stream().map(CompatibleDevice::new).collect(Collectors.toList()));
+        return compatibleDevices;
     }
 
     Map<Peripheral, List<List<DevicePort>>> getCompatiblePort(ProjectDevice projectDevice) {
@@ -125,11 +131,15 @@ public class ConfigActualDeviceViewModel {
 //        return compatiblePortList;
 //    }
 
-    void setDevice(ProjectDevice projectDevice, ActualDevice device) {
-        if (projectDevice.getActualDevice() != null) {
+    void setDevice(ProjectDevice projectDevice, CompatibleDevice device) {
+        if (projectDevice.isActualDeviceSelected()) {
             projectDevice.removeAllDeviceConnection();
         }
-        projectDevice.setActualDevice(device);
+        if (device.getActualDevice() != null) {
+            projectDevice.setActualDevice(device.getActualDevice());
+        } else {
+            projectDevice.setParentDevice(device.getProjectDevice());
+        }
         applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();

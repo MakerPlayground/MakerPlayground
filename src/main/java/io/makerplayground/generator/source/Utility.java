@@ -69,6 +69,10 @@ class Utility {
 
     static boolean validateDeviceProperty(Project project) {
         for (ProjectDevice device : project.getAllDeviceUsed()) {
+            // skip device that share actual device with other project device
+            if (device.isMergeToOtherDevice()) {
+                continue;
+            }
             // check only device that has a property
             if (!device.getActualDevice().getProperty().isEmpty()) {
                 for (Property p : device.getActualDevice().getProperty()) {

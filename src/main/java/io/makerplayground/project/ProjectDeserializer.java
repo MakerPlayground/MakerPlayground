@@ -30,7 +30,6 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHub;
 import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,12 +39,15 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by USER on 14-Jul-17.
  */
 public class ProjectDeserializer extends StdDeserializer<Project> {
+
+    // map to store the name of the project device
+    private final Map<ProjectDevice, String> shareActualDeviceMap = new HashMap<>();
+
     public ProjectDeserializer() {
         this(null);
     }
@@ -88,6 +90,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             ProjectDevice projectDevice = deserializeProjectDevice(mapper, deviceNode, controller);
             deviceList.add(projectDevice);
             project.addDevice(projectDevice);
+        }
+        for (ProjectDevice projectDevice : shareActualDeviceMap.keySet()) {
+            String parentName = shareActualDeviceMap.get(projectDevice);
+            ProjectDevice parentDevice = deviceList.stream()
+                    .filter(projectDevice1 -> projectDevice1.getName().equals(parentName))
+                    .findAny().orElseThrow(() -> new IllegalStateException("Can't find project device with name = " + parentName));
+            projectDevice.setParentDevice(parentDevice);
         }
 
         Begin begin = project.getBegin();
@@ -372,32 +381,36 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             throw new IllegalStateException("Simple expression parsing fail");
         }
     }
+
     public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
 
-        String temp = node.get("actualDevice").asText();
         ActualDevice actualDevice = null;
-        if (!temp.isEmpty()) {
-            String[] tokens = temp.split("#");
-            if (tokens.length == 1) {
-                String actualDeviceId = tokens[0];
-                actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
-            } else if (tokens.length == 2) {
-                String parentActualDeviceId = tokens[0];
-                String actualDeviceName = tokens[1];
-                ActualDevice parent = DeviceLibrary.INSTANCE.getActualDevice(parentActualDeviceId);
-                if (parent == null) {
-                    throw new IllegalStateException("The actual device field could have the format of parentDeviceId#integratedDeviceName");
-                }
-                Optional<IntegratedActualDevice> deviceOptional = parent.getIntegratedDevices(actualDeviceName);
-                if (deviceOptional.isPresent()) {
-                    actualDevice = deviceOptional.get();
-                }
-            } else {
-                throw new IllegalStateException("The actual device id could not has more than one # symbol.");
+        JsonNode actualDeviceNode = node.get("actualDevice");
+        String actualDeviceType = actualDeviceNode.get("type").asText();
+        if (actualDeviceType.equals("share")) {
+            // skip for now as we will handle it below after creating the ProjectDevice instance
+        } else if (actualDeviceType.equals("integrated")) {
+            String deviceId = actualDeviceNode.get("id").asText();
+            ActualDevice parentDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
+            if (parentDevice == null) {
+                throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
             }
+            String integratedDeviceName = actualDeviceNode.get("name").asText();
+            IntegratedActualDevice integratedActualDevice = parentDevice.getIntegratedDevices(integratedDeviceName)
+                    .orElseThrow(() -> new IllegalStateException("Can't find integrated device with name (" + integratedDeviceName +")"));
+            actualDevice = integratedActualDevice;
+        } else if (actualDeviceType.equals("single")) {
+            String deviceId = actualDeviceNode.get("id").asText();
+            actualDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
+            if (actualDevice == null) {
+                throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
+            }
+        } else {
+            throw new IllegalStateException("Invalid actual device type (" +  actualDeviceType + ")");
         }
+
         Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
         for  (JsonNode connection : node.get("actualDeviceConnection")) {
             Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
@@ -475,7 +488,12 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             property.put(p, value);
         }
 
-        return new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
+
+        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);
+        if (actualDeviceType.equals("share")) {
+            shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());
+        }
+        return projectDevice;
     }
 }

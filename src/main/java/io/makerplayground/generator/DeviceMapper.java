@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
  * Created by tanyagorn on 7/11/2017.
  */
 public class DeviceMapper {
-    public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
+
+    private static Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> getConstraintMap(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
         for (ProjectDevice projectDevice : project.getDevice()) {
@@ -99,6 +100,12 @@ public class DeviceMapper {
             }
         }
 
+        return tempMap;
+    }
+
+    public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
+        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = getConstraintMap(project);
+
         // Print to see result
 //        for (ProjectDevice device : tempMap.keySet()) {
 //            System.out.println(device.getName());
@@ -143,13 +150,50 @@ public class DeviceMapper {
         return selectableDevice;
     }
 
+    public static Map<ProjectDevice, List<ProjectDevice>> getSupportedShareDeviceList(Project project) {
+        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = getConstraintMap(project);
+
+        Map<ProjectDevice, List<ProjectDevice>> result = new HashMap<>();
+        for (ProjectDevice device : project.getDevice()) {
+            result.put(device, new ArrayList<>());
+        }
+
+        if (project.getController() != null) {
+            for (ProjectDevice projectDevice : tempMap.keySet()) {
+                List<ProjectDevice> supportParentDevice = new ArrayList<>();
+
+                for (ProjectDevice parentDevice : tempMap.keySet()) {
+                    if (projectDevice == parentDevice || !parentDevice.isActualDeviceSelected()) {
+                        continue;
+                    }
+                    ActualDevice d = parentDevice.getActualDevice();
+                    if (d.isSupport(project.getController(), projectDevice.getGenericDevice(), tempMap.get(projectDevice))) {
+                        if (d.getCloudPlatform() != null) {
+                            // if this device uses a cloud platform and the controller has been selected, we accept this device
+                            // if and only if the selected controller supports the cloud platform that this device uses
+                            if (project.getController().getSupportedCloudPlatform().contains(d.getCloudPlatform())) {
+                                supportParentDevice.add(parentDevice);
+                            }
+                        } else {
+                            supportParentDevice.add(parentDevice);
+                        }
+                    }
+                }
+
+                result.put(projectDevice, supportParentDevice);
+            }
+        }
+
+        return result;
+    }
+
     public static Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> getDeviceCompatiblePort(Project project) {
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> result = new HashMap<>();
 
         if (project.getController() == null) {
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
                 result.put(projectDevice, new HashMap<>());
-                if (projectDevice.getActualDevice() != null) {
+                if (projectDevice.isActualDeviceSelected()) {
                     for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
                         result.get(projectDevice).put(peripheral, Collections.emptyList());
                 }
@@ -225,7 +269,7 @@ public class DeviceMapper {
             result.put(projectDevice, possibleDevice);
 
             // skip if device hasn't been selected
-            if (projectDevice.getActualDevice() == null) {
+            if (!projectDevice.isActualDeviceSelected()) {
                 continue;
             }
 
@@ -335,14 +379,16 @@ public class DeviceMapper {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (projectDevice.getActualDevice() == null) {
+            if (!projectDevice.isActualDeviceSelected() && !projectDevice.isMergeToOtherDevice()) {
                 return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
             }
 
             // for each connectivity required, check if it has been connected and indicate error if it hasn't
-            for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
-                if (devicePeripheral != Peripheral.NOT_CONNECTED && !projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
-                    return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
+            if (projectDevice.isActualDeviceSelected()) {
+                for (Peripheral devicePeripheral : projectDevice.getActualDevice().getConnectivity()) {
+                    if (devicePeripheral != Peripheral.NOT_CONNECTED && !projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
+                        return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
+                    }
                 }
             }
         }
@@ -367,7 +413,9 @@ public class DeviceMapper {
             }
 
             boolean done = true;
-            if (projectDevice.getActualDevice() != null) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                // skip
+            } else if (projectDevice.isActualDeviceSelected()) {
                 // try assign port based on the device that user has selected
                 done = assignPort(project, projectDevice);
             } else {

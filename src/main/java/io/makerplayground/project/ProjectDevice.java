@@ -38,6 +38,9 @@ public class ProjectDevice {
     private StringProperty name;
     private final GenericDevice genericDevice;
     private ActualDevice actualDevice;
+    private ProjectDevice parentDevice;     // this device may share the actual device with other project device in the project
+                                            // in this case actualDevice will be null and parentDevice will contain the reference
+                                            // to the other project device (only one field can have value at the same time)
     private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
     private ActualDevice dependentDevice;
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
@@ -46,9 +49,7 @@ public class ProjectDevice {
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
-        this.actualDevice = null;
         this.deviceConnection = new HashMap<>();
-        this.dependentDevice = null;
         this.dependentDeviceConnection = new HashMap<>();
         this.propertyValue = new HashMap<>();
     }
@@ -87,6 +88,7 @@ public class ProjectDevice {
 
     public void setActualDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;
+        this.parentDevice = null;
         // initialize device properties with their default value (we don't clear the map so that it looks like we save
         // the old property value when user switch back and forth between device)
         if (actualDevice != null) {
@@ -94,6 +96,23 @@ public class ProjectDevice {
                 propertyValue.put(property, property.getDefaultValue());
             }
         }
+    }
+
+    public boolean isActualDeviceSelected() {
+        return actualDevice != null;
+    }
+
+    public ProjectDevice getParentDevice() {
+        return parentDevice;
+    }
+
+    public void setParentDevice(ProjectDevice parentDevice) {
+        this.actualDevice = null;
+        this.parentDevice = parentDevice;
+    }
+
+    public boolean isMergeToOtherDevice() {
+        return parentDevice != null;
     }
 
     public Map<Peripheral, List<DevicePort>> getDeviceConnection() {
