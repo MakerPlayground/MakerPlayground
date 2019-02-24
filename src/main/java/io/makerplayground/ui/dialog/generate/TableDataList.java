@@ -38,20 +38,27 @@ public class TableDataList {
     private final String url;
 
     public TableDataList(ProjectDevice projectDevice) {
+        ProjectDevice actualDevice;
+        if (projectDevice.isMergeToOtherDevice()) {
+            actualDevice = projectDevice.getParentDevice();
+        } else {
+            actualDevice = projectDevice;
+        }
+
         this.name = projectDevice.getName();
-        this.brand = projectDevice.getActualDevice().getBrand();
-        this.model = projectDevice.getActualDevice().getModel();
-        this.id = projectDevice.getActualDevice().getId();
+        this.brand = actualDevice.getActualDevice().getBrand();
+        this.model = actualDevice.getActualDevice().getModel();
+        this.id = actualDevice.getActualDevice().getId();
         List<String> list = new ArrayList<>();
-        for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
+        for (Peripheral p : actualDevice.getActualDevice().getConnectivity()) {
             if (p.getConnectionType() != ConnectionType.I2C) {
-                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
                 if (port == null) {
                     throw new IllegalStateException("Port hasn't been selected!!!");
                 }
                 list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
             } else { //i2c and others
-                List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
+                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
                 if (port == null) {
                     throw new IllegalStateException("Port hasn't been selected!!!");
                 }
@@ -59,7 +66,7 @@ public class TableDataList {
             }
         }
         this.pin = String.join(",", list);
-        this.url = projectDevice.getActualDevice().getUrl();
+        this.url = actualDevice.getActualDevice().getUrl();
     }
 
     public String getName() { return name; }

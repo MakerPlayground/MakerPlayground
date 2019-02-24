@@ -407,8 +407,8 @@ public class ActualDevice {
     }
 
     public Optional<IntegratedActualDevice> getIntegratedDevices(String actualDeviceName) {
-        return integratedDevices.stream().filter(integratedActualDevice -> integratedActualDevice.getName()
-                .equals(actualDeviceName)).findFirst();
+        return integratedDevices.stream().filter(integratedActualDevice ->
+                integratedActualDevice.getModel().equals(actualDeviceName)).findFirst();
     }
     @Override
     public String toString() {

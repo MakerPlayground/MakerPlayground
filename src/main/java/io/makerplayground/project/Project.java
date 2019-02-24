@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -361,8 +359,9 @@ public class Project {
     }
 
     public Set<CloudPlatform> getCloudPlatformUsed() {
-        return getAllDeviceUsed().stream().filter(projectDevice -> Objects.nonNull(projectDevice.getActualDevice())
-                    && Objects.nonNull(projectDevice.getActualDevice().getCloudPlatform()))
+        return getAllDeviceUsed().stream()
+                .filter(ProjectDevice::isActualDeviceSelected)
+                .filter(projectDevice -> Objects.nonNull(projectDevice.getActualDevice().getCloudPlatform()))
                 .map(projectDevice -> projectDevice.getActualDevice().getCloudPlatform())
                 .collect(Collectors.toUnmodifiableSet());
     }

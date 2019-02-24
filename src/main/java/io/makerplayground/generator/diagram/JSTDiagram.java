@@ -78,6 +78,9 @@ class JSTDiagram extends Pane {
 
         // get side (top, left, right, bottom) of each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             if (projectDevice.getActualDevice().getFormFactor() == FormFactor.NONE) {
                 continue;
             }

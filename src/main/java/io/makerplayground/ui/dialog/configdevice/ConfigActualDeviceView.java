@@ -28,7 +28,6 @@ import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHub;
 import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -211,37 +210,12 @@ public class ConfigActualDeviceView extends VBox{
             GridPane.setConstraints(name, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
-            ComboBox<ActualDevice> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            ComboBox<CompatibleDevice> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
             deviceComboBox.setId("deviceComboBox");
-            deviceComboBox.setCellFactory(new Callback<>() {
-                @Override
-                public ListCell<ActualDevice> call(ListView<ActualDevice> param) {
-                    return new ListCell<>() {
-                        @Override
-                        protected void updateItem(ActualDevice item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setText("");
-                            } else {
-                                setText(item.getBrand() + " " + item.getModel());
-                            }
-                        }
-                    };
-                }
-            });
-            deviceComboBox.setButtonCell(new ListCell<>() {
-                @Override
-                protected void updateItem(ActualDevice item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setText("");
-                    } else {
-                        setText(item.getBrand() + " " + item.getModel());
-                    }
-                }
-            });
-            if (projectDevice.getActualDevice() != null) {
-                deviceComboBox.getSelectionModel().select(projectDevice.getActualDevice());
+            if (projectDevice.isActualDeviceSelected()) {
+                deviceComboBox.getSelectionModel().select(new CompatibleDevice(projectDevice.getActualDevice()));
+            } else if (projectDevice.isMergeToOtherDevice()) {
+                deviceComboBox.getSelectionModel().select(new CompatibleDevice(projectDevice.getParentDevice()));
             }
             deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 viewModel.setDevice(projectDevice, newValue);
@@ -261,8 +235,8 @@ public class ConfigActualDeviceView extends VBox{
 
             Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
             // We only show port combobox and property textfield when the device has been selected
-            ActualDevice actualDevice = projectDevice.getActualDevice();
-            if (actualDevice != null) {
+            if (projectDevice.isActualDeviceSelected()) {
+                ActualDevice actualDevice = projectDevice.getActualDevice();
                 if (!actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
                     viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
                 } else {

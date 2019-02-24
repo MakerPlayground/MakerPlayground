@@ -65,9 +65,6 @@ class WireAndBreadboardDiagram extends Pane {
     private static final double J1_POS_Y = 72;
 
     private static final double CONTROLLER_Y_MARGIN = 30;
-    private static final double GROVE_FONT_SIZE = 30;
-    private static final double GROVE_Y_MARGIN = 30;
-    private static final double GROVE_X_MARGIN = 20;
     private static final int STROKE_WIDTH = 3;
     private static final double DEVICE_MARGIN = 10;
 
@@ -111,16 +108,10 @@ class WireAndBreadboardDiagram extends Pane {
         lastY += CONTROLLER_Y_MARGIN;
         ActualDevice controller = project.getController();
         ImageView controllerImage = null;
-        if(useGrove()){
-            String controllerFilename = "/device/Seeed-103030000.png";
-            controllerImage = new ImageView(new Image(getClass().getResourceAsStream(controllerFilename)));
-        }
-        else{
-            try (InputStream controllerImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, controller.getId(), "asset", "controller.png"))){
-                controllerImage = new ImageView(new Image(controllerImageStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try (InputStream controllerImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, controller.getId(), "asset", "controller.png"))){
+            controllerImage = new ImageView(new Image(controllerImageStream));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
             currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
@@ -146,6 +137,9 @@ class WireAndBreadboardDiagram extends Pane {
         int deviceCount = 0;
         int maxHeight = 0;
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             ActualDevice device = projectDevice.getActualDevice();
             if (device instanceof IntegratedActualDevice) {
                 continue;
@@ -192,58 +186,6 @@ class WireAndBreadboardDiagram extends Pane {
             }
         }
         lastY += (maxHeight + CONTROLLER_Y_MARGIN);
-
-        // draw grove devices
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            lastX = BREADBOARD_LEFT_MARGIN;
-            ActualDevice device = projectDevice.getActualDevice();
-            if (device instanceof IntegratedActualDevice) {
-                continue;
-            }
-            if (device.getFormFactor() == FormFactor.NONE) {
-                continue; // prevent the image file loading.
-            }
-            try (InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, device.getId(), "asset", "device.png"))) {
-                ImageView deviceImage = new ImageView(new Image(deviceImageStream));
-                Text text = new Text();
-                text.setFont(Font.font(GROVE_FONT_SIZE));
-                if (device.getFormFactor() == FormFactor.GROVE) {
-                    lastY += GROVE_Y_MARGIN;
-                    deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY));
-                    lastX = lastX + device.getWidth() + GROVE_X_MARGIN;
-                    for(Peripheral p : device.getConnectivity()) {
-                        ConnectionType conn = p.getConnectionType();
-                        String str = "connects to ";
-                        if(conn == ConnectionType.ANALOG) {
-                            List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
-                            Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
-                            str += selectedPort.get();
-                        } else if (conn == ConnectionType.GPIO) {
-                            List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
-                            Optional<String> selectedPort = ports.stream().map(DevicePort::getName).min(String::compareTo);
-                            str += ("D" + selectedPort.get());
-                        }
-                        else if (conn == ConnectionType.I2C) {
-                            str += "I2C";
-                        }
-                        text.setText(str);
-                        text.setLayoutX(lastX);
-                        text.setLayoutY(lastY + device.getHeight() / 2);
-                    }
-                    lastY = lastY + device.getHeight();
-                } else {
-                    continue;
-                }
-                deviceImage.setLayoutX(deviceTopLeftPos.get(projectDevice).getX());
-                deviceImage.setLayoutY(deviceTopLeftPos.get(projectDevice).getY());
-
-                this.getChildren().add(deviceImage);
-                this.getChildren().add(text);
-                deviceCount++;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
         int numberOfPwrPinUsed = 0;
         int numberOfGndPinUsed = 1;
@@ -312,6 +254,9 @@ class WireAndBreadboardDiagram extends Pane {
 
         // connect power for other devices excepts grove
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             ActualDevice device = projectDevice.getActualDevice();
             List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
 
@@ -471,6 +416,9 @@ class WireAndBreadboardDiagram extends Pane {
             }
 
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+                if (projectDevice.isMergeToOtherDevice()) {
+                    continue;
+                }
                 ActualDevice device = projectDevice.getActualDevice();
                 if (device.getFormFactor() == FormFactor.SHIELD) {
                     continue;
@@ -522,6 +470,9 @@ class WireAndBreadboardDiagram extends Pane {
 
         // connect SPI, UART, PWM, GPIO, ...
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             ActualDevice device = projectDevice.getActualDevice();
             if (device instanceof IntegratedActualDevice) {
                 continue;
@@ -588,20 +539,14 @@ class WireAndBreadboardDiagram extends Pane {
                                                 FormFactor.BREADBOARD_CUSTOM);
         int countStandAlone = 0;
         for(ProjectDevice device : project.getAllDeviceUsed()) {
+            if (device.isMergeToOtherDevice()) {
+                continue;
+            }
             FormFactor f = device.getActualDevice().getFormFactor();
             if(f == FormFactor.STANDALONE){
                 countStandAlone += 1;
             }
             if(formFactors.contains(f) || countStandAlone > 1) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean useGrove() {
-        for(ProjectDevice device : project.getAllDeviceUsed()) {
-            if(device.getActualDevice().getFormFactor() == FormFactor.GROVE) {
                 return true;
             }
         }

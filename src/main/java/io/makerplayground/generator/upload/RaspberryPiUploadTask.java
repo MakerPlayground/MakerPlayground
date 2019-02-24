@@ -101,6 +101,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         updateMessage("Preparing to generate project");
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
+                .filter(ProjectDevice::isActualDeviceSelected)
                 .map(ProjectDevice::getActualDevice)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));

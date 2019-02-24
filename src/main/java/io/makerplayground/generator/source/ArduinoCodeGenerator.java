@@ -9,7 +9,6 @@ import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHub;
 import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.text.DecimalFormat;
@@ -70,7 +69,8 @@ class ArduinoCodeGenerator {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(ProjectDevice::isActualDeviceSelected)
+                .map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseIncludeStatement(s)).append(NEW_LINE));
@@ -114,6 +114,10 @@ class ArduinoCodeGenerator {
 
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            // skip device that share actual device with other project device
+            if (!projectDevice.isActualDeviceSelected()) {
+                continue;
+            }
             builder.append(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()))
                     .append(" ").append(parseDeviceVariableName(projectDevice));
             List<String> args = new ArrayList<>();
@@ -218,6 +222,9 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             String variableName = parseDeviceVariableName(projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
@@ -255,6 +262,9 @@ class ArduinoCodeGenerator {
 
         // allow all devices to perform their own tasks
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             builder.append(INDENT).append(parseDeviceVariableName(projectDevice)).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
@@ -290,6 +300,9 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (projectDevice.isMergeToOtherDevice()) {
+                continue;
+            }
             builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(projectDevice))
                     .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
@@ -614,8 +627,7 @@ class ArduinoCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return "_" + value.getDevice().getName().replace(" ", "_") + "_"
-                    + value.getValue().getName().replace(" ", "_").replace(".", "_");
+            return parseValueVariableName(value.getDevice(), value.getValue());
         } else if (term instanceof RecordTerm) {
             RecordTerm term1 = (RecordTerm) term;
             return "Record(" + term1.getValue().getEntryList().stream()
@@ -655,7 +667,13 @@ class ArduinoCodeGenerator {
     }
 
     private static String parseDeviceVariableName(ProjectDevice projectDevice) {
-        return "_" + projectDevice.getName().replace(" ", "_").replace(".","_");
+        if (projectDevice.isActualDeviceSelected()) {
+            return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
+        } else if (projectDevice.isMergeToOtherDevice()) {
+            return "_" + projectDevice.getParentDevice().getName().replace(" ", "_").replace(".", "_");
+        } else {
+            throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
+        }
     }
 
     private static String parseValueVariableName(ProjectDevice projectDevice, Value value) {
