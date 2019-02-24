@@ -50,7 +50,7 @@ public class ConfigActualDeviceViewModel {
 
     private void applyDeviceMapping() {
         compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
-        compatibleShareDeviceList.set(DeviceMapper.getSupportedShareDeviceList(project));
+        compatibleShareDeviceList.set(DeviceMapper.getShareableDeviceList(project));
         compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
     }
 

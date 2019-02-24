@@ -18,6 +18,7 @@ package io.makerplayground.generator;
 
 import io.makerplayground.device.*;
 import io.makerplayground.device.actual.*;
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
@@ -150,20 +151,33 @@ public class DeviceMapper {
         return selectableDevice;
     }
 
-    public static Map<ProjectDevice, List<ProjectDevice>> getSupportedShareDeviceList(Project project) {
+    public static Map<ProjectDevice, List<ProjectDevice>> getShareableDeviceList(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = getConstraintMap(project);
+
+        // build a map with list of generic device type that each project device has been used for example if humidity1 and altimeter1
+        // are selected to share device with temperature1. map will contain mapping for from temperature1 (project device) to list of
+        // humidity (generic device) and altimeter (generic device)
+        Map<ProjectDevice, List<GenericDevice>> mergedDeviceMap = new HashMap<>();
+        for (ProjectDevice device : project.getDevice()) {
+            mergedDeviceMap.put(device, new ArrayList<>());
+        }
+        for (ProjectDevice device : project.getDevice()) {
+            if (device.isMergeToOtherDevice()) {
+                mergedDeviceMap.get(device.getParentDevice()).add(device.getGenericDevice());
+            }
+        }
 
         Map<ProjectDevice, List<ProjectDevice>> result = new HashMap<>();
         for (ProjectDevice device : project.getDevice()) {
             result.put(device, new ArrayList<>());
         }
-
         if (project.getController() != null) {
-            for (ProjectDevice projectDevice : tempMap.keySet()) {
-                List<ProjectDevice> supportParentDevice = new ArrayList<>();
-
+            for (ProjectDevice projectDevice : project.getDevice()) {
                 for (ProjectDevice parentDevice : tempMap.keySet()) {
-                    if (projectDevice == parentDevice || !parentDevice.isActualDeviceSelected()) {
+                    if (projectDevice == parentDevice   // prevent sharing with ourselves
+                            || !parentDevice.isActualDeviceSelected()   // skip if the actual device hasn't been selected or if this device shares an actual device with other device
+                            || projectDevice.getGenericDevice() == parentDevice.getGenericDevice()  // skip if the device has identical generic type e.g. temperature1 can't be merged with temperature2
+                            || mergedDeviceMap.get(parentDevice).contains(projectDevice.getGenericDevice())) {    // skip if this device has been selected by other device with the same generic type
                         continue;
                     }
                     ActualDevice d = parentDevice.getActualDevice();
@@ -172,18 +186,15 @@ public class DeviceMapper {
                             // if this device uses a cloud platform and the controller has been selected, we accept this device
                             // if and only if the selected controller supports the cloud platform that this device uses
                             if (project.getController().getSupportedCloudPlatform().contains(d.getCloudPlatform())) {
-                                supportParentDevice.add(parentDevice);
+                                result.get(projectDevice).add(parentDevice);
                             }
                         } else {
-                            supportParentDevice.add(parentDevice);
+                            result.get(projectDevice).add(parentDevice);
                         }
                     }
                 }
-
-                result.put(projectDevice, supportParentDevice);
             }
         }
-
         return result;
     }
 
