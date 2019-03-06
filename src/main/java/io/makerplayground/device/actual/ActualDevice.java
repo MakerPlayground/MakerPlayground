@@ -324,6 +324,10 @@ public class ActualDevice {
         return port.stream().filter(devicePort -> devicePort.hasPeripheral(peripheral)).collect(Collectors.toList());
     }
 
+    public List<DevicePort> getPort(ConnectionType connectionType) {
+        return port.stream().filter(devicePort -> devicePort.hasConnectionType(connectionType)).collect(Collectors.toList());
+    }
+
     public List<List<DevicePort>> getI2CPort() {
         List<List<DevicePort>> result = new ArrayList<>();
 

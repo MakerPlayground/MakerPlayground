@@ -101,12 +101,14 @@ public enum Peripheral {
     UART_3(ConnectionType.UART),
     UART_4(ConnectionType.UART),
 
+    ANALOG_0(ConnectionType.ANALOG),
     ANALOG_1(ConnectionType.ANALOG),
     ANALOG_2(ConnectionType.ANALOG),
     ANALOG_3(ConnectionType.ANALOG),
     ANALOG_4(ConnectionType.ANALOG),
     ANALOG_5(ConnectionType.ANALOG),
     ANALOG_6(ConnectionType.ANALOG),
+    ANALOG_7(ConnectionType.ANALOG),
 
     MP_INT_UART_1(ConnectionType.MP_INT_UART),
 
@@ -215,6 +217,8 @@ public enum Peripheral {
     INEX_GPIO_4(ConnectionType.INEX_GPIO),
     INEX_GPIO_5(ConnectionType.INEX_GPIO),
     INEX_GPIO_6(ConnectionType.INEX_GPIO),
+    INEX_GPIO_11(ConnectionType.INEX_GPIO),
+    INEX_GPIO_12(ConnectionType.INEX_GPIO),
     INEX_GPIO_13(ConnectionType.INEX_GPIO),
     INEX_GPIO_14(ConnectionType.INEX_GPIO),
     INEX_GPIO_15(ConnectionType.INEX_GPIO),
@@ -233,6 +237,7 @@ public enum Peripheral {
     INEX_PWM_4(ConnectionType.INEX_PWM),
     INEX_PWM_5(ConnectionType.INEX_PWM),
     INEX_PWM_6(ConnectionType.INEX_PWM),
+    INEX_PWM_11(ConnectionType.INEX_PWM),
     INEX_PWM_13(ConnectionType.INEX_PWM),
     INEX_PWM_14(ConnectionType.INEX_PWM),
     INEX_PWM_15(ConnectionType.INEX_PWM),
@@ -244,10 +249,12 @@ public enum Peripheral {
     INEX_ONE_WIRE_1(ConnectionType.INEX_ONE_WIRE),
 
     INEX_ANALOG_1(ConnectionType.INEX_ANALOG),
+    INEX_ANALOG_6(ConnectionType.INEX_ANALOG),
 
     INEX_UART_0(ConnectionType.INEX_UART),
 
     INEX_I2C_1(ConnectionType.INEX_I2C),
+    INEX_SPI_1(ConnectionType.INEX_SPI),
 
     INEX_WS2812_1(ConnectionType.INEX_WS2812),
 

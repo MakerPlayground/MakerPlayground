@@ -61,7 +61,9 @@ public enum ConnectionType {
     INEX_UART,
     INEX_WS2812,
     INEX_ONE_WIRE,
+    INEX_SPI,
 
     /* RPI */
-    RPI_CAMERA
+    RPI_CAMERA;
+
 }

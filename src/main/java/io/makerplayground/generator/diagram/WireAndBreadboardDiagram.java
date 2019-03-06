@@ -17,12 +17,7 @@
 package io.makerplayground.generator.diagram;
 
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DevicePort;
-import io.makerplayground.device.actual.IntegratedActualDevice;
-import io.makerplayground.device.actual.ConnectionType;
-import io.makerplayground.device.actual.FormFactor;
-import io.makerplayground.device.actual.Peripheral;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.image.Image;
@@ -33,8 +28,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +35,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.List;
 
 class WireAndBreadboardDiagram extends Pane {
     private static final double BREADBOARD_TOP_MARGIN = 100;
@@ -381,7 +373,7 @@ class WireAndBreadboardDiagram extends Pane {
         // connect i2c on breadboard
         double sdaStartX = 0, sdaStartY = 0;
         double sclStartX = 0, sclStartY = 0;
-        List<DevicePort> controllerI2CPort = controller.getPort(Peripheral.I2C_1);  // TODO: assume that we have only 1 I2C
+        List<DevicePort> controllerI2CPort = controller.getPort(ConnectionType.I2C);  // TODO: assume that we have only 1 I2C
         if (!controllerI2CPort.isEmpty()) {
             DevicePort startSDA = controllerI2CPort.stream().filter(DevicePort::isSDA).findFirst().get();
             DevicePort startSCL = controllerI2CPort.stream().filter(DevicePort::isSCL).findFirst().get();
