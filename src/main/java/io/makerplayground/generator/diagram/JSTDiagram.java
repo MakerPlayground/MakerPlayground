@@ -260,7 +260,7 @@ class JSTDiagram extends Pane {
 
             if (devicePort.size() == 1 && controllerPort.size() == 1
                     && devicePort.get(0).getType().getPinCount() > 1 && controllerPort.get(0).getType().getPinCount() > 1
-                    && devicePort.get(0).getType() == controllerPort.get(0).getType()) {   // JST to JST device (works with MP, GROVE and INEX)
+                    && devicePort.get(0).getType() == controllerPort.get(0).getType()) {   // JST to JST device (works with MP, GROVE, JR3_SERVO and INEX)
                 drawJSTToJSTConnector(device, devicePort.get(0), controllerPort.get(0));
             } else if (controllerPort.stream().allMatch(port -> port.isSplittedPort() && (port.getParent().getType() == DevicePortType.MP))) {   // MP to breakout board (only MP port can be split)
                 drawPinHeaderToMPSignal(device, devicePort, controllerPort);

@@ -224,6 +224,7 @@ public enum Peripheral {
     INEX_GPIO_15(ConnectionType.INEX_GPIO),
     INEX_GPIO_17(ConnectionType.INEX_GPIO),
     INEX_GPIO_18(ConnectionType.INEX_GPIO),
+    INEX_GPIO_20(ConnectionType.INEX_GPIO),
     INEX_GPIO_22(ConnectionType.INEX_GPIO),
     INEX_GPIO_23(ConnectionType.INEX_GPIO),
     INEX_GPIO_24(ConnectionType.INEX_GPIO),
@@ -257,6 +258,9 @@ public enum Peripheral {
     INEX_SPI_1(ConnectionType.INEX_SPI),
 
     INEX_WS2812_1(ConnectionType.INEX_WS2812),
+
+    JR3_SERVO_PWM_1(ConnectionType.JR3_SERVO),
+    JR3_SERVO_PWM_2(ConnectionType.JR3_SERVO),
 
     RPI_CAMERA(ConnectionType.RPI_CAMERA),
 

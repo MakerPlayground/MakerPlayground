@@ -15,7 +15,8 @@ public enum DevicePortType {
             Color.BLUE, Color.ANTIQUEWHITE, Color.BLUE, Color.ANTIQUEWHITE, Color.BLUE,
             Color.ANTIQUEWHITE, Color.BLUE, Color.ANTIQUEWHITE, Color.BLUE, Color.ANTIQUEWHITE, Color.BLUE),
             15, 0.5),
-    VIRTUAL(Collections.emptyList(), 0, 0);     // TODO: this field is deprecated and will be removed after the device mapping algorithm is fixed to accept device without any port
+    VIRTUAL(Collections.emptyList(), 0, 0),     // TODO: this field is deprecated and will be removed after the device mapping algorithm is fixed to accept device without any port
+    JR3_SERVO(List.of(Color.BLACK, Color.web("#EB2427"), Color.web("#FEE600")), 3, 2.2);
 
     private List<Color> wireColor;  // default color of wire
     private int pinCount;           // number of pin in the connector

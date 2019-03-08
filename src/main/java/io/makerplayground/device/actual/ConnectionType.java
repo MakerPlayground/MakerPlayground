@@ -63,6 +63,9 @@ public enum ConnectionType {
     INEX_ONE_WIRE,
     INEX_SPI,
 
+    /* JR3 Family */
+    JR3_SERVO,
+
     /* RPI */
     RPI_CAMERA;
 
