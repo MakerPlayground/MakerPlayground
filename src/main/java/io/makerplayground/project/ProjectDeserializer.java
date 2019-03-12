@@ -387,28 +387,31 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
 
         ActualDevice actualDevice = null;
+        String actualDeviceType = null;
         JsonNode actualDeviceNode = node.get("actualDevice");
-        String actualDeviceType = actualDeviceNode.get("type").asText();
-        if (actualDeviceType.equals("share")) {
-            // skip for now as we will handle it below after creating the ProjectDevice instance
-        } else if (actualDeviceType.equals("integrated")) {
-            String deviceId = actualDeviceNode.get("id").asText();
-            ActualDevice parentDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
-            if (parentDevice == null) {
-                throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
+        if (actualDeviceNode.has("type")) {
+            actualDeviceType = actualDeviceNode.get("type").asText();
+            if (actualDeviceType.equals("share")) {
+                // skip for now as we will handle it below after creating the ProjectDevice instance
+            } else if (actualDeviceType.equals("integrated")) {
+                String deviceId = actualDeviceNode.get("id").asText();
+                ActualDevice parentDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
+                if (parentDevice == null) {
+                    throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
+                }
+                String integratedDeviceName = actualDeviceNode.get("name").asText();
+                IntegratedActualDevice integratedActualDevice = parentDevice.getIntegratedDevices(integratedDeviceName)
+                        .orElseThrow(() -> new IllegalStateException("Can't find integrated device with name (" + integratedDeviceName + ")"));
+                actualDevice = integratedActualDevice;
+            } else if (actualDeviceType.equals("single")) {
+                String deviceId = actualDeviceNode.get("id").asText();
+                actualDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
+                if (actualDevice == null) {
+                    throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
+                }
+            } else {
+                throw new IllegalStateException("Invalid actual device type (" + actualDeviceType + ")");
             }
-            String integratedDeviceName = actualDeviceNode.get("name").asText();
-            IntegratedActualDevice integratedActualDevice = parentDevice.getIntegratedDevices(integratedDeviceName)
-                    .orElseThrow(() -> new IllegalStateException("Can't find integrated device with name (" + integratedDeviceName +")"));
-            actualDevice = integratedActualDevice;
-        } else if (actualDeviceType.equals("single")) {
-            String deviceId = actualDeviceNode.get("id").asText();
-            actualDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
-            if (actualDevice == null) {
-                throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
-            }
-        } else {
-            throw new IllegalStateException("Invalid actual device type (" +  actualDeviceType + ")");
         }
 
         Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
@@ -491,7 +494,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);
-        if (actualDeviceType.equals("share")) {
+        if (actualDevice != null && actualDeviceType.equals("share")) {
             shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());
         }
         return projectDevice;

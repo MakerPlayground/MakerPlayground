@@ -65,9 +65,6 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
                 jsonGenerator.writeStringField("type", "single");
                 jsonGenerator.writeStringField("id", projectDevice.getActualDevice().getId());
             }
-
-        } else {
-            jsonGenerator.writeStringField("actualDevice", "");
         }
         jsonGenerator.writeEndObject();
 
