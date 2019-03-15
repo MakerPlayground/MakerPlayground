@@ -494,7 +494,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);
-        if (actualDevice != null && actualDeviceType.equals("share")) {
+        if (actualDeviceNode.has("type") && actualDeviceType.equals("share")) {
             shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());
         }
         return projectDevice;
