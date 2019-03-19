@@ -215,7 +215,7 @@ class ArduinoCodeGenerator {
             String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
             builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR_P(").append(cloudPlatformVariableName).append(", \"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -228,7 +228,7 @@ class ArduinoCodeGenerator {
             String variableName = parseDeviceVariableName(projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(").append(variableName).append(", \"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
