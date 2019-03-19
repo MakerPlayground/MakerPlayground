@@ -359,6 +359,12 @@ public class DeviceMapper {
                             }
                         } else if (pDevice.getConnectionType() == ConnectionType.INEX_UART) {   // order must be preserved
                             throw new UnsupportedOperationException();
+                        } else if (pDevice.getConnectionType() == ConnectionType.UART) {
+                            Optional<DevicePort> rxPort = possiblePort.stream().filter(DevicePort::isRX).findAny();
+                            Optional<DevicePort> txPort = possiblePort.stream().filter(DevicePort::isTX).findAny();
+                            if (rxPort.isPresent() && txPort.isPresent()) {
+                                possibleDevice.get(pDevice).add(List.of(rxPort.get(), txPort.get()));
+                            }
                         } else {
                             // for each port in the possible port list, add to the result if it supported
                             for (DevicePort pPort : possiblePort) {

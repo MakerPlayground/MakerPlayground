@@ -69,4 +69,26 @@ public enum ConnectionType {
     /* RPI */
     RPI_CAMERA;
 
+    public boolean isGPIO() {
+        return (this == MP_GPIO_SINGLE) || (this == MP_GPIO_DUAL) || (this == GROVE_GPIO_SINGLE)
+                || (this == GROVE_GPIO_DUAL) || (this == INEX_GPIO);
+    }
+
+    public boolean isPWM() {
+        return (this == MP_PWM_SINGLE) || (this == MP_PWM_DUAL) || (this == GROVE_PWM_SINGLE)
+                || (this == GROVE_PWM_DUAL) || (this == INEX_PWM);
+    }
+
+    public boolean isAnalog() {
+        return (this == MP_ANALOG_SINGLE) || (this == MP_ANALOG_DUAL) || (this == GROVE_ANALOG_SINGLE)
+                || (this == GROVE_ANALOG_DUAL) || (this == INEX_ANALOG);
+    }
+
+    public boolean isI2C() {
+        return (this == MP_I2C) || (this == GROVE_I2C) || (this == INEX_I2C);
+    }
+
+    public boolean isUART() {
+        return (this == GROVE_UART) || (this == INEX_UART);
+    }
 }

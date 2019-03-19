@@ -118,40 +118,27 @@ public class ActualDevice {
             List<Peripheral> gpioList = new ArrayList<>(Peripheral.values(ConnectionType.GPIO));
             List<Peripheral> pwmList = new ArrayList<>(Peripheral.values(ConnectionType.PWM));
             List<Peripheral> analogList = new ArrayList<>(Peripheral.values(ConnectionType.ANALOG));
+            List<Peripheral> uartList = new ArrayList<>(Peripheral.values(ConnectionType.UART));
 
             Map<DevicePort, Set<Peripheral>> portToPeripheralMap = new HashMap<>();
             Map<Peripheral, Peripheral> oldToNewPeripheralMap = new HashMap<>();
-//            boolean hasI2C = false;
             for (DevicePort devicePort : port) {
+                if (devicePort.getType() == DevicePortType.INTERNAL || devicePort.getType() == DevicePortType.VIRTUAL) {
+                    continue;
+                }
                 Map<Peripheral, Peripheral> splitMap = new HashMap<>();
-                if (devicePort.hasConnectionType(ConnectionType.MP_PWM_SINGLE)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_PWM_SINGLE).get();
-                    splitMap.put(peripheral, pwmList.remove(0));
-                }
-                if (devicePort.hasConnectionType(ConnectionType.MP_PWM_DUAL)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_PWM_DUAL).get();
-                    splitMap.put(peripheral, pwmList.remove(0));
-                }
-                if (devicePort.hasConnectionType(ConnectionType.MP_GPIO_SINGLE)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_GPIO_SINGLE).get();
-                    splitMap.put(peripheral, gpioList.remove(0));
-                }
-                if (devicePort.hasConnectionType(ConnectionType.MP_GPIO_DUAL)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_GPIO_DUAL).get();
-                    splitMap.put(peripheral, gpioList.remove(0));
-                }
-                if (devicePort.hasConnectionType(ConnectionType.MP_ANALOG_SINGLE)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_ANALOG_SINGLE).get();
-                    splitMap.put(peripheral, analogList.remove(0));
-                }
-                if (devicePort.hasConnectionType(ConnectionType.MP_ANALOG_DUAL)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_ANALOG_DUAL).get();
-                    splitMap.put(peripheral, analogList.remove(0));
-                }
-                if (/*!hasI2C &&*/ devicePort.hasConnectionType(ConnectionType.MP_I2C)) {
-                    Peripheral peripheral = devicePort.getPeripheral(ConnectionType.MP_I2C).get();
-                    splitMap.put(peripheral, Peripheral.I2C_1);
-//                    hasI2C = true;
+                for (Peripheral peripheral : devicePort.getPeripheral()) {
+                    if (peripheral.getConnectionType().isGPIO()) {
+                        splitMap.put(peripheral, gpioList.remove(0));
+                    } else if (peripheral.getConnectionType().isPWM()) {
+                        splitMap.put(peripheral, pwmList.remove(0));
+                    } else if (peripheral.getConnectionType().isAnalog()) {
+                        splitMap.put(peripheral, analogList.remove(0));
+                    } else if (peripheral.getConnectionType().isI2C()) {
+                        splitMap.put(peripheral, Peripheral.I2C_1);
+                    } else if (peripheral.getConnectionType().isUART()) {
+                        splitMap.put(peripheral, uartList.remove(0));
+                    }
                 }
                 if (!splitMap.isEmpty()) {
                     portToPeripheralMap.put(devicePort, splitMap.keySet());
@@ -176,12 +163,21 @@ public class ActualDevice {
                     }
                     newConflictPeripheral.addAll(originalPort.getPeripheral());  // add conflict to original peripherals as both can't be used simultaneously
 
-                    if (splitPeripheral.getConnectionType() == ConnectionType.MP_I2C) {
+                    if (splitPeripheral.getConnectionType() == ConnectionType.MP_I2C || splitPeripheral.getConnectionType() == ConnectionType.GROVE_I2C) {
                         firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SCL));
                         secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SDA));
-                    } else if (splitPeripheral.isMPSingle()) {
+                    } else if (splitPeripheral.getConnectionType() == ConnectionType.INEX_I2C) {
+                        if (originalPort.isSDA()) {
+                            firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SDA));
+                        } else {
+                            firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.I2C_SCL));
+                        }
+                    } else if (splitPeripheral.getConnectionType() == ConnectionType.GROVE_UART) {
+                        firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.UART_RX));
+                        secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.UART_TX));
+                    } else if (splitPeripheral.isSingle()) {
                         firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
-                    } else if (splitPeripheral.isMPDual()) {
+                    } else if (splitPeripheral.isDual()) {
                         secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
                     }
                 }

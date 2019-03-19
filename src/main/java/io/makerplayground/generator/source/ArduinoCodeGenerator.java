@@ -124,7 +124,8 @@ class ArduinoCodeGenerator {
             if (!projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
                 // port
                 for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
+                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)
+                            && (p.getConnectionType() != ConnectionType.UART)) {
                         List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
                         if (port == null) {
                             throw new IllegalStateException("Port hasn't been selected!!!");

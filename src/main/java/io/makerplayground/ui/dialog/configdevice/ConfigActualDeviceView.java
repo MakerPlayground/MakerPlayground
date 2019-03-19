@@ -295,6 +295,8 @@ public class ConfigActualDeviceView extends VBox{
                         String portName;
                         if (p.getConnectionType() == ConnectionType.I2C) {
                             portName = "I2C";
+                        } else if (p.getConnectionType() == ConnectionType.UART) {
+                            portName = "UART";
                         } else {
                             portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
                         }

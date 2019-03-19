@@ -9,13 +9,13 @@ public class WiringDiagram {
     public static Pane make(Project project) {
         Pane wiringDiagram;
         switch(project.getController().getWiringMethod()) {
-            case GROVE:
             case WIRE_AND_BREADBOARD:
             case KIDBRIGHT:
                 wiringDiagram = new WireAndBreadboardDiagram(project);
                 break;
             case MP:
             case INEX:
+            case GROVE:
                 wiringDiagram = new JSTDiagram(project);
                 break;
             default:
