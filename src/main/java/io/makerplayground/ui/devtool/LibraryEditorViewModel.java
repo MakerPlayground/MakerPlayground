@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devtool;
 
 public class LibraryEditorViewModel {
     private String libraryName;

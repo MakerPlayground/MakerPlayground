@@ -1,6 +1,10 @@
 package io.makerplayground.ui;
 
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.ui.devtool.DeviceJsonEditorView;
+import io.makerplayground.ui.devtool.DeviceJsonEditorViewModel;
+import io.makerplayground.ui.devtool.LibraryEditorView;
+import io.makerplayground.ui.devtool.LibraryEditorViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;

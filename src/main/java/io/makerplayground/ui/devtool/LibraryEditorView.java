@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devtool;
 
 import javafx.scene.Node;
 

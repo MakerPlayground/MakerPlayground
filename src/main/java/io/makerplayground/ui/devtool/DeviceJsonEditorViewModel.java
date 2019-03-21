@@ -1,4 +1,4 @@
-package io.makerplayground.ui;
+package io.makerplayground.ui.devtool;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,11 +17,10 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @JsonSerialize
-class DeviceJsonEditorViewModel {
+public class DeviceJsonEditorViewModel {
 
     @JsonIgnore
     private static final String USER_DEVICE_PATH = System.getProperty("user.home") + File.separator + ".makerplayground" + File.separator + "developer_devices";
@@ -51,7 +49,7 @@ class DeviceJsonEditorViewModel {
         }
     }
 
-    class Port {
+    static class Port {
         String name;
         DevicePortType type;
         DevicePortSubType sub_type;
@@ -174,7 +172,7 @@ class DeviceJsonEditorViewModel {
     private ObservableList<PlatformCompatibility> platforms;
     private ObservableList<CloudPlatformCompatibility> support_cloudplatform;
 
-    DeviceJsonEditorViewModel(String deviceId) {
+    public DeviceJsonEditorViewModel(String deviceId) {
         this.deviceId = deviceId;
         this.deviceJsonFile = new File(USER_DEVICE_PATH + File.separator + deviceId + File.separator + "device.json");
         this.devicePngFile = new File(USER_DEVICE_PATH + File.separator + deviceId + File.separator + "/asset/device.png");
@@ -201,19 +199,19 @@ class DeviceJsonEditorViewModel {
 
     @JsonCreator
     public DeviceJsonEditorViewModel(@JsonProperty("deviceId") String deviceId,
-                                     @JsonProperty("brand") String brand,
-                                     @JsonProperty("model") String model,
-                                     @JsonProperty("url") String url,
-                                     @JsonProperty("deviceType") DeviceType deviceType,
-                                     @JsonProperty("formFactor") FormFactor formFactor,
-                                     @JsonProperty("width") double width,
-                                     @JsonProperty("height") double height,
-                                     @JsonProperty("property") List<Property> property,
-                                     @JsonProperty("port") List<Port> port,
-                                     @JsonProperty("connectivity") List<Peripheral> connectivity,
-                                     @JsonProperty("compatibility") List<Compatibility> compatibility,
-                                     @JsonProperty("platforms") List<PlatformCompatibility> platforms,
-                                     @JsonProperty("support_cloudplatform") List<CloudPlatformCompatibility> support_cloudplatform)
+                                      @JsonProperty("brand") String brand,
+                                      @JsonProperty("model") String model,
+                                      @JsonProperty("url") String url,
+                                      @JsonProperty("deviceType") DeviceType deviceType,
+                                      @JsonProperty("formFactor") FormFactor formFactor,
+                                      @JsonProperty("width") double width,
+                                      @JsonProperty("height") double height,
+                                      @JsonProperty("property") List<Property> property,
+                                      @JsonProperty("port") List<Port> port,
+                                      @JsonProperty("connectivity") List<Peripheral> connectivity,
+                                      @JsonProperty("compatibility") List<Compatibility> compatibility,
+                                      @JsonProperty("platforms") List<PlatformCompatibility> platforms,
+                                      @JsonProperty("support_cloudplatform") List<CloudPlatformCompatibility> support_cloudplatform)
     {
         this.deviceId = deviceId;
         this.brand = brand;

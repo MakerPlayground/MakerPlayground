@@ -64,13 +64,11 @@
                     </HBox>
                 </VBox>
 
-                <Label text="Port &amp; Connectivity" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                <Label text="Ports" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                 <VBox id="rightColumn" fx:id="rightColumn" spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="10" GridPane.columnSpan="2">
                     <ImageView id="pngImageView" fx:id="pngImageView" />
                     <Label id="portLabel" fx:id="portLabel" text="Port" />
-                    <VBox id="portVBox" fx:id="portVBox" />
-                    <Label id="connectivityLabel" fx:id="connectivityLabel" text="Connectivity" />
-                    <VBox id="connectivityVBox" fx:id="connectivityVBox" />
+                    <VBox id="portVBox" fx:id="portVBox" spacing="10"/>
                 </VBox>
 
                 <Label text="Properties" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
