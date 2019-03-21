@@ -313,8 +313,8 @@
     "description": "An lcd/oled display which can display character and graphic",
     "action": [
       {
-        "name": "Show Text",
-        "funcname": "showText",
+        "name": "Show Text at Line",
+        "funcname": "showTextAtLine",
         "type": "Active",
         "parameter": [
           {
@@ -334,12 +334,96 @@
             "constraint": [],
             "datatype": "STRING",
             "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Size",
+            "value": "Small",
+            "constraint": [
+              "Small",
+              "Medium",
+              "Large"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Color",
+            "value": "White",
+            "constraint": [
+              "White",
+              "Red",
+              "Green",
+              "Blue",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
           }
         ]
       },
       {
-        "name": "Show Number",
-        "funcname": "showNumber",
+        "name": "Show Text at Position",
+        "funcname": "showTextAtPosition",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "X",
+            "value": 0,
+            "constraint": {
+              "min": 1.0,
+              "max": 1000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Y",
+            "value": 0,
+            "constraint": {
+              "min": 1.0,
+              "max": 1000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Text",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Size",
+            "value": "Small",
+            "constraint": [
+              "Small",
+              "Medium",
+              "Large"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Color",
+            "value": "White",
+            "constraint": [
+              "White",
+              "Red",
+              "Green",
+              "Blue",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Show Number at Line",
+        "funcname": "showNumberAtLine",
         "type": "Active",
         "parameter": [
           {
@@ -369,6 +453,141 @@
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Decimal places",
+            "value": 2,
+            "constraint": {
+              "min": 0,
+              "max": 6,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Size",
+            "value": "Small",
+            "constraint": [
+              "Small",
+              "Medium",
+              "Large"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Color",
+            "value": "White",
+            "constraint": [
+              "White",
+              "Red",
+              "Green",
+              "Blue",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Show Number at Position",
+        "funcname": "showNumberAtPosition",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "X",
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 1000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Y",
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 1000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Label",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Value",
+            "value": 1234.0,
+            "constraint": {
+              "min": -99999.0,
+              "max": 99999.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Decimal places",
+            "value": 2,
+            "constraint": {
+              "min": 0,
+              "max": 6,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Size",
+            "value": "Small",
+            "constraint": [
+              "Small",
+              "Medium",
+              "Large"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Color",
+            "value": "White",
+            "constraint": [
+              "White",
+              "Red",
+              "Green",
+              "Blue",
+              "Yellow"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Clear Line",
+        "funcname": "clearLine",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Line",
+            "value": 1.0,
+            "constraint": {
+              "min": 1.0,
+              "max": 10.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
             "controltype": "SPINBOX"
           }
         ]
