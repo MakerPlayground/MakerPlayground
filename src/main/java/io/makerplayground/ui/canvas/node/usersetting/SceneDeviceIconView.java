@@ -60,7 +60,7 @@ public class SceneDeviceIconView extends VBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         action.setText(viewModel.getAction().getName());
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
-        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" )));
+        iconImageView.setImage(new Image(getClass().getResource("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" ).toExternalForm()));
 
         setOnMouseClicked(e -> {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {

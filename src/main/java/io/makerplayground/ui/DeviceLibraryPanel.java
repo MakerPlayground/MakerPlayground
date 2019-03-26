@@ -148,11 +148,7 @@ public class DeviceLibraryPanel extends TabPane {
                 throw new RuntimeException(e);
             }
 
-            try (InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons-3/" + genericDevice.getName() + ".png")) {
-                imageView.setImage(new Image(imageStream));
-            } catch (NullPointerException | IOException e) {
-                throw new IllegalStateException("Missing icon of " + genericDevice.getName());
-            }
+            imageView.setImage(new Image(getClass().getResource("/icons/colorIcons-3/" + genericDevice.getName() + ".png").toExternalForm()));
             nameLabel.setText(genericDevice.getName());
         }
 

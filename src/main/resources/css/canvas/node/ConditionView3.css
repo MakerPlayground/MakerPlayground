@@ -91,12 +91,12 @@
 #addOutputButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('add-2-toggle.png');
+    -fx-background-image: url('add-hover-small.png');
     -fx-background-size : 50px;
     -fx-cursor: hand;
 }
 #addOutputButton{
-    -fx-background-image: url('add-2.png');
+    -fx-background-image: url('add-small.png');
     -fx-background-size : 50px;
     -fx-background-color: transparent;
     -fx-cursor: hand;
