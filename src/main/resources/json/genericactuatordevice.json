@@ -496,24 +496,9 @@
             "name": "Size",
             "value": "Small",
             "constraint": [
-              "Blue",
-              "Cyan",
-              "Dark Cyan",
-              "Dark Green",
-              "Dark Grey",
-              "Green",
-              "Green Yellow",
-              "Light Grey",
-              "Magenta",
-              "Maroon",
-              "Navy",
-              "Olive",
-              "Orange",
-              "Pink",
-              "Purple",
-              "White",
-              "Red",
-              "Yellow"
+              "Small",
+              "Medium",
+              "Large"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
