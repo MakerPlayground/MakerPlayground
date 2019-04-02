@@ -22,7 +22,8 @@ package io.makerplayground.device.shared;
 public enum Unit {
     //INPUT DEVICE
     TIME,METERPERSECSQUARE,HECTOPASCAL,METER,CELSIUS,FAHRENHEIT,KELVIN,RADIUSPERSEC,DEGREEPERSEC,DECIBEL,
-    MICROTESLA,CENTIMETER,LUX,DEGREE,AMPERE,MICROGRAMS_PER_CUBIC_METER,
+    MICROTESLA,CENTIMETER,LUX,DEGREE,AMPERE,MICROGRAMS_PER_CUBIC_METER,VOLT,WATT,VOLT_AMPERE,VOLT_AMPERE_REACTIVE,
+    KILO_WATT_HOUR,KILO_VOLT_AMPERE_REACTIVE_HOUR,POWER_FACTOR,
     //OUTPUT DEVICE
     SECOND,MILLISECOND, WAV,NUMBER,
     //BASIC
@@ -50,6 +51,15 @@ public enum Unit {
             case CENTIMETER: return "cm";
             case LUX: return "lux";
             case DEGREE: return DEGREE;
+            case AMPERE: return "Amp";
+            case MICROGRAMS_PER_CUBIC_METER: return "mg/m^3";
+            case VOLT: return "V";
+            case WATT: return "W";
+            case VOLT_AMPERE: return "VA";
+            case VOLT_AMPERE_REACTIVE: return "VAr";
+            case KILO_WATT_HOUR: return "kWh";
+            case KILO_VOLT_AMPERE_REACTIVE_HOUR: return "kVArh";
+            case POWER_FACTOR: return "PF";
             case SECOND: return "sec";
             case MILLISECOND: return "ms";
             case WAV: return "wav";

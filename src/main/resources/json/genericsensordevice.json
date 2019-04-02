@@ -924,5 +924,110 @@
       }
     ],
     "value": []
+  },
+  {
+    "name": "Energy Meter",
+    "description": "A sensor to measure electricity usage.",
+    "action": [],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "type": "Active",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Current",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 60.0,
+          "unit": "AMPERE"
+        }
+      },
+      {
+        "name": "Voltage",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 300.0,
+          "unit": "VOLT"
+        }
+      },
+      {
+        "name": "Power",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 20000.0,
+          "unit": "WATT"
+        }
+      },
+      {
+        "name": "Frequency",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 100.0,
+          "unit": "HERTZ"
+        }
+      },
+      {
+        "name": "Active Apparent Power",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 20000.0,
+          "unit": "VOLT_AMPERE"
+        }
+      },
+      {
+        "name": "Reactive Apparent Power",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 20000.0,
+          "unit": "VOLT_AMPERE_REACTIVE"
+        }
+      },
+      {
+        "name": "Total Active Energy",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 300000.0,
+          "unit": "KILO_WATT_HOUR"
+        }
+      },
+      {
+        "name": "Total Reactive Energy",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": 0.0,
+          "max": 300000.0,
+          "unit": "KILO_VOLT_AMPERE_REACTIVE_HOUR"
+        }
+      },
+      {
+        "name": "Power Factor",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -1.0,
+          "max": 1.0,
+          "unit": "POWER_FACTOR"
+        }
+      },
+      {
+        "name": "Phase Angle",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -90.0,
+          "max": 90.0,
+          "unit": "DEGREE"
+        }
+      }
+    ]
   }
 ]
