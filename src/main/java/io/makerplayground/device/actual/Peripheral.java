@@ -368,4 +368,14 @@ public enum Peripheral {
                 return false;
         }
     }
+
+    public boolean isSPI() {
+        switch (this.getConnectionType()) {
+            case SPI:
+            case INEX_SPI:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

@@ -132,7 +132,7 @@ class ArduinoCodeGenerator {
                         }
                         // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
                         for (DevicePort devicePort : port) {
-                            if (p.isI2C1() || p.isI2C()) {
+                            if (p.isI2C1() || p.isI2C() || p.isSPI()) {
                                 continue;
                             }
                             if (!devicePort.getAlias().isEmpty()) {
