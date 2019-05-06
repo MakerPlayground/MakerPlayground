@@ -36,6 +36,24 @@ public class Condition extends NodeElement {
     private final ObservableList<UserSetting> setting;
     private final ObservableList<UserSetting> unmodifiableSetting;
 
+    private final Set<NodeElement> roots = new HashSet<>();
+
+    public Set<NodeElement> getRoots() {
+        return roots;
+    }
+
+    public void addRoot(NodeElement root) {
+        if (root instanceof Begin) {
+            roots.add(root);
+            return;
+        }
+        throw new IllegalStateException("Root must be Begin or Task");
+    }
+
+    public void clearRoot() {
+        roots.clear();
+    }
+
     Condition(Project project) {
         super(20,20,118,75, project);
 

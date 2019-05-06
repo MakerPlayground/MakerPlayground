@@ -24,11 +24,11 @@ import javafx.beans.property.DoubleProperty;
 /**
  * Created by Mai.Manju on 13-Jul-17.
  */
-public class BeginSceneViewModel {
+public class BeginViewModel {
     private final Begin begin;
     private final Project project;
 
-    public BeginSceneViewModel(Begin begin, Project project) {
+    public BeginViewModel(Begin begin, Project project) {
         this.begin = begin;
         this.project = project;
 

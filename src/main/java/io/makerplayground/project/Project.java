@@ -23,10 +23,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -53,7 +53,8 @@ public class Project {
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
-    private final Begin begin;
+    private final ObservableList<Begin> begins;
+
     private final Map<CloudPlatform, Map<String, String>> parameter;
 
     private final FilteredList<ProjectDevice> sensorDevice;
@@ -70,6 +71,7 @@ public class Project {
 
     private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
+    private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
     public Project() {
@@ -90,7 +92,7 @@ public class Project {
         scene = FXCollections.observableArrayList();
         condition = FXCollections.observableArrayList();
         line = FXCollections.observableArrayList();
-        begin = new Begin(this);
+        begins = FXCollections.observableArrayList();
 
         parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
@@ -98,6 +100,8 @@ public class Project {
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+
+        this.newBegin();
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -255,6 +259,49 @@ public class Project {
         checkAndInvalidateDiagram();
     }
 
+
+//    public Optional<AdditionalBegin> getTaskNode(String name) {
+//        return additionalBegins.stream().filter(c -> c.getName().equals(name)).findFirst();
+//    }
+//
+//    public AdditionalBegin newAdditionalBegin() {
+//        int id = additionalBegins.stream()
+//                .filter(node -> beginNameRegex.matcher(node.getName()).matches())
+//                .mapToInt(node -> Integer.parseInt(node.getName().substring(4)))
+//                .max()
+//                .orElse(0);
+//
+//        AdditionalBegin node = new AdditionalBegin(this);
+//        node.setName("Begin" + (id + 1));
+//        additionalBegins.add(node);
+//        checkAndInvalidateDiagram();
+//        return node;
+//    }
+//
+//    void addAdditionalBegin(AdditionalBegin additionalBegin) {
+//        this.additionalBegins.add(additionalBegin);
+//    }
+//
+//    public void removeAdditionalBegin(AdditionalBegin additionalBegin) {
+//        additionalBegins.remove(additionalBegin);
+//        for (int i=line.size()-1; i>=0; i--) {
+//            Line l = line.get(i);
+//            if (l.getSource() == additionalBegin || l.getDestination() == additionalBegin) {
+//                line.remove(l);
+//            }
+//        }
+//        checkAndInvalidateDiagram();
+//    }
+
+
+    public ObservableList<Condition> getCondition() {
+        return unmodifiableCondition;
+    }
+
+    public Optional<Condition> getCondition(String name) {
+        return condition.stream().filter(c -> c.getName().equals(name)).findFirst();
+    }
+
     public Condition newCondition() {
         int id = condition.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
@@ -295,14 +342,6 @@ public class Project {
             }
         }
         checkAndInvalidateDiagram();
-    }
-
-    public ObservableList<Condition> getCondition() {
-        return unmodifiableCondition;
-    }
-
-    public Optional<Condition> getCondition(String name) {
-        return condition.stream().filter(c -> c.getName().equals(name)).findFirst();
     }
 
     public void addLine(NodeElement source, NodeElement destination) {
@@ -407,14 +446,16 @@ public class Project {
         }
     }
 
-    public Begin getBegin() { return begin; }
+//    public Begin getBegin() { return begin; }
+
+    public ObservableList<Begin> getBegin() { return begins; }
 
     public Set<ProjectDevice> getAllDeviceUsed() {
         Set<ProjectDevice> deviceUsed = new HashSet<>();
 
         Set<NodeElement> visited = new HashSet<>();
-        Queue<NodeElement> queue = new LinkedList<>();
-        queue.add(this.begin);
+        Deque<NodeElement> queue = new ArrayDeque<>();
+        queue.addAll(this.begins);
         while(!queue.isEmpty()) {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
@@ -455,7 +496,7 @@ public class Project {
         HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
         Set<NodeElement> visited = new HashSet<>();
         Queue<NodeElement> queue = new LinkedList<>();
-        queue.add(this.begin);
+        queue.addAll(this.begins);
         while(!queue.isEmpty()) {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
@@ -501,9 +542,14 @@ public class Project {
     public boolean hasUnsavedModification() {
         if (getFilePath().isEmpty()) {
             // A hack way to check for project modification in case that it hasn't been saved
+            int beginCount = begins.size();
+            Begin firstBegin = null;
+            if(!begins.isEmpty()) {
+                firstBegin = begins.get(0);
+            }
             return !(platform.get() == Platform.ARDUINO_AVR8 && controller.get() == null && device.isEmpty()
-                    && scene.isEmpty() && condition.isEmpty() && line.isEmpty()
-                    && begin.getTop() == 200 && begin.getLeft() == 20); // begin hasn't been moved
+                    && scene.isEmpty() && condition.isEmpty() && line.isEmpty() && beginCount == 1 && firstBegin != null
+                    && firstBegin.getTop() == 200 && firstBegin.getLeft() == 20); // begin hasn't been moved
         } else {
             ObjectMapper mapper = new ObjectMapper();
             String newContent;
@@ -578,13 +624,91 @@ public class Project {
             }
         }
 
+        // Reassign root to all scene and conditions
+        getScene().forEach(Scene::clearRoot);
+        getCondition().forEach(Condition::clearRoot);
+        getBegin().forEach(this::traverseAndSetRoot);
+
+        Map<NodeElement, List<Line>> lineFromDest = this.line.stream().collect(Collectors.groupingBy(Line::getDestination));
+        for (NodeElement nodeElement : lineFromDest.keySet()) {
+            List<Line> lines = lineFromDest.get(nodeElement);
+
+            if (nodeElement instanceof Scene && ((Scene) nodeElement).getRoots().size() > 1) {
+                error.put(lines, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
+            } else if (nodeElement instanceof Condition && ((Condition) nodeElement).getRoots().size() > 1) {
+                error.put(lines, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
+            }
+        }
+
         diagramError =  Collections.unmodifiableMap(error);
 
         // invalidate every lines
         line.forEach(Line::invalidate);
     }
 
+    private Set<NodeElement> getNextNodeElements(NodeElement from) {
+        return getLine().stream().filter(line1 -> line1.getSource() == from).map(Line::getDestination).collect(Collectors.toSet());
+    }
+
+    private void traverseAndSetRoot(NodeElement from) {
+        Deque<NodeElement> remainingNodes = new ArrayDeque<>();
+        Set<NodeElement> visited = new HashSet<>();
+        remainingNodes.addAll(getNextNodeElements(from));
+        while(!remainingNodes.isEmpty()) {
+            NodeElement node = remainingNodes.removeFirst();
+            if (visited.contains(node)) {
+                continue;
+            }
+            visited.add(node);
+
+            if (node instanceof Scene) {
+                ((Scene) node).addRoot(from);
+            } else if (node instanceof Condition) {
+                ((Condition) node).addRoot(from);
+            }
+
+            Set<NodeElement> nextNodes = getNextNodeElements(node);
+            nextNodes.removeAll(visited);
+            remainingNodes.addAll(nextNodes);
+        }
+    }
+
     public Map<List<Line>, DiagramError> getDiagramStatus() {
         return diagramError;
+    }
+
+    public void removeBegin(Begin begin) {
+        if (begins.size() > 1) {
+            begins.remove(begin);
+            for (int i=line.size()-1; i>=0; i--) {
+                Line l = line.get(i);
+                if (l.getSource() == begin || l.getDestination() == begin) {
+                    line.remove(l);
+                }
+            }
+            checkAndInvalidateDiagram();
+        }
+    }
+
+    public Begin newBegin() {
+        int id = begins.stream()
+                .filter(begin1 -> beginNameRegex.matcher(begin1.getName()).matches())
+                .mapToInt(begin1 -> Integer.parseInt(begin1.getName().substring(5)))
+                .max()
+                .orElse(0);
+
+        Begin begin = new Begin(this);
+        begin.setName("Begin" + (id + 1));
+        begins.add(begin);
+        checkAndInvalidateDiagram();
+        return begin;
+    }
+
+    public Optional<Begin> getBegin(String name) {
+        return begins.stream().filter(b -> name.equals(b.getName())).findFirst();
+    }
+
+    public void addBegin(Begin begin) {
+        begins.add(begin);
     }
 }

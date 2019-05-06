@@ -62,6 +62,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
         Project project = new Project();
+        Begin defaultBegin = project.getBegin().get(0);
 
         String projectName = node.get("projectName").asText();
         project.setProjectName(projectName);
@@ -69,12 +70,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Platform platform = Platform.valueOf(node.get("controller").get("platform").asText());
         project.setPlatform(platform);
 
-        for (JsonNode cloudPlatformNode : node.get("cloudplatform")) {
-            CloudPlatform cloudPlatform = CloudPlatform.valueOf(cloudPlatformNode.get("name").asText());
-            for (JsonNode parameterNode : cloudPlatformNode.get("parameter")) {
-                String name = parameterNode.get("name").asText();
-                String value = parameterNode.get("value").asText();
-                project.setCloudPlatformParameter(cloudPlatform, name, value);
+        if (node.has("cloudplatform")) {
+            for (JsonNode cloudPlatformNode : node.get("cloudplatform")) {
+                CloudPlatform cloudPlatform = CloudPlatform.valueOf(cloudPlatformNode.get("name").asText());
+                for (JsonNode parameterNode : cloudPlatformNode.get("parameter")) {
+                    String name = parameterNode.get("name").asText();
+                    String value = parameterNode.get("value").asText();
+                    project.setCloudPlatformParameter(cloudPlatform, name, value);
+                }
             }
         }
 
@@ -99,9 +102,14 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             projectDevice.setParentDevice(parentDevice);
         }
 
-        Begin begin = project.getBegin();
-        begin.setLeft(node.get("begin").get("left").asDouble());
-        begin.setTop(node.get("begin").get("top").asDouble());
+        for (JsonNode beginNode: node.get("begin")) {
+            Begin begin = new Begin(project);
+            begin.setName(beginNode.get("name").asText());
+            begin.setLeft(beginNode.get("left").asDouble());
+            begin.setTop(beginNode.get("top").asDouble());
+            project.addBegin(begin);
+        }
+        project.removeBegin(defaultBegin);
 
         for (JsonNode sceneNode : node.get("scene")) {
             Scene scene = deserializeScene(mapper, sceneNode, deviceList, project);
@@ -115,18 +123,26 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         for (JsonNode lineNode : node.get("line")) {
             NodeElement source = null;
-            if (lineNode.get("source").asText().equals("begin")) {  // TODO: hard code
-                source = begin;
-            } else {
-                Optional<Scene> s = project.getScene(lineNode.get("source").asText());
-                if (s.isPresent()) {
-                    source = s.get();
-                }
-                Optional<Condition> c = project.getCondition(lineNode.get("source").asText());
-                if (c.isPresent()) {
-                    source = c.get();
-                }
+//            if (lineNode.get("source").asText().equals("begin")) {  // TODO: hard code
+//                source = begin;
+//            } else {
+            Optional<Begin> begin = project.getBegin(lineNode.get("source").asText());
+            if (begin.isPresent()) {
+                source = begin.get();
             }
+            Optional<Scene> scene = project.getScene(lineNode.get("source").asText());
+            if (scene.isPresent()) {
+                source = scene.get();
+            }
+            Optional<Condition> condition = project.getCondition(lineNode.get("source").asText());
+            if (condition.isPresent()) {
+                source = condition.get();
+            }
+//                Optional<AdditionalBegin> t = project.getTaskNode(lineNode.get("source").asText());
+//                if (t.isPresent()) {
+//                    source = t.get();
+//                }
+//            }
 
             NodeElement dest = null;
             Optional<Scene> s = project.getScene(lineNode.get("destination").asText());

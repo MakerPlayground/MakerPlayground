@@ -78,10 +78,15 @@ public class ProjectSerializer extends StdSerializer<Project> {
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeObjectFieldStart("begin");
-        jsonGenerator.writeNumberField("top", project.getBegin().getTop());
-        jsonGenerator.writeNumberField("left", project.getBegin().getLeft());
-        jsonGenerator.writeEndObject();
+        jsonGenerator.writeArrayFieldStart("begin");
+        for(Begin begin: project.getBegin()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("name", begin.getName());
+            jsonGenerator.writeNumberField("top", begin.getTop());
+            jsonGenerator.writeNumberField("left", begin.getLeft());
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("scene");
         for(Scene scene : project.getScene()) {
@@ -104,7 +109,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
             else if (line.getSource() instanceof Condition)
                 jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
             else if (line.getSource() instanceof Begin)
-                jsonGenerator.writeStringField("source", "begin"); // TODO: hardcode as begin
+                jsonGenerator.writeStringField("source", ((Begin) line.getSource()).getName()); // TODO: hardcode as begin
 
             if (line.getDestination() instanceof Scene)
                 jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());

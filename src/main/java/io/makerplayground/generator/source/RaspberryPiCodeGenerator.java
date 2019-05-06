@@ -9,6 +9,7 @@ import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import org.w3c.dom.Node;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -51,12 +52,25 @@ class RaspberryPiCodeGenerator {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
         generator.appendHeader();
+        generator.appendNextRunningTime();
         generator.appendTaskVariables();
-        generator.appendBeginFunction();
+        generator.appendBeginFunctions();
         generator.appendSceneFunctions();
         generator.appendConditionFunctions();
         generator.appendMainCode();
         return new SourceCodeResult(generator.builder.toString());
+    }
+
+
+    private void appendNextRunningTime() {
+        project.getBegin().forEach(taskNode -> builder.append(parseNextRunningTime(taskNode)).append(" = 0").append(NEW_LINE));
+    }
+
+    private String parseNextRunningTime(NodeElement element) {
+        if (element instanceof Begin) {
+            return "MP." + ((Begin) element).getName().replace(" ", "_") + "_nextRunningTime";
+        }
+        throw new IllegalStateException("No next running time for " + element);
     }
 
     private void appendHeader() {
@@ -87,38 +101,37 @@ class RaspberryPiCodeGenerator {
         }
     }
 
-    private void appendBeginFunction() {
-        Begin begin = project.getBegin();
+    private void appendBeginFunctions() {
+        project.getBegin().forEach(begin -> {
+            List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, begin);
+            List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
+            List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
 
-        List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, begin);
-        List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
-        List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
-
-        // generate code for begin
-        builder.append(NEW_LINE);
-        builder.append("def ").append(parseSceneFunctionName(begin)).append("():").append(NEW_LINE);
-        if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
-            if (adjacentScene.size() != 1) {
-                throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
+            // generate code for begin
+            builder.append(NEW_LINE);
+            builder.append("def ").append(parseSceneFunctionName(begin)).append("():").append(NEW_LINE);
+            if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
+                if (adjacentScene.size() != 1) {
+                    throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
+                }
+                Scene currentScene = adjacentScene.get(0);
+                builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(currentScene)).append(NEW_LINE);
+            } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseConditionFunctionName(begin)).append(NEW_LINE);
+            } else {
+                // do nothing if there isn't any scene or condition
+                builder.append(INDENT).append("pass").append(NEW_LINE);
             }
-            Scene currentScene = adjacentScene.get(0);
-            builder.append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(currentScene)).append(NEW_LINE);
-        } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-            builder.append(INDENT).append("MP.currentNode = ").append(parseConditionFunctionName(project.getBegin())).append(NEW_LINE);
-        } else {
-            // do nothing if there isn't any scene or condition
-            builder.append(INDENT).append("pass").append(NEW_LINE);
-        }
-        builder.append(NEW_LINE);
+            builder.append(NEW_LINE);
+        });
     }
 
     private void appendSceneFunctions() {
-        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>();
         Set<NodeElement> visitedNodes = new HashSet<>();
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
-        nodeToTraverse.add(project.getBegin());
+        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
@@ -138,12 +151,20 @@ class RaspberryPiCodeGenerator {
             // Generate code for node
             if (node instanceof Scene) {
                 Scene currentScene = (Scene) node;
+                Set<NodeElement> roots = ((Scene) node).getRoots();
+                if (roots.size() != 1) {
+                    throw new IllegalStateException("Cannot process the node with zero or more than one root");
+                }
+                NodeElement root = roots.iterator().next();
+
                 // create function header
                 builder.append(NEW_LINE);
                 builder.append("def ").append(parseSceneFunctionName(currentScene)).append("():").append(NEW_LINE);
+                builder.append(INDENT).append("MP.update()").append(NEW_LINE);
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
                     ProjectDevice device = setting.getDevice();
+                    String deviceName = parseDeviceVariableName(device);
                     List<String> taskParameter = new ArrayList<>();
 
                     List<Parameter> parameters = setting.getAction().getParameter();
@@ -167,7 +188,7 @@ class RaspberryPiCodeGenerator {
                                     .append("', ").append(i).append(")").append(NEW_LINE);
                         }
                         builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(device)).append("', lambda: ")
-                                .append(parseDeviceVariableName(device)).append(".").append(setting.getAction().getFunctionName()).append("(")
+                                .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
                                 .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
                     } else {    // generate code to perform action once
                         // clear task if this device used to have background task set
@@ -178,7 +199,7 @@ class RaspberryPiCodeGenerator {
                         for (Parameter p : parameters) {
                             taskParameter.add(parseExpressionForParameter(p, setting.getValueMap().get(p)));
                         }
-                        builder.append(INDENT).append(parseDeviceVariableName(device)).append(".").append(setting.getAction().getFunctionName())
+                        builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(")").append(NEW_LINE);
                     }
                 }
@@ -191,9 +212,7 @@ class RaspberryPiCodeGenerator {
                     } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
                         delayDuration = currentScene.getDelay() / 1000.0;
                     }
-                    builder.append(INDENT).append("delayEndTime = time.time() + ").append(delayDuration).append(NEW_LINE);
-                    builder.append(INDENT).append("while time.time() < delayEndTime:").append(NEW_LINE);
-                    builder.append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
+                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
                 }
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
@@ -201,11 +220,11 @@ class RaspberryPiCodeGenerator {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
-                    builder.append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
                 } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                    builder.append(INDENT).append("MP.currentNode = ").append(parseConditionFunctionName(currentScene)).append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentScene)).append(NEW_LINE);
                 } else {
-                    builder.append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(NEW_LINE);
                 }
 
                 // end of scene's function
@@ -215,12 +234,11 @@ class RaspberryPiCodeGenerator {
     }
 
     private void appendConditionFunctions() {
-        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>();
         Set<NodeElement> visitedNodes = new HashSet<>();
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
-        nodeToTraverse.add(project.getBegin());
+        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
@@ -238,6 +256,20 @@ class RaspberryPiCodeGenerator {
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
 
             if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                NodeElement root;
+                if (node instanceof Scene) {
+                    Set<NodeElement> roots = ((Scene) node).getRoots();
+                    if (roots.size() != 1) {
+                        throw new IllegalStateException("Cannot process the node with zero or more than one root");
+                    }
+                    root = roots.iterator().next();
+                }
+                else if (node instanceof Begin) {
+                    root = node;
+                } else {
+                    throw new IllegalStateException("Not support operation");
+                }
+
                 Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
                 for (Condition condition : adjacentCondition) {
                     for (UserSetting setting : condition.getSetting()) {
@@ -255,6 +287,8 @@ class RaspberryPiCodeGenerator {
                 builder.append(NEW_LINE);
                 builder.append("def ").append(parseConditionFunctionName(node)).append("():").append(NEW_LINE);
 
+                // call the update function
+                builder.append(INDENT).append("MP.update();").append(NEW_LINE);
                 // generate if for each condition
                 for (Condition condition : adjacentCondition) {
                     List<String> booleanExpressions = new ArrayList<>();
@@ -290,11 +324,11 @@ class RaspberryPiCodeGenerator {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
                     } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
                         throw new IllegalStateException("Nested condition is not allowed");
                     } else {
-                        builder.append(INDENT).append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(NEW_LINE);
                     }
                 }
                 builder.append(NEW_LINE); // end of while loop
@@ -327,12 +361,22 @@ class RaspberryPiCodeGenerator {
                         .append(" = ").append(value).append(NEW_LINE)
         );
 
-        builder.append(INDENT).append(INDENT).append("MP.currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(NEW_LINE);
+        project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(begin)).append(NEW_LINE));
         builder.append(INDENT).append(INDENT).append("while True:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("MP.currentNode()").append(NEW_LINE);
+        project.getBegin().forEach(begin -> {
+            builder.append(INDENT).append(INDENT).append(INDENT).append("if ").append(parseNextRunningTime(begin)).append(" <= time.time():").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(parsePointerName(begin)).append("()").append(NEW_LINE);
+        });
         builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
+    }
+
+    private static String parsePointerName(NodeElement nodeElement) {
+        if (nodeElement instanceof Begin) {
+            return "MP.current_" + ((Begin) nodeElement).getName().replace(" ", "_");
+        }
+        throw new IllegalStateException("No pointer to function for Scene and Condition");
     }
 
     private String parseConstructorCall(ProjectDevice projectDevice) {
@@ -529,7 +573,7 @@ class RaspberryPiCodeGenerator {
 
     private static String parseSceneFunctionName(NodeElement node) {
         if (node instanceof Begin) {
-            return "beginScene";
+            return "scene_" + ((Begin)node).getName().replace(" ", "_");
         } else if (node instanceof Scene) {
             return "scene_" + ((Scene)node).getName().replace(" ", "_");
         }

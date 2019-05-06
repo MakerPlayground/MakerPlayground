@@ -16,14 +16,17 @@
 
 package io.makerplayground.ui.canvas.node;
 
+import io.makerplayground.project.Begin;
 import io.makerplayground.ui.canvas.InteractivePane;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Arc;
 
 import java.io.IOException;
@@ -31,32 +34,40 @@ import java.io.IOException;
 /**
  * Created by Mai.Manju on 13-Jul-17.
  */
-public class BeginSceneView extends InteractiveNode {
-    private final HBox beginHBox = new HBox();
+public class BeginView extends InteractiveNode {
+    private final VBox beginVBox = new VBox();
     @FXML private Arc outPort;
+    @FXML private Button removeBeginBtn;
     @FXML private Label labelHBox;
+    @FXML private Pane labelPane;
 
-    private final BeginSceneViewModel beginSceneViewModel;
+    private final BeginViewModel beginViewModel;
 
-    public BeginSceneView(BeginSceneViewModel beginSceneViewModel, InteractivePane interactivePane) {
+    public BeginView(BeginViewModel beginViewModel, InteractivePane interactivePane) {
         super(interactivePane);
-        this.beginSceneViewModel = beginSceneViewModel;
+        this.beginViewModel = beginViewModel;
 
         // initialize view from FXML
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/BeginScene.fxml"));
-        fxmlLoader.setRoot(beginHBox);
+        fxmlLoader.setRoot(beginVBox);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getChildren().add(beginHBox);
+        getChildren().add(beginVBox);
         makeMovable(labelHBox);
 
         // bind begin's location to the model
-        translateXProperty().bindBidirectional(beginSceneViewModel.xProperty());
-        translateYProperty().bindBidirectional(beginSceneViewModel.yProperty());
+        translateXProperty().bindBidirectional(beginViewModel.xProperty());
+        translateYProperty().bindBidirectional(beginViewModel.yProperty());
+
+        // show remove button when select
+        removeBeginBtn.visibleProperty().bind(selectedProperty().and(getBegin().getBeginCountBinding().greaterThan(1)));
+        // remove condition when press the remove button
+        removeBeginBtn.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
+                , null, null, 0, 0)));
 
         // TODO: refactor into InteractiveNode
         // allow node to connect with other node
@@ -65,11 +76,11 @@ public class BeginSceneView extends InteractiveNode {
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
-                    , beginSceneViewModel.getBegin(), null
+                    , beginViewModel.getBegin(), null
                     , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                     + (outPort.getBoundsInLocal().getWidth() / 2)
-                    , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                    + (outPort.getBoundsInLocal().getHeight() / 2)));
+                    , getBoundsInParent().getMinY() + (labelPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                    + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
         });
 
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
@@ -77,7 +88,7 @@ public class BeginSceneView extends InteractiveNode {
             if (interactivePane.getDestNode() != null) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , beginSceneViewModel.getBegin(), interactivePane.getDestNode()
+                        , beginViewModel.getBegin(), interactivePane.getDestNode()
                         , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
                         + (outPort.getBoundsInLocal().getWidth() / 2)
                         , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
@@ -86,7 +97,7 @@ public class BeginSceneView extends InteractiveNode {
         });
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
-            if (interactivePane.getDestNode() != null && !beginSceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+            if (interactivePane.getDestNode() != null && !beginViewModel.hasConnectionTo(interactivePane.getDestNode())) {
                 showHilight(true);
             }
         });
@@ -101,6 +112,10 @@ public class BeginSceneView extends InteractiveNode {
 
     @Override
     protected boolean isError() {
-        return beginSceneViewModel.isError();
+        return beginViewModel.isError();
+    }
+
+    public Begin getBegin() {
+        return this.beginViewModel.getBegin();
     }
 }

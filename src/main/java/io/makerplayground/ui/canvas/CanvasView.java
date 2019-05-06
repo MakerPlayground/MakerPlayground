@@ -1,9 +1,6 @@
 package io.makerplayground.ui.canvas;
 
-import io.makerplayground.project.Condition;
-import io.makerplayground.project.Line;
-import io.makerplayground.project.NodeElement;
-import io.makerplayground.project.Scene;
+import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
@@ -31,8 +28,9 @@ import java.util.stream.Collectors;
  */
 public class CanvasView extends AnchorPane {
     @FXML private InteractivePane mainPane;
-    @FXML private Button addStateBtn;
+    @FXML private Button addSceneBtn;
     @FXML private Button addConditionBtn;
+    @FXML private Button addBeginBtn;
     @FXML private Button zoomInButton;
     @FXML private Button zoomOutButton;
     @FXML private Button zoomDefaultButton;
@@ -41,6 +39,7 @@ public class CanvasView extends AnchorPane {
     @FXML private ContextMenu contextMenu;
     @FXML private MenuItem newSceneMenuItem;
     @FXML private MenuItem newConditionMenuItem;
+    @FXML private MenuItem newBeginMenuItem;
     @FXML private MenuItem cutMenuItem;
     @FXML private MenuItem copyMenuItem;
     @FXML private MenuItem pasteMenuItem;
@@ -84,10 +83,6 @@ public class CanvasView extends AnchorPane {
         } else {
             deleteMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         }
-
-        BeginSceneView beginSceneView = new BeginSceneView(canvasViewModel.getBeginViewModel(), mainPane);
-        addConnectionEvent(beginSceneView);
-        mainPane.addChildren(beginSceneView);
     }
 
     private void initEvent() {
@@ -111,7 +106,7 @@ public class CanvasView extends AnchorPane {
         // Dynamically generate the scene UI when scene list is changed
         new DynamicViewCreatorBuilder<InteractivePane, SceneViewModel, SceneView>()
                 .setParent(mainPane)
-                .setModelLoader(canvasViewModel.getPaneStateViewModel())
+                .setModelLoader(canvasViewModel.getSceneViewModelCreator())
                 .setViewFactory(sceneViewModel -> {
                     SceneView sceneView = new SceneView(sceneViewModel, mainPane);
                     addConnectionEvent(sceneView);
@@ -126,7 +121,7 @@ public class CanvasView extends AnchorPane {
         // Dynamically generate the condition UI when condition list is changed
         new DynamicViewCreatorBuilder<InteractivePane, ConditionViewModel, ConditionView>()
                 .setParent(mainPane)
-                .setModelLoader(canvasViewModel.getConditionViewModel())
+                .setModelLoader(canvasViewModel.getConditionViewModelCreator())
                 .setViewFactory(conditionViewModel -> {
                     ConditionView conditionView = new ConditionView(conditionViewModel, mainPane);
                     addConnectionEvent(conditionView);
@@ -137,10 +132,24 @@ public class CanvasView extends AnchorPane {
                 .setNodeRemover(InteractivePane::removeChildren)
                 .createDynamicViewCreator();
 
+        // Dynamically generate the taskNode UI when condition list is changed
+        new DynamicViewCreatorBuilder<InteractivePane, BeginViewModel, BeginView>()
+                .setParent(mainPane)
+                .setModelLoader(canvasViewModel.getBeginViewModelCreator())
+                .setViewFactory(beginViewModel -> {
+                    BeginView beginView = new BeginView(beginViewModel, mainPane);
+                    addConnectionEvent(beginView);
+                    beginView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeBegin(beginView.getBegin()));
+                    return beginView;
+                })
+                .setNodeAdder(InteractivePane::addChildren)
+                .setNodeRemover(InteractivePane::removeChildren)
+                .createDynamicViewCreator();
+
         // Dynamically generate the line UI when line list is changed
         new DynamicViewCreatorBuilder<InteractivePane, LineViewModel, LineView>()
                 .setParent(mainPane)
-                .setModelLoader(canvasViewModel.getLineViewModel())
+                .setModelLoader(canvasViewModel.getLineViewModelCreator())
                 .setViewFactory(lineViewModel -> {
                     LineView lineView = new LineView(lineViewModel, mainPane);
                     lineView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeLine(lineViewModel.getLine()));
@@ -164,6 +173,12 @@ public class CanvasView extends AnchorPane {
         Condition newCondition = canvasViewModel.project.newCondition();
         newCondition.setLeft(x);
         newCondition.setTop(y);
+    }
+
+    private void newBeginHandler(double x, double y) {
+        Begin newTask = canvasViewModel.project.newBegin();
+        newTask.setLeft(x);
+        newTask.setTop(y);
     }
 
     @FXML
@@ -243,7 +258,7 @@ public class CanvasView extends AnchorPane {
                 canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
             } else if (interactiveNode instanceof LineView) {
                 canvasViewModel.project.removeLine(((LineView) interactiveNode).getLineViewModel().getLine());
-            } else if (interactiveNode instanceof BeginSceneView) {
+            } else if (interactiveNode instanceof BeginView) {
                 // we shouldn't delete begin from the canvas
             } else {
                 throw new IllegalStateException("Found invalid object in the canvas!!!");
@@ -287,12 +302,22 @@ public class CanvasView extends AnchorPane {
     }
 
     @FXML
-    private void addStateButtonHandler() {
+    private void newBeginContextMenuHandler() {
+        newBeginHandler(mainPane.getMouseX(), mainPane.getMouseY());
+    }
+
+    @FXML
+    private void addSceneButtonHandler() {
         newSceneHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
     }
 
     @FXML
     private void addConditionButtonHandler() {
         newConditionHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
+    }
+
+    @FXML
+    private void addBeginButtonHandler() {
+        newBeginHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
     }
 }

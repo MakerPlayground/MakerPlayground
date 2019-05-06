@@ -19,6 +19,8 @@
                <MenuItem id="newSceneMenuItem" fx:id="newSceneMenuItem" text="New Scene" onAction="#newSceneContextMenuHandler"/>
                <MenuItem id="newConditionMenuItem" fx:id="newConditionMenuItem" text="New Condition"
                          onAction="#newConditionContextMenuHandler"/>
+               <MenuItem id="newBeginMenuItem" fx:id="newBeginMenuItem" text="New Begin"
+                         onAction="#newBeginContextMenuHandler"/>
                <SeparatorMenuItem/>
                <MenuItem id="cutMenuItem" fx:id="cutMenuItem" text="Cut" onAction="#cutHandler"
                          accelerator="Shortcut+X"/>
@@ -32,10 +34,12 @@
          </ContextMenu>
       </contextMenu>
    </InteractivePane>
-   <Button id="addStateBtn" fx:id="addStateBtn" text="+ Add Scene" AnchorPane.topAnchor="20.0"
-           AnchorPane.rightAnchor="20.0" onAction="#addStateButtonHandler"/>
+   <Button id="addSceneBtn" fx:id="addSceneBtn" text="+ Add Scene" AnchorPane.topAnchor="20.0"
+           AnchorPane.rightAnchor="20.0" onAction="#addSceneButtonHandler"/>
    <Button id="addConditionBtn" fx:id="addConditionBtn" text="+ Add Condition" AnchorPane.topAnchor="65.0"
            AnchorPane.rightAnchor="20.0" onAction="#addConditionButtonHandler"/>
+   <Button id="addBeginBtn" fx:id="addBeginBtn" text="+ Add Begin" AnchorPane.topAnchor="110.0"
+           AnchorPane.rightAnchor="20.0" onAction="#addBeginButtonHandler"/>
    <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
       <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#zoomInHandler"/>
       <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#zoomOutHandler"/>

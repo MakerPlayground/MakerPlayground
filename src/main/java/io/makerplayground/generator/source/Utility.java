@@ -43,17 +43,14 @@ class Utility {
 
     static Set<NodeElement> getAllUsedNodes(Project project) {
         Queue<NodeElement> nodeToTraverse = new ArrayDeque<>();
+        nodeToTraverse.addAll(project.getBegin());
         Set<NodeElement> visitedNodes = new HashSet<>();
-        visitedNodes.add(project.getBegin());
-        List<NodeElement> adjacentNodes = findAdjacentNodes(project, project.getBegin());
-        nodeToTraverse.addAll(takeScene(adjacentNodes));
-        nodeToTraverse.addAll(takeCondition(adjacentNodes));
 
         NodeElement current;
         while (!nodeToTraverse.isEmpty()) {
             current = nodeToTraverse.remove();
             visitedNodes.add(current);
-            adjacentNodes = findAdjacentNodes(project, current);
+            List<NodeElement> adjacentNodes = findAdjacentNodes(project, current);
             nodeToTraverse.addAll(takeScene(adjacentNodes).stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toList()));
             nodeToTraverse.addAll(takeCondition(adjacentNodes).stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
         }

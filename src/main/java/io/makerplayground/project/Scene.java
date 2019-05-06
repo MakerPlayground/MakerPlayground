@@ -24,8 +24,10 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -49,6 +51,24 @@ public class Scene extends NodeElement {
     private final ObservableList<UserSetting> setting;
     private final DoubleProperty delay;
     private final ObjectProperty<DelayUnit> delayUnit;
+
+    private final Set<NodeElement> roots = new HashSet<>();
+
+    public Set<NodeElement> getRoots() {
+        return roots;
+    }
+
+    public void addRoot(NodeElement root) {
+        if (root instanceof Begin) {
+            roots.add(root);
+            return;
+        }
+        throw new IllegalStateException("Root must be Begin or Task");
+    }
+
+    public void clearRoot() {
+        roots.clear();
+    }
 
     Scene(Project project) {
         super(20, 20, 205, 124, project);

@@ -52,18 +52,26 @@ class ArduinoCodeGenerator {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
         generator.appendHeader();
+        generator.appendNextRunningTime();
+        generator.appendPointerVariables();
         generator.appendProjectValue();
         generator.appendFunctionDeclaration();
         generator.appendTaskVariables();
         generator.appendInstanceVariables();
         generator.appendSetupFunction();
+        generator.appendLoopFunction();
         generator.appendUpdateFunction();
-        generator.appendBeginFunction();
+        for (Begin begin : generator.project.getBegin()) {
+            generator.appendBeginFunction(begin);
+        }
         generator.appendSceneFunctions();
         generator.appendConditionFunctions();
         return new SourceCodeResult(generator.builder.toString());
     }
 
+    private void appendPointerVariables() {
+        project.getBegin().forEach(begin -> builder.append("void (*").append(parsePointerName(begin)).append(")(void);").append(NEW_LINE));
+    }
 
     private void appendHeader() {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
@@ -79,13 +87,15 @@ class ArduinoCodeGenerator {
 
 
     private void appendFunctionDeclaration() {
-        // generate function declaration for begin scene
-        builder.append("void beginScene();").append(NEW_LINE);
+        for (Begin begin : project.getBegin()) {
+            // generate function declaration for task node scene
+            builder.append("void ").append(parseSceneFunctionName(begin)).append("();").append(NEW_LINE);
 
-        // generate function declaration for first level condition(s) connected to the begin block
-        List<Condition> conditions = Utility.findAdjacentConditions(project, project.getBegin());
-        if (!conditions.isEmpty()) {
-            builder.append("void ").append(parseConditionFunctionName(project.getBegin())).append("();").append(NEW_LINE);
+            // generate function declaration for first level condition(s) connected to the task node block
+            List<Condition> conditions = Utility.findAdjacentConditions(project, begin);
+            if (!conditions.isEmpty()) {
+                builder.append("void ").append(parseConditionFunctionName(begin)).append("();").append(NEW_LINE);
+            }
         }
 
         // generate function declaration for each scene and their conditions
@@ -197,6 +207,10 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
     }
 
+    private void appendNextRunningTime() {
+        project.getBegin().forEach(taskNode -> builder.append("unsigned long ").append(parseNextRunningTime(taskNode)).append(" = 0;").append(NEW_LINE));
+    }
+
     private void appendProjectValue() {
         Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
         for (ProjectDevice projectDevice : variableMap.keySet()) {
@@ -234,7 +248,19 @@ class ArduinoCodeGenerator {
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
         }
-        builder.append(INDENT).append("currentNode = beginScene;").append(NEW_LINE);
+        project.getBegin().forEach(begin -> builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(begin)).append(";").append(NEW_LINE));
+        builder.append("}").append(NEW_LINE);
+        builder.append(NEW_LINE);
+    }
+
+    private void appendLoopFunction() {
+        builder.append("void loop() {").append(NEW_LINE);
+        builder.append(INDENT).append("update();").append(NEW_LINE);
+        project.getBegin().forEach(begin -> {
+            builder.append(INDENT).append("if (").append(parseNextRunningTime(begin)).append(" <= millis()) {").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append(parsePointerName(begin)).append("();").append(NEW_LINE);
+            builder.append(INDENT).append("}").append(NEW_LINE);
+        });
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
@@ -315,36 +341,33 @@ class ArduinoCodeGenerator {
         builder.append("}").append(NEW_LINE);
     }
 
-    private void appendBeginFunction() {
-        Begin begin = project.getBegin();
-
-        List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, begin);
+    private void appendBeginFunction(NodeElement nodeElement) {
+        List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, nodeElement);
         List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
         List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
 
         // generate code for begin
         builder.append(NEW_LINE);
-        builder.append("void ").append(parseSceneFunctionName(begin)).append("() {").append(NEW_LINE);
+        builder.append("void ").append(parseSceneFunctionName(nodeElement)).append("() {").append(NEW_LINE);
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() != 1) {
                 throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
             }
             Scene currentScene = adjacentScene.get(0);
-            builder.append(INDENT).append("currentNode = ").append(parseSceneFunctionName(currentScene)).append(";").append(NEW_LINE);
+            builder.append(INDENT).append(parsePointerName(nodeElement)).append(" = ").append(parseSceneFunctionName(currentScene)).append(";").append(NEW_LINE);
         } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-            builder.append(INDENT).append("currentNode = ").append(parseConditionFunctionName(project.getBegin())).append(";").append(NEW_LINE);
+            builder.append(INDENT).append(parsePointerName(nodeElement)).append(" = ").append(parseConditionFunctionName(nodeElement)).append(";").append(NEW_LINE);
         }
         // do nothing if there isn't any scene or condition
         builder.append("}").append(NEW_LINE);
     }
 
     private void appendSceneFunctions() {
-        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>();
         Set<NodeElement> visitedNodes = new HashSet<>();
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
-        nodeToTraverse.add(project.getBegin());
+        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
@@ -364,6 +387,12 @@ class ArduinoCodeGenerator {
             // Generate code for node
             if (node instanceof Scene) {
                 Scene currentScene = (Scene) node;
+                Set<NodeElement> roots = ((Scene) node).getRoots();
+                if (roots.size() != 1) {
+                    throw new IllegalStateException("Cannot process the node with zero or more than one root");
+                }
+                NodeElement root = roots.iterator().next();
+
                 // create function header
                 builder.append(NEW_LINE);
                 builder.append("void ").append(parseSceneFunctionName(currentScene)).append("() {").append(NEW_LINE);
@@ -419,10 +448,7 @@ class ArduinoCodeGenerator {
                     } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
                         delayDuration = (int) currentScene.getDelay();
                     }
-                    builder.append(INDENT).append("delayEndTime = millis() + ").append(delayDuration).append(";").append(NEW_LINE);
-                    builder.append(INDENT).append("while (millis() < delayEndTime) {").append(NEW_LINE);
-                    builder.append(INDENT).append(INDENT).append("update();").append(NEW_LINE);
-                    builder.append(INDENT).append("}").append(NEW_LINE);
+                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = millis() + ").append(delayDuration).append(";").append(NEW_LINE);
                 }
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
@@ -430,11 +456,11 @@ class ArduinoCodeGenerator {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
-                    builder.append(INDENT).append("currentNode = ").append(parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(";").append(NEW_LINE);
                 } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                    builder.append(INDENT).append("currentNode = ").append(parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
                 } else {
-                    builder.append(INDENT).append("currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(";").append(NEW_LINE);
                 }
 
                 // end of scene's function
@@ -444,12 +470,11 @@ class ArduinoCodeGenerator {
     }
 
     private void appendConditionFunctions() {
-        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>();
         Set<NodeElement> visitedNodes = new HashSet<>();
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
-        nodeToTraverse.add(project.getBegin());
+        Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
             NodeElement node = nodeToTraverse.remove();
@@ -467,6 +492,20 @@ class ArduinoCodeGenerator {
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
 
             if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                NodeElement root;
+                if (node instanceof Scene) {
+                    Set<NodeElement> roots = ((Scene) node).getRoots();
+                    if (roots.size() != 1) {
+                        throw new IllegalStateException("Cannot process the node with zero or more than one root");
+                    }
+                    root = roots.iterator().next();
+                }
+                else if (node instanceof Begin) {
+                    root = node;
+                } else {
+                    throw new IllegalStateException("Not support operation");
+                }
+
                 builder.append(NEW_LINE);
                 builder.append("void ").append(parseConditionFunctionName(node)).append("() {").append(NEW_LINE);
 
@@ -508,11 +547,11 @@ class ArduinoCodeGenerator {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append("currentNode = ").append(parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(";").append(NEW_LINE);
                     } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
                         throw new IllegalStateException("Nested condition is not allowed");
                     } else {
-                        builder.append(INDENT).append(INDENT).append("currentNode = ").append(parseSceneFunctionName(project.getBegin())).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(";").append(NEW_LINE);
                     }
 
                     builder.append(INDENT).append("}").append(NEW_LINE); // end of if
@@ -561,6 +600,13 @@ class ArduinoCodeGenerator {
             throw new IllegalStateException();
         }
         return returnValue;
+    }
+
+    private String parseNextRunningTime(NodeElement element) {
+        if (element instanceof Begin) {
+            return ((Begin) element).getName().replace(" ", "_") + "_nextRunningTime";
+        }
+        throw new IllegalStateException("No next running time for " + element);
     }
 
     private int parseRefreshInterval(Expression expression) {
@@ -644,18 +690,23 @@ class ArduinoCodeGenerator {
     }
 
     private static String parseSceneFunctionName(NodeElement node) {
-        if (node instanceof Begin) {
-            return "beginScene";
-        } else if (node instanceof Scene) {
+        if (node instanceof Scene) {
             return "scene_" + ((Scene)node).getName().replace(" ", "_");
+        } else if (node instanceof Begin) {
+            return "scene_" + ((Begin) node).getName().replace(" ", "_");
         }
         throw new IllegalStateException("Not support scene function name for {" + node + "}");
     }
 
+    private static String parsePointerName(NodeElement nodeElement) {
+        if (nodeElement instanceof Begin) {
+            return "current_" + ((Begin) nodeElement).getName().replace(" ", "_");
+        }
+        throw new IllegalStateException("No pointer to function for Scene and Condition");
+    }
+
     private static String parseConditionFunctionName(NodeElement nodeBeforeConditions) {
-        if (nodeBeforeConditions instanceof Begin) {
-            return "beginScene_conditions";
-        } else if (nodeBeforeConditions instanceof Scene) {
+        if (nodeBeforeConditions instanceof Begin || nodeBeforeConditions instanceof Scene) {
             return parseSceneFunctionName(nodeBeforeConditions) + "_conditions";
         } else if (nodeBeforeConditions instanceof Condition) {
             throw new IllegalStateException("Not support condition function name for condition after condition {" + nodeBeforeConditions + "}");
