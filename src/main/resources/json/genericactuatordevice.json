@@ -313,12 +313,12 @@
     "description": "An lcd/oled display which can display character and graphic",
     "action": [
       {
-        "name": "Show Text at Line",
-        "funcname": "showTextAtLine",
+        "name": "Show Text at Row",
+        "funcname": "showTextAtRow",
         "type": "Active",
         "parameter": [
           {
-            "name": "Line",
+            "name": "Row",
             "value": 1.0,
             "constraint": {
               "min": 1.0,
@@ -337,11 +337,22 @@
           },
           {
             "name": "Size",
-            "value": "Small",
+            "value": "1x",
             "constraint": [
-              "Small",
-              "Medium",
-              "Large"
+              "1x",
+              "2x",
+              "3x"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Align",
+            "value": "Left",
+            "constraint": [
+              "Left",
+              "Center",
+              "Right"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
@@ -375,85 +386,12 @@
         ]
       },
       {
-        "name": "Show Text at Position",
-        "funcname": "showTextAtPosition",
+        "name": "Show Number at Row",
+        "funcname": "showNumberAtRow",
         "type": "Active",
         "parameter": [
           {
-            "name": "X",
-            "value": 0,
-            "constraint": {
-              "min": 1.0,
-              "max": 1000.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Y",
-            "value": 0,
-            "constraint": {
-              "min": 1.0,
-              "max": 1000.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Text",
-            "value": "",
-            "constraint": [],
-            "datatype": "STRING",
-            "controltype": "TEXTBOX"
-          },
-          {
-            "name": "Size",
-            "value": "Small",
-            "constraint": [
-              "Small",
-              "Medium",
-              "Large"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Color",
-            "value": "White",
-            "constraint": [
-              "Blue",
-              "Cyan",
-              "Dark Cyan",
-              "Dark Green",
-              "Dark Grey",
-              "Green",
-              "Green Yellow",
-              "Light Grey",
-              "Magenta",
-              "Maroon",
-              "Navy",
-              "Olive",
-              "Orange",
-              "Pink",
-              "Purple",
-              "White",
-              "Red",
-              "Yellow"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
-        "name": "Show Number at Line",
-        "funcname": "showNumberAtLine",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Line",
+            "name": "Row",
             "value": 1.0,
             "constraint": {
               "min": 1.0,
@@ -494,11 +432,22 @@
           },
           {
             "name": "Size",
-            "value": "Small",
+            "value": "1x",
             "constraint": [
-              "Small",
-              "Medium",
-              "Large"
+              "1x",
+              "2x",
+              "3x"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          },
+          {
+            "name": "Align",
+            "value": "Left",
+            "constraint": [
+              "Left",
+              "Center",
+              "Right"
             ],
             "datatype": "ENUM",
             "controltype": "DROPDOWN"
@@ -532,107 +481,12 @@
         ]
       },
       {
-        "name": "Show Number at Position",
-        "funcname": "showNumberAtPosition",
+        "name": "Clear Row",
+        "funcname": "clearRow",
         "type": "Active",
         "parameter": [
           {
-            "name": "X",
-            "value": 1.0,
-            "constraint": {
-              "min": 1.0,
-              "max": 1000.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Y",
-            "value": 1.0,
-            "constraint": {
-              "min": 1.0,
-              "max": 1000.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Label",
-            "value": "",
-            "constraint": [],
-            "datatype": "STRING",
-            "controltype": "TEXTBOX"
-          },
-          {
-            "name": "Value",
-            "value": 1234.0,
-            "constraint": {
-              "min": -99999.0,
-              "max": 99999.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Decimal places",
-            "value": 2,
-            "constraint": {
-              "min": 0,
-              "max": 6,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Size",
-            "value": "Small",
-            "constraint": [
-              "Small",
-              "Medium",
-              "Large"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Color",
-            "value": "White",
-            "constraint": [
-              "Blue",
-              "Cyan",
-              "Dark Cyan",
-              "Dark Green",
-              "Dark Grey",
-              "Green",
-              "Green Yellow",
-              "Light Grey",
-              "Magenta",
-              "Maroon",
-              "Navy",
-              "Olive",
-              "Orange",
-              "Pink",
-              "Purple",
-              "White",
-              "Red",
-              "Yellow"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
-        "name": "Clear Line",
-        "funcname": "clearLine",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Line",
+            "name": "Row",
             "value": 1.0,
             "constraint": {
               "min": 1.0,
