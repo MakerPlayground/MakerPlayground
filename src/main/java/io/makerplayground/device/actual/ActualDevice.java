@@ -120,6 +120,12 @@ public class ActualDevice {
             List<Peripheral> analogList = new ArrayList<>(Peripheral.values(ConnectionType.ANALOG));
             List<Peripheral> uartList = new ArrayList<>(Peripheral.values(ConnectionType.UART));
 
+            // remove peripheral that has been used in case that this device has both normal port and splittable port
+            gpioList.removeAll(connectivity);
+            pwmList.removeAll(connectivity);
+            analogList.removeAll(connectivity);
+            uartList.removeAll(connectivity);
+
             Map<DevicePort, Set<Peripheral>> portToPeripheralMap = new HashMap<>();
             Map<Peripheral, Peripheral> oldToNewPeripheralMap = new HashMap<>();
             for (DevicePort devicePort : port) {
@@ -127,18 +133,22 @@ public class ActualDevice {
                     continue;
                 }
                 Map<Peripheral, Peripheral> splitMap = new HashMap<>();
-                for (Peripheral peripheral : devicePort.getPeripheral()) {
-                    if (peripheral.getConnectionType().isGPIO()) {
-                        splitMap.put(peripheral, gpioList.remove(0));
-                    } else if (peripheral.getConnectionType().isPWM()) {
-                        splitMap.put(peripheral, pwmList.remove(0));
-                    } else if (peripheral.getConnectionType().isAnalog()) {
-                        splitMap.put(peripheral, analogList.remove(0));
-                    } else if (peripheral.getConnectionType().isI2C()) {
-                        splitMap.put(peripheral, Peripheral.I2C_1);
-                    } else if (peripheral.getConnectionType().isUART()) {
-                        splitMap.put(peripheral, uartList.remove(0));
+                try {
+                    for (Peripheral peripheral : devicePort.getPeripheral()) {
+                        if (peripheral.getConnectionType().isGPIO()) {
+                            splitMap.put(peripheral, gpioList.remove(0));
+                        } else if (peripheral.getConnectionType().isPWM()) {
+                            splitMap.put(peripheral, pwmList.remove(0));
+                        } else if (peripheral.getConnectionType().isAnalog()) {
+                            splitMap.put(peripheral, analogList.remove(0));
+                        } else if (peripheral.getConnectionType().isI2C()) {
+                            splitMap.put(peripheral, Peripheral.I2C_1);
+                        } else if (peripheral.getConnectionType().isUART()) {
+                            splitMap.put(peripheral, uartList.remove(0));
+                        }
                     }
+                } catch (IndexOutOfBoundsException e) {
+                    throw new IllegalStateException("There aren't any free peripheral left for creating a new split port. Please add new peripherals in Peripheral.java");
                 }
                 if (!splitMap.isEmpty()) {
                     portToPeripheralMap.put(devicePort, splitMap.keySet());
