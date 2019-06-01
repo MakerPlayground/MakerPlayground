@@ -208,7 +208,6 @@ public class ConfigActualDeviceViewModel {
 
     DeviceMapperResult autoAssignDevice() {
         DeviceMapperResult result = DeviceMapper.autoAssignDevices(project);
-        System.out.println(result);
         applyDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();

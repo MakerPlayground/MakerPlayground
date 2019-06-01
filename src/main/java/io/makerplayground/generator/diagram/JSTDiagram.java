@@ -263,10 +263,10 @@ class JSTDiagram extends Pane {
                     && devicePort.get(0).getType() == controllerPort.get(0).getType()) {   // JST to JST device (works with MP, GROVE, JR3_SERVO and INEX)
                 drawJSTToJSTConnector(device, devicePort.get(0), controllerPort.get(0));
             } else if (controllerPort.stream().allMatch(DevicePort::isSplittedPort)) {   // JST to breakout board
-                drawPinHeaderToMPSignal(device, devicePort, controllerPort);
+                drawPinHeaderToJSTSignal(device, devicePort, controllerPort);
                 // connect power/gnd for device connected to split port only once in case that the signal wires come from different ports
                 if (!hasConnectedPower) {
-                    drawPinHeaderToMPPower(device, controllerPort);
+                    drawPinHeaderToJSTPower(device, controllerPort);
                 }
                 hasConnectedPower = true;
             } else if (controllerPort.stream().noneMatch(DevicePort::isSplittedPort)) { // wire to wire
@@ -313,32 +313,48 @@ class JSTDiagram extends Pane {
             double ey = endY + (centerOffset * Math.cos(Math.toRadians(endAngle)) * endFlip);
 //            drawCircle(ex, ey, WIRE_COLOR.get(i));
 
-            drawWire(sx, sy, startAngle, ex, ey, controllerPort.getType().getWireColor().get(i), wireWidth);
+            drawWire(sx, sy, startAngle, ex, ey, controllerPort.getType().getPinType(i).getColor(), wireWidth);
         }
     }
 
-    private void drawPinHeaderToMPSignal(ProjectDevice device, List<DevicePort> devicePortList, List<DevicePort> controllerPortList) {
+    private void drawPinHeaderToJSTSignal(ProjectDevice device, List<DevicePort> devicePortList, List<DevicePort> controllerPortList) {
         for (int i=0; i<devicePortList.size(); i++) {
+            // get port of the controller that current port of this device is connected to
             DevicePort controllerPort = controllerPortList.get(i);
-            int cableIndex = (controllerPort.getName().charAt(controllerPort.getName().length() - 1) - '0') - 1;  // TODO: broken
-            drawPinHeaderToMPConnector(device, devicePortList.get(i), controllerPort, cableIndex);
+            // get type of pin based on the name of the split port _1 is SIGNAL_1, _2 is SIGNAL_2 etc.
+            // TODO: find better way than string manipulation
+            DevicePortPinType type = null;
+            int splitPinIndex = controllerPort.getName().charAt(controllerPort.getName().length() - 1) - '0';
+            if (splitPinIndex == 1) {
+                type = DevicePortPinType.SIGNAL_1;
+            } else if (splitPinIndex == 2) {
+                type = DevicePortPinType.SIGNAL_2;
+            } else {
+                throw new IllegalStateException();
+            }
+            // get index of wire in the the connector that has this pin type (SIGNAL_1 is pin 1 for MP but it is pin 2 for INEX)
+            // use controllerPort.getParent() as the controllerPort is a split port which has type WIRE
+            int wireIndex =  controllerPort.getParent().getType().getPinIndex(type).orElseThrow();
+            drawPinHeaderToJSTConnector(device, devicePortList.get(i), controllerPort, wireIndex);
         }
     }
 
-    private void drawPinHeaderToMPPower(ProjectDevice device, List<DevicePort> controllerPortList) {
+    private void drawPinHeaderToJSTPower(ProjectDevice device, List<DevicePort> controllerPortList) {
         // controllerPortList should contains only one DevicePort except when the port is an I2C port in this case
         // the parent of those ports should be the same because we only let them use SCL and SDA from the same connector
         if (controllerPortList.stream().map(DevicePort::getParent).distinct().count() != 1) {
             throw new IllegalStateException();
         }
         DevicePort controllerPort = controllerPortList.get(0);
+        int powerPinIndex = controllerPort.getParent().getType().getPinIndex(DevicePortPinType.POWER).orElseThrow();
         Optional<DevicePort> powerPort = device.getActualDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isVcc).findAny();
-        powerPort.ifPresent(devicePort -> drawPinHeaderToMPConnector(device, devicePort, controllerPort, 2));
+        powerPort.ifPresent(devicePort -> drawPinHeaderToJSTConnector(device, devicePort, controllerPort, powerPinIndex));
+        int groundPinIndex = controllerPort.getParent().getType().getPinIndex(DevicePortPinType.GROUND).orElseThrow();
         Optional<DevicePort> gndPort = device.getActualDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isGnd).findAny();
-        gndPort.ifPresent(devicePort -> drawPinHeaderToMPConnector(device, devicePort, controllerPort, 3));
+        gndPort.ifPresent(devicePort -> drawPinHeaderToJSTConnector(device, devicePort, controllerPort, groundPinIndex));
     }
 
-    private void drawPinHeaderToMPConnector(ProjectDevice device, DevicePort start, DevicePort end, int cableIndex) {
+    private void drawPinHeaderToJSTConnector(ProjectDevice device, DevicePort start, DevicePort end, int cableIndex) {
         double sx = getTransformPortLocation(device, start).getX();
         double sy = getTransformPortLocation(device, start).getY();
         double startAngle = ANGLE_MAP.get(deviceSideMap.get(device));
@@ -350,7 +366,7 @@ class JSTDiagram extends Pane {
         DevicePortSubType endType = parentPort.getSubType();
 
         double pinPitch = parentPort.getType().getPinPitch() * MM_TO_PX;
-        Color color = parentPort.getType().getWireColor().get(cableIndex);
+        Color color = parentPort.getType().getPinType(cableIndex).getColor();
         double wireWidth = pinPitch * PITCH_TO_WIDTH;
 
         double centerOffset = pinPitch * (cableIndex - 1.5);

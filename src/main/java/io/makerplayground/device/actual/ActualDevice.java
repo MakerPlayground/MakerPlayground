@@ -336,19 +336,33 @@ public class ActualDevice {
             result.add(List.of(sclPort.get(), sdaPort.get()));
         }
 
-        // consider splited port (we group these type of port by their parent as SDA and SCL pins should come from the same cable)
+        // consider split port
         Map<DevicePort, List<DevicePort>> sdaPortMap = port.stream().filter(DevicePort::isSDA)
                 .filter(devicePort -> devicePort.getParent() != null).collect(groupingBy(DevicePort::getParent));
         Map<DevicePort, List<DevicePort>> sclPortMap = port.stream().filter(DevicePort::isSCL)
                 .filter(devicePort -> devicePort.getParent() != null).collect(groupingBy(DevicePort::getParent));
-        for (DevicePort parent : sclPortMap.keySet()) {
-            if (sclPortMap.get(parent).size() != 1 || !sdaPortMap.containsKey(parent) || sdaPortMap.get(parent).size() != 1) {
-                throw new IllegalStateException();
-            }
-            DevicePort scl = sclPortMap.get(parent).get(0);
-            DevicePort sda = sdaPortMap.get(parent).get(0);
-            result.add(List.of(scl, sda));
+        // type of sdaPortMap and sclPortMap are actually Map<DevicePort, DevicePort> as there shouldn't be more than 1
+        // sda/scl pin sharing the same parent but groupingBy is designed to return a list so we live with it and use get(0)
+        if (sdaPortMap.values().stream().mapToInt(Collection::size).anyMatch(v -> v != 1)
+                && sclPortMap.values().stream().mapToInt(Collection::size).anyMatch(v -> v != 1)) {
+            throw new IllegalStateException();
         }
+        // case 1: SDA and SCL pins come from the same port e.g. makerplayground or grove 4 pin port
+        for (DevicePort parent : new HashSet<>(sclPortMap.keySet())) {
+            if (sdaPortMap.containsKey(parent)) {
+                DevicePort scl = sclPortMap.get(parent).get(0);
+                DevicePort sda = sdaPortMap.get(parent).get(0);
+                result.add(List.of(scl, sda));
+                sclPortMap.remove(parent);
+            }
+        }
+        // case 2: SDA and SCL pins come from different port e.g. INEX 3 pin port
+        // In this case, we iterate over the unmapped scl pin left from case 1 and map it to every sda port left
+        for (DevicePort parent : sclPortMap.keySet()) {
+            DevicePort scl = sclPortMap.get(parent).get(0);
+            sdaPortMap.values().stream().flatMap(Collection::stream).forEach(sda -> result.add(List.of(scl, sda)));
+        }
+
         return result;
     }
 
