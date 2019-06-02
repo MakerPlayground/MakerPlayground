@@ -25,6 +25,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UploadDialogView;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,6 +53,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
     @FXML private MenuItem uploadMenuItem;
+    @FXML private MenuItem uploadStatusMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
@@ -86,9 +88,15 @@ public class Toolbar extends AnchorPane {
 
         deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
 
-        uploadMenuItem.setOnAction(event -> doUpload());
-
         initUploadButton();
+        initMenuItem();
+    }
+
+    private void initMenuItem() {
+        uploadStatusMenuItem.disableProperty().bind(Bindings.not(uploadStatusButton.visibleProperty()));
+
+        uploadMenuItem.setOnAction(event -> doUpload());
+        uploadStatusMenuItem.setOnAction(event -> showUploadDialog());
     }
 
     public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
@@ -141,14 +149,15 @@ public class Toolbar extends AnchorPane {
         separator.managedProperty().bind(separator.visibleProperty());
 
         uploadButton.setOnAction(event -> doUpload());
+        uploadStatusButton.setOnAction(event -> showUploadDialog());
+    }
 
-        uploadStatusButton.setOnAction(event -> {
-            UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
-            uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
-            uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
-            uploadDialogView.logProperty().bind(logProperty);
-            uploadDialogView.show();
-        });
+    private void showUploadDialog() {
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
+        uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
+        uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
+        uploadDialogView.logProperty().bind(logProperty);
+        uploadDialogView.show();
     }
 
     private void doUpload() {

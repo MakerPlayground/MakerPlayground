@@ -54,6 +54,12 @@
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
+                        <MenuItem fx:id="uploadStatusMenuItem" mnemonicParsing="false" text="Upload Status">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
