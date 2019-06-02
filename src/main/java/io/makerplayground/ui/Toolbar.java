@@ -54,6 +54,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem saveAsMenuItem;
     @FXML private MenuItem uploadMenuItem;
     @FXML private MenuItem uploadStatusMenuItem;
+    @FXML private MenuItem deviceMonitorMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
@@ -97,6 +98,8 @@ public class Toolbar extends AnchorPane {
 
         uploadMenuItem.setOnAction(event -> doUpload());
         uploadStatusMenuItem.setOnAction(event -> showUploadDialog());
+
+        deviceMonitorMenuItem.setOnAction(event -> deviceMonitorMenuButton.show());
     }
 
     public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {

@@ -61,6 +61,13 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="deviceMonitorMenuItem" mnemonicParsing="false" text="Device Monitor">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="M" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
                                 <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP"
