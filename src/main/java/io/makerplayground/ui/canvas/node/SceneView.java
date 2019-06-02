@@ -236,6 +236,7 @@ public class SceneView extends InteractiveNode {
                     , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                     + (inPort.getBoundsInLocal().getHeight() / 2)));
         });
+
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
             if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
@@ -245,6 +246,39 @@ public class SceneView extends InteractiveNode {
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our outPort if mouse is being dragged from other inPort
+            if (interactivePane.getDestNode() != null) {
+                showHilight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , sceneViewModel.getScene(), interactivePane.getDestNode()
+                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (outPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (outPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + (outPort.getBoundsInLocal().getHeight() / 2)));
+            }
+        });
+
+        statePane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+            if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
+                showHilight(true);
+            }
+            else if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+                showHilight(true);
+            }
+        });
+
+        statePane.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
+
+        statePane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            // allow drop to our inPort if mouse is being dragged from other outPort
+            if (interactivePane.getSourceNode() != null) {
+                showHilight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , interactivePane.getSourceNode(), sceneViewModel.getScene()
+                        , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (inPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + (inPort.getBoundsInLocal().getHeight() / 2)));
+            }
             if (interactivePane.getDestNode() != null) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
