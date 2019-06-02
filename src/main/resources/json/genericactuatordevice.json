@@ -322,7 +322,7 @@
             "value": 1.0,
             "constraint": {
               "min": 1.0,
-              "max": 10.0,
+              "max": 20.0,
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
@@ -395,7 +395,7 @@
             "value": 1.0,
             "constraint": {
               "min": 1.0,
-              "max": 10.0,
+              "max": 20.0,
               "unit": "NOT_SPECIFIED"
             },
             "datatype": "INTEGER",
