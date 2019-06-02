@@ -165,11 +165,9 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
     // Regex Function
     private Optional<List<LogItems>> getFormatLog(String rawLog) {
-        System.out.println(rawLog);
         List<LogItems> logitems = new ArrayList<>();
         Matcher log = format.matcher(rawLog);
         while (log.find()) {
-            System.out.println(log.group(1) + "____" + log.group(2) + "____" + log.group(3));
             logitems.add(new LogItems(log.group(1), log.group(2), log.group(3)));
         }
         if (logitems.size() > 0) {
