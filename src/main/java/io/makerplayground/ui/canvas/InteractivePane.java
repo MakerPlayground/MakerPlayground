@@ -150,7 +150,7 @@ public class InteractivePane extends ScrollPane {
                 selectionGroup.setMultipleSelection(true);
                 for (Node node : content.getChildren()) {
                     if (node instanceof InteractiveNode) {
-                        if (groupSelectionArea.getBoundsInParent().contains(node.getBoundsInParent())) {
+                        if (groupSelectionArea.getBoundsInParent().intersects(node.getBoundsInParent())) {
                             ((InteractiveNode) node).setSelected(true);
                         }
                     }
