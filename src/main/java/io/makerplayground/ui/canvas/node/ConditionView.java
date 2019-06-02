@@ -203,6 +203,40 @@ public class ConditionView extends InteractiveNode {
                         + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
             }
         });
+
+
+        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+            if (interactivePane.getSourceNode() != null && !conditionViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
+                showHilight(true);
+            }
+            else if (interactivePane.getDestNode() != null && !conditionViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+                showHilight(true);
+            }
+        });
+
+        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
+
+        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            // allow drop to our inPort if mouse is being dragged from other outPort
+            if (interactivePane.getSourceNode() != null) {
+                showHilight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , interactivePane.getSourceNode(), conditionViewModel.getCondition()
+                        , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (inPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
+            }
+            if (interactivePane.getDestNode() != null) {
+                showHilight(false);
+                fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
+                        , conditionViewModel.getCondition(), interactivePane.getDestNode()
+                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
+                        + (outPort.getBoundsInLocal().getWidth() / 2)
+                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
+                        + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
+            }
+        });
     }
 
     public ConditionViewModel getConditionViewModel() {

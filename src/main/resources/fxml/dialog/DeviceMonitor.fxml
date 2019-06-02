@@ -25,7 +25,7 @@
                             <PropertyValueFactory property="DeviceName"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Message" minWidth="400">
+                    <TableColumn fx:id="messageTableColumn" text="Message" minWidth="400">
                         <cellValueFactory>
                             <PropertyValueFactory property="Message"/>
                         </cellValueFactory>

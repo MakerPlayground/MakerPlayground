@@ -30,10 +30,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javafx.stage.Window;
+import javafx.util.Callback;
 import org.controlsfx.control.CheckComboBox;
 
 import java.io.IOException;
@@ -48,7 +50,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
     private ObservableList<LogItems> logData = FXCollections.observableArrayList();
     private Thread serialThread = null;
-    private final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)"); // Regex
+    private final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)", Pattern.DOTALL); // Regex
     private FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
     @FXML private TableView<LogItems> deviceMonitorTable;
     @FXML private ComboBox<LogItems.LogLevel> levelComboBox;
@@ -57,6 +59,8 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
     @FXML private Label tagLabel;
     @FXML private GridPane gridPane;
     @FXML private CheckBox onStatus;
+
+    @FXML private TableColumn<LogItems, String> messageTableColumn;
 
     public DeviceMonitor(SerialPort comPort) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
@@ -81,6 +85,21 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         checkTagComboBox.getCheckModel().getCheckedItems().addListener(this);
         levelComboBox.getSelectionModel().select(0);
 
+        messageTableColumn.setCellFactory(param -> new TableCell<>() {
+            private Text label;
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isEmpty()) {
+                    setGraphic(null);
+                    return;
+                }
+                System.out.println(item);
+                label = new Text(item);
+                label.setWrappingWidth(this.getWidth());
+                setGraphic(label);
+            }
+        });
         deviceMonitorTable.setItems(logDataFilter);
 
         initView();
@@ -146,9 +165,11 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
 
     // Regex Function
     private Optional<List<LogItems>> getFormatLog(String rawLog) {
+        System.out.println(rawLog);
         List<LogItems> logitems = new ArrayList<>();
         Matcher log = format.matcher(rawLog);
         while (log.find()) {
+            System.out.println(log.group(1) + "____" + log.group(2) + "____" + log.group(3));
             logitems.add(new LogItems(log.group(1), log.group(2), log.group(3)));
         }
         if (logitems.size() > 0) {
