@@ -48,6 +48,13 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="uploadMenuItem" mnemonicParsing="false" text="Upload">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
                                 <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP"

@@ -51,6 +51,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
+    @FXML private MenuItem uploadMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
@@ -84,6 +85,8 @@ public class Toolbar extends AnchorPane {
         diagramEditorButton.setSelected(true);
 
         deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
+
+        uploadMenuItem.setOnAction(event -> doUpload());
 
         initUploadButton();
     }
@@ -137,25 +140,7 @@ public class Toolbar extends AnchorPane {
         separator.visibleProperty().bind(uploadStatusButton.visibleProperty());
         separator.managedProperty().bind(separator.visibleProperty());
 
-        uploadButton.setOnAction(event -> {
-            if (uploadTask == null || !uploadTask.isRunning()) {
-                if (createUploadTask()) {
-                    uploadButton.setText("Cancel");
-                    uploadButton.setGraphic(uploadStopImageView);
-                    uploadStatusButton.setVisible(true);
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() != ButtonType.OK) {
-                    return;
-                }
-                uploadTask.cancel();
-                uploadButton.setText("Upload");
-                uploadButton.setGraphic(uploadStartImageView);
-                uploadStatusButton.setVisible(false);
-            }
-        });
+        uploadButton.setOnAction(event -> doUpload());
 
         uploadStatusButton.setOnAction(event -> {
             UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
@@ -164,6 +149,26 @@ public class Toolbar extends AnchorPane {
             uploadDialogView.logProperty().bind(logProperty);
             uploadDialogView.show();
         });
+    }
+
+    private void doUpload() {
+        if (uploadTask == null || !uploadTask.isRunning()) {
+            if (createUploadTask()) {
+                uploadButton.setText("Cancel");
+                uploadButton.setGraphic(uploadStopImageView);
+                uploadStatusButton.setVisible(true);
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() != ButtonType.OK) {
+                return;
+            }
+            uploadTask.cancel();
+            uploadButton.setText("Upload");
+            uploadButton.setGraphic(uploadStartImageView);
+            uploadStatusButton.setVisible(false);
+        }
     }
 
     private boolean createUploadTask() {
