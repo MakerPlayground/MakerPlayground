@@ -162,7 +162,7 @@ public class ConditionView extends InteractiveNode {
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
-            if (interactivePane.getSourceNode() != null) {
+            if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , interactivePane.getSourceNode(), conditionViewModel.getCondition()
@@ -193,7 +193,7 @@ public class ConditionView extends InteractiveNode {
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our outPort if mouse is being dragged from other inPort
-            if (interactivePane.getDestNode() != null) {
+            if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , conditionViewModel.getCondition(), interactivePane.getDestNode()
@@ -218,7 +218,7 @@ public class ConditionView extends InteractiveNode {
 
         scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
-            if (interactivePane.getSourceNode() != null) {
+            if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , interactivePane.getSourceNode(), conditionViewModel.getCondition()
@@ -227,7 +227,7 @@ public class ConditionView extends InteractiveNode {
                         , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
             }
-            if (interactivePane.getDestNode() != null) {
+            if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , conditionViewModel.getCondition(), interactivePane.getDestNode()

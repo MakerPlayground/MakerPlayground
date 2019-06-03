@@ -16,7 +16,6 @@
 
 package io.makerplayground.ui.dialog.devicepane.output;
 
-import io.makerplayground.project.UserSetting;
 import io.makerplayground.ui.canvas.node.SceneViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,21 +40,12 @@ public class OutputDeviceSelector extends PopOver {
             e.printStackTrace();
         }
 
-        viewModel.getProjectOutputDevice().stream().filter(device -> {
-            for (UserSetting userSetting : viewModel.getStateDevice()) {
-                if (userSetting.getDevice().getName().equals(device.getName())) {
-                    return false;
-                }
-            }
-            return true;
-        }).forEachOrdered(device -> {
+        viewModel.getProjectOutputDevice().forEach(device -> {
             OutputDeviceIconSelectorView outputIconView = new OutputDeviceIconSelectorView(device);
             flowPane.getChildren().add(outputIconView);
             outputIconView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 viewModel.getScene().addDevice(device);
-                flowPane.getChildren().remove(outputIconView);
             });
         });
-
     }
 }

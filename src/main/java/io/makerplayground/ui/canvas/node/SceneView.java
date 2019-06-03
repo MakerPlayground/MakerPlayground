@@ -17,6 +17,7 @@
 package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.DiagramError;
+import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.control.AutoResizeTextField;
@@ -93,7 +94,7 @@ public class SceneView extends InteractiveNode {
                         .setViewFactory(sceneDeviceIconViewModel -> {
                             SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
                             sceneDeviceIconView.setOnRemoved(event ->
-                                    sceneViewModel.removeStateDevice(sceneDeviceIconViewModel.getProjectDevice()));
+                                    sceneViewModel.removeUserSetting(sceneDeviceIconViewModel.getUserSetting()));
                             return sceneDeviceIconView;
                         })
                         .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
@@ -270,7 +271,7 @@ public class SceneView extends InteractiveNode {
 
         statePane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
-            if (interactivePane.getSourceNode() != null) {
+            if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getSceneViewModel().getScene()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , interactivePane.getSourceNode(), sceneViewModel.getScene()
@@ -279,7 +280,7 @@ public class SceneView extends InteractiveNode {
                         , getBoundsInParent().getMinY() + (inPort.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
                         + (inPort.getBoundsInLocal().getHeight() / 2)));
             }
-            if (interactivePane.getDestNode() != null) {
+            if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getSceneViewModel().getScene()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
                         , sceneViewModel.getScene(), interactivePane.getDestNode()

@@ -21,6 +21,7 @@ import io.makerplayground.ui.canvas.node.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -150,7 +151,11 @@ public class InteractivePane extends ScrollPane {
                 selectionGroup.setMultipleSelection(true);
                 for (Node node : content.getChildren()) {
                     if (node instanceof InteractiveNode) {
-                        if (groupSelectionArea.getBoundsInParent().intersects(node.getBoundsInParent())) {
+                        Bounds bound = node.getBoundsInParent();
+                        double width = 10;
+                        double height = 10;
+                        Bounds selectionBound = new BoundingBox(0.5 * (bound.getMinX() + bound.getMaxX() - width), 0.5 * (bound.getMinY() + bound.getMaxY() - height), width, height);
+                        if (groupSelectionArea.getBoundsInParent().intersects(selectionBound)) {
                             ((InteractiveNode) node).setSelected(true);
                         }
                     }

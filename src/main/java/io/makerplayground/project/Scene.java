@@ -172,6 +172,10 @@ public class Scene extends NodeElement {
         return setting;
     }
 
+    public void removeUserSetting(UserSetting userSetting) {
+        this.setting.remove(userSetting);
+    }
+
     @Override
     protected DiagramError checkError() {
         // name should contain only english alphabets and an underscore and it should not be empty

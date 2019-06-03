@@ -48,7 +48,7 @@ public class SceneViewModel {
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(Bindings.size(scene.getSetting())));
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(0));
     }
 
     public String getName() {
@@ -115,8 +115,8 @@ public class SceneViewModel {
         return scene.getSetting();
     }
 
-    public void removeStateDevice(ProjectDevice projectDevice) {
-        scene.removeDevice(projectDevice);
+    public void removeUserSetting(UserSetting userSetting) {
+        scene.removeUserSetting(userSetting);
     }
 
     public BooleanProperty hasDeviceToAddProperty() {
