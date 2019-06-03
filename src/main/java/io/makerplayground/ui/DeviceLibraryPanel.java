@@ -6,9 +6,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -17,13 +16,21 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DeviceLibraryPanel extends TabPane {
 
+    @FXML private TextField searchTextField;
+    @FXML private Accordion deviceLibraryAccordian;
+    @FXML private TitledPane actuatorPane;
     @FXML private VBox actuatorVBox;
+    @FXML private TitledPane sensorPane;
     @FXML private VBox sensorVBox;
+    @FXML private TitledPane utilityPane;
     @FXML private VBox utilityVBox;
+    @FXML private TitledPane cloudPane;
     @FXML private VBox cloudVBox;
+    @FXML private TitledPane interfacePane;
     @FXML private VBox interfaceVBox;
 
     private Consumer<GenericDevice> devicePressHandler;
@@ -87,6 +94,39 @@ public class DeviceLibraryPanel extends TabPane {
             });
             interfaceVBox.getChildren().add(deviceLibraryListCell);
         }
+
+        searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            Predicate<Node> cellPredicate = deviceLibraryListCell -> {
+                if (((DeviceLibraryListCell) deviceLibraryListCell).getName().toLowerCase().contains(newValue.toLowerCase())) {
+                    deviceLibraryListCell.setVisible(true);
+                    deviceLibraryListCell.setManaged(true);
+                    return true;
+                } else {
+                    deviceLibraryListCell.setVisible(false);
+                    deviceLibraryListCell.setManaged(false);
+                    return false;
+                }
+            };
+            // Implementation note:
+            // 1. filter and count can't be replaced by anyMatch as we want the side effect of the predicate
+            // 2. the order should be reversed from the display order so that the top-most TitledPane with matched content is expanded
+            deviceLibraryAccordian.setExpandedPane(null);
+            if (interfaceVBox.getChildren().stream().filter(cellPredicate).count() != 0) {
+                interfacePane.setExpanded(true);
+            }
+            if (cloudVBox.getChildren().stream().filter(cellPredicate).count() != 0) {
+                cloudPane.setExpanded(true);
+            }
+            if (utilityVBox.getChildren().stream().filter(cellPredicate).count() != 0) {
+                utilityPane.setExpanded(true);
+            }
+            if (sensorVBox.getChildren().stream().filter(cellPredicate).count() != 0) {
+                sensorPane.setExpanded(true);
+            }
+            if (actuatorVBox.getChildren().stream().filter(cellPredicate).count() != 0) {
+                actuatorPane.setExpanded(true);
+            }
+        });
     }
 
     public void setOnDevicePressed(Consumer<GenericDevice> consumer) {
@@ -118,6 +158,10 @@ public class DeviceLibraryPanel extends TabPane {
 
         public void setOnAddButtonPressed(EventHandler<ActionEvent> event) {
             addButton.setOnAction(event);
+        }
+
+        public String getName() {
+            return nameLabel.getText();
         }
     }
 }

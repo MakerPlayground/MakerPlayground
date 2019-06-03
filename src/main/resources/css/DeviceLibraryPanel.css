@@ -21,6 +21,10 @@
 }
 /*----------------------------------------------------*/
 
+#deviceLibraryVBox {
+    -fx-background-color: background-color;
+}
+
 .titled-pane {
     -fx-text-fill: text-color-hilight;
 }
@@ -100,4 +104,28 @@
 .scroll-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
+}
+
+
+#searchTextField {
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+#searchTextField:focused{
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-focus-color: transparent;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
 }
