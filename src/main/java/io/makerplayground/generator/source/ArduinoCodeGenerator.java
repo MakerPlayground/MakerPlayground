@@ -226,6 +226,10 @@ class ArduinoCodeGenerator {
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
 
+        if (project.getPlatform().equals(Platform.ARDUINO_ESP32)) {
+            builder.append(INDENT).append("analogSetWidth(10);").append(NEW_LINE);
+        }
+
         for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
             String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
             builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
