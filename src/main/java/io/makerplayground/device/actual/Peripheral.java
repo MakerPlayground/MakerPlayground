@@ -220,6 +220,11 @@ public enum Peripheral {
     GROVE_GPIO_SINGLE_8(ConnectionType.GROVE_GPIO_SINGLE),
     GROVE_GPIO_SINGLE_9(ConnectionType.GROVE_GPIO_SINGLE),
 
+    GROVE_GPIO_SINGLE_INNER_1(ConnectionType.GROVE_GPIO_SINGLE_INNER),
+    GROVE_GPIO_SINGLE_INNER_2(ConnectionType.GROVE_GPIO_SINGLE_INNER),
+    GROVE_GPIO_SINGLE_INNER_3(ConnectionType.GROVE_GPIO_SINGLE_INNER),
+    GROVE_GPIO_SINGLE_INNER_4(ConnectionType.GROVE_GPIO_SINGLE_INNER),
+
     GROVE_GPIO_DUAL_1(ConnectionType.GROVE_GPIO_DUAL),
     GROVE_GPIO_DUAL_2(ConnectionType.GROVE_GPIO_DUAL),
     GROVE_GPIO_DUAL_3(ConnectionType.GROVE_GPIO_DUAL),
@@ -237,6 +242,11 @@ public enum Peripheral {
     GROVE_PWM_SINGLE_5(ConnectionType.GROVE_PWM_SINGLE),
     GROVE_PWM_SINGLE_6(ConnectionType.GROVE_PWM_SINGLE),
     GROVE_PWM_SINGLE_7(ConnectionType.GROVE_PWM_SINGLE),
+
+    GROVE_PWM_SINGLE_INNER_1(ConnectionType.GROVE_PWM_SINGLE_INNER),
+    GROVE_PWM_SINGLE_INNER_2(ConnectionType.GROVE_PWM_SINGLE_INNER),
+    GROVE_PWM_SINGLE_INNER_3(ConnectionType.GROVE_PWM_SINGLE_INNER),
+    GROVE_PWM_SINGLE_INNER_4(ConnectionType.GROVE_PWM_SINGLE_INNER),
 
     GROVE_PWM_DUAL_1(ConnectionType.GROVE_PWM_DUAL),
     GROVE_PWM_DUAL_2(ConnectionType.GROVE_PWM_DUAL),
@@ -332,11 +342,15 @@ public enum Peripheral {
         return Stream.of(values()).filter(peripheral -> peripheral.getConnectionType() == connectionType).collect(Collectors.toList());
     }
 
-    public boolean isSingle() {
-        return isMPSingle() || isGroveSingle() || isInexSingle();
+    public boolean isPrimaryPortOnly() {
+        return isMPPrimaryPinOnly() || isGrovePrimaryPinOnly() || isInexPrimaryPinOnly();
     }
 
-    public boolean isMPSingle() {
+    public boolean isSecondaryPortOnly() {
+        return isGroveSecondaryPinOnly();
+    }
+
+    public boolean isMPPrimaryPinOnly() {
         switch (this.getConnectionType()) {
             case MP_GPIO_SINGLE:
             case MP_PWM_SINGLE:
@@ -347,7 +361,7 @@ public enum Peripheral {
         }
     }
 
-    public boolean isGroveSingle() {
+    public boolean isGrovePrimaryPinOnly() {
         switch (this.getConnectionType()) {
             case GROVE_GPIO_SINGLE:
             case GROVE_PWM_SINGLE:
@@ -358,7 +372,17 @@ public enum Peripheral {
         }
     }
 
-    public boolean isInexSingle() {
+    public boolean isGroveSecondaryPinOnly() {
+        switch (this.getConnectionType()) {
+            case GROVE_GPIO_SINGLE_INNER:
+            case GROVE_PWM_SINGLE_INNER:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isInexPrimaryPinOnly() {
         switch (this.getConnectionType()) {
             case INEX_GPIO:
             case INEX_PWM:

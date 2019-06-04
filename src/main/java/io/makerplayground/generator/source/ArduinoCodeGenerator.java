@@ -148,9 +148,10 @@ class ArduinoCodeGenerator {
                             if (!devicePort.getAlias().isEmpty()) {
                                 if (p.isDual()) {
                                     args.addAll(devicePort.getAlias());
-                                } else {
-                                    // TODO: addAll should be used here, so we can avoid the if statement. (Must be checked)
+                                } else if (p.isPrimaryPortOnly()) {
                                     args.add(devicePort.getAlias().get(0));
+                                } else if (p.isSecondaryPortOnly()) {
+                                    args.add(devicePort.getAlias().get(1));
                                 }
                             } else {
                                 args.add(devicePort.getName());

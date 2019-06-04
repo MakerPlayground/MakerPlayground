@@ -134,6 +134,17 @@ public class ActualDevice {
                 }
                 Map<Peripheral, Peripheral> splitMap = new HashMap<>();
                 try {
+                    List<Peripheral> peripheralList = devicePort.getPeripheral();
+                    // remove *_DUAL peripheral when port contains both *_SINGLE and *_SINGLE_INNER peripheral
+                    // TODO: this code may break if we add another inner type
+                    if (peripheralList.stream().anyMatch(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_GPIO_SINGLE)
+                            && peripheralList.stream().anyMatch(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_GPIO_SINGLE_INNER)) {
+                        peripheralList.removeIf(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_GPIO_DUAL);
+                    }
+                    if (peripheralList.stream().anyMatch(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_PWM_SINGLE)
+                            && peripheralList.stream().anyMatch(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_PWM_SINGLE_INNER)) {
+                        peripheralList.removeIf(peripheral -> peripheral.getConnectionType() == ConnectionType.GROVE_PWM_DUAL);
+                    }
                     for (Peripheral peripheral : devicePort.getPeripheral()) {
                         if (peripheral.getConnectionType().isGPIO()) {
                             splitMap.put(peripheral, gpioList.remove(0));
@@ -185,8 +196,10 @@ public class ActualDevice {
                     } else if (splitPeripheral.getConnectionType() == ConnectionType.GROVE_UART) {
                         firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.UART_RX));
                         secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.UART_TX));
-                    } else if (splitPeripheral.isSingle()) {
+                    } else if (splitPeripheral.isPrimaryPortOnly()) {
                         firstPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
+                    } else if (splitPeripheral.isSecondaryPortOnly()) {
+                        secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
                     } else if (splitPeripheral.isDual()) {
                         secondPortFunction.add(new DevicePort.DevicePortFunction(newPeripheral, newConflictPeripheral, PinType.INOUT));
                     }
