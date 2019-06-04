@@ -340,11 +340,6 @@ class JSTDiagram extends Pane {
     }
 
     private void drawPinHeaderToJSTPower(ProjectDevice device, List<DevicePort> controllerPortList) {
-        // controllerPortList should contains only one DevicePort except when the port is an I2C port in this case
-        // the parent of those ports should be the same because we only let them use SCL and SDA from the same connector
-        if (controllerPortList.stream().map(DevicePort::getParent).distinct().count() != 1) {
-            throw new IllegalStateException();
-        }
         DevicePort controllerPort = controllerPortList.get(0);
         int powerPinIndex = controllerPort.getParent().getType().getPinIndex(DevicePortPinType.POWER).orElseThrow();
         Optional<DevicePort> powerPort = device.getActualDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isVcc).findAny();
