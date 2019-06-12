@@ -77,6 +77,7 @@ public class Main extends Application {
         toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
         MainWindow mainWindow = new MainWindow(project);
+        mainWindow.deviceExplorerShowingProperty().bind(toolbar.deviceExplorerSelectProperty());
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
 

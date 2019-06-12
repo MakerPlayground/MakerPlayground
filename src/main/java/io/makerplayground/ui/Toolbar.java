@@ -30,6 +30,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -57,6 +58,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem deviceMonitorMenuItem;
     @FXML private MenuItem closeMenuItem;
 
+    @FXML private RadioButton deviceExplorerButton;
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
     @FXML private Label statusLabel;
@@ -83,9 +85,9 @@ public class Toolbar extends AnchorPane {
         }
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+        toggleGroup.getToggles().addAll(deviceExplorerButton, diagramEditorButton, deviceConfigButton);
 
-        diagramEditorButton.setSelected(true);
+        deviceExplorerButton.setSelected(true);
 
         deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
 
@@ -120,6 +122,10 @@ public class Toolbar extends AnchorPane {
 
     public void setOnCloseButtonPressed(EventHandler<ActionEvent> event) {
         closeMenuItem.setOnAction(event);
+    }
+
+    public BooleanProperty deviceExplorerSelectProperty() {
+        return deviceExplorerButton.selectedProperty();
     }
 
     public BooleanProperty diagramEditorSelectProperty() {

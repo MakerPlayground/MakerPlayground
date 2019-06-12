@@ -37,6 +37,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -44,8 +45,10 @@ import javafx.scene.text.TextAlignment;
 public class MainWindow extends BorderPane {
 
     private Project currentProject;
+    private Node deviceExplorer;
     private Node diagramEditor;
 
+    private final BooleanProperty deviceExplorerShowing;
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
 
@@ -54,7 +57,15 @@ public class MainWindow extends BorderPane {
 
     public MainWindow(ObjectProperty<Project> project) {
         currentProject = project.get();
+        deviceExplorer = initDeviceExplorer();
         diagramEditor = initDiagramEditor();
+
+        deviceExplorerShowing = new SimpleBooleanProperty();
+        deviceExplorerShowing.addListener(((observable, oldValue, newValue) -> {
+            if (newValue) {
+                setCenter(deviceExplorer);
+            }
+        }));
 
         diagramEditorShowing = new SimpleBooleanProperty();
         diagramEditorShowing.addListener((observable, oldValue, newValue) -> {
@@ -122,6 +133,11 @@ public class MainWindow extends BorderPane {
         return mainSplitPane;
     }
 
+    private Node initDeviceExplorer() {
+        Pane pane = new Pane();
+        return pane;
+    }
+
     private Node initConfigDevice() {
         StackPane rightView = new StackPane();
 
@@ -174,5 +190,13 @@ public class MainWindow extends BorderPane {
         mainLayout.setOrientation(Orientation.HORIZONTAL);
         mainLayout.getItems().addAll(configActualDeviceView, rightView);
         return mainLayout;
+    }
+
+    public boolean isDeviceExplorerShowing() {
+        return deviceExplorerShowing.get();
+    }
+
+    public BooleanProperty deviceExplorerShowingProperty() {
+        return deviceExplorerShowing;
     }
 }
