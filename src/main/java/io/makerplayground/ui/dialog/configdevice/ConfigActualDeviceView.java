@@ -16,12 +16,15 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Platform;
+import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
-import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.DeviceMapperResult;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;

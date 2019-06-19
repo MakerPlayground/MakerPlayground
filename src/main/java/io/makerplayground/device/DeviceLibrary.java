@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,10 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.DeviceType;
-import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
 
@@ -31,9 +31,11 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -97,15 +99,12 @@ public enum DeviceLibrary {
         ObjectMapper mapper = new ObjectMapper();
         Optional<String> libraryPath = getLibraryPath();
         if (libraryPath.isPresent()) {
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices"))) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices2"))) {
                 for (Path deviceDirectory : directoryStream) {
                     Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
                     if (Files.exists(deviceDefinitionPath)) {
                         try {
                             ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {});
-                            for (IntegratedActualDevice integratedActualDevice: actualDevice.getIntegratedDevices()) {
-                                integratedActualDevice.setParent(actualDevice);
-                            }
                             temp.add(actualDevice);
                         } catch (JsonParseException e) {
                             System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
@@ -161,8 +160,8 @@ public enum DeviceLibrary {
     }
 
     public List<ActualDevice> getActualDevice(Platform platform) {
-        return actualDevice.stream().filter(device -> device.getSupportedPlatform().contains(platform))
-                .collect(Collectors.toUnmodifiableList());
+        return actualDevice.stream().filter(device -> device.getPlatformSourceCodeLibrary().keySet().contains(platform))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public ActualDevice getActualDevice(String id) {

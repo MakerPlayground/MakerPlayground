@@ -17,10 +17,10 @@
 package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.*;
 

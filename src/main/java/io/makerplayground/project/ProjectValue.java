@@ -19,6 +19,8 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Value;
 
+import java.util.Objects;
+
 @JsonSerialize(using = ProjectValueSerializer.class)
 public class ProjectValue {
     private final ProjectDevice device;
@@ -52,8 +54,8 @@ public class ProjectValue {
 
         ProjectValue that = (ProjectValue) o;
 
-        if (device != null ? !device.equals(that.device) : that.device != null) return false;
-        return value != null ? value.equals(that.value) : that.value == null;
+        if (!Objects.equals(device, that.device)) return false;
+        return Objects.equals(value, that.value);
     }
 
     @Override

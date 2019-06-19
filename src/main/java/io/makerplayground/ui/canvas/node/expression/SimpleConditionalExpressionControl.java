@@ -17,7 +17,6 @@
 package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.shared.constraint.NumericConstraint;
-import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWithOperator;
 import javafx.beans.property.ReadOnlyObjectProperty;

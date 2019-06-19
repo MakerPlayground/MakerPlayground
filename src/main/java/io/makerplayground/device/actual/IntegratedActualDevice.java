@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,39 @@
 package io.makerplayground.device.actual;
 
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.shared.constraint.Constraint;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class IntegratedActualDevice extends ActualDevice {
 
-    private ActualDevice parent;
-
-    IntegratedActualDevice(String name, Map<Platform, String> classnames, Map<Platform, List<String>> externalLibraries,
-                           List<DevicePort> port, List<Peripheral> connectivity, List<Property> property,
-                           Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction,
-                           Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
-        super("", "", name, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
-                , classnames, externalLibraries, null, port, connectivity
-                , supportedAction, supportedValue, property
-                , Collections.emptyMap(), Collections.emptyList());
-    }
-
-    public ActualDevice getParent() {
-        return parent;
-    }
+    @Getter protected ActualDevice parent;
 
     public void setParent(ActualDevice parent) {
+        if (this.parent != null) {
+            throw new UnsupportedOperationException("parent couldn't be set multiple time.");
+        }
         this.parent = parent;
+    }
+
+    @Builder(builderMethodName = "IntegratedActualDeviceBuilder")
+    IntegratedActualDevice(String id, String brand, String model, String url, double width, double height,
+                           String pioBoardId, DeviceType deviceType,
+                           List<Pin> pinProvide, List<Pin> pinConsume, List<Pin> pinUnused,
+                           List<Property> property, List<Port> portProvide, List<Port> portConsume,
+                           CloudPlatform cloudConsume, Map<GenericDevice, Compatibility> compatibilityMap,
+                           Map<CloudPlatform, SourceCodeLibrary> cloudPlatformSourceCodeLibrary,
+                           Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary,
+                           List<IntegratedActualDevice> integratedDevices) {
+        super(id, brand, model, url, width, height, pioBoardId, deviceType, pinProvide, pinConsume, pinUnused,
+                property, portProvide, portConsume, cloudConsume, compatibilityMap,
+                cloudPlatformSourceCodeLibrary, platformSourceCodeLibrary, integratedDevices);
+        this.parent = null;
     }
 }

@@ -7,19 +7,16 @@
       {
         "name": "Press",
         "funcname": "isPress",
-        "type": "Active", 
         "parameter": []
       }, 
       {
         "name": "Press and release",
         "funcname": "isPressAndRelease",
-        "type": "Active", 
         "parameter": []
       },
       {
         "name": "Not press",
         "funcname": "isNotPress",
-        "type": "Active",
         "parameter": []
       }
     ], 
@@ -32,20 +29,17 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }, 
       {
         "name": "Tap", 
-        "funcname": "isTapped", 
-        "type": "Active", 
+        "funcname": "isTapped",
         "parameter": []
       }, 
       {
         "name": "Free Fall", 
-        "funcname": "isFallen", 
-        "type": "Active", 
+        "funcname": "isFallen",
         "parameter": []
       }
     ], 
@@ -96,7 +90,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -120,7 +113,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -143,8 +135,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -167,8 +158,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -183,7 +173,7 @@
         }
       }, 
       {
-        "name": "Gyro_Y", 
+        "name": "Gyro_Y",
         "dataType": "DOUBLE", 
         "constraint": {
           "min": -200.0, 
@@ -209,8 +199,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -233,8 +222,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -257,14 +245,12 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }, 
       {
         "name": "Direction", 
-        "funcname": "checkDirection", 
-        "type": "Active", 
+        "funcname": "checkDirection",
         "parameter": [
           {
             "name": "Direction", 
@@ -322,8 +308,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -346,14 +331,12 @@
     "condition": [
       {
         "name": "Detect Human", 
-        "funcname": "isDetected", 
-        "type": "Active", 
+        "funcname": "isDetected",
         "parameter": []
       }, 
       {
         "name": "No Human", 
-        "funcname": "isNotDetected", 
-        "type": "Active", 
+        "funcname": "isNotDetected",
         "parameter": []
       }
     ], 
@@ -367,19 +350,16 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Data is valid",
         "funcname": "isDataValid",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Data is not valid",
         "funcname": "isDataInvalid",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -411,8 +391,7 @@
     "condition": [
       {
         "name": "Detect Color", 
-        "funcname": "isColor", 
-        "type": "Active", 
+        "funcname": "isColor",
         "parameter": [
           {
             "name": "Color", 
@@ -442,7 +421,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -465,14 +443,12 @@
     "condition": [
       {
         "name": "Detect Water", 
-        "funcname": "isWet", 
-        "type": "Active", 
+        "funcname": "isWet",
         "parameter": []
       }, 
       {
         "name": "No Water", 
-        "funcname": "isDry", 
-        "type": "Active", 
+        "funcname": "isDry",
         "parameter": []
       }
     ], 
@@ -485,8 +461,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -509,8 +484,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -534,7 +508,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -558,7 +531,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -581,8 +553,7 @@
     "condition": [
       {
         "name": "Compare", 
-        "funcname": "", 
-        "type": "Active", 
+        "funcname": "",
         "parameter": []
       }
     ], 
@@ -606,61 +577,51 @@
       {
         "name": "Swipe Up",
         "funcname": "isSwipeUp",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Down",
         "funcname": "isSwipeDown",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Left",
         "funcname": "isSwipeLeft",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Swipe Right",
         "funcname": "isSwipeRight",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Move Forward",
         "funcname": "isMoveForward",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Move Backward",
         "funcname": "isMoveBackward",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Spin Clockwise",
         "funcname": "isSpinClockwise",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Spin Counter Clockwise",
         "funcname": "isSpinCounterClockwise",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Waving",
         "funcname": "isWave",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not Detected",
         "funcname": "isNotDetected",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -674,7 +635,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -697,7 +657,6 @@
       {
         "name": "Set DateTime",
         "funcname": "setDateTime",
-        "type": "Active",
         "parameter": [
           {
             "name": "datetime",
@@ -713,13 +672,11 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Check Day",
         "funcname": "checkDayOfWeek",
-        "type": "Active",
         "parameter": [
           {
             "name": "Day",
@@ -817,7 +774,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -859,67 +815,56 @@
       {
         "name": "Press up",
         "funcname": "isUpPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press down",
         "funcname": "isDownPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press left",
         "funcname": "isLeftPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press right",
         "funcname": "isRightPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press middle",
         "funcname": "isMiddlePress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press up",
         "funcname": "isUpRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press down",
         "funcname": "isDownRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press left",
         "funcname": "isLeftRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press right",
         "funcname": "isRightRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press middle",
         "funcname": "isMiddleRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press all",
         "funcname": "isAllRelease",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -933,7 +878,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],

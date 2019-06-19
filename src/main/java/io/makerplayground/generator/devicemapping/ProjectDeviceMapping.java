@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.actual;
+package io.makerplayground.generator.devicemapping;
 
-/**
- * Created by Palmn on 7/15/2017.
- */
-public enum FormFactor {
-    BREAKOUT_BOARD_ONESIDE, BREAKOUT_BOARD_TWOSIDE, SHIELD, STANDALONE, BREADBOARD_CUSTOM, GROVE, MP_CONTROLLER, MP_DEVICE, NONE
+public class ProjectDeviceMapping {
 }

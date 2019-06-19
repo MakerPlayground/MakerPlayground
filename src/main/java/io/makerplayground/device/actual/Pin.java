@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,18 @@
 
 package io.makerplayground.device.actual;
 
-// TODO: this enum is deprecated in flavor of the unified connection diagram in next release which uses only DevicePort type
-public enum WiringMethod {
-    WIRE_AND_BREADBOARD,
-    GROVE,
-    MP,
-    KIDBRIGHT,
-    INEX
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@JsonDeserialize(using = PinDeserializer.class)
+public class Pin {
+    private final String name;
+    private final VoltageLevel voltageLevel;
+    private final List<PinFunction> function;
+    private final PinConnectionType connectionType;
+    private final double x;
+    private final double y;
 }

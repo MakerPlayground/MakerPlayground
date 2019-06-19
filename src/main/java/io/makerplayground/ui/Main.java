@@ -38,13 +38,10 @@ import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Nuntipat Narkthong on 6/6/2017 AD.
@@ -58,6 +55,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // TODO: show progress indicator while loading if need
+
         DeviceLibrary.INSTANCE.loadDeviceFromJSON();
 
         // try to load a project file passed as a command line argument if existed

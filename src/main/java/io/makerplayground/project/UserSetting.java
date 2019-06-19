@@ -17,17 +17,18 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.project.expression.*;
+import io.makerplayground.device.shared.Condition;
+import io.makerplayground.project.expression.Expression;
+import io.makerplayground.project.expression.NumberInRangeExpression;
+import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import lombok.Getter;
 
 import java.util.*;
 
@@ -37,20 +38,35 @@ import java.util.*;
  */
 @JsonSerialize(using = UserSettingSerializer.class)
 public class UserSetting {
-    private final ProjectDevice device;
+    public enum Type {
+        SCENE, CONDITION
+    }
+
+    @Getter private final ProjectDevice device;
+    private final ReadOnlyObjectWrapper<Type> type;
     private final ReadOnlyObjectWrapper<Action> action;
-    private final ObservableMap<Parameter, Expression> valueMap;
-    private final ObservableMap<Value, Expression> expression;
-    private final ObservableMap<Value, Boolean> expressionEnable;
+    private final ReadOnlyObjectWrapper<Condition> condition;
+    @Getter private final ObservableMap<Parameter, Expression> valueMap;
+    @Getter private final ObservableMap<Value, Expression> expression;
+    @Getter private final ObservableMap<Value, Boolean> expressionEnable;
 
     private UserSetting(ProjectDevice device) {
         this.device = device;
+        this.type = new ReadOnlyObjectWrapper<>();
         this.action = new ReadOnlyObjectWrapper<>();
+        this.condition = new ReadOnlyObjectWrapper<>();
         this.valueMap = FXCollections.observableHashMap();
         this.expression = FXCollections.observableHashMap();
         this.expressionEnable = FXCollections.observableHashMap();
 
         this.action.addListener((observable, oldValue, newValue) -> {
+            valueMap.clear();
+            for (Parameter param : newValue.getParameter()) {
+                valueMap.put(param, Expression.fromDefaultParameter(param));
+            }
+        });
+
+        this.condition.addListener((observable, oldValue, newValue) -> {
             valueMap.clear();
             for (Parameter param : newValue.getParameter()) {
                 valueMap.put(param, Expression.fromDefaultParameter(param));
@@ -67,14 +83,29 @@ public class UserSetting {
         }
     }
 
-    UserSetting(ProjectDevice device, Action supportingActionOrCondition) {
+    UserSetting(ProjectDevice device, Action supportingAction) {
         this(device);
-        this.action.set(supportingActionOrCondition);
+        this.type.set(Type.SCENE);
+        this.action.set(supportingAction);
+    }
+
+    UserSetting(ProjectDevice device, Condition supportingCondition) {
+        this(device);
+        this.type.set(Type.CONDITION);
+        this.condition.set(supportingCondition);
     }
 
     UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(device);
-        this.action.set(action);
+        this(device, action);
+
+        // replace all default map values with these maps
+        this.valueMap.putAll(valueMap);
+        this.expression.putAll(expression);
+        this.expressionEnable.putAll(enable);
+    }
+
+    UserSetting(ProjectDevice device, Condition condition, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(device, condition);
 
         // replace all default map values with these maps
         this.valueMap.putAll(valueMap);
@@ -84,7 +115,11 @@ public class UserSetting {
 
     UserSetting(UserSetting u) {
         this(u.device);
-        this.action.set(u.action.get());
+        if (u.type.get() == Type.SCENE) {
+            this.action.set(u.action.get());
+        } else if(u.type.get() == Type.CONDITION) {
+            this.condition.set(u.condition.get());
+        }
 
         // replace values by the deepCopy version
         for (var entry: u.valueMap.entrySet()) {
@@ -103,12 +138,12 @@ public class UserSetting {
         }
     }
 
-    public ProjectDevice getDevice() {
-        return device;
-    }
-
     public Action getAction() {
         return action.get();
+    }
+
+    public Condition getCondition() {
+        return condition.get();
     }
 
     public void setAction(Action action) {
@@ -118,18 +153,6 @@ public class UserSetting {
 
     public ReadOnlyObjectProperty<Action> actionProperty() {
         return action.getReadOnlyProperty();
-    }
-
-    public ObservableMap<Parameter, Expression> getValueMap() {
-        return valueMap;
-    }
-
-    public ObservableMap<Value, Expression> getExpression() {
-        return expression;
-    }
-
-    public ObservableMap<Value, Boolean> getExpressionEnable() {
-        return expressionEnable;
     }
 
     public Map<ProjectDevice, Set<Value>> getAllValueUsed(Set<DataType> dataType) {

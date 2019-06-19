@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.project.term.RTCTerm;
 
-import java.time.LocalDateTime;
-
 public class SimpleRTCExpression extends Expression {
 
     public SimpleRTCExpression(RealTimeClock rtc) {

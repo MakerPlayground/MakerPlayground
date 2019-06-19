@@ -2,8 +2,6 @@ package io.makerplayground.project.term;
 
 import io.makerplayground.device.shared.RealTimeClock;
 
-import java.time.LocalDateTime;
-
 public class RTCTerm extends Term{
 
     public RTCTerm(RealTimeClock rtc) {

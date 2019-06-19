@@ -5,8 +5,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Brightness", 
@@ -23,8 +22,7 @@
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -38,7 +36,6 @@
       {
         "name": "On",
         "funcname": "on",
-        "type": "Active",
         "parameter": [
           {
             "name": "Red",
@@ -89,7 +86,6 @@
       {
         "name": "Off",
         "funcname": "off",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -247,14 +243,12 @@
     "action": [
       {
         "name": "Beep", 
-        "funcname": "beep", 
-        "type": "Active", 
+        "funcname": "beep",
         "parameter": []
       }, 
       {
         "name": "Play Tone", 
-        "funcname": "play", 
-        "type": "Active", 
+        "funcname": "play",
         "parameter": [
           {
             "name": "Tone Frequency", 
@@ -290,8 +284,7 @@
     "action": [
       {
         "name": "Show Number", 
-        "funcname": "showData", 
-        "type": "Active",
+        "funcname": "showData",
         "parameter": [
           {
             "name": "Number", 
@@ -309,7 +302,6 @@
       {
         "name": "Show Two Numbers with Colon",
         "funcname": "showTwoIntWithColon",
-        "type": "Active",
         "parameter": [
           {
             "name": "Before colon",
@@ -337,8 +329,7 @@
       },
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active",
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -351,8 +342,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Direction", 
@@ -379,8 +369,7 @@
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -393,8 +382,7 @@
     "action": [
       {
         "name": "Move To", 
-        "funcname": "moveto", 
-        "type": "Active", 
+        "funcname": "moveto",
         "parameter": [
           {
             "name": "Degree", 
@@ -419,14 +407,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -439,14 +425,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -460,7 +444,6 @@
       {
         "name": "Show Text",
         "funcname": "showTextAtRow",
-        "type": "Active",
         "parameter": [
           {
             "name": "Row",
@@ -533,7 +516,6 @@
       {
         "name": "Clear Row",
         "funcname": "clearRow",
-        "type": "Active",
         "parameter": [
           {
             "name": "Row",
@@ -551,7 +533,6 @@
       {
         "name": "Clear Screen",
         "funcname": "clearScreen",
-        "type": "Inactive",
         "parameter": []
       }
     ],

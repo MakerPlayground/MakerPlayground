@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.DeviceMapper;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;

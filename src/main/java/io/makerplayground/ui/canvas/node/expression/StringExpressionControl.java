@@ -1,27 +1,18 @@
 package io.makerplayground.ui.canvas.node.expression;
 
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.ImageExpression;
 import io.makerplayground.project.expression.ProjectValueExpression;
 import io.makerplayground.project.expression.SimpleStringExpression;
-import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import java.util.EnumSet;
 import java.util.List;
 
 public class StringExpressionControl extends HBox {

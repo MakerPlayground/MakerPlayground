@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-public enum PinType {
-    INOUT, I2C_SDA, I2C_SCL, SPI_MOSI, SPI_MISO, SPI_SCK, SPI_SS, UART_TX, UART_RX, VCC, GND, INT, EXTERNAL,
-    RPI_CAMERA,
-    NOT_CONNECTED
+public enum PortConnectionType {
+    GROVE, MP, M5STACK, UNO_SHIELD,
 }

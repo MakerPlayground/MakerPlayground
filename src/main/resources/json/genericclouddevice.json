@@ -7,19 +7,16 @@
       {
         "name": "Press",
         "funcname": "isPress",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Press and release",
         "funcname": "isPressAndRelease",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Not press",
         "funcname": "isNotPress",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -33,7 +30,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -56,13 +52,11 @@
       {
         "name": "On",
         "funcname": "on",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Off",
         "funcname": "off",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -76,7 +70,6 @@
       {
         "name": "Display number",
         "funcname": "setNumber",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -102,7 +95,6 @@
       {
         "name": "Notify",
         "funcname": "notify",
-        "type": "Active",
         "parameter": [
           {
             "name": "Message",
@@ -124,7 +116,6 @@
       {
         "name": "Pin Location",
         "funcname": "pinLocation",
-        "type": "Active",
         "parameter": [
           {
             "name": "Latitude",
@@ -153,7 +144,6 @@
       {
         "name": "Clear Pin",
         "funcname": "clearPin",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -168,7 +158,6 @@
       {
         "name": "Found",
         "funcname": "classifiedImage",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
@@ -197,36 +186,35 @@
           }
         ]
       },
+      {
+        "name": "Not Found",
+        "funcname": "noDetectedImage",
+        "parameter": [
           {
-            "name": "Not Found",
-            "funcname": "noDetectedImage",
-            "type": "Active",
-            "parameter": [
-              {
-                "name": "Image",
-                "value": "",
-                "constraint": [],
-                "datatype": "IMAGE",
-                "controltype": "IMAGE_SELECTOR"
-              },
-              {
-                "name": "Class",
-                "value": "",
-                "constraint": [],
-                "datatype": "STRING",
-                "controltype": "TEXTBOX"
-              },
-              {
-                "name": "Minimum Probability",
-                "value": 80.0,
-                "constraint": {
-                  "min": 0.0,
-                  "max": 100.0,
-                  "unit": "PERCENT"
-                },
-                "datatype": "DOUBLE",
-                "controltype": "SPINBOX"
-              }
+            "name": "Image",
+            "value": "",
+            "constraint": [],
+            "datatype": "IMAGE",
+            "controltype": "IMAGE_SELECTOR"
+          },
+          {
+            "name": "Class",
+            "value": "",
+            "constraint": [],
+            "datatype": "STRING",
+            "controltype": "TEXTBOX"
+          },
+          {
+            "name": "Minimum Probability",
+            "value": 80.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SPINBOX"
+          }
         ]
       }
     ],
@@ -239,7 +227,6 @@
       {
         "name": "Convert and play sound",
         "funcname": "convertAndPlaySound",
-        "type": "Active",
         "parameter": [
           {
             "name": "text",
@@ -253,7 +240,6 @@
       {
         "name": "Convert to sound file",
         "funcname": "convertToSoundFile",
-        "type": "Active",
         "parameter": [
           {
             "name": "text",
@@ -282,7 +268,6 @@
       {
         "name": "Convert to Text",
         "funcname": "convertToText",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
@@ -296,7 +281,6 @@
       {
         "name": "Convert to Text File",
         "funcname": "convertToTextFile",
-        "type": "Active",
         "parameter": [
           {
             "name": "Image",
@@ -319,13 +303,11 @@
       {
         "name": "Has Text",
         "funcname": "hasText",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Has No Text",
         "funcname": "hasNoText",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -344,7 +326,6 @@
       {
         "name": "Send Telemetry",
         "funcname": "sendTelemetry",
-        "type": "Active",
         "parameter": [
           {
             "name": "data",

@@ -16,8 +16,8 @@
 
 package io.makerplayground.project.expression;
 
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectDevice;

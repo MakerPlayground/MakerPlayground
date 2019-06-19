@@ -19,13 +19,12 @@ package io.makerplayground.project.expression;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.device.shared.Record;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,11 +81,9 @@ public abstract class Expression {
     public static Expression fromDefaultParameter(Parameter param) {
         switch (param.getDataType()) {
             case DOUBLE:
-                return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case INTEGER:
                 return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case STRING:
-                return new ComplexStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case DATETIME:

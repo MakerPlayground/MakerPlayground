@@ -16,9 +16,6 @@
 
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.device.actual.DevicePort;
-import io.makerplayground.device.actual.ConnectionType;
-import io.makerplayground.device.actual.Peripheral;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.control.Hyperlink;
 

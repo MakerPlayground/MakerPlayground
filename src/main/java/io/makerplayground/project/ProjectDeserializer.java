@@ -83,8 +83,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ActualDevice controller = null;
         if (!node.get("controller").get("device").asText().isEmpty()) {
-            controller = DeviceLibrary.INSTANCE.getActualDevice().stream().filter(
-                    device -> device.getId().equals(node.get("controller").get("device").asText())).findFirst().get();
+            controller = DeviceLibrary.INSTANCE.getActualDevice(node.get("controller").get("device").asText());
         }
         project.setController(controller);
 
@@ -138,11 +137,6 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             if (condition.isPresent()) {
                 source = condition.get();
             }
-//                Optional<AdditionalBegin> t = project.getTaskNode(lineNode.get("source").asText());
-//                if (t.isPresent()) {
-//                    source = t.get();
-//                }
-//            }
 
             NodeElement dest = null;
             Optional<Scene> s = project.getScene(lineNode.get("destination").asText());
@@ -211,15 +205,23 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
     public UserSetting deserializeUserSetting(ObjectMapper mapper, JsonNode node, ProjectDevice projectDevice
             , ObservableList<ProjectDevice> allProjectDevices) throws IOException {
-        Action action = projectDevice.getGenericDevice().getAction(node.get("action").asText());
-        // TODO: find a better way
-        if (action == null) {
-            action = projectDevice.getGenericDevice().getCondition(node.get("action").asText());
+        boolean hasAction = node.has("action");
+        boolean hasCondition = node.has("condition");
+        Action action = projectDevice.getGenericDevice().getAction(node.get("action").asText()).orElse(null);
+        io.makerplayground.device.shared.Condition condition = projectDevice.getGenericDevice().getCondition(node.get("condition").asText()).orElse(null);
+        if ((hasAction && action == null) || (hasCondition && condition == null)) {
+            throw new IllegalStateException("UserSetting must contain action or condition");
         }
 
         Map<Parameter, Expression> valueMap = new HashMap<>();
         for (JsonNode parameterNode : node.get("valueMap")) {
-            Parameter parameter = action.getParameter(parameterNode.get("name").asText());
+            Parameter parameter = null;
+            if (hasAction) {
+                parameter = action.getParameter(parameterNode.get("name").asText()).orElseThrow();
+            }
+            if (hasCondition) {
+                parameter = condition.getParameter(parameterNode.get("name").asText()).orElseThrow();
+            }
             Expression expression = null;
             String expressionType = parameterNode.get("type").asText();
             JsonNode valueNode = parameterNode.get("value");
@@ -264,7 +266,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Map<Value, Expression> expressionMap = new HashMap<>();
         Map<Value, Boolean> expressionEnableMap = new HashMap<>();
         for (JsonNode valueNode : node.get("expression")) {
-            Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText());
+            Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText()).orElseThrow();
             boolean enable = valueNode.get("enable").asBoolean();
             String type = valueNode.get("type").asText();
             List<Term> terms = new ArrayList<>();
@@ -284,8 +286,13 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             expressionMap.put(value, expression);
             expressionEnableMap.put(value, enable);
         }
-
-        return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
+        if (hasAction) {
+            return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
+        }
+        if (hasCondition) {
+            return new UserSetting(projectDevice, condition, valueMap, expressionMap, expressionEnableMap);
+        }
+        throw new IllegalStateException("UserSetting Deserializer Error");
     }
 
     private Expression deserializeExpression(ObjectMapper mapper, Parameter parameter, JsonNode parameterNode
@@ -345,7 +352,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 String projectDeviceName = term_node.get("value").get("name").asText();
                 String valueName = term_node.get("value").get("value").asText();
                 ProjectDevice device = allProjectDevices.stream().filter(pj -> pj.getName().equals(projectDeviceName)).findFirst().get();
-                Value value = device.getGenericDevice().getValue(valueName);
+                Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
                 term = new ValueTerm(new ProjectValue(device, value));
             }
         } else if (Term.Type.STRING.name().equals(term_type)) {
@@ -421,15 +428,18 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 IntegratedActualDevice integratedActualDevice = parentDevice.getIntegratedDevices(integratedDeviceName)
                         .orElseThrow(() -> new IllegalStateException("Can't find integrated device with name (" + integratedDeviceName + ")"));
                 actualDevice = integratedActualDevice;
-            } else if (actualDeviceType.equals("single")) {
-                String deviceId = actualDeviceNode.get("id").asText();
-                actualDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
                 if (actualDevice == null) {
                     throw new IllegalStateException("Can't find actual device with id (" + deviceId + ")");
                 }
+            } else if (actualDeviceType.equals("single")) {
+                String deviceId = actualDeviceNode.get("id").asText();
+                actualDevice = DeviceLibrary.INSTANCE.getActualDevice(deviceId);
             } else {
                 throw new IllegalStateException("Invalid actual device type (" + actualDeviceType + ")");
             }
+        }
+        if (actualDevice == null) {
+            throw new IllegalStateException("Can't deserialize actual device");
         }
 
         Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
@@ -466,7 +476,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         Map<Property, Object> property = new HashMap<>();
         for (JsonNode propertyNode : node.get("property")) {
             String propertyName = propertyNode.get("name").asText();
-            Property p = actualDevice.getProperty(propertyName);
+            Property p = actualDevice.getProperty(propertyName).orElseThrow();
             Object value;
             switch (p.getDataType()) {
                 case STRING:

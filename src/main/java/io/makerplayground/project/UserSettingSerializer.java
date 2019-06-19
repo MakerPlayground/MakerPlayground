@@ -32,7 +32,12 @@ public class UserSettingSerializer extends StdSerializer<UserSetting> {
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeStringField("device", userSetting.getDevice().getName());
-        jsonGenerator.writeStringField("action", userSetting.getAction().getName());
+        if (userSetting.getAction() != null) {
+            jsonGenerator.writeStringField("action", userSetting.getAction().getName());
+        }
+        if (userSetting.getCondition() != null) {
+            jsonGenerator.writeStringField("condition", userSetting.getCondition().getName());
+        }
 
         jsonGenerator.writeArrayFieldStart("valueMap");
         for (Map.Entry<Parameter, Expression> v : userSetting.getValueMap().entrySet()) {

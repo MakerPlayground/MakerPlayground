@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.io.IOException;
 
@@ -53,14 +53,12 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
         Object defaultValue = null;
         switch (dataType) {
             case STRING:
+            case ENUM:
                 defaultValue = node.get("value").asText();
                 break;
             case DOUBLE:
                 defaultValue = new NumberWithUnit(node.get("value").asDouble()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));
-                break;
-            case ENUM:
-                defaultValue = node.get("value").asText();
                 break;
             case INTEGER_ENUM:
                 defaultValue = node.get("value").asInt();
@@ -73,8 +71,6 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));
                 break;
             case AZURE_COGNITIVE_KEY:
-                defaultValue = null;
-                break;
             case AZURE_IOTHUB_KEY:
                 defaultValue = null;
                 break;

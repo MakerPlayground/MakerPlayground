@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-/**
- * Created by nuntipat on 7/15/2017 AD.
- */
 public enum DeviceType {
-    CONTROLLER, PERIPHERAL, VIRTUAL, INTEGRATED
+    CONTROLLER, MODULE
 }

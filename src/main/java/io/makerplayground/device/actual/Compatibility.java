@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.upload;
+package io.makerplayground.device.actual;
 
-public enum UploadResult {
-    OK,
-    CANT_FIND_PIO,
-    DEVICE_OR_PORT_MISSING,
-    CANT_CREATE_PROJECT,
-    CANT_GENERATE_CODE,
-    CODE_ERROR,
-    UNKNOWN_ERROR,
-    CANT_FIND_BOARD,
-    CANT_WRITE_CODE,
-    MISSING_LIBRARY_DIR,
-    CANT_FIND_LIBRARY,
-    USER_CANCEL
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.Constraint;
+import lombok.Data;
+
+import java.util.Map;
+
+@Data
+public class Compatibility {
+    private final Map<Action, Map<Parameter, Constraint>> deviceAction;
+    private final Map<Condition, Map<Parameter, Constraint>> deviceCondition;
+    private final Map<Value, Constraint> deviceValue;
 }

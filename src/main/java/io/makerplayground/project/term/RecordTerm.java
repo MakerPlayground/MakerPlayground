@@ -1,8 +1,7 @@
 package io.makerplayground.project.term;
 
-import io.makerplayground.device.shared.Record;
 
-import java.util.stream.Collectors;
+import io.makerplayground.device.shared.Record;
 
 public class RecordTerm extends Term {
     public RecordTerm(Record record) {

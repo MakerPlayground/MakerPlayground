@@ -6,7 +6,6 @@
       {
         "name": "Set to",
         "funcname": "setValue",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -26,7 +25,6 @@
       {
         "name": "Check Value",
         "funcname": "checkValue",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -44,7 +42,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -67,7 +64,6 @@
       {
         "name": "Set to",
         "funcname": "setValue",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -85,19 +81,16 @@
       {
         "name": "Count up by 1",
         "funcname": "increaseValue",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Count down by 1",
         "funcname": "decreaseValue",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Count by",
         "funcname": "increaseValueBy",
-        "type": "Active",
         "parameter": [
           {
             "name": "Change",
@@ -117,7 +110,6 @@
       {
         "name": "Value equal to",
         "funcname": "checkValueEqual",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -135,7 +127,6 @@
       {
         "name": "Value not equal to",
         "funcname": "checkValueNotEqual",
-        "type": "Active",
         "parameter": [
           {
             "name": "Value",
@@ -153,7 +144,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -176,13 +166,11 @@
       {
         "name": "Initialize timer",
         "funcname": "startTimer",
-        "type": "Active",
         "parameter": []
       },
       {
         "name": "Stop timer",
         "funcname": "stopTimer",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -190,7 +178,6 @@
       {
         "name": "After",
         "funcname": "isOverTime",
-        "type": "Active",
         "parameter": [
           {
             "name": "Second",
@@ -208,7 +195,6 @@
       {
         "name": "Before",
         "funcname": "isNotOverTime",
-        "type": "Active",
         "parameter": [
           {
             "name": "Second",
@@ -243,7 +229,6 @@
       {
         "name": "Add new",
         "funcname": "addData",
-        "type": "Active",
         "parameter": [
           {
             "name": "Data",
@@ -261,7 +246,6 @@
       {
         "name": "Clear all data",
         "funcname": "clear",
-        "type": "Active",
         "parameter": []
       }
     ],
@@ -269,7 +253,6 @@
       {
         "name": "Compare",
         "funcname": "",
-        "type": "Active",
         "parameter": []
       }
     ],

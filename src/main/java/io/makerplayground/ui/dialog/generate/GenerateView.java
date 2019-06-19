@@ -17,27 +17,17 @@
 package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.generator.diagram.WiringDiagram;
-import io.makerplayground.ui.dialog.UndecoratedDialog;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Window;
 
 import java.io.IOException;
 
-/**
- * Created by tanyagorn on 7/19/2017.
- */
 public class GenerateView extends TabPane {
     @FXML private TextArea codeTextArea;
     @FXML private TableView<TableDataList> deviceTable;

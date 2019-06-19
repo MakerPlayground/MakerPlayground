@@ -123,7 +123,21 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.setText(projectDevice.getName());
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    if (!projectDevice.setName(nameTextField.getText())) {
+                    String name = nameTextField.getText();
+                    boolean acceptNewName = true;
+                    if (!name.matches("^[a-zA-Z_][a-zA-Z0-9_]*")) {
+                        acceptNewName = false;
+                    }
+                    // check for duplicate name
+                    for (ProjectDevice pd : project.getDevice()) {
+                        if (pd.getName().equals(name)) {
+                            acceptNewName = false;
+                            break;
+                        }
+                    }
+                    if (acceptNewName) {
+                        projectDevice.setName(name);
+                    } else {
                         nameTextField.setText(projectDevice.getName());
                     }
                 }

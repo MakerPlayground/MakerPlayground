@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
@@ -33,160 +34,356 @@ import io.makerplayground.device.shared.constraint.Constraint;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by Nititorn on 7/7/2017.
- */
-public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
+import static io.makerplayground.util.DeserializerHelper.*;
 
-    public ActualDeviceDeserializer() {
-        this(null);
-    }
+public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
-    public ActualDeviceDeserializer(Class<ActualDevice> t) {
-        super(t);
-    }
+    private String id;
 
     @Override
-    public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
-        String id = node.get("id").asText();
-        String brand = node.get("brand").asText();
-        String model = node.get("model").asText();
-        String url = node.get("url").asText();
-        double width = node.get("width").asDouble();
-        double height = node.get("height").asDouble();
+        throwIfMissingField(node, "id", "device must have id");
 
-        Map<Platform, String> classnames = new HashMap<>();
-        Map<Platform, List<String>> externalLibraries = new HashMap<>();
-        for (JsonNode platform_node: node.get("platforms")) {
-            Platform platform = Platform.valueOf(platform_node.get("platform").asText());
-            String classname = platform_node.get("classname").asText();
-            List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
-                    , new TypeReference<List<String>>() {});
-            classnames.put(platform, classname);
-            externalLibraries.put(platform, externalLibraryList);
-        }
+        /* id */
+        id = node.get("id").asText();
 
-        DeviceType type = DeviceType.valueOf(node.get("type").asText());
-        WiringMethod wiringMethod = null;
+        throwIfMissingField(node, "type", id);
+        throwIfMissingField(node, "brand", id);
+        throwIfMissingField(node, "model", id);
+        throwIfMissingField(node, "url", id);
+        throwIfMissingField(node, "width", id);
+        throwIfMissingField(node, "height", id);
+        throwIfFieldIsNotArray(node, "platforms", id);
+
+        createArrayNodeIfMissing(node, "cloud_provide");
+        throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id);
+        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_unused");
+        createArrayNodeIfMissing(node, "port_provide", "port_consume");
+        createArrayNodeIfMissing(node, "property");
+        createArrayNodeIfMissing(node, "compatibility");
+        createArrayNodeIfMissing(node, "integrated_devices");
+
+        /* DeviceType */
+        DeviceType deviceType = DeviceType.valueOf(node.get("type").asText());
+
+        /* PioBoardId */
         String pioBoardId = "";
-        if (type == DeviceType.CONTROLLER) {
-            if (node.has("pio_boardid")) {
-                pioBoardId = node.get("pio_boardid").asText();
-            } else {
-                throw new IllegalStateException("Missing field 'pio_boardid' for device id = " + id);
-            }
-            if (node.has("wiring_method")) {
-                wiringMethod = WiringMethod.valueOf(node.get("wiring_method").asText());
-            } else {
-                throw new IllegalStateException("Missing field 'wiring_method' for device id = " + id);
-            }
+        if (deviceType == DeviceType.CONTROLLER) {
+            throwIfMissingField(node, "pio_boardid", id);
+            pioBoardId = node.get("pio_boardid").asText();
         }
-        FormFactor formFactor = FormFactor.valueOf(node.get("formfactor").asText());
-        CloudPlatform cloudPlatform = null;
-        if (node.has("cloud_platform")) {
-            cloudPlatform = CloudPlatform.valueOf(node.get("cloud_platform").asText());
+
+        /* Extract platformSourceCodeLibrary */
+        Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary = new HashMap<>();
+        for (JsonNode platformNode : node.get("platforms")) {
+            Platform platform = Platform.valueOf(platformNode.get("platform").asText());
+            String classname = platformNode.get("classname").asText();
+            List<String> externalLibraryList = mapper.readValue(platformNode.get("library_dependency").traverse()
+                    , new TypeReference<List<String>>() {});
+            platformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
         }
-        List<DevicePort> port = mapper.readValue(node.get("port").traverse()
-                , new TypeReference<List<DevicePort>>() {});
-        List<Peripheral> connectivity = mapper.readValue(node.get("connectivity").traverse()
-                , new TypeReference<List<Peripheral>>() {});
-        List<Property> property = mapper.readValue(node.get("property").traverse()
-                , new TypeReference<List<Property>>() {});
 
+        /* Extract cloudPlatformSourceCodeLibrary */
+        Map<CloudPlatform, SourceCodeLibrary> cloudPlatformSourceCodeLibrary = new HashMap<>();
+        for (JsonNode jsonNode : node.get("cloud_provide")) {
+            CloudPlatform platform = CloudPlatform.valueOf(jsonNode.get("cloud_platform").asText());
+            String classname = jsonNode.get("classname").asText();
+            List<String> externalLibraryList = mapper.readValue(jsonNode.get("library_dependency").traverse()
+                    , new TypeReference<List<String>>() {});
+            cloudPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+        }
 
-        Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
-        Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
-        readCompatibilityField(mapper, node, supportedDeviceaction, supportedDeviceValue);
+        /* CloudPlatform */
+        CloudPlatform cloudConsume = node.has("cloudConsume") ? CloudPlatform.valueOf(node.get("cloudConsume").asText()) : null;
+
+        /* Pin, Port, Property */
+        List<Pin> pinProvide = mapper.readValue(node.get("pin_provide").traverse(), new TypeReference<List<Pin>>() {});
+        List<Pin> pinConsume = mapper.readValue(node.get("pin_consume").traverse(), new TypeReference<List<Pin>>() {});
+        List<Pin> pinUnused = mapper.readValue(node.get("pin_unused").traverse(), new TypeReference<List<Pin>>() {});
+        List<Port> portProvide = loadPort(node.get("port_provide"), pinProvide);
+        List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
+        List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
+
+        /* Compatibility */
+        Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
 
         List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
-        if (node.has("integrated_device")) {
-            for (JsonNode deviceNode : node.get("integrated_device")) {
-                String integratedDeviceName = deviceNode.get("name").asText();
-                Map<Platform, String> integratedLibrary = new HashMap<>();
-                Map<Platform, List<String>> integratedExternalLibrary = new HashMap<>();
-                for (JsonNode platform_node: deviceNode.get("platforms")) {
-                    Platform platform = Platform.valueOf(platform_node.get("platform").asText());
-                    String classname = platform_node.get("classname").asText();
-                    List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
-                            , new TypeReference<List<String>>() {});
-                    integratedLibrary.put(platform, classname);
-                    integratedExternalLibrary.put(platform, externalLibraryList);
-                }
+        for (JsonNode inNode : node.get("integrated_devices")) {
 
-                List<Property> integratedProperty;
-                if (deviceNode.has("property")) {
-                    integratedProperty = mapper.readValue(deviceNode.get("property").traverse(), new TypeReference<List<Property>>() {});
-                } else {
-                    integratedProperty = Collections.emptyList();
-                }
-                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse(),
-                        new TypeReference<List<DevicePort>>() {});
-                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse(),
-                        new TypeReference<List<Peripheral>>() {});
+            /* Check for name */
+            throwIfMissingField(inNode, "name", id, "integrated_device");
 
-                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
-                Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
-                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction, integratedSupportedDeviceValue);
+            /* Extract Device Name */
+            String inDeviceName = inNode.get("name").asText();
 
-                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
-                        integratedExternalLibrary, integratedPort, integratedConnectivity, integratedProperty,
-                        integratedSupportedDeviceaction, integratedSupportedDeviceValue));
+            throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id, "integrated_device", inDeviceName);
+            createArrayNodeIfMissing(inNode, "pin_provide", "pin_consume", "pin_unused");
+            createArrayNodeIfMissing(inNode, "port_provide", "port_consume");
+            createArrayNodeIfMissing(inNode, "property");
+            createArrayNodeIfMissing(inNode, "compatibility");
+
+            /* Check for platforms library */
+            throwIfMissingField(inNode, "platforms", id, "integrated_device", inDeviceName);
+            throwIfFieldIsNotArray(inNode, "platforms", id, "integrated_device", inDeviceName);
+
+            /* Extract platformSourceCodeLibrary */
+            Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
+            for (JsonNode platform_node: inNode.get("platforms")) {
+                Platform platform = Platform.valueOf(platform_node.get("platform").asText());
+                String classname = platform_node.get("classname").asText();
+                List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
+                        , new TypeReference<List<String>>() {});
+                inPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
             }
+
+            /* Extract cloudPlatformSourceCodeLibrary */
+            Map<CloudPlatform, SourceCodeLibrary> inCloudPlatformSourceCodeLibrary = new HashMap<>();
+            for (JsonNode platform_node : inNode.get("cloud_provide")) {
+                CloudPlatform platform = CloudPlatform.valueOf(platform_node.get("cloud_platform").asText());
+                String classname = platform_node.get("classname").asText();
+                List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
+                        , new TypeReference<List<String>>() {});
+                inCloudPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+            }
+
+            /* CloudPlatform */
+            CloudPlatform inCloudConsume = inNode.has("cloudConsume") ? CloudPlatform.valueOf(node.get("cloudConsume").asText()) : null;
+
+            /* Pin, Port, Property */
+            List<Pin> inPinProvide = mapper.readValue(inNode.get("pinProvide").traverse(), new TypeReference<List<Pin>>() {});
+            List<Pin> inPinConsume = mapper.readValue(inNode.get("pinConsume").traverse(), new TypeReference<List<Pin>>() {});
+            List<Pin> inPinUnused = mapper.readValue(inNode.get("pinUnused").traverse(), new TypeReference<List<Pin>>() {});
+            List<Port> inPortProvide = loadPort(inNode.get("portProvide"), pinProvide);
+            List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
+            List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
+
+            /* Compatibility */
+            Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
+
+            IntegratedActualDevice.IntegratedActualDeviceBuilder()
+                    .id(inDeviceName)
+                    .brand("")
+                    .model("")
+                    .url("")
+                    .width(0.0)
+                    .height(0.0)
+                    .platformSourceCodeLibrary(inPlatformSourceCodeLibrary)
+                    .cloudPlatformSourceCodeLibrary(inCloudPlatformSourceCodeLibrary)
+                    .deviceType(DeviceType.MODULE)
+                    .pioBoardId("")
+                    .cloudConsume(inCloudConsume)
+                    .pinProvide(inPinProvide)
+                    .pinConsume(inPinConsume)
+                    .pinUnused(inPinUnused)
+                    .portConsume(inPortConsume)
+                    .portProvide(inPortProvide)
+                    .property(inProperty)
+                    .compatibilityMap(inCompatibilityMap)
+                    .integratedDevices(Collections.emptyList())
+                    .build();
         }
 
-        Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform = new HashMap<>();
-        if (type == DeviceType.CONTROLLER) {
-            if (node.has("support_cloudplatform") && node.get("support_cloudplatform").isArray()) {
-                for (JsonNode cloudPlatformNode : node.get("support_cloudplatform")) {
-                    CloudPlatform cloudPlatformKey = mapper.treeToValue(cloudPlatformNode.get("cloud_platform"), CloudPlatform.class);
-                    String className = mapper.treeToValue(cloudPlatformNode.get("classname"), String.class);
-                    List<String> cloudPlatformDependency = mapper.readValue(cloudPlatformNode.get("library_dependency").traverse(), new TypeReference<List<String>>() {});
-                    CloudPlatformLibrary cloudPlatformLibrary = new CloudPlatformLibrary(className, cloudPlatformDependency);
-                    supportedCloudPlatform.put(cloudPlatformKey, cloudPlatformLibrary);
-                }
-            }
-        }
+        ActualDevice actualDevice = ActualDevice.builder()
+                .id(id)
+                .brand(node.get("brand").asText())
+                .model(node.get("model").asText())
+                .url(node.get("url").asText())
+                .width(node.get("width").asDouble())
+                .height(node.get("height").asDouble())
+                .platformSourceCodeLibrary(platformSourceCodeLibrary)
+                .cloudPlatformSourceCodeLibrary(cloudPlatformSourceCodeLibrary)
+                .deviceType(deviceType)
+                .pioBoardId(pioBoardId)
+                .cloudConsume(cloudConsume)
+                .pinProvide(pinProvide)
+                .pinConsume(pinConsume)
+                .pinUnused(pinUnused)
+                .portConsume(portConsume)
+                .portProvide(portProvide)
+                .property(property)
+                .compatibilityMap(compatibilityMap)
+                .integratedDevices(integratedDevices)
+                .build();
 
-        return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, classnames, externalLibraries,
-                cloudPlatform, port, connectivity, supportedDeviceaction, supportedDeviceValue, property, supportedCloudPlatform, integratedDevices);
+        actualDevice.getIntegratedDevices().forEach(inActualDevice -> inActualDevice.setParent(actualDevice));
+
+        return actualDevice;
+
+//        List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
+//        if (node.has("integrated_device")) {
+//            for (JsonNode deviceNode : node.get("integrated_device")) {
+//                String integratedDeviceName = deviceNode.get("name").asText();
+//                Map<Platform, String> integratedLibrary = new HashMap<>();
+//                Map<Platform, List<String>> integratedExternalLibrary = new HashMap<>();
+//                for (JsonNode platform_node: deviceNode.get("platforms")) {
+//                    Platform platform = Platform.valueOf(platform_node.get("platform").asText());
+//                    String classname = platform_node.get("classname").asText();
+//                    List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
+//                            , new TypeReference<List<String>>() {});
+//                    integratedLibrary.put(platform, classname);
+//                    integratedExternalLibrary.put(platform, externalLibraryList);
+//                }
+//
+//                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse(),
+//                        new TypeReference<List<DevicePort>>() {});
+//                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse(),
+//                        new TypeReference<List<Peripheral>>() {});
+//
+//                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
+//                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceCondition = new HashMap<>();
+//                Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
+//                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction,
+//                        integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
+//
+//                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
+//                        integratedExternalLibrary, integratedPort, integratedConnectivity,
+//                        integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
+//            }
+//        }
     }
 
-    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
-        for (JsonNode deviceNode : node.get("compatibility")) {
-            String deviceName = deviceNode.get("name").asText();
+    private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<GenericDevice, Compatibility> compatibilityMap = new HashMap<>();
+        for (JsonNode compatibilityNode : node.get("compatibility")) {
+
+            /* Query GenericDevice */
+            String deviceName = compatibilityNode.get("name").asText();
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
 
-            Map<Action, Map<Parameter, Constraint>> supportedAction = new HashMap<>();
-            for (JsonNode actionNode : deviceNode.get("action")) {
+            /* Check and Preprocess */
+            createArrayNodeIfMissing(compatibilityNode, "action");
+            createArrayNodeIfMissing(compatibilityNode, "condition");
+            createArrayNodeIfMissing(compatibilityNode, "value");
+
+            Map<Action, Map<Parameter, Constraint>> deviceAction = new HashMap<>();
+            for (JsonNode actionNode : compatibilityNode.get("action")) {
+
+                /* Check and Preprocess */
+                throwIfMissingField(actionNode, "name", id, "compatibility", genericDevice.getName() ,"action", "[?]");
+                createArrayNodeIfMissing(actionNode, "parameter");
+
+                /* Query Action */
                 String actionName = actionNode.get("name").asText();
-                Action action = genericDevice.getAction(actionName);
-                if (action == null) {
-                    continue;
+                Optional<Action> action = genericDevice.getAction(actionName);
+                if (action.isEmpty()) {
+                    throw new IllegalStateException("There is no action '" + actionName + "' in generic_device '" + genericDevice.getName() + "'");
                 }
+
+                /* Extract Parameter */
                 Map<Parameter, Constraint> supportedParam = new HashMap<>();
                 for (JsonNode parameterNode : actionNode.get("parameter")) {
-                    String parameterName = parameterNode.get("name").asText();
-                    Constraint constraint = mapper.treeToValue(parameterNode.get("constraint"), Constraint.class);
-                    Parameter parameter = action.getParameter(parameterName);
-                    supportedParam.put(parameter, constraint);
-                }
-                supportedAction.put(action, supportedParam);
-            }
-            supportedDeviceaction.put(genericDevice, supportedAction);
 
-            Map<Value, Constraint> supportedValue = new HashMap<>();
-            for (JsonNode valueNode : deviceNode.get("value")) {
-                String valueName = valueNode.get("name").asText();
-                //System.out.println(actionName);
-                Constraint constraint = mapper.treeToValue(valueNode.get("constraint"), Constraint.class);
-                //System.out.println(constraint);
-                Value value = genericDevice.getValue(valueName);
-                supportedValue.put(value, constraint);
+                    /* Check and Preprocess */
+                    throwIfMissingField(actionNode, "name", id, "compatibility", genericDevice.getName(), actionName, "parameter");
+                    createArrayNodeIfMissing(actionNode, "parameter");
+
+                    /* Extract Parameter */
+                    String parameterName = parameterNode.get("name").asText();
+                    Optional<Parameter> parameter = action.get().getParameter(parameterName);
+                    if (parameter.isEmpty()) {
+                        throw new IllegalStateException("There is no parameter '" + parameterName + "' for action '" + actionName + "' ");
+                    }
+
+                    /* Extract Constraint */
+                    Constraint constraint = parameterNode.has("constraint") ? mapper.treeToValue(parameterNode.get("constraint"), Constraint.class) : Constraint.NONE;
+
+                    /* Put parameter and constraint into Map */
+                    supportedParam.put(parameter.get(), constraint);
+                }
+
+                /* Put action and param to Map */
+                deviceAction.put(action.get(), supportedParam);
             }
-            supportedDeviceValue.put(genericDevice, supportedValue);
+
+            Map<Condition, Map<Parameter, Constraint>> deviceCondition = new HashMap<>();
+            for (JsonNode conditionNode : compatibilityNode.get("condition")) {
+
+                /* Check and Preprocess */
+                throwIfMissingField(conditionNode, "name", id, "compatibility", genericDevice.getName() ,"condition");
+                createArrayNodeIfMissing(conditionNode, "parameter");
+
+                /* Query Action */
+                String conditionName = conditionNode.get("name").asText();
+                Optional<Condition> condition = genericDevice.getCondition(conditionName);
+                if (condition.isEmpty()) {
+                    throw new IllegalStateException("There is no condition '" + conditionName + "' in generic_device '" + genericDevice.getName() + "'");
+                }
+
+                /* Extract Parameter */
+                Map<Parameter, Constraint> supportedParam = new HashMap<>();
+                for (JsonNode parameterNode : conditionNode.get("parameter")) {
+
+                    /* Check and Preprocess */
+                    throwIfMissingField(conditionNode, "name", id, "compatibility", genericDevice.getName(), conditionName, "parameter");
+                    createArrayNodeIfMissing(conditionNode, "parameter");
+
+                    /* Extract Parameter */
+                    String parameterName = parameterNode.get("name").asText();
+                    Optional<Parameter> parameter = condition.get().getParameter(parameterName);
+                    if (parameter.isEmpty()) {
+                        throw new IllegalStateException("There is no parameter '" + parameterName + "' for action '" + conditionName + "' ");
+                    }
+
+                    /* Extract Constraint */
+                    Constraint constraint = parameterNode.has("constraint") ? mapper.treeToValue(parameterNode.get("constraint"), Constraint.class) : Constraint.NONE;
+
+                    /* Put parameter and constraint into Map */
+                    supportedParam.put(parameter.get(), constraint);
+                }
+
+                /* Put action and param to Map */
+                deviceCondition.put(condition.get(), supportedParam);
+            }
+
+            Map<Value, Constraint> deviceValue = new HashMap<>();
+            for (JsonNode valueNode : compatibilityNode.get("value")) {
+
+                /* Check and Preprocess */
+                throwIfMissingField(valueNode, "name", id, "compatibility", genericDevice.getName(), "value");
+
+                /* Extract Value */
+                String valueName = valueNode.get("name").asText();
+                Optional<Value> value = genericDevice.getValue(valueName);
+                if (value.isEmpty()) {
+                    throw new IllegalStateException("No value '" + valueName + "' for '" + genericDevice.getName() + "'");
+                }
+
+                /* Extract Constraint */
+                Constraint constraint = valueNode.has("constraint") ? mapper.treeToValue(valueNode.get("constraint"), Constraint.class) : Constraint.NONE;
+
+                /* Put value and constraint into map */
+                deviceValue.put(value.get(), constraint);
+            }
+
+            /* Put genericdevice and compatibility into map */
+            compatibilityMap.put(genericDevice, new Compatibility(deviceAction, deviceCondition, deviceValue));
         }
+        return compatibilityMap;
+    }
+
+    private List<Port> loadPort(JsonNode portsNode, List<Pin> pinList) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Port> portList = new ArrayList<>();
+        for (JsonNode portNode: portsNode) {
+            throwIfMissingField(portNode, "type", id, "port");
+            throwIfMissingField(portNode, "elements", id, "port");
+            throwIfFieldIsNotArray(portNode, "elements", id, "port");
+
+            PortConnectionType portConnectionType = PortConnectionType.valueOf(portNode.get("type").asText());
+            List<Pin> portElements = new ArrayList<>();
+
+            List<String> pinNames = mapper.readValue(portNode.get("elements").traverse(), new TypeReference<List<String>>() {});
+            for(Pin pin: pinList) {
+                if (pinNames.contains(pin.getName())) {
+                    portElements.add(pin);
+                }
+            }
+            portList.add(new Port(portConnectionType, portElements));
+        }
+        return portList;
     }
 }

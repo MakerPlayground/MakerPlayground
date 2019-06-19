@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-import java.util.List;
-
-public class CloudPlatformLibrary {
-    private final String className;
-    private final List<String> dependency;
-
-    public CloudPlatformLibrary(String className, List<String> dependency) {
-        this.className = className;
-        this.dependency = dependency;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public List<String> getDependency() {
-        return dependency;
-    }
+public enum PinFunction {
+    VCC, GND, SCL, SDA, NO_FUNCTION
 }

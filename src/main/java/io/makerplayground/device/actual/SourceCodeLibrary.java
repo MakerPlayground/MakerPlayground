@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.upload;
+package io.makerplayground.device.actual;
 
-public enum UploadResult {
-    OK,
-    CANT_FIND_PIO,
-    DEVICE_OR_PORT_MISSING,
-    CANT_CREATE_PROJECT,
-    CANT_GENERATE_CODE,
-    CODE_ERROR,
-    UNKNOWN_ERROR,
-    CANT_FIND_BOARD,
-    CANT_WRITE_CODE,
-    MISSING_LIBRARY_DIR,
-    CANT_FIND_LIBRARY,
-    USER_CANCEL
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class SourceCodeLibrary {
+    private final String className;
+    private final List<String> dependency;
 }

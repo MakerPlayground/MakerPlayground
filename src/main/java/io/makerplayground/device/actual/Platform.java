@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,20 @@
 
 package io.makerplayground.device.actual;
 
+import lombok.Getter;
+
+@Getter
 public enum Platform {
     ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino"),
     ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino"),
     ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino"),
     RASPBERRYPI("Raspberry Pi", "raspberrypi");
 
-    private String displayName;
-    private String libFolderName;
-
     Platform(String displayName, String libFolderName) {
         this.displayName = displayName;
         this.libFolderName = libFolderName;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getLibraryFolderName() {
-        return libFolderName;
-    }
+    private String displayName;
+    private String libFolderName;
 }

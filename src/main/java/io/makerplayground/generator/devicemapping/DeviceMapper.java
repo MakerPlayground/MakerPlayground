@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator;
+package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.device.*;
-import io.makerplayground.device.actual.*;
-import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
-import io.makerplayground.device.shared.DataType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.Scene;
-import io.makerplayground.project.UserSetting;
-import io.makerplayground.project.expression.*;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Created by tanyagorn on 7/11/2017.
- */
 public class DeviceMapper {
-
     private static Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> getConstraintMap(Project project) {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 
@@ -385,8 +376,8 @@ public class DeviceMapper {
         return DeviceLibrary.INSTANCE.getActualDevice().stream()
                 .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
                         && device.getSupportedPlatform().contains(project.getPlatform()))
-                        // TODO: getCloudPlatformUsed() is based on an actual device selected which doesn't work in this case as the controller hasn't been selected yet
-                        // && device.getSupportedCloudPlatform().containsAll(project.getCloudPlatformUsed()))
+                // TODO: getCloudPlatformUsed() is based on an actual device selected which doesn't work in this case as the controller hasn't been selected yet
+                // && device.getSupportedCloudPlatform().containsAll(project.getCloudPlatformUsed()))
                 .collect(Collectors.toUnmodifiableList());
     }
 
