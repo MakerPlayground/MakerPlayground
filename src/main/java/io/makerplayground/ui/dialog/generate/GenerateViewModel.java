@@ -16,6 +16,8 @@
 
 package io.makerplayground.ui.dialog.generate;
 
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.generator.devicemapping.ProjectConfiguration;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -36,8 +38,13 @@ public class GenerateViewModel {
         this.observableTableList = FXCollections.observableArrayList();
 
         if (!code.hasError()) {
-            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-                observableTableList.add(new TableDataList(projectDevice));
+            ProjectConfiguration configuration = project.getProjectConfiguration();
+            var connections = configuration.getUnmodifiableDevicePinPortConnections();
+            for (var entry : configuration.getUnmodifiableDeviceMap().entrySet()) {
+                ProjectDevice device = entry.getKey();
+                ActualDevice actualDevice = entry.getValue();
+                String pinDescription = connections.stream().filter(connection -> connection.getTo() == actualDevice).findFirst().orElseThrow().getDescription();
+                observableTableList.add(new TableDataList(device.getName(), actualDevice.getBrand(), actualDevice.getModel(), actualDevice.getId(), pinDescription, actualDevice.getUrl()));
             }
         }
     }

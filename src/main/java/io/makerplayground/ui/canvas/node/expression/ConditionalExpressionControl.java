@@ -1,5 +1,7 @@
 package io.makerplayground.ui.canvas.node.expression;
 
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;

@@ -19,8 +19,6 @@ package io.makerplayground.generator.upload;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.generator.devicemapping.DeviceMapper;
-import io.makerplayground.generator.devicemapping.DeviceMapperResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -67,11 +65,12 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
-        if (mappingResult != DeviceMapperResult.OK) {
-            Platform.runLater(()->updateMessage(mappingResult.getErrorMessage()));
-            return UploadResult.DEVICE_OR_PORT_MISSING;
-        }
+        /* TODO: uncomment this */
+//        DeviceMapperResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(project);
+//        if (mappingResult != DeviceMapperResult.OK) {
+//            Platform.runLater(()->updateMessage(mappingResult.getErrorMessage()));
+//            return UploadResult.DEVICE_OR_PORT_MISSING;
+//        }
 
         SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
@@ -117,8 +116,9 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         updateMessage("Preparing to generate project");
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .filter(ProjectDevice::isActualDeviceSelected)
-                .map(ProjectDevice::getActualDevice)
+                .filter(project::isActualDeviceSelected)
+                .map(project::getActualDevice)
+                .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
@@ -127,12 +127,12 @@ public class RaspberryPiUploadTask extends UploadTask {
         }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getMpLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
 
         Set<String> externalLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getExternalLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getExternalLibrary(project.getSelectedPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries
@@ -141,10 +141,10 @@ public class RaspberryPiUploadTask extends UploadTask {
             mpLibraries.add(cloudPlatform.getLibName());
 
             // add controller-specific library when using cloudPlatform.
-            mpLibraries.add(project.getController().getCloudPlatformLibraryName(cloudPlatform));
+            mpLibraries.add(project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform));
 
             // add controller-specific external dependency when using cloudPlatform.
-            externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
+            externalLibraries.addAll(project.getSelectedController().getCloudPlatformLibraryDependency(cloudPlatform));
         }
 
         Platform.runLater(() -> log.set("List of library used \n"));
@@ -199,7 +199,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         // copy mp library
         for (String libName: mpLibraries) {
-            File source = Paths.get(libraryPath.get(), "lib", project.getPlatform().getLibFolderName(), libName).toFile();
+            File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
             File destination = Paths.get(projectPath, libName).toFile();
             try {
                 FileUtils.copyDirectory(source, destination);

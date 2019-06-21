@@ -24,15 +24,20 @@ import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
+import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
+import io.makerplayground.generator.devicemapping.ProjectConfiguration;
+import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
 import io.makerplayground.version.ProjectVersionControl;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,15 +53,11 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     private StringProperty projectName;
-    private ReadOnlyObjectWrapper<Platform> platform;
-    private ActualDevice controller;
     private final ObservableList<ProjectDevice> device;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
     private final ObservableList<Line> line;
     private final ObservableList<Begin> begins;
-
-    private final Map<CloudPlatform, Map<String, String>> parameter;
 
     @Getter private final FilteredList<ProjectDevice> sensorDevice;
     @Getter private final FilteredList<ProjectDevice> actuatorDevice;
@@ -67,19 +68,19 @@ public class Project {
     @Getter private final FilteredList<ProjectDevice> deviceWithCondition;
 
     @Getter private final ObservableList<ProjectDevice> unmodifiableDevice;
-    private final ObservableList<Scene> unmodifiableScene;
-    private final ObservableList<Condition> unmodifiableCondition;
-    private final ObservableList<Line> unmodifiableLine;
+    @Getter private final ObservableList<Scene> unmodifiableScene;
+    @Getter private final ObservableList<Condition> unmodifiableCondition;
+    @Getter private final ObservableList<Line> unmodifiableLine;
 
     private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
+    @Getter @Setter private ProjectConfiguration projectConfiguration;
+
     public Project() {
         projectName = new SimpleStringProperty("Untitled Project");
-        platform = new ReadOnlyObjectWrapper<>(Platform.ARDUINO_AVR8);
-        controller = null;
 
         device = FXCollections.observableArrayList();
         unmodifiableDevice = FXCollections.unmodifiableObservableList(device);
@@ -96,14 +97,15 @@ public class Project {
         line = FXCollections.observableArrayList();
         begins = FXCollections.observableArrayList();
 
-        parameter = new EnumMap<>(CloudPlatform.class);
+//        parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
 
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
         unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
         unmodifiableLine = FXCollections.unmodifiableObservableList(line);
 
-        this.newBegin();
+        projectConfiguration = ProjectConfigurationLogic.newConfiguration();
+        newBegin();
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -119,20 +121,8 @@ public class Project {
         return newProject;
     }
 
-    public ObservableList<ProjectDevice> getDevice() {
-        return unmodifiableDevice;
-    }
-
-    public ObservableList<Scene> getScene() {
-        return unmodifiableScene;
-    }
-
-    public ObservableList<Condition> getCondition() {
-        return unmodifiableCondition;
-    }
-
-    public Platform getPlatform() {
-        return platform.get();
+    public Platform getSelectedPlatform() {
+        return projectConfiguration.getPlatform();
     }
 
     private String getDeviceVarName(GenericDevice device) {
@@ -142,7 +132,7 @@ public class Project {
     private int getNextId(GenericDevice device) {
         String varName = getDeviceVarName(device);
         Pattern p = Pattern.compile(varName+"\\d+");
-        return getDevice().stream()
+        return getUnmodifiableDevice().stream()
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(varName.length())))
                 .max()
@@ -174,18 +164,12 @@ public class Project {
         }
     }
 
-    public ReadOnlyObjectProperty<Platform> platformProperty() {
-        return platform.getReadOnlyProperty();
-    }
-
     public void setPlatform(Platform platform) {
-        this.platform.set(platform);
-        // controller must be cleared every time platform has changed
-        setController(null);
+        this.projectConfiguration = ProjectConfigurationLogic.changePlatform(projectConfiguration, platform);
     }
 
-    public Optional<Scene> getScene(String name) {
-        return scene.stream().filter(s -> s.getName().equals(name)).findFirst();
+    public Optional<Scene> getUnmodifiableScene(String name) {
+        return unmodifiableScene.stream().filter(s -> s.getName().equals(name)).findFirst();
     }
 
     public Scene newScene() {
@@ -230,7 +214,7 @@ public class Project {
         checkAndInvalidateDiagram();
     }
 
-    public Optional<Condition> getCondition(String name) {
+    public Optional<Condition> getUnmodifiableCondition(String name) {
         return condition.stream().filter(c -> c.getName().equals(name)).findFirst();
     }
 
@@ -294,12 +278,9 @@ public class Project {
         return line.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
     }
 
-    public ObservableList<Line> getLine() {
-        return unmodifiableLine;
-    }
-
     // TODO: need to get again after set
     public String getCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName) {
+        var parameter = projectConfiguration.getUnmodifiableCloudParameterMap();
         if (parameter.containsKey(cloudPlatform)) {
             return parameter.get(cloudPlatform).get(parameterName);
         } else {
@@ -308,20 +289,14 @@ public class Project {
     }
 
     public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
-        if (parameter.containsKey(cloudPlatform)) {
-            parameter.get(cloudPlatform).put(parameterName, value);
-        } else {
-            Map<String, String> parameterMap = new HashMap<>();
-            parameterMap.put(parameterName, value);
-            parameter.put(cloudPlatform, parameterMap);
-        }
+        projectConfiguration = ProjectConfigurationLogic.changeCloudPlatformParameter(projectConfiguration, cloudPlatform, parameterName, value);
     }
 
     public Set<CloudPlatform> getCloudPlatformUsed() {
         return getAllDeviceUsed().stream()
-                .filter(ProjectDevice::isActualDeviceSelected)
-                .filter(projectDevice -> Objects.nonNull(projectDevice.getActualDevice().getCloudConsume()))
-                .map(projectDevice -> projectDevice.getActualDevice().getCloudConsume())
+                .filter(projectDevice -> projectConfiguration.isActualDeviceSelected(projectDevice))
+                .filter(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).isPresent())
+                .map(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).orElseThrow())
                 .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -349,27 +324,20 @@ public class Project {
         return value;
     }
 
-    public ActualDevice getController() {
-        return controller;
+    public ActualDevice getSelectedController() {
+        return projectConfiguration.getController();
     }
 
     public void setController(ActualDevice controller) {
-        this.controller = controller;
-        // remove all port and actual device assignment when the controller is changed
-        for (ProjectDevice projectDevice : getDevice()) {
-            projectDevice.removeAllDeviceConnection();
-            projectDevice.setActualDevice(null);
-        }
+        projectConfiguration = ProjectConfigurationLogic.changeController(projectConfiguration, controller);
     }
 
     public ObservableList<Begin> getBegin() { return begins; }
 
     public Set<ProjectDevice> getAllDeviceUsed() {
         Set<ProjectDevice> deviceUsed = new HashSet<>();
-
         Set<NodeElement> visited = new HashSet<>();
-        Deque<NodeElement> queue = new ArrayDeque<>();
-        queue.addAll(this.begins);
+        Deque<NodeElement> queue = new ArrayDeque<>(this.begins);
         while(!queue.isEmpty()) {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
@@ -401,7 +369,7 @@ public class Project {
     }
 
     public Set<ProjectDevice> getAllDeviceUnused() {
-        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getDevice());
+        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getUnmodifiableDevice());
         devicesNotUsed.removeAll(this.getAllDeviceUsed());
         return devicesNotUsed;
     }
@@ -409,8 +377,7 @@ public class Project {
     public Map<ProjectDevice, Set<Value>> getAllValueUsedMap(Set<DataType> dataType) {
         HashMap<ProjectDevice, Set<Value>> allValueUsed = new HashMap<>();
         Set<NodeElement> visited = new HashSet<>();
-        Queue<NodeElement> queue = new LinkedList<>();
-        queue.addAll(this.begins);
+        Queue<NodeElement> queue = new LinkedList<>(this.begins);
         while(!queue.isEmpty()) {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
@@ -461,9 +428,16 @@ public class Project {
             if(!begins.isEmpty()) {
                 firstBegin = begins.get(0);
             }
-            return !(platform.get() == Platform.ARDUINO_AVR8 && controller == null && device.isEmpty()
-                    && scene.isEmpty() && condition.isEmpty() && line.isEmpty() && beginCount == 1 && firstBegin != null
-                    && firstBegin.getTop() == 200 && firstBegin.getLeft() == 20); // begin hasn't been moved
+            return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
+                    && projectConfiguration.getController() == null
+                    && device.isEmpty()
+                    && scene.isEmpty()
+                    && condition.isEmpty()
+                    && line.isEmpty()
+                    && beginCount == 1
+                    && firstBegin != null
+                    && firstBegin.getTop() == 200
+                    && firstBegin.getLeft() == 20); // begin hasn't been moved
         } else {
             ObjectMapper mapper = new ObjectMapper();
             String newContent;
@@ -501,6 +475,15 @@ public class Project {
         return Optional.empty();
     }
 
+    public boolean isNameDuplicate(String newName) {
+        for (ProjectDevice projectDevice : this.getUnmodifiableDevice()) {
+            if (projectDevice.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Map<List<Line>, DiagramError> diagramError = Collections.emptyMap();
 
     private void checkAndInvalidateDiagram() {
@@ -530,8 +513,8 @@ public class Project {
         }
 
         // Reassign root to all scene and conditions
-        getScene().forEach(Scene::clearRoot);
-        getCondition().forEach(Condition::clearRoot);
+        getUnmodifiableScene().forEach(Scene::clearRoot);
+        getUnmodifiableCondition().forEach(Condition::clearRoot);
         getBegin().forEach(this::traverseAndSetRoot);
 
         Map<NodeElement, List<Line>> lineFromDest = this.line.stream().collect(Collectors.groupingBy(Line::getDestination));
@@ -552,13 +535,12 @@ public class Project {
     }
 
     private Set<NodeElement> getNextNodeElements(NodeElement from) {
-        return getLine().stream().filter(line1 -> line1.getSource() == from).map(Line::getDestination).collect(Collectors.toSet());
+        return getUnmodifiableLine().stream().filter(line1 -> line1.getSource() == from).map(Line::getDestination).collect(Collectors.toSet());
     }
 
     private void traverseAndSetRoot(NodeElement from) {
-        Deque<NodeElement> remainingNodes = new ArrayDeque<>();
         Set<NodeElement> visited = new HashSet<>();
-        remainingNodes.addAll(getNextNodeElements(from));
+        Deque<NodeElement> remainingNodes = new ArrayDeque<>(getNextNodeElements(from));
         while(!remainingNodes.isEmpty()) {
             NodeElement node = remainingNodes.removeFirst();
             if (visited.contains(node)) {
@@ -615,5 +597,25 @@ public class Project {
 
     public void addBegin(Begin begin) {
         begins.add(begin);
+    }
+
+    public boolean isActualDeviceSelected(ProjectDevice projectDevice) {
+        return this.getProjectConfiguration().isActualDeviceSelected(projectDevice);
+    }
+
+    public Optional<ActualDevice> getActualDevice(ProjectDevice projectDevice) {
+        return this.getProjectConfiguration().getActualDevice(projectDevice);
+    }
+
+    public Object getPropertyValue(ProjectDevice projectDevice, Property property) {
+        return this.getProjectConfiguration().getPropertyValue(projectDevice, property);
+    }
+
+    public boolean isUsedSameDevice(ProjectDevice projectDevice) {
+        return this.getProjectConfiguration().isUsedSameDevice(projectDevice);
+    }
+
+    public Optional<ProjectDevice> getParentDevice(ProjectDevice projectDevice) {
+        return this.getProjectConfiguration().getParentDevice(projectDevice);
     }
 }

@@ -36,9 +36,9 @@ public class CanvasViewModel {
     public CanvasViewModel(Project project) {
         this.project = project;
         this.beginViewModel = new DynamicViewModelCreator<>(project.getBegin(), begin -> new BeginViewModel(begin, project));
-        this.SceneViewModel = new DynamicViewModelCreator<>(project.getScene(), scene -> new SceneViewModel(scene, project));
-        this.conditionViewModel = new DynamicViewModelCreator<>(project.getCondition(), condition -> new ConditionViewModel(condition, project));
-        this.lineViewModel = new DynamicViewModelCreator<>(project.getLine(), LineViewModel::new);
+        this.SceneViewModel = new DynamicViewModelCreator<>(project.getUnmodifiableScene(), scene -> new SceneViewModel(scene, project));
+        this.conditionViewModel = new DynamicViewModelCreator<>(project.getUnmodifiableCondition(), condition -> new ConditionViewModel(condition, project));
+        this.lineViewModel = new DynamicViewModelCreator<>(project.getUnmodifiableLine(), LineViewModel::new);
     }
 
     public void connect(NodeElement nodeElement1, NodeElement nodeElement2) {

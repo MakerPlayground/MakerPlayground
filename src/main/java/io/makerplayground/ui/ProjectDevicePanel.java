@@ -50,11 +50,11 @@ public class ProjectDevicePanel extends TabPane {
             throw new RuntimeException(e);
         }
 
-        actuatorList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
-        sensorList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
-        utilityList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
-        cloudList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
-        interfaceList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
+        actuatorList = project.getUnmodifiableDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
+        sensorList = project.getUnmodifiableDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
+        utilityList = project.getUnmodifiableDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
+        cloudList = project.getUnmodifiableDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
+        interfaceList = project.getUnmodifiableDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
 
         initView(actuatorVBox, actuatorList);
         initView(sensorVBox, sensorList);
@@ -72,7 +72,7 @@ public class ProjectDevicePanel extends TabPane {
         cloudTitledPane.managedProperty().bind(cloudTitledPane.visibleProperty());
         interfaceTitledPane.visibleProperty().bind(Bindings.isNotEmpty(interfaceList));
         interfaceTitledPane.managedProperty().bind(interfaceTitledPane.visibleProperty());
-        warningPane.visibleProperty().bind(Bindings.isEmpty(project.getDevice()));
+        warningPane.visibleProperty().bind(Bindings.isEmpty(project.getUnmodifiableDevice()));
         warningPane.managedProperty().bind(warningPane.visibleProperty());
     }
 
@@ -123,22 +123,11 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.setText(projectDevice.getName());
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    String name = nameTextField.getText();
-                    boolean acceptNewName = true;
-                    if (!name.matches("^[a-zA-Z_][a-zA-Z0-9_]*")) {
-                        acceptNewName = false;
-                    }
-                    // check for duplicate name
-                    for (ProjectDevice pd : project.getDevice()) {
-                        if (pd.getName().equals(name)) {
-                            acceptNewName = false;
-                            break;
-                        }
-                    }
-                    if (acceptNewName) {
-                        projectDevice.setName(name);
-                    } else {
+                    String newName = nameTextField.getText();
+                    if (!newName.matches("^[a-zA-Z_][a-zA-Z0-9_]*") || project.isNameDuplicate(newName)){
                         nameTextField.setText(projectDevice.getName());
+                    } else {
+                        projectDevice.setName(newName);
                     }
                 }
             });

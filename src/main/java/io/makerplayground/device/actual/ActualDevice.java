@@ -16,18 +16,17 @@
 
 package io.makerplayground.device.actual;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.generic.GenericDevice;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Data @Builder
 @JsonDeserialize(using = ActualDeviceDeserializer.class)
-public class ActualDevice {
+public class ActualDevice implements Comparable<ActualDevice> {
     protected final String id;
     protected final String brand;
     protected final String model;
@@ -93,5 +92,20 @@ public class ActualDevice {
             return sourceCodeLibrary.getDependency();
         }
         throw new IllegalStateException("The actual device [" + String.join(", ", List.of(id, brand, model)) + "] not support for cloudplatform [" + cloudPlatform.getDisplayName() + "]");
+    }
+
+    @JsonIgnore
+    public boolean isPinProviderDevice() {
+        return Objects.nonNull(getPinProvide()) && !getPinProvide().isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean isPortProviderDevice() {
+        return Objects.nonNull(getPortProvide()) && !getPortProvide().isEmpty();
+    }
+
+    @Override
+    public int compareTo(ActualDevice o) {
+        return (getBrand() + getModel()).compareTo(o.getBrand() + o.getModel());
     }
 }

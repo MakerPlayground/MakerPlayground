@@ -16,6 +16,12 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -36,7 +42,7 @@ public class SceneDeviceIconViewModel {
 
     public SceneDeviceIconViewModel(UserSetting userSetting, NodeElement nodeElement, Project project) {
         this.userSetting = userSetting;
-        //this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+        //this.name = new SimpleStringProperty(userSetting.getUnmodifiableDevice().getName());
         this.nodeElement = nodeElement;
         this.project = project;
     }
@@ -57,8 +63,16 @@ public class SceneDeviceIconViewModel {
         return userSetting.getAction();
     }
 
+    public Condition getCondition() {
+        return userSetting.getCondition();
+    }
+
     public void setAction(Action action) {
         userSetting.setAction(action);
+    }
+
+    public void setCondition(Condition condition) {
+        userSetting.setCondition(condition);
     }
 
     public ReadOnlyObjectProperty<Action> actionProperty() {

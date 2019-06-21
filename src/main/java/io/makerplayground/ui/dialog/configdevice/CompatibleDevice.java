@@ -4,6 +4,7 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.project.ProjectDevice;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class CompatibleDevice {
     private ActualDevice actualDevice;
@@ -17,12 +18,12 @@ public class CompatibleDevice {
         this.projectDevice = projectDevice;
     }
 
-    public ActualDevice getActualDevice() {
-        return actualDevice;
+    public Optional<ActualDevice> getActualDevice() {
+        return actualDevice != null ? Optional.of(actualDevice) : Optional.empty();
     }
 
-    public ProjectDevice getProjectDevice() {
-        return projectDevice;
+    public Optional<ProjectDevice> getProjectDevice() {
+        return projectDevice != null ? Optional.of(projectDevice) : Optional.empty();
     }
 
     @Override

@@ -21,7 +21,7 @@ import io.makerplayground.project.Project;
 public class SourceCodeGenerator {
 
     public static SourceCodeResult generate(Project project) {
-        switch (project.getPlatform()) {
+        switch (project.getSelectedPlatform()) {
             case ARDUINO_AVR8:
             case ARDUINO_ESP8266:
             case ARDUINO_ESP32:
@@ -29,7 +29,7 @@ public class SourceCodeGenerator {
             case RASPBERRYPI:
                 return RaspberryPiCodeGenerator.generateCode(project);
             default:
-                throw new IllegalStateException("Not Support code for platform: " + project.getPlatform());
+                throw new IllegalStateException("Not Support code for platform: " + project.getSelectedPlatform());
         }
     }
 }

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.version.ProjectVersionControl;
 
 import java.io.IOException;
@@ -47,9 +48,9 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeStringField("projectName", project.getProjectName());
 
         jsonGenerator.writeObjectFieldStart("controller");
-        jsonGenerator.writeStringField("platform", project.getPlatform().name());
-        if (project.getController() != null)
-            jsonGenerator.writeStringField("device", project.getController().getId());
+        jsonGenerator.writeStringField("platform", project.getSelectedPlatform().name());
+        if (project.getSelectedController() != null)
+            jsonGenerator.writeStringField("device", project.getSelectedController().getId());
         else
             jsonGenerator.writeStringField("device", "");
         jsonGenerator.writeEndObject();
@@ -72,7 +73,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("device");
-        for(ProjectDevice device : project.getDevice()) {
+        for(ProjectDevice device : project.getUnmodifiableDevice()) {
             mapper.writeValue(jsonGenerator, device);
         }
         jsonGenerator.writeEndArray();
@@ -88,19 +89,19 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("scene");
-        for(Scene scene : project.getScene()) {
+        for(Scene scene : project.getUnmodifiableScene()) {
             mapper.writeValue(jsonGenerator, scene);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("condition");
-        for(Condition condition : project.getCondition()) {
+        for(Condition condition : project.getUnmodifiableCondition()) {
             mapper.writeValue(jsonGenerator, condition);
         }
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("line");
-        for(Line line : project.getLine()) {
+        for(Line line : project.getUnmodifiableLine()) {
             jsonGenerator.writeStartObject();
 
             if (line.getSource() instanceof Scene)

@@ -24,28 +24,28 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 @JsonSerialize (using = ProjectDeviceSerializer.class)
-public class ProjectDevice {
+public class ProjectDevice implements Comparable<ProjectDevice>{
     private final StringProperty name;
     @Getter private final GenericDevice genericDevice;
-    @Getter private ActualDevice actualDevice;
-    @Getter private ProjectDevice parentDevice;     // this device may share the actual device with other project device in the project
+//    @Getter private ActualDevice actualDevice;
+//    @Getter private ProjectDevice parentDevice;     // this device may share the actual device with other project device in the project
                                             // in this case actualDevice will be null and parentDevice will contain the reference
                                             // to the other project device (only one field can have value at the same time)
 //    private Map<Peripheral, List<DevicePort>> deviceConnection; // connection from this device (key) to the processor (value)
-    @Getter private ActualDevice dependentDevice;
+//    @Getter private ActualDevice dependentDevice;
 //    @Getter private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
-    private Map<Property, Object> propertyValue;  // property needed by the actual device
 
     public ProjectDevice(String name, GenericDevice genericDevice, Project project) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
 //        this.deviceConnection = new HashMap<>();
 //        this.dependentDeviceConnection = new HashMap<>();
-        this.propertyValue = new HashMap<>();
+//        this.propertyValue = new HashMap<>();
     }
 
     ProjectDevice(String name, GenericDevice genericDevice, ActualDevice actualDevice,
@@ -55,11 +55,10 @@ public class ProjectDevice {
                   Map<Property, Object> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
-        this.actualDevice = actualDevice;
+//        this.actualDevice = actualDevice;
 //        this.deviceConnection = deviceConnection;
-        this.dependentDevice = dependentDevice;
+//        this.dependentDevice = dependentDevice;
 //        this.dependentDeviceConnection = dependentDeviceConnection;
-        this.propertyValue = propertyValue;
     }
 
     public String getName() {
@@ -78,29 +77,34 @@ public class ProjectDevice {
     }
 
     public void setActualDevice(ActualDevice actualDevice) {
-        this.actualDevice = actualDevice;
-        this.parentDevice = null;
+//        this.actualDevice = actualDevice;
+//        this.parentDevice = null;
         // initialize device properties with their default value (we don't clear the map so that it looks like we save
         // the old property value when user switch back and forth between device)
-        if (actualDevice != null) {
-            for (Property property : actualDevice.getProperty()) {
-                propertyValue.put(property, property.getDefaultValue());
-            }
-        }
+//        if (actualDevice != null) {
+//            for (Property property : actualDevice.getProperty()) {
+//                propertyValue.put(property, property.getDefaultValue());
+//            }
+//        }
     }
 
-    public boolean isActualDeviceSelected() {
-        return actualDevice != null;
+    @Override
+    public int compareTo(ProjectDevice o) {
+        return getName().compareTo(o.getName());
     }
 
-    public void setParentDevice(ProjectDevice parentDevice) {
-        this.actualDevice = null;
-        this.parentDevice = parentDevice;
-    }
+//    public boolean isActualDeviceSelected() {
+//        return actualDevice != null;
+//    }
 
-    public boolean isMergeToOtherDevice() {
-        return parentDevice != null;
-    }
+//    public void setParentDevice(ProjectDevice parentDevice) {
+//        this.actualDevice = null;
+//        this.parentDevice = parentDevice;
+//    }
+
+//    public boolean isMergeToOtherDevice() {
+//        return parentDevice != null;
+//    }
 
 //    public Map<Peripheral, List<DevicePort>> getDeviceConnection() {
 //        // TODO: we should return an immutable copy for safety
@@ -119,11 +123,5 @@ public class ProjectDevice {
 //        this.deviceConnection.clear();
 //    }
 
-    public Object getPropertyValue(Property p) {
-        return propertyValue.get(p);
-    }
 
-    public void setPropertyValue(Property p, Object value) {
-        propertyValue.put(p, value);
-    }
 }

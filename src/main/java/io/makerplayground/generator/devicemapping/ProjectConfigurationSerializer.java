@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.actual;
+package io.makerplayground.generator.devicemapping;
 
-import lombok.Data;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
-import java.util.List;
+import java.io.IOException;
 
-@Data
-public class Port {
-    private final String name;
-    private final PortConnectionType type;
-    private final List<Pin> elements;
+public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfiguration> {
+    @Override
+    public void serialize(ProjectConfiguration value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
 }

@@ -53,7 +53,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
     private final GridPane propertyPane = new GridPane();
 
     private Label conditionLabel;
-    private ComboBox<Action> conditionComboBox;
+    private ComboBox<Condition> conditionComboBox;
 
     public ConditionDevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;
@@ -83,10 +83,10 @@ public class ConditionDevicePropertyWindow extends PopOver {
         conditionComboBox = new ComboBox<>(FXCollections.observableArrayList(viewModel.getGenericDevice().getCondition()));
         conditionComboBox.setCellFactory(new Callback<>() {
             @Override
-            public ListCell<Action> call(ListView<Action> param) {
+            public ListCell<Condition> call(ListView<Condition> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(Action item, boolean empty) {
+                    protected void updateItem(Condition item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText("");
@@ -99,7 +99,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         });
         conditionComboBox.setButtonCell(new ListCell<>(){
             @Override
-            protected void updateItem(Action item, boolean empty) {
+            protected void updateItem(Condition item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
                     setText("");
@@ -108,9 +108,9 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 }
             }
         });
-        conditionComboBox.getSelectionModel().select(viewModel.getAction());
+        conditionComboBox.getSelectionModel().select(viewModel.getCondition());
         conditionComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            viewModel.setAction(newValue);
+            viewModel.setCondition(newValue);
             redrawProperty();
         });
         GridPane.setRowIndex(conditionComboBox, 0);

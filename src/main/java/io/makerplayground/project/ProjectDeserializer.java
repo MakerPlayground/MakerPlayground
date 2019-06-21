@@ -98,7 +98,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             ProjectDevice parentDevice = deviceList.stream()
                     .filter(projectDevice1 -> projectDevice1.getName().equals(parentName))
                     .findAny().orElseThrow(() -> new IllegalStateException("Can't find project device with name = " + parentName));
-            projectDevice.setParentDevice(parentDevice);
+            project.getProjectConfiguration().setParentDevice(projectDevice, parentDevice);
         }
 
         for (JsonNode beginNode: node.get("begin")) {
@@ -129,21 +129,21 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             if (begin.isPresent()) {
                 source = begin.get();
             }
-            Optional<Scene> scene = project.getScene(lineNode.get("source").asText());
+            Optional<Scene> scene = project.getUnmodifiableScene(lineNode.get("source").asText());
             if (scene.isPresent()) {
                 source = scene.get();
             }
-            Optional<Condition> condition = project.getCondition(lineNode.get("source").asText());
+            Optional<Condition> condition = project.getUnmodifiableCondition(lineNode.get("source").asText());
             if (condition.isPresent()) {
                 source = condition.get();
             }
 
             NodeElement dest = null;
-            Optional<Scene> s = project.getScene(lineNode.get("destination").asText());
+            Optional<Scene> s = project.getUnmodifiableScene(lineNode.get("destination").asText());
             if (s.isPresent()) {
                 dest = s.get();
             }
-            Optional<Condition> c = project.getCondition(lineNode.get("destination").asText());
+            Optional<Condition> c = project.getUnmodifiableCondition(lineNode.get("destination").asText());
             if (c.isPresent()) {
                 dest = c.get();
             }
@@ -442,17 +442,18 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             throw new IllegalStateException("Can't deserialize actual device");
         }
 
-        Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
-        for  (JsonNode connection : node.get("actualDeviceConnection")) {
-            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
-            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
-            List<DevicePort> port = new ArrayList<>();
-            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
-                String portName = controllerPeripheral.asText();
-                port.add(controller.getPort(portName));
-            }
-            actualDeviceConnection.put(source, port);
-        }
+        /* TODO: uncomment this */
+//        Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
+//        for  (JsonNode connection : node.get("actualDeviceConnection")) {
+//            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
+//            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
+//            List<DevicePort> port = new ArrayList<>();
+//            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
+//                String portName = controllerPeripheral.asText();
+//                port.add(controller.getPort(portName));
+//            }
+//            actualDeviceConnection.put(source, port);
+//        }
 
         String dependentDeviceId = node.get("actualDevice").asText();
         ActualDevice dependentDevice = null;
@@ -460,18 +461,19 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             dependentDevice = DeviceLibrary.INSTANCE.getActualDevice(dependentDeviceId);
         }
 
-        Map<Peripheral, List<DevicePort>> dependentDeviceConnection = new HashMap<>();
-        for (JsonNode connection : node.get("dependentDeviceConnection")) {
-            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
-            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
-            List<DevicePort> port = new ArrayList<>();
-            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
-                String portName = controllerPeripheral.asText();
-                port.add(controller.getPort(portName));
-            }
-            actualDeviceConnection.put(source, port);
-            dependentDeviceConnection.put(source, port);
-        }
+        /* TODO: uncomment this */
+//        Map<Peripheral, List<DevicePort>> dependentDeviceConnection = new HashMap<>();
+//        for (JsonNode connection : node.get("dependentDeviceConnection")) {
+//            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
+//            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
+//            List<DevicePort> port = new ArrayList<>();
+//            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
+//                String portName = controllerPeripheral.asText();
+//                port.add(controller.getPort(portName));
+//            }
+//            actualDeviceConnection.put(source, port);
+//            dependentDeviceConnection.put(source, port);
+//        }
 
         Map<Property, Object> property = new HashMap<>();
         for (JsonNode propertyNode : node.get("property")) {
@@ -519,9 +521,9 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             property.put(p, value);
         }
 
-
-        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, project, actualDevice, actualDeviceConnection
-                , dependentDevice, dependentDeviceConnection, property);
+        /* TODO: uncomment this & add actual device connection and dependent device connection to project device  */
+        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice
+                , dependentDevice, property);
         if (actualDeviceNode.has("type") && actualDeviceType.equals("share")) {
             shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());
         }

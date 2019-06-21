@@ -151,6 +151,11 @@ public class UserSetting {
         initValueMap();
     }
 
+    public void setCondition(Condition condition) {
+        this.condition.set(condition);
+        initValueMap();
+    }
+
     public ReadOnlyObjectProperty<Action> actionProperty() {
         return action.getReadOnlyProperty();
     }

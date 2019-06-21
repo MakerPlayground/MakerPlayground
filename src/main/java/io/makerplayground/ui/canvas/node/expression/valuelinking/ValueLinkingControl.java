@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.expression.valuelinking;
 
+import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
@@ -87,14 +88,11 @@ public class ValueLinkingControl extends GridPane {
 
         ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
-        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setRefreshInterval(newValue);
-        });
+        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> getExpression().setRefreshInterval(newValue));
 
         SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
-        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setUserDefinedInterval(newValue);
-        });
+        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                getExpression().setUserDefinedInterval(newValue));
         customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
         customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
 
@@ -131,9 +129,8 @@ public class ValueLinkingControl extends GridPane {
                 }
             }
         });
-        valueCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            expression.set(((ProjectValueExpression) expression.get()).setProjectValue(newValue));
-        });
+        valueCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                expression.set(((ProjectValueExpression) expression.get()).setProjectValue(newValue)));
         GridPane.setConstraints(valueCombobox, 1, 0);
 
         CheckBox mappingEnableCheckbox = new CheckBox("map range");
@@ -155,14 +152,12 @@ public class ValueLinkingControl extends GridPane {
 
         ComboBox<Expression.RefreshInterval> refreshIntervalComboBox = new ComboBox<>(FXCollections.observableArrayList(Expression.RefreshInterval.values()));
         refreshIntervalComboBox.getSelectionModel().select(getExpression().getRefreshInterval());
-        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setRefreshInterval(newValue);
-        });
+        refreshIntervalComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                getExpression().setRefreshInterval(newValue));
 
         SpinnerWithUnit customIntervalSpinner = new SpinnerWithUnit(0, Double.MAX_VALUE, List.of(Unit.SECOND, Unit.MILLISECOND), getExpression().getUserDefinedInterval());
-        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            getExpression().setUserDefinedInterval(newValue);
-        });
+        customIntervalSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                getExpression().setUserDefinedInterval(newValue));
         customIntervalSpinner.visibleProperty().bind(refreshIntervalComboBox.getSelectionModel().selectedItemProperty().isEqualTo(Expression.RefreshInterval.USER_DEFINED));
         customIntervalSpinner.managedProperty().bind(customIntervalSpinner.visibleProperty());
 
@@ -243,12 +238,10 @@ public class ValueLinkingControl extends GridPane {
             sourceRange = new RangeSliderWithUnit();
         }
         sourceRange.disableProperty().bind(valueCombobox.getSelectionModel().selectedItemProperty().isNull());
-        sourceRange.lowValueProperty().addListener((observable, oldValue, newValue) -> {
-            expression.set(((ValueLinkingExpression) getExpression()).setSourceLowValue(newValue));
-        });
-        sourceRange.highValueProperty().addListener((observable, oldValue, newValue) -> {
-            expression.set(((ValueLinkingExpression) getExpression()).setSourceHighValue(newValue));
-        });
+        sourceRange.lowValueProperty().addListener((observable, oldValue, newValue) ->
+                expression.set(((ValueLinkingExpression) getExpression()).setSourceLowValue(newValue)));
+        sourceRange.highValueProperty().addListener((observable, oldValue, newValue) ->
+                expression.set(((ValueLinkingExpression) getExpression()).setSourceHighValue(newValue)));
         GridPane.setConstraints(sourceRange, 1, 1, 2, 1);
 
         Label toLabel = new Label("to range");
@@ -257,12 +250,10 @@ public class ValueLinkingControl extends GridPane {
         Parameter p = valueLinkingExpression.getDestinationParameter();
         destRange = new RangeSliderWithUnit(p.getMinimumValue(), p.getMaximumValue(), valueLinkingExpression.getDestinationLowValue()
                 , valueLinkingExpression.getDestinationHighValue(), false, List.of(Unit.NOT_SPECIFIED));
-        destRange.lowValueProperty().addListener((observable, oldValue, newValue) -> {
-            expression.set(((ValueLinkingExpression) getExpression()).setDestinationLowValue(newValue));
-        });
-        destRange.highValueProperty().addListener((observable, oldValue, newValue) -> {
-            expression.set(((ValueLinkingExpression) getExpression()).setDestinationHighValue(newValue));
-        });
+        destRange.lowValueProperty().addListener((observable, oldValue, newValue) ->
+                expression.set(((ValueLinkingExpression) getExpression()).setDestinationLowValue(newValue)));
+        destRange.highValueProperty().addListener((observable, oldValue, newValue) ->
+                expression.set(((ValueLinkingExpression) getExpression()).setDestinationHighValue(newValue)));
         GridPane.setConstraints(destRange, 1, 2, 2, 1);
 
         setHgap(10);

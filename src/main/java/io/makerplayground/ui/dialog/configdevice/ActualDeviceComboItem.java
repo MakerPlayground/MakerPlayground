@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.actual;
+package io.makerplayground.ui.dialog.configdevice;
 
-import lombok.Data;
+import io.makerplayground.device.actual.ActualDevice;
+import lombok.AccessLevel;
+import lombok.Value;
+import lombok.experimental.NonFinal;
+import lombok.experimental.Wither;
 
-import java.util.List;
-
-@Data
-public class Port {
-    private final String name;
-    private final PortConnectionType type;
-    private final List<Pin> elements;
+@Value
+public class ActualDeviceComboItem {
+    private final ActualDevice actualDevice;
+    @Wither(AccessLevel.PACKAGE) @NonFinal boolean selectable;
 }

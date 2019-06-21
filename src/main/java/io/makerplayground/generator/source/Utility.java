@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.source;
 
+import io.makerplayground.device.actual.Property;
 import io.makerplayground.project.*;
 
 import java.util.*;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 class Utility {
 
     static long getMaximumNumberOfExpression(Project project, ProjectDevice device) {
-        return project.getScene().stream()
+        return project.getUnmodifiableScene().stream()
                 .flatMap(scene -> scene.getSetting().stream())
                 .filter(userSetting -> userSetting.getDevice() == device)
                 .filter(UserSetting::isDataBindingUsed)
@@ -33,7 +34,7 @@ class Utility {
     }
 
     static List<NodeElement> findAdjacentNodes(Project project, NodeElement source) {
-        return project.getLine().stream().filter(line -> line.getSource() == source)
+        return project.getUnmodifiableLine().stream().filter(line -> line.getSource() == source)
                 .map(Line::getDestination).collect(Collectors.toList());
     }
 
@@ -48,7 +49,7 @@ class Utility {
     }
 
     static List<Condition> findAdjacentConditions(Project project, NodeElement source) {
-        return project.getLine().stream()
+        return project.getUnmodifiableLine().stream()
                 .filter(line -> line.getSource() == source)
                 .map(Line::getDestination)
                 .filter(nodeElement -> nodeElement instanceof Condition)
@@ -82,13 +83,13 @@ class Utility {
     static boolean validateDeviceProperty(Project project) {
         for (ProjectDevice device : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
-            if (device.isMergeToOtherDevice()) {
+            if (project.isUsedSameDevice(device)) {
                 continue;
             }
             // check only device that has a property
-            if (!device.getActualDevice().getProperty().isEmpty()) {
-                for (Property p : device.getActualDevice().getProperty()) {
-                    Object value = device.getPropertyValue(p);
+            if (project.getActualDevice(device).isPresent() && !project.getActualDevice(device).get().getProperty().isEmpty()) {
+                for (Property p : project.getActualDevice(device).get().getProperty()) {
+                    Object value = project.getPropertyValue(device, p);
                     // TODO: allow property to be optional
                     if (value == null) {
                         return false;
@@ -102,7 +103,7 @@ class Utility {
     }
 
     static Set<ProjectDevice> getUsedDevicesWithTask(Project project) {
-        return project.getScene().stream()
+        return project.getUnmodifiableScene().stream()
                 .flatMap(scene -> scene.getSetting().stream())
                 .filter(UserSetting::isDataBindingUsed)
                 .map(UserSetting::getDevice)

@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.actual;
+package io.makerplayground.generator.devicemapping;
 
-import lombok.Data;
-
-import java.util.List;
-
-@Data
-public class Port {
-    private final String name;
-    private final PortConnectionType type;
-    private final List<Pin> elements;
+public enum DevicePinPortConnectionResultStatus {
+    OK, ERROR
 }

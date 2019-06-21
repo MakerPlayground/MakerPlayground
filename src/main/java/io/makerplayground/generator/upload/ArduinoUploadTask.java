@@ -19,8 +19,6 @@ package io.makerplayground.generator.upload;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.generator.devicemapping.DeviceMapperResult;
-import io.makerplayground.generator.devicemapping.DeviceMapper;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -59,11 +57,12 @@ public class ArduinoUploadTask extends UploadTask {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
-        if (mappingResult != DeviceMapperResult.OK) {
-            updateMessage(mappingResult.getErrorMessage());
-            return UploadResult.DEVICE_OR_PORT_MISSING;
-        }
+        /* TODO: uncomment this */
+//        DeviceMapperResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(project);
+//        if (mappingResult != DeviceMapperResult.OK) {
+//            updateMessage(mappingResult.getErrorMessage());
+//            return UploadResult.DEVICE_OR_PORT_MISSING;
+//        }
 
         SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
@@ -96,8 +95,9 @@ public class ArduinoUploadTask extends UploadTask {
         updateMessage("Preparing to generate project");
 
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .filter(ProjectDevice::isActualDeviceSelected)
-                .map(ProjectDevice::getActualDevice)
+                .filter(project::isActualDeviceSelected)
+                .map(project::getActualDevice)
+                .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
@@ -106,13 +106,13 @@ public class ArduinoUploadTask extends UploadTask {
         }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getMpLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
         mpLibraries.add("MP_DEVICE");
 
         Set<String> externalLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getExternalLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getExternalLibrary(project.getSelectedPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries
@@ -121,14 +121,14 @@ public class ArduinoUploadTask extends UploadTask {
             mpLibraries.add(cloudPlatform.getLibName());
 
             // add controller-specific library when using cloudPlatform.
-            mpLibraries.add(project.getController().getCloudPlatformLibraryName(cloudPlatform));
+            mpLibraries.add(project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform));
 
             // add controller-specific external dependency when using cloudPlatform.
-            externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
+            externalLibraries.addAll(project.getSelectedController().getCloudPlatformLibraryDependency(cloudPlatform));
         }
 
         // SPECIAL CASE: apply fixed for atmega328pb used in MakerPlayground Baseboard
-        if (project.getController().getPioBoardId().equals("atmega328pb")) {
+        if (project.getSelectedController().getPioBoardId().equals("atmega328pb")) {
             externalLibraries.add("Wire");
             externalLibraries.add("SPI");
         }
@@ -152,7 +152,7 @@ public class ArduinoUploadTask extends UploadTask {
             return UploadResult.CANT_CREATE_PROJECT;
         }
         UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
-                , List.of("init", "--board", project.getController().getPioBoardId())
+                , List.of("init", "--board", project.getSelectedController().getPioBoardId())
                 , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
         if (result != UploadResult.OK) {
             return result;
@@ -183,7 +183,7 @@ public class ArduinoUploadTask extends UploadTask {
 
         // copy mp library
         for (String libName: mpLibraries) {
-            File source = Paths.get(libraryPath.get(), "lib", project.getPlatform().getLibFolderName(), libName).toFile();
+            File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
             File destination = Paths.get(projectPath, "lib", libName).toFile();
             try {
                 FileUtils.copyDirectory(source, destination);

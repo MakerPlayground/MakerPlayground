@@ -189,7 +189,7 @@ public class Toolbar extends AnchorPane {
 
         // we MUST deep copy the project because user can modified the project in the UI thread while the upload thread
         // access the project
-        switch (project.get().getPlatform()) {
+        switch (project.get().getSelectedPlatform()) {
             case ARDUINO_AVR8:
             case ARDUINO_ESP32:
             case ARDUINO_ESP8266:

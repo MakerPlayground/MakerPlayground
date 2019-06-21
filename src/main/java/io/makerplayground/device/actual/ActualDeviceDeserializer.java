@@ -107,6 +107,13 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
+        if (pinProvide.isEmpty()) { pinProvide = null; }
+        if (pinConsume.isEmpty()) { pinConsume = null; }
+        if (pinUnused.isEmpty()) { pinUnused = null; }
+        if (portProvide.isEmpty()) { portProvide = null; }
+        if (portConsume.isEmpty()) { portConsume = null; }
+        if (property.isEmpty()) { property = null; }
+
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
 
@@ -159,6 +166,13 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             List<Port> inPortProvide = loadPort(inNode.get("portProvide"), pinProvide);
             List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
+
+            if (inPinProvide.isEmpty()) { inPinProvide = null; }
+            if (inPinConsume.isEmpty()) { inPinConsume = null; }
+            if (inPinUnused.isEmpty()) { inPinUnused = null; }
+            if (inPortProvide.isEmpty()) { inPortProvide = null; }
+            if (inPortConsume.isEmpty()) { inPortConsume = null; }
+            if (inProperty.isEmpty()) { inProperty = null; }
 
             /* Compatibility */
             Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
@@ -369,9 +383,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         ObjectMapper mapper = new ObjectMapper();
         List<Port> portList = new ArrayList<>();
         for (JsonNode portNode: portsNode) {
+            throwIfMissingField(portNode, "name", id, "port");
             throwIfMissingField(portNode, "type", id, "port");
             throwIfMissingField(portNode, "elements", id, "port");
             throwIfFieldIsNotArray(portNode, "elements", id, "port");
+
+            String portName = portNode.get("name").asText();
 
             PortConnectionType portConnectionType = PortConnectionType.valueOf(portNode.get("type").asText());
             List<Pin> portElements = new ArrayList<>();
@@ -382,7 +399,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     portElements.add(pin);
                 }
             }
-            portList.add(new Port(portConnectionType, portElements));
+            portList.add(new Port(portName, portConnectionType, portElements));
         }
         return portList;
     }

@@ -139,7 +139,7 @@ public class Scene extends NodeElement {
         this.name.set(name);
         invalidate();
         // invalidate other scene as every scene needs to check for duplicate name
-        for (Scene s : project.getScene()) {
+        for (Scene s : project.getUnmodifiableScene()) {
             s.invalidate();
         }
     }
@@ -184,7 +184,7 @@ public class Scene extends NodeElement {
         }
 
         // name should be unique
-        for (Scene s : project.getScene()) {
+        for (Scene s : project.getUnmodifiableScene()) {
             if ((this != s) && name.get().equals(s.name.get())) {
                 return DiagramError.SCENE_DUPLICATE_NAME;
             }
