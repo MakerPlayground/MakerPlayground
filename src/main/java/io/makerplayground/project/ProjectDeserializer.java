@@ -23,10 +23,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.generator.devicemapping.ProjectConfiguration;
+import io.makerplayground.generator.devicemapping.ProjectConfigurationDeserializer;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
@@ -149,6 +152,11 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             }
             project.addLine(source, dest);
         }
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(ProjectConfiguration.class, new ProjectConfigurationDeserializer(project));
+        mapper.registerModule(module);
+        project.setConfiguration(jsonParser.readValueAs(ProjectConfiguration.class));
 
         return project;
     }
@@ -407,7 +415,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
     }
 
-    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, Project project, ActualDevice controller) {
+    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) throws IOException {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
 
@@ -442,18 +450,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             throw new IllegalStateException("Can't deserialize actual device");
         }
 
-        /* TODO: uncomment this */
-//        Map<Peripheral, List<DevicePort>> actualDeviceConnection = new HashMap<>();
-//        for  (JsonNode connection : node.get("actualDeviceConnection")) {
-//            Peripheral source = Peripheral.valueOf(connection.get("devicePeripheral").asText());
-//            //Peripheral dest = Peripheral.valueOf(connection.get("controllerPeripheral").asText());
-//            List<DevicePort> port = new ArrayList<>();
-//            for (JsonNode controllerPeripheral : connection.get("controllerPeripheral")) {
-//                String portName = controllerPeripheral.asText();
-//                port.add(controller.getPort(portName));
-//            }
-//            actualDeviceConnection.put(source, port);
-//        }
+        ProjectConfiguration configuration = mapper.readValue(node.get("config").traverse(), new TypeReference<ProjectConfiguration>() {});
 
         String dependentDeviceId = node.get("actualDevice").asText();
         ActualDevice dependentDevice = null;

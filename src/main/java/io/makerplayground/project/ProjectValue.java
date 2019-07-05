@@ -18,50 +18,11 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Value;
+import lombok.Data;
 
-import java.util.Objects;
-
+@Data
 @JsonSerialize(using = ProjectValueSerializer.class)
 public class ProjectValue {
     private final ProjectDevice device;
     private final Value value;
-
-    public ProjectValue(ProjectDevice device, Value value) {
-        this.device = device;
-        this.value = value;
-    }
-
-    public ProjectDevice getDevice() {
-        return device;
-    }
-
-    public Value getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "ProjectValue{" +
-                "device=" + device.getName() +
-                ", value=" + value +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProjectValue that = (ProjectValue) o;
-
-        if (!Objects.equals(device, that.device)) return false;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = device != null ? device.hashCode() : 0;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
-    }
 }

@@ -20,10 +20,19 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import io.makerplayground.project.Project;
 
 import java.io.IOException;
 
 public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectConfiguration> {
+
+    private final Project project;
+
+    public ProjectConfigurationDeserializer(Project project) {
+        super();
+        this.project = project;
+    }
+
     @Override
     public ProjectConfiguration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         throw new UnsupportedOperationException("Not implemented yet");

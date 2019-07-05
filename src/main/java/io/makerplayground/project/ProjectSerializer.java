@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.version.ProjectVersionControl;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeEndArray();
 
         jsonGenerator.writeArrayFieldStart("device");
-        for(ProjectDevice device : project.getUnmodifiableDevice()) {
+        for(ProjectDevice device : project.getUnmodifiableProjectDevice()) {
             mapper.writeValue(jsonGenerator, device);
         }
         jsonGenerator.writeEndArray();
@@ -119,6 +120,8 @@ public class ProjectSerializer extends StdSerializer<Project> {
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeObjectField("config", project.getProjectConfiguration());
 
         jsonGenerator.writeEndObject();
     }

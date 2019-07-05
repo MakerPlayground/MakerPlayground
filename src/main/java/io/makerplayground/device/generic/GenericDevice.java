@@ -16,6 +16,7 @@
 
 package io.makerplayground.device.generic;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.makerplayground.device.GenericDeviceType;
@@ -31,6 +32,7 @@ import java.util.Optional;
 public class GenericDevice {
     private final String name;
     private final String description;
+    @JacksonInject
     private final GenericDeviceType type;
     private final List<Action> action;
     private final List<Condition> condition;

@@ -35,6 +35,7 @@ public class ProjectConfigurationLogic {
                 .actionCompatibility(new HashMap<>())
                 .conditionCompatibility(new HashMap<>())
                 .devicePinPortConnections(new TreeSet<>())
+                .devicePropertyValueMap(new HashMap<>())
                 .cloudPlatformParameterMap(new TreeMap<>())
                 .build();
     }
@@ -49,6 +50,7 @@ public class ProjectConfigurationLogic {
                     .actionCompatibility(new HashMap<>())
                     .conditionCompatibility(new HashMap<>())
                     .devicePinPortConnections(new TreeSet<>())
+                    .devicePropertyValueMap(new HashMap<>())
                     .cloudPlatformParameterMap(configuration.getCloudParameterMap())
                     .build();
         } else {
@@ -73,6 +75,7 @@ public class ProjectConfigurationLogic {
                 .actionCompatibility(conf.getActionCompatibility())
                 .conditionCompatibility(conf.getConditionCompatibility())
                 .devicePinPortConnections(conf.getDevicePinPortConnections())
+                .devicePropertyValueMap(conf.getDevicePropertyValueMap())
                 .cloudPlatformParameterMap(parameter)
                 .build();
     }
@@ -89,6 +92,7 @@ public class ProjectConfigurationLogic {
                 .actionCompatibility(new HashMap<>())
                 .conditionCompatibility(new HashMap<>())
                 .devicePinPortConnections(new TreeSet<>())
+                .devicePropertyValueMap(new HashMap<>())
                 .cloudPlatformParameterMap(conf.getCloudParameterMap())
                 .build();
     }
@@ -96,13 +100,13 @@ public class ProjectConfigurationLogic {
 //    private static Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> getConstraintMap(Project project) {
 //        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
 //
-//        for (ProjectDevice projectDevice : project.getUnmodifiableDevice()) {
+//        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
 //            tempMap.put(projectDevice, new HashMap<>());
 //        }
 //
 //        for (Scene s : project.getUnmodifiableScene()) {
 //            for (UserSetting u : s.getSetting()) {
-//                ProjectDevice projectDevice = u.getUnmodifiableDevice();
+//                ProjectDevice projectDevice = u.getUnmodifiableProjectDevice();
 //                Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
 //                for (Parameter parameter : u.getValueMap().keySet()) {
 //                    Action action = u.getAction();
@@ -179,7 +183,7 @@ public class ProjectConfigurationLogic {
 //
 //        // Get the list of compatible device
 //        Map<ProjectDevice, List<ActualDevice>> selectableDevice = new HashMap<>();
-//        for (ProjectDevice device : project.getUnmodifiableDevice()) {
+//        for (ProjectDevice device : project.getUnmodifiableProjectDevice()) {
 //            selectableDevice.put(device, new ArrayList<>());
 //        }
 //
@@ -211,21 +215,21 @@ public class ProjectConfigurationLogic {
 //        // are selected to share device with temperature1. map will contain mapping for from temperature1 (project device) to list of
 //        // humidity (generic device) and altimeter (generic device)
 //        Map<ProjectDevice, List<GenericDevice>> mergedDeviceMap = new HashMap<>();
-//        for (ProjectDevice device : project.getUnmodifiableDevice()) {
+//        for (ProjectDevice device : project.getUnmodifiableProjectDevice()) {
 //            mergedDeviceMap.put(device, new ArrayList<>());
 //        }
-//        for (ProjectDevice device : project.getUnmodifiableDevice()) {
+//        for (ProjectDevice device : project.getUnmodifiableProjectDevice()) {
 //            if (device.isMergeToOtherDevice()) {
 //                mergedDeviceMap.get(device.getParentDevice()).add(device.getGenericDevice());
 //            }
 //        }
 //
 //        Map<ProjectDevice, List<ProjectDevice>> result = new HashMap<>();
-//        for (ProjectDevice device : project.getUnmodifiableDevice()) {
+//        for (ProjectDevice device : project.getUnmodifiableProjectDevice()) {
 //            result.put(device, new ArrayList<>());
 //        }
 //        if (project.getSelectedController() != null) {
-//            for (ProjectDevice projectDevice : project.getUnmodifiableDevice()) {
+//            for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
 //                for (ProjectDevice parentDevice : tempMap.keySet()) {
 //                    if (projectDevice == parentDevice   // prevent sharing with ourselves
 //                            || !parentDevice.isActualDeviceSelected()   // skip if the actual device hasn't been selected or if this device shares an actual device with other device

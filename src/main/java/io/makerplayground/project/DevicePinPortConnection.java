@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.Port;
@@ -23,6 +24,7 @@ import lombok.*;
 
 import java.util.*;
 
+@JsonSerialize(using = DevicePinPortConnectionSerializer.class)
 @Data
 public class DevicePinPortConnection implements Comparable<DevicePinPortConnection> {
     private final ActualDevice from;
@@ -50,13 +52,13 @@ public class DevicePinPortConnection implements Comparable<DevicePinPortConnecti
                 pinPortNameTo.add(pinMapFromTo.get(pin).getName());
             }
         }
-        if (Objects.nonNull(getPortMapFromTo())) {
+        if (Objects.nonNull(portMapFromTo)) {
             for(Port port : portMapFromTo.keySet()) {
                 pinPortNameFrom.add(port.getName());
                 pinPortNameTo.add(portMapFromTo.get(port).getName());
             }
         }
-        return from.getModel() + "-"+ from.getModel() + "(" + String.join(",", pinPortNameFrom) + ") -> "+ to.getBrand() + "-" + to.getModel() + "(" + String.join(", ", pinPortNameTo);
+        return from.getBrand() + "-"+ from.getModel() + "(" + String.join(",", pinPortNameFrom) + ") -> "+ to.getBrand() + "-" + to.getModel() + "(" + String.join(", ", pinPortNameTo);
     }
 
     @Override

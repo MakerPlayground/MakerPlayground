@@ -19,12 +19,154 @@ package io.makerplayground.generator.devicemapping;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.project.DevicePinPortConnection;
+import io.makerplayground.project.ProjectDevice;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfiguration> {
     @Override
-    public void serialize(ProjectConfiguration value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public void serialize(ProjectConfiguration configuration, JsonGenerator jsonGenerator, SerializerProvider serializers) throws IOException {
+
+        jsonGenerator.writeStartObject();
+        /* platform */
+        jsonGenerator.writeObjectField("platform", configuration.getPlatform());
+
+        /* controller */
+        if (configuration.getController() != null) {
+            jsonGenerator.writeObjectField("controller", configuration.getController().getId());
+        }
+
+        /* actionCompatibility */
+        var projectDeviceActionCompatibility = configuration.getActionCompatibility();
+        jsonGenerator.writeArrayFieldStart("projectDeviceActionCompatibility");
+        for (ProjectDevice projectDevice: projectDeviceActionCompatibility.keySet()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+
+            var actionCompatibility = projectDeviceActionCompatibility.get(projectDevice);
+            jsonGenerator.writeArrayFieldStart("actionCompatibility");
+            for (Action action: actionCompatibility.keySet()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("action", action.getName());
+
+                var compatibility = actionCompatibility.get(action);
+                jsonGenerator.writeArrayFieldStart("compatibility");
+                for (Parameter parameter: compatibility.keySet()) {
+                    jsonGenerator.writeStringField("parameter", parameter.getName());
+                    jsonGenerator.writeObjectField("constraint", compatibility.get(parameter));
+                }
+                jsonGenerator.writeEndArray();
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* conditionCompatibility */
+        var projectDeviceConditionCompatibility = configuration.getConditionCompatibility();
+        jsonGenerator.writeArrayFieldStart("projectDeviceConditionCompatibility");
+        for (ProjectDevice projectDevice: projectDeviceConditionCompatibility.keySet()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+
+            var conditionCompatibility = projectDeviceConditionCompatibility.get(projectDevice);
+            jsonGenerator.writeArrayFieldStart("conditionCompatibility");
+            for (Condition condition: conditionCompatibility.keySet()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("condition", condition.getName());
+
+                var compatibility = conditionCompatibility.get(condition);
+                jsonGenerator.writeArrayFieldStart("compatibility");
+                for (Parameter parameter: compatibility.keySet()) {
+                    jsonGenerator.writeStringField("parameter", parameter.getName());
+                    jsonGenerator.writeObjectField("constraint", compatibility.get(parameter));
+                }
+                jsonGenerator.writeEndArray();
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* devicePropertyValueMap */
+        var devicePropertyValueMap = configuration.getDevicePropertyValueMap();
+        jsonGenerator.writeArrayFieldStart("devicePropertyValueMap");
+        for (ProjectDevice projectDevice: devicePropertyValueMap.keySet()) {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectdevice", projectDevice.getName());
+
+            jsonGenerator.writeArrayFieldStart("propertyValue");
+            var propertyValue = devicePropertyValueMap.get(projectDevice);
+            for (Property property: propertyValue.keySet()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("property", property.getName());
+                jsonGenerator.writeObjectField("value", propertyValue.get(property));
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* deviceMap */
+        var deviceMap = configuration.getDeviceMap();
+        jsonGenerator.writeArrayFieldStart("deviceMap");
+        for (ProjectDevice projectDevice : deviceMap.keySet()) {
+            ActualDevice actualDevice = deviceMap.get(projectDevice);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+            jsonGenerator.writeStringField("actualDevice", actualDevice != null ? actualDevice.getId() : "");
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* sameDeviceMap */
+        var sameDeviceMap = configuration.getSameDeviceMap();
+        jsonGenerator.writeArrayFieldStart("sameDeviceMap");
+        for (ProjectDevice projectDevice : sameDeviceMap.keySet()) {
+            ProjectDevice sameDevice = sameDeviceMap.get(projectDevice);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+            jsonGenerator.writeStringField("sameDevice", sameDevice.getName());
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* devicePinPortConnections */
+        jsonGenerator.writeArrayFieldStart("devicePinPortConnection");
+        for (DevicePinPortConnection devicePinPortConnection : configuration.getDevicePinPortConnections()) {
+            jsonGenerator.writeObject(devicePinPortConnection);
+        }
+        jsonGenerator.writeEndArray();
+
+        /* cloudParameterMap */
+        var cloudParameterMap = configuration.getCloudParameterMap();
+        jsonGenerator.writeArrayFieldStart("cloudParameterMap");
+        for (CloudPlatform cloudPlatform : cloudParameterMap.keySet()) {
+            Map<String, String> parameterMap = cloudParameterMap.get(cloudPlatform);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("cloudplatform", cloudPlatform);
+            jsonGenerator.writeArrayFieldStart("parameterMap");
+            for (String parameter: parameterMap.keySet()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("parameter", parameter);
+                jsonGenerator.writeStringField("value", parameterMap.get(parameter));
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+        jsonGenerator.writeEndObject();
     }
 }

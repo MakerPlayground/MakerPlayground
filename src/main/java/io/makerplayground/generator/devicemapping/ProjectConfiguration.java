@@ -31,6 +31,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,15 +60,15 @@ public final class ProjectConfiguration {
     @Getter private final Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> actualDevicesSelectableMap;
 
     @Builder(access = AccessLevel.PACKAGE)
-    public ProjectConfiguration(Platform platform,
+    public ProjectConfiguration(@NonNull Platform platform,
                                 ActualDevice controller,
-                                Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
-                                Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility,
-                                Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
-                                SortedMap<ProjectDevice, ActualDevice> deviceMap,
-                                SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap,
-                                SortedSet<DevicePinPortConnection> devicePinPortConnections,
-                                SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
+                                @NonNull Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
+                                @NonNull Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility,
+                                @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
+                                @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
+                                @NonNull SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap,
+                                @NonNull SortedSet<DevicePinPortConnection> devicePinPortConnections,
+                                @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
         this.platform = new ReadOnlyObjectWrapper<>(platform);
         this.controller = new ReadOnlyObjectWrapper<>(controller);
         this.actionCompatibility = actionCompatibility;

@@ -43,42 +43,6 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
         jsonGenerator.writeStringField("name", projectDevice.getName());
         jsonGenerator.writeStringField("genericDevice", projectDevice.getGenericDevice().getName());
 
-        jsonGenerator.writeObjectFieldStart("actualDevice");
-        /* TODO: uncomment this */
-//        if (projectDevice.isMergeToOtherDevice()) {
-//            jsonGenerator.writeStringField("type", "share");
-//            jsonGenerator.writeStringField("parent", projectDevice.getParentDevice().getName());
-//        } else if (projectDevice.isActualDeviceSelected()) {
-//            if (projectDevice.getCompatibleDevice() instanceof IntegratedActualDevice) {
-//                IntegratedActualDevice device = (IntegratedActualDevice) projectDevice.getCompatibleDevice();
-////                String id = device.getParent().getId() + "#" + device.getName();
-////                jsonGenerator.writeStringField("actualDevice", id);
-//                jsonGenerator.writeStringField("type", "integrated");
-//                jsonGenerator.writeStringField("id", device.getParent().getId());
-//                jsonGenerator.writeStringField("name", device.getModel());
-//            } else {
-////                jsonGenerator.writeStringField("actualDevice", projectDevice.getCompatibleDevice().getId());
-//                jsonGenerator.writeStringField("type", "single");
-//                jsonGenerator.writeStringField("id", projectDevice.getCompatibleDevice().getId());
-//            }
-//        }
-        jsonGenerator.writeEndObject();
-
-        jsonGenerator.writeArrayFieldStart("actualDeviceConnection");
-        /* TODO: uncomment this */
-//        for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDeviceConnection().entrySet()) {
-//            jsonGenerator.writeStartObject();
-//            jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
-//            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getDeviceId());
-//            jsonGenerator.writeArrayFieldStart("controllerPeripheral");
-//            for (DevicePort devicePort : connection.getValue()) {
-//                mapper.writeValue(jsonGenerator, devicePort.getName());
-//            }
-//            jsonGenerator.writeEndArray();
-//            jsonGenerator.writeEndObject();
-//        }
-        jsonGenerator.writeEndArray();
-
         /* TODO: uncomment this */
 //        if (projectDevice.getDependentDevice() != null) {
 //            jsonGenerator.writeStringField("dependentDevice", projectDevice.getDependentDevice().getId());
@@ -98,9 +62,9 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //            jsonGenerator.writeEndArray();
 //            jsonGenerator.writeEndObject();
 //        }
-        jsonGenerator.writeEndArray();
+//        jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("property");
+//        jsonGenerator.writeArrayFieldStart("property");
         /* TODO: uncomment this */
 //        if (projectDevice.isActualDeviceSelected()) {
 //            for (Property property : projectDevice.getCompatibleDevice().getProperty()) {
@@ -156,7 +120,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //                jsonGenerator.writeEndObject();
 //            }
 //        }
-        jsonGenerator.writeEndArray();
+//        jsonGenerator.writeEndArray();
 
         jsonGenerator.writeEndObject();
     }

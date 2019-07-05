@@ -67,7 +67,7 @@ public class Project {
     @Getter private final FilteredList<ProjectDevice> deviceWithAction;
     @Getter private final FilteredList<ProjectDevice> deviceWithCondition;
 
-    @Getter private final ObservableList<ProjectDevice> unmodifiableDevice;
+    @Getter private final ObservableList<ProjectDevice> unmodifiableProjectDevice;
     @Getter private final ObservableList<Scene> unmodifiableScene;
     @Getter private final ObservableList<Condition> unmodifiableCondition;
     @Getter private final ObservableList<Line> unmodifiableLine;
@@ -83,7 +83,7 @@ public class Project {
         projectName = new SimpleStringProperty("Untitled Project");
 
         device = FXCollections.observableArrayList();
-        unmodifiableDevice = FXCollections.unmodifiableObservableList(device);
+        unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(device);
         actuatorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
         sensorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
         utilityDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
@@ -97,7 +97,6 @@ public class Project {
         line = FXCollections.observableArrayList();
         begins = FXCollections.observableArrayList();
 
-//        parameter = new EnumMap<>(CloudPlatform.class);
         filePath = new SimpleStringProperty("");
 
         unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
@@ -132,7 +131,7 @@ public class Project {
     private int getNextId(GenericDevice device) {
         String varName = getDeviceVarName(device);
         Pattern p = Pattern.compile(varName+"\\d+");
-        return getUnmodifiableDevice().stream()
+        return getUnmodifiableProjectDevice().stream()
                 .filter(projectDevice -> p.matcher(projectDevice.getName()).matches())
                 .mapToInt(value -> Integer.parseInt(value.getName().substring(varName.length())))
                 .max()
@@ -369,7 +368,7 @@ public class Project {
     }
 
     public Set<ProjectDevice> getAllDeviceUnused() {
-        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getUnmodifiableDevice());
+        Set<ProjectDevice> devicesNotUsed = new HashSet<>(this.getUnmodifiableProjectDevice());
         devicesNotUsed.removeAll(this.getAllDeviceUsed());
         return devicesNotUsed;
     }
@@ -476,7 +475,7 @@ public class Project {
     }
 
     public boolean isNameDuplicate(String newName) {
-        for (ProjectDevice projectDevice : this.getUnmodifiableDevice()) {
+        for (ProjectDevice projectDevice : this.getUnmodifiableProjectDevice()) {
             if (projectDevice.getName().equals(newName)) {
                 return true;
             }
@@ -617,5 +616,9 @@ public class Project {
 
     public Optional<ProjectDevice> getParentDevice(ProjectDevice projectDevice) {
         return this.getProjectConfiguration().getParentDevice(projectDevice);
+    }
+
+    void setConfiguration(ProjectConfiguration readValueAs) {
+
     }
 }

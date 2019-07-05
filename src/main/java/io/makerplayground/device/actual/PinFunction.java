@@ -17,7 +17,7 @@
 package io.makerplayground.device.actual;
 
 public enum PinFunction {
-    VCC, GND, SCL, SDA, DIGITAL_IN, DIGITAL_OUT, ANALOG_IN, ANALOG_OUT, PWM, INTERRUPT, HW_SERIAL_IN, HW_SERIAL_OUT, SW_SERIAL_IN, SW_SERIAL_OUT, NO_FUNCTION;
+    VCC, GND, SCL, SDA, DIGITAL_IN, DIGITAL_OUT, ANALOG_IN, ANALOG_OUT, PWM, INTERRUPT, HW_SERIAL_IN, HW_SERIAL_OUT, SW_SERIAL_IN, SW_SERIAL_OUT, MOSI, MISO, SCK, AREF, NO_FUNCTION;
 
     public boolean isMultipleUsed() {
         switch (this) {
