@@ -17,9 +17,9 @@
 <?import javafx.scene.text.Text?>
 
 <fx:root type="VBox" spacing="5" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="250" minHeight="27.0" minWidth="250" prefHeight="27.0" prefWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" vbarPolicy="NEVER">
+    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="75" minHeight="27.0" minWidth="75" prefHeight="27.0" prefWidth="75" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" vbarPolicy="NEVER">
         <content>
-            <HBox fx:id="mainPane" maxHeight="25">
+            <HBox fx:id="mainPane" maxHeight="25" alignment="CENTER_LEFT">
                 <children>
                     <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
                         <HBox.margin>

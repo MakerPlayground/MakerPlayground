@@ -24,6 +24,7 @@ import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -153,13 +154,14 @@ public class SceneDevicePropertyWindow extends PopOver {
 
             Node control = null;
             if (p.getControlType() == ControlType.SLIDER) {
+                // TODO: this can't ever be null isn't it?
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
+                MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(
                         p,
                         viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
-                        viewModel.getParameterValue(p)
+                        CustomNumberExpression.of(viewModel.getParameterValue(p))
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
@@ -175,13 +177,14 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
+                // TODO: this can't ever be null isn't it?
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
+                MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(
                         p,
                         viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
-                        viewModel.getParameterValue(p)
+                        CustomNumberExpression.of(viewModel.getParameterValue(p))
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;

@@ -82,9 +82,9 @@ public abstract class Expression {
     public static Expression fromDefaultParameter(Parameter param) {
         switch (param.getDataType()) {
             case DOUBLE:
-                return new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue());
+                return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case INTEGER:
-                return new NumberWithUnitExpression((NumberWithUnit) param.getDefaultValue());
+                return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case STRING:
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case ENUM:

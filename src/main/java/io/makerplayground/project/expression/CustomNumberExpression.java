@@ -16,15 +16,24 @@
 
 package io.makerplayground.project.expression;
 
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.term.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CustomNumberExpression extends Expression {
 
+    public static final CustomNumberExpression INVALID = new CustomNumberExpression(Collections.emptyList());
+
     public CustomNumberExpression() {
         super(Type.CUSTOM_NUMBER);
+    }
+
+    public CustomNumberExpression(NumberWithUnit d) {
+        super(Type.CUSTOM_NUMBER);
+        this.terms.add(new NumberWithUnitTerm(d));
     }
 
     public CustomNumberExpression(List<Term> terms) {
@@ -34,6 +43,16 @@ public class CustomNumberExpression extends Expression {
 
     CustomNumberExpression(CustomNumberExpression e) {
         super(e);
+    }
+
+    public static CustomNumberExpression of(Expression e) {
+        if (e instanceof CustomNumberExpression) {
+            return (CustomNumberExpression) e;
+        } else if (e instanceof NumberWithUnitExpression || e instanceof ProjectValueExpression || e instanceof ValueLinkingExpression) {
+            return new CustomNumberExpression(e.getTerms());
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public CustomNumberExpression addTerm(int index, Term t) {
