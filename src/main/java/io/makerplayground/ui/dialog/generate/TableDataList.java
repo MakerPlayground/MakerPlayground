@@ -42,13 +42,13 @@ public class TableDataList {
 //        }
 //
 //        this.name = projectDevice.getName();
-//        this.brand = actualDevice.getCompatibleDevice().getBrand();
-//        this.model = actualDevice.getCompatibleDevice().getModel();
-//        this.id = actualDevice.getCompatibleDevice().getId();
+//        this.brand = actualDevice.getCompatibleDeviceComboItem().getBrand();
+//        this.model = actualDevice.getCompatibleDeviceComboItem().getModel();
+//        this.id = actualDevice.getCompatibleDeviceComboItem().getId();
 //        List<String> list = new ArrayList<>();
 //
 //        /* TODO: uncomment this */
-////        for (Peripheral p : actualDevice.getCompatibleDevice().getConnectivity()) {
+////        for (Peripheral p : actualDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 ////            if (p.getConnectionType() != ConnectionType.I2C) {
 ////                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
 ////                if (port == null) {
@@ -64,7 +64,7 @@ public class TableDataList {
 ////            }
 ////        }
 //        this.pin = String.join(",", list);
-//        this.url = actualDevice.getCompatibleDevice().getUrl();
+//        this.url = actualDevice.getCompatibleDeviceComboItem().getUrl();
 //    }
 
     public Hyperlink getHyperLink() {

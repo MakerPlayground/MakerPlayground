@@ -16,47 +16,22 @@
 
 package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.project.DevicePinPortConnection;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.expression.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
 
 public class ProjectConfigurationLogic {
-
-    public static ProjectConfiguration newConfiguration() {
-        return ProjectConfiguration.builder()
-                .platform(Platform.ARDUINO_AVR8)
-                .controller(null)
-                .deviceMap(new TreeMap<>())
-                .sameDeviceMap(new TreeMap<>())
-                .actionCompatibility(new HashMap<>())
-                .conditionCompatibility(new HashMap<>())
-                .devicePinPortConnections(new TreeSet<>())
-                .devicePropertyValueMap(new HashMap<>())
-                .cloudPlatformParameterMap(new TreeMap<>())
-                .build();
-    }
-
-    public static ProjectConfiguration changePlatform(ProjectConfiguration configuration, Platform platform) {
-        if (configuration.getPlatform() != platform) {
-            return ProjectConfiguration.builder()
-                    .platform(platform)
-                    .controller(null)
-                    .deviceMap(new TreeMap<>())
-                    .sameDeviceMap(new TreeMap<>())
-                    .actionCompatibility(new HashMap<>())
-                    .conditionCompatibility(new HashMap<>())
-                    .devicePinPortConnections(new TreeSet<>())
-                    .devicePropertyValueMap(new HashMap<>())
-                    .cloudPlatformParameterMap(configuration.getCloudParameterMap())
-                    .build();
-        } else {
-            return configuration;
-        }
-    }
 
     public static ProjectConfiguration changeCloudPlatformParameter(ProjectConfiguration conf, CloudPlatform cloudPlatform, String parameterName, String value) {
         var parameter = new TreeMap<>(conf.getUnmodifiableCloudParameterMap());
@@ -70,97 +45,59 @@ public class ProjectConfigurationLogic {
         return ProjectConfiguration.builder()
                 .platform(conf.getPlatform())
                 .controller(conf.getController())
-                .deviceMap(conf.getDeviceMap())
-                .sameDeviceMap(conf.getSameDeviceMap())
-                .actionCompatibility(conf.getActionCompatibility())
-                .conditionCompatibility(conf.getConditionCompatibility())
-                .devicePinPortConnections(conf.getDevicePinPortConnections())
-                .devicePropertyValueMap(conf.getDevicePropertyValueMap())
+                .deviceMap(conf.getUnmodifiableDeviceMap())
+                .sameDeviceMap(conf.getUnmodifiableSameDeviceMap())
+                .devicePinPortConnections(conf.getUnmodifiableDevicePinPortConnections())
+                .devicePropertyValueMap(conf.getUnmodifiableDevicePropertyValueMap())
                 .cloudPlatformParameterMap(parameter)
                 .build();
     }
 
-    public static ProjectConfiguration changeController(ProjectConfiguration conf, ActualDevice controller) {
-        SortedMap<ProjectDevice, ActualDevice> deviceMap = new TreeMap<>();
-        SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap = new TreeMap<>();
-        SortedSet<DevicePinPortConnection> devicePinPortConnection = new TreeSet<>();
-        return ProjectConfiguration.builder()
-                .platform(conf.getPlatform())
-                .controller(controller)
-                .deviceMap(new TreeMap<>())
-                .sameDeviceMap(new TreeMap<>())
-                .actionCompatibility(new HashMap<>())
-                .conditionCompatibility(new HashMap<>())
-                .devicePinPortConnections(new TreeSet<>())
-                .devicePropertyValueMap(new HashMap<>())
-                .cloudPlatformParameterMap(conf.getCloudParameterMap())
-                .build();
+    public static Constraint extractConstraint(Parameter parameter, Expression expression) {
+        Constraint newConstraint = Constraint.NONE;
+        switch (parameter.getDataType()) {
+            case DOUBLE:
+            case INTEGER:
+                if (expression instanceof NumberWithUnitExpression) {
+                    NumberWithUnit n = ((NumberWithUnitExpression) expression).getNumberWithUnit();
+                    newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
+                } else if (expression instanceof CustomNumberExpression) {
+                    // TODO: should be calculated from the expression or use range of parameter value
+                } else if (expression instanceof ValueLinkingExpression) {
+                    ValueLinkingExpression exp = (ValueLinkingExpression) expression;
+                    newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
+                } else if (expression instanceof ProjectValueExpression) {
+                    ProjectValueExpression exp = (ProjectValueExpression) expression;
+                    if (exp.getProjectValue() != null) {
+                        newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
+                    }
+                } else {
+                    throw new IllegalStateException("Constraint is not defined for expression type: " + expression.getClass().getCanonicalName());
+                }
+                break;
+            case BOOLEAN_ENUM:
+            case INTEGER_ENUM:
+            case STRING:
+            case ENUM:
+                if (expression instanceof SimpleStringExpression) {
+                    newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) expression).getString());
+                }
+                break;
+
+            case DATETIME:
+            case RECORD:
+            case IMAGE:
+                newConstraint = Constraint.NONE;
+                break;
+
+            case AZURE_COGNITIVE_KEY:
+            case AZURE_IOTHUB_KEY:
+            default:
+                throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
+        }
+        return newConstraint;
     }
 
-//    private static Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> getConstraintMap(Project project) {
-//        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = new HashMap<>();
-//
-//        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-//            tempMap.put(projectDevice, new HashMap<>());
-//        }
-//
-//        for (Scene s : project.getUnmodifiableScene()) {
-//            for (UserSetting u : s.getSetting()) {
-//                ProjectDevice projectDevice = u.getUnmodifiableProjectDevice();
-//                Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
-//                for (Parameter parameter : u.getValueMap().keySet()) {
-//                    Action action = u.getAction();
-//                    Expression o = u.getValueMap().get(parameter);
-//
-//                    if (!compatibility.containsKey(action)) {
-//                        compatibility.put(action, new HashMap<>());
-//                    }
-//
-//                    Constraint newConstraint = Constraint.NONE;
-//                    if (parameter.getDataType() == DataType.INTEGER || parameter.getDataType() == DataType.DOUBLE) {
-//                        if (o instanceof NumberWithUnitExpression) {
-//                            NumberWithUnit n = ((NumberWithUnitExpression) o).getNumberWithUnit();
-//                            newConstraint = Constraint.createNumericConstraint(n.getValue(), n.getValue(), n.getUnit());
-//                        } else if (o instanceof CustomNumberExpression) {
-//                            // TODO: should be calculated from the expression or use range of parameter value
-//                        } else if (o instanceof ValueLinkingExpression) {
-//                            ValueLinkingExpression exp = (ValueLinkingExpression) o;
-//                            newConstraint = Constraint.createNumericConstraint(exp.getDestinationLowValue().getValue(), exp.getDestinationHighValue().getValue(), exp.getDestinationLowValue().getUnit());
-//                        } else if (o instanceof ProjectValueExpression) {
-//                            ProjectValueExpression exp = (ProjectValueExpression) o;
-//                            if (exp.getProjectValue() != null) {
-//                                newConstraint = ((NumericConstraint) parameter.getConstraint()).intersect(exp.getProjectValue().getValue().getConstraint(), Function.identity());
-//                            }
-//                        } else {
-//                            throw new IllegalStateException("Constraint is not defined for expression type: " + o.getClass().getCanonicalName());
-//                        }
-//                    } else if (parameter.getDataType() == DataType.STRING || parameter.getDataType() == DataType.ENUM) {
-//                        if (o instanceof SimpleStringExpression) {
-//                            newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) o).getString());
-//                        } else if (o instanceof ProjectValueExpression) {
-//                            newConstraint = Constraint.NONE;
-//                        }
-//                    } else if (parameter.getDataType() == DataType.DATETIME || parameter.getDataType() == DataType.RECORD
-//                            || parameter.getDataType() == DataType.IMAGE) {
-//                        newConstraint = Constraint.NONE;
-//                    } else {
-//                        throw new IllegalStateException("There isn't any method to calculate constraint from this parameter's data type");
-//                    }
-//
-//                    Map<Parameter, Constraint> parameterMap = compatibility.get(action);
-//                    if (parameterMap.containsKey(parameter)) {
-//                        Constraint oldConstraint = parameterMap.get(parameter);
-//                        parameterMap.replace(parameter, oldConstraint.union(newConstraint));
-//                    } else {
-//                        parameterMap.put(parameter, newConstraint);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return tempMap;
-//    }
-//
 //    public static Map<ProjectDevice, List<ActualDevice>> getSupportedDeviceList(Project project) {
 //        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> tempMap = getConstraintMap(project);
 //
@@ -175,7 +112,7 @@ public class ProjectConfigurationLogic {
 ////            }
 ////        }
 //
-//        List<ActualDevice> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getCompatibleDevice(project.getSelectedPlatform()));
+//        List<ActualDevice> actualDevice = new ArrayList<>(DeviceLibrary.INSTANCE.getActualDevice(project.getSelectedPlatform()));
 //        // append with integrated device of the current controller if existed
 //        if (project.getSelectedController() != null) {
 //            actualDevice.addAll(project.getSelectedController().getIntegratedDevices());
@@ -237,7 +174,7 @@ public class ProjectConfigurationLogic {
 //                            || mergedDeviceMap.get(parentDevice).contains(projectDevice.getGenericDevice())) {    // skip if this device has been selected by other device with the same generic type
 //                        continue;
 //                    }
-//                    ActualDevice d = parentDevice.getCompatibleDevice();
+//                    ActualDevice d = parentDevice.getCompatibleDeviceComboItem();
 //                    if (d.isSupport(project.getSelectedController(), projectDevice.getGenericDevice(), tempMap.get(projectDevice))) {
 //                        if (d.getCloudConsume() != null) {
 //                            // if this device uses a cloud platform and the controller has been selected, we accept this device
@@ -262,7 +199,7 @@ public class ProjectConfigurationLogic {
 //            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
 //                result.put(projectDevice, new HashMap<>());
 //                if (projectDevice.isActualDeviceSelected()) {
-//                    for (Peripheral peripheral : projectDevice.getCompatibleDevice().getConnectivity())
+//                    for (Peripheral peripheral : projectDevice.getCompatibleDeviceComboItem().getConnectivity())
 //                        result.get(projectDevice).put(peripheral, Collections.emptyList());
 //                }
 //            }
@@ -342,7 +279,7 @@ public class ProjectConfigurationLogic {
 //            }
 //
 //            // initialize result map
-//            for (Peripheral pDevice : projectDevice.getCompatibleDevice().getConnectivity()) {
+//            for (Peripheral pDevice : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //                possibleDevice.put(pDevice, new ArrayList<>());
 //            }
 //
@@ -355,7 +292,7 @@ public class ProjectConfigurationLogic {
 //                }
 //            }
 //
-//            for (Peripheral pDevice : projectDevice.getCompatibleDevice().getConnectivity()) {
+//            for (Peripheral pDevice : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //                if (pDevice.getConnectionType() == ConnectionType.NONE) {    // TODO: should be removed
 //                    possibleDevice.get(pDevice).add(Collections.emptyList());
 //                } else if (pDevice.getConnectionType() == ConnectionType.I2C) {    // I2C can be shared so we handle it separately
@@ -385,8 +322,8 @@ public class ProjectConfigurationLogic {
 //                        }
 //                    }
 //
-//                    boolean shield = projectDevice.getCompatibleDevice().getFormFactor() == FormFactor.SHIELD;
-//                    boolean integratedDevice = projectDevice.getCompatibleDevice() instanceof IntegratedActualDevice;
+//                    boolean shield = projectDevice.getCompatibleDeviceComboItem().getFormFactor() == FormFactor.SHIELD;
+//                    boolean integratedDevice = projectDevice.getCompatibleDeviceComboItem() instanceof IntegratedActualDevice;
 //                    if (integratedDevice || shield) {   // in case of an integrated device or shield, possible port is only the port with the same peripheral
 //                        List<DevicePort> mappedIntegratedPort = possiblePort.stream()
 //                                .filter(devicePort1 -> devicePort1.hasPeripheral(pDevice))
@@ -439,7 +376,7 @@ public class ProjectConfigurationLogic {
 //    }
 //
 //    public static List<ActualDevice> getSupportedController(Project project) {
-//        return DeviceLibrary.INSTANCE.getCompatibleDevice().stream()
+//        return DeviceLibrary.INSTANCE.getCompatibleDeviceComboItem().stream()
 //                .filter(device -> (device.getDeviceType() == DeviceType.CONTROLLER)
 //                        && device.getSupportedPlatform().contains(project.getSelectedPlatform()))
 //                // TODO: getCloudPlatformUsed() is based on an actual device selected which doesn't work in this case as the controller hasn't been selected yet
@@ -447,32 +384,32 @@ public class ProjectConfigurationLogic {
 //                .collect(Collectors.toUnmodifiableList());
 //    }
 //
-//    public static DeviceMapperResult validateDeviceAssignment(Project project) {
+    public static ProjectMappingResult validateDeviceAssignment(Project project) {
+        ProjectConfiguration configuration = project.getProjectConfiguration();
+        if (configuration.getController() == null) {
+            return ProjectMappingResult.NO_MCU_SELECTED;
+        }
+
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (!configuration.isActualDeviceSelected(projectDevice) && !configuration.isUsedSameDevice(projectDevice)) {
+                return ProjectMappingResult.NOT_SELECT_DEVICE;
+            }
+
+            // for each connectivity required, check if it has been connected and indicate error if it hasn't
+            if (configuration.isActualDeviceSelected(projectDevice)) {
+                ProjectDevice root = configuration.getParentDevice(projectDevice).orElse(projectDevice);
+                if (project.getProjectConfiguration().getUnmodifiableDevicePinPortConnections().stream().noneMatch(connection -> connection.getTo() == root)) {
+                    return ProjectMappingResult.NOT_SELECT_PORT;
+                }
+            }
+        }
+
+        return ProjectMappingResult.OK;
+    }
+//
+//    public static ProjectMappingResult autoAssignDevices(Project project) {
 //        if (project.getSelectedController() == null) {
-//            return DeviceMapperResult.NO_MCU_SELECTED;
-//        }
-//
-//        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-//            if (!projectDevice.isActualDeviceSelected() && !projectDevice.isMergeToOtherDevice()) {
-//                return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
-//            }
-//
-//            // for each connectivity required, check if it has been connected and indicate error if it hasn't
-//            if (projectDevice.isActualDeviceSelected()) {
-//                for (Peripheral devicePeripheral : projectDevice.getCompatibleDevice().getConnectivity()) {
-//                    if (devicePeripheral != Peripheral.NOT_CONNECTED && !projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
-//                        return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return DeviceMapperResult.OK;
-//    }
-//
-//    public static DeviceMapperResult autoAssignDevices(Project project) {
-//        if (project.getSelectedController() == null) {
-//            return DeviceMapperResult.NO_MCU_SELECTED;
+//            return ProjectMappingResult.NO_MCU_SELECTED;
 //        }
 //
 //        // reclaim ports from unused devices
@@ -483,7 +420,7 @@ public class ProjectConfigurationLogic {
 //        Map<ProjectDevice, List<ActualDevice>> supportedDeviceMap = getSupportedDeviceList(project);
 //        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
 //            if (supportedDeviceMap.get(projectDevice).isEmpty()) {
-//                return DeviceMapperResult.NO_SUPPORT_DEVICE;
+//                return ProjectMappingResult.NO_SUPPORT_DEVICE;
 //            }
 //
 //            boolean done = true;
@@ -504,14 +441,14 @@ public class ProjectConfigurationLogic {
 //                }
 //            }
 //            if (!done) {
-//                return DeviceMapperResult.CANT_ASSIGN_PORT;
+//                return ProjectMappingResult.CANT_ASSIGN_PORT;
 //            }
 //        }
-//        return DeviceMapperResult.OK;
+//        return ProjectMappingResult.OK;
 //    }
 //
 //    private static boolean assignPort(Project project, ProjectDevice projectDevice) {
-//        for (Peripheral devicePeripheral : projectDevice.getCompatibleDevice().getConnectivity()) {
+//        for (Peripheral devicePeripheral : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //            if (!projectDevice.getDeviceConnection().containsKey(devicePeripheral)) {
 //                List<List<DevicePort>> port = getDeviceCompatiblePort(project).get(projectDevice).get(devicePeripheral);
 //                if (port.isEmpty()) {
@@ -547,7 +484,7 @@ public class ProjectConfigurationLogic {
 //
 //    public ActualDeviceComboItem getControllerComboItem(ActualDevice controller) {
 //        return controllerComboItemList.stream()
-//                .filter(item -> item.getCompatibleDevice() == controller)
+//                .filter(item -> item.getCompatibleDeviceComboItem() == controller)
 //                .findFirst()
 //                .orElseThrow();
 //    }
@@ -555,7 +492,7 @@ public class ProjectConfigurationLogic {
 
 //    public ActualDeviceComboItem getSelectedControllerComboItem() {
 //        return controllerComboItemList.stream()
-//                .filter(actualDeviceComboItem -> actualDeviceComboItem.getCompatibleDevice() == project.getSelectedController())
+//                .filter(actualDeviceComboItem -> actualDeviceComboItem.getCompatibleDeviceComboItem() == project.getSelectedController())
 //                .findFirst()
 //                .orElseThrow();
 //    }

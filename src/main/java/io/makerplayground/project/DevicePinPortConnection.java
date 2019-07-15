@@ -17,7 +17,6 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.Port;
 import lombok.*;
@@ -27,14 +26,13 @@ import java.util.*;
 @JsonSerialize(using = DevicePinPortConnectionSerializer.class)
 @Data
 public class DevicePinPortConnection implements Comparable<DevicePinPortConnection> {
-    private final ActualDevice from;
-    private final ActualDevice to;
+    private final ProjectDevice from;
+    private final ProjectDevice to;
     private final Map<Pin, Pin> pinMapFromTo;
     private final Map<Port, Port> portMapFromTo;
-    @Getter(lazy = true) private final String description = generateDescription();
 
-    public DevicePinPortConnection(@NonNull ActualDevice from,
-                                   @NonNull ActualDevice to,
+    public DevicePinPortConnection(@NonNull ProjectDevice from,
+                                   @NonNull ProjectDevice to,
                                    Map<Pin, Pin> pinMapFromTo,
                                    Map<Port, Port> portMapFromTo) {
         this.from = from;
@@ -43,26 +41,38 @@ public class DevicePinPortConnection implements Comparable<DevicePinPortConnecti
         this.portMapFromTo = Objects.nonNull(portMapFromTo) ? Collections.unmodifiableMap(portMapFromTo) : null;
     }
 
-    private String generateDescription() {
-        List<String> pinPortNameFrom = new ArrayList<>();
-        List<String> pinPortNameTo = new ArrayList<>();
+    private static String getPortFromToString(Map<Pin, Pin> pinMapFromTo, Map<Port, Port> portMapFromTo) {
+        List<String> pinPortName = new ArrayList<>();
         if (Objects.nonNull(pinMapFromTo)) {
             for(Pin pin : pinMapFromTo.keySet()) {
-                pinPortNameFrom.add(pin.getName());
-                pinPortNameTo.add(pinMapFromTo.get(pin).getName());
+                pinPortName.add(pin.getName());
+                pinPortName.add(pinMapFromTo.get(pin).getName());
             }
         }
         if (Objects.nonNull(portMapFromTo)) {
             for(Port port : portMapFromTo.keySet()) {
-                pinPortNameFrom.add(port.getName());
-                pinPortNameTo.add(portMapFromTo.get(port).getName());
+                pinPortName.add(port.getName());
+                pinPortName.add(portMapFromTo.get(port).getName());
             }
         }
-        return from.getBrand() + "-"+ from.getModel() + "(" + String.join(",", pinPortNameFrom) + ") -> "+ to.getBrand() + "-" + to.getModel() + "(" + String.join(", ", pinPortNameTo);
+        return String.join(",", pinPortName);
     }
 
     @Override
     public int compareTo(DevicePinPortConnection o) {
-        return generateDescription().compareTo(o.generateDescription());
+        if (Objects.nonNull(from) && Objects.nonNull(o.from)) {
+            int result = from.compareTo(o.from);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (Objects.nonNull(to) && Objects.nonNull(o.to)) {
+            int result = to.compareTo(o.to);
+            if (result != 0) {
+                return result;
+            }
+        }
+
+        return getPortFromToString(pinMapFromTo, portMapFromTo).compareTo(getPortFromToString(o.pinMapFromTo, o.portMapFromTo));
     }
 }

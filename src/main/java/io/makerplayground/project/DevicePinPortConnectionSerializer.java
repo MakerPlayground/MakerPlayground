@@ -31,10 +31,10 @@ public class DevicePinPortConnectionSerializer extends JsonSerializer<DevicePinP
         jsonGenerator.writeStartObject();
 
         /* from */
-        jsonGenerator.writeStringField("from", devicePinPortConnection.getFrom().getId());
+        jsonGenerator.writeStringField("from", devicePinPortConnection.getFrom().getName());
 
         /* to */
-        jsonGenerator.writeStringField("to", devicePinPortConnection.getTo().getId());
+        jsonGenerator.writeStringField("to", devicePinPortConnection.getTo().getName());
 
         /* pinMapFromTo */
         var pinMap = devicePinPortConnection.getPinMapFromTo();

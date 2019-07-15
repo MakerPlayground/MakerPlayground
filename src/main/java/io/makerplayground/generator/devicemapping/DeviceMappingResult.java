@@ -16,6 +16,23 @@
 
 package io.makerplayground.generator.devicemapping;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@RequiredArgsConstructor
 public enum DeviceMappingResult {
-    OK, NO_SUPPORTING_ACTION, NO_SUPPORTING_CONDITION, NO_SUPPORTING_CONDITION_PARAMETER, NO_SUPPORTING_ACTION_PARAMETER, CONSTRAINT_NOT_COMPATIBLE, NO_AVAILABLE_PIN_PORT;
+    OK(""),
+    NO_SUPPORTING_ACTION("device not provide a required action"),
+    NO_SUPPORTING_CONDITION("device not provide a required condition"),
+    CONDITION_PARAMETER_NOT_COMPATIBLE("some condition contains incompatible parameters"),
+    ACTION_PARAMETER_NOT_COMPATIBLE("some action contains incompatible parameters"),
+    CONSTRAINT_NOT_COMPATIBLE("project requires over the device capability"),
+    NO_AVAILABLE_PIN_PORT("no available pin or port");
+
+    @Getter
+    private final String errorMessage;
+
+    @Getter @Setter
+    private String detailMessage;
 }

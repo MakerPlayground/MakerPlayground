@@ -17,12 +17,17 @@
 package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.generator.devicemapping.ProjectConfiguration;
+import io.makerplayground.device.actual.Pin;
+import io.makerplayground.device.actual.Port;
+import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.generator.source.SourceCodeResult;
+import io.makerplayground.project.DevicePinPortConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.*;
 
 /**
  * Created by tanyagorn on 7/19/2017.
@@ -40,13 +45,46 @@ public class GenerateViewModel {
         if (!code.hasError()) {
             ProjectConfiguration configuration = project.getProjectConfiguration();
             var connections = configuration.getUnmodifiableDevicePinPortConnections();
-            for (var entry : configuration.getUnmodifiableDeviceMap().entrySet()) {
-                ProjectDevice device = entry.getKey();
-                ActualDevice actualDevice = entry.getValue();
-                String pinDescription = connections.stream().filter(connection -> connection.getTo() == actualDevice).findFirst().orElseThrow().getDescription();
-                observableTableList.add(new TableDataList(device.getName(), actualDevice.getBrand(), actualDevice.getModel(), actualDevice.getId(), pinDescription, actualDevice.getUrl()));
+            var deviceMap = configuration.getUnmodifiableDeviceMap();
+            for (ProjectDevice device : deviceMap.keySet()) {
+                ActualDevice actualDevice = deviceMap.get(device);
+                connections.stream().filter(conn -> conn.getTo() == device).findFirst().ifPresent(connection ->
+                        observableTableList.add(new TableDataList(device.getName(),
+                                actualDevice.getBrand(),
+                                actualDevice.getModel(),
+                                actualDevice.getId(),
+                                generateDescription(connection),
+                                actualDevice.getUrl())
+                        )
+                );
             }
         }
+    }
+
+    private String generateDescription(DevicePinPortConnection connection) {
+        List<String> pinPortNameFrom = new ArrayList<>();
+        List<String> pinPortNameTo = new ArrayList<>();
+        ProjectConfiguration configuration = project.getProjectConfiguration();
+        Optional<ActualDevice> from = configuration.getActualDevice(connection.getFrom());
+        Optional<ActualDevice> to = configuration.getActualDevice(connection.getTo());
+        if (from.isPresent() && to.isPresent()) {
+            Map<Pin, Pin> pinMapFromTo = connection.getPinMapFromTo();
+            Map<Port, Port> portMapFromTo = connection.getPortMapFromTo();
+            if (Objects.nonNull(pinMapFromTo)) {
+                for(Pin pin : pinMapFromTo.keySet()) {
+                    pinPortNameFrom.add(pin.getName());
+                    pinPortNameTo.add(pinMapFromTo.get(pin).getName());
+                }
+            }
+            if (Objects.nonNull(portMapFromTo)) {
+                for(Port port : portMapFromTo.keySet()) {
+                    pinPortNameFrom.add(port.getName());
+                    pinPortNameTo.add(portMapFromTo.get(port).getName());
+                }
+            }
+            return from.get().getBrand() + "-"+ from.get().getModel() + "(" + String.join(",", pinPortNameFrom) + ") -> "+ to.get().getBrand() + "-" + to.get().getModel() + "(" + String.join(", ", pinPortNameTo);
+        }
+        return "";
     }
 
     public Project getProject() {

@@ -38,26 +38,28 @@ class RaspberryPiCodeGenerator {
     private static final String NEW_LINE = "\n";
 
     private final Project project;
+    private final ProjectConfiguration configuration;
     private final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
     private RaspberryPiCodeGenerator(Project project) {
         this.project = project;
+        this.configuration = project.getProjectConfiguration();
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
     }
 
     static SourceCodeResult generateCode(Project project) {
-        /* TODO: uncomment this */
+//        /* TODO: uncomment this */
 //        RaspberryPiCodeGenerator generator = new RaspberryPiCodeGenerator(project);
 //        // Check if the diagram (only the connected nodes) are all valid.
 //        if (!Utility.validateDiagram(project)) {
 //            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
 //        }
 //        // Check if all used devices are assigned.
-//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != DeviceMapperResult.OK) {
+//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
 //            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
 //        }
 //        if (!Utility.validateDeviceProperty(project)) {
@@ -94,8 +96,8 @@ class RaspberryPiCodeGenerator {
         builder.append("from MakerPlayground import MP").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(project::isActualDeviceSelected)
-                .map(projectDevice -> project.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(configuration::isActualDeviceSelected)
+                .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
@@ -106,7 +108,7 @@ class RaspberryPiCodeGenerator {
         Set<ProjectDevice> devices = Utility.getUsedDevicesWithTask(project);
         if (!devices.isEmpty()) {
             for (ProjectDevice projectDevice : devices) {
-                builder.append(parseDeviceExpressionVariableName(project, projectDevice)).append(" = [None]");
+                builder.append(parseDeviceExpressionVariableName(configuration, projectDevice)).append(" = [None]");
                 long noExpr = Utility.getMaximumNumberOfExpression(project, projectDevice);
                 if (noExpr > 1) {
                     builder.append(" * ").append(noExpr);
@@ -180,7 +182,7 @@ class RaspberryPiCodeGenerator {
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
                     ProjectDevice device = setting.getDevice();
-                    String deviceName = parseDeviceVariableName(project, device);
+                    String deviceName = parseDeviceVariableName(configuration, device);
                     List<String> taskParameter = new ArrayList<>();
 
                     List<Parameter> parameters = setting.getAction().getParameter();
@@ -190,26 +192,26 @@ class RaspberryPiCodeGenerator {
                             Expression e = setting.getValueMap().get(p);
                             if (setting.isDataBindingUsed(p)) {
                                 parameterIndex++;
-                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(project, device)).append("', ")
+                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
                                         .append(parameterIndex)
                                         .append("lambda:").append(parseExpressionForParameter(p, e)).append(", ")
                                         .append(parseRefreshInterval(e)).append(")").append(NEW_LINE);
-                                taskParameter.add(parseDeviceExpressionVariableName(project, device) + "[" + parameterIndex + "].value");
+                                taskParameter.add(parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "].value");
                             } else {
                                 taskParameter.add(parseExpressionForParameter(p, e));
                             }
                         }
                         for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
-                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(project, device))
+                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(configuration, device))
                                     .append("', ").append(i).append(")").append(NEW_LINE);
                         }
-                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(project, device)).append("', lambda: ")
+                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(configuration, device)).append("', lambda: ")
                                 .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
                                 .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
                     } else {    // generate code to perform action once
-                        // clear task if this device used to have background task set
+                        // unsetDevice task if this device used to have background task set
                         if (Utility.getUsedDevicesWithTask(project).contains(device)) {
-                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(project, device)).append("')").append(NEW_LINE);
+                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(configuration, device)).append("')").append(NEW_LINE);
                         }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
@@ -315,7 +317,7 @@ class RaspberryPiCodeGenerator {
                         else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(project, setting.getDevice()) + "." +
+                            booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
@@ -373,7 +375,7 @@ class RaspberryPiCodeGenerator {
                 .collect(Collectors.toMap(Function.identity(), this::parseConstructorCall));
 
         deviceNameMap.forEach((key, value) ->
-                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(project, key))
+                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(configuration, key))
                         .append(" = ").append(value).append(NEW_LINE)
         );
 
@@ -396,14 +398,14 @@ class RaspberryPiCodeGenerator {
     }
 
     private String parseConstructorCall(ProjectDevice projectDevice) {
-        StringBuilder text = new StringBuilder(project.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
+        StringBuilder text = new StringBuilder(configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
 
         List<String> args = new ArrayList<>();
 
         /* TODO: uncomment this & assign port as parameter */
-//        if (projectDevice.isActualDeviceSelected() && !projectDevice.getCompatibleDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+//        if (projectDevice.isActualDeviceSelected() && !projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
 //            // port
-//            for (Peripheral p : projectDevice.getCompatibleDevice().getConnectivity()) {
+//            for (Peripheral p : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
 //                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
 //                    if (port == null) {
@@ -429,8 +431,8 @@ class RaspberryPiCodeGenerator {
 //            }
 //        }
         // property for the generic device
-        for (Property p : project.getActualDevice(projectDevice).orElseThrow().getProperty()) {
-            Object value = project.getPropertyValue(projectDevice, p);
+        for (Property p : configuration.getActualDevice(projectDevice).orElseThrow().getProperty()) {
+            Object value = configuration.getPropertyValue(projectDevice, p);
             if (value == null) {
                 throw new IllegalStateException("Property hasn't been set");
             }
@@ -458,7 +460,7 @@ class RaspberryPiCodeGenerator {
             }
         }
             // TODO: add Cloud Platform instance to arg list
-//            CloudPlatform cloudPlatform = projectDevice.getCompatibleDevice().getCloudPlatform();
+//            CloudPlatform cloudPlatform = projectDevice.getCompatibleDeviceComboItem().getCloudPlatform();
 //            if (cloudPlatform != null) {
 //                args.add(parseCloudPlatformVariableName(cloudPlatform));
 //            }
@@ -520,7 +522,7 @@ class RaspberryPiCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return parseProjectValue(project, value.getDevice(), value.getValue());
+            return parseProjectValue(configuration, value.getDevice(), value.getValue());
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
@@ -543,7 +545,7 @@ class RaspberryPiCodeGenerator {
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "MP.constrain(MP.map(" + parseProjectValue(project, valueLinkingExpression.getSourceValue().getDevice()
+            returnValue = "MP.constrain(MP.map(" + parseProjectValue(configuration, valueLinkingExpression.getSourceValue().getDevice()
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
@@ -551,7 +553,7 @@ class RaspberryPiCodeGenerator {
             ProjectValue projectValue = projectValueExpression.getProjectValue();
             DataType dataType = projectValue.getValue().getType();
             if (dataType == DataType.STRING) {
-                returnValue = parseProjectValue(project, projectValue.getDevice(), projectValue.getValue());
+                returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
             } else if (dataType == DataType.DOUBLE || dataType == DataType.INTEGER) {
                 // TODO: separate the datatype for double and integer
                 NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
@@ -566,7 +568,7 @@ class RaspberryPiCodeGenerator {
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
-            returnValue = parseProjectValue(project, projectValue.getDevice(), projectValue.getValue());
+            returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
         } else if (expression instanceof ComplexStringExpression) {
             List<String> subExpression = new ArrayList<>();
             for (Expression e : ((ComplexStringExpression) expression).getSubExpressions()) {
@@ -624,29 +626,29 @@ class RaspberryPiCodeGenerator {
 //        return "_" + cloudPlatform.getLibName().replace(" ", "_");
 //    }
 
-    private static String parseDeviceName(Project project, ProjectDevice projectDevice) {
-        if (project.isUsedSameDevice(projectDevice)) {
-            return "_" + project.getParentDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
-        } else if (project.isActualDeviceSelected(projectDevice)) {
+    private static String parseDeviceName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+        if (configuration.isUsedSameDevice(projectDevice)) {
+            return "_" + configuration.getParentDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
+        } else if (configuration.isActualDeviceSelected(projectDevice)) {
             return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
         } else {
             throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
         }
     }
 
-    private static String parseProjectValue(Project project,  ProjectDevice projectDevice, Value value) {
-        return parseDeviceVariableName(project, projectDevice) + ".get" + value.getName().replace(" ", "_") + "()";
+    private static String parseProjectValue(ProjectConfiguration configuration,  ProjectDevice projectDevice, Value value) {
+        return parseDeviceVariableName(configuration, projectDevice) + ".get" + value.getName().replace(" ", "_") + "()";
     }
 
 //    private String parseDeviceTaskVariableName(ProjectDevice device) {
 //        return parseDeviceName(device) + "_Task";
 //    }
 
-    private static String parseDeviceVariableName(Project project, ProjectDevice projectDevice) {
-        return "MP.devices['" + parseDeviceName(project, projectDevice) + "']";
+    private static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+        return "MP.devices['" + parseDeviceName(configuration, projectDevice) + "']";
     }
 
-    private String parseDeviceExpressionVariableName(Project project, ProjectDevice device) {
-        return "MP.expressions['" + parseDeviceName(project, device) + "']";
+    private String parseDeviceExpressionVariableName(ProjectConfiguration configuration, ProjectDevice device) {
+        return "MP.expressions['" + parseDeviceName(configuration, device) + "']";
     }
 }

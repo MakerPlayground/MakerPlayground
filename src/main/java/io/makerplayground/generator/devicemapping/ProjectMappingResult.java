@@ -16,16 +16,17 @@
 
 package io.makerplayground.generator.devicemapping;
 
-public enum DeviceMapperResult {
+public enum ProjectMappingResult {
     OK(""),
     NO_MCU_SELECTED("Controller hasn't been selected"),
-    NOT_SELECT_DEVICE_OR_PORT("Device or port hasn't been selected"),
+    NOT_SELECT_DEVICE("Device hasn't been selected"),
+    NOT_SELECT_PORT("Port hasn't been selected"),
     NO_SUPPORT_DEVICE("Can't find support device"),
     CANT_ASSIGN_PORT("Can't automatically assigned port for some devices");
 
     private final String errorMessage;
 
-    DeviceMapperResult(String errorMessage) {
+    ProjectMappingResult(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 

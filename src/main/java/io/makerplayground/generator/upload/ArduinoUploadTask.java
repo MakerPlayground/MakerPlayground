@@ -58,8 +58,8 @@ public class ArduinoUploadTask extends UploadTask {
         }
 
         /* TODO: uncomment this */
-//        DeviceMapperResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(project);
-//        if (mappingResult != DeviceMapperResult.OK) {
+//        ProjectMappingResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(project);
+//        if (mappingResult != ProjectMappingResult.OK) {
 //            updateMessage(mappingResult.getErrorMessage());
 //            return UploadResult.DEVICE_OR_PORT_MISSING;
 //        }
@@ -77,7 +77,7 @@ public class ArduinoUploadTask extends UploadTask {
 
         // check platformio installation
         Optional<String> pythonPath = Utility.getPythonPath();
-        if (!pythonPath.isPresent()) {
+        if (pythonPath.isEmpty()) {
             updateMessage("Error: Can't find python with valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
@@ -95,8 +95,8 @@ public class ArduinoUploadTask extends UploadTask {
         updateMessage("Preparing to generate project");
 
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .filter(project::isActualDeviceSelected)
-                .map(project::getActualDevice)
+                .filter(configuration::isActualDeviceSelected)
+                .map(configuration::getActualDevice)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));

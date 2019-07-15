@@ -64,10 +64,10 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //        }
 //        jsonGenerator.writeEndArray();
 
-//        jsonGenerator.writeArrayFieldStart("property");
         /* TODO: uncomment this */
+//        jsonGenerator.writeArrayFieldStart("property");
 //        if (projectDevice.isActualDeviceSelected()) {
-//            for (Property property : projectDevice.getCompatibleDevice().getProperty()) {
+//            for (Property property : projectDevice.getCompatibleDeviceComboItem().getProperty()) {
 //                Object value = projectDevice.getPropertyValue(property);
 //                jsonGenerator.writeStartObject();
 //                jsonGenerator.writeStringField("name", property.getName());

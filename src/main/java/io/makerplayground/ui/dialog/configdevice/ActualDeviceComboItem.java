@@ -17,6 +17,7 @@
 package io.makerplayground.ui.dialog.configdevice;
 
 import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import lombok.AccessLevel;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -25,5 +26,5 @@ import lombok.experimental.Wither;
 @Value
 public class ActualDeviceComboItem {
     private final ActualDevice actualDevice;
-    @Wither(AccessLevel.PACKAGE) @NonFinal boolean selectable;
+    @Wither(AccessLevel.PACKAGE) @NonFinal DeviceMappingResult mappingResult;
 }

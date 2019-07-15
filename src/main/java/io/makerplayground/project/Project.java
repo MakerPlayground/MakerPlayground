@@ -24,15 +24,16 @@ import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
-import io.makerplayground.generator.devicemapping.ProjectConfiguration;
+import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
 import io.makerplayground.version.ProjectVersionControl;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = ProjectSerializer.class)
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
-    private StringProperty projectName;
+    @Getter @Setter private String projectName;
     private final ObservableList<ProjectDevice> device;
     private final ObservableList<Scene> scene;
     private final ObservableList<Condition> condition;
@@ -72,39 +73,49 @@ public class Project {
     @Getter private final ObservableList<Condition> unmodifiableCondition;
     @Getter private final ObservableList<Line> unmodifiableLine;
 
-    private final StringProperty filePath;
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
+    private ObjectProperty<Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>>> actionCompatibility = new SimpleObjectProperty<>();
+    private ObjectProperty<Map<ProjectDevice, Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>>>> conditionCompatibility = new SimpleObjectProperty<>();
+
     @Getter @Setter private ProjectConfiguration projectConfiguration;
 
     public Project() {
-        projectName = new SimpleStringProperty("Untitled Project");
+        this.projectName = "Untitled Project";
 
-        device = FXCollections.observableArrayList();
-        unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(device);
-        actuatorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
-        sensorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
-        utilityDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
-        cloudDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
-        interfaceDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
-        deviceWithAction = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasAction());
-        deviceWithCondition = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasCondition());
+        this.device = FXCollections.observableArrayList();
+        this.unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(device);
+        this.actuatorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
+        this.sensorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
+        this.utilityDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
+        this.cloudDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
+        this.interfaceDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
+        this.deviceWithAction = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasAction());
+        this.deviceWithCondition = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasCondition());
 
-        scene = FXCollections.observableArrayList();
-        condition = FXCollections.observableArrayList();
-        line = FXCollections.observableArrayList();
-        begins = FXCollections.observableArrayList();
+        this.scene = FXCollections.observableArrayList();
+        this.condition = FXCollections.observableArrayList();
+        this.line = FXCollections.observableArrayList();
+        this.begins = FXCollections.observableArrayList();
 
-        filePath = new SimpleStringProperty("");
+        this.unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
+        this.unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
+        this.unmodifiableLine = FXCollections.unmodifiableObservableList(line);
 
-        unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
-        unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
-        unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+        this.projectConfiguration = ProjectConfiguration.builder()
+                .platform(Platform.ARDUINO_AVR8)
+                .controller(null)
+                .deviceMap(new TreeMap<>())
+                .sameDeviceMap(new TreeMap<>())
+                .devicePinPortConnections(new TreeSet<>())
+                .devicePropertyValueMap(new HashMap<>())
+                .cloudPlatformParameterMap(new TreeMap<>())
+                .build();
 
-        projectConfiguration = ProjectConfigurationLogic.newConfiguration();
-        newBegin();
+        this.calculateCompatibility();
+        this.newBegin();
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -155,16 +166,11 @@ public class Project {
         if (!device.remove(pd)) {
             throw new IllegalStateException("");
         }
-        // update other devices that share the actual device with the removed device
-        for (ProjectDevice projectDevice : device) {
-            if (projectDevice.getParentDevice() == pd) {
-                projectDevice.setParentDevice(null);
-            }
-        }
+        this.calculateCompatibility();
     }
 
     public void setPlatform(Platform platform) {
-        this.projectConfiguration = ProjectConfigurationLogic.changePlatform(projectConfiguration, platform);
+        this.projectConfiguration.setPlatform(platform);
     }
 
     public Optional<Scene> getUnmodifiableScene(String name) {
@@ -299,18 +305,6 @@ public class Project {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public String getProjectName() {
-        return projectName.get();
-    }
-
-    public StringProperty projectNameProperty() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName.set(projectName);
-    }
-
     public List<ProjectValue> getAvailableValue(Set<DataType> dataType) {
         List<ProjectValue> value = new ArrayList<>();
         for (ProjectDevice projectDevice : device) {
@@ -328,7 +322,7 @@ public class Project {
     }
 
     public void setController(ActualDevice controller) {
-        projectConfiguration = ProjectConfigurationLogic.changeController(projectConfiguration, controller);
+        projectConfiguration.setController(controller);
     }
 
     public ObservableList<Begin> getBegin() { return begins; }
@@ -407,20 +401,8 @@ public class Project {
         return allValueUsed;
     }
 
-    public String getFilePath() {
-        return filePath.get();
-    }
-
-    public StringProperty filePathProperty() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath.set(filePath);
-    }
-
-    public boolean hasUnsavedModification() {
-        if (getFilePath().isEmpty()) {
+    public boolean hasUnsavedModification(File currentFile) {
+        if (currentFile == null) {
             // A hack way to check for project modification in case that it hasn't been saved
             int beginCount = begins.size();
             Begin firstBegin = null;
@@ -448,7 +430,7 @@ public class Project {
 
             String oldContent;
             try {
-                oldContent = new String(Files.readAllBytes(new File(getFilePath()).toPath()));
+                oldContent = new String(Files.readAllBytes(currentFile.toPath()));
             } catch (IOException e) {
                 return true;
             }
@@ -463,9 +445,8 @@ public class Project {
             try {
                 String projectVersion = ProjectVersionControl.readProjectVersion(f);
                 if (ProjectVersionControl.canOpen(projectVersion)) {
-                    Project p = mapper.readValue(f, Project.class);
-                    p.setFilePath(f.getAbsolutePath());
-                    return Optional.of(p);
+                    Project project = mapper.readValue(f, Project.class);
+                    return Optional.of(project);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -598,27 +579,82 @@ public class Project {
         begins.add(begin);
     }
 
-    public boolean isActualDeviceSelected(ProjectDevice projectDevice) {
-        return this.getProjectConfiguration().isActualDeviceSelected(projectDevice);
-    }
+    public void calculateCompatibility() {
+        Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility = new HashMap<>();
+        Map<ProjectDevice, Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>>> conditionCompatibility = new HashMap<>();
+        Set<NodeElement> visited = new HashSet<>();
+        Deque<NodeElement> queue = new ArrayDeque<>(this.begins);
+        while(!queue.isEmpty()) {
+            NodeElement current = queue.remove();
+            if (current instanceof Scene) {
+                Scene temp = (Scene) current;
+                temp.getSetting().forEach(s->{
+                    ProjectDevice projectDevice = s.getDevice();
+                    if (!actionCompatibility.containsKey(projectDevice)) {
+                        Map<Action, Map<Parameter, Constraint>> actionParameterMap = new TreeMap<>(Comparator.comparing(Action::getName));
+                        actionCompatibility.put(projectDevice, actionParameterMap);
+                    }
+                    s.getValueMap().forEach((parameter, expression) -> {
+                        Action action = s.getAction();
+                        if (!actionCompatibility.get(projectDevice).containsKey(action)){
+                            actionCompatibility.get(projectDevice).put(action, new TreeMap<>(Comparator.comparing(Parameter::getName)));
+                        }
+                        if (!actionCompatibility.get(projectDevice).get(action).containsKey(parameter)) {
+                            actionCompatibility.get(projectDevice).get(action).put(parameter, ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                        } else {
+                            Constraint oldConstraint = actionCompatibility.get(projectDevice).get(action).get(parameter);
+                            Constraint newConstraint = oldConstraint.union(ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            actionCompatibility.get(projectDevice).get(action).put(parameter, newConstraint);
+                        }
+                    });
+//                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
+//                        if (!compatibilityUsed.containsKey(projectDevice1)) {
+//                            Map<Parameter, Constraint> parameterConstraintMap = new TreeMap<>(Comparator.comparing(Parameter::getName));
+//                            compatibilityUsed.put(projectDevice1, parameterConstraintMap);
+//                        }
+//                        s.getValueMap().forEach((parameter, expression) -> {
+//                            if (!compatibilityUsed.get(projectDevice1).containsKey(parameter)) {
+//                                compatibilityUsed.get(projectDevice1).put(parameter, expression.getConstraint());
+//                            } else {
+//                                Constraint constraint = compatibilityUsed.get(projectDevice1).get(parameter);
+//                                compatibilityUsed.get(projectDevice1).put(parameter, constraint.union(expression.getConstraint()));
+//                            }
+//                        });
+//                    });
+                });
+            }
+            else if (current instanceof Condition) {
+                Condition temp = (Condition) current;
+                temp.getSetting().forEach(s->{
+                    ProjectDevice projectDevice = s.getDevice();
+                    if (!conditionCompatibility.containsKey(projectDevice)) {
+                        Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>> conditionParameterMap = new TreeMap<>(Comparator.comparing(io.makerplayground.device.shared.Condition::getName));
+                        conditionCompatibility.put(projectDevice, conditionParameterMap);
+                    }
+                    s.getValueMap().forEach((parameter, expression) -> {
+                        var condition = s.getCondition();
+                        if (!conditionCompatibility.get(projectDevice).containsKey(condition)){
+                            conditionCompatibility.get(projectDevice).put(condition, new TreeMap<>(Comparator.comparing(Parameter::getName)));
+                        }
+                        if (!conditionCompatibility.get(projectDevice).get(condition).containsKey(parameter)) {
+                            conditionCompatibility.get(projectDevice).get(condition).put(parameter, ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                        } else {
+                            Constraint oldConstraint = conditionCompatibility.get(projectDevice).get(condition).get(parameter);
+                            Constraint newConstraint = oldConstraint.union(ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            conditionCompatibility.get(projectDevice).get(condition).put(parameter, newConstraint);
+                        }
+                    });
+                });
+            }
+            visited.add(current);
+            Set<NodeElement> unvisitedAdj = line.stream()
+                    .filter(l->l.getSource() == current)
+                    .map(Line::getDestination)
+                    .dropWhile(visited::contains)
+                    .collect(Collectors.toSet());
+            queue.addAll(unvisitedAdj);
+        }
 
-    public Optional<ActualDevice> getActualDevice(ProjectDevice projectDevice) {
-        return this.getProjectConfiguration().getActualDevice(projectDevice);
-    }
-
-    public Object getPropertyValue(ProjectDevice projectDevice, Property property) {
-        return this.getProjectConfiguration().getPropertyValue(projectDevice, property);
-    }
-
-    public boolean isUsedSameDevice(ProjectDevice projectDevice) {
-        return this.getProjectConfiguration().isUsedSameDevice(projectDevice);
-    }
-
-    public Optional<ProjectDevice> getParentDevice(ProjectDevice projectDevice) {
-        return this.getProjectConfiguration().getParentDevice(projectDevice);
-    }
-
-    void setConfiguration(ProjectConfiguration readValueAs) {
-
+        projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility);
     }
 }

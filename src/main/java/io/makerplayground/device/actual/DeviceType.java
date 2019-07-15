@@ -17,5 +17,5 @@
 package io.makerplayground.device.actual;
 
 public enum DeviceType {
-    CONTROLLER, MODULE
+    CONTROLLER, MODULE, VIRTUAL, INTEGRATED
 }

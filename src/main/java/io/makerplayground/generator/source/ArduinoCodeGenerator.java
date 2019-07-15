@@ -45,12 +45,14 @@ class ArduinoCodeGenerator {
     private static final String NEW_LINE = "\n";
 
     private final Project project;
+    private final ProjectConfiguration configuration;
     private final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
     private ArduinoCodeGenerator(Project project) {
         this.project = project;
+        this.configuration = project.getProjectConfiguration();
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
@@ -64,7 +66,7 @@ class ArduinoCodeGenerator {
 //            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
 //        }
 //        // Check if all used devices are assigned.
-//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != DeviceMapperResult.OK) {
+//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
 //            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
 //        }
 //        if (!Utility.validateDeviceProperty(project)) {
@@ -102,8 +104,8 @@ class ArduinoCodeGenerator {
 
         // generate include
         Stream<String> device_libs = project.getAllDeviceUsed().stream()
-                .filter(project::isActualDeviceSelected)
-                .map(projectDevice -> project.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
+                .filter(configuration::isActualDeviceSelected)
+                .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseIncludeStatement(s)).append(NEW_LINE));
@@ -150,18 +152,18 @@ class ArduinoCodeGenerator {
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
-            Optional<ActualDevice> actualDevice = project.getActualDevice(projectDevice);
+            Optional<ActualDevice> actualDevice = configuration.getActualDevice(projectDevice);
             if (actualDevice.isEmpty()) {
                 continue;
             }
             builder.append(actualDevice.get().getMpLibrary(project.getSelectedPlatform()))
-                    .append(" ").append(parseDeviceVariableName(project, projectDevice));
+                    .append(" ").append(parseDeviceVariableName(configuration, projectDevice));
             List<String> args = new ArrayList<>();
 
             /* TODO: uncomment this & assign port as parameter */
-//            if (!projectDevice.getCompatibleDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+//            if (!projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
 //                // port
-//                for (Peripheral p : projectDevice.getCompatibleDevice().getConnectivity()) {
+//                for (Peripheral p : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)
 //                            && (p.getConnectionType() != ConnectionType.UART)) {
 //                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
@@ -191,7 +193,7 @@ class ArduinoCodeGenerator {
 
             // property for the generic device
             for (Property p : actualDevice.get().getProperty()) {
-                Object value = project.getPropertyValue(projectDevice, p);
+                Object value = configuration.getPropertyValue(projectDevice, p);
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");
                 }
@@ -245,7 +247,7 @@ class ArduinoCodeGenerator {
         Map<ProjectDevice, Set<Value>> variableMap = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
         for (ProjectDevice projectDevice : variableMap.keySet()) {
             for (Value v : variableMap.get(projectDevice)) {
-                builder.append("double ").append(parseValueVariableName(project, projectDevice, v)).append(";").append(NEW_LINE);
+                builder.append("double ").append(parseValueVariableName(configuration, projectDevice, v)).append(";").append(NEW_LINE);
             }
         }
         builder.append(NEW_LINE);
@@ -271,10 +273,10 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (project.isUsedSameDevice(projectDevice)) {
+            if (configuration.isUsedSameDevice(projectDevice)) {
                 continue;
             }
-            String variableName = parseDeviceVariableName(project, projectDevice);
+            String variableName = parseDeviceVariableName(configuration, projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
@@ -303,8 +305,8 @@ class ArduinoCodeGenerator {
         Set<ProjectDevice> devices = Utility.getUsedDevicesWithTask(project);
         if (!devices.isEmpty()) {
             for (ProjectDevice projectDevice : devices) {
-                builder.append("Task ").append(parseDeviceTaskVariableName(project, projectDevice)).append(" = NULL;").append(NEW_LINE);
-                builder.append("Expr ").append(parseDeviceExpressionVariableName(project, projectDevice))
+                builder.append("Task ").append(parseDeviceTaskVariableName(configuration, projectDevice)).append(" = NULL;").append(NEW_LINE);
+                builder.append("Expr ").append(parseDeviceExpressionVariableName(configuration, projectDevice))
                         .append("[").append(Utility.getMaximumNumberOfExpression(project, projectDevice)).append("];").append(NEW_LINE);
             }
             builder.append(NEW_LINE);
@@ -323,10 +325,10 @@ class ArduinoCodeGenerator {
 
         // allow all devices to perform their own tasks
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (project.isUsedSameDevice(projectDevice)) {
+            if (configuration.isUsedSameDevice(projectDevice)) {
                 continue;
             }
-            builder.append(INDENT).append(parseDeviceVariableName(project, projectDevice)).append(".update(currentTime);").append(NEW_LINE);
+            builder.append(INDENT).append(parseDeviceVariableName(configuration, projectDevice)).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
@@ -334,8 +336,8 @@ class ArduinoCodeGenerator {
         Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
         for (ProjectDevice projectDevice : valueUsed.keySet()) {
             for (Value v : valueUsed.get(projectDevice)) {
-                builder.append(INDENT).append(parseValueVariableName(project, projectDevice, v)).append(" = ")
-                        .append(parseDeviceVariableName(project, projectDevice)).append(".get")
+                builder.append(INDENT).append(parseValueVariableName(configuration, projectDevice, v)).append(" = ")
+                        .append(parseDeviceVariableName(configuration, projectDevice)).append(".get")
                         .append(v.getName().replace(" ", "_").replace(".", "_")).append("();").append(NEW_LINE);
             }
         }
@@ -345,8 +347,8 @@ class ArduinoCodeGenerator {
 
         // recompute expression's value
         for (ProjectDevice projectDevice : Utility.getUsedDevicesWithTask(project)) {
-            builder.append(INDENT).append("evaluateExpression(").append(parseDeviceTaskVariableName(project, projectDevice)).append(", ")
-                    .append(parseDeviceExpressionVariableName(project, projectDevice)).append(", ")
+            builder.append(INDENT).append("evaluateExpression(").append(parseDeviceTaskVariableName(configuration, projectDevice)).append(", ")
+                    .append(parseDeviceExpressionVariableName(configuration, projectDevice)).append(", ")
                     .append(Utility.getMaximumNumberOfExpression(project, projectDevice)).append(");").append(NEW_LINE);
         }
         if (!Utility.getUsedDevicesWithTask(project).isEmpty()) {
@@ -361,10 +363,10 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (project.isUsedSameDevice(projectDevice)) {
+            if (configuration.isUsedSameDevice(projectDevice)) {
                 continue;
             }
-            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(project, projectDevice))
+            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
                     .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
         builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
@@ -434,7 +436,7 @@ class ArduinoCodeGenerator {
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
                     ProjectDevice device = setting.getDevice();
-                    String deviceName = parseDeviceVariableName(project, device);
+                    String deviceName = parseDeviceVariableName(configuration, device);
                     List<String> taskParameter = new ArrayList<>();
 
                     List<Parameter> parameters = setting.getAction().getParameter();
@@ -443,7 +445,7 @@ class ArduinoCodeGenerator {
                         for (Parameter p : parameters) {
                             Expression e = setting.getValueMap().get(p);
                             if (setting.isDataBindingUsed(p)) {
-                                String expressionVarName = parseDeviceExpressionVariableName(project, device) + "[" + parameterIndex + "]";
+                                String expressionVarName = parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "]";
                                 parameterIndex++;
                                 builder.append(INDENT).append("setExpression(").append(expressionVarName).append(", ")
                                         .append("[]()->double{").append("return ").append(parseExpressionForParameter(p, e)).append(";}, ")
@@ -454,16 +456,16 @@ class ArduinoCodeGenerator {
                             }
                         }
                         for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
-                            builder.append(INDENT).append("clearExpression(").append(parseDeviceExpressionVariableName(project, device))
+                            builder.append(INDENT).append("clearExpression(").append(parseDeviceExpressionVariableName(configuration, device))
                                     .append("[").append(i).append("]);").append(NEW_LINE);
                         }
-                        builder.append(INDENT).append("setTask(").append(parseDeviceTaskVariableName(project, device)).append(", []() -> void {")
+                        builder.append(INDENT).append("setTask(").append(parseDeviceTaskVariableName(configuration, device)).append(", []() -> void {")
                                 .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
                                 .append(String.join(", ", taskParameter)).append(");});").append(NEW_LINE);
                     } else {    // generate code to perform action once
-                        // clear task if this device used to have background task set
+                        // unsetDevice task if this device used to have background task set
                         if (Utility.getUsedDevicesWithTask(project).contains(device)) {
-                            builder.append(INDENT).append(parseDeviceTaskVariableName(project, device)).append(" = NULL;").append(NEW_LINE);
+                            builder.append(INDENT).append(parseDeviceTaskVariableName(configuration, device)).append(" = NULL;").append(NEW_LINE);
                         }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
@@ -555,7 +557,7 @@ class ArduinoCodeGenerator {
                         else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(project, setting.getDevice()) + "." +
+                            booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
@@ -612,7 +614,7 @@ class ArduinoCodeGenerator {
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "constrain(map(" + parseValueVariableName(project, valueLinkingExpression.getSourceValue().getDevice()
+            returnValue = "constrain(map(" + parseValueVariableName(configuration, valueLinkingExpression.getSourceValue().getDevice()
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
@@ -626,7 +628,7 @@ class ArduinoCodeGenerator {
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
-            returnValue = parseDeviceVariableName(project, projectValue.getDevice()) + ".get"
+            returnValue = parseDeviceVariableName(configuration, projectValue.getDevice()) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
             returnValue = exprStr;
@@ -730,7 +732,7 @@ class ArduinoCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return parseValueVariableName(project, value.getDevice(), value.getValue());
+            return parseValueVariableName(configuration, value.getDevice(), value.getValue());
         } else if (term instanceof RecordTerm) {
             RecordTerm term1 = (RecordTerm) term;
             return "Record(" + term1.getValue().getEntryList().stream()
@@ -784,15 +786,15 @@ class ArduinoCodeGenerator {
         }
     }
 
-    private static String parseValueVariableName(Project project, ProjectDevice projectDevice, Value value) {
-        return parseDeviceVariableName(project, projectDevice) + "_" + value.getName().replace(" ", "_").replace(".","_");
+    private static String parseValueVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice, Value value) {
+        return parseDeviceVariableName(configuration, projectDevice) + "_" + value.getName().replace(" ", "_").replace(".","_");
     }
 
-    private String parseDeviceTaskVariableName(Project project, ProjectDevice device) {
-        return parseDeviceVariableName(project, device) + "_Task";
+    private String parseDeviceTaskVariableName(ProjectConfiguration configuration, ProjectDevice device) {
+        return parseDeviceVariableName(configuration, device) + "_Task";
     }
 
-    private String parseDeviceExpressionVariableName(Project project, ProjectDevice device) {
-        return parseDeviceVariableName(project, device) + "_Expr";
+    private String parseDeviceExpressionVariableName(ProjectConfiguration configuration, ProjectDevice device) {
+        return parseDeviceVariableName(configuration, device) + "_Expr";
     }
 }

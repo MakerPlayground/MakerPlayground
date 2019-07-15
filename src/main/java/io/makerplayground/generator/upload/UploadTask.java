@@ -17,6 +17,7 @@
 package io.makerplayground.generator.upload;
 
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectConfiguration;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
@@ -24,10 +25,12 @@ import javafx.concurrent.Task;
 public abstract class UploadTask extends Task<UploadResult> {
 
     protected final Project project;
+    protected final ProjectConfiguration configuration;
     protected final ReadOnlyStringWrapper log;
 
     public UploadTask(Project project) {
         this.project = project;
+        this.configuration = project.getProjectConfiguration();
         this.log = new ReadOnlyStringWrapper();
     }
 

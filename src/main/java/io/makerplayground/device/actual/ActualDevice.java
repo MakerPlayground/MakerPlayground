@@ -19,6 +19,9 @@ package io.makerplayground.device.actual;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.constraint.Constraint;
 import lombok.Builder;
 import lombok.Data;
 

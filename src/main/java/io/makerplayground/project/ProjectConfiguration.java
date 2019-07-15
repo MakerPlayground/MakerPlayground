@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.devicemapping;
+package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -24,62 +24,57 @@ import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
-import io.makerplayground.project.DevicePinPortConnection;
-import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.DevicePinPortConnectionResultStatus;
+import io.makerplayground.generator.devicemapping.DevicePinPortLogic;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonSerialize(using = ProjectConfigurationSerializer.class)
 @JsonDeserialize(using = ProjectConfigurationDeserializer.class)
 public final class ProjectConfiguration {
-    private final ReadOnlyObjectWrapper<Platform> platform;
-    private final ReadOnlyObjectWrapper<ActualDevice> controller;
+    @Setter(AccessLevel.PACKAGE) private Platform platform;
 
-    @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
-    @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility;
+    private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
+    private Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility;
+
     @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap;
-
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap;
     @Getter(AccessLevel.PACKAGE) private final SortedSet<DevicePinPortConnection> devicePinPortConnections;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<CloudPlatform, Map<String, String>> cloudParameterMap;
 
+    @Getter private final Map<ProjectDevice, Map<Property, Object>> unmodifiableDevicePropertyValueMap;
     @Getter private final SortedMap<ProjectDevice, ActualDevice> unmodifiableDeviceMap;
     @Getter private final SortedMap<ProjectDevice, ProjectDevice> unmodifiableSameDeviceMap;
     @Getter private final SortedSet<DevicePinPortConnection> unmodifiableDevicePinPortConnections;
     @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
-    @Getter private final SortedMap<ActualDevice, Boolean> controllerSelectableMap;
-    @Getter private final Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> actualDevicesSelectableMap;
+    @Getter private SortedMap<ActualDevice, DeviceMappingResult> controllerSelectableMap;
+    @Getter private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> actualDevicesSelectableMap;
 
-    @Builder(access = AccessLevel.PACKAGE)
-    public ProjectConfiguration(@NonNull Platform platform,
+    @Builder
+    ProjectConfiguration(@NonNull Platform platform,
                                 ActualDevice controller,
-                                @NonNull Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
-                                @NonNull Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility,
                                 @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
                                 @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
                                 @NonNull SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap,
                                 @NonNull SortedSet<DevicePinPortConnection> devicePinPortConnections,
                                 @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
-        this.platform = new ReadOnlyObjectWrapper<>(platform);
-        this.controller = new ReadOnlyObjectWrapper<>(controller);
-        this.actionCompatibility = actionCompatibility;
-        this.conditionCompatibility = conditionCompatibility;
+        this.platform = platform;
         this.devicePropertyValueMap = devicePropertyValueMap;
 
         this.deviceMap = deviceMap;
+        this.deviceMap.put(ProjectDevice.CONTROLLER, controller);
         this.sameDeviceMap = sameDeviceMap;
         this.devicePinPortConnections = devicePinPortConnections;
         this.cloudParameterMap = cloudPlatformParameterMap;
 
+        this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
         this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
         this.unmodifiableSameDeviceMap = Collections.unmodifiableSortedMap(sameDeviceMap);
         this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedSet(devicePinPortConnections);
@@ -89,11 +84,25 @@ public final class ProjectConfiguration {
                 .getActualDevice(getPlatform())
                 .stream()
                 .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
-                .collect(Collectors.toMap(o -> o, o -> true, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
-        this.actualDevicesSelectableMap = generateDeviceSelectableMap();
+                .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
     }
 
-    private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> generateDeviceSelectableMap() {
+    void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility, Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {
+        this.actionCompatibility = actionCompatibility;
+        this.conditionCompatibility = conditionCompatibility;
+
+        List<ProjectDevice> devices = Stream.concat(actionCompatibility.keySet().stream(), conditionCompatibility.keySet().stream()).collect(Collectors.toList());
+        devices.add(ProjectDevice.CONTROLLER);
+
+        deviceMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()));
+        devicePropertyValueMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()));
+        sameDeviceMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()) && !devices.contains(entry.getValue()));
+        devicePinPortConnections.removeIf(connection -> !devices.contains(connection.getFrom()) && !devices.contains(connection.getTo()));
+
+        generateDeviceSelectableMap();
+    }
+
+    private void generateDeviceSelectableMap() {
         Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap = new HashMap<>();
         Set<ProjectDevice> usedDevice = new HashSet<>();
         usedDevice.addAll(this.actionCompatibility.keySet());
@@ -118,9 +127,15 @@ public final class ProjectConfiguration {
                             continue;
                         }
                         Map<Parameter, Constraint> parameterConstraintMap = compatibleDevice.getActualDevice().get().getCompatibilityMap().get(device.getGenericDevice()).getDeviceAction().get(action);
+                        for (Parameter parameter: parameterConstraintMap.keySet()) {
+                            if (!action.getParameter().contains(parameter)) {
+                                selectable.put(compatibleDevice, DeviceMappingResult.ACTION_PARAMETER_NOT_COMPATIBLE);
+                                break;
+                            }
+                        }
                         for (Parameter parameter: action.getParameter()) {
                             if (!parameterConstraintMap.containsKey(parameter)) {
-                                selectable.put(compatibleDevice, DeviceMappingResult.NO_SUPPORTING_ACTION_PARAMETER);
+                                selectable.put(compatibleDevice, DeviceMappingResult.ACTION_PARAMETER_NOT_COMPATIBLE);
                                 break;
                             }
                             Constraint constraint = parameterConstraintMap.get(parameter);
@@ -144,9 +159,15 @@ public final class ProjectConfiguration {
                             continue;
                         }
                         Map<Parameter, Constraint> parameterConstraintMap = compatibleDevice.getActualDevice().get().getCompatibilityMap().get(device.getGenericDevice()).getDeviceCondition().get(condition);
+                        for (Parameter parameter: parameterConstraintMap.keySet()) {
+                            if (!condition.getParameter().contains(parameter)) {
+                                selectable.put(compatibleDevice, DeviceMappingResult.CONDITION_PARAMETER_NOT_COMPATIBLE);
+                                break;
+                            }
+                        }
                         for (Parameter parameter: condition.getParameter()) {
                             if (!parameterConstraintMap.containsKey(parameter)) {
-                                selectable.put(compatibleDevice, DeviceMappingResult.NO_SUPPORTING_CONDITION_PARAMETER);
+                                selectable.put(compatibleDevice, DeviceMappingResult.CONDITION_PARAMETER_NOT_COMPATIBLE);
                                 break;
                             }
                             Constraint constraint = parameterConstraintMap.get(parameter);
@@ -158,38 +179,39 @@ public final class ProjectConfiguration {
                 }
             }
         }
-
         /* set reason for circuit incompatibility */
         for (ProjectDevice device: usedDevice) {
             /* device already connect: no problem */
-            if (unmodifiableDevicePinPortConnections.stream().map(DevicePinPortConnection::getTo).collect(Collectors.toList()).contains(deviceMap.get(device))) {
+            if (unmodifiableDevicePinPortConnections.stream().map(DevicePinPortConnection::getTo).collect(Collectors.toList()).contains(device)) {
                 continue;
             }
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(device);
-            PinPortLogic pinPortLogic = new PinPortLogic(controller.get(), deviceMap.values(), devicePinPortConnections);
+            DevicePinPortLogic pinPortLogic = new DevicePinPortLogic(deviceMap, devicePinPortConnections);
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
-                if (compatibleDevice.getActualDevice().isPresent() && pinPortLogic.checkCompatibilityFor(compatibleDevice.getActualDevice().get()) == DevicePinPortConnectionResultStatus.ERROR) {
+                if (compatibleDevice.getActualDevice().isPresent() && pinPortLogic.checkCompatibilityFor(device, compatibleDevice.getActualDevice().get()) == DevicePinPortConnectionResultStatus.ERROR) {
                     selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
                 }
             }
         }
-
-        return deviceSelectableMap;
+        this.actualDevicesSelectableMap = deviceSelectableMap;
     }
 
     public Platform getPlatform() {
-        return platform.get();
+        return platform;
+    }
+
+    public void setController(ActualDevice controller) {
+        unsetAllDevices();
+        deviceMap.put(ProjectDevice.CONTROLLER, controller);
+        generateDeviceSelectableMap();
     }
 
     public ActualDevice getController() {
-        return controller.get();
+        return deviceMap.get(ProjectDevice.CONTROLLER);
     }
 
     public boolean isActualDeviceSelected(ProjectDevice projectDevice) {
-        if (unmodifiableDeviceMap.containsKey(projectDevice) && Objects.nonNull(unmodifiableDeviceMap.get(projectDevice))) {
-            return true;
-        }
-        return false;
+        return unmodifiableDeviceMap.containsKey(projectDevice) && Objects.nonNull(unmodifiableDeviceMap.get(projectDevice));
     }
 
     public Optional<ActualDevice> getActualDevice(ProjectDevice projectDevice) {
@@ -234,6 +256,10 @@ public final class ProjectConfiguration {
         return getParentDevice(candidate);
     }
 
+    public void setActualDevice(ProjectDevice projectDevice, ActualDevice actualDevice) {
+        this.deviceMap.put(projectDevice, actualDevice);
+    }
+
     public void setParentDevice(ProjectDevice projectDevice, ProjectDevice parentDevice) {
         this.sameDeviceMap.put(projectDevice, parentDevice);
     }
@@ -246,9 +272,22 @@ public final class ProjectConfiguration {
     }
 
     public void removeAllDeviceConnection(ProjectDevice projectDevice) {
-        ActualDevice actualDevice = deviceMap.get(projectDevice);
         devicePinPortConnections.removeAll(devicePinPortConnections.stream()
-                .filter(devicePinPortConnection -> devicePinPortConnection.getTo() == actualDevice || devicePinPortConnection.getFrom() == actualDevice)
+                .filter(devicePinPortConnection -> devicePinPortConnection.getTo() == projectDevice || devicePinPortConnection.getFrom() == projectDevice)
                 .collect(Collectors.toList()));
+    }
+
+    public void unsetDevice(ProjectDevice projectDevice) {
+        deviceMap.entrySet().removeIf(entry -> projectDevice == entry.getKey());
+        devicePropertyValueMap.entrySet().removeIf(entry -> projectDevice == entry.getKey());
+        sameDeviceMap.entrySet().removeIf(entry -> projectDevice == entry.getKey() || projectDevice == entry.getValue());
+        devicePinPortConnections.removeIf(connection -> projectDevice == connection.getFrom() || projectDevice == connection.getTo());
+    }
+
+    void unsetAllDevices() {
+        deviceMap.clear();
+        devicePropertyValueMap.clear();
+        sameDeviceMap.clear();
+        devicePinPortConnections.clear();
     }
 }

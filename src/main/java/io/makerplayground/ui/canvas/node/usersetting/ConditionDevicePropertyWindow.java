@@ -136,7 +136,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
     private void redrawProperty() {
         propertyPane.getChildren().retainAll(conditionLabel, conditionComboBox);
 
-        List<Parameter> params = viewModel.getAction().getParameter();
+        List<Parameter> params = viewModel.getCondition().getParameter();
         for (int i=0; i<params.size(); i++) {
             Parameter p = params.get(i);
 
@@ -227,7 +227,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
             propertyPane.getChildren().addAll(name, control);
         }
 
-        if (viewModel.getAction().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
+        if (viewModel.getCondition().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
             List<Value> values = viewModel.getValue();
             for (int i=0; i<values.size(); i++) {
                 Value value = values.get(i);

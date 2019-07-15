@@ -24,12 +24,11 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
-import io.makerplayground.generator.devicemapping.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
-import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
@@ -50,7 +49,6 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends VBox{
 
@@ -66,7 +64,6 @@ public class ConfigActualDeviceView extends VBox{
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
-//    @FXML private ComboBox<ActualDevice> controllerComboBox;
     @FXML private ComboBox<ActualDeviceComboItem> controllerComboBox;
     @FXML private Label controllerName;
 
@@ -100,8 +97,8 @@ public class ConfigActualDeviceView extends VBox{
 
         autoButton.setOnAction(event -> {
             /* TODO: uncomment this */
-//            DeviceMapperResult result = viewModel.autoAssignDevice();
-//            if (result != DeviceMapperResult.OK) {
+//            ProjectMappingResult result = viewModel.autoAssignDevice();
+//            if (result != ProjectMappingResult.OK) {
 //                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
 //                warningDialogView.showAndWait();
 //            }
@@ -154,7 +151,7 @@ public class ConfigActualDeviceView extends VBox{
                             setText("");
                         } else {
                             setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
-                            setBackground(item.isSelectable() ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+                            setBackground(item.getMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
                         }
                     }
                 };
@@ -168,16 +165,17 @@ public class ConfigActualDeviceView extends VBox{
                     setText("");
                 } else {
                     setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
-                    setBackground(item.isSelectable() ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+                    setBackground(item.getMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
                 }
             }
         });
+        List<ActualDeviceComboItem> controllerList = viewModel.getControllerComboItemList(viewModel.getSelectedPlatform());
         controllerComboBox.getItems().clear();
-        controllerComboBox.getItems().addAll(viewModel.getControllerComboItemList());
+        controllerComboBox.getItems().addAll(controllerList);
         controllerComboBox.getItems().stream()
                 .filter(actualDeviceComboItem -> actualDeviceComboItem.getActualDevice() == viewModel.getSelectedController())
                 .findFirst()
-                .ifPresent(selectedController -> controllerComboBox.getSelectionModel().select(selectedController));
+                .ifPresentOrElse(selectedController -> controllerComboBox.getSelectionModel().select(selectedController), this::initDeviceControl);
     }
 
     private void initDeviceControl() {
@@ -190,6 +188,71 @@ public class ConfigActualDeviceView extends VBox{
         initDeviceControlChildren();
         initUnusedDeviceControl();
         initCloudPlatformPropertyControl();
+    }
+
+    private Callback<ListView<CompatibleDeviceComboItem>, ListCell<CompatibleDeviceComboItem>> newDeviceCellFactory() {
+        return new Callback<>() {
+            @Override
+            public ListCell<CompatibleDeviceComboItem> call(ListView<CompatibleDeviceComboItem> param) {
+                final Background GREY_BG = new Background(new BackgroundFill(Color.gray(0.8), CornerRadii.EMPTY, Insets.EMPTY));
+                ListCell<CompatibleDeviceComboItem> cell = new ListCell<>() {
+                    @Override
+                    protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                            setTooltip(null);
+                        } else {
+                            if (item.getCompatibleDevice().getActualDevice().isPresent()) {
+                                ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
+                                setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                            } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
+                                ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
+                                setText("Same as " + projectDevice.getName());
+                            }
+                            setBackground(item.getDeviceMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : GREY_BG);
+                            if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                                Tooltip tooltip = new Tooltip("Device not supported (reason: " + item.getDeviceMappingResult().getErrorMessage() + ")");
+                                setTooltip(tooltip);
+                            }
+                        }
+                    }
+                };
+                cell.hoverProperty().addListener((observable, wasHover, isNowHover) -> {
+                    if (!cell.isEmpty()) {
+                        if (cell.getItem().getDeviceMappingResult() != DeviceMappingResult.OK) {
+                            cell.setBackground(GREY_BG);
+                        }
+                        else if (!isNowHover) {
+                            cell.setBackground(Background.EMPTY);
+                        }
+                    }
+                });
+                return cell;
+            }
+        };
+    }
+
+    private ListCell<CompatibleDeviceComboItem> newDeviceComboItemListCell() {
+        return new ListCell<>() {
+            final Background GREY_BG = new Background(new BackgroundFill(Color.gray(0.8), CornerRadii.EMPTY, Insets.EMPTY));
+            @Override
+            protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText("");
+                } else {
+                    if (item.getCompatibleDevice().getActualDevice().isPresent()) {
+                        ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
+                        setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                    } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
+                        ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
+                        setText("Same as " + projectDevice.getName());
+                    }
+                    setBackground(item.getDeviceMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : GREY_BG);
+                }
+            }
+        };
     }
 
     private void initDeviceControlChildren() {
@@ -220,8 +283,10 @@ public class ConfigActualDeviceView extends VBox{
             GridPane.setConstraints(name, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
-            ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDeviceComboItem(projectDevice)));
             deviceComboBox.setId("deviceComboBox");
+            deviceComboBox.setCellFactory(newDeviceCellFactory());
+            deviceComboBox.setButtonCell(newDeviceComboItemListCell());
             deviceComboBox.getItems().stream()
                     .filter(compatibleDeviceComboItem -> {
                         Optional<ActualDevice> actualDevice = compatibleDeviceComboItem.getCompatibleDevice().getActualDevice();
@@ -241,7 +306,7 @@ public class ConfigActualDeviceView extends VBox{
             VBox entireComboBoxDevice = new VBox();
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
-            entireComboBoxDevice.setDisable(viewModel.getController() == null);
+//            entireComboBoxDevice.setDisable(viewModel.getController() == null);
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
@@ -332,7 +397,7 @@ public class ConfigActualDeviceView extends VBox{
 //                }
 
                 // property
-                if (!viewModel.getActualDevice(projectDevice).orElseThrow().getProperty().isEmpty()) {
+                if (viewModel.getActualDevice(projectDevice).orElseThrow().getProperty() != null && !viewModel.getActualDevice(projectDevice).orElseThrow().getProperty().isEmpty()) {
                     GridPane propertyGridPane = new GridPane();
                     propertyGridPane.setHgap(10);
                     propertyGridPane.setVgap(10);
@@ -474,7 +539,7 @@ public class ConfigActualDeviceView extends VBox{
                 cloudPlatformParameterPane.getChildren().addAll(cloudPlatformIcon, cloudPlatformNameLabel);
 
                 for (String parameterName : cloudPlatform.getParameter()) { // use cloudPlatform.getUnmodifiableCloudParameterMap() as the map may not contain every params as key and we want it in the order defined
-                    String value = viewModel.getCloudPlatfromParameterValue(cloudPlatform, parameterName);
+                    String value = viewModel.getCloudPlatformParameterValue(cloudPlatform, parameterName);
 
                     Label parameterNameLabel = new Label(parameterName);
                     GridPane.setRowIndex(parameterNameLabel, currentRow);

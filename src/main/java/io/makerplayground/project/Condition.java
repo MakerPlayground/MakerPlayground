@@ -146,7 +146,7 @@ public class Condition extends NodeElement {
 
         for (UserSetting userSetting : setting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
-            if (userSetting.getAction().getName().equals("Compare")) {
+            if (userSetting.getCondition().getName().equals("Compare")) {
                 if (!userSetting.getExpressionEnable().values().contains(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }

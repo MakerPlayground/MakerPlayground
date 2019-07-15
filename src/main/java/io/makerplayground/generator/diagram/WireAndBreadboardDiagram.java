@@ -133,7 +133,7 @@ class WireAndBreadboardDiagram extends Pane {
 //            if (projectDevice.isMergeToOtherDevice()) {
 //                continue;
 //            }
-//            ActualDevice device = projectDevice.getCompatibleDevice();
+//            ActualDevice device = projectDevice.getCompatibleDeviceComboItem();
 //            if (device instanceof IntegratedActualDevice) {
 //                continue;
 //            }
@@ -250,7 +250,7 @@ class WireAndBreadboardDiagram extends Pane {
 //            if (projectDevice.isMergeToOtherDevice()) {
 //                continue;
 //            }
-//            ActualDevice device = projectDevice.getCompatibleDevice();
+//            ActualDevice device = projectDevice.getCompatibleDeviceComboItem();
 //            List<DevicePort> powerPort = device.getPort(Peripheral.POWER);
 //
 //            if (device instanceof IntegratedActualDevice) {
@@ -412,7 +412,7 @@ class WireAndBreadboardDiagram extends Pane {
 //                if (projectDevice.isMergeToOtherDevice()) {
 //                    continue;
 //                }
-//                ActualDevice device = projectDevice.getCompatibleDevice();
+//                ActualDevice device = projectDevice.getCompatibleDeviceComboItem();
 //                if (device.getFormFactor() == FormFactor.SHIELD) {
 //                    continue;
 //                }
@@ -466,7 +466,7 @@ class WireAndBreadboardDiagram extends Pane {
 //            if (projectDevice.isMergeToOtherDevice()) {
 //                continue;
 //            }
-//            ActualDevice device = projectDevice.getCompatibleDevice();
+//            ActualDevice device = projectDevice.getCompatibleDeviceComboItem();
 //            if (device instanceof IntegratedActualDevice) {
 //                continue;
 //            }
@@ -535,7 +535,7 @@ class WireAndBreadboardDiagram extends Pane {
 //            if (device.isMergeToOtherDevice()) {
 //                continue;
 //            }
-//            FormFactor f = device.getCompatibleDevice().getFormFactor();
+//            FormFactor f = device.getCompatibleDeviceComboItem().getFormFactor();
 //            if(f == FormFactor.STANDALONE){
 //                countStandAlone += 1;
 //            }
@@ -667,11 +667,11 @@ class WireAndBreadboardDiagram extends Pane {
 //        double startX = 0, startY = 0;
 //        double endX = 0, endY = 0;
 //
-//        if (source.getCompatibleDevice().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
+//        if (source.getCompatibleDeviceComboItem().getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
 //            startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
 //            startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
-//        } else if (source.getCompatibleDevice().getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
-//            DevicePort srcTopLeftPort = getTopLeftHole(source.getCompatibleDevice());
+//        } else if (source.getCompatibleDeviceComboItem().getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+//            DevicePort srcTopLeftPort = getTopLeftHole(source.getCompatibleDeviceComboItem());
 //
 //            //top side - go up
 //            if (sourcePort.getY() == srcTopLeftPort.getY()) {
@@ -682,7 +682,7 @@ class WireAndBreadboardDiagram extends Pane {
 //                startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
 //                startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY() + HOLE_SPACE;
 //            }
-//        } else if (source.getCompatibleDevice().getFormFactor() == FormFactor.STANDALONE) {
+//        } else if (source.getCompatibleDeviceComboItem().getFormFactor() == FormFactor.STANDALONE) {
 //            startX = deviceTopLeftPos.get(source).getX() + sourcePort.getX();
 //            startY = deviceTopLeftPos.get(source).getY() + sourcePort.getY();
 //        }

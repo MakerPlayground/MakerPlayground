@@ -28,8 +28,6 @@ import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.generator.devicemapping.ProjectConfiguration;
-import io.makerplayground.generator.devicemapping.ProjectConfigurationDeserializer;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
@@ -156,7 +154,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ProjectConfiguration.class, new ProjectConfigurationDeserializer(project));
         mapper.registerModule(module);
-        project.setConfiguration(jsonParser.readValueAs(ProjectConfiguration.class));
+        project.setProjectConfiguration(jsonParser.readValueAs(ProjectConfiguration.class));
 
         return project;
     }
@@ -519,8 +517,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
 
         /* TODO: uncomment this & add actual device connection and dependent device connection to project device  */
-        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice
-                , dependentDevice, property);
+        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice);
         if (actualDeviceNode.has("type") && actualDeviceType.equals("share")) {
             shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());
         }

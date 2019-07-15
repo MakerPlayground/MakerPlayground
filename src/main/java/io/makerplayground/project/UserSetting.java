@@ -160,6 +160,10 @@ public class UserSetting {
         return action.getReadOnlyProperty();
     }
 
+    public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
+        return this.getAllValueUsed(Set.of(DataType.values()));
+    }
+
     public Map<ProjectDevice, Set<Value>> getAllValueUsed(Set<DataType> dataType) {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 

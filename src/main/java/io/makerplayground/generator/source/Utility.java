@@ -81,15 +81,16 @@ class Utility {
     }
 
     static boolean validateDeviceProperty(Project project) {
+        ProjectConfiguration configuration = project.getProjectConfiguration();
         for (ProjectDevice device : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
-            if (project.isUsedSameDevice(device)) {
+            if (configuration.isUsedSameDevice(device)) {
                 continue;
             }
             // check only device that has a property
-            if (project.getActualDevice(device).isPresent() && !project.getActualDevice(device).get().getProperty().isEmpty()) {
-                for (Property p : project.getActualDevice(device).get().getProperty()) {
-                    Object value = project.getPropertyValue(device, p);
+            if (configuration.getActualDevice(device).isPresent() && !configuration.getActualDevice(device).get().getProperty().isEmpty()) {
+                for (Property p : configuration.getActualDevice(device).get().getProperty()) {
+                    Object value = configuration.getPropertyValue(device, p);
                     // TODO: allow property to be optional
                     if (value == null) {
                         return false;

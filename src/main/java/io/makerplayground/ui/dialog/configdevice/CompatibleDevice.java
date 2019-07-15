@@ -3,10 +3,11 @@ package io.makerplayground.ui.dialog.configdevice;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.project.ProjectDevice;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
-public class CompatibleDevice {
+public class CompatibleDevice implements Comparable<CompatibleDevice> {
     private ActualDevice actualDevice;
     private ProjectDevice projectDevice;
 
@@ -50,6 +51,26 @@ public class CompatibleDevice {
             return Objects.hash(actualDevice);
         } else {
             return Objects.hash(projectDevice);
+        }
+    }
+
+    private static final Comparator<ActualDevice> comparator = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
+
+    @Override
+    public int compareTo(CompatibleDevice that) {
+        if (this.getProjectDevice().isPresent() && that.getProjectDevice().isPresent()) {
+            return this.getProjectDevice().get().getName().compareTo(that.getProjectDevice().get().getName());
+        }
+        else if (this.getProjectDevice().isPresent() && that.getProjectDevice().isEmpty()) {
+            return -1;
+        }
+        else if (this.getProjectDevice().isEmpty() && that.getProjectDevice().isPresent()) {
+            return 1;
+        }
+        else {
+            ActualDevice thisDevice = this.getActualDevice().orElseThrow();
+            ActualDevice thatDevice = that.getActualDevice().orElseThrow();
+            return comparator.compare(thisDevice, thatDevice);
         }
     }
 }

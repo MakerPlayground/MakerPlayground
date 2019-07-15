@@ -16,7 +16,8 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.devicemapping.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -127,9 +128,7 @@ public class MainWindow extends BorderPane {
         Runnable generateViewCreator = () -> {
             rightView.getChildren().clear();
 
-            /* TODO: uncomment this and remove the fake mappingResult */
-//            DeviceMapperResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(currentProject);
-            DeviceMapperResult mappingResult = DeviceMapperResult.OK;
+            ProjectMappingResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(currentProject);
             SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generate(currentProject);
 
             GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);
@@ -142,7 +141,7 @@ public class MainWindow extends BorderPane {
             rightView.getChildren().add(generateView);
 
             String errorMessage = null;
-            if (mappingResult != DeviceMapperResult.OK) {
+            if (mappingResult != ProjectMappingResult.OK) {
                 errorMessage = mappingResult.getErrorMessage();
             } else if (codeGeneratorResult.hasError()) {
                 errorMessage = codeGeneratorResult.getError().getDescription();
@@ -163,6 +162,7 @@ public class MainWindow extends BorderPane {
         };
 
         // device config
+        currentProject.calculateCompatibility();
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);

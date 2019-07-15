@@ -81,7 +81,7 @@ class JSTDiagram extends Pane {
 //            if (projectDevice.isMergeToOtherDevice()) {
 //                continue;
 //            }
-//            if (projectDevice.getCompatibleDevice().getFormFactor() == FormFactor.NONE) {
+//            if (projectDevice.getCompatibleDeviceComboItem().getFormFactor() == FormFactor.NONE) {
 //                continue;
 //            }
 //
@@ -107,9 +107,9 @@ class JSTDiagram extends Pane {
 //        try (InputStream controllerImageStream = Files.newInputStream(controllerImagePath)) {
 //            // left offset is equal to the max height of all devices on the left hand side not the max width because the image
 //            // need to be rotate CW by 90 degree
-//            controllerOffsetX = PADDING_X + deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDevice)
+//            controllerOffsetX = PADDING_X + deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                    .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
-//            controllerOffsetY = PADDING_Y + deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDevice)
+//            controllerOffsetY = PADDING_Y + deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                    .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING;
 //            Image controllerImage = new Image(controllerImageStream);
 //            ImageView controllerImageView = new ImageView(controllerImage);
@@ -123,59 +123,59 @@ class JSTDiagram extends Pane {
 //        double left = 0, right = 0, top = 0, bottom = 0;
 //
 //        // draw top device
-//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDevice)        // left offset is equal to the max height of all devices on the left hand side
+//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDeviceComboItem)        // left offset is equal to the max height of all devices on the left hand side
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
-//        bottom = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDevice)
+//        bottom = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_Y;
 //        List<ProjectDevice> topDevice = deviceMap.get(Side.TOP);
 //        topDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getX()));
 //        for (ProjectDevice device : topDevice) {
-//            devicePositionMap.put(device, new Point2D(left, bottom - device.getCompatibleDevice().getHeight()));
+//            devicePositionMap.put(device, new Point2D(left, bottom - device.getCompatibleDeviceComboItem().getHeight()));
 //            drawDevice(device);
-//            left += device.getCompatibleDevice().getWidth() + DEVICE_SPACING;
+//            left += device.getCompatibleDeviceComboItem().getWidth() + DEVICE_SPACING;
 //        }
 //
 //        // draw left device
-//        right = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDevice)       // left offset is equal to the max height of all devices on the left hand side
+//        right = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDeviceComboItem)       // left offset is equal to the max height of all devices on the left hand side
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
-//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDevice)
+//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y;
 //        List<ProjectDevice> leftDevice = deviceMap.get(Side.LEFT);
 //        leftDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getY()));
 //        for (ProjectDevice device : leftDevice) {
-//            devicePositionMap.put(device, new Point2D(right - device.getCompatibleDevice().getHeight()
-//                    , top + device.getCompatibleDevice().getWidth()));
+//            devicePositionMap.put(device, new Point2D(right - device.getCompatibleDeviceComboItem().getHeight()
+//                    , top + device.getCompatibleDeviceComboItem().getWidth()));
 //            drawDevice(device);
-//            top += device.getCompatibleDevice().getWidth() + DEVICE_SPACING;
+//            top += device.getCompatibleDeviceComboItem().getWidth() + DEVICE_SPACING;
 //        }
 //
 //        // draw bottom device
-//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDevice)        // left offset is equal to the max height of all devices on the left hand side
+//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDeviceComboItem)        // left offset is equal to the max height of all devices on the left hand side
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + PADDING_X;    // not the max width because the image need to be rotate CW by 90 degree
-//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDevice)
+//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y
 //                + controller.getHeight() + DEVICE_TO_BOARD_SPACING;
 //        List<ProjectDevice> bottomDevice = deviceMap.get(Side.BOTTOM);
 //        bottomDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getX()));
 //        for (ProjectDevice device : bottomDevice) {
-//            devicePositionMap.put(device, new Point2D(left + device.getCompatibleDevice().getWidth()
-//                    , top + device.getCompatibleDevice().getHeight()));
+//            devicePositionMap.put(device, new Point2D(left + device.getCompatibleDeviceComboItem().getWidth()
+//                    , top + device.getCompatibleDeviceComboItem().getHeight()));
 //            drawDevice(device);
-//            left += device.getCompatibleDevice().getWidth() + DEVICE_SPACING;
+//            left += device.getCompatibleDeviceComboItem().getWidth() + DEVICE_SPACING;
 //        }
 //
 //        // draw right device
-//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDevice)   // left offset is equal to the max height of all devices on the left hand side
+//        left = deviceMap.get(Side.LEFT).stream().map(ProjectDevice::getCompatibleDeviceComboItem)   // left offset is equal to the max height of all devices on the left hand side
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0)            // not the max width because the image need to be rotate CW by 90 degree
 //                + DEVICE_TO_BOARD_SPACING + controller.getWidth() + DEVICE_TO_BOARD_SPACING + PADDING_X;
-//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDevice)
+//        top = deviceMap.get(Side.TOP).stream().map(ProjectDevice::getCompatibleDeviceComboItem)
 //                .mapToDouble(ActualDevice::getHeight).max().orElse(0) + DEVICE_TO_BOARD_SPACING + PADDING_Y;
 //        List<ProjectDevice> rightDevice = deviceMap.get(Side.RIGHT);
 //        rightDevice.sort(Comparator.comparingDouble(o -> deviceControllerPortMap.get(o).getY()));
 //        for (ProjectDevice device : deviceMap.get(Side.RIGHT)) {
-//            devicePositionMap.put(device, new Point2D(left + device.getCompatibleDevice().getHeight(), top));
+//            devicePositionMap.put(device, new Point2D(left + device.getCompatibleDeviceComboItem().getHeight(), top));
 //            drawDevice(device);
-//            top += device.getCompatibleDevice().getWidth() + DEVICE_SPACING;
+//            top += device.getCompatibleDeviceComboItem().getWidth() + DEVICE_SPACING;
 //        }
 //
 //        // draw wire
@@ -220,7 +220,7 @@ class JSTDiagram extends Pane {
 //        double top = devicePositionMap.get(device).getY();
 //        double angle = ANGLE_MAP.get(deviceSideMap.get(device));
 //
-//        Path deviceImagePath = Paths.get(deviceDirectoryPath,device.getCompatibleDevice().getId(), "asset", "device.png");
+//        Path deviceImagePath = Paths.get(deviceDirectoryPath,device.getCompatibleDeviceComboItem().getId(), "asset", "device.png");
 //        try (InputStream deviceImageStream = Files.newInputStream(deviceImagePath)){
 //            Image deviceImage = new Image(deviceImageStream);
 //            ImageView deviceImageView = new ImageView(deviceImage);
@@ -242,17 +242,17 @@ class JSTDiagram extends Pane {
 //            }
 //            getChildren().addAll(deviceImageView);
 //        } catch (IOException e) {
-//            throw new IllegalStateException("Image not found : " + deviceDirectoryPath + device.getCompatibleDevice().getId() + "/asset/device.png");
+//            throw new IllegalStateException("Image not found : " + deviceDirectoryPath + device.getCompatibleDeviceComboItem().getId() + "/asset/device.png");
 //        }
 //    }
 //
 //    private void drawCable(ProjectDevice device, ActualDevice controller) {
-//        List<Peripheral> deviceConnectivity = device.getCompatibleDevice().getConnectivity();
+//        List<Peripheral> deviceConnectivity = device.getCompatibleDeviceComboItem().getConnectivity();
 //        Map<Peripheral, List<DevicePort>> deviceConnection = device.getDeviceConnection();
 //        boolean hasConnectedPower = false;
 //
 //        for (Peripheral peripheral : deviceConnectivity) {
-//            List<DevicePort> devicePort = device.getCompatibleDevice().getPort(peripheral);
+//            List<DevicePort> devicePort = device.getCompatibleDeviceComboItem().getPort(peripheral);
 //            List<DevicePort> controllerPort = deviceConnection.get(peripheral);
 //            if (devicePort.size() != controllerPort.size()) {
 //                throw new IllegalStateException("");
@@ -342,10 +342,10 @@ class JSTDiagram extends Pane {
 //    private void drawPinHeaderToJSTPower(ProjectDevice device, List<DevicePort> controllerPortList) {
 //        DevicePort controllerPort = controllerPortList.get(0);
 //        int powerPinIndex = controllerPort.getParent().getType().getPinIndex(DevicePortPinType.POWER).orElseThrow();
-//        Optional<DevicePort> powerPort = device.getCompatibleDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isVcc).findAny();
+//        Optional<DevicePort> powerPort = device.getCompatibleDeviceComboItem().getPort(Peripheral.POWER).stream().filter(DevicePort::isVcc).findAny();
 //        powerPort.ifPresent(devicePort -> drawPinHeaderToJSTConnector(device, devicePort, controllerPort, powerPinIndex));
 //        int groundPinIndex = controllerPort.getParent().getType().getPinIndex(DevicePortPinType.GROUND).orElseThrow();
-//        Optional<DevicePort> gndPort = device.getCompatibleDevice().getPort(Peripheral.POWER).stream().filter(DevicePort::isGnd).findAny();
+//        Optional<DevicePort> gndPort = device.getCompatibleDeviceComboItem().getPort(Peripheral.POWER).stream().filter(DevicePort::isGnd).findAny();
 //        gndPort.ifPresent(devicePort -> drawPinHeaderToJSTConnector(device, devicePort, controllerPort, groundPinIndex));
 //    }
 //
@@ -388,7 +388,7 @@ class JSTDiagram extends Pane {
 //        Optional<DevicePort> controllerVccPort = unusedPowerPort.stream().filter(DevicePort::isVcc).findAny();
 //        Optional<DevicePort> controllerGroundPort = unusedPowerPort.stream().filter(DevicePort::isGnd).findAny();
 //
-//        List<DevicePort> devicePowerPort = device.getCompatibleDevice().getPort(Peripheral.POWER);
+//        List<DevicePort> devicePowerPort = device.getCompatibleDeviceComboItem().getPort(Peripheral.POWER);
 //        Optional<DevicePort> deviceVccPort = devicePowerPort.stream().filter(DevicePort::isVcc).findAny();
 //        Optional<DevicePort> deviceGroundPort = devicePowerPort.stream().filter(DevicePort::isGnd).findAny();
 //

@@ -16,14 +16,26 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import lombok.AccessLevel;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
 
 @Value
-public class CompatibleDeviceComboItem {
+public class CompatibleDeviceComboItem implements Comparable<CompatibleDeviceComboItem> {
     private final CompatibleDevice compatibleDevice;
     @Wither(AccessLevel.PACKAGE) @NonFinal
-    boolean selectable;
+    DeviceMappingResult deviceMappingResult;
+
+    @Override
+    public int compareTo(CompatibleDeviceComboItem that) {
+        if (this.deviceMappingResult == DeviceMappingResult.OK && that.deviceMappingResult != DeviceMappingResult.OK) {
+            return -1;
+        }
+        else if (this.deviceMappingResult != DeviceMappingResult.OK && that.deviceMappingResult == DeviceMappingResult.OK) {
+            return 1;
+        }
+        return this.compatibleDevice.compareTo(that.compatibleDevice);
+    }
 }
