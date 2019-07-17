@@ -25,6 +25,7 @@ import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.DevicePinPortConnectionResult;
 import io.makerplayground.generator.devicemapping.DevicePinPortConnectionResultStatus;
 import io.makerplayground.generator.devicemapping.DevicePinPortLogic;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
@@ -45,17 +46,19 @@ public final class ProjectConfiguration {
     @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap;
-    @Getter(AccessLevel.PACKAGE) private final SortedSet<DevicePinPortConnection> devicePinPortConnections;
+    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, DevicePinPortConnection> devicePinPortConnections;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<CloudPlatform, Map<String, String>> cloudParameterMap;
 
     @Getter private final Map<ProjectDevice, Map<Property, Object>> unmodifiableDevicePropertyValueMap;
     @Getter private final SortedMap<ProjectDevice, ActualDevice> unmodifiableDeviceMap;
     @Getter private final SortedMap<ProjectDevice, ProjectDevice> unmodifiableSameDeviceMap;
-    @Getter private final SortedSet<DevicePinPortConnection> unmodifiableDevicePinPortConnections;
+    @Getter private final SortedMap<ProjectDevice, DevicePinPortConnection> unmodifiableDevicePinPortConnections;
     @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
     @Getter private SortedMap<ActualDevice, DeviceMappingResult> controllerSelectableMap;
-    @Getter private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> actualDevicesSelectableMap;
+    @Getter private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> compatibleDevicesSelectableMap;
+    @Getter private Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>> devicePinPortConnectionMap;
+//    @Getter private Map<CompatibleDevice, DevicePinPortConnectionResult> compatiblePinPortConnectionMap;
 
     @Builder
     ProjectConfiguration(@NonNull Platform platform,
@@ -63,7 +66,7 @@ public final class ProjectConfiguration {
                                 @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
                                 @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
                                 @NonNull SortedMap<ProjectDevice, ProjectDevice> sameDeviceMap,
-                                @NonNull SortedSet<DevicePinPortConnection> devicePinPortConnections,
+                                @NonNull SortedMap<ProjectDevice, DevicePinPortConnection> devicePinPortConnections,
                                 @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
         this.platform = platform;
         this.devicePropertyValueMap = devicePropertyValueMap;
@@ -77,7 +80,7 @@ public final class ProjectConfiguration {
         this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
         this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
         this.unmodifiableSameDeviceMap = Collections.unmodifiableSortedMap(sameDeviceMap);
-        this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedSet(devicePinPortConnections);
+        this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedMap(devicePinPortConnections);
         this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudPlatformParameterMap);
 
         this.controllerSelectableMap = DeviceLibrary.INSTANCE
@@ -97,13 +100,14 @@ public final class ProjectConfiguration {
         deviceMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()));
         devicePropertyValueMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()));
         sameDeviceMap.entrySet().removeIf(entry -> !devices.contains(entry.getKey()) && !devices.contains(entry.getValue()));
-        devicePinPortConnections.removeIf(connection -> !devices.contains(connection.getFrom()) && !devices.contains(connection.getTo()));
+        devicePinPortConnections.entrySet().removeIf(entry -> !devices.contains(entry.getValue().getFrom()) && !devices.contains(entry.getValue().getTo()));
 
-        generateDeviceSelectableMap();
+        generateDeviceSelectableMapAndPinPortConnection();
     }
 
-    private void generateDeviceSelectableMap() {
+    private void generateDeviceSelectableMapAndPinPortConnection() {
         Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap = new HashMap<>();
+        Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>> deviceConnectionMap = new HashMap<>();
         Set<ProjectDevice> usedDevice = new HashSet<>();
         usedDevice.addAll(this.actionCompatibility.keySet());
         usedDevice.addAll(this.conditionCompatibility.keySet());
@@ -180,20 +184,40 @@ public final class ProjectConfiguration {
             }
         }
         /* set reason for circuit incompatibility */
-        for (ProjectDevice device: usedDevice) {
+        for (ProjectDevice projectDevice: usedDevice) {
             /* device already connect: no problem */
-            if (unmodifiableDevicePinPortConnections.stream().map(DevicePinPortConnection::getTo).collect(Collectors.toList()).contains(device)) {
+            if (unmodifiableDevicePinPortConnections.values().stream().map(DevicePinPortConnection::getTo).collect(Collectors.toList()).contains(projectDevice)) {
                 continue;
             }
-            SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(device);
-            DevicePinPortLogic pinPortLogic = new DevicePinPortLogic(deviceMap, devicePinPortConnections);
+            SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(projectDevice);
+            DevicePinPortLogic pinPortLogic = new DevicePinPortLogic(deviceMap, devicePinPortConnections.values());
+            Map<ActualDevice, List<DevicePinPortConnection>> actualDeviceConnectionMap = new HashMap<>();
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
-                if (compatibleDevice.getActualDevice().isPresent() && pinPortLogic.checkCompatibilityFor(device, compatibleDevice.getActualDevice().get()) == DevicePinPortConnectionResultStatus.ERROR) {
-                    selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
+                if (compatibleDevice.getActualDevice().isPresent()) {
+                    DevicePinPortConnectionResult result = pinPortLogic.withNewActualDevice(projectDevice, compatibleDevice.getActualDevice().get());
+                    if (result.getStatus() == DevicePinPortConnectionResultStatus.ERROR) {
+                        selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
+                    }
+                    else {
+                        ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
+                        List<DevicePinPortConnection> devicePinPortConnections = result.getConnectionSet().stream()
+                                .flatMap(Collection::stream)
+                                .filter(devicePinPortConnection -> devicePinPortConnection.getTo() == projectDevice)
+                                .distinct()
+                                .sorted()
+                                .collect(Collectors.toList());
+                        actualDeviceConnectionMap.put(actualDevice, devicePinPortConnections);
+                    }
                 }
             }
+            deviceConnectionMap.put(projectDevice, actualDeviceConnectionMap);
         }
-        this.actualDevicesSelectableMap = deviceSelectableMap;
+
+        /* TODO: uncomment this and add ProjectDevice that could share to others */
+
+        this.compatibleDevicesSelectableMap = deviceSelectableMap;
+        this.devicePinPortConnectionMap = deviceConnectionMap;
+//        this.compatiblePinPortConnectionMap = deviceConnectionMap;
     }
 
     public Platform getPlatform() {
@@ -203,7 +227,7 @@ public final class ProjectConfiguration {
     public void setController(ActualDevice controller) {
         unsetAllDevices();
         deviceMap.put(ProjectDevice.CONTROLLER, controller);
-        generateDeviceSelectableMap();
+        generateDeviceSelectableMapAndPinPortConnection();
     }
 
     public ActualDevice getController() {
@@ -272,8 +296,9 @@ public final class ProjectConfiguration {
     }
 
     public void removeAllDeviceConnection(ProjectDevice projectDevice) {
-        devicePinPortConnections.removeAll(devicePinPortConnections.stream()
-                .filter(devicePinPortConnection -> devicePinPortConnection.getTo() == projectDevice || devicePinPortConnection.getFrom() == projectDevice)
+        devicePinPortConnections.remove(projectDevice);
+        devicePinPortConnections.entrySet().removeAll(devicePinPortConnections.entrySet().stream()
+                .filter(entry -> entry.getValue().getTo() == projectDevice || entry.getValue().getFrom() == projectDevice)
                 .collect(Collectors.toList()));
     }
 
@@ -281,13 +306,25 @@ public final class ProjectConfiguration {
         deviceMap.entrySet().removeIf(entry -> projectDevice == entry.getKey());
         devicePropertyValueMap.entrySet().removeIf(entry -> projectDevice == entry.getKey());
         sameDeviceMap.entrySet().removeIf(entry -> projectDevice == entry.getKey() || projectDevice == entry.getValue());
-        devicePinPortConnections.removeIf(connection -> projectDevice == connection.getFrom() || projectDevice == connection.getTo());
+        devicePinPortConnections.entrySet().removeIf(e -> projectDevice == e.getValue().getFrom() || projectDevice == e.getValue().getTo());
     }
 
-    void unsetAllDevices() {
+    private void unsetAllDevices() {
         deviceMap.clear();
         devicePropertyValueMap.clear();
         sameDeviceMap.clear();
         devicePinPortConnections.clear();
+    }
+
+    public void setDevicePinPortConnection(ProjectDevice projectDevice, DevicePinPortConnection connection) {
+        devicePinPortConnections.put(projectDevice, connection);
+    }
+
+    public void unsetDevicePinPortConnection(ProjectDevice projectDevice) {
+        devicePinPortConnections.remove(projectDevice);
+    }
+
+    public DevicePinPortConnection getDevicePinPortConnection(ProjectDevice projectDevice) {
+        return devicePinPortConnections.get(projectDevice);
     }
 }

@@ -48,15 +48,16 @@ public class GenerateViewModel {
             var deviceMap = configuration.getUnmodifiableDeviceMap();
             for (ProjectDevice device : deviceMap.keySet()) {
                 ActualDevice actualDevice = deviceMap.get(device);
-                connections.stream().filter(conn -> conn.getTo() == device).findFirst().ifPresent(connection ->
-                        observableTableList.add(new TableDataList(device.getName(),
-                                actualDevice.getBrand(),
-                                actualDevice.getModel(),
-                                actualDevice.getId(),
-                                generateDescription(connection),
-                                actualDevice.getUrl())
-                        )
-                );
+                if (connections.containsKey(device)) {
+                    var connection = connections.get(device);
+                    observableTableList.add(new TableDataList(device.getName(),
+                            actualDevice.getBrand(),
+                            actualDevice.getModel(),
+                            actualDevice.getId(),
+                            generateDescription(connection),
+                            actualDevice.getUrl())
+                    );
+                }
             }
         }
     }

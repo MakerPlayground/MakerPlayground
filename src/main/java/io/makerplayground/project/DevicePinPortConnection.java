@@ -75,4 +75,26 @@ public class DevicePinPortConnection implements Comparable<DevicePinPortConnecti
 
         return getPortFromToString(pinMapFromTo, portMapFromTo).compareTo(getPortFromToString(o.pinMapFromTo, o.portMapFromTo));
     }
+
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (!(obj instanceof DevicePinPortConnection)) {
+//            return false;
+//        }
+//        DevicePinPortConnection that = (DevicePinPortConnection) obj;
+//        if (getFrom().equals(that.getFrom()) && getTo().equals(that.getTo())) {
+//            boolean pinMapMatch = ((pinMapFromTo != null) == (that.getPinMapFromTo() != null));
+//            if (pinMapFromTo != null && that.getPinMapFromTo() != null) {
+//                pinMapMatch = getPinMapFromTo().equals(that.getPinMapFromTo());
+//            }
+//
+//            boolean portMapMatch = ((portMapFromTo != null) == (that.getPortMapFromTo() != null));
+//            if (portMapFromTo != null && that.getPortMapFromTo() != null) {
+//                portMapMatch = getPinMapFromTo().equals(that.getPinMapFromTo());
+//            }
+//
+//            return pinMapMatch && portMapMatch;
+//        }
+//        return false;
+//    }
 }

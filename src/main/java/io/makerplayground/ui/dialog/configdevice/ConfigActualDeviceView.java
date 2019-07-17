@@ -25,6 +25,7 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.project.DevicePinPortConnection;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
@@ -49,6 +50,7 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends VBox{
 
@@ -240,7 +242,8 @@ public class ConfigActualDeviceView extends VBox{
             protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
-                    setText("");
+                    setText(null);
+                    setTooltip(null);
                 } else {
                     if (item.getCompatibleDevice().getActualDevice().isPresent()) {
                         ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
@@ -250,7 +253,60 @@ public class ConfigActualDeviceView extends VBox{
                         setText("Same as " + projectDevice.getName());
                     }
                     setBackground(item.getDeviceMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : GREY_BG);
+                    if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                        Tooltip tooltip = new Tooltip("Device not supported (reason: " + item.getDeviceMappingResult().getErrorMessage() + ")");
+                        setTooltip(tooltip);
+                    }
                 }
+            }
+        };
+    }
+
+    private String getPinPortConnectionString(DevicePinPortConnection connection) {
+        String text = "";
+
+        if (connection.getPinMapFromTo() != null) {
+            text += connection.getPinMapFromTo().entrySet().stream().map(e->e.getKey().getName() + "-" +e.getValue().getName()).collect(Collectors.joining(" | "));
+        }
+        if (connection.getPinMapFromTo() != null && connection.getPortMapFromTo() != null) {
+            text += " / ";
+        }
+        if (connection.getPortMapFromTo() != null) {
+            text += connection.getPortMapFromTo().entrySet().stream().map(e->e.getKey().getName() + "-" +e.getValue().getName()).collect(Collectors.joining(" | "));
+        }
+
+        return text;
+    }
+
+    private ListCell<DevicePinPortConnection> newPinPortConnectionListCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(DevicePinPortConnection item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(getPinPortConnectionString(item));
+                }
+            }
+        };
+    }
+
+    private Callback<ListView<DevicePinPortConnection>, ListCell<DevicePinPortConnection>> newPinPortConnectionCellFactory() {
+        return new Callback<>() {
+            @Override
+            public ListCell<DevicePinPortConnection> call(ListView<DevicePinPortConnection> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(DevicePinPortConnection item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            setText(getPinPortConnectionString(item));
+                        }
+                    }
+                };
             }
         };
     }
@@ -306,7 +362,6 @@ public class ConfigActualDeviceView extends VBox{
             VBox entireComboBoxDevice = new VBox();
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
-//            entireComboBoxDevice.setDisable(viewModel.getController() == null);
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
@@ -315,10 +370,37 @@ public class ConfigActualDeviceView extends VBox{
             portPane.setVgap(5.0);
             portPane.setAlignment(Pos.CENTER_LEFT);
 
-//            Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
+            if (deviceComboBox.getSelectionModel().getSelectedItem() != null) {
+                CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
+                if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
+                    compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
+                        ComboBox<DevicePinPortConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnection(projectDevice, actualDevice)));
+//                        portComboBox.setId("portComboBox");
+                        portComboBox.setCellFactory(newPinPortConnectionCellFactory());
+                        portComboBox.setButtonCell(newPinPortConnectionListCell());
+                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevicePinPortConnection(projectDevice, newValue));
+
+                        DevicePinPortConnection connection = viewModel.getPinPortConnection(projectDevice);
+                        if (connection != null) {
+                            portComboBox.getSelectionModel().select(connection);
+                        }
+
+//                        Label portLabel = new Label("Connection");
+//                        HBox portHBox = new HBox();
+//
+//                        portHBox.getChildren().addAll(portLabel, portComboBox);
+//                        portHBox.setSpacing(5);
+//                        portPane.getChildren().addAll(portHBox);
+//
+//                        entireComboBoxDevice.getChildren().add(portPane);
+                        entireComboBoxDevice.getChildren().add(portComboBox);
+                    });
+                }
+            }
+
             // We only show port combobox and property textfield when the device has been selected
             if (viewModel.isActualDeviceSelected(projectDevice)) {
-                ActualDevice actualDevice = viewModel.getActualDevice(projectDevice).orElseThrow();
+//                ActualDevice actualDevice = viewModel.getActualDevice(projectDevice).orElseThrow();
 
                 /* TODO: uncomment this */
 //                if (!actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
@@ -358,6 +440,7 @@ public class ConfigActualDeviceView extends VBox{
 //                                }
 //                            }
 //                        });
+
 //                        if (!projectDevice.getDeviceConnection().isEmpty()) {
 //                            // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
 //                            portComboBox.getItems().add(1, Collections.emptyList());

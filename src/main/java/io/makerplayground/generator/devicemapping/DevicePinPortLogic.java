@@ -45,7 +45,7 @@ public class DevicePinPortLogic {
 
     /* The assigned pin and port connection is used as constraint to limit the generated possible answers.
      */
-    private Set<DevicePinPortConnection> assignedDevicePinPortConnections;
+    private Collection<DevicePinPortConnection> assignedDevicePinPortConnections;
 
     public DevicePinPortLogic() {
         this(Collections.emptyMap(), Collections.emptySortedSet());
@@ -55,12 +55,12 @@ public class DevicePinPortLogic {
         this(deviceMap, Collections.emptySortedSet());
     }
 
-    public DevicePinPortLogic(@NonNull Map<ProjectDevice, ActualDevice> deviceMap, @NonNull Set<DevicePinPortConnection> assignedDevicePinPortConnections) {
+    public DevicePinPortLogic(@NonNull Map<ProjectDevice, ActualDevice> deviceMap, @NonNull Collection<DevicePinPortConnection> assignedDevicePinPortConnections) {
         this(deviceMap, assignedDevicePinPortConnections, null, null);
     }
 
     private DevicePinPortLogic(@NonNull Map<ProjectDevice, ActualDevice> deviceMap,
-                               @NonNull Set<DevicePinPortConnection> assignedDevicePinPortConnections,
+                               @NonNull Collection<DevicePinPortConnection> assignedDevicePinPortConnections,
                                Map<Set<DevicePinPortConnection>, List<Pin>> remainingPinProvide,
                                Map<Set<DevicePinPortConnection>, List<Port>> remainingPortProvide)
     {

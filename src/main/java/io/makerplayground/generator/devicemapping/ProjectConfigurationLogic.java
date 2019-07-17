@@ -398,7 +398,7 @@ public class ProjectConfigurationLogic {
             // for each connectivity required, check if it has been connected and indicate error if it hasn't
             if (configuration.isActualDeviceSelected(projectDevice)) {
                 ProjectDevice root = configuration.getParentDevice(projectDevice).orElse(projectDevice);
-                if (project.getProjectConfiguration().getUnmodifiableDevicePinPortConnections().stream().noneMatch(connection -> connection.getTo() == root)) {
+                if (project.getProjectConfiguration().getUnmodifiableDevicePinPortConnections().values().stream().noneMatch(entry -> entry.getTo() == root)) {
                     return ProjectMappingResult.NOT_SELECT_PORT;
                 }
             }

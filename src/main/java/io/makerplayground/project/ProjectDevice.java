@@ -30,7 +30,7 @@ import java.util.Map;
 
 @JsonSerialize (using = ProjectDeviceSerializer.class)
 public class ProjectDevice implements Comparable<ProjectDevice>{
-    public static final ProjectDevice CONTROLLER = new ProjectDevice("controller", null);
+    public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
     private final StringProperty name;
     @Getter private final GenericDevice genericDevice;

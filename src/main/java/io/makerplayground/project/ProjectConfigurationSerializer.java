@@ -142,8 +142,12 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
 
         /* devicePinPortConnections */
         jsonGenerator.writeArrayFieldStart("devicePinPortConnection");
-        for (DevicePinPortConnection devicePinPortConnection : configuration.getDevicePinPortConnections()) {
-            jsonGenerator.writeObject(devicePinPortConnection);
+        for (ProjectDevice projectDevice: configuration.getDevicePinPortConnections().keySet()) {
+            DevicePinPortConnection devicePinPortConnection = configuration.getDevicePinPortConnections().get(projectDevice);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+            jsonGenerator.writeObjectField("pinPortConnection", devicePinPortConnection);
+            jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
 

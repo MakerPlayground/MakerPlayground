@@ -109,7 +109,7 @@ public class Project {
                 .controller(null)
                 .deviceMap(new TreeMap<>())
                 .sameDeviceMap(new TreeMap<>())
-                .devicePinPortConnections(new TreeSet<>())
+                .devicePinPortConnections(new TreeMap<>())
                 .devicePropertyValueMap(new HashMap<>())
                 .cloudPlatformParameterMap(new TreeMap<>())
                 .build();
