@@ -16,13 +16,27 @@
 
 package io.makerplayground.device.actual;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Data
-public class Port {
+public class Port implements Comparable<Port> {
+
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    private final Comparator<Port> comparator = Comparator.comparing(Port::getName).thenComparing(Port::getType);
+
     private final String name;
     private final PortConnectionType type;
     private final List<Pin> elements;
+
+    @Override
+    public int compareTo(Port o) {
+        return comparator.compare(this, o);
+    }
 }

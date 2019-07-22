@@ -16,10 +16,7 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
@@ -47,6 +44,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.*;
@@ -266,13 +264,13 @@ public class ConfigActualDeviceView extends VBox{
         String text = "";
 
         if (connection.getPinMapFromTo() != null) {
-            text += connection.getPinMapFromTo().entrySet().stream().map(e->e.getKey().getName() + "-" +e.getValue().getName()).collect(Collectors.joining(" | "));
+            text += connection.getPinMapFromTo().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue)).map(e -> e.getKey().getName()).collect(Collectors.joining("-"));
         }
         if (connection.getPinMapFromTo() != null && connection.getPortMapFromTo() != null) {
             text += " / ";
         }
         if (connection.getPortMapFromTo() != null) {
-            text += connection.getPortMapFromTo().entrySet().stream().map(e->e.getKey().getName() + "-" +e.getValue().getName()).collect(Collectors.joining(" | "));
+            text += connection.getPortMapFromTo().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue)).map(e -> e.getKey().getName()).collect(Collectors.joining("-"));
         }
 
         return text;
@@ -385,15 +383,26 @@ public class ConfigActualDeviceView extends VBox{
                             portComboBox.getSelectionModel().select(connection);
                         }
 
-//                        Label portLabel = new Label("Connection");
-//                        HBox portHBox = new HBox();
-//
-//                        portHBox.getChildren().addAll(portLabel, portComboBox);
-//                        portHBox.setSpacing(5);
-//                        portPane.getChildren().addAll(portHBox);
-//
-//                        entireComboBoxDevice.getChildren().add(portPane);
-                        entireComboBoxDevice.getChildren().add(portComboBox);
+                        String label = "";
+                        if (actualDevice.getPinConsume() != null) {
+                            label += actualDevice.getPinConsume().stream().sorted().map(Pin::getName).collect(Collectors.joining("-"));
+                        }
+                        if (actualDevice.getPinConsume() != null && actualDevice.getPortConsume() != null) {
+                            label += " / ";
+                        }
+                        if (actualDevice.getPortConsume() != null) {
+                            label += actualDevice.getPortConsume().stream().sorted().map(Port::getName).collect(Collectors.joining("-"));
+                        }
+
+                        Tooltip tooltip = new Tooltip(label);
+                        tooltip.setShowDelay(Duration.millis(50));
+                        Label portLabel = new Label("Port");
+                        portLabel.setTooltip(tooltip);
+                        HBox portHBox = new HBox();
+                        portHBox.setAlignment(Pos.CENTER_LEFT);
+                        portHBox.getChildren().addAll(portLabel, portComboBox);
+                        portHBox.setSpacing(5);
+                        entireComboBoxDevice.getChildren().add(portHBox);
                     });
                 }
             }
