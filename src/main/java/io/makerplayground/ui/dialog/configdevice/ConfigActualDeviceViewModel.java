@@ -57,7 +57,7 @@ public class ConfigActualDeviceViewModel {
 
     private void applyDeviceMapping() {
         compatibleDeviceMap.set(project.getProjectConfiguration().getCompatibleDevicesSelectableMap());
-        devicePinPortList.set(project.getProjectConfiguration().getDevicePinPortConnectionMap());
+        devicePinPortList.set(project.getProjectConfiguration().getCompatibleDevicePinPortConnectionMap());
     }
 
     public void clearDeviceConfigChangedCallback() {
@@ -89,8 +89,8 @@ public class ConfigActualDeviceViewModel {
     void setController(ActualDeviceComboItem device) {
         if (selectedController != device) {
             selectedController = device;
-            if (device != null) {
-                project.setController(device.getActualDevice());
+            if (selectedController != null) {
+                project.setController(selectedController.getActualDevice());
             }
             applyDeviceMapping();
             if (controllerChangedCallback != null) {
@@ -106,31 +106,33 @@ public class ConfigActualDeviceViewModel {
         return project.getSelectedController();
     }
 
-////    ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceListProperty() {
-////        return compatibleDeviceList;
-////    }
-////
-////    ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
-////        return devicePinPortList;
-////    }
-
     void setDevice(ProjectDevice projectDevice, CompatibleDevice device) {
         ProjectConfiguration configuration = project.getProjectConfiguration();
-        if (configuration.isActualDeviceSelected(projectDevice)) {
-            project.getProjectConfiguration().removeAllDeviceConnection(projectDevice);
+        /* same as previous -> do nothing */
+        if (device == null) {
+            if (configuration.getActualDevice(projectDevice).isPresent() || configuration.getIdenticalDevice(projectDevice).isPresent()) {
+                configuration.unsetDevice(projectDevice);
+                applyDeviceMapping();
+                if (deviceConfigChangedCallback != null) {
+                    deviceConfigChangedCallback.run();
+                }
+                if (configChangedCallback != null) {
+                    configChangedCallback.run();
+                }
+            }
         }
-        configuration.unsetDevice(projectDevice);
-        if (device.getActualDevice().isPresent()) {
-            configuration.setActualDevice(projectDevice, device.getActualDevice().get());
-        } else if (device.getProjectDevice().isPresent()){
-            configuration.setParentDevice(projectDevice, device.getProjectDevice().orElseThrow());
-        }
-        applyDeviceMapping();
-        if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.run();
-        }
-        if (configChangedCallback != null) {
-            configChangedCallback.run();
+        else if (configuration.getActualDevice(projectDevice) != device.getActualDevice()
+                || configuration.getIdenticalDevice(projectDevice) != device.getProjectDevice()) {
+
+            device.getActualDevice().ifPresentOrElse(actualDevice -> configuration.setActualDevice(projectDevice, actualDevice),
+                    () -> device.getProjectDevice().ifPresent(identicalDevice -> configuration.setIdenticalDevice(projectDevice, identicalDevice)));
+            applyDeviceMapping();
+            if (deviceConfigChangedCallback != null) {
+                deviceConfigChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
         }
     }
 
@@ -194,32 +196,28 @@ public class ConfigActualDeviceViewModel {
 
     public List<CompatibleDeviceComboItem> getCompatibleDeviceComboItem(ProjectDevice projectDevice) {
         if (!compatibleDeviceMap.get().containsKey(projectDevice)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return compatibleDeviceMap.get().get(projectDevice).entrySet().stream().map(entry -> new CompatibleDeviceComboItem(entry.getKey(), entry.getValue())).sorted().collect(Collectors.toList());
     }
 
-    public boolean isActualDeviceSelected(ProjectDevice projectDevice) {
-        return project.getProjectConfiguration().isActualDeviceSelected(projectDevice);
+    public boolean isActualDevicePresent(ProjectDevice projectDevice) {
+        return project.getProjectConfiguration().getActualDevice(projectDevice).isPresent();
     }
-
-//    public Optional<ActualDevice> getActualDeviceComboItem(ProjectDevice projectDevice) {
-//        return project.getActualDevice(projectDevice);
-//    }
 
     public Optional<ActualDevice> getActualDevice(ProjectDevice projectDevice) {
         return project.getProjectConfiguration().getActualDevice(projectDevice);
     }
 
     public Optional<ProjectDevice> getParentDevice(ProjectDevice projectDevice) {
-        return project.getProjectConfiguration().getParentDevice(projectDevice);
+        return project.getProjectConfiguration().getIdenticalDevice(projectDevice);
     }
 
-    public List<DevicePinPortConnection> getPossiblePinPortConnection(ProjectDevice projectDevice, ActualDevice actualDevice) {
+    public List<DevicePinPortConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
         return devicePinPortList.get().get(projectDevice).get(actualDevice);
     }
 
-    public DevicePinPortConnection getPinPortConnection(ProjectDevice projectDevice) {
+    public DevicePinPortConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
         return project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
     }
 

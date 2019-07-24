@@ -66,7 +66,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 
         /* TODO: uncomment this */
 //        jsonGenerator.writeArrayFieldStart("property");
-//        if (projectDevice.isActualDeviceSelected()) {
+//        if (projectDevice.isActualDevicePresent()) {
 //            for (Property property : projectDevice.getCompatibleDeviceComboItem().getProperty()) {
 //                Object value = projectDevice.getPropertyValue(property);
 //                jsonGenerator.writeStartObject();

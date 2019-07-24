@@ -17,6 +17,7 @@
 package io.makerplayground.device.actual;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 public enum Platform {
@@ -31,5 +32,5 @@ public enum Platform {
     }
 
     private String displayName;
-    private String libFolderName;
+    @ToString.Exclude private String libFolderName;
 }

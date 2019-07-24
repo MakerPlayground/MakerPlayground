@@ -17,11 +17,12 @@
 package io.makerplayground.device.actual;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
 public class SourceCodeLibrary {
     private final String className;
-    private final List<String> dependency;
+    @ToString.Exclude private final List<String> dependency;
 }

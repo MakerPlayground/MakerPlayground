@@ -16,44 +16,32 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.generic.GenericDevice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 @JsonSerialize (using = ProjectDeviceSerializer.class)
+@Data @AllArgsConstructor
 public class ProjectDevice implements Comparable<ProjectDevice>{
+    @JsonIgnore
     public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
-    private final StringProperty name;
-    @Getter private final GenericDevice genericDevice;
+    private String name;
+    @Getter @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
 
-    public ProjectDevice(String name, GenericDevice genericDevice, Project project) {
-        this.name = new SimpleStringProperty(name);
-        this.genericDevice = genericDevice;
-    }
-
-    public String getName() {
-        return name.get();
-    }
-
-    public boolean setName(String name) {
-        // name should contain only letters, digits and underscores and cannot start with a digit (we follow the c
-        // identifier rule which should be fine for code generate for most platform )
-        this.name.set(name);
-        return true;
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
+//    public ProjectDevice(String name, GenericDevice genericDevice) {
+//        this.name = name;
+//        this.genericDevice = genericDevice;
+//    }
 
     @Override
     public int compareTo(ProjectDevice o) {

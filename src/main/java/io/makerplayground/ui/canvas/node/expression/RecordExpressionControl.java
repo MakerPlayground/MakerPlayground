@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecordExpressionControl extends VBox {
-    private static final Parameter parameter = new Parameter("Field", NumberWithUnit.ZERO, NumericConstraint.NONE, DataType.DOUBLE, ControlType.SPINBOX);
+    private static final Parameter parameter = new Parameter("Field", DataType.DOUBLE, NumberWithUnit.ZERO, NumericConstraint.NONE, ControlType.SPINBOX);
     private final List<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<RecordExpression> expression;
 

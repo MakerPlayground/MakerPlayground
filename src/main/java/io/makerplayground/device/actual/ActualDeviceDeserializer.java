@@ -38,6 +38,10 @@ import static io.makerplayground.util.DeserializerHelper.*;
 
 public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
+    private static final List<Pin> dummyPinList = Collections.emptyList();
+    private static final List<Port> dummyPortList = Collections.emptyList();
+    private static final List<Property> dummyPropertyList = Collections.emptyList();
+
     private String id;
 
     @Override
@@ -107,12 +111,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-        if (pinProvide.isEmpty()) { pinProvide = null; }
-        if (pinConsume.isEmpty()) { pinConsume = null; }
-        if (pinUnused.isEmpty()) { pinUnused = null; }
-        if (portProvide.isEmpty()) { portProvide = null; }
-        if (portConsume.isEmpty()) { portConsume = null; }
-        if (property.isEmpty()) { property = null; }
+        if (pinProvide.isEmpty()) { pinProvide = dummyPinList; }
+        if (pinConsume.isEmpty()) { pinConsume = dummyPinList; }
+        if (pinUnused.isEmpty()) { pinUnused = dummyPinList; }
+        if (portProvide.isEmpty()) { portProvide = dummyPortList; }
+        if (portConsume.isEmpty()) { portConsume = dummyPortList; }
+        if (property.isEmpty()) { property = dummyPropertyList; }
 
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
@@ -167,12 +171,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-            if (inPinProvide.isEmpty()) { inPinProvide = null; }
-            if (inPinConsume.isEmpty()) { inPinConsume = null; }
-            if (inPinUnused.isEmpty()) { inPinUnused = null; }
-            if (inPortProvide.isEmpty()) { inPortProvide = null; }
-            if (inPortConsume.isEmpty()) { inPortConsume = null; }
-            if (inProperty.isEmpty()) { inProperty = null; }
+            if (inPinProvide.isEmpty()) { inPinProvide = dummyPinList; }
+            if (inPinConsume.isEmpty()) { inPinConsume = dummyPinList; }
+            if (inPinUnused.isEmpty()) { inPinUnused = dummyPinList; }
+            if (inPortProvide.isEmpty()) { inPortProvide = dummyPortList; }
+            if (inPortConsume.isEmpty()) { inPortConsume = dummyPortList; }
+            if (inProperty.isEmpty()) { inProperty = dummyPropertyList; }
 
             /* Compatibility */
             Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);

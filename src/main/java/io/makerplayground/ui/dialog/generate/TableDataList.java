@@ -36,7 +36,7 @@ public class TableDataList {
 //    public TableDataList(ProjectDevice projectDevice) {
 //        ProjectDevice actualDevice;
 //        if (projectDevice.isMergeToOtherDevice()) {
-//            actualDevice = projectDevice.getParentDevice();
+//            actualDevice = projectDevice.getIdenticalDevice();
 //        } else {
 //            actualDevice = projectDevice;
 //        }

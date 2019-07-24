@@ -66,11 +66,11 @@ public class GenerateViewModel {
         List<String> pinPortNameFrom = new ArrayList<>();
         List<String> pinPortNameTo = new ArrayList<>();
         ProjectConfiguration configuration = project.getProjectConfiguration();
-        Optional<ActualDevice> from = configuration.getActualDevice(connection.getFrom());
-        Optional<ActualDevice> to = configuration.getActualDevice(connection.getTo());
+        Optional<ActualDevice> from = configuration.getActualDevice(connection.getConsumerDevice());
+        Optional<ActualDevice> to = configuration.getActualDevice(connection.getProviderDevice());
         if (from.isPresent() && to.isPresent()) {
-            Map<Pin, Pin> pinMapFromTo = connection.getPinMapFromTo();
-            Map<Port, Port> portMapFromTo = connection.getPortMapFromTo();
+            Map<Pin, Pin> pinMapFromTo = connection.getPinMapConsumerProvider();
+            Map<Port, Port> portMapFromTo = connection.getPortMapConsumerProvider();
             if (Objects.nonNull(pinMapFromTo)) {
                 for(Pin pin : pinMapFromTo.keySet()) {
                     pinPortNameFrom.add(pin.getName());

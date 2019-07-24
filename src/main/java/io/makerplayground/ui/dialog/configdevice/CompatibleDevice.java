@@ -1,5 +1,6 @@
 package io.makerplayground.ui.dialog.configdevice;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.project.ProjectDevice;
 
@@ -10,6 +11,9 @@ import java.util.Optional;
 public class CompatibleDevice implements Comparable<CompatibleDevice> {
     private ActualDevice actualDevice;
     private ProjectDevice projectDevice;
+
+    @JsonIgnore
+    private static final Comparator<ActualDevice> comparator = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
 
     public CompatibleDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;
@@ -54,8 +58,6 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
         }
     }
 
-    private static final Comparator<ActualDevice> comparator = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
-
     @Override
     public int compareTo(CompatibleDevice that) {
         if (this.getProjectDevice().isPresent() && that.getProjectDevice().isPresent()) {
@@ -67,10 +69,9 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
         else if (this.getProjectDevice().isEmpty() && that.getProjectDevice().isPresent()) {
             return 1;
         }
-        else {
-            ActualDevice thisDevice = this.getActualDevice().orElseThrow();
-            ActualDevice thatDevice = that.getActualDevice().orElseThrow();
-            return comparator.compare(thisDevice, thatDevice);
+        else if (this.getActualDevice().isPresent() && that.getActualDevice().isPresent()) {
+            return comparator.compare(this.getActualDevice().get(), that.getActualDevice().get());
         }
+        throw new IllegalStateException("CompatibleDevice must contains neither projectDevice nor actualDevice");
     }
 }

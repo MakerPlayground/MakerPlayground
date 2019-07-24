@@ -91,7 +91,7 @@ public class ConfigActualDeviceView extends VBox{
         viewModel.setControllerChangedCallback(this::initDeviceControl);
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
 
-        // write change to the viewmodel
+        // write change to the viewModel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
 
@@ -263,14 +263,14 @@ public class ConfigActualDeviceView extends VBox{
     private String getPinPortConnectionString(DevicePinPortConnection connection) {
         String text = "";
 
-        if (connection.getPinMapFromTo() != null) {
-            text += connection.getPinMapFromTo().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue)).map(e -> e.getKey().getName()).collect(Collectors.joining("-"));
+        if (!connection.getPinMapConsumerProvider().isEmpty()) {
+            text += connection.getPinMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getName()).collect(Collectors.joining("-"));
         }
-        if (connection.getPinMapFromTo() != null && connection.getPortMapFromTo() != null) {
+        if (!connection.getPinMapConsumerProvider().isEmpty() && !connection.getPortMapConsumerProvider().isEmpty()) {
             text += " / ";
         }
-        if (connection.getPortMapFromTo() != null) {
-            text += connection.getPortMapFromTo().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getValue)).map(e -> e.getKey().getName()).collect(Collectors.joining("-"));
+        if (!connection.getPortMapConsumerProvider().isEmpty()) {
+            text += connection.getPortMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getName()).collect(Collectors.joining("-"));
         }
 
         return text;
@@ -284,7 +284,7 @@ public class ConfigActualDeviceView extends VBox{
                 if (empty) {
                     setText(null);
                 } else {
-                    setText(getPinPortConnectionString(item));
+                    setText(item != DevicePinPortConnection.NOT_CONNECTED ? getPinPortConnectionString(item) : null);
                 }
             }
         };
@@ -301,7 +301,7 @@ public class ConfigActualDeviceView extends VBox{
                         if (empty) {
                             setText(null);
                         } else {
-                            setText(getPinPortConnectionString(item));
+                            setText(item != DevicePinPortConnection.NOT_CONNECTED ? getPinPortConnectionString(item) : null);
                         }
                     }
                 };
@@ -372,16 +372,15 @@ public class ConfigActualDeviceView extends VBox{
                 CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
                 if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
                     compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
-                        ComboBox<DevicePinPortConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnection(projectDevice, actualDevice)));
-//                        portComboBox.setId("portComboBox");
+                        ComboBox<DevicePinPortConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnections(projectDevice, actualDevice)));
                         portComboBox.setCellFactory(newPinPortConnectionCellFactory());
                         portComboBox.setButtonCell(newPinPortConnectionListCell());
-                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevicePinPortConnection(projectDevice, newValue));
-
-                        DevicePinPortConnection connection = viewModel.getPinPortConnection(projectDevice);
-                        if (connection != null) {
+                        DevicePinPortConnection connection = viewModel.getSelectedPinPortConnection(projectDevice);
+                        if (connection != DevicePinPortConnection.NOT_CONNECTED) {
+                            System.out.println(connection);
                             portComboBox.getSelectionModel().select(connection);
                         }
+                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevicePinPortConnection(projectDevice, newValue));
 
                         String label = "";
                         if (actualDevice.getPinConsume() != null) {
@@ -408,7 +407,7 @@ public class ConfigActualDeviceView extends VBox{
             }
 
             // We only show port combobox and property textfield when the device has been selected
-            if (viewModel.isActualDeviceSelected(projectDevice)) {
+            if (viewModel.isActualDevicePresent(projectDevice)) {
 //                ActualDevice actualDevice = viewModel.getActualDevice(projectDevice).orElseThrow();
 
                 /* TODO: uncomment this */

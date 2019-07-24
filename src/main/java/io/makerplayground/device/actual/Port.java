@@ -28,8 +28,7 @@ import java.util.List;
 public class Port implements Comparable<Port> {
 
     @JsonIgnore
-    @Getter(AccessLevel.NONE)
-    private final Comparator<Port> comparator = Comparator.comparing(Port::getName).thenComparing(Port::getType);
+    private static final Comparator<Port> comparator = Comparator.comparing(Port::getName).thenComparing(Port::getType);
 
     private final String name;
     private final PortConnectionType type;

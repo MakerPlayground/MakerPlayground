@@ -72,6 +72,6 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
                 throw new IllegalStateException("Error: found unknown datatype!!!");
         }
 
-        return new Parameter(name, defaultValue, constraint, dataType, controlType);
+        return new Parameter(name, dataType, defaultValue, constraint, controlType);
     }
 }

@@ -22,7 +22,6 @@ import io.makerplayground.project.ProjectDevice;
 import lombok.NonNull;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class DevicePinPortLogic {
 
@@ -99,7 +98,7 @@ public class DevicePinPortLogic {
                 if (actualDevice == null || projectDevice == ProjectDevice.CONTROLLER) {
                     continue;
                 }
-                DevicePinPortConnectionResult result = this.withNewActualDevice(projectDevice, actualDevice);
+                DevicePinPortConnectionResult result = this.tryAssignActualDevice(projectDevice, actualDevice);
                 if (result.getStatus() == DevicePinPortConnectionResultStatus.OK) {
                     this.possibleDevicePinPortConnection = result.getConnectionSet();
                     this.remainingPortProvide = result.getRemainingPortProvide();
@@ -118,15 +117,10 @@ public class DevicePinPortLogic {
         }
     }
 
-    public DevicePinPortConnectionResultStatus checkCompatibilityFor(ProjectDevice projectDevice, ActualDevice actualDevice) {
-        DevicePinPortConnectionResult result = this.withNewActualDevice(projectDevice, actualDevice);
-        return result.getStatus();
-    }
-
     /* Caution!!! This method implementation assumes that the pin/port provider is controller only
      * If there is the change in assumption, the code implementation must be changed.
      */
-    public DevicePinPortConnectionResult withNewActualDevice(ProjectDevice target, ActualDevice actualDevice) {
+    public DevicePinPortConnectionResult tryAssignActualDevice(ProjectDevice target, ActualDevice actualDevice) {
         if (actualDevice.getDeviceType() == DeviceType.CONTROLLER) {
             throw new UnsupportedOperationException("Not support for controller");
         }
@@ -137,12 +131,12 @@ public class DevicePinPortLogic {
             throw new UnsupportedOperationException("Not support for pin expander device yet");
         }
 
-        boolean hasPortConsume = Objects.nonNull(actualDevice.getPortConsume());
-        boolean hasPinConsume = Objects.nonNull(actualDevice.getPinConsume());
+        boolean hasPortConsume = !actualDevice.getPortConsume().isEmpty();
+        boolean hasPinConsume = !actualDevice.getPinConsume().isEmpty();
         if (hasPinConsume && hasPortConsume) {
             throw new UnsupportedOperationException("Not support for device that has both pinConsume and portConsume. " +
                     "Implementation is finished but testing is needed. " +
-                    "Please uncomment this throw exception!!");
+                    "To test it, uncomment this throw exception!!");
         }
 
         /* device has no connection (e.g. virtual device) */
@@ -166,7 +160,7 @@ public class DevicePinPortLogic {
             }
 
             /* if the device connection is not assigned yet */
-            if (assignedDevicePinPortConnections.stream().noneMatch(devicePinPortConnection -> devicePinPortConnection.getTo() == target)) {
+            if (assignedDevicePinPortConnections.stream().noneMatch(devicePinPortConnection -> devicePinPortConnection.getConsumerDevice() == target)) {
                 /* try consume pin and port from pinProvide and portProvide */
                 boolean[][] portMatching = new boolean[hasPortConsume ? actualDevice.getPortConsume().size() : 0][];
                 for (int i=0; i<portMatching.length; i++) {
@@ -238,15 +232,15 @@ public class DevicePinPortLogic {
                         temp.add(pinPortConnection);
                         List<Port> portProvide = new ArrayList<>(allPortProvide);
                         List<Pin> pinProvide = new ArrayList<>(allPinProvide);
-                        portProvide.removeAll(pinPortConnection.getPortMapFromTo().keySet());
-                        pinPortConnection.getPortMapFromTo().forEach((portFrom, portTo) -> {
+                        portProvide.removeAll(pinPortConnection.getPortMapConsumerProvider().keySet());
+                        pinPortConnection.getPortMapConsumerProvider().forEach((portFrom, portTo) -> {
                             for (int i=0; i<portFrom.getElements().size(); i++) {
                                 if (!portTo.getElements().get(i).getFunction().get(0).getOpposite().isMultipleUsed()) {
                                     pinProvide.remove(portFrom.getElements().get(i));
                                 }
                             }
                         });
-                        pinPortConnection.getPinMapFromTo().forEach((pinFrom, pinTo) -> {
+                        pinPortConnection.getPinMapConsumerProvider().forEach((pinFrom, pinTo) -> {
                             if (!pinTo.getFunction().get(0).getOpposite().isMultipleUsed()) {
                                 pinProvide.remove(pinFrom);
                             }
@@ -269,8 +263,8 @@ public class DevicePinPortLogic {
                         temp.add(portConnection);
                         List<Port> portProvide = new ArrayList<>(allPortProvide);
                         List<Pin> pinProvide = new ArrayList<>(allPinProvide);
-                        portProvide.removeAll(portConnection.getPortMapFromTo().keySet());
-                        portConnection.getPortMapFromTo().forEach((portFrom, portTo) -> {
+                        portProvide.removeAll(portConnection.getPortMapConsumerProvider().keySet());
+                        portConnection.getPortMapConsumerProvider().forEach((portFrom, portTo) -> {
                             for (int i=0; i<portFrom.getElements().size(); i++) {
                                 if (!portTo.getElements().get(i).getFunction().get(0).getOpposite().isMultipleUsed()) {
                                     pinProvide.remove(portFrom.getElements().get(i));
@@ -294,7 +288,7 @@ public class DevicePinPortLogic {
                         Set<DevicePinPortConnection> temp = new HashSet<>(connections);
                         temp.add(pinConnection);
                         List<Pin> pinProvide = new ArrayList<>(allPinProvide);
-                        pinConnection.getPinMapFromTo().forEach((pinFrom, pinTo) -> {
+                        pinConnection.getPinMapConsumerProvider().forEach((pinFrom, pinTo) -> {
                             if (!pinTo.getFunction().get(0).getOpposite().isMultipleUsed()) {
                                 pinProvide.remove(pinFrom);
                             }
@@ -307,26 +301,26 @@ public class DevicePinPortLogic {
             }
             /* if the device connection is already assigned */
             else {
-                Stream<DevicePinPortConnection> stream = assignedDevicePinPortConnections.stream()
-                        .filter(devicePinPortConnection -> devicePinPortConnection.getTo() == target);
-                if (stream.count() > 1) {
-                    throw new UnsupportedOperationException("Not support the case that one device has two or more devices to connected");
-                }
-                DevicePinPortConnection assignedConnection = stream.findFirst().orElseThrow();
+                DevicePinPortConnection assignedConnection = assignedDevicePinPortConnections.stream()
+                        .filter(devicePinPortConnection -> devicePinPortConnection.getConsumerDevice() == target)
+                        .findFirst()
+                        .orElseThrow();
 
                 Set<DevicePinPortConnection> temp = new HashSet<>(connections);
                 temp.add(assignedConnection);
                 List<Port> portProvide = new ArrayList<>(allPortProvide);
                 List<Pin> pinProvide = new ArrayList<>(allPinProvide);
-                portProvide.removeAll(assignedConnection.getPortMapFromTo().keySet());
-                assignedConnection.getPortMapFromTo().forEach((portFrom, portTo) -> {
-                    for (int i=0; i<portFrom.getElements().size(); i++) {
-                        if (!portTo.getElements().get(i).getFunction().get(0).getOpposite().isMultipleUsed()) {
-                            pinProvide.remove(portFrom.getElements().get(i));
+                if (assignedConnection.getPortMapConsumerProvider() != null) {
+                    portProvide.removeAll(assignedConnection.getPortMapConsumerProvider().keySet());
+                    assignedConnection.getPortMapConsumerProvider().forEach((portFrom, portTo) -> {
+                        for (int i=0; i<portFrom.getElements().size(); i++) {
+                            if (!portTo.getElements().get(i).getFunction().get(0).getOpposite().isMultipleUsed()) {
+                                pinProvide.remove(portFrom.getElements().get(i));
+                            }
                         }
-                    }
-                });
-                assignedConnection.getPinMapFromTo().forEach((pinFrom, pinTo) -> {
+                    });
+                }
+                assignedConnection.getPinMapConsumerProvider().forEach((pinFrom, pinTo) -> {
                     if (!pinTo.getFunction().get(0).getOpposite().isMultipleUsed()) {
                         pinProvide.remove(pinFrom);
                     }
@@ -345,7 +339,7 @@ public class DevicePinPortLogic {
         Set<DevicePinPortConnection> result = new HashSet<>();
         for (DevicePinPortConnection portConnection: portConnections) {
             for (DevicePinPortConnection pinConnection: pinConnections) {
-                result.add(new DevicePinPortConnection(portConnection.getFrom(), portConnection.getTo(), pinConnection.getPinMapFromTo(), portConnection.getPortMapFromTo()));
+                result.add(new DevicePinPortConnection(portConnection.getConsumerDevice(), portConnection.getProviderDevice(), pinConnection.getPinMapConsumerProvider(), portConnection.getPortMapConsumerProvider()));
             }
         }
         return result;
@@ -369,7 +363,7 @@ public class DevicePinPortLogic {
         // base case
         if (currentRow == selected.length) {
             Set<DevicePinPortConnection> result = new HashSet<>();
-            Map<Pin, Pin> pinMap = new HashMap<>();
+            SortedMap<Pin, Pin> pinMap = new TreeMap<>();
             for (int i=0; i<selected.length; i++) {
                 int trueIndex = -1;
                 for (int j=0; j<selected[i].length; j++) {
@@ -377,9 +371,9 @@ public class DevicePinPortLogic {
                         trueIndex = j;
                     }
                 }
-                pinMap.put(allPinProvide.get(trueIndex), pinConsume.get(i));
+                pinMap.put(pinConsume.get(i), allPinProvide.get(trueIndex));
             }
-            result.add(new DevicePinPortConnection(projectDeviceProvider, projectDeviceConsumer, pinMap, null));
+            result.add(new DevicePinPortConnection(projectDeviceConsumer, projectDeviceProvider, pinMap, null));
             return result;
         }
         // recursive case
@@ -422,7 +416,7 @@ public class DevicePinPortLogic {
     private Set<DevicePinPortConnection> generateAllPossibleDevicePortConnectionRecursive(boolean[][] portMatching, boolean[][] selected, ProjectDevice projectDeviceConsumer, ProjectDevice projectDeviceProvider, ActualDevice consumer, ActualDevice provider, List<Port> portConsume, List<Port> allPortProvide, int currentRow) {
         if (currentRow >= selected.length) {
             Set<DevicePinPortConnection> result = new HashSet<>();
-            Map<Port, Port> portMap = new HashMap<>();
+            SortedMap<Port, Port> portMap = new TreeMap<>();
             for (int i=0; i<selected.length; i++) {
                 int trueIndex = -1;
                 for (int j=0; j<selected[i].length; j++) {
@@ -430,9 +424,9 @@ public class DevicePinPortLogic {
                         trueIndex = j;
                     }
                 }
-                portMap.put(allPortProvide.get(trueIndex), portConsume.get(i));
+                portMap.put(portConsume.get(i), allPortProvide.get(trueIndex));
             }
-            result.add(new DevicePinPortConnection(projectDeviceProvider, projectDeviceConsumer, null, portMap));
+            result.add(new DevicePinPortConnection(projectDeviceConsumer, projectDeviceProvider, null, portMap));
             return result;
         }
         Set<DevicePinPortConnection> result = new HashSet<>();

@@ -96,7 +96,7 @@ class RaspberryPiCodeGenerator {
         builder.append("from MakerPlayground import MP").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(configuration::isActualDeviceSelected)
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
@@ -403,7 +403,7 @@ class RaspberryPiCodeGenerator {
         List<String> args = new ArrayList<>();
 
         /* TODO: uncomment this & assign port as parameter */
-//        if (projectDevice.isActualDeviceSelected() && !projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
+//        if (projectDevice.isActualDevicePresent() && !projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
 //            // port
 //            for (Peripheral p : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
 //                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
@@ -627,9 +627,9 @@ class RaspberryPiCodeGenerator {
 //    }
 
     private static String parseDeviceName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
-        if (configuration.isUsedSameDevice(projectDevice)) {
-            return "_" + configuration.getParentDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
-        } else if (configuration.isActualDeviceSelected(projectDevice)) {
+        if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+            return "_" + configuration.getIdenticalDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
+        } else if (configuration.getActualDevice(projectDevice).isPresent()) {
             return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
         } else {
             throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");

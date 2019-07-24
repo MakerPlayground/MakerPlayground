@@ -27,8 +27,9 @@ public enum DeviceMappingResult {
     NO_SUPPORTING_CONDITION("device not provide a required condition"),
     CONDITION_PARAMETER_NOT_COMPATIBLE("some condition contains incompatible parameters"),
     ACTION_PARAMETER_NOT_COMPATIBLE("some action contains incompatible parameters"),
-    CONSTRAINT_NOT_COMPATIBLE("project requires over the device capability"),
-    NO_AVAILABLE_PIN_PORT("no available pin or port");
+    CONSTRAINT_NOT_COMPATIBLE("project requires more capability than the device can provide"),
+    NO_AVAILABLE_PIN_PORT("no available pin or port"),
+    NO_AVAILABLE_CLOUD_PLATFORM("no available cloud platform in this circuit");
 
     @Getter
     private final String errorMessage;

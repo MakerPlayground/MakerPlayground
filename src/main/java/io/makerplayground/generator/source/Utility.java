@@ -84,11 +84,11 @@ class Utility {
         ProjectConfiguration configuration = project.getProjectConfiguration();
         for (ProjectDevice device : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
-            if (configuration.isUsedSameDevice(device)) {
+            if (configuration.getIdenticalDevice(device).isPresent()) {
                 continue;
             }
             // check only device that has a property
-            if (configuration.getActualDevice(device).isPresent() && !configuration.getActualDevice(device).get().getProperty().isEmpty()) {
+            if (configuration.getActualDevice(device).isPresent() && configuration.getActualDevice(device).get().getProperty() != null && !configuration.getActualDevice(device).get().getProperty().isEmpty()) {
                 for (Property p : configuration.getActualDevice(device).get().getProperty()) {
                     Object value = configuration.getPropertyValue(device, p);
                     // TODO: allow property to be optional

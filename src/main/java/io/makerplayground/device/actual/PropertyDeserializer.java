@@ -78,6 +78,6 @@ public class PropertyDeserializer extends StdDeserializer<Property> {
                 throw(new IllegalStateException("Format error!!!"));
         }
 
-        return new Property(name, defaultValue, constraint, dataType, controlType);
+        return new Property(name, dataType, defaultValue, constraint, controlType);
     }
 }

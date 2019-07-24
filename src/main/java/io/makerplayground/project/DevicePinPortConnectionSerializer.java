@@ -31,13 +31,13 @@ public class DevicePinPortConnectionSerializer extends JsonSerializer<DevicePinP
         jsonGenerator.writeStartObject();
 
         /* from */
-        jsonGenerator.writeStringField("from", devicePinPortConnection.getFrom().getName());
+        jsonGenerator.writeStringField("from", devicePinPortConnection.getConsumerDevice().getName());
 
         /* to */
-        jsonGenerator.writeStringField("to", devicePinPortConnection.getTo().getName());
+        jsonGenerator.writeStringField("to", devicePinPortConnection.getProviderDevice().getName());
 
         /* pinMapFromTo */
-        var pinMap = devicePinPortConnection.getPinMapFromTo();
+        var pinMap = devicePinPortConnection.getPinMapConsumerProvider();
         jsonGenerator.writeArrayFieldStart("pinMap");
         for (Pin pinFrom: pinMap.keySet()) {
             Pin pinTo = pinMap.get(pinFrom);
@@ -47,7 +47,7 @@ public class DevicePinPortConnectionSerializer extends JsonSerializer<DevicePinP
         jsonGenerator.writeEndArray();
 
         /* portMapFromTo */
-        var portMap = devicePinPortConnection.getPortMapFromTo();
+        var portMap = devicePinPortConnection.getPortMapConsumerProvider();
         jsonGenerator.writeArrayFieldStart("portMap");
         for (Port portFrom: portMap.keySet()) {
             Port portTo = portMap.get(portFrom);

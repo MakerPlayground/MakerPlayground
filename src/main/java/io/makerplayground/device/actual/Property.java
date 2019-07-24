@@ -23,15 +23,16 @@ import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @JsonDeserialize(using = PropertyDeserializer.class)
 public class Property {
     private final String name;
-    private final Object defaultValue;
-    private final Constraint constraint;
     private final DataType dataType;
-    private final ControlType controlType;
+    @ToString.Exclude private final Object defaultValue;
+    @ToString.Exclude private final Constraint constraint;
+    @ToString.Exclude private final ControlType controlType;
 
     public double getMinimumValue() {
         return ((NumericConstraint) constraint).getMin();

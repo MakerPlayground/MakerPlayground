@@ -21,6 +21,7 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,18 +30,10 @@ import java.util.List;
 @JsonDeserialize(using = ParameterDeserializer.class)
 public class Parameter {
     private final String name;
-    private final Object defaultValue;
-    private final Constraint constraint;
     private final DataType dataType;
-    private final ControlType controlType;
-
-    public Parameter(String name, Object defaultValue, Constraint constraint, DataType dataType, ControlType controlType) {
-        this.name = name;
-        this.defaultValue = defaultValue;
-        this.constraint = constraint;
-        this.dataType = dataType;
-        this.controlType = controlType;
-    }
+    @ToString.Exclude private final Object defaultValue;
+    @ToString.Exclude private final Constraint constraint;
+    @ToString.Exclude private final ControlType controlType;
 
     public double getMinimumValue() {
         return ((NumericConstraint) constraint).getMin();

@@ -25,6 +25,7 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.List;
@@ -36,23 +37,23 @@ import java.util.Set;
 public class SceneDeviceIconViewModel {
 
     private final UserSetting userSetting;
-    //private final SimpleStringProperty name;
+    private final SimpleStringProperty name;
     private final Project project;
     private final NodeElement nodeElement;
 
     public SceneDeviceIconViewModel(UserSetting userSetting, NodeElement nodeElement, Project project) {
         this.userSetting = userSetting;
-        //this.name = new SimpleStringProperty(userSetting.getUnmodifiableProjectDevice().getName());
+        this.name = new SimpleStringProperty(userSetting.getDevice().getName());
         this.nodeElement = nodeElement;
         this.project = project;
     }
 
     public String getName() {
-        return userSetting.getDevice().getName();
+        return name.get();
     }
 
     public StringProperty nameProperty() {
-        return userSetting.getDevice().nameProperty();
+        return name;
     }
 
     public String getImageName() {

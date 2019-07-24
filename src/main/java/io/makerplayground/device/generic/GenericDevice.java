@@ -24,6 +24,7 @@ import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Value;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,12 +32,12 @@ import java.util.Optional;
 @Data
 public class GenericDevice {
     private final String name;
-    private final String description;
+    @ToString.Exclude private final String description;
+    @ToString.Exclude private final List<Action> action;
+    @ToString.Exclude private final List<Condition> condition;
+    @ToString.Exclude private final List<Value> value;
     @JacksonInject
-    private final GenericDeviceType type;
-    private final List<Action> action;
-    private final List<Condition> condition;
-    private final List<Value> value;
+    @ToString.Exclude private final GenericDeviceType type;
 
     /**
      * Construct a new generic device. The constructor should only be invoked by the DeviceLibrary

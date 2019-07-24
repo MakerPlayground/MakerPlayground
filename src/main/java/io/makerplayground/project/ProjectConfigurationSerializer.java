@@ -22,9 +22,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Property;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.Parameter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -129,7 +126,7 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         jsonGenerator.writeEndArray();
 
         /* sameDeviceMap */
-        var sameDeviceMap = configuration.getSameDeviceMap();
+        var sameDeviceMap = configuration.getIdenticalDeviceMap();
         jsonGenerator.writeArrayFieldStart("sameDeviceMap");
         for (ProjectDevice projectDevice : sameDeviceMap.keySet()) {
             ProjectDevice sameDevice = sameDeviceMap.get(projectDevice);

@@ -16,16 +16,15 @@
 
 package io.makerplayground.generator.source;
 
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
@@ -59,40 +58,37 @@ class ArduinoCodeGenerator {
     }
 
     static SourceCodeResult generateCode(Project project) {
-        /* TODO: uncomment this */
-//        ArduinoCodeGenerator generator = new ArduinoCodeGenerator(project);
-//        // Check if the diagram (only the connected nodes) are all valid.
-//        if (!Utility.validateDiagram(project)) {
-//            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
-//        }
-//        // Check if all used devices are assigned.
-//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
-//            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
-//        }
-//        if (!Utility.validateDeviceProperty(project)) {
-//            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
-//        }
-//        if (project.getCloudPlatformUsed().size() > 1) {
-//            return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
-//        }
-//        generator.appendHeader();
-//        generator.appendNextRunningTime();
-//        generator.appendPointerVariables();
-//        generator.appendProjectValue();
-//        generator.appendFunctionDeclaration();
-//        generator.appendTaskVariables();
-//        generator.appendInstanceVariables();
-//        generator.appendSetupFunction();
-//        generator.appendLoopFunction();
-//        generator.appendUpdateFunction();
-//        for (Begin begin : generator.project.getBegin()) {
-//            generator.appendBeginFunction(begin);
-//        }
-//        generator.appendSceneFunctions();
-//        generator.appendConditionFunctions();
-//        return new SourceCodeResult(generator.builder.toString());
-
-        return new SourceCodeResult("");
+        ArduinoCodeGenerator generator = new ArduinoCodeGenerator(project);
+        // Check if the diagram (only the connected nodes) are all valid.
+        if (!Utility.validateDiagram(project)) {
+            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
+        }
+        // Check if all used devices are assigned.
+        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
+            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
+        }
+        if (!Utility.validateDeviceProperty(project)) {
+            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
+        }
+        if (project.getCloudPlatformUsed().size() > 1) {
+            return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
+        }
+        generator.appendHeader();
+        generator.appendNextRunningTime();
+        generator.appendPointerVariables();
+        generator.appendProjectValue();
+        generator.appendFunctionDeclaration();
+        generator.appendTaskVariables();
+        generator.appendInstanceVariables();
+        generator.appendSetupFunction();
+        generator.appendLoopFunction();
+        generator.appendUpdateFunction();
+        for (Begin begin : generator.project.getBegin()) {
+            generator.appendBeginFunction(begin);
+        }
+        generator.appendSceneFunctions();
+        generator.appendConditionFunctions();
+        return new SourceCodeResult(generator.builder.toString());
     }
 
     private void appendPointerVariables() {
@@ -104,7 +100,7 @@ class ArduinoCodeGenerator {
 
         // generate include
         Stream<String> device_libs = project.getAllDeviceUsed().stream()
-                .filter(configuration::isActualDeviceSelected)
+                .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
@@ -161,9 +157,16 @@ class ArduinoCodeGenerator {
             List<String> args = new ArrayList<>();
 
             /* TODO: uncomment this & assign port as parameter */
+            DevicePinPortConnection connection = project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
+            if (connection != DevicePinPortConnection.NOT_CONNECTED) {
+                Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
+//                for () {
+//
+//                }
+            }
 //            if (!projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
 //                // port
-//                for (Peripheral p : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
+//                for (Peripheral p : projectDevice.getCompatibleDevice().getConnectivity()) {
 //                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)
 //                            && (p.getConnectionType() != ConnectionType.UART)) {
 //                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
@@ -192,35 +195,37 @@ class ArduinoCodeGenerator {
 //            }
 
             // property for the generic device
-            for (Property p : actualDevice.get().getProperty()) {
-                Object value = configuration.getPropertyValue(projectDevice, p);
-                if (value == null) {
-                    throw new IllegalStateException("Property hasn't been set");
-                }
-                switch (p.getDataType()) {
-                    case INTEGER:
-                    case DOUBLE:
-                        args.add(String.valueOf(((NumberWithUnit) value).getValue()));
-                        break;
-                    case INTEGER_ENUM:
-                    case BOOLEAN_ENUM:
-                        args.add(String.valueOf(value));
-                        break;
-                    case STRING:
-                    case ENUM:
-                        args.add("\"" + value + "\"");
-                        break;
-                    case AZURE_COGNITIVE_KEY:
-                        AzureCognitiveServices acs = (AzureCognitiveServices) value;
-                        args.add("\"" + acs.getLocation().toLowerCase() + "\"");
-                        args.add("\"" + acs.getKey1() + "\"");
-                        break;
-                    case AZURE_IOTHUB_KEY:
-                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
-                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
-                        break;
-                    default:
-                        throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+            if (actualDevice.get().getProperty() != null) {
+                for (Property p : actualDevice.get().getProperty()) {
+                    Object value = configuration.getPropertyValue(projectDevice, p);
+                    if (value == null) {
+                        throw new IllegalStateException("Property hasn't been set");
+                    }
+                    switch (p.getDataType()) {
+                        case INTEGER:
+                        case DOUBLE:
+                            args.add(String.valueOf(((NumberWithUnit) value).getValue()));
+                            break;
+                        case INTEGER_ENUM:
+                        case BOOLEAN_ENUM:
+                            args.add(String.valueOf(value));
+                            break;
+                        case STRING:
+                        case ENUM:
+                            args.add("\"" + value + "\"");
+                            break;
+                        case AZURE_COGNITIVE_KEY:
+                            AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                            args.add("\"" + acs.getLocation().toLowerCase() + "\"");
+                            args.add("\"" + acs.getKey1() + "\"");
+                            break;
+                        case AZURE_IOTHUB_KEY:
+                            AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                            args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
+                            break;
+                        default:
+                            throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+                    }
                 }
             }
 
@@ -273,7 +278,7 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (configuration.isUsedSameDevice(projectDevice)) {
+            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
                 continue;
             }
             String variableName = parseDeviceVariableName(configuration, projectDevice);
@@ -325,7 +330,7 @@ class ArduinoCodeGenerator {
 
         // allow all devices to perform their own tasks
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (configuration.isUsedSameDevice(projectDevice)) {
+            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
                 continue;
             }
             builder.append(INDENT).append(parseDeviceVariableName(configuration, projectDevice)).append(".update(currentTime);").append(NEW_LINE);
@@ -363,7 +368,7 @@ class ArduinoCodeGenerator {
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (configuration.isUsedSameDevice(projectDevice)) {
+            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
                 continue;
             }
             builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
@@ -551,14 +556,14 @@ class ArduinoCodeGenerator {
                 for (Condition condition : adjacentCondition) {
                     List<String> booleanExpressions = new ArrayList<>();
                     for (UserSetting setting : condition.getSetting()) {
-                        if (setting.getAction() == null) {
-                            throw new IllegalStateException("UserSetting {" + setting + "}'s action must be set ");
+                        if (setting.getCondition() == null) {
+                            throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
                         }
-                        else if (!setting.getAction().getName().equals("Compare")) {
+                        else if (!setting.getCondition().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
+                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
-                                    setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
+                                    setting.getCondition().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {

@@ -7,7 +7,7 @@
  *
  *      https://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law or agreed providerDevice in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.Port;
@@ -26,33 +27,50 @@ import java.util.*;
 @JsonSerialize(using = DevicePinPortConnectionSerializer.class)
 @Data
 public class DevicePinPortConnection implements Comparable<DevicePinPortConnection> {
-    private final ProjectDevice from;
-    private final ProjectDevice to;
-    private final Map<Pin, Pin> pinMapFromTo;
-    private final Map<Port, Port> portMapFromTo;
+
+    @JsonIgnore public static final DevicePinPortConnection NOT_CONNECTED = new DevicePinPortConnection();
+
+    @JsonIgnore private static final SortedMap<Pin, Pin> dummyPinMap = new TreeMap<>();
+    @JsonIgnore private static final SortedMap<Port, Port> dummyPortMap = new TreeMap<>();
+    @JsonIgnore private static final Comparator<DevicePinPortConnection> comparator = Comparator
+            .comparing(DevicePinPortConnection::getConsumerDevice)
+            .thenComparing(DevicePinPortConnection::getProviderDevice)
+            .thenComparing(DevicePinPortConnection::getPinPortString);
+
+    private final ProjectDevice consumerDevice;
+    private final ProjectDevice providerDevice;
+    private final SortedMap<Pin, Pin> pinMapConsumerProvider;
+    private final SortedMap<Port, Port> portMapConsumerProvider;
+
+    private DevicePinPortConnection() {
+        consumerDevice = null;
+        providerDevice = null;
+        pinMapConsumerProvider = dummyPinMap;
+        portMapConsumerProvider = dummyPortMap;
+    }
 
     public DevicePinPortConnection(@NonNull ProjectDevice from,
                                    @NonNull ProjectDevice to,
-                                   Map<Pin, Pin> pinMapFromTo,
-                                   Map<Port, Port> portMapFromTo) {
-        this.from = from;
-        this.to = to;
-        this.pinMapFromTo = Objects.nonNull(pinMapFromTo) ? Collections.unmodifiableMap(pinMapFromTo) : null;
-        this.portMapFromTo = Objects.nonNull(portMapFromTo) ? Collections.unmodifiableMap(portMapFromTo) : null;
+                                   SortedMap<Pin, Pin> pinMapFromTo,
+                                   SortedMap<Port, Port> portMapFromTo) {
+        this.consumerDevice = from;
+        this.providerDevice = to;
+        this.pinMapConsumerProvider = Objects.nonNull(pinMapFromTo) ? Collections.unmodifiableSortedMap(pinMapFromTo) : dummyPinMap;
+        this.portMapConsumerProvider = Objects.nonNull(portMapFromTo) ? Collections.unmodifiableSortedMap(portMapFromTo) : dummyPortMap;
     }
 
-    private static String getPortFromToString(Map<Pin, Pin> pinMapFromTo, Map<Port, Port> portMapFromTo) {
+    private String getPinPortString() {
         List<String> pinPortName = new ArrayList<>();
-        if (Objects.nonNull(pinMapFromTo)) {
-            for(Pin pin : pinMapFromTo.keySet()) {
+        if (Objects.nonNull(pinMapConsumerProvider)) {
+            for(Pin pin : pinMapConsumerProvider.keySet()) {
                 pinPortName.add(pin.getName());
-                pinPortName.add(pinMapFromTo.get(pin).getName());
+                pinPortName.add(pinMapConsumerProvider.get(pin).getName());
             }
         }
-        if (Objects.nonNull(portMapFromTo)) {
-            for(Port port : portMapFromTo.keySet()) {
+        if (Objects.nonNull(portMapConsumerProvider)) {
+            for(Port port : portMapConsumerProvider.keySet()) {
                 pinPortName.add(port.getName());
-                pinPortName.add(portMapFromTo.get(port).getName());
+                pinPortName.add(portMapConsumerProvider.get(port).getName());
             }
         }
         return String.join(",", pinPortName);
@@ -60,41 +78,6 @@ public class DevicePinPortConnection implements Comparable<DevicePinPortConnecti
 
     @Override
     public int compareTo(DevicePinPortConnection o) {
-        if (Objects.nonNull(from) && Objects.nonNull(o.from)) {
-            int result = from.compareTo(o.from);
-            if (result != 0) {
-                return result;
-            }
-        }
-        if (Objects.nonNull(to) && Objects.nonNull(o.to)) {
-            int result = to.compareTo(o.to);
-            if (result != 0) {
-                return result;
-            }
-        }
-
-        return getPortFromToString(pinMapFromTo, portMapFromTo).compareTo(getPortFromToString(o.pinMapFromTo, o.portMapFromTo));
+        return comparator.compare(this, o);
     }
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (!(obj instanceof DevicePinPortConnection)) {
-//            return false;
-//        }
-//        DevicePinPortConnection that = (DevicePinPortConnection) obj;
-//        if (getFrom().equals(that.getFrom()) && getTo().equals(that.getTo())) {
-//            boolean pinMapMatch = ((pinMapFromTo != null) == (that.getPinMapFromTo() != null));
-//            if (pinMapFromTo != null && that.getPinMapFromTo() != null) {
-//                pinMapMatch = getPinMapFromTo().equals(that.getPinMapFromTo());
-//            }
-//
-//            boolean portMapMatch = ((portMapFromTo != null) == (that.getPortMapFromTo() != null));
-//            if (portMapFromTo != null && that.getPortMapFromTo() != null) {
-//                portMapMatch = getPinMapFromTo().equals(that.getPinMapFromTo());
-//            }
-//
-//            return pinMapMatch && portMapMatch;
-//        }
-//        return false;
-//    }
 }

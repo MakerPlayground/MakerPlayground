@@ -99,7 +99,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
             ProjectDevice parentDevice = deviceList.stream()
                     .filter(projectDevice1 -> projectDevice1.getName().equals(parentName))
                     .findAny().orElseThrow(() -> new IllegalStateException("Can't find project device with name = " + parentName));
-            project.getProjectConfiguration().setParentDevice(projectDevice, parentDevice);
+            project.getProjectConfiguration().setIdenticalDevice(projectDevice, parentDevice);
         }
 
         for (JsonNode beginNode: node.get("begin")) {

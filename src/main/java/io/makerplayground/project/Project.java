@@ -108,13 +108,12 @@ public class Project {
                 .platform(Platform.ARDUINO_AVR8)
                 .controller(null)
                 .deviceMap(new TreeMap<>())
-                .sameDeviceMap(new TreeMap<>())
+                .identicalDeviceMap(new TreeMap<>())
                 .devicePinPortConnections(new TreeMap<>())
                 .devicePropertyValueMap(new HashMap<>())
                 .cloudPlatformParameterMap(new TreeMap<>())
                 .build();
 
-        this.calculateCompatibility();
         this.newBegin();
     }
 
@@ -299,7 +298,7 @@ public class Project {
 
     public Set<CloudPlatform> getCloudPlatformUsed() {
         return getAllDeviceUsed().stream()
-                .filter(projectDevice -> projectConfiguration.isActualDeviceSelected(projectDevice))
+                .filter(projectDevice -> projectConfiguration.getActualDevice(projectDevice).isPresent())
                 .filter(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).isPresent())
                 .map(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).orElseThrow())
                 .collect(Collectors.toUnmodifiableSet());

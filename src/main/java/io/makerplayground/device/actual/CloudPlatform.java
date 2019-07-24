@@ -17,6 +17,7 @@
 package io.makerplayground.device.actual;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -34,6 +35,6 @@ public enum CloudPlatform {
     }
 
     private final String displayName;
-    private final List<String> parameter;
-    private final String libName;
+    @ToString.Exclude private final List<String> parameter;
+    @ToString.Exclude private final String libName;
 }
