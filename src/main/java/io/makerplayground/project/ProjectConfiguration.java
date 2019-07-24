@@ -498,4 +498,11 @@ public final class ProjectConfiguration {
     public DevicePinPortConnection getDevicePinPortConnection(ProjectDevice projectDevice) {
         return devicePinPortConnections.getOrDefault(projectDevice, DevicePinPortConnection.NOT_CONNECTED);
     }
+
+    public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
+        if (!cloudParameterMap.containsKey(cloudPlatform)) {
+            cloudParameterMap.put(cloudPlatform, new HashMap<>());
+        }
+        this.cloudParameterMap.get(cloudPlatform).put(parameterName, value);
+    }
 }

@@ -59,7 +59,7 @@ class RaspberryPiCodeGenerator {
 //            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
 //        }
 //        // Check if all used devices are assigned.
-//        if (ProjectConfigurationLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
+//        if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
 //            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
 //        }
 //        if (!Utility.validateDeviceProperty(project)) {

@@ -58,7 +58,7 @@ public class ArduinoUploadTask extends UploadTask {
         }
 
         /* TODO: uncomment this */
-//        ProjectMappingResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(project);
+//        ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(project);
 //        if (mappingResult != ProjectMappingResult.OK) {
 //            updateMessage(mappingResult.getErrorMessage());
 //            return UploadResult.DEVICE_OR_PORT_MISSING;

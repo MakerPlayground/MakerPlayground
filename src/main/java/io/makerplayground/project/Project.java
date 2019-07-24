@@ -30,7 +30,7 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
-import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -293,7 +293,8 @@ public class Project {
     }
 
     public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
-        projectConfiguration = ProjectConfigurationLogic.changeCloudPlatformParameter(projectConfiguration, cloudPlatform, parameterName, value);
+        projectConfiguration.setCloudPlatformParameter(cloudPlatform, parameterName, value);
+//        projectConfiguration = ProjectLogic.changeCloudPlatformParameter(projectConfiguration, cloudPlatform, parameterName, value);
     }
 
     public Set<CloudPlatform> getCloudPlatformUsed() {
@@ -599,10 +600,10 @@ public class Project {
                             actionCompatibility.get(projectDevice).put(action, new TreeMap<>(Comparator.comparing(Parameter::getName)));
                         }
                         if (!actionCompatibility.get(projectDevice).get(action).containsKey(parameter)) {
-                            actionCompatibility.get(projectDevice).get(action).put(parameter, ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            actionCompatibility.get(projectDevice).get(action).put(parameter, ProjectLogic.extractConstraint(parameter, expression));
                         } else {
                             Constraint oldConstraint = actionCompatibility.get(projectDevice).get(action).get(parameter);
-                            Constraint newConstraint = oldConstraint.union(ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            Constraint newConstraint = oldConstraint.union(ProjectLogic.extractConstraint(parameter, expression));
                             actionCompatibility.get(projectDevice).get(action).put(parameter, newConstraint);
                         }
                     });
@@ -636,10 +637,10 @@ public class Project {
                             conditionCompatibility.get(projectDevice).put(condition, new TreeMap<>(Comparator.comparing(Parameter::getName)));
                         }
                         if (!conditionCompatibility.get(projectDevice).get(condition).containsKey(parameter)) {
-                            conditionCompatibility.get(projectDevice).get(condition).put(parameter, ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            conditionCompatibility.get(projectDevice).get(condition).put(parameter, ProjectLogic.extractConstraint(parameter, expression));
                         } else {
                             Constraint oldConstraint = conditionCompatibility.get(projectDevice).get(condition).get(parameter);
-                            Constraint newConstraint = oldConstraint.union(ProjectConfigurationLogic.extractConstraint(parameter, expression));
+                            Constraint newConstraint = oldConstraint.union(ProjectLogic.extractConstraint(parameter, expression));
                             conditionCompatibility.get(projectDevice).get(condition).put(parameter, newConstraint);
                         }
                     });

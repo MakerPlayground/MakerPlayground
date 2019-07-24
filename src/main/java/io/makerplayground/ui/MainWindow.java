@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui;
 
+import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.generator.devicemapping.ProjectConfigurationLogic;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -128,7 +128,7 @@ public class MainWindow extends BorderPane {
         Runnable generateViewCreator = () -> {
             rightView.getChildren().clear();
 
-            ProjectMappingResult mappingResult = ProjectConfigurationLogic.validateDeviceAssignment(currentProject);
+            ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(currentProject);
             SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generate(currentProject);
 
             GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);

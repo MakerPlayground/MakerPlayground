@@ -16,7 +16,6 @@
 
 package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
@@ -26,32 +25,9 @@ import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.expression.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Function;
 
-public class ProjectConfigurationLogic {
-
-    public static ProjectConfiguration changeCloudPlatformParameter(ProjectConfiguration conf, CloudPlatform cloudPlatform, String parameterName, String value) {
-        var parameter = new TreeMap<>(conf.getUnmodifiableCloudParameterMap());
-        if (parameter.containsKey(cloudPlatform)) {
-            parameter.get(cloudPlatform).put(parameterName, value);
-        } else {
-            Map<String, String> parameterMap = new HashMap<>();
-            parameterMap.put(parameterName, value);
-            parameter.put(cloudPlatform, parameterMap);
-        }
-        return ProjectConfiguration.builder()
-                .platform(conf.getPlatform())
-                .controller(conf.getController())
-                .deviceMap(conf.getUnmodifiableDeviceMap())
-                .identicalDeviceMap(conf.getUnmodifiableIdenticalDeviceMap())
-                .devicePinPortConnections(conf.getUnmodifiableDevicePinPortConnections())
-                .devicePropertyValueMap(conf.getUnmodifiableDevicePropertyValueMap())
-                .cloudPlatformParameterMap(parameter)
-                .build();
-    }
+public class ProjectLogic {
 
     public static Constraint extractConstraint(Parameter parameter, Expression expression) {
         Constraint newConstraint = Constraint.NONE;

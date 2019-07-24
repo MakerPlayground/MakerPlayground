@@ -222,7 +222,7 @@ public class ConfigActualDeviceViewModel {
     }
 
 //    ProjectMappingResult autoAssignDevice() {
-//        ProjectMappingResult result = ProjectConfigurationLogic.autoAssignDevices(project);
+//        ProjectMappingResult result = ProjectLogic.autoAssignDevices(project);
 //        applyDeviceMapping();
 //        if (deviceConfigChangedCallback != null) {
 //            deviceConfigChangedCallback.run();
