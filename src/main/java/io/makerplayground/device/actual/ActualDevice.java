@@ -19,13 +19,14 @@ package io.makerplayground.device.actual;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.project.ProjectDevice;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data @Builder
 @JsonDeserialize(using = ActualDeviceDeserializer.class)
@@ -38,12 +39,12 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final double height;
     protected final String pioBoardId;
     protected final DeviceType deviceType;
-    protected final List<Pin> pinProvide;
-    protected final List<Pin> pinConsume;
-    protected final List<Pin> pinUnused;
+    @Getter(AccessLevel.NONE) protected final List<Pin> pinProvide;
+    @Getter(AccessLevel.NONE) protected final List<Pin> pinConsume;
+    @Getter(AccessLevel.NONE) protected final List<Pin> pinUnused;
+    @Getter(AccessLevel.NONE) protected final List<Port> portProvide;
+    @Getter(AccessLevel.NONE) protected final List<Port> portConsume;
     protected final List<Property> property;
-    protected final List<Port> portProvide;
-    protected final List<Port> portConsume;
     protected final CloudPlatform cloudConsume;
 
     /* compatibility */
@@ -97,14 +98,60 @@ public class ActualDevice implements Comparable<ActualDevice> {
         throw new IllegalStateException("The actual device [" + String.join(", ", List.of(id, brand, model)) + "] not support for cloudplatform [" + cloudPlatform.getDisplayName() + "]");
     }
 
+    public List<Pin> getPinProvideByOwnerDevice(ProjectDevice projectDevice) {
+        return pinProvide.stream().map(pin -> Pin.builder()
+                .connectionType(pin.getConnectionType())
+                .function(pin.getFunction())
+                .name(pin.getName())
+                .voltageLevel(pin.getVoltageLevel())
+                .x(pin.getX())
+                .y(pin.getY())
+                .ownerProjectDevice(projectDevice)
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<Port> getPortProvideByOwnerDevice(ProjectDevice projectDevice) {
+        return portProvide.stream().map(port -> Port.builder()
+                .name(port.getName())
+                .type(port.getType())
+                .elements(port.getElements())
+                .ownerProjectDevice(projectDevice)
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<Pin> getPinConsumeByOwnerDevice(ProjectDevice projectDevice) {
+        return pinConsume.stream().map(pin -> Pin.builder()
+                .connectionType(pin.getConnectionType())
+                .function(pin.getFunction())
+                .name(pin.getName())
+                .voltageLevel(pin.getVoltageLevel())
+                .x(pin.getX())
+                .y(pin.getY())
+                .ownerProjectDevice(projectDevice)
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<Port> getPortConsumeByOwnerDevice(ProjectDevice projectDevice) {
+        return portConsume.stream().map(port -> Port.builder()
+                .name(port.getName())
+                .type(port.getType())
+                .elements(port.getElements())
+                .ownerProjectDevice(projectDevice)
+                .build()
+        ).collect(Collectors.toList());
+    }
+
     @JsonIgnore
     public boolean isPinProviderDevice() {
-        return Objects.nonNull(getPinProvide()) && !getPinProvide().isEmpty();
+        return pinProvide.isEmpty();
     }
 
     @JsonIgnore
     public boolean isPortProviderDevice() {
-        return Objects.nonNull(getPortProvide()) && !getPortProvide().isEmpty();
+        return portProvide.isEmpty();
     }
 
     @Override

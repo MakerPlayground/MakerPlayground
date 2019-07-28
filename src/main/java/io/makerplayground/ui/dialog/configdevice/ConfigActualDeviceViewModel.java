@@ -21,7 +21,7 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
-import io.makerplayground.project.DevicePinPortConnection;
+import io.makerplayground.project.PinPortConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
@@ -39,7 +39,7 @@ public class ConfigActualDeviceViewModel {
 
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>>> compatibleDeviceMap;
-    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>>> devicePinPortList;
+    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<PinPortConnection>>>> devicePinPortList;
 
     private ActualDeviceComboItem selectedController;
 
@@ -136,7 +136,7 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    void setDevicePinPortConnection(ProjectDevice projectDevice, DevicePinPortConnection connection) {
+    void setDevicePinPortConnection(ProjectDevice projectDevice, PinPortConnection connection) {
         if (project.getProjectConfiguration().getDevicePinPortConnection(projectDevice) != connection) {
             if (connection == null) {
                 project.getProjectConfiguration().unsetDevicePinPortConnection(projectDevice);
@@ -213,11 +213,11 @@ public class ConfigActualDeviceViewModel {
         return project.getProjectConfiguration().getIdenticalDevice(projectDevice);
     }
 
-    public List<DevicePinPortConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
+    public List<PinPortConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
         return devicePinPortList.get().get(projectDevice).get(actualDevice);
     }
 
-    public DevicePinPortConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
+    public PinPortConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
         return project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
     }
 

@@ -157,8 +157,8 @@ class ArduinoCodeGenerator {
             List<String> args = new ArrayList<>();
 
             /* TODO: uncomment this & assign port as parameter */
-            DevicePinPortConnection connection = project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
-            if (connection != DevicePinPortConnection.NOT_CONNECTED) {
+            PinPortConnection connection = project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
+            if (connection != PinPortConnection.NOT_CONNECTED) {
                 Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
 //                for () {
 //

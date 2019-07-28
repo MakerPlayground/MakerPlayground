@@ -38,10 +38,6 @@ import static io.makerplayground.util.DeserializerHelper.*;
 
 public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
-    private static final List<Pin> dummyPinList = Collections.emptyList();
-    private static final List<Port> dummyPortList = Collections.emptyList();
-    private static final List<Property> dummyPropertyList = Collections.emptyList();
-
     private String id;
 
     @Override
@@ -111,13 +107,6 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-        if (pinProvide.isEmpty()) { pinProvide = dummyPinList; }
-        if (pinConsume.isEmpty()) { pinConsume = dummyPinList; }
-        if (pinUnused.isEmpty()) { pinUnused = dummyPinList; }
-        if (portProvide.isEmpty()) { portProvide = dummyPortList; }
-        if (portConsume.isEmpty()) { portConsume = dummyPortList; }
-        if (property.isEmpty()) { property = dummyPropertyList; }
-
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
 
@@ -171,17 +160,18 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-            if (inPinProvide.isEmpty()) { inPinProvide = dummyPinList; }
-            if (inPinConsume.isEmpty()) { inPinConsume = dummyPinList; }
-            if (inPinUnused.isEmpty()) { inPinUnused = dummyPinList; }
-            if (inPortProvide.isEmpty()) { inPortProvide = dummyPortList; }
-            if (inPortConsume.isEmpty()) { inPortConsume = dummyPortList; }
-            if (inProperty.isEmpty()) { inProperty = dummyPropertyList; }
+            /* deallocate the created empty list and set to the shared static empty list instead */
+            if (inPinProvide.isEmpty()) { inPinProvide = Collections.emptyList(); }
+            if (inPinConsume.isEmpty()) { inPinConsume = Collections.emptyList(); }
+            if (inPinUnused.isEmpty()) { inPinUnused = Collections.emptyList(); }
+            if (inPortProvide.isEmpty()) { inPortProvide = Collections.emptyList(); }
+            if (inPortConsume.isEmpty()) { inPortConsume = Collections.emptyList(); }
+            if (inProperty.isEmpty()) { inProperty = Collections.emptyList(); }
 
             /* Compatibility */
             Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
 
-            IntegratedActualDevice.IntegratedActualDeviceBuilder()
+            integratedDevices.add(IntegratedActualDevice.IntegratedActualDeviceBuilder()
                     .id(inDeviceName)
                     .brand("")
                     .model("")
@@ -201,8 +191,18 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     .property(inProperty)
                     .compatibilityMap(inCompatibilityMap)
                     .integratedDevices(Collections.emptyList())
-                    .build();
+                    .build()
+            );
         }
+
+        /* deallocate the created empty list and set to the shared static empty list instead */
+        if (pinProvide.isEmpty()) { pinProvide = Collections.emptyList(); }
+        if (pinConsume.isEmpty()) { pinConsume = Collections.emptyList(); }
+        if (pinUnused.isEmpty()) { pinUnused = Collections.emptyList(); }
+        if (portProvide.isEmpty()) { portProvide = Collections.emptyList(); }
+        if (portConsume.isEmpty()) { portConsume = Collections.emptyList(); }
+        if (property.isEmpty()) { property = Collections.emptyList(); }
+        if (integratedDevices.isEmpty()) { integratedDevices = Collections.emptyList(); }
 
         ActualDevice actualDevice = ActualDevice.builder()
                 .id(id)
@@ -229,38 +229,6 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         actualDevice.getIntegratedDevices().forEach(inActualDevice -> inActualDevice.setParent(actualDevice));
 
         return actualDevice;
-
-//        List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
-//        if (node.has("integrated_device")) {
-//            for (JsonNode deviceNode : node.get("integrated_device")) {
-//                String integratedDeviceName = deviceNode.get("name").asText();
-//                Map<Platform, String> integratedLibrary = new HashMap<>();
-//                Map<Platform, List<String>> integratedExternalLibrary = new HashMap<>();
-//                for (JsonNode platform_node: deviceNode.get("platforms")) {
-//                    Platform platform = Platform.valueOf(platform_node.get("platform").asText());
-//                    String classname = platform_node.get("classname").asText();
-//                    List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
-//                            , new TypeReference<List<String>>() {});
-//                    integratedLibrary.put(platform, classname);
-//                    integratedExternalLibrary.put(platform, externalLibraryList);
-//                }
-//
-//                List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse(),
-//                        new TypeReference<List<DevicePort>>() {});
-//                List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse(),
-//                        new TypeReference<List<Peripheral>>() {});
-//
-//                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
-//                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceCondition = new HashMap<>();
-//                Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
-//                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction,
-//                        integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
-//
-//                integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
-//                        integratedExternalLibrary, integratedPort, integratedConnectivity,
-//                        integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
-//            }
-//        }
     }
 
     private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws JsonProcessingException {
@@ -403,7 +371,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     portElements.add(pin);
                 }
             }
-            portList.add(new Port(portName, portConnectionType, portElements));
+            portList.add(new Port(portName, portConnectionType, portElements, null));
         }
         return portList;
     }

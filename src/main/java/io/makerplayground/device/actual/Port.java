@@ -17,14 +17,16 @@
 package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.makerplayground.project.ProjectDevice;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;
 
-@Data
+@Data @Builder
 public class Port implements Comparable<Port> {
 
     @JsonIgnore
@@ -33,6 +35,8 @@ public class Port implements Comparable<Port> {
     private final String name;
     private final PortConnectionType type;
     private final List<Pin> elements;
+
+    private final ProjectDevice ownerProjectDevice;
 
     @Override
     public int compareTo(Port o) {

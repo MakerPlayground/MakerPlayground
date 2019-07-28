@@ -57,6 +57,6 @@ public class PinDeserializer extends JsonDeserializer<Pin> {
             functions = List.of(PinFunction.valueOf(node.get("function").asText()));
         }
 
-        return new Pin(name, voltageLevel, functions, connectionType, x, y);
+        return new Pin(name, voltageLevel, functions, connectionType, x, y, null);
     }
 }

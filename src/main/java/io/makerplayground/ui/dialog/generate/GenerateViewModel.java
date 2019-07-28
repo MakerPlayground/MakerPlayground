@@ -19,9 +19,9 @@ package io.makerplayground.ui.dialog.generate;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.Port;
+import io.makerplayground.project.PinPortConnection;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.generator.source.SourceCodeResult;
-import io.makerplayground.project.DevicePinPortConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.collections.FXCollections;
@@ -61,31 +61,32 @@ public class GenerateViewModel {
             }
         }
     }
+    private static final String NEW_LINE = "\n";
 
-    private String generateDescription(DevicePinPortConnection connection) {
-        List<String> pinPortNameFrom = new ArrayList<>();
-        List<String> pinPortNameTo = new ArrayList<>();
-        ProjectConfiguration configuration = project.getProjectConfiguration();
-        Optional<ActualDevice> from = configuration.getActualDevice(connection.getConsumerDevice());
-        Optional<ActualDevice> to = configuration.getActualDevice(connection.getProviderDevice());
-        if (from.isPresent() && to.isPresent()) {
-            Map<Pin, Pin> pinMapFromTo = connection.getPinMapConsumerProvider();
-            Map<Port, Port> portMapFromTo = connection.getPortMapConsumerProvider();
-            if (Objects.nonNull(pinMapFromTo)) {
-                for(Pin pin : pinMapFromTo.keySet()) {
-                    pinPortNameFrom.add(pin.getName());
-                    pinPortNameTo.add(pinMapFromTo.get(pin).getName());
-                }
-            }
-            if (Objects.nonNull(portMapFromTo)) {
-                for(Port port : portMapFromTo.keySet()) {
-                    pinPortNameFrom.add(port.getName());
-                    pinPortNameTo.add(portMapFromTo.get(port).getName());
-                }
-            }
-            return from.get().getBrand() + "-"+ from.get().getModel() + "(" + String.join(",", pinPortNameFrom) + ") -> "+ to.get().getBrand() + "-" + to.get().getModel() + "(" + String.join(", ", pinPortNameTo);
+    private String generateDescription(PinPortConnection connection) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
+        Map<Port, Port> portMap = connection.getPortMapConsumerProvider();
+        for(Pin consumerPin : pinMap.keySet()) {
+            Pin providerPin = pinMap.get(consumerPin);
+            stringBuilder.append("(");
+            stringBuilder.append(consumerPin.getOwnerProjectDevice().getName()).append("'s ").append(consumerPin.getName());
+            stringBuilder.append(" -> ");
+            stringBuilder.append(providerPin.getOwnerProjectDevice().getName()).append("'s ").append(providerPin.getName());
+            stringBuilder.append(")");
+            stringBuilder.append(NEW_LINE);
         }
-        return "";
+        for(Port consumerPort : portMap.keySet()) {
+            Port providerPort = portMap.get(consumerPort);
+            stringBuilder.append("(");
+            stringBuilder.append(consumerPort.getOwnerProjectDevice().getName()).append("'s ").append(consumerPort.getName());
+            stringBuilder.append(" -> ");
+            stringBuilder.append(providerPort.getOwnerProjectDevice().getName()).append("'s ").append(providerPort.getName());
+            stringBuilder.append(")");
+            stringBuilder.append(NEW_LINE);
+        }
+        return stringBuilder.toString().strip();
     }
 
     public Project getProject() {

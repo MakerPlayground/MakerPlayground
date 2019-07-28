@@ -48,7 +48,7 @@ public class IntegratedActualDevice extends ActualDevice {
                            Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary,
                            List<IntegratedActualDevice> integratedDevices) {
         super(id, brand, model, url, width, height, pioBoardId, deviceType, pinProvide, pinConsume, pinUnused,
-                property, portProvide, portConsume, cloudConsume, compatibilityMap,
+                portConsume, portProvide, property, cloudConsume, compatibilityMap,
                 cloudPlatformSourceCodeLibrary, platformSourceCodeLibrary, integratedDevices);
         this.parent = null;
     }

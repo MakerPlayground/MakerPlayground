@@ -18,16 +18,14 @@ package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.ToString;
+import io.makerplayground.project.ProjectDevice;
+import lombok.*;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-@Data
+@Data @Builder
 @JsonDeserialize(using = PinDeserializer.class)
 public class Pin implements Comparable<Pin>{
 
@@ -40,6 +38,8 @@ public class Pin implements Comparable<Pin>{
     private final PinConnectionType connectionType;
     @ToString.Exclude private final double x;
     @ToString.Exclude private final double y;
+
+    private final ProjectDevice ownerProjectDevice;
 
     @Override
     public int compareTo(Pin o) {

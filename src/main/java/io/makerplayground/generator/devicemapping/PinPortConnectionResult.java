@@ -16,21 +16,15 @@
 
 package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.device.actual.Pin;
-import io.makerplayground.device.actual.Port;
-import io.makerplayground.project.DevicePinPortConnection;
+import io.makerplayground.project.PinPortConnection;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Data
-public class DevicePinPortConnectionResult {
-    private final DevicePinPortConnectionResultStatus status;
-    private final Set<Set<DevicePinPortConnection>> connectionSet;
-    private final Map<Set<DevicePinPortConnection>, List<Pin>> remainingPinProvide;
-    private final Map<Set<DevicePinPortConnection>, List<Port>> remainingPortProvide;
+public class PinPortConnectionResult {
+    private final PinPortConnectionResultStatus status;
+    private final List<PinPortConnection> connections;
 
-    public static DevicePinPortConnectionResult ERROR = new DevicePinPortConnectionResult(DevicePinPortConnectionResultStatus.ERROR, null, null, null);
+    public static PinPortConnectionResult ERROR = new PinPortConnectionResult(PinPortConnectionResultStatus.ERROR, null);
 }

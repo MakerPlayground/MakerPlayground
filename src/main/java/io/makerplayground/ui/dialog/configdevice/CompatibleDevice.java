@@ -1,6 +1,5 @@
 package io.makerplayground.ui.dialog.configdevice;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.project.ProjectDevice;
 
@@ -12,8 +11,8 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
     private ActualDevice actualDevice;
     private ProjectDevice projectDevice;
 
-    @JsonIgnore
-    private static final Comparator<ActualDevice> comparator = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
+    private static final Comparator<ProjectDevice> PROJECT_DEVICE_COMPARATOR = Comparator.comparing(ProjectDevice::getName);
+    private static final Comparator<ActualDevice> ACTUAL_DEVICE_COMPARATOR = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
 
     public CompatibleDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;
@@ -60,17 +59,17 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
 
     @Override
     public int compareTo(CompatibleDevice that) {
-        if (this.getProjectDevice().isPresent() && that.getProjectDevice().isPresent()) {
-            return this.getProjectDevice().get().getName().compareTo(that.getProjectDevice().get().getName());
+        if (projectDevice != null && that.projectDevice != null) {
+            return PROJECT_DEVICE_COMPARATOR.compare(projectDevice, that.projectDevice);
         }
-        else if (this.getProjectDevice().isPresent() && that.getProjectDevice().isEmpty()) {
+        else if (actualDevice != null && that.actualDevice != null) {
+            return ACTUAL_DEVICE_COMPARATOR.compare(actualDevice, that.actualDevice);
+        }
+        else if (projectDevice != null) { // that.projectDevice always null in this case
             return -1;
         }
-        else if (this.getProjectDevice().isEmpty() && that.getProjectDevice().isPresent()) {
+        else if (that.projectDevice != null) { // this.projectDevice always null in this case
             return 1;
-        }
-        else if (this.getActualDevice().isPresent() && that.getActualDevice().isPresent()) {
-            return comparator.compare(this.getActualDevice().get(), that.getActualDevice().get());
         }
         throw new IllegalStateException("CompatibleDevice must contains neither projectDevice nor actualDevice");
     }

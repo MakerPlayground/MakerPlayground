@@ -27,8 +27,8 @@ import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
-import io.makerplayground.generator.devicemapping.DevicePinPortConnectionResult;
-import io.makerplayground.generator.devicemapping.DevicePinPortConnectionResultStatus;
+import io.makerplayground.generator.devicemapping.PinPortConnectionResult;
+import io.makerplayground.generator.devicemapping.PinPortConnectionResultStatus;
 import io.makerplayground.generator.devicemapping.DevicePinPortLogic;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
 import javafx.collections.FXCollections;
@@ -45,7 +45,7 @@ import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 @JsonDeserialize(using = ProjectConfigurationDeserializer.class)
 public final class ProjectConfiguration {
 
-    /* input variables: calculations needs the compatibilities data from the project instance. */
+    /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
     @JsonIgnore private Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility;
 
@@ -59,21 +59,21 @@ public final class ProjectConfiguration {
     /* output variables: compatible devices and pin/port connections */
     @JsonIgnore @Getter private SortedMap<ActualDevice, DeviceMappingResult> controllerSelectableMap;
     @JsonIgnore @Getter private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> compatibleDevicesSelectableMap;
-    @JsonIgnore @Getter private Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>> compatibleDevicePinPortConnectionMap;
+    @JsonIgnore @Getter private Map<ProjectDevice, Map<ActualDevice, List<PinPortConnection>>> compatibleDevicePinPortConnectionMap;
 
-    /* data structure: user's selection that would be stored in file */
+    /* data structure: user's input that would be stored in file */
     @Setter(AccessLevel.PACKAGE) @Getter private Platform platform;
     @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap;
-    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, DevicePinPortConnection> devicePinPortConnections;
+    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnections;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<CloudPlatform, Map<String, String>> cloudParameterMap;
 
-    /* unmodifiable variables: the unmodifiable view of data structure to protect the change from outside class */
+    /* unmodifiable variables: the unmodifiable view of data structure to protect the data change from outside class */
     @Getter private final Map<ProjectDevice, Map<Property, Object>> unmodifiableDevicePropertyValueMap;
     @Getter private final SortedMap<ProjectDevice, ActualDevice> unmodifiableDeviceMap;
     @Getter private final SortedMap<ProjectDevice, ProjectDevice> unmodifiableIdenticalDeviceMap;
-    @Getter private final SortedMap<ProjectDevice, DevicePinPortConnection> unmodifiableDevicePinPortConnections;
+    @Getter private final SortedMap<ProjectDevice, PinPortConnection> unmodifiableDevicePinPortConnections;
     @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
     @Builder
@@ -82,7 +82,7 @@ public final class ProjectConfiguration {
                                 @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
                                 @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
                                 @NonNull SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap,
-                                @NonNull SortedMap<ProjectDevice, DevicePinPortConnection> devicePinPortConnections,
+                                @NonNull SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnections,
                                 @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
         this.platform = platform;
         this.devicePropertyValueMap = devicePropertyValueMap;
@@ -106,7 +106,8 @@ public final class ProjectConfiguration {
                 .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
     }
 
-    void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility, Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {
+    void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
+                             Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {
         this.actionCompatibility = actionCompatibility;
         this.conditionCompatibility = conditionCompatibility;
 
@@ -126,13 +127,20 @@ public final class ProjectConfiguration {
 
     private void generateDeviceSelectableMapAndPinPortConnection() {
         Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap = new HashMap<>();
-        Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>> deviceConnectionMap = new HashMap<>();
+        Map<ProjectDevice, Map<ActualDevice, List<PinPortConnection>>> deviceConnectionMap = new HashMap<>();
         /* add all device that is the same generic with "OK" mapping result */
         for (ProjectDevice device: nonControllerDevices) {
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = DeviceLibrary.INSTANCE.getActualDevice(getPlatform())
                     .stream()
                     .filter(actualDevice -> actualDevice.getCompatibilityMap().containsKey(device.getGenericDevice()))
                     .collect(Collectors.toMap(CompatibleDevice::new, o->DeviceMappingResult.OK, (o1, o2)->{throw new IllegalStateException("");}, TreeMap::new));
+            if (getController() != null) {
+                getController().getIntegratedDevices().forEach(integratedActualDevice -> {
+                    if (integratedActualDevice.getCompatibilityMap().containsKey(device.getGenericDevice())) {
+                        selectable.put(new CompatibleDevice(integratedActualDevice), DeviceMappingResult.OK);
+                    }
+                });
+            }
             deviceSelectableMap.put(device, selectable);
         }
         setFlagToDeviceIfActionConditionIsIncompatible(deviceSelectableMap);
@@ -222,35 +230,53 @@ public final class ProjectConfiguration {
         }
     }
 
-    private void setFlagToDeviceIfPinPortIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap, Map<ProjectDevice, Map<ActualDevice, List<DevicePinPortConnection>>> deviceConnectionMap) {
-        DevicePinPortLogic pinPortLogic = new DevicePinPortLogic(deviceMap, devicePinPortConnections.values());
+    private void setFlagToDeviceIfPinPortIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap, Map<ProjectDevice, Map<ActualDevice, List<PinPortConnection>>> deviceConnectionMap) {
         /* set reason for circuit incompatibility */
         for (ProjectDevice projectDevice: nonControllerDevices) {
-//            /* device already connect: no problem */
-//            if (unmodifiableDevicePinPortConnections.values().stream().map(DevicePinPortConnection::getConsumerDevice).collect(Collectors.toList()).contains(projectDevice)) {
-//                continue;
-//            }
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(projectDevice);
-            Map<ActualDevice, List<DevicePinPortConnection>> actualDeviceConnectionMap = new HashMap<>();
+            Map<ActualDevice, List<PinPortConnection>> actualDeviceConnectionMap = new HashMap<>();
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
                 if (compatibleDevice.getActualDevice().isPresent() && selectable.get(compatibleDevice) == DeviceMappingResult.OK) {
-                    Map<ProjectDevice, DevicePinPortConnection> tempMap = devicePinPortConnections.entrySet().stream().filter(entry -> entry.getKey() == projectDevice).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    tempMap.keySet().forEach(devicePinPortConnections::remove);
-                    DevicePinPortConnectionResult result = pinPortLogic.tryAssignActualDevice(projectDevice, compatibleDevice.getActualDevice().get());
-                    if (result.getStatus() == DevicePinPortConnectionResultStatus.ERROR) {
+                    ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
+
+                    /* In order to check the compatible, the assigned pin/port must be temporary deallocated from the remaining pin/port. */
+                    PinPortConnection connectionFromProjectDevice = devicePinPortConnections.getOrDefault(projectDevice, PinPortConnection.NOT_CONNECTED);
+                    Queue<PinPortConnection> allDeallocatedConnections = new ArrayDeque<>();
+                    Queue<PinPortConnection> connectionsToBeDeallocated = new ArrayDeque<>();
+                    connectionsToBeDeallocated.add(connectionFromProjectDevice);
+                    while(connectionsToBeDeallocated.size() > 0) {
+                        PinPortConnection connection = connectionsToBeDeallocated.poll();
+                        allDeallocatedConnections.add(connection);
+                        remainingPinProvide.addAll(connection.getPinMapConsumerProvider().values().stream()
+                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .collect(Collectors.toList()));
+                        remainingPinProvide.addAll(connection.getPortMapConsumerProvider().values().stream()
+                                .flatMap(port -> port.getElements().stream())
+                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .collect(Collectors.toList()));
+                        remainingPortProvide.addAll(connection.getPortMapConsumerProvider().values());
+                        // TODO: add connection to be deallocated in case that there is the dependent device
+                    }
+
+                    PinPortConnectionResult result = DevicePinPortLogic.generateOneStepPossiblePinPortConnection(remainingPinProvide, remainingPortProvide, projectDevice, actualDevice);
+                    if (result.getStatus() == PinPortConnectionResultStatus.ERROR) {
                         selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
                     }
                     else {
-                        ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
-                        List<DevicePinPortConnection> devicePinPortConnections = result.getConnectionSet().stream()
-                                .flatMap(Collection::stream)
-                                .filter(devicePinPortConnection -> devicePinPortConnection.getConsumerDevice() == projectDevice)
-                                .distinct()
-                                .sorted()
-                                .collect(Collectors.toList());
-                        actualDeviceConnectionMap.put(actualDevice, devicePinPortConnections);
+                        actualDeviceConnectionMap.put(actualDevice, result.getConnections());
                     }
-                    devicePinPortConnections.putAll(tempMap);
+
+                    while(allDeallocatedConnections.size() > 0) {
+                        PinPortConnection connection = allDeallocatedConnections.poll();
+                        remainingPinProvide.removeAll(connection.getPinMapConsumerProvider().values().stream()
+                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .collect(Collectors.toList()));
+                        remainingPinProvide.removeAll(connection.getPortMapConsumerProvider().values().stream()
+                                .flatMap(port -> port.getElements().stream())
+                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .collect(Collectors.toList()));
+                        remainingPortProvide.removeAll(connection.getPortMapConsumerProvider().values());
+                    }
                 }
             }
             deviceConnectionMap.put(projectDevice, actualDeviceConnectionMap);
@@ -346,8 +372,8 @@ public final class ProjectConfiguration {
             remainingPinProvide.clear();
             remainingPortProvide.clear();
             remainingCloudPlatform.clear();
-            remainingPinProvide.addAll(controller.getPinProvide());
-            remainingPortProvide.addAll(controller.getPortProvide());
+            remainingPinProvide.addAll(controller.getPinProvideByOwnerDevice(CONTROLLER));
+            remainingPortProvide.addAll(controller.getPortProvideByOwnerDevice(CONTROLLER));
             remainingCloudPlatform.addAll(controller.getCloudPlatformSourceCodeLibrary().keySet());
 
             generateDeviceSelectableMapAndPinPortConnection();
@@ -450,14 +476,14 @@ public final class ProjectConfiguration {
 
         if (deviceMap.get(CONTROLLER) != null) {
             ActualDevice controller = deviceMap.get(CONTROLLER);
-            remainingPinProvide.addAll(controller.getPinProvide());
-            remainingPortProvide.addAll(controller.getPortProvide());
+            remainingPinProvide.addAll(controller.getPinProvideByOwnerDevice(CONTROLLER));
+            remainingPortProvide.addAll(controller.getPortProvideByOwnerDevice(CONTROLLER));
         }
     }
 
-    public void setDevicePinPortConnection(ProjectDevice projectDevice, DevicePinPortConnection connection) {
+    public void setDevicePinPortConnection(ProjectDevice projectDevice, PinPortConnection connection) {
         if (getActualDevice(projectDevice).isPresent()) {
-            DevicePinPortConnection previousConnection = getDevicePinPortConnection(projectDevice);
+            PinPortConnection previousConnection = getDevicePinPortConnection(projectDevice);
             if (previousConnection != connection) {
                 unsetDevicePinPortConnection(projectDevice);
                 devicePinPortConnections.put(projectDevice, connection);
@@ -482,7 +508,7 @@ public final class ProjectConfiguration {
     }
 
     public void unsetDevicePinPortConnection(ProjectDevice projectDevice) {
-        DevicePinPortConnection connection = devicePinPortConnections.remove(projectDevice);
+        PinPortConnection connection = devicePinPortConnections.remove(projectDevice);
         if (connection != null) {
             connection.getPinMapConsumerProvider().forEach((consumerPin, providerPin) -> remainingPinProvide.add(providerPin));
             connection.getPortMapConsumerProvider().forEach((consumerPort, providerPort) -> {
@@ -495,8 +521,8 @@ public final class ProjectConfiguration {
 //                .collect(Collectors.toList()));
     }
 
-    public DevicePinPortConnection getDevicePinPortConnection(ProjectDevice projectDevice) {
-        return devicePinPortConnections.getOrDefault(projectDevice, DevicePinPortConnection.NOT_CONNECTED);
+    public PinPortConnection getDevicePinPortConnection(ProjectDevice projectDevice) {
+        return devicePinPortConnections.getOrDefault(projectDevice, PinPortConnection.NOT_CONNECTED);
     }
 
     public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {

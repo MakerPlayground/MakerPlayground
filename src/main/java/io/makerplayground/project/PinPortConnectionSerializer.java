@@ -24,25 +24,21 @@ import io.makerplayground.device.actual.Port;
 
 import java.io.IOException;
 
-public class DevicePinPortConnectionSerializer extends JsonSerializer<DevicePinPortConnection> {
+public class PinPortConnectionSerializer extends JsonSerializer<PinPortConnection> {
 
     @Override
-    public void serialize(DevicePinPortConnection devicePinPortConnection, JsonGenerator jsonGenerator, SerializerProvider serializers) throws IOException {
+    public void serialize(PinPortConnection devicePinPortConnection, JsonGenerator jsonGenerator, SerializerProvider serializers) throws IOException {
         jsonGenerator.writeStartObject();
-
-        /* from */
-        jsonGenerator.writeStringField("from", devicePinPortConnection.getConsumerDevice().getName());
-
-        /* to */
-        jsonGenerator.writeStringField("to", devicePinPortConnection.getProviderDevice().getName());
 
         /* pinMapFromTo */
         var pinMap = devicePinPortConnection.getPinMapConsumerProvider();
         jsonGenerator.writeArrayFieldStart("pinMap");
         for (Pin pinFrom: pinMap.keySet()) {
             Pin pinTo = pinMap.get(pinFrom);
-            jsonGenerator.writeStringField("pinFrom", pinFrom.getName());
-            jsonGenerator.writeStringField("pinTo", pinTo.getName());
+            jsonGenerator.writeStringField("pinConsume", pinFrom.getName());
+            jsonGenerator.writeStringField("pinConsumeOwner", pinFrom.getOwnerProjectDevice().getName());
+            jsonGenerator.writeStringField("pinProvide", pinTo.getName());
+            jsonGenerator.writeStringField("pinProvideOwner", pinTo.getOwnerProjectDevice().getName());
         }
         jsonGenerator.writeEndArray();
 
@@ -51,8 +47,10 @@ public class DevicePinPortConnectionSerializer extends JsonSerializer<DevicePinP
         jsonGenerator.writeArrayFieldStart("portMap");
         for (Port portFrom: portMap.keySet()) {
             Port portTo = portMap.get(portFrom);
-            jsonGenerator.writeStringField("portFrom", portFrom.getName());
-            jsonGenerator.writeStringField("portTo", portTo.getName());
+            jsonGenerator.writeStringField("portConsume", portFrom.getName());
+            jsonGenerator.writeStringField("portConsumeOwner", portFrom.getOwnerProjectDevice().getName());
+            jsonGenerator.writeStringField("portProvide", portTo.getName());
+            jsonGenerator.writeStringField("portProvideOwner", portTo.getOwnerProjectDevice().getName());
         }
         jsonGenerator.writeEndArray();
 
