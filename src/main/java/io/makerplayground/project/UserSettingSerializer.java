@@ -1,33 +1,21 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
-import io.makerplayground.project.expression.*;
 
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created by USER on 13-Jul-17.
- */
-public class UserSettingSerializer extends StdSerializer<UserSetting> {
-    public UserSettingSerializer() {
-        this(null);
-    }
-
-    public UserSettingSerializer(Class<UserSetting> t) {
-        super(t);
-    }
+public class UserSettingSerializer extends JsonSerializer<UserSetting> {
 
     @Override
     public void serialize(UserSetting userSetting, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
 
         jsonGenerator.writeStartObject();
 

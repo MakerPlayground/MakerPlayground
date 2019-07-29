@@ -276,6 +276,7 @@ public final class ProjectConfiguration {
                                 .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
                                 .collect(Collectors.toList()));
                         remainingPortProvide.removeAll(connection.getPortMapConsumerProvider().values());
+                        // TODO: add pin/port to be removed in case that there is the dependent device
                     }
                 }
             }

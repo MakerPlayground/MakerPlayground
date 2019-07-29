@@ -17,19 +17,13 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.generic.GenericDevice;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import lombok.*;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
 @JsonSerialize (using = ProjectDeviceSerializer.class)
+@JsonDeserialize (using = ProjectDeviceDeserializer.class)
 @Data @AllArgsConstructor
 public class ProjectDevice implements Comparable<ProjectDevice>{
     @JsonIgnore
@@ -37,11 +31,6 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
 
     private String name;
     @Getter @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
-
-//    public ProjectDevice(String displayName, GenericDevice genericDevice) {
-//        this.displayName = displayName;
-//        this.genericDevice = genericDevice;
-//    }
 
     @Override
     public int compareTo(ProjectDevice o) {

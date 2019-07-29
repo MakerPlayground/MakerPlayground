@@ -375,6 +375,7 @@ public class ConfigActualDeviceView extends VBox{
                         ComboBox<PinPortConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnections(projectDevice, actualDevice)));
                         portComboBox.setCellFactory(newPinPortConnectionCellFactory());
                         portComboBox.setButtonCell(newPinPortConnectionListCell());
+                        portComboBox.itemsProperty().get().add(0, PinPortConnection.NOT_CONNECTED);
                         PinPortConnection connection = viewModel.getSelectedPinPortConnection(projectDevice);
                         if (connection != PinPortConnection.NOT_CONNECTED) {
                             portComboBox.getSelectionModel().select(connection);

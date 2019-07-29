@@ -32,8 +32,6 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -54,10 +52,10 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     @Getter @Setter private String projectName;
-    private final ObservableList<ProjectDevice> device;
-    private final ObservableList<Scene> scene;
-    private final ObservableList<Condition> condition;
-    private final ObservableList<Line> line;
+    private final ObservableList<ProjectDevice> devices;
+    private final ObservableList<Scene> scenes;
+    private final ObservableList<Condition> conditions;
+    private final ObservableList<Line> lines;
     private final ObservableList<Begin> begins;
 
     @Getter private final FilteredList<ProjectDevice> sensorDevice;
@@ -77,32 +75,29 @@ public class Project {
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
-    private ObjectProperty<Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>>> actionCompatibility = new SimpleObjectProperty<>();
-    private ObjectProperty<Map<ProjectDevice, Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>>>> conditionCompatibility = new SimpleObjectProperty<>();
-
     @Getter @Setter private ProjectConfiguration projectConfiguration;
 
     public Project() {
         this.projectName = "Untitled Project";
 
-        this.device = FXCollections.observableArrayList();
-        this.unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(device);
-        this.actuatorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
-        this.sensorDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
-        this.utilityDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
-        this.cloudDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
-        this.interfaceDevice = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
-        this.deviceWithAction = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasAction());
-        this.deviceWithCondition = new FilteredList<>(device, projectDevice -> projectDevice.getGenericDevice().hasCondition());
+        this.devices = FXCollections.observableArrayList();
+        this.unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(devices);
+        this.actuatorDevice = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
+        this.sensorDevice = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
+        this.utilityDevice = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
+        this.cloudDevice = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
+        this.interfaceDevice = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
+        this.deviceWithAction = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().hasAction());
+        this.deviceWithCondition = new FilteredList<>(devices, projectDevice -> projectDevice.getGenericDevice().hasCondition());
 
-        this.scene = FXCollections.observableArrayList();
-        this.condition = FXCollections.observableArrayList();
-        this.line = FXCollections.observableArrayList();
+        this.scenes = FXCollections.observableArrayList();
+        this.conditions = FXCollections.observableArrayList();
+        this.lines = FXCollections.observableArrayList();
         this.begins = FXCollections.observableArrayList();
 
-        this.unmodifiableScene = FXCollections.unmodifiableObservableList(scene);
-        this.unmodifiableCondition = FXCollections.unmodifiableObservableList(condition);
-        this.unmodifiableLine = FXCollections.unmodifiableObservableList(line);
+        this.unmodifiableScene = FXCollections.unmodifiableObservableList(scenes);
+        this.unmodifiableCondition = FXCollections.unmodifiableObservableList(conditions);
+        this.unmodifiableLine = FXCollections.unmodifiableObservableList(lines);
 
         this.projectConfiguration = ProjectConfiguration.builder()
                 .platform(Platform.ARDUINO_AVR8)
@@ -149,20 +144,19 @@ public class Project {
     }
 
     void addDevice(ProjectDevice projectDevice) {
-        device.add(projectDevice);
+        devices.add(projectDevice);
     }
 
     public ProjectDevice addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
-        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice, this);
-        device.add(projectDevice);
-        return projectDevice;
+        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
+        devices.add(projectDevice);
     }
 
-    public void removeDevice(ProjectDevice pd) {
-        scene.forEach(s->s.removeDevice(pd));
-        condition.forEach(c->c.removeDevice(pd));
-        if (!device.remove(pd)) {
+    public void removeDevice(ProjectDevice genericDevice) {
+        scenes.forEach(s->s.removeDevice(genericDevice));
+        conditions.forEach(c->c.removeDevice(genericDevice));
+        if (!devices.remove(genericDevice)) {
             throw new IllegalStateException("");
         }
         this.calculateCompatibility();
@@ -177,7 +171,7 @@ public class Project {
     }
 
     public Scene newScene() {
-        int id = scene.stream()
+        int id = scenes.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
                 .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
                 .max()
@@ -185,45 +179,45 @@ public class Project {
 
         Scene s = new Scene(this);
         s.setName("Scene" + (id + 1));
-        scene.add(s);
+        scenes.add(s);
         checkAndInvalidateDiagram();
         return s;
     }
 
     public Scene newScene(Scene s) {
-        int id = scene.stream()
+        int id = scenes.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
                 .mapToInt(scene1 -> Integer.parseInt(scene1.getName().substring(5)))
                 .max()
                 .orElse(0);
 
         Scene newScene = new Scene(s, "Scene" + (id + 1), this);
-        scene.add(newScene);
+        scenes.add(newScene);
         checkAndInvalidateDiagram();
         return newScene;
     }
 
     void addScene(Scene s) {
-        scene.add(s);
+        scenes.add(s);
     }
 
     public void removeScene(Scene s) {
-        scene.remove(s);
-        for (int i=line.size()-1; i>=0; i--) {
-            Line l = line.get(i);
+        scenes.remove(s);
+        for (int i = lines.size()-1; i>=0; i--) {
+            Line l = lines.get(i);
             if (l.getSource() == s || l.getDestination() == s) {
-                line.remove(l);
+                lines.remove(l);
             }
         }
         checkAndInvalidateDiagram();
     }
 
     public Optional<Condition> getUnmodifiableCondition(String name) {
-        return condition.stream().filter(c -> c.getName().equals(name)).findFirst();
+        return conditions.stream().filter(c -> c.getName().equals(name)).findFirst();
     }
 
     public Condition newCondition() {
-        int id = condition.stream()
+        int id = conditions.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
                 .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
                 .max()
@@ -231,34 +225,34 @@ public class Project {
 
         Condition c = new Condition(this);
         c.setName("condition" + (id + 1));
-        condition.add(c);
+        conditions.add(c);
         checkAndInvalidateDiagram();
         return c;
     }
 
     public Condition newCondition(Condition c) {
-        int id = condition.stream()
+        int id = conditions.stream()
                 .filter(condition -> conditionNameRegex.matcher(condition.getName()).matches())
                 .mapToInt(condition -> Integer.parseInt(condition.getName().substring(9)))
                 .max()
                 .orElse(0);
 
         Condition newCondition = new Condition(c, "condition" + (id + 1), this);
-        condition.add(newCondition);
+        conditions.add(newCondition);
         checkAndInvalidateDiagram();
         return newCondition;
     }
 
     void addCondition(Condition c) {
-        condition.add(c);
+        conditions.add(c);
     }
 
     public void removeCondition(Condition c) {
-        condition.remove(c);
-        for (int i=line.size()-1; i>=0; i--) {
-            Line l = line.get(i);
+        conditions.remove(c);
+        for (int i = lines.size()-1; i>=0; i--) {
+            Line l = lines.get(i);
             if (l.getSource() == c || l.getDestination() == c) {
-                line.remove(l);
+                lines.remove(l);
             }
         }
         checkAndInvalidateDiagram();
@@ -266,20 +260,20 @@ public class Project {
 
     public void addLine(NodeElement source, NodeElement destination) {
         // do not create new line if there existed a line with identical source and destination
-        if (line.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
+        if (lines.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
             Line l = new Line(source, destination, this);
-            line.add(l);
+            lines.add(l);
         }
         checkAndInvalidateDiagram();
     }
 
     public void removeLine(Line l) {
-        line.remove(l);
+        lines.remove(l);
         checkAndInvalidateDiagram();
     }
 
     public boolean hasLine(NodeElement source, NodeElement destination) {
-        return line.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
+        return lines.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
     }
 
     // TODO: need to get again after set
@@ -307,7 +301,7 @@ public class Project {
 
     public List<ProjectValue> getAvailableValue(Set<DataType> dataType) {
         List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : device) {
+        for (ProjectDevice projectDevice : devices) {
             for (Value v : projectDevice.getGenericDevice().getValue()) {
                 if (dataType.contains(v.getType())) {
                     value.add(new ProjectValue(projectDevice, v));
@@ -351,7 +345,7 @@ public class Project {
                 });
             }
             visited.add(current);
-            Set<NodeElement> unvisitedAdj = line.stream()
+            Set<NodeElement> unvisitedAdj = lines.stream()
                     .filter(l->l.getSource() == current)
                     .map(Line::getDestination)
                     .dropWhile(visited::contains)
@@ -391,7 +385,7 @@ public class Project {
                 }));
             }
             visited.add(current);
-            Set<NodeElement> unvisitedAdj = line.stream()
+            Set<NodeElement> unvisitedAdj = lines.stream()
                     .filter(l->l.getSource() == current)
                     .map(Line::getDestination)
                     .dropWhile(visited::contains)
@@ -411,10 +405,10 @@ public class Project {
             }
             return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
                     && projectConfiguration.getController() == null
-                    && device.isEmpty()
-                    && scene.isEmpty()
-                    && condition.isEmpty()
-                    && line.isEmpty()
+                    && devices.isEmpty()
+                    && scenes.isEmpty()
+                    && conditions.isEmpty()
+                    && lines.isEmpty()
                     && beginCount == 1
                     && firstBegin != null
                     && firstBegin.getTop() == 200
@@ -469,7 +463,7 @@ public class Project {
     private void checkAndInvalidateDiagram() {
         Map<List<Line>, DiagramError> error = new HashMap<>();
 
-        Map<NodeElement, List<Line>> lineFromSource = this.line.stream().collect(Collectors.groupingBy(Line::getSource));
+        Map<NodeElement, List<Line>> lineFromSource = this.lines.stream().collect(Collectors.groupingBy(Line::getSource));
 
         for (NodeElement nodeElement : lineFromSource.keySet()) {
             List<Line> lines = lineFromSource.get(nodeElement);
@@ -497,7 +491,7 @@ public class Project {
         getUnmodifiableCondition().forEach(Condition::clearRoot);
         getBegin().forEach(this::traverseAndSetRoot);
 
-        Map<NodeElement, List<Line>> lineFromDest = this.line.stream().collect(Collectors.groupingBy(Line::getDestination));
+        Map<NodeElement, List<Line>> lineFromDest = this.lines.stream().collect(Collectors.groupingBy(Line::getDestination));
         for (NodeElement nodeElement : lineFromDest.keySet()) {
             List<Line> lines = lineFromDest.get(nodeElement);
 
@@ -511,7 +505,7 @@ public class Project {
         diagramError =  Collections.unmodifiableMap(error);
 
         // invalidate every lines
-        line.forEach(Line::invalidate);
+        lines.forEach(Line::invalidate);
     }
 
     private Set<NodeElement> getNextNodeElements(NodeElement from) {
@@ -547,10 +541,10 @@ public class Project {
     public void removeBegin(Begin begin) {
         if (begins.size() > 1) {
             begins.remove(begin);
-            for (int i=line.size()-1; i>=0; i--) {
-                Line l = line.get(i);
+            for (int i = lines.size()-1; i>=0; i--) {
+                Line l = lines.get(i);
                 if (l.getSource() == begin || l.getDestination() == begin) {
-                    line.remove(l);
+                    lines.remove(l);
                 }
             }
             checkAndInvalidateDiagram();
@@ -647,7 +641,7 @@ public class Project {
                 });
             }
             visited.add(current);
-            Set<NodeElement> unvisitedAdj = line.stream()
+            Set<NodeElement> unvisitedAdj = lines.stream()
                     .filter(l->l.getSource() == current)
                     .map(Line::getDestination)
                     .dropWhile(visited::contains)

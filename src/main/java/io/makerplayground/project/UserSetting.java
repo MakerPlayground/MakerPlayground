@@ -17,8 +17,8 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;

@@ -20,6 +20,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.PinPortConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
@@ -88,7 +89,8 @@ public class ProjectLogic {
             // for each connectivity required, check if it has been connected and indicate error if it hasn't
             if (configuration.getActualDevice(projectDevice).isPresent()) {
                 ProjectDevice root = configuration.getIdenticalDevice(projectDevice).orElse(projectDevice);
-                if (!project.getProjectConfiguration().getUnmodifiableDevicePinPortConnections().containsKey(root)) {
+                var projectDeviceConnectionMap = project.getProjectConfiguration().getUnmodifiableDevicePinPortConnections();
+                if (!projectDeviceConnectionMap.containsKey(root) || projectDeviceConnectionMap.get(root) == PinPortConnection.NOT_CONNECTED) {
                     return ProjectMappingResult.NOT_SELECT_PORT;
                 }
             }
