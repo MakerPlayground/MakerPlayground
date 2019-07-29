@@ -609,7 +609,7 @@ public class Project {
                     });
 //                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
 //                        if (!compatibilityUsed.containsKey(projectDevice1)) {
-//                            Map<Parameter, Constraint> parameterConstraintMap = new TreeMap<>(Comparator.comparing(Parameter::getName));
+//                            Map<Parameter, Constraint> parameterConstraintMap = new TreeMap<>(Comparator.comparing(Parameter::getDisplayName));
 //                            compatibilityUsed.put(projectDevice1, parameterConstraintMap);
 //                        }
 //                        s.getValueMap().forEach((parameter, expression) -> {

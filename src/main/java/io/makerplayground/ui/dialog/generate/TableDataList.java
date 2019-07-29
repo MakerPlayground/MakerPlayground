@@ -41,7 +41,7 @@ public class TableDataList {
 //            actualDevice = projectDevice;
 //        }
 //
-//        this.name = projectDevice.getName();
+//        this.displayName = projectDevice.getDisplayName();
 //        this.brand = actualDevice.getCompatibleDeviceComboItem().getBrand();
 //        this.model = actualDevice.getCompatibleDeviceComboItem().getModel();
 //        this.id = actualDevice.getCompatibleDeviceComboItem().getId();
@@ -54,13 +54,13 @@ public class TableDataList {
 ////                if (port == null) {
 ////                    throw new IllegalStateException("Port hasn't been selected!!!");
 ////                }
-////                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+////                list.addAll(port.stream().map(DevicePort::getDisplayName).collect(Collectors.toList()));
 ////            } else { //i2c and others
 ////                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
 ////                if (port == null) {
 ////                    throw new IllegalStateException("Port hasn't been selected!!!");
 ////                }
-////                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
+////                list.addAll(port.stream().map(DevicePort::getDisplayName).collect(Collectors.toList()));
 ////            }
 ////        }
 //        this.pin = String.join(",", list);

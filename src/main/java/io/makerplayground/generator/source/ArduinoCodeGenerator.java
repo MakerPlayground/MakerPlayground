@@ -148,89 +148,67 @@ class ArduinoCodeGenerator {
         // instantiate object(s) for each device
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
-            Optional<ActualDevice> actualDevice = configuration.getActualDevice(projectDevice);
-            if (actualDevice.isEmpty()) {
+            if (configuration.getActualDevice(projectDevice).isEmpty()) {
                 continue;
             }
-            builder.append(actualDevice.get().getMpLibrary(project.getSelectedPlatform()))
+            ActualDevice actualDevice = configuration.getActualDevice(projectDevice).get();
+            builder.append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
                     .append(" ").append(parseDeviceVariableName(configuration, projectDevice));
             List<String> args = new ArrayList<>();
 
             /* TODO: uncomment this & assign port as parameter */
             PinPortConnection connection = project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
             if (connection != PinPortConnection.NOT_CONNECTED) {
+                Map<Port, Port> portMap = connection.getPortMapConsumerProvider();
                 Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
-//                for () {
-//
-//                }
-            }
-//            if (!projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
-//                // port
-//                for (Peripheral p : projectDevice.getCompatibleDevice().getConnectivity()) {
-//                    if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)
-//                            && (p.getConnectionType() != ConnectionType.UART)) {
-//                        List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-//                        if (port == null) {
-//                            throw new IllegalStateException("Port hasn't been selected!!!");
-//                        }
-//                        // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
-//                        for (DevicePort devicePort : port) {
-//                            if (p.isI2C1() || p.isI2C() || p.isSPI()) {
-//                                continue;
-//                            }
-//                            if (!devicePort.getAlias().isEmpty()) {
-//                                if (p.isDual()) {
-//                                    args.addAll(devicePort.getAlias());
-//                                } else if (p.isPrimaryPortOnly()) {
-//                                    args.add(devicePort.getAlias().get(0));
-//                                } else if (p.isSecondaryPortOnly()) {
-//                                    args.add(devicePort.getAlias().get(1));
-//                                }
-//                            } else {
-//                                args.add(devicePort.getName());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-            // property for the generic device
-            if (actualDevice.get().getProperty() != null) {
-                for (Property p : actualDevice.get().getProperty()) {
-                    Object value = configuration.getPropertyValue(projectDevice, p);
-                    if (value == null) {
-                        throw new IllegalStateException("Property hasn't been set");
-                    }
-                    switch (p.getDataType()) {
-                        case INTEGER:
-                        case DOUBLE:
-                            args.add(String.valueOf(((NumberWithUnit) value).getValue()));
-                            break;
-                        case INTEGER_ENUM:
-                        case BOOLEAN_ENUM:
-                            args.add(String.valueOf(value));
-                            break;
-                        case STRING:
-                        case ENUM:
-                            args.add("\"" + value + "\"");
-                            break;
-                        case AZURE_COGNITIVE_KEY:
-                            AzureCognitiveServices acs = (AzureCognitiveServices) value;
-                            args.add("\"" + acs.getLocation().toLowerCase() + "\"");
-                            args.add("\"" + acs.getKey1() + "\"");
-                            break;
-                        case AZURE_IOTHUB_KEY:
-                            AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
-                            args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
-                            break;
-                        default:
-                            throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+                for (Pin pinConsume: pinMap.keySet()) {
+                    Pin pinProvide = pinMap.get(pinConsume);
+                    PinFunction functionUsed = pinConsume.getFunction().get(0).getOpposite();
+                    if (PinFunction.FUNCTIONS_WITH_CODES.contains(functionUsed)) {
+                        if (!pinProvide.getCodingName().isEmpty()) {
+                            args.addAll(pinProvide.getCodingName());
+                        } else {
+                            args.add(pinProvide.getDisplayName());
+                        }
                     }
                 }
             }
 
+            // property for the generic device
+            for (Property p : actualDevice.getProperty()) {
+                Object value = configuration.getPropertyValue(projectDevice, p);
+                if (value == null) {
+                    throw new IllegalStateException("Property hasn't been set");
+                }
+                switch (p.getDataType()) {
+                    case INTEGER:
+                    case DOUBLE:
+                        args.add(String.valueOf(((NumberWithUnit) value).getValue()));
+                        break;
+                    case INTEGER_ENUM:
+                    case BOOLEAN_ENUM:
+                        args.add(String.valueOf(value));
+                        break;
+                    case STRING:
+                    case ENUM:
+                        args.add("\"" + value + "\"");
+                        break;
+                    case AZURE_COGNITIVE_KEY:
+                        AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                        args.add("\"" + acs.getLocation().toLowerCase() + "\"");
+                        args.add("\"" + acs.getKey1() + "\"");
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
+                        break;
+                    default:
+                        throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+                }
+            }
+
             // Cloud Platform instance
-            CloudPlatform cloudPlatform = actualDevice.get().getCloudConsume();
+            CloudPlatform cloudPlatform = actualDevice.getCloudConsume();
             if (cloudPlatform != null) {
                 args.add(parseCloudPlatformVariableName(cloudPlatform));
             }
@@ -758,7 +736,7 @@ class ArduinoCodeGenerator {
         } else if (node instanceof Begin) {
             return "scene_" + ((Begin) node).getName().replace(" ", "_");
         }
-        throw new IllegalStateException("Not support scene function name for {" + node + "}");
+        throw new IllegalStateException("Not support scene function displayName for {" + node + "}");
     }
 
     private static String parsePointerName(NodeElement nodeElement) {
@@ -772,9 +750,9 @@ class ArduinoCodeGenerator {
         if (nodeBeforeConditions instanceof Begin || nodeBeforeConditions instanceof Scene) {
             return parseSceneFunctionName(nodeBeforeConditions) + "_conditions";
         } else if (nodeBeforeConditions instanceof Condition) {
-            throw new IllegalStateException("Not support condition function name for condition after condition {" + nodeBeforeConditions + "}");
+            throw new IllegalStateException("Not support condition function displayName for condition after condition {" + nodeBeforeConditions + "}");
         }
-        throw new IllegalStateException("Not support condition function name for {" + nodeBeforeConditions + "}");
+        throw new IllegalStateException("Not support condition function displayName for {" + nodeBeforeConditions + "}");
     }
 
     private static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {

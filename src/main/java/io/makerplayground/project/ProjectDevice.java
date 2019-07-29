@@ -38,8 +38,8 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
     private String name;
     @Getter @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
 
-//    public ProjectDevice(String name, GenericDevice genericDevice) {
-//        this.name = name;
+//    public ProjectDevice(String displayName, GenericDevice genericDevice) {
+//        this.displayName = displayName;
 //        this.genericDevice = genericDevice;
 //    }
 

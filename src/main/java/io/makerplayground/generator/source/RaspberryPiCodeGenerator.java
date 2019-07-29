@@ -424,7 +424,7 @@ class RaspberryPiCodeGenerator {
 //                                args.add(devicePort.getAlias().get(0));
 //                            }
 //                        } else {
-//                            args.add(devicePort.getName());
+//                            args.add(devicePort.getDisplayName());
 //                        }
 //                    }
 //                }

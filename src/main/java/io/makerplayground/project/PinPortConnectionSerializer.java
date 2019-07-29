@@ -35,9 +35,9 @@ public class PinPortConnectionSerializer extends JsonSerializer<PinPortConnectio
         jsonGenerator.writeArrayFieldStart("pinMap");
         for (Pin pinFrom: pinMap.keySet()) {
             Pin pinTo = pinMap.get(pinFrom);
-            jsonGenerator.writeStringField("pinConsume", pinFrom.getName());
+            jsonGenerator.writeStringField("pinConsume", pinFrom.getDisplayName());
             jsonGenerator.writeStringField("pinConsumeOwner", pinFrom.getOwnerProjectDevice().getName());
-            jsonGenerator.writeStringField("pinProvide", pinTo.getName());
+            jsonGenerator.writeStringField("pinProvide", pinTo.getDisplayName());
             jsonGenerator.writeStringField("pinProvideOwner", pinTo.getOwnerProjectDevice().getName());
         }
         jsonGenerator.writeEndArray();

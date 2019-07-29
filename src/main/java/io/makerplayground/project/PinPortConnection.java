@@ -43,8 +43,8 @@ public class PinPortConnection implements Comparable<PinPortConnection> {
     private String getPinPortString() {
         List<String> pinPortName = new ArrayList<>();
         for(Pin pin : pinMapConsumerProvider.keySet()) {
-            pinPortName.add(pin.getName());
-            pinPortName.add(pinMapConsumerProvider.get(pin).getName());
+            pinPortName.add(pin.getDisplayName());
+            pinPortName.add(pinMapConsumerProvider.get(pin).getDisplayName());
         }
         for(Port port : portMapConsumerProvider.keySet()) {
             pinPortName.add(port.getName());

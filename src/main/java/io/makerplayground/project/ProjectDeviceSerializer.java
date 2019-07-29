@@ -53,11 +53,11 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //        jsonGenerator.writeArrayFieldStart("dependentDeviceConnection");
 //        for (Map.Entry<Peripheral, List<DevicePort>> connection : projectDevice.getDependentDeviceConnection().entrySet()) {
 //            jsonGenerator.writeStartObject();
-//            jsonGenerator.writeStringField("devicePeripheral", connection.getKey().name());
+//            jsonGenerator.writeStringField("devicePeripheral", connection.getKey().displayName());
 //            //jsonGenerator.writeStringField("controllerPeripheral", connection.getValue().getDeviceId());
 //            jsonGenerator.writeArrayFieldStart("controllerPeripheral");
 //            for (DevicePort devicePort : connection.getValue()) {
-//                mapper.writeValue(jsonGenerator, devicePort.getName());
+//                mapper.writeValue(jsonGenerator, devicePort.getDisplayName());
 //            }
 //            jsonGenerator.writeEndArray();
 //            jsonGenerator.writeEndObject();
@@ -70,7 +70,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //            for (Property property : projectDevice.getCompatibleDeviceComboItem().getProperty()) {
 //                Object value = projectDevice.getPropertyValue(property);
 //                jsonGenerator.writeStartObject();
-//                jsonGenerator.writeStringField("name", property.getName());
+//                jsonGenerator.writeStringField("displayName", property.getDisplayName());
 //                switch (property.getDataType()) {
 //                    case STRING:
 //                    case ENUM:
@@ -81,7 +81,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //                        NumberWithUnit numberWithUnit = (NumberWithUnit) value;
 //                        jsonGenerator.writeObjectFieldStart("value");
 //                        jsonGenerator.writeStringField("value", String.valueOf(numberWithUnit.getValue()));
-//                        jsonGenerator.writeStringField("unit", numberWithUnit.getUnit().name());
+//                        jsonGenerator.writeStringField("unit", numberWithUnit.getUnit().displayName());
 //                        jsonGenerator.writeEndObject();
 //                        break;
 //                    case INTEGER_ENUM:
@@ -96,7 +96,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //                        } else {
 //                            AzureCognitiveServices acs = (AzureCognitiveServices) value;
 //                            jsonGenerator.writeObjectFieldStart("value");
-//                            jsonGenerator.writeStringField("name", acs.getName());
+//                            jsonGenerator.writeStringField("displayName", acs.getDisplayName());
 //                            jsonGenerator.writeStringField("location", acs.getLocation());
 //                            jsonGenerator.writeStringField("key1", acs.getKey1());
 //                            jsonGenerator.writeStringField("key2", acs.getKey2());
@@ -109,7 +109,7 @@ public class ProjectDeviceSerializer extends StdSerializer<ProjectDevice> {
 //                        } else {
 //                            AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
 //                            jsonGenerator.writeObjectFieldStart("value");
-//                            jsonGenerator.writeStringField("deviceId", azureIoTHubDevice.getName());
+//                            jsonGenerator.writeStringField("deviceId", azureIoTHubDevice.getDisplayName());
 //                            jsonGenerator.writeStringField("connectionString", azureIoTHubDevice.getConnectionString());
 //                            jsonGenerator.writeEndObject();
 //                        }

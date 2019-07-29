@@ -367,7 +367,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
             List<String> pinNames = mapper.readValue(portNode.get("elements").traverse(), new TypeReference<List<String>>() {});
             for(Pin pin: pinList) {
-                if (pinNames.contains(pin.getName())) {
+                if (pinNames.contains(pin.getDisplayName())) {
                     portElements.add(pin);
                 }
             }

@@ -71,9 +71,9 @@ public class GenerateViewModel {
         for(Pin consumerPin : pinMap.keySet()) {
             Pin providerPin = pinMap.get(consumerPin);
             stringBuilder.append("(");
-            stringBuilder.append(consumerPin.getOwnerProjectDevice().getName()).append("'s ").append(consumerPin.getName());
+            stringBuilder.append(consumerPin.getOwnerProjectDevice().getName()).append("'s ").append(consumerPin.getDisplayName());
             stringBuilder.append(" -> ");
-            stringBuilder.append(providerPin.getOwnerProjectDevice().getName()).append("'s ").append(providerPin.getName());
+            stringBuilder.append(providerPin.getOwnerProjectDevice().getName()).append("'s ").append(providerPin.getDisplayName());
             stringBuilder.append(")");
             stringBuilder.append(NEW_LINE);
         }

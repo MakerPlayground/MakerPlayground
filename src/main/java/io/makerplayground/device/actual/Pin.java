@@ -19,20 +19,22 @@ package io.makerplayground.device.actual;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.project.ProjectDevice;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Data @Builder
 @JsonDeserialize(using = PinDeserializer.class)
 public class Pin implements Comparable<Pin>{
 
     @JsonIgnore
-    private static final Comparator<Pin> comparator = Comparator.comparing(Pin::getName).thenComparing(Pin::getVoltageLevel).thenComparing(Pin::getX).thenComparing(Pin::getY);
+    private static final Comparator<Pin> comparator = Comparator.comparing(Pin::getDisplayName).thenComparing(Pin::getVoltageLevel).thenComparing(Pin::getX).thenComparing(Pin::getY);
 
-    private final String name;
+    private final String displayName;
+    private final List<String> codingName;
     private final VoltageLevel voltageLevel;
     private final List<PinFunction> function;
     private final PinConnectionType connectionType;

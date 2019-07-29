@@ -91,7 +91,7 @@ class JSTDiagram extends Pane {
 //                    .collect(Collectors.groupingBy(port -> Objects.requireNonNullElse(port.getParent(), port), Collectors.counting()));
 //            DevicePort controllerPort = Collections.max(count.entrySet(), Map.Entry.comparingByValue()).getKey();
 //
-//            String controllerPortName = controllerPort.getName();
+//            String controllerPortName = controllerPort.getDisplayName();
 //            if (controllerPortName.equals("Internal")) {    // TODO: remove after we finish migrate to integrated device json syntax
 //                continue;
 //            }
@@ -321,10 +321,10 @@ class JSTDiagram extends Pane {
 //        for (int i=0; i<devicePortList.size(); i++) {
 //            // get port of the controller that current port of this device is connected to
 //            DevicePort controllerPort = controllerPortList.get(i);
-//            // get type of pin based on the name of the split port _1 is SIGNAL_1, _2 is SIGNAL_2 etc.
+//            // get type of pin based on the displayName of the split port _1 is SIGNAL_1, _2 is SIGNAL_2 etc.
 //            // TODO: find better way than string manipulation
 //            DevicePortPinType type = null;
-//            int splitPinIndex = controllerPort.getName().charAt(controllerPort.getName().length() - 1) - '0';
+//            int splitPinIndex = controllerPort.getDisplayName().charAt(controllerPort.getDisplayName().length() - 1) - '0';
 //            if (splitPinIndex == 1) {
 //                type = DevicePortPinType.SIGNAL_1;
 //            } else if (splitPinIndex == 2) {

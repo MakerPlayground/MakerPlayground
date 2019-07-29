@@ -264,7 +264,7 @@ public class ConfigActualDeviceView extends VBox{
         String text = "";
 
         if (!connection.getPinMapConsumerProvider().isEmpty()) {
-            text += connection.getPinMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getName()).collect(Collectors.joining("-"));
+            text += connection.getPinMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getDisplayName()).collect(Collectors.joining("-"));
         }
         if (!connection.getPinMapConsumerProvider().isEmpty() && !connection.getPortMapConsumerProvider().isEmpty()) {
             text += " / ";
@@ -383,7 +383,7 @@ public class ConfigActualDeviceView extends VBox{
 
                         List<Pin> pinConsume = actualDevice.getPinConsumeByOwnerDevice(null);
                         List<Port> portConsume = actualDevice.getPortConsumeByOwnerDevice(null);
-                        String label = pinConsume.stream().sorted().map(Pin::getName).collect(Collectors.joining("-"));
+                        String label = pinConsume.stream().sorted().map(Pin::getDisplayName).collect(Collectors.joining("-"));
                         if (!pinConsume.isEmpty() && !portConsume.isEmpty()) {
                             label += " / ";
                         }
@@ -427,7 +427,7 @@ public class ConfigActualDeviceView extends VBox{
 //                                        if (empty) {
 //                                            setText("");
 //                                        } else {
-//                                            setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+//                                            setText(String.join(",", item.stream().map(DevicePort::getDisplayName).collect(Collectors.toList())));
 //                                        }
 //                                    }
 //                                };
@@ -440,7 +440,7 @@ public class ConfigActualDeviceView extends VBox{
 //                                if (empty) {
 //                                    setText("");
 //                                } else {
-//                                    setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
+//                                    setText(String.join(",", item.stream().map(DevicePort::getDisplayName).collect(Collectors.toList())));
 //                                }
 //                            }
 //                        });
@@ -469,7 +469,7 @@ public class ConfigActualDeviceView extends VBox{
 //                        } else if (p.getConnectionType() == ConnectionType.UART) {
 //                            portName = "UART";
 //                        } else {
-//                            portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+//                            portName = projectDevice.getActualDevice().getPort(p).get(0).getDisplayName();
 //                        }
 //
 //                        Label portLabel = new Label(portName);

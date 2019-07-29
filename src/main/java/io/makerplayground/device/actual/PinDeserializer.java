@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static io.makerplayground.util.DeserializerHelper.createArrayNodeIfMissing;
 import static io.makerplayground.util.DeserializerHelper.throwIfMissingField;
 
 public class PinDeserializer extends JsonDeserializer<Pin> {
@@ -38,25 +39,26 @@ public class PinDeserializer extends JsonDeserializer<Pin> {
 
         throwIfMissingField(node, "name", "pin");
 
-        String name = node.get("name").asText();
-        throwIfMissingField(node, "x", "pin", name, "x");
-        throwIfMissingField(node, "y", "pin", name, "y");
+        String displayName = node.get("name").asText();
+        List<String> codingName = node.has("coding_name") ? mapper.readValue(node.get("coding_name").traverse(), new TypeReference<List<String>>() {}) : Collections.emptyList();
 
+        throwIfMissingField(node, "x", "pin", displayName, "x");
         double x = node.get("x").asDouble();
+
+        throwIfMissingField(node, "y", "pin", displayName, "y");
         double y = node.get("y").asDouble();
+
         VoltageLevel voltageLevel = node.has("voltage_level") ? VoltageLevel.valueOf(node.get("voltage_level").asText()) : null;
         PinConnectionType connectionType = node.has("connection_type") ? PinConnectionType.valueOf(node.get("connection_type").asText()) : PinConnectionType.NOT_CONNECT;
 
+        createArrayNodeIfMissing(node, "function");
         List<PinFunction> functions;
-        if (!node.has("function")) {
-            functions = Collections.emptyList();
-        }
-        else if (node.get("function").isArray()) {
+        if (node.get("function").isArray()) {
             functions = mapper.readValue(node.get("function").traverse(), new TypeReference<List<PinFunction>>() {});
         } else {
             functions = List.of(PinFunction.valueOf(node.get("function").asText()));
         }
 
-        return new Pin(name, voltageLevel, functions, connectionType, x, y, null);
+        return new Pin(displayName, codingName, voltageLevel, functions, connectionType, x, y, null);
     }
 }

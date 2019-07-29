@@ -44,18 +44,18 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
 //        jsonGenerator.writeArrayFieldStart("projectDeviceActionCompatibility");
 //        for (ProjectDevice projectDevice: projectDeviceActionCompatibility.keySet()) {
 //            jsonGenerator.writeStartObject();
-//            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+//            jsonGenerator.writeStringField("projectDevice", projectDevice.getDisplayName());
 //
 //            var actionCompatibility = projectDeviceActionCompatibility.get(projectDevice);
 //            jsonGenerator.writeArrayFieldStart("actionCompatibility");
 //            for (Action action: actionCompatibility.keySet()) {
 //                jsonGenerator.writeStartObject();
-//                jsonGenerator.writeStringField("action", action.getName());
+//                jsonGenerator.writeStringField("action", action.getDisplayName());
 //
 //                var compatibility = actionCompatibility.get(action);
 //                jsonGenerator.writeArrayFieldStart("compatibility");
 //                for (Parameter parameter: compatibility.keySet()) {
-//                    jsonGenerator.writeStringField("parameter", parameter.getName());
+//                    jsonGenerator.writeStringField("parameter", parameter.getDisplayName());
 //                    jsonGenerator.writeObjectField("constraint", compatibility.get(parameter));
 //                }
 //                jsonGenerator.writeEndArray();
@@ -71,18 +71,18 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
 //        jsonGenerator.writeArrayFieldStart("projectDeviceConditionCompatibility");
 //        for (ProjectDevice projectDevice: projectDeviceConditionCompatibility.keySet()) {
 //            jsonGenerator.writeStartObject();
-//            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+//            jsonGenerator.writeStringField("projectDevice", projectDevice.getDisplayName());
 //
 //            var conditionCompatibility = projectDeviceConditionCompatibility.get(projectDevice);
 //            jsonGenerator.writeArrayFieldStart("conditionCompatibility");
 //            for (Condition condition: conditionCompatibility.keySet()) {
 //                jsonGenerator.writeStartObject();
-//                jsonGenerator.writeStringField("condition", condition.getName());
+//                jsonGenerator.writeStringField("condition", condition.getDisplayName());
 //
 //                var compatibility = conditionCompatibility.get(condition);
 //                jsonGenerator.writeArrayFieldStart("compatibility");
 //                for (Parameter parameter: compatibility.keySet()) {
-//                    jsonGenerator.writeStringField("parameter", parameter.getName());
+//                    jsonGenerator.writeStringField("parameter", parameter.getDisplayName());
 //                    jsonGenerator.writeObjectField("constraint", compatibility.get(parameter));
 //                }
 //                jsonGenerator.writeEndArray();

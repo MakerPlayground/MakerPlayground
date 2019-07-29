@@ -30,7 +30,6 @@ import java.util.List;
  */
 public class SceneViewModel {
     private final Scene scene;
-    //private final SimpleStringProperty name;
     private final SimpleDoubleProperty delay;
     private final Project project;
 
@@ -40,7 +39,6 @@ public class SceneViewModel {
 
     public SceneViewModel(Scene scene, Project project) {
         this.scene = scene;
-        //this.name = new SimpleStringProperty(scene.getName());
         this.delay = new SimpleDoubleProperty(scene.getDelay());
         this.delay.addListener((observable, oldValue, newValue) -> scene.setDelay(newValue.doubleValue()));
         this.project = project;
