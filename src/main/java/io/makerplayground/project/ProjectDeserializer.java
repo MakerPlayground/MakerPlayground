@@ -146,7 +146,8 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
             project.addLine(source, destination);
         }
 
-//        project.setProjectConfiguration(jsonParser.readValueAs(ProjectConfiguration.class));
+        ProjectConfiguration config = mapper.readValue(node.get("projectConfiguration").traverse(), ProjectConfiguration.class);
+        project.setProjectConfiguration(config);
 
         return project;
     }

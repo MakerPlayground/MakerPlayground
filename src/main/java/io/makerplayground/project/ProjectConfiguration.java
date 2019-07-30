@@ -17,7 +17,6 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
@@ -27,9 +26,9 @@ import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.DevicePinPortLogic;
 import io.makerplayground.generator.devicemapping.PinPortConnectionResult;
 import io.makerplayground.generator.devicemapping.PinPortConnectionResultStatus;
-import io.makerplayground.generator.devicemapping.DevicePinPortLogic;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
 import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 
 @JsonSerialize(using = ProjectConfigurationSerializer.class)
-@JsonDeserialize(using = ProjectConfigurationDeserializer.class)
 public final class ProjectConfiguration {
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
@@ -76,28 +74,19 @@ public final class ProjectConfiguration {
     @Getter private final SortedMap<ProjectDevice, PinPortConnection> unmodifiableDevicePinPortConnections;
     @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
-    @Builder
-    ProjectConfiguration(@NonNull Platform platform,
-                                ActualDevice controller,
-                                @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
-                                @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
-                                @NonNull SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap,
-                                @NonNull SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnections,
-                                @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
+    ProjectConfiguration(@NonNull Platform platform) {
         this.platform = platform;
-        this.devicePropertyValueMap = devicePropertyValueMap;
-
-        this.deviceMap = deviceMap;
-        this.deviceMap.put(CONTROLLER, controller);
-        this.identicalDeviceMap = identicalDeviceMap;
-        this.devicePinPortConnections = devicePinPortConnections;
-        this.cloudParameterMap = cloudPlatformParameterMap;
+        this.devicePropertyValueMap = new HashMap<>();
+        this.deviceMap = new TreeMap<>();
+        this.identicalDeviceMap = new TreeMap<>();
+        this.devicePinPortConnections = new TreeMap<>();
+        this.cloudParameterMap = new TreeMap<>();
 
         this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
         this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
         this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
         this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedMap(devicePinPortConnections);
-        this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudPlatformParameterMap);
+        this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudParameterMap);
 
         this.controllerSelectableMap = DeviceLibrary.INSTANCE
                 .getActualDevice(getPlatform())
@@ -105,6 +94,36 @@ public final class ProjectConfiguration {
                 .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
                 .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
     }
+
+//    @Builder
+//    ProjectConfiguration(@NonNull Platform platform,
+//                                ActualDevice controller,
+//                                @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
+//                                @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
+//                                @NonNull SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap,
+//                                @NonNull SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnections,
+//                                @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
+//        this.platform = platform;
+//        this.devicePropertyValueMap = devicePropertyValueMap;
+//
+//        this.deviceMap = deviceMap;
+//        this.deviceMap.put(CONTROLLER, controller);
+//        this.identicalDeviceMap = identicalDeviceMap;
+//        this.devicePinPortConnections = devicePinPortConnections;
+//        this.cloudParameterMap = cloudPlatformParameterMap;
+//
+//        this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
+//        this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
+//        this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
+//        this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedMap(devicePinPortConnections);
+//        this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudPlatformParameterMap);
+//
+//        this.controllerSelectableMap = DeviceLibrary.INSTANCE
+//                .getActualDevice(getPlatform())
+//                .stream()
+//                .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
+//                .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
+//    }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
                              Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {

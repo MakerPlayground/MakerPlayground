@@ -33,6 +33,8 @@ import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.makerplayground.util.DeserializerHelper.*;
 
@@ -106,6 +108,24 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Port> portProvide = loadPort(node.get("port_provide"), pinProvide);
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
+
+        List<String> allPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinUnused.stream())
+                .reduce(Stream::concat)
+                .orElseGet(Stream::empty)
+                .map(Pin::getDisplayName)
+                .collect(Collectors.toList());
+        if (allPinName.stream().anyMatch(s -> Collections.frequency(allPinName, s) > 1)) {
+            throw new IllegalStateException("There is a duplicate pin's name.");
+        }
+
+        List<String> allPortName = Stream.of(portProvide.stream(), portConsume.stream())
+                .reduce(Stream::concat)
+                .orElseGet(Stream::empty)
+                .map(Port::getName)
+                .collect(Collectors.toList());
+        if (allPortName.stream().anyMatch(s -> Collections.frequency(allPortName, s) > 1)) {
+            throw new IllegalStateException("There is a duplicate port's name.");
+        }
 
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);

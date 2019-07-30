@@ -19,9 +19,10 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.*;
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
 import java.util.Map;
@@ -34,10 +35,11 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         /* platform */
         jsonGenerator.writeObjectField("platform", configuration.getPlatform());
 
-        /* controller */
-        if (configuration.getController() != null) {
-            jsonGenerator.writeObjectField("controller", configuration.getController().getId());
-        }
+
+//        /* controller */
+//        if (configuration.getController() != null) {
+//            jsonGenerator.writeObjectField("controller", configuration.getController().getId());
+//        }
 
 //        /* actionCompatibility */
 //        var projectDeviceActionCompatibility = configuration.getActionCompatibility();
@@ -93,26 +95,6 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
 //        }
 //        jsonGenerator.writeEndArray();
 
-        /* devicePropertyValueMap */
-        var devicePropertyValueMap = configuration.getDevicePropertyValueMap();
-        jsonGenerator.writeArrayFieldStart("devicePropertyValueMap");
-        for (ProjectDevice projectDevice: devicePropertyValueMap.keySet()) {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("projectdevice", projectDevice.getName());
-
-            jsonGenerator.writeArrayFieldStart("propertyValue");
-            var propertyValue = devicePropertyValueMap.get(projectDevice);
-            for (Property property: propertyValue.keySet()) {
-                jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("property", property.getName());
-                jsonGenerator.writeObjectField("value", propertyValue.get(property));
-                jsonGenerator.writeEndObject();
-            }
-            jsonGenerator.writeEndArray();
-            jsonGenerator.writeEndObject();
-        }
-        jsonGenerator.writeEndArray();
-
         /* deviceMap */
         var deviceMap = configuration.getDeviceMap();
         jsonGenerator.writeArrayFieldStart("deviceMap");
@@ -125,14 +107,80 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         }
         jsonGenerator.writeEndArray();
 
-        /* sameDeviceMap */
-        var sameDeviceMap = configuration.getIdenticalDeviceMap();
-        jsonGenerator.writeArrayFieldStart("sameDeviceMap");
-        for (ProjectDevice projectDevice : sameDeviceMap.keySet()) {
-            ProjectDevice sameDevice = sameDeviceMap.get(projectDevice);
+        /* devicePropertyValueMap */
+        var devicePropertyValueMap = configuration.getDevicePropertyValueMap();
+        jsonGenerator.writeArrayFieldStart("devicePropertyValueMap");
+        for (ProjectDevice projectDevice: devicePropertyValueMap.keySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
-            jsonGenerator.writeStringField("sameDevice", sameDevice.getName());
+
+            jsonGenerator.writeArrayFieldStart("propertyValue");
+            var propertyValue = devicePropertyValueMap.get(projectDevice);
+            for (Property property: propertyValue.keySet()) {
+                Object value = propertyValue.get(property);
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("property", property.getName());
+                switch (property.getDataType()) {
+                    case STRING:
+                    case ENUM:
+                        jsonGenerator.writeStringField("value", (String) value);
+                        break;
+                    case INTEGER:
+                    case DOUBLE:
+                        NumberWithUnit numberWithUnit = (NumberWithUnit) value;
+                        jsonGenerator.writeObjectFieldStart("value");
+                        jsonGenerator.writeStringField("value", String.valueOf(numberWithUnit.getValue()));
+                        jsonGenerator.writeObjectField("unit", numberWithUnit.getUnit());
+                        jsonGenerator.writeEndObject();
+                        break;
+                    case INTEGER_ENUM:
+                        jsonGenerator.writeNumberField("value", (Integer) value);
+                        break;
+                    case BOOLEAN_ENUM:
+                        jsonGenerator.writeBooleanField("value", (Boolean) value);
+                        break;
+                    case AZURE_COGNITIVE_KEY:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                            jsonGenerator.writeObjectFieldStart("value");
+                            jsonGenerator.writeStringField("displayName", acs.getName());
+                            jsonGenerator.writeStringField("location", acs.getLocation());
+                            jsonGenerator.writeStringField("key1", acs.getKey1());
+                            jsonGenerator.writeStringField("key2", acs.getKey2());
+                            jsonGenerator.writeEndObject();
+                        }
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                            jsonGenerator.writeObjectFieldStart("value");
+                            jsonGenerator.writeStringField("deviceId", azureIoTHubDevice.getName());
+                            jsonGenerator.writeStringField("connectionString", azureIoTHubDevice.getConnectionString());
+                            jsonGenerator.writeEndObject();
+                        }
+                        break;
+                    default:
+                        throw new IllegalStateException("Found invalid datatype while deserialize property");
+                }
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
+        jsonGenerator.writeEndArray();
+
+        /* identicalDeviceMap */
+        var identicalDeviceMap = configuration.getIdenticalDeviceMap();
+        jsonGenerator.writeArrayFieldStart("identicalDeviceMap");
+        for (ProjectDevice projectDevice : identicalDeviceMap.keySet()) {
+            ProjectDevice identicalDevice = identicalDeviceMap.get(projectDevice);
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
+            jsonGenerator.writeStringField("identicalDevice", identicalDevice.getName());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -140,10 +188,31 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         /* devicePinPortConnections */
         jsonGenerator.writeArrayFieldStart("devicePinPortConnection");
         for (ProjectDevice projectDevice: configuration.getDevicePinPortConnections().keySet()) {
-            PinPortConnection devicePinPortConnection = configuration.getDevicePinPortConnections().get(projectDevice);
+            PinPortConnection pinPortConnection = configuration.getDevicePinPortConnections().get(projectDevice);
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
-            jsonGenerator.writeObjectField("pinPortConnection", devicePinPortConnection);
+            jsonGenerator.writeArrayFieldStart("pinMapConsumerProvider");
+            for (Pin consumerPin: pinPortConnection.getPinMapConsumerProvider().keySet()) {
+                Pin providerPin = pinPortConnection.getPinMapConsumerProvider().get(consumerPin);
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("pinConsumeName", consumerPin.getDisplayName());
+                jsonGenerator.writeStringField("pinConsumeOwner", consumerPin.getOwnerProjectDevice().getName());
+                jsonGenerator.writeStringField("pinProvideName", providerPin.getDisplayName());
+                jsonGenerator.writeStringField("pinProvideOwner", providerPin.getOwnerProjectDevice().getName());
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeArrayFieldStart("portMapConsumerProvider");
+            for (Port consumerPort: pinPortConnection.getPortMapConsumerProvider().keySet()) {
+                Port providerPort = pinPortConnection.getPortMapConsumerProvider().get(consumerPort);
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("portConsumeName", consumerPort.getName());
+                jsonGenerator.writeStringField("portConsumeOwner", consumerPort.getOwnerProjectDevice().getName());
+                jsonGenerator.writeStringField("portProvideName", providerPort.getName());
+                jsonGenerator.writeStringField("portProvideOwner", providerPort.getOwnerProjectDevice().getName());
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
@@ -154,7 +223,7 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         for (CloudPlatform cloudPlatform : cloudParameterMap.keySet()) {
             Map<String, String> parameterMap = cloudParameterMap.get(cloudPlatform);
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("cloudplatform", cloudPlatform);
+            jsonGenerator.writeObjectField("cloudPlatform", cloudPlatform);
             jsonGenerator.writeArrayFieldStart("parameterMap");
             for (String parameter: parameterMap.keySet()) {
                 jsonGenerator.writeStartObject();

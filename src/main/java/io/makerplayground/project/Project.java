@@ -99,16 +99,7 @@ public class Project {
         this.unmodifiableCondition = FXCollections.unmodifiableObservableList(conditions);
         this.unmodifiableLine = FXCollections.unmodifiableObservableList(lines);
 
-        this.projectConfiguration = ProjectConfiguration.builder()
-                .platform(Platform.ARDUINO_AVR8)
-                .controller(null)
-                .deviceMap(new TreeMap<>())
-                .identicalDeviceMap(new TreeMap<>())
-                .devicePinPortConnections(new TreeMap<>())
-                .devicePropertyValueMap(new HashMap<>())
-                .cloudPlatformParameterMap(new TreeMap<>())
-                .build();
-
+        this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.newBegin();
     }
 

@@ -17,6 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.Port;
@@ -24,7 +25,6 @@ import lombok.*;
 
 import java.util.*;
 
-@JsonSerialize(using = PinPortConnectionSerializer.class)
 @Data
 public class PinPortConnection implements Comparable<PinPortConnection> {
 
@@ -35,9 +35,15 @@ public class PinPortConnection implements Comparable<PinPortConnection> {
     private final SortedMap<Pin, Pin> pinMapConsumerProvider;
     private final SortedMap<Port, Port> portMapConsumerProvider;
 
-    public PinPortConnection(SortedMap<Pin, Pin> pinMapFromTo, SortedMap<Port, Port> portMapFromTo) {
-        this.pinMapConsumerProvider = Objects.nonNull(pinMapFromTo) ? Collections.unmodifiableSortedMap(pinMapFromTo) : Collections.emptySortedMap();
-        this.portMapConsumerProvider = Objects.nonNull(portMapFromTo) ? Collections.unmodifiableSortedMap(portMapFromTo) : Collections.emptySortedMap();
+    public PinPortConnection(SortedMap<Pin, Pin> pinMapConsumerProvider,
+                             SortedMap<Port, Port> portMapConsumerProvider)
+    {
+        this.pinMapConsumerProvider = Objects.nonNull(pinMapConsumerProvider)
+                ? Collections.unmodifiableSortedMap(pinMapConsumerProvider)
+                : Collections.emptySortedMap();
+        this.portMapConsumerProvider = Objects.nonNull(portMapConsumerProvider)
+                ? Collections.unmodifiableSortedMap(portMapConsumerProvider)
+                : Collections.emptySortedMap();
     }
 
     private String getPinPortString() {
