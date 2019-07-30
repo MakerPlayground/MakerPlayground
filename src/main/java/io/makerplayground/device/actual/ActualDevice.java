@@ -16,7 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.ProjectDevice;
@@ -25,7 +24,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,7 @@ public class ActualDevice implements Comparable<ActualDevice> {
     @Getter(AccessLevel.NONE) protected final List<Pin> pinUnused;
     @Getter(AccessLevel.NONE) protected final List<Port> portProvide;
     @Getter(AccessLevel.NONE) protected final List<Port> portConsume;
+    protected final Map<String, List<String>> samePinMap;
     protected final List<Property> property;
     protected final CloudPlatform cloudConsume;
 

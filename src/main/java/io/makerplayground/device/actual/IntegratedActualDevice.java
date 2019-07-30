@@ -40,15 +40,15 @@ public class IntegratedActualDevice extends ActualDevice {
 
     @Builder(builderMethodName = "IntegratedActualDeviceBuilder")
     IntegratedActualDevice(String id, String brand, String model, String url, double width, double height,
-                           String pioBoardId, DeviceType deviceType,
-                           List<Pin> pinProvide, List<Pin> pinConsume, List<Pin> pinUnused,
-                           List<Property> property, List<Port> portProvide, List<Port> portConsume,
-                           CloudPlatform cloudConsume, Map<GenericDevice, Compatibility> compatibilityMap,
+                           String pioBoardId, DeviceType deviceType, List<Pin> pinProvide, List<Pin> pinConsume,
+                           List<Pin> pinUnused, List<Property> property, List<Port> portProvide, List<Port> portConsume,
+                           Map<String, List<String>> samePinMap, CloudPlatform cloudConsume,
+                           Map<GenericDevice, Compatibility> compatibilityMap,
                            Map<CloudPlatform, SourceCodeLibrary> cloudPlatformSourceCodeLibrary,
                            Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary,
                            List<IntegratedActualDevice> integratedDevices) {
         super(id, brand, model, url, width, height, pioBoardId, deviceType, pinProvide, pinConsume, pinUnused,
-                portConsume, portProvide, property, cloudConsume, compatibilityMap,
+                portConsume, portProvide, samePinMap, property, cloudConsume, compatibilityMap,
                 cloudPlatformSourceCodeLibrary, platformSourceCodeLibrary, integratedDevices);
         this.parent = null;
     }

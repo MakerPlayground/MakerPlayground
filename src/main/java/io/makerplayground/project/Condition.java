@@ -74,7 +74,7 @@ public class Condition extends NodeElement {
         super(top, left, 118, 75, project);
 
         this.name = new SimpleStringProperty(name);
-        this.setting = FXCollections.observableList(setting);
+        this.setting = FXCollections.observableArrayList(setting);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
         invalidate();

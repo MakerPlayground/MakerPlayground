@@ -62,7 +62,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
         createArrayNodeIfMissing(node, "cloud_provide");
         throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id);
-        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_unused");
+        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_unused", "same_pins");
         createArrayNodeIfMissing(node, "port_provide", "port_consume");
         createArrayNodeIfMissing(node, "property");
         createArrayNodeIfMissing(node, "compatibility");
@@ -105,6 +105,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Pin> pinProvide = mapper.readValue(node.get("pin_provide").traverse(), new TypeReference<List<Pin>>() {});
         List<Pin> pinConsume = mapper.readValue(node.get("pin_consume").traverse(), new TypeReference<List<Pin>>() {});
         List<Pin> pinUnused = mapper.readValue(node.get("pin_unused").traverse(), new TypeReference<List<Pin>>() {});
+        List<List<String>> samePinStr = mapper.readValue(node.get("same_pins").traverse(), new TypeReference<List<List<String>>>() {});
         List<Port> portProvide = loadPort(node.get("port_provide"), pinProvide);
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
@@ -125,6 +126,15 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .collect(Collectors.toList());
         if (allPortName.stream().anyMatch(s -> Collections.frequency(allPortName, s) > 1)) {
             throw new IllegalStateException("There is a duplicate port's name.");
+        }
+
+        Map<String, List<String>> samePinMap = new HashMap<>();
+        for (List<String> samePin: samePinStr) {
+            for (String pin: samePin) {
+                List<String> samePinList = new ArrayList<>(samePin);
+                samePinList.remove(pin);
+                samePinMap.put(pin, samePinList);
+            }
         }
 
         /* Compatibility */
@@ -180,6 +190,33 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
 
+            List<String> allInPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinUnused.stream())
+                    .reduce(Stream::concat)
+                    .orElseGet(Stream::empty)
+                    .map(Pin::getDisplayName)
+                    .collect(Collectors.toList());
+            if (allInPinName.stream().anyMatch(s -> Collections.frequency(allPinName, s) > 1)) {
+                throw new IllegalStateException("There is a duplicate pin's name.");
+            }
+
+            List<String> allInPortName = Stream.of(portProvide.stream(), portConsume.stream())
+                    .reduce(Stream::concat)
+                    .orElseGet(Stream::empty)
+                    .map(Port::getName)
+                    .collect(Collectors.toList());
+            if (allInPortName.stream().anyMatch(s -> Collections.frequency(allPortName, s) > 1)) {
+                throw new IllegalStateException("There is a duplicate port's name.");
+            }
+
+            Map<String, List<String>> inSamePinMap = new HashMap<>();
+            for (List<String> samePin: samePinStr) {
+                for (String pin: samePin) {
+                    List<String> samePinList = new ArrayList<>(samePin);
+                    samePinList.remove(pin);
+                    inSamePinMap.put(pin, samePinList);
+                }
+            }
+
             /* deallocate the created empty list and set to the shared static empty list instead */
             if (inPinProvide.isEmpty()) { inPinProvide = Collections.emptyList(); }
             if (inPinConsume.isEmpty()) { inPinConsume = Collections.emptyList(); }
@@ -208,6 +245,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     .pinUnused(inPinUnused)
                     .portConsume(inPortConsume)
                     .portProvide(inPortProvide)
+                    .samePinMap(inSamePinMap)
                     .property(inProperty)
                     .compatibilityMap(inCompatibilityMap)
                     .integratedDevices(Collections.emptyList())
@@ -241,6 +279,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .pinUnused(pinUnused)
                 .portConsume(portConsume)
                 .portProvide(portProvide)
+                .samePinMap(samePinMap)
                 .property(property)
                 .compatibilityMap(compatibilityMap)
                 .integratedDevices(integratedDevices)

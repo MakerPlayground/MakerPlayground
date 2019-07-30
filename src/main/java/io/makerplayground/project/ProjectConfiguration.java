@@ -52,6 +52,7 @@ public final class ProjectConfiguration {
     @JsonIgnore private FilteredList<ProjectDevice> nonControllerDevices = new FilteredList<>(usedDevices, projectDevice -> projectDevice != CONTROLLER);
     @JsonIgnore private Set<Pin> remainingPinProvide = new HashSet<>();
     @JsonIgnore private Set<Port> remainingPortProvide = new HashSet<>();
+    @JsonIgnore private Set<Pin> usedPin = new HashSet<>();
     @JsonIgnore private List<CloudPlatform> remainingCloudPlatform = new ArrayList<>();
 
     /* output variables: compatible devices and pin/port connections */
@@ -94,36 +95,6 @@ public final class ProjectConfiguration {
                 .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
                 .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
     }
-
-//    @Builder
-//    ProjectConfiguration(@NonNull Platform platform,
-//                                ActualDevice controller,
-//                                @NonNull Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap,
-//                                @NonNull SortedMap<ProjectDevice, ActualDevice> deviceMap,
-//                                @NonNull SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap,
-//                                @NonNull SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnections,
-//                                @NonNull SortedMap<CloudPlatform, Map<String, String>> cloudPlatformParameterMap) {
-//        this.platform = platform;
-//        this.devicePropertyValueMap = devicePropertyValueMap;
-//
-//        this.deviceMap = deviceMap;
-//        this.deviceMap.put(CONTROLLER, controller);
-//        this.identicalDeviceMap = identicalDeviceMap;
-//        this.devicePinPortConnections = devicePinPortConnections;
-//        this.cloudParameterMap = cloudPlatformParameterMap;
-//
-//        this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
-//        this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
-//        this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
-//        this.unmodifiableDevicePinPortConnections = Collections.unmodifiableSortedMap(devicePinPortConnections);
-//        this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudPlatformParameterMap);
-//
-//        this.controllerSelectableMap = DeviceLibrary.INSTANCE
-//                .getActualDevice(getPlatform())
-//                .stream()
-//                .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
-//                .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
-//    }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
                              Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {
@@ -395,6 +366,7 @@ public final class ProjectConfiguration {
             remainingPinProvide.addAll(controller.getPinProvideByOwnerDevice(CONTROLLER));
             remainingPortProvide.addAll(controller.getPortProvideByOwnerDevice(CONTROLLER));
             remainingCloudPlatform.addAll(controller.getCloudPlatformSourceCodeLibrary().keySet());
+            usedPin.clear();
 
             generateDeviceSelectableMapAndPinPortConnection();
         }
@@ -493,6 +465,7 @@ public final class ProjectConfiguration {
         devicePinPortConnections.clear();
         remainingPinProvide.clear();
         remainingPortProvide.clear();
+        usedPin.clear();
 
         if (deviceMap.get(CONTROLLER) != null) {
             ActualDevice controller = deviceMap.get(CONTROLLER);
@@ -510,7 +483,16 @@ public final class ProjectConfiguration {
                 connection.getPinMapConsumerProvider().forEach((consumerPin, providerPin) -> {
                     if (!consumerPin.getFunction().get(0).getOpposite().isMultipleUsed()) {
                         remainingPinProvide.remove(providerPin);
+                        usedPin.add(providerPin);
                     }
+                    /* allocate the same pin (still need to allocate even it is the multiple used i.e. A4 and SDA in arduino) */
+                    Map<String, List<String>> samePinMap = deviceMap.get(providerPin.getOwnerProjectDevice()).getSamePinMap();
+                    List<String> samePin = samePinMap.getOrDefault(providerPin.getDisplayName(), Collections.emptyList());
+                    List<Pin> removingPin = remainingPinProvide.stream()
+                            .filter(pin -> pin.getOwnerProjectDevice() == providerPin.getOwnerProjectDevice() && samePin.contains(pin.getDisplayName()))
+                            .collect(Collectors.toList());
+                    remainingPinProvide.removeAll(removingPin);
+                    usedPin.addAll(removingPin);
                 });
                 connection.getPortMapConsumerProvider().forEach((consumerPort, providerPort) -> {
                     remainingPortProvide.remove(providerPort);
@@ -519,7 +501,16 @@ public final class ProjectConfiguration {
                         Pin providerPin = providerPort.getElements().get(i);
                         if (!consumerPin.getFunction().get(0).getOpposite().isMultipleUsed()) {
                             remainingPinProvide.remove(providerPin);
+                            usedPin.add(providerPin);
                         }
+                        /* allocate the same pin (still need to allocate even it is the multiple used i.e. A4 and SDA in arduino) */
+                        Map<String, List<String>> samePinMap = deviceMap.get(providerPin.getOwnerProjectDevice()).getSamePinMap();
+                        List<String> samePin = samePinMap.getOrDefault(providerPin.getDisplayName(), Collections.emptyList());
+                        List<Pin> removingPin = remainingPinProvide.stream()
+                                .filter(pin -> pin.getOwnerProjectDevice() == providerPin.getOwnerProjectDevice() && samePin.contains(pin.getDisplayName()))
+                                .collect(Collectors.toList());
+                        remainingPinProvide.removeAll(removingPin);
+                        usedPin.addAll(removingPin);
                     }
                 });
                 generateDeviceSelectableMapAndPinPortConnection();
@@ -530,15 +521,33 @@ public final class ProjectConfiguration {
     public void unsetDevicePinPortConnection(ProjectDevice projectDevice) {
         PinPortConnection connection = devicePinPortConnections.remove(projectDevice);
         if (connection != null) {
-            connection.getPinMapConsumerProvider().forEach((consumerPin, providerPin) -> remainingPinProvide.add(providerPin));
+            connection.getPinMapConsumerProvider().forEach((consumerPin, providerPin) -> {
+                Map<String, List<String>> samePinMap = deviceMap.get(projectDevice).getSamePinMap();
+                List<String> samePin = samePinMap.getOrDefault(providerPin.getDisplayName(), Collections.emptyList());
+                List<Pin> usedSamePin = usedPin.stream()
+                        .filter(pin -> pin.getOwnerProjectDevice() == projectDevice && samePin.contains(pin.getDisplayName()))
+                        .collect(Collectors.toList());
+                remainingPinProvide.add(providerPin);
+                remainingPinProvide.addAll(usedSamePin);
+                usedPin.remove(providerPin);
+                usedPin.removeAll(usedSamePin);
+            });
             connection.getPortMapConsumerProvider().forEach((consumerPort, providerPort) -> {
                 remainingPortProvide.add(providerPort);
                 remainingPinProvide.addAll(providerPort.getElements());
+                providerPort.getElements().forEach(providerPin -> {
+                    Map<String, List<String>> samePinMap = deviceMap.get(projectDevice).getSamePinMap();
+                    List<String> samePin = samePinMap.get(providerPin.getDisplayName());
+                    List<Pin> usedSamePin = usedPin.stream()
+                            .filter(pin -> pin.getOwnerProjectDevice() == projectDevice && samePin.contains(pin.getDisplayName()))
+                            .collect(Collectors.toList());
+                    remainingPinProvide.add(providerPin);
+                    remainingPinProvide.addAll(usedSamePin);
+                    usedPin.remove(providerPin);
+                    usedPin.removeAll(usedSamePin);
+                });
             });
         }
-//        devicePinPortConnections.entrySet().removeAll(devicePinPortConnections.entrySet().stream()
-//                .filter(entry -> entry.getValue().getProviderDevice() == projectDevice || entry.getValue().getConsumerDevice() == projectDevice)
-//                .collect(Collectors.toList()));
     }
 
     public PinPortConnection getDevicePinPortConnection(ProjectDevice projectDevice) {
