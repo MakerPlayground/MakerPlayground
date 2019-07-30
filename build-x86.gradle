@@ -70,8 +70,6 @@ task createBundle(type: Exec) {
             '--output', "${buildDir}/native-image",
             '--runtime-image', "${buildDir}/image",
             '--module', "${moduleName}",
-            '--jvm-args', '--add-modules javafx.controls',
-            '--jvm-args', '--add-modules javafx.fxml',
             '--jvm-args', "--add-reads ${project.name}.merged.module=javafx.base,javafx.graphics,javafx.controls",
             '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=${project.name}.merged.module",
             '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=${project.name}.merged.module",
