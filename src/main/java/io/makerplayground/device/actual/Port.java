@@ -18,10 +18,8 @@ package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.project.ProjectDevice;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;

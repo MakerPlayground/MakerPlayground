@@ -31,13 +31,12 @@ import java.util.List;
 public class Pin implements Comparable<Pin>{
 
     @JsonIgnore
-    private static final Comparator<Pin> comparator = Comparator.comparing(Pin::getDisplayName).thenComparing(Pin::getVoltageLevel).thenComparing(Pin::getX).thenComparing(Pin::getY);
+    protected static final Comparator<Pin> comparator = Comparator.comparing(Pin::getDisplayName).thenComparing(Pin::getVoltageLevel).thenComparing(Pin::getX).thenComparing(Pin::getY);
 
     private final String displayName;
     private final List<String> codingName;
     private final VoltageLevel voltageLevel;
     private final List<PinFunction> function;
-    private final PinConnectionType connectionType;
     @ToString.Exclude private final double x;
     @ToString.Exclude private final double y;
 

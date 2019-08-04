@@ -58,7 +58,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // TODO: show progress indicator while loading if need
 
-        DeviceLibrary.INSTANCE.loadDeviceFromJSON();
+        DeviceLibrary.INSTANCE.loadDeviceFromFiles();
 
         focusProject.addListener((observable, oldValue, newValue) -> {
             /* set title name */

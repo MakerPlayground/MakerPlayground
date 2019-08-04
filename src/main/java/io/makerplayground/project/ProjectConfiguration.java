@@ -238,11 +238,11 @@ public final class ProjectConfiguration {
                         PinPortConnection connection = connectionsToBeDeallocated.poll();
                         allDeallocatedConnections.add(connection);
                         remainingPinProvide.addAll(connection.getPinMapConsumerProvider().values().stream()
-                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .filter(pin -> pin.getFunction().get(0).isSingleUsed())
                                 .collect(Collectors.toList()));
                         remainingPinProvide.addAll(connection.getPortMapConsumerProvider().values().stream()
                                 .flatMap(port -> port.getElements().stream())
-                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .filter(pin -> pin.getFunction().get(0).isSingleUsed())
                                 .collect(Collectors.toList()));
                         remainingPortProvide.addAll(connection.getPortMapConsumerProvider().values());
                         // TODO: add connection to be deallocated in case that there is the dependent device
@@ -259,11 +259,11 @@ public final class ProjectConfiguration {
                     while(allDeallocatedConnections.size() > 0) {
                         PinPortConnection connection = allDeallocatedConnections.poll();
                         remainingPinProvide.removeAll(connection.getPinMapConsumerProvider().values().stream()
-                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .filter(pin -> pin.getFunction().get(0).isSingleUsed())
                                 .collect(Collectors.toList()));
                         remainingPinProvide.removeAll(connection.getPortMapConsumerProvider().values().stream()
                                 .flatMap(port -> port.getElements().stream())
-                                .filter(pin -> !pin.getFunction().get(0).isMultipleUsed())
+                                .filter(pin -> pin.getFunction().get(0).isSingleUsed())
                                 .collect(Collectors.toList()));
                         remainingPortProvide.removeAll(connection.getPortMapConsumerProvider().values());
                         // TODO: add pin/port to be removed in case that there is the dependent device
@@ -481,7 +481,7 @@ public final class ProjectConfiguration {
                 unsetDevicePinPortConnection(projectDevice);
                 devicePinPortConnections.put(projectDevice, connection);
                 connection.getPinMapConsumerProvider().forEach((consumerPin, providerPin) -> {
-                    if (!consumerPin.getFunction().get(0).getOpposite().isMultipleUsed()) {
+                    if (consumerPin.getFunction().get(0).getOpposite().isSingleUsed()) {
                         remainingPinProvide.remove(providerPin);
                         usedPin.add(providerPin);
                     }
@@ -499,7 +499,7 @@ public final class ProjectConfiguration {
                     for (int i=0; i<consumerPort.getElements().size(); i++) {
                         Pin consumerPin = consumerPort.getElements().get(i);
                         Pin providerPin = providerPort.getElements().get(i);
-                        if (!consumerPin.getFunction().get(0).getOpposite().isMultipleUsed()) {
+                        if (consumerPin.getFunction().get(0).getOpposite().isSingleUsed()) {
                             remainingPinProvide.remove(providerPin);
                             usedPin.add(providerPin);
                         }

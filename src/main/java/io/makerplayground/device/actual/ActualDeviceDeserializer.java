@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
@@ -43,9 +43,9 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
     private String id;
 
     @Override
-    public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+    public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+        YAMLMapper mapper = new YAMLMapper();
+        JsonNode node = mapper.readTree(jsonParser);
 
         throwIfMissingField(node, "id", "device must have id");
 
@@ -62,7 +62,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
         createArrayNodeIfMissing(node, "cloud_provide");
         throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id);
-        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_unused", "same_pins");
+        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_not_connect", "same_pins");
         createArrayNodeIfMissing(node, "port_provide", "port_consume");
         createArrayNodeIfMissing(node, "property");
         createArrayNodeIfMissing(node, "compatibility");
@@ -99,18 +99,18 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         }
 
         /* CloudPlatform */
-        CloudPlatform cloudConsume = node.has("cloudConsume") ? CloudPlatform.valueOf(node.get("cloudConsume").asText()) : null;
+        CloudPlatform cloudConsume = node.has("cloud_consume") ? CloudPlatform.valueOf(node.get("cloud_consume").asText()) : null;
 
         /* Pin, Port, Property */
         List<Pin> pinProvide = mapper.readValue(node.get("pin_provide").traverse(), new TypeReference<List<Pin>>() {});
         List<Pin> pinConsume = mapper.readValue(node.get("pin_consume").traverse(), new TypeReference<List<Pin>>() {});
-        List<Pin> pinUnused = mapper.readValue(node.get("pin_unused").traverse(), new TypeReference<List<Pin>>() {});
+        List<Pin> pinNotConnect = mapper.readValue(node.get("pin_not_connect").traverse(), new TypeReference<List<Pin>>() {});
         List<List<String>> samePinStr = mapper.readValue(node.get("same_pins").traverse(), new TypeReference<List<List<String>>>() {});
         List<Port> portProvide = loadPort(node.get("port_provide"), pinProvide);
         List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-        List<String> allPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinUnused.stream())
+        List<String> allPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinNotConnect.stream())
                 .reduce(Stream::concat)
                 .orElseGet(Stream::empty)
                 .map(Pin::getDisplayName)
@@ -149,8 +149,8 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             /* Extract Device Name */
             String inDeviceName = inNode.get("name").asText();
 
-            throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id, "integrated_device", inDeviceName);
-            createArrayNodeIfMissing(inNode, "pin_provide", "pin_consume", "pin_unused");
+            throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume"), id, "integrated_device", inDeviceName);
+            createArrayNodeIfMissing(inNode, "pin_provide", "pin_consume");
             createArrayNodeIfMissing(inNode, "port_provide", "port_consume");
             createArrayNodeIfMissing(inNode, "property");
             createArrayNodeIfMissing(inNode, "compatibility");
@@ -159,38 +159,27 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             throwIfMissingField(inNode, "platforms", id, "integrated_device", inDeviceName);
             throwIfFieldIsNotArray(inNode, "platforms", id, "integrated_device", inDeviceName);
 
-            /* Extract platformSourceCodeLibrary */
-            Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
-            for (JsonNode platform_node: inNode.get("platforms")) {
-                Platform platform = Platform.valueOf(platform_node.get("platform").asText());
-                String classname = platform_node.get("classname").asText();
-                List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
-                        , new TypeReference<List<String>>() {});
-                inPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
-            }
-
             /* Extract cloudPlatformSourceCodeLibrary */
             Map<CloudPlatform, SourceCodeLibrary> inCloudPlatformSourceCodeLibrary = new HashMap<>();
             for (JsonNode platform_node : inNode.get("cloud_provide")) {
                 CloudPlatform platform = CloudPlatform.valueOf(platform_node.get("cloud_platform").asText());
-                String classname = platform_node.get("classname").asText();
+                String className = platform_node.get("classname").asText();
                 List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
                         , new TypeReference<List<String>>() {});
-                inCloudPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+                inCloudPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(className, externalLibraryList));
             }
 
             /* CloudPlatform */
-            CloudPlatform inCloudConsume = inNode.has("cloudConsume") ? CloudPlatform.valueOf(node.get("cloudConsume").asText()) : null;
+            CloudPlatform inCloudConsume = inNode.has("cloud_consume") ? CloudPlatform.valueOf(node.get("cloud_consume").asText()) : null;
 
             /* Pin, Port, Property */
-            List<Pin> inPinProvide = mapper.readValue(inNode.get("pinProvide").traverse(), new TypeReference<List<Pin>>() {});
-            List<Pin> inPinConsume = mapper.readValue(inNode.get("pinConsume").traverse(), new TypeReference<List<Pin>>() {});
-            List<Pin> inPinUnused = mapper.readValue(inNode.get("pinUnused").traverse(), new TypeReference<List<Pin>>() {});
-            List<Port> inPortProvide = loadPort(inNode.get("portProvide"), pinProvide);
-            List<Port> inPortConsume = loadPort(inNode.get("portConsume"), pinConsume);
+            List<Pin> inPinProvide = mapper.readValue(inNode.get("pin_provide").traverse(), new TypeReference<List<IntegratedPin>>() {});
+            List<Pin> inPinConsume = mapper.readValue(inNode.get("pin_consume").traverse(), new TypeReference<List<IntegratedPin>>() {});
+            List<Port> inPortProvide = loadPort(inNode.get("port_provide"), pinProvide);
+            List<Port> inPortConsume = loadPort(inNode.get("port_consume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-            List<String> allInPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinUnused.stream())
+            List<String> allInPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinNotConnect.stream())
                     .reduce(Stream::concat)
                     .orElseGet(Stream::empty)
                     .map(Pin::getDisplayName)
@@ -220,7 +209,6 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             /* deallocate the created empty list and set to the shared static empty list instead */
             if (inPinProvide.isEmpty()) { inPinProvide = Collections.emptyList(); }
             if (inPinConsume.isEmpty()) { inPinConsume = Collections.emptyList(); }
-            if (inPinUnused.isEmpty()) { inPinUnused = Collections.emptyList(); }
             if (inPortProvide.isEmpty()) { inPortProvide = Collections.emptyList(); }
             if (inPortConsume.isEmpty()) { inPortConsume = Collections.emptyList(); }
             if (inProperty.isEmpty()) { inProperty = Collections.emptyList(); }
@@ -235,14 +223,14 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     .url("")
                     .width(0.0)
                     .height(0.0)
-                    .platformSourceCodeLibrary(inPlatformSourceCodeLibrary)
+                    .platformSourceCodeLibrary(platformSourceCodeLibrary)
                     .cloudPlatformSourceCodeLibrary(inCloudPlatformSourceCodeLibrary)
                     .deviceType(DeviceType.MODULE)
                     .pioBoardId("")
                     .cloudConsume(inCloudConsume)
                     .pinProvide(inPinProvide)
                     .pinConsume(inPinConsume)
-                    .pinUnused(inPinUnused)
+                    .pinNotConnect(Collections.emptyList())
                     .portConsume(inPortConsume)
                     .portProvide(inPortProvide)
                     .samePinMap(inSamePinMap)
@@ -256,7 +244,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         /* deallocate the created empty list and set to the shared static empty list instead */
         if (pinProvide.isEmpty()) { pinProvide = Collections.emptyList(); }
         if (pinConsume.isEmpty()) { pinConsume = Collections.emptyList(); }
-        if (pinUnused.isEmpty()) { pinUnused = Collections.emptyList(); }
+        if (pinNotConnect.isEmpty()) { pinNotConnect = Collections.emptyList(); }
         if (portProvide.isEmpty()) { portProvide = Collections.emptyList(); }
         if (portConsume.isEmpty()) { portConsume = Collections.emptyList(); }
         if (property.isEmpty()) { property = Collections.emptyList(); }
@@ -276,7 +264,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .cloudConsume(cloudConsume)
                 .pinProvide(pinProvide)
                 .pinConsume(pinConsume)
-                .pinUnused(pinUnused)
+                .pinNotConnect(pinNotConnect)
                 .portConsume(portConsume)
                 .portProvide(portProvide)
                 .samePinMap(samePinMap)
@@ -291,7 +279,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
     }
 
     private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+        YAMLMapper mapper = new YAMLMapper();
         Map<GenericDevice, Compatibility> compatibilityMap = new HashMap<>();
         for (JsonNode compatibilityNode : node.get("compatibility")) {
 
@@ -411,7 +399,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
     }
 
     private List<Port> loadPort(JsonNode portsNode, List<Pin> pinList) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        YAMLMapper mapper = new YAMLMapper();
         List<Port> portList = new ArrayList<>();
         for (JsonNode portNode: portsNode) {
             throwIfMissingField(portNode, "name", id, "port");

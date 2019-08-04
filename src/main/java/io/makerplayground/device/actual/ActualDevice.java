@@ -43,7 +43,7 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final DeviceType deviceType;
     @Getter(AccessLevel.NONE) protected final List<Pin> pinProvide;
     @Getter(AccessLevel.NONE) protected final List<Pin> pinConsume;
-    @Getter(AccessLevel.NONE) protected final List<Pin> pinUnused;
+    @Getter(AccessLevel.NONE) protected final List<Pin> pinNotConnect;
     @Getter(AccessLevel.NONE) protected final List<Port> portProvide;
     @Getter(AccessLevel.NONE) protected final List<Port> portConsume;
     protected final Map<String, List<String>> samePinMap;
@@ -105,7 +105,6 @@ public class ActualDevice implements Comparable<ActualDevice> {
         return pinList.stream()
                 .filter(pin -> pinName == null || pin.getDisplayName().equals(pinName))
                 .map(pin -> Pin.builder()
-                        .connectionType(pin.getConnectionType())
                         .function(pin.getFunction())
                         .displayName(pin.getDisplayName())
                         .voltageLevel(pin.getVoltageLevel())

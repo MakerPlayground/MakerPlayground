@@ -16,6 +16,25 @@
 
 package io.makerplayground.device.actual;
 
+import javafx.scene.paint.Color;
+import lombok.Getter;
+
+import java.util.Collections;
+import java.util.List;
+
+@Getter
 public enum PortConnectionType {
-    GROVE, MP, M5STACK, UNO_SHIELD,
+    GROVE(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 2),
+    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 2),
+    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 2),
+    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 2),
+    UNO_SHIELD(Collections.emptyList(), 0);
+
+    private final List<Color> pinColors;
+    private final double lineWidth;
+
+    PortConnectionType(List<Color> colors, double lineWeight) {
+        this.pinColors = colors;
+        this.lineWidth = lineWeight;
+    }
 }

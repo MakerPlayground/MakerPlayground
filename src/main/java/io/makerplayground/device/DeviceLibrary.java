@@ -20,10 +20,13 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.Action;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,21 +56,24 @@ public enum DeviceLibrary {
 
     DeviceLibrary() {}
 
-    public void loadDeviceFromJSON() {
+    public void loadDeviceFromFiles() {
         this.genericSensorDevice = loadGenericDeviceFromJSON("/json/genericsensordevice.json", GenericDeviceType.SENSOR);
         this.genericActuatorDevice = loadGenericDeviceFromJSON("/json/genericactuatordevice.json", GenericDeviceType.ACTUATOR);
         this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json", GenericDeviceType.UTILITY);
         this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json", GenericDeviceType.CLOUD);
         this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json", GenericDeviceType.INTERFACE);
-
-        List<GenericDevice> genericDevices = new ArrayList<>();
-        genericDevices.addAll(genericSensorDevice);
-        genericDevices.addAll(genericActuatorDevice);
-        genericDevices.addAll(genericUtilityDevice);
-        genericDevices.addAll(genericCloudDevice);
-        genericDevices.addAll(genericInterfaceDevice);
-        this.allGenericDevice = Collections.unmodifiableList(genericDevices);
-
+        this.allGenericDevice = new ArrayList<>();
+        this.allGenericDevice.addAll(genericSensorDevice);
+        this.allGenericDevice.addAll(genericActuatorDevice);
+        this.allGenericDevice.addAll(genericUtilityDevice);
+        this.allGenericDevice.addAll(genericCloudDevice);
+        this.allGenericDevice.addAll(genericInterfaceDevice);
+        this.allGenericDevice.forEach(genericDevice -> {
+            System.out.println(genericDevice.getName());
+            genericDevice.getAction().forEach(System.out::println);
+            genericDevice.getCondition().forEach(System.out::println);
+            genericDevice.getValue().forEach(System.out::println);
+        });
         this.actualDevice = loadActualDeviceList();
     }
 
@@ -96,15 +102,15 @@ public enum DeviceLibrary {
 
     private List<ActualDevice> loadActualDeviceList(){
         List<ActualDevice> temp = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
+        YAMLMapper mapper = new YAMLMapper();
         Optional<String> libraryPath = getLibraryPath();
         if (libraryPath.isPresent()) {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices2"))) {
                 for (Path deviceDirectory : directoryStream) {
-                    Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
+                    Path deviceDefinitionPath = deviceDirectory.resolve("device.yaml");
                     if (Files.exists(deviceDefinitionPath)) {
                         try {
-                            ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {});
+                            ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), ActualDevice.class);
                             temp.add(actualDevice);
                         } catch (JsonParseException e) {
                             System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());

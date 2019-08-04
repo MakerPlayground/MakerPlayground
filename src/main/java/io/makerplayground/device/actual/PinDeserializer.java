@@ -23,8 +23,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +35,8 @@ import static io.makerplayground.util.DeserializerHelper.throwIfMissingField;
 
 public class PinDeserializer extends JsonDeserializer<Pin> {
     @Override
-    public Pin deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+    public Pin deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+        YAMLMapper mapper = new YAMLMapper();
         JsonNode node = mapper.readTree(jsonParser);
 
         throwIfMissingField(node, "name", "pin");
@@ -49,7 +51,6 @@ public class PinDeserializer extends JsonDeserializer<Pin> {
         double y = node.get("y").asDouble();
 
         VoltageLevel voltageLevel = node.has("voltage_level") ? VoltageLevel.valueOf(node.get("voltage_level").asText()) : null;
-        PinConnectionType connectionType = node.has("connection_type") ? PinConnectionType.valueOf(node.get("connection_type").asText()) : PinConnectionType.NOT_CONNECT;
 
         createArrayNodeIfMissing(node, "function");
         List<PinFunction> functions;
@@ -59,6 +60,11 @@ public class PinDeserializer extends JsonDeserializer<Pin> {
             functions = List.of(PinFunction.valueOf(node.get("function").asText()));
         }
 
-        return new Pin(displayName, codingName, voltageLevel, functions, connectionType, x, y, null);
+        if (node.has("connect_to")) {
+            String connectTo = node.get("connect_to").asText();
+            return new IntegratedPin(displayName, codingName, voltageLevel, functions, x, y, null, connectTo);
+        } else {
+            return new Pin(displayName, codingName, voltageLevel, functions, x, y, null);
+        }
     }
 }
