@@ -5,6 +5,7 @@ import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.Operator;
 import io.makerplayground.ui.canvas.node.expression.custom.ChipField;
+import io.makerplayground.ui.canvas.node.expression.custom.NumericChipField;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -85,7 +86,7 @@ public class CustomConditionalExpressionControl extends VBox {
                 entry.setOperator(newValue);
             });
 
-            ChipField chipField = new ChipField(entry.getExpression(), projectValues);
+            NumericChipField chipField = new NumericChipField(entry.getExpression(), projectValues);
             chipField.expressionProperty().addListener((observable, oldValue, newValue) -> entry.setExpression(newValue));
 
             operatorLabel = new Label("and");

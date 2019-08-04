@@ -26,6 +26,11 @@ public class SimpleStringExpression extends Expression {
         terms.add(new StringTerm(str));
     }
 
+    public SimpleStringExpression(StringTerm str) {
+        super(Type.SIMPLE_STRING);
+        terms.add(str);
+    }
+
     SimpleStringExpression(SimpleStringExpression e) {
         super(e);
     }

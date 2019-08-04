@@ -19,7 +19,7 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.expression.CustomNumberExpression;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -36,6 +36,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -51,12 +52,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ChipField extends VBox {
+public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private ScrollPane scrollPane;
     @FXML private HBox mainPane;
     @FXML private Rectangle cursor;
 
     @FXML private GridPane chipSelectorPane;
+    @FXML private StackPane stringChip;
     @FXML private StackPane numberChip;
     @FXML private StackPane valueChip;
     @FXML private StackPane plusChip;
@@ -66,17 +68,19 @@ public class ChipField extends VBox {
     @FXML private StackPane openParenthesisChip;
     @FXML private StackPane closeParenthesisChip;
 
+    private final ReadOnlyObjectWrapper<T> expressionProperty;
     private final List<ProjectValue> projectValues;
-    private final ReadOnlyObjectWrapper<CustomNumberExpression> expressionProperty;
+    private final boolean parseStringChip;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
     private static final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
     private static final int EXPAND_BUFFER = 15;
 
-    public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
-        this.projectValues = projectValues;
+    public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
+        this.projectValues = projectValues;
+        this.parseStringChip = parseStringChip;
         initView();
         initEvent();
     }
@@ -105,13 +109,25 @@ public class ChipField extends VBox {
         chipSelectorPane.setVisible(false);
         chipSelectorPane.setManaged(false);
 
+        // hide the string chip
+        if (!parseStringChip) {
+            stringChip.setVisible(false);
+            stringChip.setManaged(false);
+        }
+
         updateViewLayout();
         updateHilight();
     }
 
     private void initEvent() {
         scrollPane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.BACK_SPACE) {
+            if (event.isShortcutDown() && event.getCode() == KeyCode.V && Clipboard.getSystemClipboard().hasString()) {
+                String s = Clipboard.getSystemClipboard().getString().replaceAll("\\p{Cntrl}", "");
+                for (char c : s.toCharArray()) {
+                    mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor), new Text(String.valueOf(c)));
+                }
+                updateViewLayout();
+            } else if (event.getCode() == KeyCode.BACK_SPACE) {
                 int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
                 if (currentCursorPosition > 0) {
                     Node removeNode = mainPane.getChildren().get(currentCursorPosition - 1);
@@ -151,8 +167,9 @@ public class ChipField extends VBox {
                 transformTextToChip();
                 updateViewLayout();
                 updateExpression();
-            } else {
-                mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor), new Text(event.getText()));
+            } else if (!event.getText().isEmpty()) {
+                mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor)
+                        , new Text(event.getText().replaceAll("\\p{Cntrl}", "")));
                 updateViewLayout();
             }
         });
@@ -160,6 +177,7 @@ public class ChipField extends VBox {
         scrollPane.addEventHandler(KeyEvent.ANY, Event::consume);
 
         // add chip when the icons in the chipSelectorPane is pressed
+        stringChip.setOnMousePressed(event -> addChip(new StringTerm("")));
         numberChip.setOnMousePressed(event -> addChip(new NumberWithUnitTerm(NumberWithUnit.ZERO)));
         valueChip.setOnMousePressed(event -> addChip(new ValueTerm(null)));
         plusChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.PLUS)));
@@ -263,13 +281,18 @@ public class ChipField extends VBox {
 
     private void addChip(Term t) {
         Chip c = addChipUI(t, mainPane.getChildren().indexOf(cursor));
+        transformTextToChip();
+        updateViewLayout();
         updateExpression();
         repositionScrollpane(c);
     }
 
     private Chip addChipUI(Term t, int index) {
         Chip chip;
-        if (t instanceof NumberWithUnitTerm) {
+        if (t instanceof StringTerm) {
+            chip = new StringChip(((StringTerm) t).getValue());
+            ((StringChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
+        } else if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
             ((NumberWithUnitChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {
@@ -298,23 +321,29 @@ public class ChipField extends VBox {
 
     private void removeChip(Chip chip) {
         mainPane.getChildren().remove(chip);
+        transformTextToChip();
+        updateViewLayout();
         updateExpression();
     }
 
+    abstract T convertToExpression(List<Term> terms, boolean hasNonParseText);
+
     private void updateExpression() {
         if (mainPane.getChildren().stream().noneMatch(node -> node instanceof Text)) {
-            expressionProperty.set(new CustomNumberExpression(mainPane.getChildren().stream()
-                    .filter(node -> node instanceof Chip).map(node -> ((Chip) node).getTerm()).collect(Collectors.toList())));
+            List<Term> terms = mainPane.getChildren().stream()
+                    .filter(node -> node instanceof Chip)
+                    .map(node -> ((Chip) node).getTerm())
+                    .collect(Collectors.toList());
+            expressionProperty.set(convertToExpression(terms, false));
         } else {
-            expressionProperty.set(CustomNumberExpression.INVALID);
+            expressionProperty.set(convertToExpression(Collections.emptyList(), true));
         }
-        transformTextToChip();
-        updateViewLayout();
         updateHilight();
     }
 
     private void transformTextToChip() {
         List<Node> nodes = mainPane.getChildren();
+//        System.out.println(nodes);
         Set<String> operator = Operator.getArithmeticOperator().stream().map(Operator::getDisplayString).collect(Collectors.toSet());
 
         int i = nodes.size()-1;
@@ -329,7 +358,7 @@ public class ChipField extends VBox {
                 // process block of texts from position i+1 to endIndex (inclusive) and replace them with a chip
                 List<Node> textNode = nodes.subList(i+1, endIndex+1);
                 if (!textNode.isEmpty()) {
-                    String text = textNode.stream().map(t -> ((Text) t).getText()).collect(Collectors.joining()).trim();
+                    String text = textNode.stream().map(t -> ((Text) t).getText()).collect(Collectors.joining());
                     Term t = null;
                     if (text.matches("-?\\d+\\.?\\d*")) {
                         t = new NumberWithUnitTerm(NumberWithUnit.of(Double.parseDouble(text), Unit.NOT_SPECIFIED));
@@ -341,6 +370,8 @@ public class ChipField extends VBox {
                                 break;
                             }
                         }
+                    } else if (parseStringChip) {
+                        t = new StringTerm(text);
                     }
                     textNode.clear();
                     if (t != null) {
@@ -376,6 +407,8 @@ public class ChipField extends VBox {
                 // do nothing
             } else if (previousNode instanceof Text || currentNode instanceof Text) {
                 HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if (previousNode instanceof StringChip || currentNode instanceof StringChip) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
             } else if ((previousNode instanceof NumberWithUnitChip || previousNode instanceof ProjectValueChip
                     || isOperatorChip(previousNode, OperatorType.RIGHT_UNARY))
                     && (currentNode instanceof NumberWithUnitChip || currentNode instanceof ProjectValueChip
@@ -398,18 +431,18 @@ public class ChipField extends VBox {
     }
 
     private void updateHilight() {
-        if (!expressionProperty.get().isValid()) {
+        if (!getExpression().isValid()) {
             scrollPane.setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
         } else {
             scrollPane.setStyle("-fx-effect: null;");
         }
     }
 
-    public CustomNumberExpression getExpression() {
+    public T getExpression() {
         return expressionProperty.get();
     }
 
-    public ReadOnlyObjectProperty<CustomNumberExpression> expressionProperty() {
-        return expressionProperty.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<T> expressionProperty() {
+        return  expressionProperty.getReadOnlyProperty();
     }
 }

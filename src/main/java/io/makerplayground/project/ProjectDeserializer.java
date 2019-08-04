@@ -247,8 +247,10 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
                 expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
             } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
+            } else if (ComplexStringExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new ComplexStringExpression(terms);
             } else {
-                throw new IllegalStateException("expression type not supported");
+                throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }
 
             Expression.RefreshInterval refreshInterval = Expression.RefreshInterval.valueOf(valueNode.get("refreshInterval").asText());

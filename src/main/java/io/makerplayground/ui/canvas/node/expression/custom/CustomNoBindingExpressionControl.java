@@ -46,7 +46,7 @@ public class CustomNoBindingExpressionControl extends GridPane {
         fromLabel.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
         GridPane.setConstraints(fromLabel, 0, 0, 1, 1, HPos.LEFT, VPos.TOP);
 
-        ChipField chipField = new ChipField(expression, projectValues);
+        NumericChipField chipField = new NumericChipField(expression, projectValues);
         chipField.expressionProperty().addListener((observable, oldValue, newValue) -> this.expression.set(newValue));
         GridPane.setConstraints(chipField, 1, 0);
 

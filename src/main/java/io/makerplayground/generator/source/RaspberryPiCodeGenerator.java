@@ -305,7 +305,7 @@ class RaspberryPiCodeGenerator {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + parseExpression(expression) + ")");
+                                    booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
                                 }
                             }
                         }
@@ -450,7 +450,7 @@ class RaspberryPiCodeGenerator {
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
-    private static String parseTerm(Term term) {
+    private String parseTerm(Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
@@ -508,13 +508,13 @@ class RaspberryPiCodeGenerator {
         }
     }
 
-    private String parseExpression(Expression expression) {
-        return expression.getTerms().stream().map(RaspberryPiCodeGenerator::parseTerm).collect(Collectors.joining(" "));
+    private String parseTerms(List<Term> expression) {
+        return expression.stream().map(this::parseTerm).collect(Collectors.joining(" "));
     }
 
     private String parseExpressionForParameter(Parameter parameter, Expression expression) {
         String returnValue;
-        String exprStr = parseExpression(expression);
+        String exprStr = parseTerms(expression.getTerms());
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
@@ -549,8 +549,19 @@ class RaspberryPiCodeGenerator {
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseProjectValue(projectValue.getDevice(), projectValue.getValue());
-        }
-        else {
+        } else if (expression instanceof ComplexStringExpression) {
+            List<String> subExpression = new ArrayList<>();
+            for (Expression e : ((ComplexStringExpression) expression).getSubExpressions()) {
+                if (e instanceof SimpleStringExpression) {
+                    subExpression.add("'" + ((SimpleStringExpression) e).getString() + "'");
+                } else if (e instanceof CustomNumberExpression) {
+                    subExpression.add("str(" + parseTerms(e.getTerms()) + ")");
+                } else {
+                    throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+                }
+            }
+            returnValue = String.join("+", subExpression);
+        } else {
             throw new IllegalStateException();
         }
         return returnValue;

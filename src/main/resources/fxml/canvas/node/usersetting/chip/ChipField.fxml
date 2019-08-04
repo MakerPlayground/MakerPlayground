@@ -36,25 +36,32 @@
             <ColumnConstraints />
             <ColumnConstraints />
             <ColumnConstraints />
+            <ColumnConstraints />
         </columnConstraints>
         <rowConstraints>
             <RowConstraints />
             <RowConstraints />
         </rowConstraints>
         <children>
-            <StackPane fx:id="numberChip">
+            <StackPane fx:id="stringChip" GridPane.columnIndex="0">
+                <children>
+                    <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#c75450" height="25.0" width="60.0" />
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="String" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="numberChip" GridPane.columnIndex="1">
                 <children>
                     <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#2673fd" height="25.0" width="60.0" />
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Number" />
                 </children>
             </StackPane>
-            <StackPane fx:id="valueChip" GridPane.rowIndex="1">
+            <StackPane fx:id="valueChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <children>
                     <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#9129d7" height="25.0" width="60.0" />
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
                 </children>
             </StackPane>
-            <StackPane fx:id="plusChip" GridPane.columnIndex="1">
+            <StackPane fx:id="plusChip" GridPane.columnIndex="2">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -73,7 +80,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="+" />
                 </children>
             </StackPane>
-            <StackPane fx:id="multiplyChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <StackPane fx:id="multiplyChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -92,7 +99,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="x" />
                 </children>
             </StackPane>
-            <StackPane fx:id="minusChip" GridPane.columnIndex="2">
+            <StackPane fx:id="minusChip" GridPane.columnIndex="3">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -111,7 +118,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
                 </children>
             </StackPane>
-            <StackPane fx:id="divideChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <StackPane fx:id="divideChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -130,7 +137,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
                 </children>
             </StackPane>
-            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="3">
+            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="4">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -155,7 +162,7 @@
                     </Text>
                 </children>
             </StackPane>
-            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="4" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>

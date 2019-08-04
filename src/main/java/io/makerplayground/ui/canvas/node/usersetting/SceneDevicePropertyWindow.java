@@ -25,6 +25,7 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
+import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -166,10 +167,10 @@ public class SceneDevicePropertyWindow extends PopOver {
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
-                TextField textField = new TextField();
-                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
-                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
-                control = textField;
+                StringChipField stringChipField = new StringChipField((ComplexStringExpression) viewModel.getParameterValue(p)
+                        , viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
+                stringChipField.expressionProperty().addListener((observableValue, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = stringChipField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);

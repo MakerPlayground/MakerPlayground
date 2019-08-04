@@ -19,7 +19,7 @@ public class MultiFunctionNumericControl extends HBox {
     public MultiFunctionNumericControl(Parameter p, List<ProjectValue> projectValues, CustomNumberExpression expression) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
 
-        ChipField chipField = new ChipField(expression, projectValues);
+        NumericChipField chipField = new NumericChipField(expression, projectValues);
         chipField.expressionProperty().addListener((observable, oldValue, newValue) -> this.expression.set(newValue));
         getChildren().add(chipField);
 

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
+        SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
     }
 
     public enum RefreshInterval {
@@ -86,7 +86,7 @@ public abstract class Expression {
             case INTEGER:
                 return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case STRING:
-                return new SimpleStringExpression((String) param.getDefaultValue());
+                return new ComplexStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case DATETIME:
