@@ -34,7 +34,7 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
     @FXML private Rectangle background;
     @FXML private TextField input;
 
-    private static final DecimalFormat df = new DecimalFormat("#.##");
+    private static final DecimalFormat df = new DecimalFormat("0.######");
 
     public NumberWithUnitChip(NumberWithUnit initialValue) {
         super(initialValue, Term.Type.NUMBER);
@@ -58,7 +58,7 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
                     double value = Double.parseDouble(input.getText());
                     setValue(new NumberWithUnit(value, getValue().getUnit()));  // TODO: shouldn't hardcoded unit
                 } catch (NumberFormatException e) {
-                    input.setText(df.format(getValue().getValue()) + getValue().getUnit());
+                    input.setText(df.format(getValue().getValue()));
                 }
             }
         });
