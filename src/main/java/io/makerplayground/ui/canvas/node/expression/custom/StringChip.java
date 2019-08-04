@@ -61,5 +61,4 @@ public class StringChip extends Chip<String> {
     public Term getTerm() {
         return new StringTerm(getValue());
     }
-    
 }

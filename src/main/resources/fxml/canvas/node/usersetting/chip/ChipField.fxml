@@ -15,19 +15,34 @@
 <?import javafx.scene.shape.Path?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
-<fx:root type="VBox" spacing="5" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="75" minHeight="27.0" minWidth="75" prefHeight="27.0" prefWidth="75" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" vbarPolicy="NEVER">
+<fx:root spacing="5" type="VBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" vbarPolicy="NEVER" minHeight="27.0" minWidth="75"
+                stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" >
         <content>
-            <HBox fx:id="mainPane" maxHeight="25" alignment="CENTER_LEFT">
+            <StackPane>
                 <children>
-                    <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
-                        <HBox.margin>
-                            <Insets left="2.0" right="2.0" top="2.0" />
-                        </HBox.margin>
-                    </Rectangle>
+                    <HBox fx:id="mainPane" alignment="CENTER_LEFT" minHeight="25.0" >
+                        <children>
+                            <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
+                                <HBox.margin>
+                                    <Insets left="2.0" right="2.0" top="2.0" />
+                                </HBox.margin>
+                            </Rectangle>
+                        </children>
+                    </HBox>
+                    <VBox fx:id="displayModePane" alignment="CENTER_LEFT" minHeight="25.0" >
+                        <children>
+                            <TextFlow fx:id="displayModeTextFlow" maxWidth="250.0" >
+                                <padding>
+                                    <Insets left="8.0" />
+                                </padding>
+                            </TextFlow>
+                        </children>
+                    </VBox>
                 </children>
-            </HBox>
+            </StackPane>
         </content>
     </ScrollPane>
     <GridPane fx:id="chipSelectorPane" alignment="CENTER" hgap="5.0" vgap="5.0">

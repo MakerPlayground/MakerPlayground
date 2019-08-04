@@ -33,7 +33,12 @@ public class ValueTerm extends Term {
         return value != null;
     }
 
+    @Override
     public String toString() {
-        return ((ProjectValue) value).getDevice().getName() + "'s " + ((ProjectValue) value).getValue().getName();
+        if (getValue() != null) {
+            return getValue().getDevice().getName() + "'s " + getValue().getValue().getName();
+        } else {
+            return "";
+        }
     }
 }

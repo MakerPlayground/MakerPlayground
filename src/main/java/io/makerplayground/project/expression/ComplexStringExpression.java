@@ -163,8 +163,10 @@ public class ComplexStringExpression extends Expression {
             endIndex = i;
 
             result.add(new CustomNumberExpression(terms.subList(startIndex, endIndex)));
-            result.add(new SimpleStringExpression((StringTerm) terms.get(endIndex)));
-            i++;
+            if (i < terms.size()) {
+                result.add(new SimpleStringExpression((StringTerm) terms.get(endIndex)));
+                i++;
+            }
         }
 
         return result;

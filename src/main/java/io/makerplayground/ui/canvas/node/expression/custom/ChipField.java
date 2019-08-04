@@ -44,8 +44,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -54,7 +56,9 @@ import java.util.stream.Collectors;
 
 public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private ScrollPane scrollPane;
-    @FXML private HBox mainPane;
+    @FXML protected HBox mainPane;
+    @FXML private VBox displayModePane;
+    @FXML protected TextFlow displayModeTextFlow;
     @FXML private Rectangle cursor;
 
     @FXML private GridPane chipSelectorPane;
@@ -75,7 +79,13 @@ public abstract class ChipField<T extends Expression> extends VBox {
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
     private static final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
+    private static final Insets CURSOR_INSETS = new Insets(2, 2, 0, 2);
+    private static final Insets FIRST_TEXT_INSETS = new Insets(0, 0, 0, 8);
+    private static final Insets FIRST_CURSOR_INSETS = new Insets(2, 2, 0, 10);
     private static final int EXPAND_BUFFER = 15;
+    private static final int MAXIMUM_WIDTH = 250;
+    private static final int MINIMUM_WIDTH = 75;
+    protected static final Color TEXT_COLOR = Color.web("#333333");
 
     public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
@@ -101,22 +111,29 @@ public abstract class ChipField<T extends Expression> extends VBox {
             addChipUI(listTerm.get(i), i);
         }
 
-        // hide the cursor until the ChipField or it's children (chip in the ChipField) received focus
-        cursor.setVisible(false);
-        cursor.setManaged(false);
-
-        // hide the chipSelectorPane until the ChipField or it's children (chip in the ChipField) received focus
-        chipSelectorPane.setVisible(false);
-        chipSelectorPane.setManaged(false);
-
         // hide the string chip
         if (!parseStringChip) {
             stringChip.setVisible(false);
             stringChip.setManaged(false);
         }
 
+        // automatically expand the chipfield based on its content
+        displayModeTextFlow.layoutBoundsProperty().addListener(observable -> Platform.runLater(this::updateChipfieldWidth));
+        mainPane.layoutBoundsProperty().addListener(observable -> Platform.runLater(this::updateChipfieldWidth));
+
+        // hide the chipSelectorPane until the ChipField or it's children (chip in the ChipField) received focus
+        chipSelectorPane.visibleProperty().bind(chipFieldFocus);
+        chipSelectorPane.managedProperty().bind(chipFieldFocus);
+
+        // switch between display mode and editing mode based on ChipField's focus
+        displayModePane.visibleProperty().bind(chipFieldFocus.not());
+        displayModePane.managedProperty().bind(chipFieldFocus.not());
+        mainPane.visibleProperty().bind(chipFieldFocus);
+        mainPane.managedProperty().bind(chipFieldFocus);
+
         updateViewLayout();
         updateHilight();
+        updateDisplayMode();
     }
 
     private void initEvent() {
@@ -167,6 +184,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 transformTextToChip();
                 updateViewLayout();
                 updateExpression();
+                updateDisplayMode();
             } else if (!event.getText().isEmpty()) {
                 mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor)
                         , new Text(event.getText().replaceAll("\\p{Cntrl}", "")));
@@ -214,6 +232,12 @@ public abstract class ChipField<T extends Expression> extends VBox {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> cursorVisible.set(false)),
                 new KeyFrame(Duration.seconds( 1), evt -> cursorVisible.set(true)));
         timeline.setCycleCount(Animation.INDEFINITE);
+
+        // hide the cursor until the ChipField or it's children (chip in the ChipField) received focus
+        cursor.visibleProperty().bind(chipFieldFocus.and(cursorVisible));
+        cursor.managedProperty().bind(chipFieldFocus);  // do NOT bind with cursorVisible to reserve space when the cursor is blink
+
+        // toggle cursor animation and update state / commit change when the chipfield loses focus
         chipFieldFocus.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 timeline.play();
@@ -223,33 +247,32 @@ public abstract class ChipField<T extends Expression> extends VBox {
             transformTextToChip();
             updateViewLayout();
             updateExpression();
+            updateDisplayMode();
             updateChipfieldWidth();
         });
-
-        // automatically expand the chipfield based on its content
-        mainPane.layoutBoundsProperty().addListener(observable -> Platform.runLater(this::updateChipfieldWidth));
-
-        cursor.visibleProperty().bind(chipFieldFocus.and(cursorVisible));
-        cursor.managedProperty().bind(chipFieldFocus);
-
-        chipSelectorPane.visibleProperty().bind(chipFieldFocus);
-        chipSelectorPane.managedProperty().bind(chipFieldFocus);
     }
 
     private void updateChipfieldWidth() {
-        double contentWidth = mainPane.getLayoutBounds().getWidth();
+        double chipPaneWidth = mainPane.getLayoutBounds().getWidth();
+        double displayPaneWidth = displayModeTextFlow.getLayoutBounds().getWidth();
         double chipSelectorWidth = chipSelectorPane.getLayoutBounds().getWidth();
 
         double newWidth;
-        if (chipFieldFocus.get() && contentWidth < chipSelectorWidth) {
-            newWidth = chipSelectorWidth;
-        } else {
-            if (contentWidth > 250) {
-                newWidth = 250;
-            } else if (contentWidth > 75) {
-                newWidth = contentWidth + EXPAND_BUFFER;
+        if (chipFieldFocus.get()) {
+            if (chipPaneWidth < chipSelectorWidth) {
+                newWidth = chipSelectorWidth;
+            } else if (chipPaneWidth + EXPAND_BUFFER > MAXIMUM_WIDTH) {
+                newWidth = MAXIMUM_WIDTH;
             } else {
-                newWidth = 75;
+                newWidth = chipPaneWidth + EXPAND_BUFFER;
+            }
+        } else {
+            if (displayPaneWidth + EXPAND_BUFFER > MAXIMUM_WIDTH) {
+                newWidth = MAXIMUM_WIDTH;
+            } else if (displayPaneWidth > MINIMUM_WIDTH) {
+                newWidth = displayPaneWidth + EXPAND_BUFFER;
+            } else {
+                newWidth = MINIMUM_WIDTH;
             }
         }
 
@@ -284,6 +307,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
         transformTextToChip();
         updateViewLayout();
         updateExpression();
+        updateDisplayMode();
         repositionScrollpane(c);
     }
 
@@ -324,6 +348,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
         transformTextToChip();
         updateViewLayout();
         updateExpression();
+        updateDisplayMode();
     }
 
     abstract T convertToExpression(List<Term> terms, boolean hasNonParseText);
@@ -343,7 +368,6 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
     private void transformTextToChip() {
         List<Node> nodes = mainPane.getChildren();
-//        System.out.println(nodes);
         Set<String> operator = Operator.getArithmeticOperator().stream().map(Operator::getDisplayString).collect(Collectors.toSet());
 
         int i = nodes.size()-1;
@@ -397,14 +421,20 @@ public abstract class ChipField<T extends Expression> extends VBox {
             return;
         }
 
-        HBox.setMargin(nodes.get(0), Insets.EMPTY);
+        if (nodes.get(0) instanceof Text) {
+            HBox.setMargin(nodes.get(0), FIRST_TEXT_INSETS);
+        } else if (nodes.get(0) == cursor) {
+            HBox.setMargin(nodes.get(0), FIRST_CURSOR_INSETS);
+        } else {
+            HBox.setMargin(nodes.get(0), Insets.EMPTY);
+        }
         for (int i=1; i<nodes.size(); i++) {
             Node previousNode = nodes.get(i - 1);
             Node currentNode = nodes.get(i);
             if (previousNode == cursor) {
                 HBox.setMargin(currentNode, Insets.EMPTY);
             } else if (currentNode == cursor) {
-                // do nothing
+                HBox.setMargin(currentNode, CURSOR_INSETS);
             } else if (previousNode instanceof Text || currentNode instanceof Text) {
                 HBox.setMargin(currentNode, Insets.EMPTY);
             } else if (previousNode instanceof StringChip || currentNode instanceof StringChip) {
@@ -424,6 +454,13 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 HBox.setMargin(currentNode, CHIP_FIT_INSETS);
             }
         }
+    }
+
+    protected void updateDisplayMode() {
+        displayModeTextFlow.getChildren().clear();
+        Text t = new Text(getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" ")));
+        t.setFill(TEXT_COLOR);
+        displayModeTextFlow.getChildren().add(t);
     }
 
     private boolean isOperatorChip(Node node, OperatorType operator) {
