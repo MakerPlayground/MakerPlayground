@@ -313,7 +313,7 @@
     "description": "An lcd/oled display which can display character and graphic",
     "action": [
       {
-        "name": "Show Text at Row",
+        "name": "Show Text",
         "funcname": "showTextAtRow",
         "type": "Active",
         "parameter": [
@@ -334,101 +334,6 @@
             "constraint": [],
             "datatype": "STRING",
             "controltype": "TEXTBOX"
-          },
-          {
-            "name": "Size",
-            "value": "1x",
-            "constraint": [
-              "1x",
-              "2x",
-              "3x"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Align",
-            "value": "Left",
-            "constraint": [
-              "Left",
-              "Center",
-              "Right"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          },
-          {
-            "name": "Color",
-            "value": "White",
-            "constraint": [
-              "Blue",
-              "Cyan",
-              "Dark Cyan",
-              "Dark Green",
-              "Dark Grey",
-              "Green",
-              "Green Yellow",
-              "Light Grey",
-              "Magenta",
-              "Maroon",
-              "Navy",
-              "Olive",
-              "Orange",
-              "Pink",
-              "Purple",
-              "White",
-              "Red",
-              "Yellow"
-            ],
-            "datatype": "ENUM",
-            "controltype": "DROPDOWN"
-          }
-        ]
-      },
-      {
-        "name": "Show Number at Row",
-        "funcname": "showNumberAtRow",
-        "type": "Active",
-        "parameter": [
-          {
-            "name": "Row",
-            "value": 1.0,
-            "constraint": {
-              "min": 1.0,
-              "max": 20.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Label",
-            "value": "",
-            "constraint": [],
-            "datatype": "STRING",
-            "controltype": "TEXTBOX"
-          },
-          {
-            "name": "Value",
-            "value": 1234.0,
-            "constraint": {
-              "min": -99999.0,
-              "max": 99999.0,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "DOUBLE",
-            "controltype": "SPINBOX"
-          },
-          {
-            "name": "Decimal places",
-            "value": 2,
-            "constraint": {
-              "min": 0,
-              "max": 6,
-              "unit": "NOT_SPECIFIED"
-            },
-            "datatype": "INTEGER",
-            "controltype": "SPINBOX"
           },
           {
             "name": "Size",
