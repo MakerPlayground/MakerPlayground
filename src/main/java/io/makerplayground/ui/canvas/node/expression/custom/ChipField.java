@@ -17,12 +17,14 @@
 package io.makerplayground.ui.canvas.node.expression.custom;
 
 import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.expression.CustomNumberExpression;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -34,6 +36,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -41,19 +44,25 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ChipField extends VBox {
+public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private ScrollPane scrollPane;
-    @FXML private HBox mainPane;
+    @FXML protected HBox mainPane;
+    @FXML private VBox displayModePane;
+    @FXML protected TextFlow displayModeTextFlow;
     @FXML private Rectangle cursor;
 
     @FXML private GridPane chipSelectorPane;
+    @FXML private StackPane stringChip;
     @FXML private StackPane numberChip;
     @FXML private StackPane valueChip;
     @FXML private StackPane plusChip;
@@ -63,19 +72,25 @@ public class ChipField extends VBox {
     @FXML private StackPane openParenthesisChip;
     @FXML private StackPane closeParenthesisChip;
 
+    private final ReadOnlyObjectWrapper<T> expressionProperty;
     private final List<ProjectValue> projectValues;
-    private final ReadOnlyObjectWrapper<CustomNumberExpression> expressionProperty;
-
-    private final List<Chip> chipList = new ArrayList<>();
-    private final Map<Chip, Term> chipMap = new HashMap<>();
+    private final boolean parseStringChip;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
-    private final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
+    private static final Insets CHIP_FIT_INSETS = new Insets(0, 0, 0, -10);
+    private static final Insets CURSOR_INSETS = new Insets(2, 2, 0, 2);
+    private static final Insets FIRST_TEXT_INSETS = new Insets(0, 0, 0, 8);
+    private static final Insets FIRST_CURSOR_INSETS = new Insets(2, 2, 0, 10);
+    private static final int EXPAND_BUFFER = 15;
+    private static final int MAXIMUM_WIDTH = 250;
+    private static final int MINIMUM_WIDTH = 75;
+    protected static final Color TEXT_COLOR = Color.web("#333333");
 
-    public ChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
-        this.projectValues = projectValues;
+    public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
+        this.projectValues = projectValues;
+        this.parseStringChip = parseStringChip;
         initView();
         initEvent();
     }
@@ -96,31 +111,58 @@ public class ChipField extends VBox {
             addChipUI(listTerm.get(i), i);
         }
 
-        // hide the cursor until the ChipField or it's children (chip in the ChipField) received focus
-        cursor.setVisible(false);
-        cursor.setManaged(false);
+        // hide the string chip
+        if (!parseStringChip) {
+            stringChip.setVisible(false);
+            stringChip.setManaged(false);
+        }
+
+        // automatically expand the chipfield based on its content
+        displayModeTextFlow.layoutBoundsProperty().addListener(observable -> Platform.runLater(this::updateChipfieldWidth));
+        mainPane.layoutBoundsProperty().addListener(observable -> Platform.runLater(this::updateChipfieldWidth));
 
         // hide the chipSelectorPane until the ChipField or it's children (chip in the ChipField) received focus
-        chipSelectorPane.setVisible(false);
-        chipSelectorPane.setManaged(false);
+        chipSelectorPane.visibleProperty().bind(chipFieldFocus);
+        chipSelectorPane.managedProperty().bind(chipFieldFocus);
+
+        // switch between display mode and editing mode based on ChipField's focus
+        displayModePane.visibleProperty().bind(chipFieldFocus.not());
+        displayModePane.managedProperty().bind(chipFieldFocus.not());
+        mainPane.visibleProperty().bind(chipFieldFocus);
+        mainPane.managedProperty().bind(chipFieldFocus);
 
         updateViewLayout();
         updateHilight();
+        updateDisplayMode();
     }
 
     private void initEvent() {
         scrollPane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.BACK_SPACE) {
+            if (event.isShortcutDown() && event.getCode() == KeyCode.V && Clipboard.getSystemClipboard().hasString()) {
+                String s = Clipboard.getSystemClipboard().getString().replaceAll("\\p{Cntrl}", "");
+                for (char c : s.toCharArray()) {
+                    mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor), new Text(String.valueOf(c)));
+                }
+                updateViewLayout();
+            } else if (event.getCode() == KeyCode.BACK_SPACE) {
                 int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
                 if (currentCursorPosition > 0) {
-                    Chip chip = chipList.get(currentCursorPosition - 1);
-                    removeChip(chip);
+                    Node removeNode = mainPane.getChildren().get(currentCursorPosition - 1);
+                    if (removeNode instanceof Text) {
+                        mainPane.getChildren().remove(removeNode);
+                    } else {
+                        removeChip((Chip) removeNode);
+                    }
                 }
             } else if (event.getCode() == KeyCode.DELETE) {
                 int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
-                if (currentCursorPosition < chipList.size()) {
-                    Chip chip = chipList.get(currentCursorPosition);
-                    removeChip(chip);
+                if (currentCursorPosition < mainPane.getChildren().size() - 1) {
+                    Node removeNode = mainPane.getChildren().get(currentCursorPosition + 1);
+                    if (removeNode instanceof Text) {
+                        mainPane.getChildren().remove(removeNode);
+                    } else {
+                        removeChip((Chip) removeNode);
+                    }
                 }
             } else if (event.getCode() == KeyCode.LEFT) {
                 int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
@@ -132,18 +174,28 @@ public class ChipField extends VBox {
                 }
             } else if (event.getCode() == KeyCode.RIGHT) {
                 int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
-                if (currentCursorPosition < chipList.size()) {
+                if (currentCursorPosition < mainPane.getChildren().size() - 1) {
                     mainPane.getChildren().remove(cursor);
                     mainPane.getChildren().add(currentCursorPosition + 1, cursor);
                     updateViewLayout();
                     repositionScrollpane(cursor);
                 }
+            } else if (event.getCode() == KeyCode.ENTER)  {
+                transformTextToChip();
+                updateViewLayout();
+                updateExpression();
+                updateDisplayMode();
+            } else if (!event.getText().isEmpty()) {
+                mainPane.getChildren().add(mainPane.getChildren().indexOf(cursor)
+                        , new Text(event.getText().replaceAll("\\p{Cntrl}", "")));
+                updateViewLayout();
             }
         });
 
         scrollPane.addEventHandler(KeyEvent.ANY, Event::consume);
 
         // add chip when the icons in the chipSelectorPane is pressed
+        stringChip.setOnMousePressed(event -> addChip(new StringTerm("")));
         numberChip.setOnMousePressed(event -> addChip(new NumberWithUnitTerm(NumberWithUnit.ZERO)));
         valueChip.setOnMousePressed(event -> addChip(new ValueTerm(null)));
         plusChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.PLUS)));
@@ -180,20 +232,53 @@ public class ChipField extends VBox {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> cursorVisible.set(false)),
                 new KeyFrame(Duration.seconds( 1), evt -> cursorVisible.set(true)));
         timeline.setCycleCount(Animation.INDEFINITE);
+
+        // hide the cursor until the ChipField or it's children (chip in the ChipField) received focus
+        cursor.visibleProperty().bind(chipFieldFocus.and(cursorVisible));
+        cursor.managedProperty().bind(chipFieldFocus);  // do NOT bind with cursorVisible to reserve space when the cursor is blink
+
+        // toggle cursor animation and update state / commit change when the chipfield loses focus
         chipFieldFocus.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 timeline.play();
             } else {
                 timeline.stop();
             }
+            transformTextToChip();
             updateViewLayout();
+            updateExpression();
+            updateDisplayMode();
+            updateChipfieldWidth();
         });
+    }
 
-        cursor.visibleProperty().bind(chipFieldFocus.and(cursorVisible));
-        cursor.managedProperty().bind(chipFieldFocus);
+    private void updateChipfieldWidth() {
+        double chipPaneWidth = mainPane.getLayoutBounds().getWidth();
+        double displayPaneWidth = displayModeTextFlow.getLayoutBounds().getWidth();
+        double chipSelectorWidth = chipSelectorPane.getLayoutBounds().getWidth();
 
-        chipSelectorPane.visibleProperty().bind(chipFieldFocus);
-        chipSelectorPane.managedProperty().bind(chipFieldFocus);
+        double newWidth;
+        if (chipFieldFocus.get()) {
+            if (chipPaneWidth < chipSelectorWidth) {
+                newWidth = chipSelectorWidth;
+            } else if (chipPaneWidth + EXPAND_BUFFER > MAXIMUM_WIDTH) {
+                newWidth = MAXIMUM_WIDTH;
+            } else {
+                newWidth = chipPaneWidth + EXPAND_BUFFER;
+            }
+        } else {
+            if (displayPaneWidth + EXPAND_BUFFER > MAXIMUM_WIDTH) {
+                newWidth = MAXIMUM_WIDTH;
+            } else if (displayPaneWidth > MINIMUM_WIDTH) {
+                newWidth = displayPaneWidth + EXPAND_BUFFER;
+            } else {
+                newWidth = MINIMUM_WIDTH;
+            }
+        }
+
+        scrollPane.setMinWidth(newWidth);
+        scrollPane.setPrefWidth(newWidth);
+        scrollPane.setMaxWidth(newWidth);
     }
 
     private void repositionScrollpane(Node node) {
@@ -219,13 +304,19 @@ public class ChipField extends VBox {
 
     private void addChip(Term t) {
         Chip c = addChipUI(t, mainPane.getChildren().indexOf(cursor));
+        transformTextToChip();
+        updateViewLayout();
         updateExpression();
+        updateDisplayMode();
         repositionScrollpane(c);
     }
 
     private Chip addChipUI(Term t, int index) {
         Chip chip;
-        if (t instanceof NumberWithUnitTerm) {
+        if (t instanceof StringTerm) {
+            chip = new StringChip(((StringTerm) t).getValue());
+            ((StringChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
+        } else if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
             ((NumberWithUnitChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {
@@ -239,80 +330,156 @@ public class ChipField extends VBox {
         }
 
         chip.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            int chipPosition = chipList.indexOf(chip);
             mainPane.getChildren().remove(cursor);
+            int chipPosition = mainPane.getChildren().indexOf(chip);
             mainPane.getChildren().add(chipPosition+1, cursor);
+            transformTextToChip();
             updateViewLayout();
             repositionScrollpane(chip);
         });
 
-        chipList.add(index, chip);
-        chipMap.put(chip, t);
         mainPane.getChildren().add(index, chip);
 
         return chip;
     }
 
     private void removeChip(Chip chip) {
-        chipList.remove(chip);
-        chipMap.remove(chip);
         mainPane.getChildren().remove(chip);
+        transformTextToChip();
+        updateViewLayout();
         updateExpression();
+        updateDisplayMode();
     }
 
+    abstract T convertToExpression(List<Term> terms, boolean hasNonParseText);
+
     private void updateExpression() {
-        expressionProperty.set(new CustomNumberExpression(chipList.stream().map(Chip::getTerm).collect(Collectors.toList())));
-        updateViewLayout();
+        if (mainPane.getChildren().stream().noneMatch(node -> node instanceof Text)) {
+            List<Term> terms = mainPane.getChildren().stream()
+                    .filter(node -> node instanceof Chip)
+                    .map(node -> ((Chip) node).getTerm())
+                    .collect(Collectors.toList());
+            expressionProperty.set(convertToExpression(terms, false));
+        } else {
+            expressionProperty.set(convertToExpression(Collections.emptyList(), true));
+        }
         updateHilight();
     }
 
+    private void transformTextToChip() {
+        List<Node> nodes = mainPane.getChildren();
+        Set<String> operator = Operator.getArithmeticOperator().stream().map(Operator::getDisplayString).collect(Collectors.toSet());
+
+        int i = nodes.size()-1;
+        while (i >= 0) {
+            if (nodes.get(i) instanceof Text) {
+                int endIndex = i;
+                // decrement i until we found any kind of chip or a operator
+                while ((i >= 0) && (nodes.get(i) instanceof Text) && !operator.contains(((Text) nodes.get(i)).getText())) {
+                    i--;
+                }
+
+                // process block of texts from position i+1 to endIndex (inclusive) and replace them with a chip
+                List<Node> textNode = nodes.subList(i+1, endIndex+1);
+                if (!textNode.isEmpty()) {
+                    String text = textNode.stream().map(t -> ((Text) t).getText()).collect(Collectors.joining());
+                    Term t = null;
+                    if (text.matches("-?\\d+\\.?\\d*")) {
+                        t = new NumberWithUnitTerm(NumberWithUnit.of(Double.parseDouble(text), Unit.NOT_SPECIFIED));
+                    } else if (text.contains("'s ")) {
+                        for (ProjectValue projectValue : projectValues) {
+                            String s = projectValue.getDevice().getName() + "'s " + projectValue.getValue().getName();
+                            if (text.equals(s)) {
+                                t = new ValueTerm(projectValue);
+                                break;
+                            }
+                        }
+                    } else if (parseStringChip) {
+                        t = new StringTerm(text);
+                    }
+                    textNode.clear();
+                    if (t != null) {
+                        addChipUI(t, i+1);
+                    }
+                }
+
+                // process text at position i (in case that the first loop terminate because of an operator)
+                if ((i >= 0) && nodes.get(i) instanceof Text) {
+                    String operatorString = ((Text) nodes.get(i)).getText();
+                    OperatorTerm operatorTerm = new OperatorTerm(Operator.fromDisplayString(operatorString));
+                    nodes.remove(i);
+                    addChipUI(operatorTerm, i);
+                }
+            }
+            i--;
+        }
+    }
+
     private void updateViewLayout() {
-        if (chipList.isEmpty()) {
+        List<Node> nodes = mainPane.getChildren();
+        if (nodes.isEmpty()) {
             return;
         }
 
-        int currentCursorPosition = mainPane.getChildren().indexOf(cursor);
-
-        HBox.setMargin(chipList.get(0), Insets.EMPTY);
-        for (int i=1; i<chipList.size(); i++) {
-            Chip previousChip = chipList.get(i - 1);
-            Chip currentChip = chipList.get(i);
-            if (i == currentCursorPosition && chipFieldFocus.get()) {
-                HBox.setMargin(currentChip, Insets.EMPTY);
-            } else if ((previousChip instanceof NumberWithUnitChip || previousChip instanceof ProjectValueChip
-                    || isOperatorChip(previousChip, OperatorType.RIGHT_UNARY))
-                    && (currentChip instanceof NumberWithUnitChip || currentChip instanceof ProjectValueChip
-                    || isOperatorChip(currentChip, OperatorType.LEFT_UNARY))) {
-                HBox.setMargin(currentChip, Insets.EMPTY);
-            } else if (isOperatorChip(previousChip, OperatorType.BINARY)
-                    && isOperatorChip(currentChip, OperatorType.BINARY)) {
-                HBox.setMargin(currentChip, Insets.EMPTY);
-            } else if (isOperatorChip(previousChip, OperatorType.LEFT_UNARY)
-                    && isOperatorChip(currentChip, OperatorType.RIGHT_UNARY)) {
-                HBox.setMargin(currentChip, Insets.EMPTY);
+        if (nodes.get(0) instanceof Text) {
+            HBox.setMargin(nodes.get(0), FIRST_TEXT_INSETS);
+        } else if (nodes.get(0) == cursor) {
+            HBox.setMargin(nodes.get(0), FIRST_CURSOR_INSETS);
+        } else {
+            HBox.setMargin(nodes.get(0), Insets.EMPTY);
+        }
+        for (int i=1; i<nodes.size(); i++) {
+            Node previousNode = nodes.get(i - 1);
+            Node currentNode = nodes.get(i);
+            if (previousNode == cursor) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if (currentNode == cursor) {
+                HBox.setMargin(currentNode, CURSOR_INSETS);
+            } else if (previousNode instanceof Text || currentNode instanceof Text) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if (previousNode instanceof StringChip || currentNode instanceof StringChip) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if ((previousNode instanceof NumberWithUnitChip || previousNode instanceof ProjectValueChip
+                    || isOperatorChip(previousNode, OperatorType.RIGHT_UNARY))
+                    && (currentNode instanceof NumberWithUnitChip || currentNode instanceof ProjectValueChip
+                    || isOperatorChip(currentNode, OperatorType.LEFT_UNARY))) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if (isOperatorChip(previousNode, OperatorType.BINARY)
+                    && isOperatorChip(currentNode, OperatorType.BINARY)) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if (isOperatorChip(previousNode, OperatorType.LEFT_UNARY)
+                    && isOperatorChip(currentNode, OperatorType.RIGHT_UNARY)) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
             } else {
-                HBox.setMargin(currentChip, CHIP_FIT_INSETS);
+                HBox.setMargin(currentNode, CHIP_FIT_INSETS);
             }
         }
     }
 
-    private boolean isOperatorChip(Chip<?> chip, OperatorType operator) {
-        return (chip instanceof OperatorChip) && (((OperatorChip) chip).getTerm().getValue().getType() == operator);
+    protected void updateDisplayMode() {
+        displayModeTextFlow.getChildren().clear();
+        Text t = new Text(getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" ")));
+        t.setFill(TEXT_COLOR);
+        displayModeTextFlow.getChildren().add(t);
+    }
+
+    private boolean isOperatorChip(Node node, OperatorType operator) {
+        return (node instanceof OperatorChip) && (((OperatorChip) node).getTerm().getValue().getType() == operator);
     }
 
     private void updateHilight() {
-        if (!expressionProperty.get().isValid()) {
+        if (!getExpression().isValid()) {
             scrollPane.setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
         } else {
             scrollPane.setStyle("-fx-effect: null;");
         }
     }
 
-    public CustomNumberExpression getExpression() {
+    public T getExpression() {
         return expressionProperty.get();
     }
 
-    public ReadOnlyObjectProperty<CustomNumberExpression> expressionProperty() {
-        return expressionProperty.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<T> expressionProperty() {
+        return  expressionProperty.getReadOnlyProperty();
     }
 }

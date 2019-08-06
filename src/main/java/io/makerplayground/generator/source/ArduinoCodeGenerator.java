@@ -532,7 +532,7 @@ class ArduinoCodeGenerator {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + parseExpression(expression) + ")");
+                                    booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
                                 }
                             }
                         }
@@ -566,13 +566,13 @@ class ArduinoCodeGenerator {
         }
     }
 
-    private String parseExpression(Expression expression) {
-        return expression.getTerms().stream().map(this::parseTerm).collect(Collectors.joining(" "));
+    private String parseTerms(List<Term> expression) {
+        return expression.stream().map(this::parseTerm).collect(Collectors.joining(" "));
     }
 
     private String parseExpressionForParameter(Parameter parameter, Expression expression) {
         String returnValue;
-        String exprStr = parseExpression(expression);
+        String exprStr = parseTerms(expression.getTerms());
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
@@ -601,6 +601,28 @@ class ArduinoCodeGenerator {
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
             returnValue = exprStr;
+        } else if (expression instanceof ComplexStringExpression) {
+            List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
+            if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
+                returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
+            } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
+                returnValue = "String(" + parseTerms(subExpression.get(0).getTerms()) + ").c_str()";
+            } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
+                returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
+                        .collect(Collectors.joining("", "\"", "\""));
+            } else {
+                List<String> subExpressionString = new ArrayList<>();
+                for (Expression e : subExpression) {
+                    if (e instanceof SimpleStringExpression) {
+                        subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
+                    } else if (e instanceof CustomNumberExpression) {
+                        subExpressionString.add("String(" + parseTerms(e.getTerms()) + ")");
+                    } else {
+                        throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+                    }
+                }
+                returnValue = "(" + String.join("+", subExpressionString) + ").c_str()";
+            }
         } else {
             throw new IllegalStateException();
         }
@@ -683,7 +705,7 @@ class ArduinoCodeGenerator {
         } else if (term instanceof RecordTerm) {
             RecordTerm term1 = (RecordTerm) term;
             return "Record(" + term1.getValue().getEntryList().stream()
-                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseExpression(entry.getValue()) + ")")
+                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(entry.getValue().getTerms()) + ")")
                     .collect(Collectors.joining(",")) + ")";
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");

@@ -24,6 +24,8 @@ import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
+import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -153,21 +155,22 @@ public class SceneDevicePropertyWindow extends PopOver {
 
             Node control = null;
             if (p.getControlType() == ControlType.SLIDER) {
+                // TODO: this can't ever be null isn't it?
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                SliderNumberWithUnitExpressionControl expressionControl = new SliderNumberWithUnitExpressionControl(
+                MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(
                         p,
                         viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
-                        viewModel.getParameterValue(p)
+                        CustomNumberExpression.of(viewModel.getParameterValue(p))
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
-                TextField textField = new TextField();
-                textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, new SimpleStringExpression(newValue)));
-                textField.setText(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
-                control = textField;
+                StringChipField stringChipField = new StringChipField((ComplexStringExpression) viewModel.getParameterValue(p)
+                        , viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
+                stringChipField.expressionProperty().addListener((observableValue, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
+                control = stringChipField;
             } else if (p.getControlType() == ControlType.DROPDOWN) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
@@ -175,13 +178,14 @@ public class SceneDevicePropertyWindow extends PopOver {
                 comboBox.getSelectionModel().select(((SimpleStringExpression) viewModel.getParameterValue(p)).getString());
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
+                // TODO: this can't ever be null isn't it?
                 if (viewModel.getParameterValue(p) == null) {
                     viewModel.setParameterValue(p, new NumberWithUnitExpression((NumberWithUnit) p.getDefaultValue()));
                 }
-                SpinnerNumberWithUnitExpressionControl expressionControl = new SpinnerNumberWithUnitExpressionControl(
+                MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(
                         p,
                         viewModel.getProjectValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)),
-                        viewModel.getParameterValue(p)
+                        CustomNumberExpression.of(viewModel.getParameterValue(p))
                 );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> viewModel.setParameterValue(p, newValue));
                 control = expressionControl;

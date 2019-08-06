@@ -15,23 +15,39 @@
 <?import javafx.scene.shape.Path?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
-<fx:root type="VBox" spacing="5" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="27" maxWidth="250" minHeight="27.0" minWidth="250" prefHeight="27.0" prefWidth="250" stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" vbarPolicy="NEVER">
+<fx:root spacing="5" type="VBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <ScrollPane id="scrollPane" fx:id="scrollPane" hbarPolicy="NEVER" vbarPolicy="NEVER" minHeight="27.0" minWidth="75"
+                stylesheets="@../../../../../css/canvas/node/usersetting/chip/ChipField.css" >
         <content>
-            <HBox fx:id="mainPane" maxHeight="25">
+            <StackPane>
                 <children>
-                    <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
-                        <HBox.margin>
-                            <Insets left="2.0" right="2.0" top="2.0" />
-                        </HBox.margin>
-                    </Rectangle>
+                    <HBox fx:id="mainPane" alignment="CENTER_LEFT" minHeight="25.0" >
+                        <children>
+                            <Rectangle fx:id="cursor" fill="#333333" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="1.0">
+                                <HBox.margin>
+                                    <Insets left="2.0" right="2.0" top="2.0" />
+                                </HBox.margin>
+                            </Rectangle>
+                        </children>
+                    </HBox>
+                    <VBox fx:id="displayModePane" alignment="CENTER_LEFT" minHeight="25.0" >
+                        <children>
+                            <TextFlow fx:id="displayModeTextFlow" maxWidth="250.0" >
+                                <padding>
+                                    <Insets left="8.0" />
+                                </padding>
+                            </TextFlow>
+                        </children>
+                    </VBox>
                 </children>
-            </HBox>
+            </StackPane>
         </content>
     </ScrollPane>
     <GridPane fx:id="chipSelectorPane" alignment="CENTER" hgap="5.0" vgap="5.0">
         <columnConstraints>
+            <ColumnConstraints />
             <ColumnConstraints />
             <ColumnConstraints />
             <ColumnConstraints />
@@ -42,19 +58,25 @@
             <RowConstraints />
         </rowConstraints>
         <children>
-            <StackPane fx:id="numberChip">
+            <StackPane fx:id="stringChip" GridPane.columnIndex="0">
+                <children>
+                    <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#c75450" height="25.0" width="60.0" />
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="String" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="numberChip" GridPane.columnIndex="1">
                 <children>
                     <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#2673fd" height="25.0" width="60.0" />
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Number" />
                 </children>
             </StackPane>
-            <StackPane fx:id="valueChip" GridPane.rowIndex="1">
+            <StackPane fx:id="valueChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <children>
                     <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#9129d7" height="25.0" width="60.0" />
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" />
                 </children>
             </StackPane>
-            <StackPane fx:id="plusChip" GridPane.columnIndex="1">
+            <StackPane fx:id="plusChip" GridPane.columnIndex="2">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -73,7 +95,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="+" />
                 </children>
             </StackPane>
-            <StackPane fx:id="multiplyChip" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <StackPane fx:id="multiplyChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -92,7 +114,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="x" />
                 </children>
             </StackPane>
-            <StackPane fx:id="minusChip" GridPane.columnIndex="2">
+            <StackPane fx:id="minusChip" GridPane.columnIndex="3">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -111,7 +133,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
                 </children>
             </StackPane>
-            <StackPane fx:id="divideChip" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <StackPane fx:id="divideChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -130,7 +152,7 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
                 </children>
             </StackPane>
-            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="3">
+            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="4">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -155,7 +177,7 @@
                     </Text>
                 </children>
             </StackPane>
-            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="4" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>

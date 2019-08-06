@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
 
 public class NumberWithUnitTerm extends Term {
     // The required digits is at least 6 for GPS's lat, lon values.
-    private static final DecimalFormat df = new DecimalFormat("0.0#####");
+    private static final DecimalFormat df = new DecimalFormat("0.######");
 
     public static final NumberWithUnitTerm ZERO = new NumberWithUnitTerm(NumberWithUnit.ZERO);
 

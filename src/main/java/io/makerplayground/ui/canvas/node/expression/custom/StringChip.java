@@ -16,33 +16,27 @@
 
 package io.makerplayground.ui.canvas.node.expression.custom;
 
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.project.term.NumberWithUnitTerm;
+import io.makerplayground.project.term.StringTerm;
 import io.makerplayground.project.term.Term;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-
-import java.text.DecimalFormat;
 
 import java.io.IOException;
 
-public class NumberWithUnitChip extends Chip<NumberWithUnit> {
+public class StringChip extends Chip<String> {
 
     @FXML private Rectangle background;
     @FXML private TextField input;
 
-    private static final DecimalFormat df = new DecimalFormat("0.######");
-
-    public NumberWithUnitChip(NumberWithUnit initialValue) {
-        super(initialValue, Term.Type.NUMBER);
+    public StringChip(String initialValue) {
+        super(initialValue, Term.Type.STRING);
     }
 
     @Override
     protected void initView() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/NumberWithUnitChip.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/chip/StringChip.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
@@ -51,15 +45,10 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
             e.printStackTrace();
         }
 
-        input.setText(df.format(getValue().getValue())); // TODO: display unit
+        input.setText(getValue());
         input.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                try {
-                    double value = Double.parseDouble(input.getText());
-                    setValue(new NumberWithUnit(value, getValue().getUnit()));  // TODO: shouldn't hardcoded unit
-                } catch (NumberFormatException e) {
-                    input.setText(df.format(getValue().getValue()));
-                }
+                setValue(input.getText());
             }
         });
         input.prefColumnCountProperty().bind(input.textProperty().length());
@@ -70,6 +59,6 @@ public class NumberWithUnitChip extends Chip<NumberWithUnit> {
 
     @Override
     public Term getTerm() {
-        return new NumberWithUnitTerm(getValue());
+        return new StringTerm(getValue());
     }
 }

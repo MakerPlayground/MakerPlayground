@@ -44,6 +44,15 @@ public enum Operator {
         this.displayString = displayString;
     }
 
+    public static Operator fromDisplayString(String s) {
+        for (Operator operator : Operator.values()) {
+            if (operator.displayString.equals(s)) {
+                return operator;
+            }
+        }
+        return null;
+    }
+
     public OperatorType getType() {
         return type;
     }
@@ -52,11 +61,17 @@ public enum Operator {
         return displayString;
     }
 
-    private static final List<Operator> OPERATORS = List.of(Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL
+    private static final List<Operator> COMPARISON_OPERATORS = List.of(Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL
             , Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL, Operator.EQUAL, Operator.NOT_EQUAL);
 
     public static List<Operator> getComparisonOperator() {
-        return OPERATORS;
+        return COMPARISON_OPERATORS;
+    }
+
+    private static final List<Operator> ARITHMETIC_OPERATORS = List.of(PLUS, MINUS, MULTIPLY, DIVIDE, MOD, OPEN_PARENTHESIS, CLOSE_PARENTHESIS);
+
+    public static List<Operator> getArithmeticOperator() {
+        return ARITHMETIC_OPERATORS;
     }
 
     @Override

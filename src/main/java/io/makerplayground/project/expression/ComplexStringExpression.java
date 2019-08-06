@@ -16,60 +16,64 @@
 
 package io.makerplayground.project.expression;
 
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.term.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CustomNumberExpression extends Expression {
+public class ComplexStringExpression extends Expression {
 
-    public static final CustomNumberExpression INVALID = new CustomNumberExpression(Collections.emptyList());
+    public static final ComplexStringExpression INVALID = new ComplexStringExpression(Collections.emptyList());
 
-    public CustomNumberExpression() {
-        super(Type.CUSTOM_NUMBER);
+    public ComplexStringExpression() {
+        super(Type.COMPLEX_STRING);
     }
 
-    public CustomNumberExpression(NumberWithUnit d) {
-        super(Type.CUSTOM_NUMBER);
-        this.terms.add(new NumberWithUnitTerm(d));
-    }
-
-    public CustomNumberExpression(List<Term> terms) {
-        super(Type.CUSTOM_NUMBER);
-        this.terms.addAll(terms);
-    }
-
-    CustomNumberExpression(CustomNumberExpression e) {
-        super(e);
-    }
-
-    public static CustomNumberExpression of(Expression e) {
-        if (e instanceof CustomNumberExpression) {
-            return (CustomNumberExpression) e;
-        } else if (e instanceof NumberWithUnitExpression || e instanceof ProjectValueExpression || e instanceof ValueLinkingExpression) {
-            return new CustomNumberExpression(e.getTerms());
-        } else {
-            throw new IllegalArgumentException();
+    public ComplexStringExpression(String s) {
+        super(Type.COMPLEX_STRING);
+        if (!s.isEmpty()) {
+            this.terms.add(new StringTerm(s));
         }
     }
 
-    public CustomNumberExpression addTerm(int index, Term t) {
-        List<Term> newTerm = new ArrayList<>(terms);
-        newTerm.add(index, t);
-        return new CustomNumberExpression(newTerm);
+    public ComplexStringExpression(List<Term> terms) {
+        super(Type.COMPLEX_STRING);
+        this.terms.addAll(terms);
     }
 
-    public CustomNumberExpression removeTerm(int index) {
-        List<Term> newTerm = new ArrayList<>(terms);
-        newTerm.remove(index);
-        return new CustomNumberExpression(newTerm);
+    ComplexStringExpression(ComplexStringExpression e) {
+        super(e);
     }
 
     @Override
     public boolean isValid() {
-        List<Term> terms = getTerms();
+        int i=0, startIndex=0, endIndex=0;
+        while (i < terms.size()) {
+            // advance to the first non string term if any
+            while ((i < terms.size()) && (terms.get(i) instanceof StringTerm)) {
+                i++;
+            }
+            if (i == terms.size()) {
+                break;
+            }
+            startIndex = i;
+
+            // advance to the next string term after the group of non string term
+            while ((i < terms.size()) && !(terms.get(i) instanceof StringTerm)) {
+                i++;
+            }
+            endIndex = i;
+
+            // check non string term between startIndex (inclusive) and endIndex (exclusive)
+            if (!isNumericTermsValid(terms.subList(startIndex, endIndex))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isNumericTermsValid(List<Term> terms) {
         if (terms.isEmpty()) {
             return false;
         }
@@ -137,9 +141,39 @@ public class CustomNumberExpression extends Expression {
         return t instanceof ValueTerm || t instanceof NumberWithUnitTerm;
     }
 
-    @Override
-    public CustomNumberExpression deepCopy() {
-        return new CustomNumberExpression(this);
+    public List<Expression> getSubExpressions() {
+        List<Expression> result = new ArrayList<>();
+
+        int i=0, startIndex=0, endIndex=0;
+        while (i < terms.size()) {
+            // advance to the first non string term if any
+            while ((i < terms.size()) && (terms.get(i) instanceof StringTerm)) {
+                result.add(new SimpleStringExpression((StringTerm) terms.get(i)));
+                i++;
+            }
+            if (i == terms.size()) {
+                break;
+            }
+            startIndex = i;
+
+            // advance to the next string term after the group of non string term
+            while ((i < terms.size()) && !(terms.get(i) instanceof StringTerm)) {
+                i++;
+            }
+            endIndex = i;
+
+            result.add(new CustomNumberExpression(terms.subList(startIndex, endIndex)));
+            if (i < terms.size()) {
+                result.add(new SimpleStringExpression((StringTerm) terms.get(endIndex)));
+                i++;
+            }
+        }
+
+        return result;
     }
 
+    @Override
+    public ComplexStringExpression deepCopy() {
+        return new ComplexStringExpression(this);
+    }
 }
