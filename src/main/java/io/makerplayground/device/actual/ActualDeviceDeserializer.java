@@ -117,6 +117,12 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                     integratedExternalLibrary.put(platform, externalLibraryList);
                 }
 
+                List<Property> integratedProperty;
+                if (deviceNode.has("property")) {
+                    integratedProperty = mapper.readValue(deviceNode.get("property").traverse(), new TypeReference<List<Property>>() {});
+                } else {
+                    integratedProperty = Collections.emptyList();
+                }
                 List<DevicePort> integratedPort = mapper.readValue(deviceNode.get("port").traverse(),
                         new TypeReference<List<DevicePort>>() {});
                 List<Peripheral> integratedConnectivity = mapper.readValue(deviceNode.get("connectivity").traverse(),
@@ -129,7 +135,7 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                         integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
 
                 integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
-                        integratedExternalLibrary, integratedPort, integratedConnectivity,
+                        integratedExternalLibrary, integratedPort, integratedConnectivity, integratedProperty,
                         integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
             }
         }

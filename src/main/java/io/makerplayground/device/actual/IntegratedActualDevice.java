@@ -31,13 +31,13 @@ public class IntegratedActualDevice extends ActualDevice {
     private ActualDevice parent;
 
     IntegratedActualDevice(String name, Map<Platform, String> classnames, Map<Platform, List<String>> externalLibraries,
-                           List<DevicePort> port, List<Peripheral> connectivity,
+                           List<DevicePort> port, List<Peripheral> connectivity, List<Property> property,
                            Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction,
                            Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition,
                            Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
         super("", "", name, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
                 , classnames, externalLibraries, null, port, connectivity
-                , supportedAction, supportedCondition, supportedValue, Collections.emptyList()
+                , supportedAction, supportedCondition, supportedValue, property
                 , Collections.emptyMap(), Collections.emptyList());
     }
 

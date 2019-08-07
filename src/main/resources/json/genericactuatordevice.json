@@ -97,6 +97,151 @@
     "value": []
   },
   {
+    "name": "RGB LED Strip",
+    "description": "Addressable RGB LED Strip e.g. WS2812, APA102",
+    "action": [
+      {
+        "name": "Set Color",
+        "funcname": "setColor",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Index",
+            "value": 1.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Red",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Green",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Blue",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Fill Color",
+        "funcname": "fillColor",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Start Index",
+            "value": 1.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "End Index",
+            "value": 1.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 10000.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          },
+          {
+            "name": "Red",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Green",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          },
+          {
+            "name": "Blue",
+            "value": 255.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 255.0,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Set Brightness",
+        "funcname": "setBrightness",
+        "type": "Active",
+        "parameter": [
+          {
+            "name": "Brightness",
+            "value": 100.0,
+            "constraint": {
+              "min": 0.0,
+              "max": 100.0,
+              "unit": "PERCENT"
+            },
+            "datatype": "DOUBLE",
+            "controltype": "SLIDER"
+          }
+        ]
+      },
+      {
+        "name": "Clear",
+        "funcname": "clear",
+        "type": "Inactive",
+        "parameter": []
+      }
+    ],
+    "condition": [],
+    "value": []
+  },
+  {
     "name": "Buzzer", 
     "description": "A kind of speaker that can control frequency of sound", 
     "action": [
