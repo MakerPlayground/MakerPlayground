@@ -16,6 +16,6 @@
 
 package io.makerplayground.generator.devicemapping;
 
-public enum PinPortConnectionResultStatus {
+public enum DeviceConnectionResultStatus {
     OK, ERROR
 }

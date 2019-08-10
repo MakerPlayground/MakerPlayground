@@ -40,11 +40,16 @@ import static io.makerplayground.util.DeserializerHelper.*;
 
 public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
+    private YAMLMapper mapper = new YAMLMapper();
     private String id;
+    private Map<String, Map<String, PinTemplate>> allPinTemplateMap;
+
+    public ActualDeviceDeserializer(Map<String, Map<String, PinTemplate>> allPinTemplateMap) {
+        this.allPinTemplateMap = allPinTemplateMap;
+    }
 
     @Override
     public ActualDevice deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
-        YAMLMapper mapper = new YAMLMapper();
         JsonNode node = mapper.readTree(jsonParser);
 
         throwIfMissingField(node, "id", "device must have id");
@@ -58,12 +63,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         throwIfMissingField(node, "url", id);
         throwIfMissingField(node, "width", id);
         throwIfMissingField(node, "height", id);
+        throwIfMissingField(node, "pin_template", id);
         throwIfFieldIsNotArray(node, "platforms", id);
+        throwIfOneOfTheseFieldsNotExist(node, List.of("connection_provide", "connection_consume"), id);
 
         createArrayNodeIfMissing(node, "cloud_provide");
-        throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume", "pin_unused"), id);
-        createArrayNodeIfMissing(node, "pin_provide", "pin_consume", "pin_not_connect", "same_pins");
-        createArrayNodeIfMissing(node, "port_provide", "port_consume");
+        createArrayNodeIfMissing(node, "connection_provide", "connection_consume");
         createArrayNodeIfMissing(node, "property");
         createArrayNodeIfMissing(node, "compatibility");
         createArrayNodeIfMissing(node, "integrated_devices");
@@ -101,40 +106,24 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         /* CloudPlatform */
         CloudPlatform cloudConsume = node.has("cloud_consume") ? CloudPlatform.valueOf(node.get("cloud_consume").asText()) : null;
 
+        String templateName = node.get("pin_template").asText();
+        if (!this.allPinTemplateMap.containsKey(templateName)) {
+            throw new IllegalStateException("There is no pin_template named " + templateName);
+        }
+        Map<String, PinTemplate> devicePinTemplate = this.allPinTemplateMap.get(templateName);
+
         /* Pin, Port, Property */
-        List<Pin> pinProvide = mapper.readValue(node.get("pin_provide").traverse(), new TypeReference<List<Pin>>() {});
-        List<Pin> pinConsume = mapper.readValue(node.get("pin_consume").traverse(), new TypeReference<List<Pin>>() {});
-        List<Pin> pinNotConnect = mapper.readValue(node.get("pin_not_connect").traverse(), new TypeReference<List<Pin>>() {});
-        List<List<String>> samePinStr = mapper.readValue(node.get("same_pins").traverse(), new TypeReference<List<List<String>>>() {});
-        List<Port> portProvide = loadPort(node.get("port_provide"), pinProvide);
-        List<Port> portConsume = loadPort(node.get("port_consume"), pinConsume);
+        List<Connection> connectionProvide = loadConnection(node.get("connection_provide"), devicePinTemplate);
+        List<Connection> connectionConsume = loadConnection(node.get("connection_consume"), devicePinTemplate);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-        List<String> allPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinNotConnect.stream())
+        List<String> allConnectionName = Stream.of(connectionProvide.stream(), connectionConsume.stream())
                 .reduce(Stream::concat)
                 .orElseGet(Stream::empty)
-                .map(Pin::getDisplayName)
+                .map(Connection::getName)
                 .collect(Collectors.toList());
-        if (allPinName.stream().anyMatch(s -> Collections.frequency(allPinName, s) > 1)) {
-            throw new IllegalStateException("There is a duplicate pin's name.");
-        }
-
-        List<String> allPortName = Stream.of(portProvide.stream(), portConsume.stream())
-                .reduce(Stream::concat)
-                .orElseGet(Stream::empty)
-                .map(Port::getName)
-                .collect(Collectors.toList());
-        if (allPortName.stream().anyMatch(s -> Collections.frequency(allPortName, s) > 1)) {
-            throw new IllegalStateException("There is a duplicate port's name.");
-        }
-
-        Map<String, List<String>> samePinMap = new HashMap<>();
-        for (List<String> samePin: samePinStr) {
-            for (String pin: samePin) {
-                List<String> samePinList = new ArrayList<>(samePin);
-                samePinList.remove(pin);
-                samePinMap.put(pin, samePinList);
-            }
+        if (allConnectionName.stream().anyMatch(s -> Collections.frequency(allConnectionName, s) > 1)) {
+            throw new IllegalStateException("There is a duplicate connection's name.");
         }
 
         /* Compatibility */
@@ -148,106 +137,66 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
             /* Extract Device Name */
             String inDeviceName = inNode.get("name").asText();
-
-            throwIfOneOfTheseFieldsNotExist(node, List.of("pin_provide", "pin_consume"), id, "integrated_device", inDeviceName);
-            createArrayNodeIfMissing(inNode, "pin_provide", "pin_consume");
-            createArrayNodeIfMissing(inNode, "port_provide", "port_consume");
             createArrayNodeIfMissing(inNode, "property");
-            createArrayNodeIfMissing(inNode, "compatibility");
 
-            /* Check for platforms library */
+            /* Check for required fields */
+            throwIfMissingField(inNode, "pin_template", id, "integrated_device", inDeviceName);
+            throwIfMissingField(inNode, "integrated_connection", id, "integrated_device", inDeviceName);
+            throwIfMissingField(inNode, "compatibility", id, "integrated_device", inDeviceName);
             throwIfMissingField(inNode, "platforms", id, "integrated_device", inDeviceName);
             throwIfFieldIsNotArray(inNode, "platforms", id, "integrated_device", inDeviceName);
 
-            /* Extract cloudPlatformSourceCodeLibrary */
-            Map<CloudPlatform, SourceCodeLibrary> inCloudPlatformSourceCodeLibrary = new HashMap<>();
-            for (JsonNode platform_node : inNode.get("cloud_provide")) {
-                CloudPlatform platform = CloudPlatform.valueOf(platform_node.get("cloud_platform").asText());
-                String className = platform_node.get("classname").asText();
-                List<String> externalLibraryList = mapper.readValue(platform_node.get("library_dependency").traverse()
-                        , new TypeReference<List<String>>() {});
-                inCloudPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(className, externalLibraryList));
+            String inTemplateName = inNode.get("pin_template").asText();
+            if (!this.allPinTemplateMap.containsKey(inTemplateName)) {
+                throw new IllegalStateException("There is no pin_template named " + templateName);
+            }
+            Map<String, PinTemplate> inDevicePinTemplate = this.allPinTemplateMap.get(templateName);
+
+            List<Connection> inConnection = new ArrayList<>();
+            for (JsonNode integratedConnectionNode: node.get("integrated_connection")) {
+                throwIfMissingField(integratedConnectionNode, "ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
+                throwIfMissingField(integratedConnectionNode, "host_ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
+                String refTo = integratedConnectionNode.get("ref_to").asText();
+                String hostRefTo = integratedConnectionNode.get("host_ref_to").asText();
+                PinTemplate template = inDevicePinTemplate.get(refTo);
+                Pin pin = new Pin(refTo, template.getCodingName(), template.getVoltageLevel(), template.getFunction(), -1, -1);
+                inConnection.add(new IntegratedConnection(template.getName(), ConnectionType.WIRE, List.of(pin), null, hostRefTo));
             }
 
-            /* CloudPlatform */
-            CloudPlatform inCloudConsume = inNode.has("cloud_consume") ? CloudPlatform.valueOf(node.get("cloud_consume").asText()) : null;
+            /* Extract platformSourceCodeLibrary */
+            Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
+            for (JsonNode platformNode : inNode.get("platforms")) {
+                Platform platform = Platform.valueOf(platformNode.get("platform").asText());
+                String classname = platformNode.get("classname").asText();
+                List<String> externalLibraryList = mapper.readValue(platformNode.get("library_dependency").traverse()
+                        , new TypeReference<List<String>>() {});
+                inPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+            }
 
-            /* Pin, Port, Property */
-            List<Pin> inPinProvide = mapper.readValue(inNode.get("pin_provide").traverse(), new TypeReference<List<IntegratedPin>>() {});
-            List<Pin> inPinConsume = mapper.readValue(inNode.get("pin_consume").traverse(), new TypeReference<List<IntegratedPin>>() {});
-            List<Port> inPortProvide = loadPort(inNode.get("port_provide"), pinProvide);
-            List<Port> inPortConsume = loadPort(inNode.get("port_consume"), pinConsume);
             List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-            List<String> allInPinName = Stream.of(pinProvide.stream(), pinConsume.stream(), pinNotConnect.stream())
-                    .reduce(Stream::concat)
-                    .orElseGet(Stream::empty)
-                    .map(Pin::getDisplayName)
-                    .collect(Collectors.toList());
-            if (allInPinName.stream().anyMatch(s -> Collections.frequency(allPinName, s) > 1)) {
-                throw new IllegalStateException("There is a duplicate pin's name.");
-            }
-
-            List<String> allInPortName = Stream.of(portProvide.stream(), portConsume.stream())
-                    .reduce(Stream::concat)
-                    .orElseGet(Stream::empty)
-                    .map(Port::getName)
-                    .collect(Collectors.toList());
-            if (allInPortName.stream().anyMatch(s -> Collections.frequency(allPortName, s) > 1)) {
-                throw new IllegalStateException("There is a duplicate port's name.");
-            }
-
-            Map<String, List<String>> inSamePinMap = new HashMap<>();
-            for (List<String> samePin: samePinStr) {
-                for (String pin: samePin) {
-                    List<String> samePinList = new ArrayList<>(samePin);
-                    samePinList.remove(pin);
-                    inSamePinMap.put(pin, samePinList);
-                }
-            }
-
             /* deallocate the created empty list and set to the shared static empty list instead */
-            if (inPinProvide.isEmpty()) { inPinProvide = Collections.emptyList(); }
-            if (inPinConsume.isEmpty()) { inPinConsume = Collections.emptyList(); }
-            if (inPortProvide.isEmpty()) { inPortProvide = Collections.emptyList(); }
-            if (inPortConsume.isEmpty()) { inPortConsume = Collections.emptyList(); }
             if (inProperty.isEmpty()) { inProperty = Collections.emptyList(); }
 
             /* Compatibility */
             Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
 
             integratedDevices.add(IntegratedActualDevice.IntegratedActualDeviceBuilder()
-                    .id(inDeviceName)
-                    .brand("")
-                    .model("")
-                    .url("")
-                    .width(0.0)
-                    .height(0.0)
-                    .platformSourceCodeLibrary(platformSourceCodeLibrary)
-                    .cloudPlatformSourceCodeLibrary(inCloudPlatformSourceCodeLibrary)
-                    .deviceType(DeviceType.MODULE)
-                    .pioBoardId("")
-                    .cloudConsume(inCloudConsume)
-                    .pinProvide(inPinProvide)
-                    .pinConsume(inPinConsume)
-                    .pinNotConnect(Collections.emptyList())
-                    .portConsume(inPortConsume)
-                    .portProvide(inPortProvide)
-                    .samePinMap(inSamePinMap)
+                    .name(inDeviceName)
+                    .integratedConnection(inConnection)
                     .property(inProperty)
                     .compatibilityMap(inCompatibilityMap)
-                    .integratedDevices(Collections.emptyList())
+                    .pinTemplate(inTemplateName)
+                    .platformSourceCodeLibrary(inPlatformSourceCodeLibrary)
                     .build()
             );
         }
 
         /* deallocate the created empty list and set to the shared static empty list instead */
-        if (pinProvide.isEmpty()) { pinProvide = Collections.emptyList(); }
-        if (pinConsume.isEmpty()) { pinConsume = Collections.emptyList(); }
-        if (pinNotConnect.isEmpty()) { pinNotConnect = Collections.emptyList(); }
-        if (portProvide.isEmpty()) { portProvide = Collections.emptyList(); }
-        if (portConsume.isEmpty()) { portConsume = Collections.emptyList(); }
+        if (connectionProvide.isEmpty()) { connectionProvide = Collections.emptyList(); }
+        if (connectionConsume.isEmpty()) { connectionConsume = Collections.emptyList(); }
         if (property.isEmpty()) { property = Collections.emptyList(); }
+        if (cloudPlatformSourceCodeLibrary.isEmpty()) { cloudPlatformSourceCodeLibrary = Collections.emptyMap(); }
         if (integratedDevices.isEmpty()) { integratedDevices = Collections.emptyList(); }
 
         ActualDevice actualDevice = ActualDevice.builder()
@@ -262,12 +211,8 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .deviceType(deviceType)
                 .pioBoardId(pioBoardId)
                 .cloudConsume(cloudConsume)
-                .pinProvide(pinProvide)
-                .pinConsume(pinConsume)
-                .pinNotConnect(pinNotConnect)
-                .portConsume(portConsume)
-                .portProvide(portProvide)
-                .samePinMap(samePinMap)
+                .connectionConsume(connectionConsume)
+                .connectionProvide(connectionProvide)
                 .property(property)
                 .compatibilityMap(compatibilityMap)
                 .integratedDevices(integratedDevices)
@@ -322,10 +267,13 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     }
 
                     /* Extract Constraint */
-                    Constraint constraint = parameterNode.has("constraint") ? mapper.treeToValue(parameterNode.get("constraint"), Constraint.class) : Constraint.NONE;
+                    Constraint constraint = parameter.get().getConstraint();
+                    if (parameterNode.has("constraint")) {
+                        constraint = constraint.intersect(mapper.treeToValue(parameterNode.get("constraint"), Constraint.class));
+                    }
 
                     /* Put parameter and constraint into Map */
-                    supportedParam.put(parameter.get(), constraint);
+                    supportedParam.put(parameter.get(), parameter.get().getConstraint().intersect(constraint));
                 }
 
                 /* Put action and param to Map */
@@ -358,11 +306,14 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     String parameterName = parameterNode.get("name").asText();
                     Optional<Parameter> parameter = condition.get().getParameter(parameterName);
                     if (parameter.isEmpty()) {
-                        throw new IllegalStateException("There is no parameter '" + parameterName + "' for action '" + conditionName + "' ");
+                        throw new IllegalStateException("There is no parameter '" + parameterName + "' for condition '" + conditionName + "' ");
                     }
 
                     /* Extract Constraint */
-                    Constraint constraint = parameterNode.has("constraint") ? mapper.treeToValue(parameterNode.get("constraint"), Constraint.class) : Constraint.NONE;
+                    Constraint constraint = parameter.get().getConstraint();
+                    if (parameterNode.has("constraint")) {
+                        constraint = constraint.intersect(mapper.treeToValue(parameterNode.get("constraint"), Constraint.class));
+                    }
 
                     /* Put parameter and constraint into Map */
                     supportedParam.put(parameter.get(), constraint);
@@ -398,28 +349,62 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         return compatibilityMap;
     }
 
-    private List<Port> loadPort(JsonNode portsNode, List<Pin> pinList) throws IOException {
-        YAMLMapper mapper = new YAMLMapper();
-        List<Port> portList = new ArrayList<>();
+    private List<Connection> loadConnection(JsonNode portsNode, Map<String, PinTemplate> pinTemplateMap) throws IOException {
+        List<Connection> connectionList = new ArrayList<>();
         for (JsonNode portNode: portsNode) {
-            throwIfMissingField(portNode, "name", id, "port");
-            throwIfMissingField(portNode, "type", id, "port");
-            throwIfMissingField(portNode, "elements", id, "port");
-            throwIfFieldIsNotArray(portNode, "elements", id, "port");
+            throwIfMissingField(portNode, "name", id, "connection");
+            throwIfMissingField(portNode, "type", id, "connection");
+            throwIfMissingField(portNode, "pins", id, "connection");
+            throwIfFieldIsNotArray(portNode, "pins", id, "connection");
 
-            String portName = portNode.get("name").asText();
+            String connectionName = portNode.get("name").asText();
+            ConnectionType connectionType = ConnectionType.valueOf(portNode.get("type").asText());
 
-            PortConnectionType portConnectionType = PortConnectionType.valueOf(portNode.get("type").asText());
-            List<Pin> portElements = new ArrayList<>();
+            List<Pin> pins = new ArrayList<>();
+            for (JsonNode pinNode: portNode.get("pins")) {
+                throwIfMissingField(pinNode, "ref_to", id, "connection","pin");
 
-            List<String> pinNames = mapper.readValue(portNode.get("elements").traverse(), new TypeReference<List<String>>() {});
-            for(Pin pin: pinList) {
-                if (pinNames.contains(pin.getDisplayName())) {
-                    portElements.add(pin);
+                String refTo = pinNode.get("ref_to").asText();
+
+                throwIfMissingField(pinNode, "x", "pin", refTo, "x");
+                throwIfMissingField(pinNode, "y", "pin", refTo, "y");
+
+                if (!pinTemplateMap.containsKey(refTo)) {
+                    throw new IllegalStateException("There is no " + refTo + " in the pin_template");
+                }
+
+                PinTemplate pinTemplate = pinTemplateMap.get(refTo);
+                double x = pinNode.get("x").asDouble();
+                double y = pinNode.get("y").asDouble();
+                VoltageLevel voltageLevel = pinNode.has("voltage_level") ? VoltageLevel.valueOf(pinNode.get("voltage_level").asText()) : pinTemplate.getVoltageLevel();
+
+                List<PinFunction> function = pinTemplate.getFunction();
+                if (pinNode.has("function")) {
+                    if (pinNode.get("function").isArray()) {
+                        function = mapper.readValue(pinNode.get("function").traverse(), new TypeReference<List<PinFunction>>() {});
+                    } else {
+                        function = List.of(PinFunction.valueOf(pinNode.get("function").asText()));
+                    }
+                }
+
+                pins.add(Pin.builder()
+                        .refTo(refTo)
+                        .codingName(pinTemplate.getCodingName())
+                        .voltageLevel(voltageLevel)
+                        .function(function)
+                        .x(x)
+                        .y(y)
+                        .build());
+            }
+
+            if (connectionType.isSplittable()) {
+                for (int i=0; i<pins.size(); i++) {
+                    connectionList.add(new Connection(connectionName+"_"+(i+1), ConnectionType.WIRE, List.of(pins.get(i)), null));
                 }
             }
-            portList.add(new Port(portName, portConnectionType, portElements, null));
+
+            connectionList.add(new Connection(connectionName, connectionType, pins, null));
         }
-        return portList;
+        return connectionList;
     }
 }

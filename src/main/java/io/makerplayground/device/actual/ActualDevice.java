@@ -16,7 +16,6 @@
 
 package io.makerplayground.device.actual;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.ProjectDevice;
 import lombok.AccessLevel;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data @Builder
-@JsonDeserialize(using = ActualDeviceDeserializer.class)
 public class ActualDevice implements Comparable<ActualDevice> {
     protected final String id;
     protected final String brand;
@@ -41,12 +39,9 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final double height;
     protected final String pioBoardId;
     protected final DeviceType deviceType;
-    @Getter(AccessLevel.NONE) protected final List<Pin> pinProvide;
-    @Getter(AccessLevel.NONE) protected final List<Pin> pinConsume;
-    @Getter(AccessLevel.NONE) protected final List<Pin> pinNotConnect;
-    @Getter(AccessLevel.NONE) protected final List<Port> portProvide;
-    @Getter(AccessLevel.NONE) protected final List<Port> portConsume;
-    protected final Map<String, List<String>> samePinMap;
+    protected final String pinTemplate;
+    @Getter(AccessLevel.NONE) protected final List<Connection> connectionProvide;
+    @Getter(AccessLevel.NONE) protected final List<Connection> connectionConsume;
     protected final List<Property> property;
     protected final CloudPlatform cloudConsume;
 
@@ -101,61 +96,31 @@ public class ActualDevice implements Comparable<ActualDevice> {
         throw new IllegalStateException("The actual device [" + String.join(", ", List.of(id, brand, model)) + "] not support for cloudplatform [" + cloudPlatform.getDisplayName() + "]");
     }
 
-    private Stream<Pin> queryPin(List<Pin> pinList, ProjectDevice projectDevice, String pinName) {
-        return pinList.stream()
-                .filter(pin -> pinName == null || pin.getDisplayName().equals(pinName))
-                .map(pin -> Pin.builder()
-                        .function(pin.getFunction())
-                        .displayName(pin.getDisplayName())
-                        .voltageLevel(pin.getVoltageLevel())
-                        .codingName(pin.getCodingName())
-                        .x(pin.getX())
-                        .y(pin.getY())
-                        .ownerProjectDevice(projectDevice)
-                        .build());
-    }
-
-    private Stream<Port> queryPort(List<Port> portList, ProjectDevice projectDevice, String portName) {
-        return portList.stream()
+    private Stream<Connection> queryConnection(List<Connection> connectionList, ProjectDevice projectDevice, String portName) {
+        return connectionList.stream()
                 .filter(port -> portName == null || port.getName().equals(portName))
-                .map(port -> Port.builder()
+                .map(port -> Connection.builder()
                         .name(port.getName())
                         .type(port.getType())
-                        .elements(port.getElements())
+                        .pins(port.getPins())
                         .ownerProjectDevice(projectDevice)
                         .build());
     }
 
-    public List<Pin> getPinProvideByOwnerDevice(ProjectDevice projectDevice) {
-        return queryPin(pinProvide, projectDevice, null).collect(Collectors.toList());
+    public List<Connection> getConnectionProvideByOwnerDevice(ProjectDevice projectDevice) {
+        return queryConnection(connectionProvide, projectDevice, null).collect(Collectors.toList());
     }
 
-    public Optional<Pin> getPinProvideByOwnerDevice(ProjectDevice projectDevice, String pinDisplayName) {
-        return queryPin(pinProvide, projectDevice, pinDisplayName).findFirst();
+    public Optional<Connection> getConnectionProvideByOwnerDevice(ProjectDevice projectDevice, String portName) {
+        return queryConnection(connectionProvide, projectDevice, portName).findFirst();
     }
 
-    public List<Pin> getPinConsumeByOwnerDevice(ProjectDevice projectDevice) {
-        return queryPin(pinConsume, projectDevice, null).collect(Collectors.toList());
+    public List<Connection> getConnectionConsumeByOwnerDevice(ProjectDevice projectDevice) {
+        return queryConnection(connectionConsume, projectDevice, null).collect(Collectors.toList());
     }
 
-    public Optional<Pin> getPinConsumeByOwnerDevice(ProjectDevice projectDevice, String pinDisplayName) {
-        return queryPin(pinConsume, projectDevice, pinDisplayName).findFirst();
-    }
-
-    public List<Port> getPortProvideByOwnerDevice(ProjectDevice projectDevice) {
-        return queryPort(portProvide, projectDevice, null).collect(Collectors.toList());
-    }
-
-    public Optional<Port> getPortProvideByOwnerDevice(ProjectDevice projectDevice, String portName) {
-        return queryPort(portProvide, projectDevice, portName).findFirst();
-    }
-
-    public List<Port> getPortConsumeByOwnerDevice(ProjectDevice projectDevice) {
-        return queryPort(portConsume, projectDevice, null).collect(Collectors.toList());
-    }
-
-    public Optional<Port> getPortConsumeByOwnerDevice(ProjectDevice projectDevice, String portName) {
-        return queryPort(portConsume, projectDevice, portName).findFirst();
+    public Optional<Connection> getConnectionConsumeByOwnerDevice(ProjectDevice projectDevice, String portName) {
+        return queryConnection(connectionConsume, projectDevice, portName).findFirst();
     }
 
     @Override

@@ -21,7 +21,7 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
-import io.makerplayground.project.PinPortConnection;
+import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
@@ -39,7 +39,7 @@ public class ConfigActualDeviceViewModel {
 
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>>> compatibleDeviceMap;
-    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<PinPortConnection>>>> devicePinPortList;
+    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<DeviceConnection>>>> devicePinPortList;
 
     private ActualDeviceComboItem selectedController;
 
@@ -57,7 +57,7 @@ public class ConfigActualDeviceViewModel {
 
     private void applyDeviceMapping() {
         compatibleDeviceMap.set(project.getProjectConfiguration().getCompatibleDevicesSelectableMap());
-        devicePinPortList.set(project.getProjectConfiguration().getCompatibleDevicePinPortConnectionMap());
+        devicePinPortList.set(project.getProjectConfiguration().getCompatibleDeviceConnectionMap());
     }
 
     public void clearDeviceConfigChangedCallback() {
@@ -136,12 +136,12 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    void setDevicePinPortConnection(ProjectDevice projectDevice, PinPortConnection connection) {
-        if (project.getProjectConfiguration().getDevicePinPortConnection(projectDevice) != connection) {
+    void setDevicePinPortConnection(ProjectDevice projectDevice, DeviceConnection connection) {
+        if (project.getProjectConfiguration().getDeviceConnection(projectDevice) != connection) {
             if (connection == null) {
-                project.getProjectConfiguration().unsetDevicePinPortConnection(projectDevice);
+                project.getProjectConfiguration().unsetDeviceConnection(projectDevice);
             } else {
-                project.getProjectConfiguration().setDevicePinPortConnection(projectDevice, connection);
+                project.getProjectConfiguration().setDeviceConnection(projectDevice, connection);
             }
             applyDeviceMapping();
             if (deviceConfigChangedCallback != null) {
@@ -213,12 +213,12 @@ public class ConfigActualDeviceViewModel {
         return project.getProjectConfiguration().getIdenticalDevice(projectDevice);
     }
 
-    public List<PinPortConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
+    public List<DeviceConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
         return devicePinPortList.get().get(projectDevice).get(actualDevice);
     }
 
-    public PinPortConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
-        return project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
+    public DeviceConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
+        return project.getProjectConfiguration().getDeviceConnection(projectDevice);
     }
 
 //    ProjectMappingResult autoAssignDevice() {

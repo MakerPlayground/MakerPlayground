@@ -23,18 +23,25 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-public enum PortConnectionType {
-    GROVE(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 2),
-    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 2),
-    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 2),
-    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 2),
-    UNO_SHIELD(Collections.emptyList(), 0);
+public enum ConnectionType {
+    WIRE(List.of(Color.YELLOW), 2, false),
+    GROVE(List.of(Color.WHITE, Color.YELLOW, Color.RED, Color.BLACK), 2, true),
+    MAKER_PLAYGROUND(List.of(Color.YELLOW, Color.WHITE, Color.RED, Color.BLACK), 2, true),
+    M5STACK(List.of(Color.WHITE, Color.YELLOW, Color.RED, Color.BLACK), 2, true),
+    INEX3(List.of(Color.RED, Color.WHITE, Color.BLACK), 2, true),
+    UNO_SHIELD(Collections.emptyList(), 0, true);
 
     private final List<Color> pinColors;
     private final double lineWidth;
+    private final boolean splittable;
 
-    PortConnectionType(List<Color> colors, double lineWeight) {
+    ConnectionType(List<Color> colors, double lineWeight, boolean splittable) {
         this.pinColors = colors;
         this.lineWidth = lineWeight;
+        this.splittable = splittable;
+    }
+
+    public boolean canConsume(ConnectionType type) {
+        return this == type;
     }
 }

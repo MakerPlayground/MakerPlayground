@@ -22,7 +22,7 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
-import io.makerplayground.project.PinPortConnection;
+import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
@@ -260,48 +260,41 @@ public class ConfigActualDeviceView extends VBox{
         };
     }
 
-    private String getPinPortConnectionString(PinPortConnection connection) {
-        String text = "";
-
-        if (!connection.getPinMapConsumerProvider().isEmpty()) {
-            text += connection.getPinMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getDisplayName()).collect(Collectors.joining("-"));
-        }
-        if (!connection.getPinMapConsumerProvider().isEmpty() && !connection.getPortMapConsumerProvider().isEmpty()) {
-            text += " / ";
-        }
-        if (!connection.getPortMapConsumerProvider().isEmpty()) {
-            text += connection.getPortMapConsumerProvider().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(e -> e.getValue().getName()).collect(Collectors.joining("-"));
-        }
-
-        return text;
+    private String getDeviceConnectionString(DeviceConnection connection) {
+        return connection.getConsumerProviderConnections()
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .map(e -> e.getValue().getName())
+                .collect(Collectors.joining("-"));
     }
 
-    private ListCell<PinPortConnection> newPinPortConnectionListCell() {
+    private ListCell<DeviceConnection> newPinPortConnectionListCell() {
         return new ListCell<>() {
             @Override
-            protected void updateItem(PinPortConnection item, boolean empty) {
+            protected void updateItem(DeviceConnection item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
                     setText(null);
                 } else {
-                    setText(item != PinPortConnection.NOT_CONNECTED ? getPinPortConnectionString(item) : null);
+                    setText(item != DeviceConnection.NOT_CONNECTED ? getDeviceConnectionString(item) : null);
                 }
             }
         };
     }
 
-    private Callback<ListView<PinPortConnection>, ListCell<PinPortConnection>> newPinPortConnectionCellFactory() {
+    private Callback<ListView<DeviceConnection>, ListCell<DeviceConnection>> newPinPortConnectionCellFactory() {
         return new Callback<>() {
             @Override
-            public ListCell<PinPortConnection> call(ListView<PinPortConnection> param) {
+            public ListCell<DeviceConnection> call(ListView<DeviceConnection> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(PinPortConnection item, boolean empty) {
+                    protected void updateItem(DeviceConnection item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText(null);
                         } else {
-                            setText(item != PinPortConnection.NOT_CONNECTED ? getPinPortConnectionString(item) : null);
+                            setText(item != DeviceConnection.NOT_CONNECTED ? getDeviceConnectionString(item) : null);
                         }
                     }
                 };
@@ -372,23 +365,17 @@ public class ConfigActualDeviceView extends VBox{
                 CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
                 if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
                     compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
-                        ComboBox<PinPortConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnections(projectDevice, actualDevice)));
+                        ComboBox<DeviceConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnections(projectDevice, actualDevice)));
                         portComboBox.setCellFactory(newPinPortConnectionCellFactory());
                         portComboBox.setButtonCell(newPinPortConnectionListCell());
-                        portComboBox.itemsProperty().get().add(0, PinPortConnection.NOT_CONNECTED);
-                        PinPortConnection connection = viewModel.getSelectedPinPortConnection(projectDevice);
-                        if (connection != PinPortConnection.NOT_CONNECTED) {
+                        portComboBox.itemsProperty().get().add(0, DeviceConnection.NOT_CONNECTED);
+                        DeviceConnection connection = viewModel.getSelectedPinPortConnection(projectDevice);
+                        if (connection != DeviceConnection.NOT_CONNECTED) {
                             portComboBox.getSelectionModel().select(connection);
                         }
                         portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevicePinPortConnection(projectDevice, newValue));
 
-                        List<Pin> pinConsume = actualDevice.getPinConsumeByOwnerDevice(null);
-                        List<Port> portConsume = actualDevice.getPortConsumeByOwnerDevice(null);
-                        String label = pinConsume.stream().sorted().map(Pin::getDisplayName).collect(Collectors.joining("-"));
-                        if (!pinConsume.isEmpty() && !portConsume.isEmpty()) {
-                            label += " / ";
-                        }
-                        label += portConsume.stream().sorted().map(Port::getName).collect(Collectors.joining("-"));
+                        String label = actualDevice.getConnectionConsumeByOwnerDevice(null).stream().sorted().map(Connection::getName).collect(Collectors.joining("-"));
 
                         Tooltip tooltip = new Tooltip(label);
                         tooltip.setShowDelay(Duration.millis(50));

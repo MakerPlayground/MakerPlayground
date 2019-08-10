@@ -16,22 +16,39 @@
 
 package io.makerplayground.device.actual;
 
+import java.util.List;
 import java.util.Set;
 
 public enum PinFunction {
-    VCC, GND, SCL, SDA, DIGITAL_IN, DIGITAL_OUT, ANALOG_IN, ANALOG_OUT, PWM_OUT, PWM_IN, INTERRUPT_LOW, INTERRUPT_HIGH, INTERRUPT_CHANGE, INTERRUPT_RISING, INTERRUPT_FALLING, HW_SERIAL_IN, HW_SERIAL_OUT, SW_SERIAL_IN, SW_SERIAL_OUT, MOSI, MISO, SCK, AREF, NO_FUNCTION;
-
-    public static final Set<PinFunction> FUNCTIONS_WITH_CODES = Set.of(DIGITAL_IN, DIGITAL_OUT, ANALOG_IN, ANALOG_OUT, PWM_OUT, INTERRUPT_LOW, HW_SERIAL_IN, HW_SERIAL_OUT, SW_SERIAL_IN, SW_SERIAL_OUT);
+    VCC, GND,
+    SCL, SDA,
+    SCL1, SDA1,
+    DIGITAL_IN, DIGITAL_OUT,
+    ANALOG_IN, ANALOG_OUT,
+    PWM_OUT, PWM_IN,
+    INTERRUPT_LOW, INTERRUPT_HIGH, INTERRUPT_CHANGE, INTERRUPT_RISING, INTERRUPT_FALLING,
+    HW_SERIAL_RX, HW_SERIAL_TX,
+    HW_SERIAL_RX1, HW_SERIAL_TX1,
+    SW_SERIAL_RX, SW_SERIAL_TX,
+    HW_OR_SW_SERIAL_RX, HW_OR_SW_SERIAL_TX,
+    MOSI, MISO, SCK,
+    MOSI1, MISO1, SCK1,
+    AREF, NO_FUNCTION;
 
     public boolean isSingleUsed() {
         switch (this) {
             case VCC:
             case GND:
-            case SCL:
-            case SDA:
             case MOSI:
+            case MOSI1:
             case MISO:
+            case MISO1:
             case SCK:
+            case SCK1:
+            case SCL:
+            case SCL1:
+            case SDA:
+            case SDA1:
             case NO_FUNCTION:
                 return false;
             case INTERRUPT_LOW:
@@ -45,49 +62,82 @@ public enum PinFunction {
             case ANALOG_OUT:
             case PWM_OUT:
             case PWM_IN:
-            case HW_SERIAL_IN:
-            case HW_SERIAL_OUT:
-            case SW_SERIAL_IN:
-            case SW_SERIAL_OUT:
+            case HW_SERIAL_RX:
+            case HW_SERIAL_TX:
+            case SW_SERIAL_RX:
+            case SW_SERIAL_TX:
             case AREF:
+            case HW_OR_SW_SERIAL_RX:
+            case HW_OR_SW_SERIAL_TX:
                 return true;
         }
         return true;
     }
 
-    public PinFunction getOpposite() {
+    public List<PinFunction> getPossibleConsume() {
         switch (this) {
-            case DIGITAL_IN:
-                return DIGITAL_OUT;
-            case DIGITAL_OUT:
-                return DIGITAL_IN;
-            case ANALOG_IN:
-                return ANALOG_OUT;
-            case ANALOG_OUT:
-                return ANALOG_IN;
-            case PWM_OUT:
-                return PWM_IN;
-            case PWM_IN:
-                return PWM_OUT;
-            case HW_SERIAL_IN:
-                return HW_SERIAL_OUT;
-            case HW_SERIAL_OUT:
-                return HW_SERIAL_IN;
-            case SW_SERIAL_IN:
-                return SW_SERIAL_OUT;
-            case SW_SERIAL_OUT:
-                return SW_SERIAL_IN;
-            case NO_FUNCTION:
-            case INTERRUPT_LOW:
-            case INTERRUPT_HIGH:
-            case INTERRUPT_CHANGE:
-            case INTERRUPT_RISING:
-            case INTERRUPT_FALLING:
             case VCC:
+                return List.of(VCC);
             case GND:
+                return List.of(GND);
             case SCL:
+                return List.of(SCL);
             case SDA:
-                return this;
+                return List.of(SDA);
+            case SCL1:
+                return List.of(SCL1);
+            case SDA1:
+                return List.of(SDA1);
+            case DIGITAL_IN:
+                return List.of(DIGITAL_OUT);
+            case DIGITAL_OUT:
+                return List.of(DIGITAL_IN);
+            case ANALOG_IN:
+                return List.of(ANALOG_OUT);
+            case ANALOG_OUT:
+                return List.of(ANALOG_IN);
+            case PWM_OUT:
+                return List.of(PWM_IN);
+            case PWM_IN:
+                return List.of(PWM_OUT);
+            case INTERRUPT_LOW:
+                return List.of(INTERRUPT_LOW);
+            case INTERRUPT_HIGH:
+                return List.of(INTERRUPT_HIGH);
+            case INTERRUPT_CHANGE:
+                return List.of(INTERRUPT_CHANGE);
+            case INTERRUPT_RISING:
+                return List.of(INTERRUPT_RISING);
+            case INTERRUPT_FALLING:
+                return List.of(INTERRUPT_FALLING);
+            case HW_SERIAL_RX:
+                return List.of(HW_SERIAL_TX);
+            case HW_SERIAL_TX:
+                return List.of(HW_SERIAL_RX);
+            case SW_SERIAL_RX:
+                return List.of(SW_SERIAL_TX);
+            case SW_SERIAL_TX:
+                return List.of(SW_SERIAL_RX);
+            case HW_OR_SW_SERIAL_RX:
+                return List.of(HW_SERIAL_TX, SW_SERIAL_TX);
+            case HW_OR_SW_SERIAL_TX:
+                return List.of(HW_SERIAL_RX, SW_SERIAL_RX);
+            case MOSI:
+                return List.of(MOSI);
+            case MISO:
+                return List.of(MISO);
+            case SCK:
+                return List.of(SCK);
+            case MOSI1:
+                return List.of(MOSI1);
+            case MISO1:
+                return List.of(MISO1);
+            case SCK1:
+                return List.of(SCK1);
+            case AREF:
+                return List.of();
+            case NO_FUNCTION:
+                return List.of(PinFunction.values());
         }
         throw new IllegalStateException("");
     }

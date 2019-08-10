@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,17 +40,15 @@ public class IntegratedActualDevice extends ActualDevice {
     }
 
     @Builder(builderMethodName = "IntegratedActualDeviceBuilder")
-    IntegratedActualDevice(String id, String brand, String model, String url, double width, double height,
-                           String pioBoardId, DeviceType deviceType, List<Pin> pinProvide, List<Pin> pinConsume,
-                           List<Pin> pinNotConnect, List<Property> property, List<Port> portProvide, List<Port> portConsume,
-                           Map<String, List<String>> samePinMap, CloudPlatform cloudConsume,
+    IntegratedActualDevice(String name,
+                           List<Property> property,
+                           String pinTemplate,
+                           List<Connection> integratedConnection,
                            Map<GenericDevice, Compatibility> compatibilityMap,
-                           Map<CloudPlatform, SourceCodeLibrary> cloudPlatformSourceCodeLibrary,
-                           Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary,
-                           List<IntegratedActualDevice> integratedDevices) {
-        super(id, brand, model, url, width, height, pioBoardId, deviceType, pinProvide, pinConsume, pinNotConnect,
-                portConsume, portProvide, samePinMap, property, cloudConsume, compatibilityMap,
-                cloudPlatformSourceCodeLibrary, platformSourceCodeLibrary, integratedDevices);
+                           Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary) {
+        super(name, "", "", "", 0.0, 0.0, "", DeviceType.MODULE, pinTemplate,
+                Collections.emptyList(), integratedConnection, property, null, compatibilityMap,
+                Collections.emptyMap(), platformSourceCodeLibrary, Collections.emptyList());
         this.parent = null;
     }
 }

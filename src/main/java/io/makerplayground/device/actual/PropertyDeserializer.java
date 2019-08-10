@@ -18,6 +18,7 @@ package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -29,15 +30,7 @@ import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.io.IOException;
 
-public class PropertyDeserializer extends StdDeserializer<Property> {
-
-    public PropertyDeserializer() {
-        this(null);
-    }
-
-    public PropertyDeserializer(Class<?> vc) {
-        super(vc);
-    }
+public class PropertyDeserializer extends JsonDeserializer<Property> {
 
     @Override
     public Property deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {

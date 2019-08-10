@@ -49,6 +49,16 @@ class ArduinoCodeGenerator {
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
+
+    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
+            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
+            PinFunction.PWM_OUT,
+            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
+            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
+    );
+
+
     private ArduinoCodeGenerator(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
@@ -157,18 +167,27 @@ class ArduinoCodeGenerator {
             List<String> args = new ArrayList<>();
 
             /* TODO: uncomment this & assign port as parameter */
-            PinPortConnection connection = project.getProjectConfiguration().getDevicePinPortConnection(projectDevice);
-            if (connection != PinPortConnection.NOT_CONNECTED) {
-                Map<Port, Port> portMap = connection.getPortMapConsumerProvider();
-                Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
-                for (Pin pinConsume: pinMap.keySet()) {
-                    Pin pinProvide = pinMap.get(pinConsume);
-                    PinFunction functionUsed = pinConsume.getFunction().get(0).getOpposite();
-                    if (PinFunction.FUNCTIONS_WITH_CODES.contains(functionUsed)) {
-                        if (!pinProvide.getCodingName().isEmpty()) {
-                            args.addAll(pinProvide.getCodingName());
-                        } else {
-                            args.add(pinProvide.getDisplayName());
+            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
+            if (connection != DeviceConnection.NOT_CONNECTED) {
+                Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+                for (Connection connectionConsume: connectionMap.keySet()) {
+                    Connection connectionProvide = connectionMap.get(connectionConsume);
+                    for (int i=0; i<connectionConsume.getPins().size(); i++) {
+                        Pin pinConsume = connectionConsume.getPins().get(i);
+                        Pin pinProvide = connectionProvide.getPins().get(i);
+                        List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
+                        for (PinFunction function: possibleFunctionConsume) {
+                            if (pinProvide.getFunction().contains(function)) {
+                                if (PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                    if (!pinProvide.getCodingName().isEmpty()) {
+                                        args.add(pinProvide.getCodingName());
+                                    }
+                                    else {
+                                        args.add(pinProvide.getRefTo());
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 }

@@ -25,6 +25,7 @@ import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfiguration> {
@@ -186,30 +187,33 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
         jsonGenerator.writeEndArray();
 
         /* devicePinPortConnections */
-        jsonGenerator.writeArrayFieldStart("devicePinPortConnection");
-        for (ProjectDevice projectDevice: configuration.getDevicePinPortConnections().keySet()) {
-            PinPortConnection pinPortConnection = configuration.getDevicePinPortConnections().get(projectDevice);
+        jsonGenerator.writeArrayFieldStart("deviceConnection");
+        for (ProjectDevice projectDevice: configuration.getDeviceConnections().keySet()) {
+            DeviceConnection deviceConnection = configuration.getDeviceConnections().get(projectDevice);
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
-            jsonGenerator.writeArrayFieldStart("pinMapConsumerProvider");
-            for (Pin consumerPin: pinPortConnection.getPinMapConsumerProvider().keySet()) {
-                Pin providerPin = pinPortConnection.getPinMapConsumerProvider().get(consumerPin);
+            jsonGenerator.writeArrayFieldStart("consumerProviderConnection");
+            for (Connection consumerConnection : deviceConnection.getConsumerProviderConnections().keySet()) {
+                Connection providerConnection = deviceConnection.getConsumerProviderConnections().get(consumerConnection);
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("pinConsumeName", consumerPin.getDisplayName());
-                jsonGenerator.writeStringField("pinConsumeOwner", consumerPin.getOwnerProjectDevice().getName());
-                jsonGenerator.writeStringField("pinProvideName", providerPin.getDisplayName());
-                jsonGenerator.writeStringField("pinProvideOwner", providerPin.getOwnerProjectDevice().getName());
+                jsonGenerator.writeStringField("consumeConnectionName", consumerConnection.getName());
+                jsonGenerator.writeStringField("consumeConnectionOwner", consumerConnection.getOwnerProjectDevice().getName());
+                jsonGenerator.writeStringField("provideConnectionName", providerConnection.getName());
+                jsonGenerator.writeStringField("provideConnectionOwner", providerConnection.getOwnerProjectDevice().getName());
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
-            jsonGenerator.writeArrayFieldStart("portMapConsumerProvider");
-            for (Port consumerPort: pinPortConnection.getPortMapConsumerProvider().keySet()) {
-                Port providerPort = pinPortConnection.getPortMapConsumerProvider().get(consumerPort);
+            jsonGenerator.writeArrayFieldStart("providerFunction");
+            for (Connection providerConnection : deviceConnection.getProviderFunction().keySet()) {
+                List<PinFunction> pinFunctions = deviceConnection.getProviderFunction().get(providerConnection);
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("portConsumeName", consumerPort.getName());
-                jsonGenerator.writeStringField("portConsumeOwner", consumerPort.getOwnerProjectDevice().getName());
-                jsonGenerator.writeStringField("portProvideName", providerPort.getName());
-                jsonGenerator.writeStringField("portProvideOwner", providerPort.getOwnerProjectDevice().getName());
+                jsonGenerator.writeStringField("provideConnectionName", providerConnection.getName());
+                jsonGenerator.writeStringField("provideConnectionOwner", providerConnection.getOwnerProjectDevice().getName());
+                jsonGenerator.writeArrayFieldStart("pinFunctions");
+                for (PinFunction function: pinFunctions) {
+                    jsonGenerator.writeObject(function);
+                }
+                jsonGenerator.writeEndArray();
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();

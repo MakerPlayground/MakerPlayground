@@ -79,6 +79,10 @@ public class CategoricalConstraint implements Constraint {
 
     @Override
     public Constraint intersect(Constraint constraint) {
+        if (constraint == Constraint.NONE) {
+            return Constraint.NONE;
+        }
+
         if (!(constraint instanceof CategoricalConstraint))
             throw new ClassCastException();
 

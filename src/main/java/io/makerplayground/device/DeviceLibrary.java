@@ -19,14 +19,16 @@ package io.makerplayground.device;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DeviceType;
-import io.makerplayground.device.actual.Platform;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,10 +36,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,13 +67,41 @@ public enum DeviceLibrary {
         this.allGenericDevice.addAll(genericUtilityDevice);
         this.allGenericDevice.addAll(genericCloudDevice);
         this.allGenericDevice.addAll(genericInterfaceDevice);
-        this.allGenericDevice.forEach(genericDevice -> {
-            System.out.println(genericDevice.getName());
-            genericDevice.getAction().forEach(System.out::println);
-            genericDevice.getCondition().forEach(System.out::println);
-            genericDevice.getValue().forEach(System.out::println);
-        });
-        this.actualDevice = loadActualDeviceList();
+        Map<String, Map<String, PinTemplate>> pinTemplate = loadPinTemplateList();
+        this.actualDevice = loadActualDeviceList(pinTemplate);
+    }
+
+    private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
+        YAMLMapper mapper = new YAMLMapper();
+        Optional<String> libraryPath = getLibraryPath();
+        Map<String, Map<String, PinTemplate>> pinTemplateMap = new HashMap<>();
+        if (libraryPath.isPresent()) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "pin_templates"))) {
+                for (Path pinTemplatePath : directoryStream) {
+                    if (Files.exists(pinTemplatePath)) {
+                        try {
+                            JsonNode rootNode = mapper.readValue(pinTemplatePath.toFile(), JsonNode.class);
+                            String filename = FilenameUtils.removeExtension(pinTemplatePath.getFileName().toString());
+                            if (!rootNode.has("pins") && !rootNode.get("pins").isArray()) {
+                                throw new IllegalStateException("pin template file must has 'pins' and it must be an array");
+                            }
+                            pinTemplateMap.put(filename, new HashMap<>());
+                            List<PinTemplate> pinTemplateList = mapper.readValue(rootNode.get("pins").traverse(), new TypeReference<List<PinTemplate>>() {});
+                            pinTemplateList.forEach(pinTemplate -> pinTemplateMap.get(filename).put(pinTemplate.getName(), pinTemplate));
+                        } catch (JsonParseException e) {
+                            System.err.println("Found some errors when reading pin_template at " + pinTemplatePath.toAbsolutePath());
+                        } catch (NullPointerException e) {
+                            System.err.println("Found some errors when reading pin_template at " + pinTemplatePath.toAbsolutePath());
+                            throw new IllegalStateException(e);
+                        }
+                    }
+                }
+                return Collections.unmodifiableMap(pinTemplateMap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Collections.emptyMap();
     }
 
     private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName, GenericDeviceType type){
@@ -100,12 +127,15 @@ public enum DeviceLibrary {
         return libraryPaths.stream().filter(s -> new File(s).exists()).findFirst();
     }
 
-    private List<ActualDevice> loadActualDeviceList(){
+    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate){
         List<ActualDevice> temp = new ArrayList<>();
         YAMLMapper mapper = new YAMLMapper();
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(ActualDevice.class, new ActualDeviceDeserializer(pinTemplate));
+        mapper.registerModule(simpleModule);
         Optional<String> libraryPath = getLibraryPath();
         if (libraryPath.isPresent()) {
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices2"))) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices"))) {
                 for (Path deviceDirectory : directoryStream) {
                     Path deviceDefinitionPath = deviceDirectory.resolve("device.yaml");
                     if (Files.exists(deviceDefinitionPath)) {

@@ -14,30 +14,17 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.actual;
+package io.makerplayground.generator.devicemapping;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.project.ProjectDevice;
-import lombok.Builder;
+import io.makerplayground.project.DeviceConnection;
 import lombok.Data;
 
-import java.util.Comparator;
 import java.util.List;
 
-@Data @Builder
-public class Port implements Comparable<Port> {
+@Data
+public class DeviceConnectionResult {
+    private final DeviceConnectionResultStatus status;
+    private final List<DeviceConnection> connections;
 
-    @JsonIgnore
-    private static final Comparator<Port> comparator = Comparator.comparing(Port::getName).thenComparing(Port::getType);
-
-    private final String name;
-    private final PortConnectionType type;
-    private final List<Pin> elements;
-
-    private final ProjectDevice ownerProjectDevice;
-
-    @Override
-    public int compareTo(Port o) {
-        return comparator.compare(this, o);
-    }
+    public static DeviceConnectionResult ERROR = new DeviceConnectionResult(DeviceConnectionResultStatus.ERROR, null);
 }

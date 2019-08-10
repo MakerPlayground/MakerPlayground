@@ -22,15 +22,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
-import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
-import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.util.*;
@@ -144,52 +141,49 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
         }
 
         /* devicePinPortConnections */
-        SortedMap<ProjectDevice, PinPortConnection> devicePinPortConnectionMap = new TreeMap<>();
-        for (JsonNode devicePinPortConnectionNode: node.get("devicePinPortConnection")) {
-            String projectDeviceName = devicePinPortConnectionNode.get("projectDevice").asText();
+        SortedMap<ProjectDevice, DeviceConnection> deviceConnectionMap = new TreeMap<>();
+        for (JsonNode deviceConnectionNode: node.get("deviceConnection")) {
+            String projectDeviceName = deviceConnectionNode.get("projectDevice").asText();
             ProjectDevice projectDevice = searchProjectDevice(projectDeviceName);
 
-            SortedMap<Pin, Pin> pinMapConsumerProvider = new TreeMap<>();
-            for (JsonNode pinMapConsumerProviderNode: devicePinPortConnectionNode.get("pinMapConsumerProvider")) {
-                String consumerProjectDeviceName = pinMapConsumerProviderNode.get("pinConsumeOwner").asText();
-                String consumerPinName = pinMapConsumerProviderNode.get("pinConsumeName").asText();
+            SortedMap<Connection, Connection> consumerProviderConnection = new TreeMap<>();
+            for (JsonNode connectionConsumerProviderNode: deviceConnectionNode.get("consumerProviderConnection")) {
+                String consumerProjectDeviceName = connectionConsumerProviderNode.get("consumeConnectionOwner").asText();
+                String consumePortName = connectionConsumerProviderNode.get("consumeConnectionName").asText();
                 ProjectDevice consumerProjectDevice = searchProjectDevice(consumerProjectDeviceName);
                 ActualDevice consumerActualDevice = deviceMap.get(consumerProjectDevice);
-                Optional<Pin> pinConsume = consumerActualDevice.getPinConsumeByOwnerDevice(consumerProjectDevice, consumerPinName);
+                Optional<Connection> connectionConsume = consumerActualDevice.getConnectionConsumeByOwnerDevice(consumerProjectDevice, consumePortName);
 
-                String providerProjectDeviceName = pinMapConsumerProviderNode.get("pinProvideOwner").asText();
-                String providerPinName = pinMapConsumerProviderNode.get("pinProvideName").asText();
+                String providerProjectDeviceName = connectionConsumerProviderNode.get("provideConnectionOwner").asText();
+                String providerPinName = connectionConsumerProviderNode.get("provideConnectionName").asText();
                 ProjectDevice providerProjectDevice = searchProjectDevice(providerProjectDeviceName);
                 ActualDevice providerActualDevice = deviceMap.get(providerProjectDevice);
-                Optional<Pin> pinProvide = providerActualDevice.getPinProvideByOwnerDevice(providerProjectDevice, providerPinName);
+                Optional<Connection> connectionProvide = providerActualDevice.getConnectionProvideByOwnerDevice(providerProjectDevice, providerPinName);
 
-                if (pinConsume.isEmpty() || pinProvide.isEmpty()) {
-                    throw new IllegalStateException("The required pin is not in the project");
+                if (connectionConsume.isEmpty() || connectionProvide.isEmpty()) {
+                    throw new IllegalStateException("The required connection is not in the project");
                 }
-                pinMapConsumerProvider.put(pinConsume.get(), pinProvide.get());
+                consumerProviderConnection.put(connectionConsume.get(), connectionProvide.get());
             }
 
-            SortedMap<Port, Port> portMapConsumerProvider = new TreeMap<>();
-            for (JsonNode portMapConsumerProviderNode: devicePinPortConnectionNode.get("portMapConsumerProvider")) {
-                String consumerProjectDeviceName = portMapConsumerProviderNode.get("portConsumeOwner").asText();
-                String consumePortName = portMapConsumerProviderNode.get("portConsumerName").asText();
-                ProjectDevice consumerProjectDevice = searchProjectDevice(consumerProjectDeviceName);
-                ActualDevice consumerActualDevice = deviceMap.get(consumerProjectDevice);
-                Optional<Port> portConsume = consumerActualDevice.getPortConsumeByOwnerDevice(consumerProjectDevice, consumePortName);
+            SortedMap<Connection, List<PinFunction>> providerFunction = new TreeMap<>();
+            for (JsonNode providerFunctionNode : deviceConnectionNode.get("providerFunction")) {
+                List<PinFunction> pinFunctions = new ArrayList<>();
 
-                String providerProjectDeviceName = portMapConsumerProviderNode.get("portProvideOwner").asText();
-                String providerPinName = portMapConsumerProviderNode.get("portProvideName").asText();
+                String providerProjectDeviceName = providerFunctionNode.get("provideConnectionOwner").asText();
+                String providerPinName = providerFunctionNode.get("provideConnectionName").asText();
                 ProjectDevice providerProjectDevice = searchProjectDevice(providerProjectDeviceName);
                 ActualDevice providerActualDevice = deviceMap.get(providerProjectDevice);
-                Optional<Port> portProvide = providerActualDevice.getPortProvideByOwnerDevice(providerProjectDevice, providerPinName);
-
-                if (portConsume.isEmpty() || portProvide.isEmpty()) {
-                    throw new IllegalStateException("The required pin is not in the project");
+                Optional<Connection> connectionProvide = providerActualDevice.getConnectionProvideByOwnerDevice(providerProjectDevice, providerPinName);
+                if (connectionProvide.isEmpty()) {
+                    throw new IllegalStateException("The required connection is not in the project");
                 }
-                portMapConsumerProvider.put(portConsume.get(), portConsume.get());
+                for (JsonNode pinFunctionNode : providerFunctionNode.get("pinFunctions")) {
+                    pinFunctions.add(PinFunction.valueOf(pinFunctionNode.asText()));
+                }
+                providerFunction.put(connectionProvide.get(), pinFunctions);
             }
-
-            devicePinPortConnectionMap.put(projectDevice, new PinPortConnection(pinMapConsumerProvider, portMapConsumerProvider));
+            deviceConnectionMap.put(projectDevice, new DeviceConnection(consumerProviderConnection, providerFunction));
         }
 
         SortedMap<CloudPlatform, Map<String, String>> cloudParameterMap = new TreeMap<>();
@@ -220,9 +214,9 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
             configuration.setIdenticalDevice(projectDevice, identicalDevice);
         }
 
-        for (ProjectDevice projectDevice: devicePinPortConnectionMap.keySet()) {
-            PinPortConnection connection = devicePinPortConnectionMap.get(projectDevice);
-            configuration.setDevicePinPortConnection(projectDevice, connection);
+        for (ProjectDevice projectDevice: deviceConnectionMap.keySet()) {
+            DeviceConnection connection = deviceConnectionMap.get(projectDevice);
+            configuration.setDeviceConnection(projectDevice, connection);
         }
 
         for (ProjectDevice projectDevice: devicePropertyValueMap.keySet()) {

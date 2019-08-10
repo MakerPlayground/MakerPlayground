@@ -17,9 +17,8 @@
 package io.makerplayground.ui.dialog.generate;
 
 import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.Pin;
-import io.makerplayground.device.actual.Port;
-import io.makerplayground.project.PinPortConnection;
+import io.makerplayground.device.actual.Connection;
+import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -44,7 +43,7 @@ public class GenerateViewModel {
 
         if (!code.hasError()) {
             ProjectConfiguration configuration = project.getProjectConfiguration();
-            var connections = configuration.getUnmodifiableDevicePinPortConnections();
+            var connections = configuration.getUnmodifiableDeviceConnections();
             var deviceMap = configuration.getUnmodifiableDeviceMap();
             for (ProjectDevice device : deviceMap.keySet()) {
                 ActualDevice actualDevice = deviceMap.get(device);
@@ -63,26 +62,16 @@ public class GenerateViewModel {
     }
     private static final String NEW_LINE = "\n";
 
-    private String generateDescription(PinPortConnection connection) {
+    private String generateDescription(DeviceConnection connection) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        Map<Pin, Pin> pinMap = connection.getPinMapConsumerProvider();
-        Map<Port, Port> portMap = connection.getPortMapConsumerProvider();
-        for(Pin consumerPin : pinMap.keySet()) {
-            Pin providerPin = pinMap.get(consumerPin);
+        Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+        for(Connection consumerConnection : connectionMap.keySet()) {
+            Connection providerConnection = connectionMap.get(consumerConnection);
             stringBuilder.append("(");
-            stringBuilder.append(consumerPin.getOwnerProjectDevice().getName()).append("'s ").append(consumerPin.getDisplayName());
+            stringBuilder.append(consumerConnection.getOwnerProjectDevice().getName()).append("'s ").append(consumerConnection.getName());
             stringBuilder.append(" -> ");
-            stringBuilder.append(providerPin.getOwnerProjectDevice().getName()).append("'s ").append(providerPin.getDisplayName());
-            stringBuilder.append(")");
-            stringBuilder.append(NEW_LINE);
-        }
-        for(Port consumerPort : portMap.keySet()) {
-            Port providerPort = portMap.get(consumerPort);
-            stringBuilder.append("(");
-            stringBuilder.append(consumerPort.getOwnerProjectDevice().getName()).append("'s ").append(consumerPort.getName());
-            stringBuilder.append(" -> ");
-            stringBuilder.append(providerPort.getOwnerProjectDevice().getName()).append("'s ").append(providerPort.getName());
+            stringBuilder.append(providerConnection.getOwnerProjectDevice().getName()).append("'s ").append(providerConnection.getName());
             stringBuilder.append(")");
             stringBuilder.append(NEW_LINE);
         }
