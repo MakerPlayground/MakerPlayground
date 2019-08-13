@@ -99,7 +99,6 @@
       {
         "name": "Set Color",
         "funcname": "setColor",
-        "type": "Active",
         "parameter": [
           {
             "name": "Index",
@@ -150,7 +149,6 @@
       {
         "name": "Fill Color",
         "funcname": "fillColor",
-        "type": "Active",
         "parameter": [
           {
             "name": "Start Index",
@@ -212,7 +210,6 @@
       {
         "name": "Set Brightness",
         "funcname": "setBrightness",
-        "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
@@ -230,7 +227,6 @@
       {
         "name": "Clear",
         "funcname": "clear",
-        "type": "Inactive",
         "parameter": []
       }
     ],

@@ -84,6 +84,7 @@ public abstract class Expression {
             case INTEGER:
                 return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case STRING:
+                return new ComplexStringExpression((String) param.getDefaultValue());
             case ENUM:
                 return new SimpleStringExpression((String) param.getDefaultValue());
             case DATETIME:
