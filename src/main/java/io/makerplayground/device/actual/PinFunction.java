@@ -33,7 +33,8 @@ public enum PinFunction {
     HW_OR_SW_SERIAL_RX, HW_OR_SW_SERIAL_TX,
     MOSI, MISO, SCK,
     MOSI1, MISO1, SCK1,
-    AREF, NO_FUNCTION;
+    AREF, NO_FUNCTION,
+    SCI1, SCI2, SCI3, SCI4, SCI5, SCI6, SCI7, SCI8, SCI9, SCI10, SCI11, SCI12, SCI13, SCI14, SCI15;
 
     public boolean isSingleUsed() {
         switch (this) {

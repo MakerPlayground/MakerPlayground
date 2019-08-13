@@ -16,11 +16,10 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
@@ -39,7 +38,7 @@ public class ConfigActualDeviceViewModel {
 
     private final Project project;
     private final ObjectProperty<Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>>> compatibleDeviceMap;
-    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<DeviceConnection>>>> devicePinPortList;
+    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, List<DeviceConnection>>>> deviceConnectionList;
 
     private ActualDeviceComboItem selectedController;
 
@@ -51,13 +50,13 @@ public class ConfigActualDeviceViewModel {
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
         this.compatibleDeviceMap = new SimpleObjectProperty<>();
-        this.devicePinPortList = new SimpleObjectProperty<>();
+        this.deviceConnectionList = new SimpleObjectProperty<>();
         applyDeviceMapping();
     }
 
     private void applyDeviceMapping() {
         compatibleDeviceMap.set(project.getProjectConfiguration().getCompatibleDevicesSelectableMap());
-        devicePinPortList.set(project.getProjectConfiguration().getCompatibleDeviceConnectionMap());
+        deviceConnectionList.set(project.getProjectConfiguration().getCompatibleDeviceConnectionMap());
     }
 
     public void clearDeviceConfigChangedCallback() {
@@ -153,7 +152,7 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    Object getPropertyValue(ProjectDevice projectDevice, Property p) {
+    Optional<Object> getPropertyValue(ProjectDevice projectDevice, Property p) {
         return project.getProjectConfiguration().getPropertyValue(projectDevice, p);
     }
 
@@ -188,9 +187,11 @@ public class ConfigActualDeviceViewModel {
     }
 
     public List<ActualDeviceComboItem> getControllerComboItemList(Platform platform) {
-        return project.getProjectConfiguration().getControllerSelectableMap().entrySet().stream()
-                .filter(entry -> entry.getKey().getPlatformSourceCodeLibrary().containsKey(platform))
-                .map(entry -> new ActualDeviceComboItem(entry.getKey(), entry.getValue()))
+        return DeviceLibrary.INSTANCE
+                .getActualDevice(platform)
+                .stream()
+                .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
+                .map(actualDevice -> new ActualDeviceComboItem(actualDevice, DeviceMappingResult.OK))
                 .collect(Collectors.toList());
     }
 
@@ -213,23 +214,23 @@ public class ConfigActualDeviceViewModel {
         return project.getProjectConfiguration().getIdenticalDevice(projectDevice);
     }
 
-    public List<DeviceConnection> getPossiblePinPortConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
-        return devicePinPortList.get().get(projectDevice).get(actualDevice);
+    public List<DeviceConnection> getPossibleDeviceConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
+        return deviceConnectionList.get().get(projectDevice).get(actualDevice);
     }
 
     public DeviceConnection getSelectedPinPortConnection(ProjectDevice projectDevice) {
         return project.getProjectConfiguration().getDeviceConnection(projectDevice);
     }
 
-//    ProjectMappingResult autoAssignDevice() {
-//        ProjectMappingResult result = ProjectLogic.autoAssignDevices(project);
-//        applyDeviceMapping();
-//        if (deviceConfigChangedCallback != null) {
-//            deviceConfigChangedCallback.run();
-//        }
-//        if (configChangedCallback != null) {
-//            configChangedCallback.run();
-//        }
-//        return result;
-//    }
+    ProjectMappingResult autoAssignDevice() {
+        ProjectMappingResult result = project.getProjectConfiguration().autoAssignDevices();
+        applyDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+        return result;
+    }
 }

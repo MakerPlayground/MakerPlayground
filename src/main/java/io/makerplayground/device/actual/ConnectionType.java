@@ -29,7 +29,8 @@ public enum ConnectionType {
     MAKER_PLAYGROUND(List.of(Color.YELLOW, Color.WHITE, Color.RED, Color.BLACK), 2, true),
     M5STACK(List.of(Color.WHITE, Color.YELLOW, Color.RED, Color.BLACK), 2, true),
     INEX3(List.of(Color.RED, Color.WHITE, Color.BLACK), 2, true),
-    UNO_SHIELD(Collections.emptyList(), 0, true);
+    UNO_SHIELD(Collections.emptyList(), 0, true),
+    CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5, false);
 
     private final List<Color> pinColors;
     private final double lineWidth;

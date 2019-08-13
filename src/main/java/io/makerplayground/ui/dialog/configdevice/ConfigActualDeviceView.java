@@ -22,11 +22,13 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
+import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.collections.FXCollections;
@@ -97,11 +99,11 @@ public class ConfigActualDeviceView extends VBox{
 
         autoButton.setOnAction(event -> {
             /* TODO: uncomment this */
-//            ProjectMappingResult result = viewModel.autoAssignDevice();
-//            if (result != ProjectMappingResult.OK) {
-//                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
-//                warningDialogView.showAndWait();
-//            }
+            ProjectMappingResult result = viewModel.autoAssignDevice();
+            if (result != ProjectMappingResult.OK) {
+                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
+                warningDialogView.showAndWait();
+            }
         });
     }
 
@@ -356,16 +358,14 @@ public class ConfigActualDeviceView extends VBox{
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
-            FlowPane portPane = new FlowPane();
-            portPane.setHgap(5.0);
-            portPane.setVgap(5.0);
-            portPane.setAlignment(Pos.CENTER_LEFT);
-
             if (deviceComboBox.getSelectionModel().getSelectedItem() != null) {
                 CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
                 if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
                     compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
-                        ComboBox<DeviceConnection> portComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getPossiblePinPortConnections(projectDevice, actualDevice)));
+                        if (actualDevice.getDeviceType() == DeviceType.VIRTUAL) {
+                            return;
+                        }
+                        ComboBox<DeviceConnection> portComboBox = new ComboBox<>(FXCollections.observableList(new ArrayList<>(viewModel.getPossibleDeviceConnections(projectDevice, actualDevice))));
                         portComboBox.setCellFactory(newPinPortConnectionCellFactory());
                         portComboBox.setButtonCell(newPinPortConnectionListCell());
                         portComboBox.itemsProperty().get().add(0, DeviceConnection.NOT_CONNECTED);
@@ -486,7 +486,11 @@ public class ConfigActualDeviceView extends VBox{
                         GridPane.setColumnIndex(propertyLabel, 0);
                         propertyGridPane.getChildren().add(propertyLabel);
 
-                        Object currentValue = viewModel.getPropertyValue(projectDevice, p);
+                        Optional<Object> propertyValue = viewModel.getPropertyValue(projectDevice, p);
+                        if (propertyValue.isEmpty()) {
+                            continue;
+                        }
+                        Object currentValue = propertyValue.get();
                         if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
                             TextField textField = new TextField((String) currentValue);
                             textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));

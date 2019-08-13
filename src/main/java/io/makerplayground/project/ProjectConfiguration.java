@@ -25,10 +25,7 @@ import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.Constraint;
-import io.makerplayground.generator.devicemapping.DeviceMappingResult;
-import io.makerplayground.generator.devicemapping.DeviceConnectionLogic;
-import io.makerplayground.generator.devicemapping.DeviceConnectionResult;
-import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
+import io.makerplayground.generator.devicemapping.*;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,7 +52,6 @@ public final class ProjectConfiguration {
     @JsonIgnore private List<CloudPlatform> remainingCloudPlatform = new ArrayList<>();
 
     /* output variables: compatible devices and pin/port connections */
-    @JsonIgnore @Getter private SortedMap<ActualDevice, DeviceMappingResult> controllerSelectableMap;
     @JsonIgnore @Getter private Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> compatibleDevicesSelectableMap;
     @JsonIgnore @Getter private Map<ProjectDevice, Map<ActualDevice, List<DeviceConnection>>> compatibleDeviceConnectionMap;
 
@@ -87,12 +83,6 @@ public final class ProjectConfiguration {
         this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
         this.unmodifiableDeviceConnections = Collections.unmodifiableSortedMap(deviceConnections);
         this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudParameterMap);
-
-        this.controllerSelectableMap = DeviceLibrary.INSTANCE
-                .getActualDevice(getPlatform())
-                .stream()
-                .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
-                .collect(Collectors.toMap(o -> o, o -> DeviceMappingResult.OK, (o1, o2)-> { throw new IllegalStateException(""); }, TreeMap::new));
     }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
@@ -527,5 +517,76 @@ public final class ProjectConfiguration {
             cloudParameterMap.put(cloudPlatform, new HashMap<>());
         }
         this.cloudParameterMap.get(cloudPlatform).put(parameterName, value);
+    }
+
+    public ProjectMappingResult autoAssignDevices() {
+        if (getController() == null) {
+            return ProjectMappingResult.NO_MCU_SELECTED;
+        }
+
+        List<ProjectDevice> unassignedDevices = new ArrayList<>(usedDevices);
+        unassignedDevices.remove(CONTROLLER);
+        unassignedDevices.removeAll(identicalDeviceMap.keySet());
+        deviceConnections.forEach((projectDevice, deviceConnection) -> {
+            if (deviceConnection != DeviceConnection.NOT_CONNECTED) {
+                unassignedDevices.remove(projectDevice);
+            }
+        });
+        while (!unassignedDevices.isEmpty()) {
+            // assign the identical device if possible.
+            Map<ProjectDevice, List<ProjectDevice>> identicalDeviceMap = compatibleDevicesSelectableMap.entrySet().stream()
+                    .filter(entry -> unassignedDevices.contains(entry.getKey()))    // unassigned device only
+                    .collect(Collectors.toMap(Map.Entry::getKey,
+                            entry -> entry.getValue().keySet().stream()
+                                    .filter(compatibleDevice -> compatibleDevice.getProjectDevice().isPresent())
+                                    .map(compatibleDevice -> compatibleDevice.getProjectDevice().get())
+                                    .collect(Collectors.toList())));
+            identicalDeviceMap.forEach((projectDevice, projectDevices) -> {
+                if (!projectDevices.isEmpty()) {
+                    setIdenticalDevice(projectDevice, projectDevices.get(0));
+                    unassignedDevices.remove(projectDevice);
+                }
+            });
+
+            // assign the connection to the selected actual device.
+            List<ProjectDevice> tempMap = new ArrayList<>(unassignedDevices);
+            for (ProjectDevice projectDevice: tempMap) {
+                if (deviceMap.containsKey(projectDevice) && deviceMap.get(projectDevice) != null && (!deviceConnections.containsKey(projectDevice) || deviceConnections.get(projectDevice) == DeviceConnection.NOT_CONNECTED)) {
+                    if (!compatibleDevicesSelectableMap.containsKey(projectDevice)) {
+                        throw new IllegalStateException("Cannot have project device that is not in the compatibility map");
+                    }
+                    Map<ActualDevice, List<DeviceConnection>> actualDeviceListMap = compatibleDeviceConnectionMap.get(projectDevice);
+                    if (!actualDeviceListMap.containsKey(deviceMap.get(projectDevice))) {
+                        throw new IllegalStateException("Cannot have selected actual device tha is not in the compatibility map");
+                    }
+                    List<DeviceConnection> deviceConnections = actualDeviceListMap.get(deviceMap.get(projectDevice));
+                    if (deviceConnections.isEmpty()) {
+                        return ProjectMappingResult.CANT_ASSIGN_PORT;
+                    }
+                    setDeviceConnection(projectDevice, deviceConnections.get(0));
+                    unassignedDevices.remove(projectDevice);
+                }
+            }
+
+            // get the unassigned device that has minimum remaining value.
+            Optional<ProjectDevice> mrvProjectDevice = unassignedDevices.stream().min((projectDevice1, projectDevice2) -> {
+                SortedMap<CompatibleDevice, DeviceMappingResult> possibleChoice1 = compatibleDevicesSelectableMap.get(projectDevice1);
+                int possibleChoiceCount = 0;
+                for (CompatibleDevice compatibleDevice: possibleChoice1.keySet()) {
+                    if (possibleChoice1.get(compatibleDevice) == DeviceMappingResult.OK && compatibleDevice.getActualDevice().isPresent()) {
+                        possibleChoiceCount += 1;
+                    }
+                }
+                SortedMap<CompatibleDevice, DeviceMappingResult> possibleChoice2 = compatibleDevicesSelectableMap.get(projectDevice2);
+                for (CompatibleDevice compatibleDevice: possibleChoice2.keySet()) {
+                    if (possibleChoice1.get(compatibleDevice) == DeviceMappingResult.OK && compatibleDevice.getActualDevice().isPresent()) {
+                        possibleChoiceCount -= 1;
+                    }
+                }
+                return possibleChoiceCount;
+            });
+            mrvProjectDevice.ifPresent(projectDevice -> setActualDevice(projectDevice, compatibleDevicesSelectableMap.get(projectDevice).firstKey().getActualDevice().orElseThrow()));
+        }
+        return ProjectMappingResult.OK;
     }
 }
