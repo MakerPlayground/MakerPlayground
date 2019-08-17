@@ -177,11 +177,17 @@ public class Project {
         device.add(projectDevice);
     }
 
-    public void removeDevice(ProjectDevice genericDevice) {
-        scene.forEach(s->s.removeDevice(genericDevice));
-        condition.forEach(c->c.removeDevice(genericDevice));
-        if (!device.remove(genericDevice)) {
+    public void removeDevice(ProjectDevice pd) {
+        scene.forEach(s->s.removeDevice(pd));
+        condition.forEach(c->c.removeDevice(pd));
+        if (!device.remove(pd)) {
             throw new IllegalStateException("");
+        }
+        // update other devices that share the actual device with the removed device
+        for (ProjectDevice projectDevice : device) {
+            if (projectDevice.getParentDevice() == pd) {
+                projectDevice.setParentDevice(null);
+            }
         }
     }
 
