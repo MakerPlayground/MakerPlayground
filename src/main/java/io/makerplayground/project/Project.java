@@ -171,10 +171,11 @@ public class Project {
         device.add(projectDevice);
     }
 
-    public void addDevice(GenericDevice genericDevice) {
+    public ProjectDevice addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
-        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
+        ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice, this);
         device.add(projectDevice);
+        return projectDevice;
     }
 
     public void removeDevice(ProjectDevice pd) {
@@ -591,15 +592,6 @@ public class Project {
             }
         }
         return Optional.empty();
-    }
-
-    public boolean isNameDuplicate(String newName) {
-        for (ProjectDevice projectDevice : this.getDevice()) {
-            if (projectDevice.getName().equals(newName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Map<List<Line>, DiagramError> diagramError = Collections.emptyMap();

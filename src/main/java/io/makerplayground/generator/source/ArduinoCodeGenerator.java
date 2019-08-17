@@ -745,11 +745,11 @@ class ArduinoCodeGenerator {
         return "_" + cloudPlatform.getLibName().replace(" ", "_");
     }
 
-    private static String parseDeviceVariableName(ProjectDevice projectDevice) {
+    public static String parseDeviceVariableName(ProjectDevice projectDevice) {
         if (projectDevice.isActualDeviceSelected()) {
-            return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
+            return "_" + projectDevice.getName();
         } else if (projectDevice.isMergeToOtherDevice()) {
-            return "_" + projectDevice.getParentDevice().getName().replace(" ", "_").replace(".", "_");
+            return "_" + projectDevice.getParentDevice().getName();
         } else {
             throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
         }

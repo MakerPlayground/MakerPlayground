@@ -123,11 +123,8 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.setText(projectDevice.getName());
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    // Do not allow device's name to be duplicated or empty
-                    if (nameTextField.getText().isEmpty() || project.isNameDuplicate(nameTextField.getText())) {
+                    if (!projectDevice.setName(nameTextField.getText())) {
                         nameTextField.setText(projectDevice.getName());
-                    } else { // write change to model
-                        projectDevice.setName(nameTextField.getText());
                     }
                 }
             });

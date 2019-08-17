@@ -90,7 +90,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
 
         ObservableList<ProjectDevice> deviceList = FXCollections.observableArrayList();
         for (JsonNode deviceNode : node.get("device")) {
-            ProjectDevice projectDevice = deserializeProjectDevice(mapper, deviceNode, controller);
+            ProjectDevice projectDevice = deserializeProjectDevice(mapper, deviceNode, project, controller);
             deviceList.add(projectDevice);
             project.addDevice(projectDevice);
         }
@@ -400,7 +400,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
     }
 
-    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, ActualDevice controller) {
+    public ProjectDevice deserializeProjectDevice(ObjectMapper mapper, JsonNode node, Project project, ActualDevice controller) {
         String name = node.get("name").asText();
         GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(node.get("genericDevice").asText());
 
@@ -510,7 +510,7 @@ public class ProjectDeserializer extends StdDeserializer<Project> {
         }
 
 
-        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, actualDevice, actualDeviceConnection
+        ProjectDevice projectDevice = new ProjectDevice(name, genericDevice, project, actualDevice, actualDeviceConnection
                 , dependentDevice, dependentDeviceConnection, property);
         if (actualDeviceNode.has("type") && actualDeviceType.equals("share")) {
             shareActualDeviceMap.put(projectDevice, actualDeviceNode.get("parent").asText());

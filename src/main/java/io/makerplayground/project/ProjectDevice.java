@@ -37,6 +37,7 @@ import java.util.Map;
 public class ProjectDevice {
     private StringProperty name;
     private final GenericDevice genericDevice;
+    private final Project project;
     private ActualDevice actualDevice;
     private ProjectDevice parentDevice;     // this device may share the actual device with other project device in the project
                                             // in this case actualDevice will be null and parentDevice will contain the reference
@@ -46,19 +47,21 @@ public class ProjectDevice {
     private Map<Peripheral, List<DevicePort>> dependentDeviceConnection; // connection from this device (key) to the processor (value)
     private Map<Property, Object> propertyValue;  // property needed by the actual device
 
-    public ProjectDevice(String name, GenericDevice genericDevice) {
+    public ProjectDevice(String name, GenericDevice genericDevice, Project project) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
+        this.project = project;
         this.deviceConnection = new HashMap<>();
         this.dependentDeviceConnection = new HashMap<>();
         this.propertyValue = new HashMap<>();
     }
 
-    ProjectDevice(String name, GenericDevice genericDevice, ActualDevice actualDevice, Map<Peripheral
+    ProjectDevice(String name, GenericDevice genericDevice, Project project, ActualDevice actualDevice, Map<Peripheral
             , List<DevicePort>> deviceConnection, ActualDevice dependentDevice, Map<Peripheral
             , List<DevicePort>> dependentDeviceConnection, Map<Property, Object> propertyValue) {
         this.name = new SimpleStringProperty(name);
         this.genericDevice = genericDevice;
+        this.project = project;
         this.actualDevice = actualDevice;
         this.deviceConnection = deviceConnection;
         this.dependentDevice = dependentDevice;
@@ -70,8 +73,20 @@ public class ProjectDevice {
         return name.get();
     }
 
-    public void setName(String name) {
+    public boolean setName(String name) {
+        // name should contain only letters, digits and underscores and cannot start with a digit (we follow the c
+        // identifier rule which should be fine for code generate for most platform )
+        if (!name.matches("^[a-zA-Z_][a-zA-Z0-9_]*")) {
+            return false;
+        }
+        // check for duplicate name
+        for (ProjectDevice projectDevice : project.getDevice()) {
+            if (projectDevice.getName().equals(name)) {
+                return false;
+            }
+        }
         this.name.set(name);
+        return true;
     }
 
     public StringProperty nameProperty() {
