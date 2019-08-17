@@ -57,12 +57,13 @@ public class ActualDevice {
 
     //private final Map<GenericDevice, Action> supportedAction;
     private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction;  // action support for each generic device
-    private final Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition;  // action support for each generic device
     private final Map<GenericDevice, Map<Value, Constraint>> supportedValue;                   // value supported for each generic device
     private final Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform;          // optional value for microcontroller
     private final List<Property> property;
 
     private final List<IntegratedActualDevice> integratedDevices;
+
+    private final Set<GenericDevice> supportedGenericDevice;
 
     //private final Map<String, List<String>> dependency;     // list of device that depend on this device ex. speakers that can be used with this amp
     // or an amplifier for a thermistor
@@ -85,7 +86,6 @@ public class ActualDevice {
             , List<DevicePort> port
             , List<Peripheral> connectivity
             , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction
-            , Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedCondition
             , Map<GenericDevice, Map<Value, Constraint>> supportedValue
             , List<Property> property
             , Map<CloudPlatform, CloudPlatformLibrary> supportedCloudPlatform
@@ -106,11 +106,15 @@ public class ActualDevice {
         this.port = port;
         this.connectivity = Collections.unmodifiableList(connectivity);
         this.supportedAction = supportedAction;
-        this.supportedCondition = supportedCondition;
         this.supportedValue = supportedValue;
         this.property = Collections.unmodifiableList(property);
         this.supportedCloudPlatform = supportedCloudPlatform;
         this.integratedDevices = Collections.unmodifiableList(integratedDevices);
+
+        Set<GenericDevice> supportedGenericDevice = new HashSet<>();
+        supportedGenericDevice.addAll(supportedAction.keySet());
+        supportedGenericDevice.addAll(supportedValue.keySet());
+        this.supportedGenericDevice = Collections.unmodifiableSet(supportedGenericDevice);
 
         // TODO: check for duplicate peripheral between port
 
@@ -401,16 +405,49 @@ public class ActualDevice {
         return supportedAction;
     }
 
-    public boolean isSupport(ActualDevice controller, GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
-        // skip port type test for virtual and integrated device
+    public boolean isSupport(ActualDevice controller) {
+        if (deviceType == DeviceType.CONTROLLER) {
+            throw new IllegalStateException("This method should not be called from the controller side");
+        }
+
+        // check support platform
+        if (!getSupportedPlatform().containsAll(controller.getSupportedPlatform())) {
+            return false;
+        }
+
+        // check port type
         if (deviceType != DeviceType.VIRTUAL && deviceType != DeviceType.INTEGRATED) {
             Set<DevicePortType> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
             Set<DevicePortType> devicePortType = getPort().stream().map(DevicePort::getType)
                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
-            // this device is supported if and only if its ports has the same type as some ports of the controller
-            devicePortType.retainAll(controllerPortType);
-            if (devicePortType.isEmpty()) {
+            if (!controllerPortType.containsAll(devicePortType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // TODO: integrated device should only support their own controller (now this method is not being called on IntegratedActualDevice of other controller so it is ok)
+    public boolean isSupport(ActualDevice controller, GenericDevice genericDevice, Map<Action, Map<Parameter, Constraint>> theirMap) {
+        // check platform
+        Set<Platform> controllerPlatform = controller.getSupportedPlatform();
+        if (controllerPlatform.size() != 1) {
+            throw new IllegalStateException("Controller shouldn't belong to more than 1 platform");
+        }
+        if (!getSupportedPlatform().containsAll(controllerPlatform)) {
+            return false;
+        }
+
+        // skip port type test for virtual device and integrated device
+        if (deviceType != DeviceType.VIRTUAL && deviceType != DeviceType.INTEGRATED) {
+            Set<DevicePortType> controllerPortType = controller.getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
+            Set<DevicePortType> devicePortType = getPort().stream().map(DevicePort::getType)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(DevicePortType.class)));
+            // this device is supported if and only if the controller has port(s) with the type required by the device
+            if (!controllerPortType.containsAll(devicePortType)) {
                 return false;
             }
         }
@@ -437,6 +474,10 @@ public class ActualDevice {
         }
 
         return true;
+    }
+
+    public Set<GenericDevice> getSupportedGenericDevice() {
+        return supportedGenericDevice;
     }
 
     public List<IntegratedActualDevice> getIntegratedDevices() {

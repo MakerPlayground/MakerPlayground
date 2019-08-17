@@ -128,6 +128,10 @@ public class GenericDevice {
         return null;
     }
 
+    public boolean hasValue() {
+        return !value.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "GenericDevice{" +

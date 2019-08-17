@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
@@ -56,12 +57,15 @@ public enum DeviceLibrary {
         this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json", GenericDeviceType.UTILITY);
         this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json", GenericDeviceType.CLOUD);
         this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json", GenericDeviceType.INTERFACE);
-        this.allGenericDevice = new ArrayList<>();
-        this.allGenericDevice.addAll(genericSensorDevice);
-        this.allGenericDevice.addAll(genericActuatorDevice);
-        this.allGenericDevice.addAll(genericUtilityDevice);
-        this.allGenericDevice.addAll(genericCloudDevice);
-        this.allGenericDevice.addAll(genericInterfaceDevice);
+
+        List<GenericDevice> genericDevices = new ArrayList<>();
+        genericDevices.addAll(genericSensorDevice);
+        genericDevices.addAll(genericActuatorDevice);
+        genericDevices.addAll(genericUtilityDevice);
+        genericDevices.addAll(genericCloudDevice);
+        genericDevices.addAll(genericInterfaceDevice);
+        this.allGenericDevice = Collections.unmodifiableList(genericDevices);
+
         this.actualDevice = loadActualDeviceList();
     }
 
@@ -119,6 +123,10 @@ public enum DeviceLibrary {
         return Collections.emptyList();
     }
 
+    public List<GenericDevice> getGenericDevice() {
+        return allGenericDevice;
+    }
+
     public GenericDevice getGenericDevice(String name) {
         for (GenericDevice genericDevice : allGenericDevice) {
             if (genericDevice.getName().equals(name)) {
@@ -154,7 +162,7 @@ public enum DeviceLibrary {
 
     public List<ActualDevice> getActualDevice(Platform platform) {
         return actualDevice.stream().filter(device -> device.getSupportedPlatform().contains(platform))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public ActualDevice getActualDevice(String id) {
@@ -164,5 +172,15 @@ public enum DeviceLibrary {
             }
         }
         return null;
+    }
+
+    public List<ActualDevice> getActualDevice(DeviceType deviceType) {
+        return actualDevice.stream().filter(device -> device.getDeviceType() == deviceType)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<ActualDevice> getActualDevice(GenericDevice genericDevice) {
+        return actualDevice.stream().filter(device -> device.getSupportedGenericDevice().contains(genericDevice))
+                .collect(Collectors.toUnmodifiableList());
     }
 }

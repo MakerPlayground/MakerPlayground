@@ -98,9 +98,8 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
 
 
         Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction = new HashMap<>();
-        Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition = new HashMap<>();
         Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue = new HashMap<>();
-        readCompatibilityField(mapper, node, supportedDeviceaction, supportedDeviceCondition, supportedDeviceValue);
+        readCompatibilityField(mapper, node, supportedDeviceaction, supportedDeviceValue);
 
         List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
         if (node.has("integrated_device")) {
@@ -129,14 +128,12 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                         new TypeReference<List<Peripheral>>() {});
 
                 Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceaction = new HashMap<>();
-                Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> integratedSupportedDeviceCondition = new HashMap<>();
                 Map<GenericDevice, Map<Value, Constraint>> integratedSupportedDeviceValue = new HashMap<>();
-                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction,
-                        integratedSupportedDeviceCondition, integratedSupportedDeviceValue);
+                readCompatibilityField(mapper, deviceNode, integratedSupportedDeviceaction, integratedSupportedDeviceValue);
 
                 integratedDevices.add(new IntegratedActualDevice(integratedDeviceName, integratedLibrary,
                         integratedExternalLibrary, integratedPort, integratedConnectivity, integratedProperty,
-                        integratedSupportedDeviceaction, integratedSupportedDeviceCondition, integratedSupportedDeviceValue));
+                        integratedSupportedDeviceaction, integratedSupportedDeviceValue));
             }
         }
 
@@ -154,11 +151,10 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
         }
 
         return new ActualDevice(id, brand, model, url, width, height, type, pioBoardId, wiringMethod, formFactor, classnames, externalLibraries,
-                cloudPlatform, port, connectivity, supportedDeviceaction,
-                supportedDeviceCondition, supportedDeviceValue, property, supportedCloudPlatform, integratedDevices);
+                cloudPlatform, port, connectivity, supportedDeviceaction, supportedDeviceValue, property, supportedCloudPlatform, integratedDevices);
     }
 
-    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceCondition, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
+    private void readCompatibilityField(ObjectMapper mapper, JsonNode node, Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedDeviceaction, Map<GenericDevice, Map<Value, Constraint>> supportedDeviceValue) throws JsonProcessingException {
         for (JsonNode deviceNode : node.get("compatibility")) {
             String deviceName = deviceNode.get("name").asText();
             GenericDevice genericDevice = DeviceLibrary.INSTANCE.getGenericDevice(deviceName);
@@ -180,24 +176,6 @@ public class ActualDeviceDeserializer extends StdDeserializer<ActualDevice> {
                 supportedAction.put(action, supportedParam);
             }
             supportedDeviceaction.put(genericDevice, supportedAction);
-
-            Map<Action, Map<Parameter, Constraint>> supportedCondition = new HashMap<>();
-            for (JsonNode actionNode : deviceNode.get("action")) {  // the node name hasn't been changed
-                String actionName = actionNode.get("name").asText();
-                Action condition = genericDevice.getCondition(actionName);
-                if (condition == null) {
-                    continue;
-                }
-                Map<Parameter, Constraint> supportedParam = new HashMap<>();
-                for (JsonNode parameterNode : actionNode.get("parameter")) {
-                    String parameterName = parameterNode.get("name").asText();
-                    Constraint constraint = mapper.treeToValue(parameterNode.get("constraint"), Constraint.class);
-                    Parameter parameter = condition.getParameter(parameterName);
-                    supportedParam.put(parameter, constraint);
-                }
-                supportedCondition.put(condition, supportedParam);
-            }
-            supportedDeviceCondition.put(genericDevice, supportedCondition);
 
             Map<Value, Constraint> supportedValue = new HashMap<>();
             for (JsonNode valueNode : deviceNode.get("value")) {
