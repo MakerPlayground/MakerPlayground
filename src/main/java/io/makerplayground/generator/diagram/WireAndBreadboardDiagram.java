@@ -20,6 +20,7 @@ import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -67,10 +68,10 @@ class WireAndBreadboardDiagram extends Pane {
     private static List<Integer> powerUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
     private static List<Integer> groundUsed = new ArrayList<>(Arrays.asList(1,2,5,11,17,23,29,35,41,47,53));
 
-    private final Project project;
+    protected final Project project;
 
-    private Position controllerPosition;
-    private Map<ProjectDevice, Position> deviceTopLeftPos;
+    protected Point2D controllerPosition;
+    protected Map<ProjectDevice, Point2D> deviceTopLeftPos;
 
     public WireAndBreadboardDiagram(Project project) {
         this.project = project;
@@ -135,7 +136,7 @@ class WireAndBreadboardDiagram extends Pane {
                 currentRow += leftHoleOffset + calculateNumberOfHoleWithoutLeftWing(controller);
             }
         } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
-            controllerPosition = new Position(BREADBOARD_LEFT_MARGIN, lastY);
+            controllerPosition = new Point2D(BREADBOARD_LEFT_MARGIN, lastY);
             lastY = lastY + controller.getHeight();
         }
         controllerImage.setLayoutX(controllerPosition.getX());
@@ -146,7 +147,7 @@ class WireAndBreadboardDiagram extends Pane {
         double lastX = BREADBOARD_LEFT_MARGIN;
         int deviceCount = 0;
         int maxHeight = 0;
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }
@@ -164,17 +165,17 @@ class WireAndBreadboardDiagram extends Pane {
                 if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                     DevicePort topLeftPort = getTopLeftHole(device);
                     currentRow += calculateNumberOfHoleWithCurrentDeviceLeftWing(topLeftPort);
-                    deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
+                    deviceTopLeftPos.put(projectDevice, new Point2D(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - topLeftPort.getX()
                             , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY()));
 
                     currentRow += calculateNumberOfHoleWithoutLeftWing(device);
                 } else if (device.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
                     int heightHole = (int) ((getBottomLeftHole(device).getY() - getTopLeftHole(device).getY()) / HOLE_SPACE) + 1;
-                    deviceTopLeftPos.put(projectDevice, new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
+                    deviceTopLeftPos.put(projectDevice, new Point2D(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) - getTopLeftHole(device).getX()
                             , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((BREADBOARD_NUM_COLUMN - ((heightHole - 2) / 2)) * HOLE_SPACE)));
                     currentRow += calculateNumberOfHoleWithoutLeftWing(device);
                 } else if (device.getFormFactor() == FormFactor.STANDALONE) {
-                    deviceTopLeftPos.put(projectDevice, new Position(lastX, lastY + CONTROLLER_Y_MARGIN));
+                    deviceTopLeftPos.put(projectDevice, new Point2D(lastX, lastY + CONTROLLER_Y_MARGIN));
                     maxHeight = maxHeight < device.getHeight() ? (int) device.getHeight() : maxHeight;
                 } else if (device.getFormFactor() == FormFactor.SHIELD) {
                     deviceTopLeftPos.put(projectDevice, controllerPosition);
@@ -263,7 +264,7 @@ class WireAndBreadboardDiagram extends Pane {
 
 
         // connect power for other devices excepts grove
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }
@@ -425,7 +426,7 @@ class WireAndBreadboardDiagram extends Pane {
                 sclStartY = startSCL.getY() + controllerPosition.getY();
             }
 
-            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (ProjectDevice projectDevice : project.getDevice()) {
                 if (projectDevice.isMergeToOtherDevice()) {
                     continue;
                 }
@@ -479,7 +480,7 @@ class WireAndBreadboardDiagram extends Pane {
 
 
         // connect SPI, UART, PWM, GPIO, ...
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }
@@ -551,7 +552,7 @@ class WireAndBreadboardDiagram extends Pane {
             return true;
         }
         int countStandAlone = 0;
-        for(ProjectDevice device : project.getAllDeviceUsed()) {
+        for(ProjectDevice device : project.getDevice()) {
             if (device.isMergeToOtherDevice()) {
                 continue;
             }
@@ -817,31 +818,5 @@ class WireAndBreadboardDiagram extends Pane {
         line.setStroke(Color.BLUE);
         line.setStrokeWidth(STROKE_WIDTH);
         this.getChildren().add(line);
-    }
-
-    public static class Position {
-        private double x;
-        private double y;
-
-        public Position(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
     }
 }

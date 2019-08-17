@@ -17,6 +17,9 @@
 package io.makerplayground.ui;
 
 import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.generator.source.ArduinoCodeGenerator;
+import io.makerplayground.generator.source.SourceCodeGenerator;
+import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.generator.upload.ArduinoUploadTask;
 import io.makerplayground.generator.upload.RaspberryPiUploadTask;
 import io.makerplayground.generator.upload.UploadResult;
@@ -162,7 +165,7 @@ public class Toolbar extends AnchorPane {
     }
 
     private void showUploadDialog() {
-        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask, false);
         uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
         uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
         uploadDialogView.logProperty().bind(logProperty);
@@ -199,7 +202,8 @@ public class Toolbar extends AnchorPane {
             case ARDUINO_AVR8:
             case ARDUINO_ESP32:
             case ARDUINO_ESP8266:
-                uploadTask = new ArduinoUploadTask(Project.newInstance(project.get()));
+                SourceCodeResult codeResult = SourceCodeGenerator.generate(project.get());
+                uploadTask = new ArduinoUploadTask(codeResult, Project.newInstance(project.get()), false);
                 break;
             case RASPBERRYPI:
                 String initialIpValue = "192.168.1.100";

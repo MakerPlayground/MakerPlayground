@@ -40,7 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 class JSTDiagram extends Pane {
-    private enum Side {
+    protected enum Side {
         TOP, RIGHT, BOTTOM, LEFT
     }
 
@@ -55,15 +55,15 @@ class JSTDiagram extends Pane {
             , Color.CYAN, Color.PURPLE, Color.DARKBLUE, Color.LIMEGREEN);
     private static final Color POWER_WIRE_COLOR = Color.RED;
     private static final Color GND_WIRE_COLOR = Color.BLACK;
-    private static final Map<Side, Double> ANGLE_MAP = new EnumMap<>(Map.of(Side.TOP, 0.0, Side.LEFT, -90.0, Side.BOTTOM, 180.0, Side.RIGHT, 90.0));
+    protected static final Map<Side, Double> ANGLE_MAP = new EnumMap<>(Map.of(Side.TOP, 0.0, Side.LEFT, -90.0, Side.BOTTOM, 180.0, Side.RIGHT, 90.0));
     private static final String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
 
     private final Map<Side, List<ProjectDevice>> deviceMap = new EnumMap<>(Side.class);
-    private final Map<ProjectDevice, Side> deviceSideMap = new HashMap<>();
-    private final Map<ProjectDevice, Point2D> devicePositionMap = new HashMap<>();
+    protected final Map<ProjectDevice, Side> deviceSideMap = new HashMap<>();
+    protected final Map<ProjectDevice, Point2D> devicePositionMap = new HashMap<>();
     private final Map<ProjectDevice, DevicePort> deviceControllerPortMap = new HashMap<>();
     private final List<DevicePort> usedPowerPort = new ArrayList<>();   // list of used power/gnd port when connecting from wire to wire
-    private double controllerOffsetX, controllerOffsetY;
+    protected double controllerOffsetX, controllerOffsetY;
     private final Random random = new Random();
 
     public JSTDiagram(Project project) {
@@ -77,7 +77,7 @@ class JSTDiagram extends Pane {
         }
 
         // get side (top, left, right, bottom) of each device
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }

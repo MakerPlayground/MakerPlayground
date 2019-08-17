@@ -35,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Window;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class UploadDialogView extends UndecoratedDialog {
     private final AnchorPane anchorPane = new AnchorPane();
@@ -49,7 +50,7 @@ public class UploadDialogView extends UndecoratedDialog {
     private final RotateTransition rt;
     private final StringProperty logProperty;
 
-    public UploadDialogView(Window owner, UploadTask uploadTask) {
+    public UploadDialogView(Window owner, UploadTask uploadTask, boolean modal) {
         super(owner);
         this.uploadTask = uploadTask;
 
@@ -68,11 +69,12 @@ public class UploadDialogView extends UndecoratedDialog {
         rt.setCycleCount(Animation.INDEFINITE);
         rt.setInterpolator(Interpolator.LINEAR);
 
-        // initialize ui based on the current state of the task
-        if (uploadTask.isRunning()) {
-            rt.play();
-        } else if (uploadTask.isDone()) {
+        // initialize ui based on the current state of the task. Note that uploadTask.isRunning() shouldn't be used
+        // as task may still be in ready state thus transition won't be played
+        if (uploadTask.isDone()) {
             updateUI();
+        } else {
+            rt.play();
         }
 
         // Cancel the rotation effect when the upload task is cancelled
@@ -99,6 +101,22 @@ public class UploadDialogView extends UndecoratedDialog {
             // pane is actually expanded or collapsed (this may be unsafe and may break in different jdk!!!)
             Platform.runLater(this::sizeToScene);
         });
+
+        if (modal) {
+            setClosingPredicate(() -> {
+                if (uploadTask.isDone()) {
+                    return true;
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        uploadTask.cancel();
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
 
         setContent(anchorPane);
     }

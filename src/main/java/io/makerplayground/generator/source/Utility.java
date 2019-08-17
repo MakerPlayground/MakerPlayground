@@ -6,12 +6,12 @@ import io.makerplayground.project.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Utility {
+public class Utility {
 
     static long getMaximumNumberOfExpression(Project project, ProjectDevice device) {
         return project.getScene().stream()
                 .flatMap(scene -> scene.getSetting().stream())
-                .filter(userSetting -> userSetting.getDevice() == device)
+                .filter(userSetting -> userSetting.getProjectDevice() == device)
                 .filter(UserSetting::isDataBindingUsed)
                 .mapToLong(UserSetting::getNumberOfDatabindParams)
                 .max().orElse(0);
@@ -64,7 +64,7 @@ class Utility {
                 && project.getDiagramStatus().isEmpty();
     }
 
-    static boolean validateDeviceProperty(Project project) {
+    public static boolean validateDeviceProperty(Project project) {
         for (ProjectDevice device : project.getAllDeviceUsed()) {
             // skip device that share actual device with other project device
             if (device.isMergeToOtherDevice()) {
@@ -90,7 +90,7 @@ class Utility {
         return project.getScene().stream()
                 .flatMap(scene -> scene.getSetting().stream())
                 .filter(UserSetting::isDataBindingUsed)
-                .map(UserSetting::getDevice)
+                .map(UserSetting::getProjectDevice)
                 .collect(Collectors.toSet());
     }
 }

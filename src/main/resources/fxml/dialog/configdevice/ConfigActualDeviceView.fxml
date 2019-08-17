@@ -43,6 +43,21 @@
                         <RowConstraints/>
                     </rowConstraints>
                 </GridPane>
+                <VBox fx:id="devicePane" spacing="20" visible="false">
+                    <Separator/>
+                    <HBox alignment="CENTER">
+                        <Label id="deviceLabel" text="Devices"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+<!--                        <Button fx:id="autoButton" text="Auto Select"/>-->
+                    </HBox>
+                    <GridPane fx:id="deviceSettingPane" hgap="20.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="90.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES"/>
+                        </columnConstraints>
+                    </GridPane>
+                </VBox>
                 <VBox fx:id="usedDevice" spacing="20" visible="false">
                     <Separator/>
                     <HBox alignment="CENTER">
@@ -72,13 +87,28 @@
                         </columnConstraints>
                     </GridPane>
                 </VBox>
+<!--                <VBox fx:id="unusedDevice" spacing="20" visible="false">-->
+<!--                    <Separator/>-->
+<!--                    <HBox>-->
+<!--                        <Label id="unusedLabel" text="Unused devices"/>-->
+<!--                    </HBox>-->
+<!--                    <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">-->
+<!--                    </FlowPane>-->
+<!--                </VBox>-->
                 <VBox fx:id="unusedDevice" spacing="20" visible="false">
                     <Separator/>
-                    <HBox>
+                    <HBox alignment="CENTER">
                         <Label id="unusedLabel" text="Unused devices"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+<!--                        <Button fx:id="autoButton" text="Auto Select"/>-->
                     </HBox>
-                    <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
-                    </FlowPane>
+                    <GridPane fx:id="unusedDeviceSettingPane" hgap="20.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="90.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES"/>
+                        </columnConstraints>
+                    </GridPane>
                 </VBox>
             </VBox>
             <VBox.margin>

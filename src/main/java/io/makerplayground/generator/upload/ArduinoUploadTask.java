@@ -25,8 +25,13 @@ import java.util.stream.Collectors;
 
 public class ArduinoUploadTask extends UploadTask {
 
-    public ArduinoUploadTask(Project project) {
+    private final SourceCodeResult sourceCode;
+    private final boolean generateAllDevices;
+
+    public ArduinoUploadTask(SourceCodeResult sourceCode, Project project, boolean generateAllDevices) {
         super(project);
+        this.sourceCode = sourceCode;
+        this.generateAllDevices = generateAllDevices;
     }
 
     @Override
@@ -43,15 +48,9 @@ public class ArduinoUploadTask extends UploadTask {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
-        if (mappingResult != DeviceMapperResult.OK) {
-            updateMessage(mappingResult.getErrorMessage());
-            return UploadResult.DEVICE_OR_PORT_MISSING;
-        }
-
-        SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
-        if (sourcecode.getError() != null) {
-            updateMessage("Error: " + sourcecode.getError().getDescription());
+        // abort if error was found in the generated source code
+        if (sourceCode.getError() != null) {
+            updateMessage("Error: " + sourceCode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;
         }
 
@@ -79,10 +78,18 @@ public class ArduinoUploadTask extends UploadTask {
         updateProgress(0.20, 1);
         updateMessage("Preparing to generate project");
 
-        List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .filter(ProjectDevice::isActualDeviceSelected)
-                .map(ProjectDevice::getActualDevice)
-                .collect(Collectors.toList());
+        List<ActualDevice> actualDevicesUsed;
+        if (generateAllDevices) {
+            actualDevicesUsed = project.getDevice().stream()
+                    .filter(ProjectDevice::isActualDeviceSelected)
+                    .map(ProjectDevice::getActualDevice)
+                    .collect(Collectors.toList());
+        } else {
+            actualDevicesUsed= project.getAllDeviceUsed().stream()
+                    .filter(ProjectDevice::isActualDeviceSelected)
+                    .map(ProjectDevice::getActualDevice)
+                    .collect(Collectors.toList());
+        }
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
                 actualDevicesUsed.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
@@ -150,7 +157,7 @@ public class ArduinoUploadTask extends UploadTask {
 
             // generate source file
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + "src" + File.separator + "main.cpp"))){
-                bw.write(sourcecode.getCode());
+                bw.write(sourceCode.getCode());
             }
         } catch (IOException | NullPointerException e) {
             updateMessage("Error: Cannot write code to project directory");

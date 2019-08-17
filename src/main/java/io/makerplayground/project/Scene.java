@@ -115,7 +115,7 @@ public class Scene extends NodeElement {
 
     public void removeDevice(ProjectDevice device) {
         for (int i = setting.size() - 1; i >= 0; i--) {
-            if (setting.get(i).getDevice() == device) {
+            if (setting.get(i).getProjectDevice() == device) {
                 setting.remove(i);
             }
         }

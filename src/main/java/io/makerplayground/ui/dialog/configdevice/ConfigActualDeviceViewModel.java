@@ -17,6 +17,7 @@
 package io.makerplayground.ui.dialog.configdevice;
 
 import io.makerplayground.device.actual.*;
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.generator.DeviceMapper;
 import io.makerplayground.generator.DeviceMapperResult;
 import io.makerplayground.project.Project;
@@ -54,19 +55,22 @@ public class ConfigActualDeviceViewModel {
         compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
     }
 
-    public void setPlatformChangedCallback(Runnable callback) {
+    // this method is used by the ConfigActualDeviceView (other should use setConfigChangedCallback)
+    void setPlatformChangedCallback(Runnable callback) {
         platformChangedCallback = callback;
     }
 
-    public void setControllerChangedCallback(Runnable callback) {
+    // this method is used by the ConfigActualDeviceView (other should use setConfigChangedCallback)
+    void setControllerChangedCallback(Runnable callback) {
         controllerChangedCallback = callback;
     }
 
-    public void setDeviceConfigChangedCallback(Runnable callback) {
+    // this method is used by the ConfigActualDeviceView (other should use setConfigChangedCallback)
+    void setDeviceConfigChangedCallback(Runnable callback) {
         deviceConfigChangedCallback = callback;
     }
 
-    public void clearDeviceConfigChangedCallback() {
+    void clearDeviceConfigChangedCallback() {
         deviceConfigChangedCallback = null;
     }
 
@@ -90,6 +94,7 @@ public class ConfigActualDeviceViewModel {
     }
 
     void setPlatform(Platform platform) {
+        refreshOldIntegratedDevice();
         project.setPlatform(platform);
         applyDeviceMapping();
         if (platformChangedCallback != null) {
@@ -108,9 +113,45 @@ public class ConfigActualDeviceViewModel {
         return project.getController();
     }
 
+    private void refreshOldIntegratedDevice() {
+        Set<ProjectDevice> usedDevice = project.getAllDeviceUsed();
+        for (ProjectDevice projectDevice : new ArrayList<>(project.getDevice())) {
+            if (projectDevice.getActualDevice() instanceof IntegratedActualDevice) {
+                if (usedDevice.contains(projectDevice)) {
+                    projectDevice.setActualDevice(null);
+                } else {
+                    project.removeDevice(projectDevice);
+                }
+            }
+        }
+    }
+
     void setController(ActualDevice device) {
+        refreshOldIntegratedDevice();
         project.setController(device);
+        // automatically added integrated devices of the new controller if available
+        List<ProjectDevice> addedDevice = new ArrayList<>();
+        if (project.getController() != null) {
+            for (IntegratedActualDevice integratedActualDevice : project.getController().getIntegratedDevices()) {
+                for (GenericDevice genericDevice : integratedActualDevice.getSupportedGenericDevice()) {
+                    ProjectDevice projectDevice = project.addDevice(genericDevice);
+                    projectDevice.setActualDevice(integratedActualDevice);
+                    addedDevice.add(projectDevice);
+                }
+            }
+        }
         applyDeviceMapping();
+        // automatically select port for the recently added integrated devices
+        for (ProjectDevice projectDevice : addedDevice) {
+            for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity()) {
+                // this condition below should always be true but we include it for safety when integrated device
+                // was incorrectly defined
+                List<List<DevicePort>> ports = compatiblePortList.get().get(projectDevice).get(peripheral);
+                if (!ports.isEmpty()) {
+                    projectDevice.setDeviceConnection(peripheral, ports.get(0));
+                }
+            }
+        }
         if (controllerChangedCallback != null) {
             controllerChangedCallback.run();
         }
@@ -198,12 +239,28 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
+    List<ProjectDevice> getDevice() {
+        return project.getDevice();
+    }
+
     Set<ProjectDevice> getUsedDevice() {
         return project.getAllDeviceUsed();
     }
 
     Set<ProjectDevice> getUnusedDevice() {
         return  project.getAllDeviceUnused();
+    }
+
+    void removeDevice(ProjectDevice projectDevice) {
+        project.removeDevice(projectDevice);
+
+        applyDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
     }
 
     DeviceMapperResult autoAssignDevice() {

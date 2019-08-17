@@ -22,11 +22,11 @@ public class SourceCodeResult {
     private SourceCodeError error;
     private String location;
 
-    SourceCodeResult(String code) {
+    public SourceCodeResult(String code) {
         this.code = code;
     }
 
-    SourceCodeResult(SourceCodeError error, String location) {
+    public SourceCodeResult(SourceCodeError error, String location) {
         this.error = error;
         this.location = location;
     }

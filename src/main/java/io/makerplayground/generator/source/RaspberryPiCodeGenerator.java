@@ -9,7 +9,6 @@ import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
-import org.w3c.dom.Node;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -163,7 +162,7 @@ class RaspberryPiCodeGenerator {
                 builder.append(INDENT).append("MP.update()").append(NEW_LINE);
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
-                    ProjectDevice device = setting.getDevice();
+                    ProjectDevice device = setting.getProjectDevice();
                     String deviceName = parseDeviceVariableName(device);
                     List<String> taskParameter = new ArrayList<>();
 
@@ -183,7 +182,7 @@ class RaspberryPiCodeGenerator {
                                 taskParameter.add(parseExpressionForParameter(p, e));
                             }
                         }
-                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
+                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getProjectDevice()); i++) {
                             builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(device))
                                     .append("', ").append(i).append(")").append(NEW_LINE);
                         }
@@ -299,7 +298,7 @@ class RaspberryPiCodeGenerator {
                         else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
+                            booleanExpressions.add(parseDeviceVariableName(setting.getProjectDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {

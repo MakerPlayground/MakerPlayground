@@ -67,7 +67,7 @@ public class UserSetting {
         }
     }
 
-    UserSetting(ProjectDevice device, Action supportingActionOrCondition) {
+    public UserSetting(ProjectDevice device, Action supportingActionOrCondition) {
         this(device);
         this.action.set(supportingActionOrCondition);
     }
@@ -103,7 +103,7 @@ public class UserSetting {
         }
     }
 
-    public ProjectDevice getDevice() {
+    public ProjectDevice getProjectDevice() {
         return device;
     }
 
@@ -124,12 +124,36 @@ public class UserSetting {
         return valueMap;
     }
 
+    public Expression getParameterValue(Parameter p) {
+        return valueMap.get(p);
+    }
+
+    public void setParameterValue(Parameter p, Expression o) {
+        valueMap.replace(p, o);
+    }
+
     public ObservableMap<Value, Expression> getExpression() {
         return expression;
     }
 
+    public Expression getExpression(Value v) {
+        return expression.get(v);
+    }
+
+    public void setExpression(Value v, Expression e) {
+        expression.replace(v, e);
+    }
+
     public ObservableMap<Value, Boolean> getExpressionEnable() {
         return expressionEnable;
+    }
+
+    public boolean isExpressionEnable(Value v) {
+        return expressionEnable.get(v);
+    }
+
+    public void setExpressionEnable(Value v, boolean b) {
+        expressionEnable.replace(v, b);
     }
 
     public Map<ProjectDevice, Set<Value>> getAllValueUsed(Set<DataType> dataType) {

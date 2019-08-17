@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class ArduinoCodeGenerator {
+public class ArduinoCodeGenerator {
 
     private static final String INDENT = "    ";
     private static final String NEW_LINE = "\n";
@@ -405,7 +405,7 @@ class ArduinoCodeGenerator {
                 builder.append(INDENT).append("update();").append(NEW_LINE);
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
-                    ProjectDevice device = setting.getDevice();
+                    ProjectDevice device = setting.getProjectDevice();
                     String deviceName = parseDeviceVariableName(device);
                     List<String> taskParameter = new ArrayList<>();
 
@@ -425,7 +425,7 @@ class ArduinoCodeGenerator {
                                 taskParameter.add(parseExpressionForParameter(p, e));
                             }
                         }
-                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
+                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getProjectDevice()); i++) {
                             builder.append(INDENT).append("clearExpression(").append(parseDeviceExpressionVariableName(device))
                                     .append("[").append(i).append("]);").append(NEW_LINE);
                         }
@@ -527,7 +527,7 @@ class ArduinoCodeGenerator {
                         else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
+                            booleanExpressions.add(parseDeviceVariableName(setting.getProjectDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
@@ -567,32 +567,16 @@ class ArduinoCodeGenerator {
         }
     }
 
-    private String parseTerms(List<Term> expression) {
-        return expression.stream().map(this::parseTerm).collect(Collectors.joining(" "));
+    private static String parseTerms(List<Term> expression) {
+        return expression.stream().map(ArduinoCodeGenerator::parseTerm).collect(Collectors.joining(" "));
     }
 
-    private String parseExpressionForParameter(Parameter parameter, Expression expression) {
+    public static String parseExpressionForParameter(Parameter parameter, Expression expression) {
         String returnValue;
         String exprStr = parseTerms(expression.getTerms());
-        if (expression instanceof NumberWithUnitExpression) {
-            returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
-        } else if (expression instanceof CustomNumberExpression) {
+        if (expression instanceof CustomNumberExpression) {
             returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
-        } else if (expression instanceof ValueLinkingExpression) {
-            ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
-            double fromLow = valueLinkingExpression.getSourceLowValue().getValue();
-            double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
-            double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
-            double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "constrain(map(" + parseValueVariableName(valueLinkingExpression.getSourceValue().getDevice()
-                    , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
-                    + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
-        } else if (expression instanceof ProjectValueExpression) {
-            ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
-            NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
-            NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            returnValue = "constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
-        } else if (expression instanceof SimpleStringExpression) {
+        } else  if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
             returnValue = exprStr;
@@ -650,7 +634,7 @@ class ArduinoCodeGenerator {
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
-    private String parseTerm(Term term) {
+    private static String parseTerm(Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());

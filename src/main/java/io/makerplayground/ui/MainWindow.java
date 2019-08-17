@@ -27,6 +27,7 @@ import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.generate.GenerateView;
 import io.makerplayground.ui.dialog.generate.GenerateViewModel;
+import javafx.application.HostServices;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -37,7 +38,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -45,7 +45,7 @@ import javafx.scene.text.TextAlignment;
 public class MainWindow extends BorderPane {
 
     private Project currentProject;
-    private Node deviceExplorer;
+    private DeviceExplorerTab deviceExplorer;
     private Node diagramEditor;
 
     private final BooleanProperty deviceExplorerShowing;
@@ -55,14 +55,18 @@ public class MainWindow extends BorderPane {
     private final IntegerProperty currentTabIndex;
     private final DoubleProperty deviceDiagramZoomLevel;
 
-    public MainWindow(ObjectProperty<Project> project) {
+    private final HostServices hostServices;
+
+    public MainWindow(HostServices hs, ObjectProperty<Project> project) {
+        hostServices = hs;
         currentProject = project.get();
-        deviceExplorer = initDeviceExplorer();
+        deviceExplorer = new DeviceExplorerTab(currentProject, hostServices);
         diagramEditor = initDiagramEditor();
 
         deviceExplorerShowing = new SimpleBooleanProperty();
         deviceExplorerShowing.addListener(((observable, oldValue, newValue) -> {
             if (newValue) {
+                deviceExplorer.refreshView();
                 setCenter(deviceExplorer);
             }
         }));
@@ -85,11 +89,16 @@ public class MainWindow extends BorderPane {
 
         project.addListener((observable, oldValue, newValue) -> {
             currentProject = newValue;
+            deviceExplorer = new DeviceExplorerTab(currentProject, hostServices);
             diagramEditor = initDiagramEditor();
-            if (diagramEditorShowing.get()) {
+            if (deviceExplorerShowing.get()) {
+                setCenter(deviceExplorer);
+            } else if (diagramEditorShowing.get()) {
                 setCenter(diagramEditor);
-            } else {    // deviceConfigShowing must be true
+            } else if (deviceConfigShowing.get()) {
                 setCenter(initConfigDevice());
+            } else {
+                throw new IllegalStateException();
             }
         });
     }
@@ -131,11 +140,6 @@ public class MainWindow extends BorderPane {
         mainSplitPane.getItems().addAll(canvasView, panelSplitPane);
 
         return mainSplitPane;
-    }
-
-    private Node initDeviceExplorer() {
-        Pane pane = new Pane();
-        return pane;
     }
 
     private Node initConfigDevice() {
@@ -180,7 +184,7 @@ public class MainWindow extends BorderPane {
         // device config
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
+        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel, true);
 
         // generate view
         generateViewCreator.run();

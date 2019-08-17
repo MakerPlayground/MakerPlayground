@@ -42,7 +42,7 @@ public class InputDeviceSelector extends PopOver {
         }
         viewModel.getProjectInputDevice().stream().filter(device -> {
             for (UserSetting userSetting : viewModel.getConditionDevice()) {
-                if (userSetting.getDevice() == device) {
+                if (userSetting.getProjectDevice() == device) {
                     return false;
                 }
             }

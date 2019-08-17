@@ -121,6 +121,15 @@ public class Project {
         return unmodifiableDevice;
     }
 
+    public Optional<ProjectDevice> getDevice(String name) {
+        for (ProjectDevice projectDevice : unmodifiableDevice) {
+            if (projectDevice.getName().equals(name)) {
+                return Optional.of(projectDevice);
+            }
+        }
+        return Optional.empty();
+    }
+
     public ObservableList<ProjectDevice> getActuatorDevice() {
         return actuatorDevice;
     }
@@ -471,14 +480,14 @@ public class Project {
             else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
                 temp.getSetting().forEach(s->{
-                    deviceUsed.add(s.getDevice());
+                    deviceUsed.add(s.getProjectDevice());
                     deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
             }
             else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s->{
-                    deviceUsed.add(s.getDevice());
+                    deviceUsed.add(s.getProjectDevice());
                     deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
             }

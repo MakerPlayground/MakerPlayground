@@ -49,7 +49,7 @@ public class DeviceMapper {
 
         for (Scene s : project.getScene()) {
             for (UserSetting u : s.getSetting()) {
-                ProjectDevice projectDevice = u.getDevice();
+                ProjectDevice projectDevice = u.getProjectDevice();
                 Map<Action, Map<Parameter, Constraint>> compatibility = tempMap.get(projectDevice);
                 for (Parameter parameter : u.getValueMap().keySet()) {
                     Action action = u.getAction();
@@ -202,7 +202,7 @@ public class DeviceMapper {
         Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>> result = new HashMap<>();
 
         if (project.getController() == null) {
-            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            for (ProjectDevice projectDevice : project.getDevice()) {
                 result.put(projectDevice, new HashMap<>());
                 if (projectDevice.isActualDeviceSelected()) {
                     for (Peripheral peripheral : projectDevice.getActualDevice().getConnectivity())
@@ -217,7 +217,7 @@ public class DeviceMapper {
 
         // get list of ports that have been used
         Set<DevicePort> usedPort = new HashSet<>();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C && p.getConnectionType() != ConnectionType.KMM_RS_485) {
                     usedPort.addAll(projectDevice.getDeviceConnection().get(p));
@@ -227,7 +227,7 @@ public class DeviceMapper {
 
         // get list of port that conflict to the used port i.e. the used port can't be used if this port is being used
         Map<ProjectDevice, Set<DevicePort>> conflictIfUsedPortMap = new HashMap<>();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
                 if (p.getConnectionType() != ConnectionType.I2C && p.getConnectionType() != ConnectionType.KMM_RS_485) {
                     List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
@@ -241,7 +241,7 @@ public class DeviceMapper {
 
         // get list of port that the used port conflict to i.e. port that can't be used if this used port is being used
         Map<ProjectDevice, Set<DevicePort>> conflictPortMap = new HashMap<>();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             for (Peripheral devicePeripheral : projectDevice.getDeviceConnection().keySet()) {
                 List<DevicePort> controllerPort = projectDevice.getDeviceConnection().get(devicePeripheral);
                 for (DevicePort port : controllerPort) {
@@ -259,7 +259,7 @@ public class DeviceMapper {
 
         // get list of split port that each device used along with the sibling ports of that port
         Map<ProjectDevice, Set<DevicePort>> splitPortMap = new HashMap<>();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             for (List<DevicePort> controllerPort : projectDevice.getDeviceConnection().values()) {
                 for (DevicePort port : controllerPort) {
                     if (port.getParent() != null) {
@@ -275,7 +275,7 @@ public class DeviceMapper {
             }
         }
 
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             Map<Peripheral, List<List<DevicePort>>> possibleDevice = new HashMap<>();
             result.put(projectDevice, possibleDevice);
 
@@ -399,7 +399,7 @@ public class DeviceMapper {
             return DeviceMapperResult.NO_MCU_SELECTED;
         }
 
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (!projectDevice.isActualDeviceSelected() && !projectDevice.isMergeToOtherDevice()) {
                 return DeviceMapperResult.NOT_SELECT_DEVICE_OR_PORT;
             }
@@ -423,12 +423,12 @@ public class DeviceMapper {
         }
 
         // reclaim ports from unused devices
-        for (ProjectDevice projectDevice : project.getAllDeviceUnused()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             projectDevice.removeAllDeviceConnection();
         }
 
         Map<ProjectDevice, List<ActualDevice>> supportedDeviceMap = getSupportedDeviceList(project);
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             if (supportedDeviceMap.get(projectDevice).isEmpty()) {
                 return DeviceMapperResult.NO_SUPPORT_DEVICE;
             }
@@ -480,7 +480,7 @@ public class DeviceMapper {
     }
 
     private static boolean hasPortUsed(Project project, List<DevicePort> portList) {
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : project.getDevice()) {
             List<DevicePort> portUsed = projectDevice.getDeviceConnection().values().stream()
                     .flatMap(Collection::stream).collect(Collectors.toList());
             for (DevicePort port : portList) {
