@@ -154,7 +154,7 @@ public class Project {
     }
 
     private String getDeviceVarName(GenericDevice device) {
-        return device.getName().replaceAll("[()]", "");
+        return device.getName().replaceAll("[() ]", "");
     }
 
     private int getNextId(GenericDevice device) {
