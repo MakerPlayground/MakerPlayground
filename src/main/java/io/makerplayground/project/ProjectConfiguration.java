@@ -479,6 +479,9 @@ public final class ProjectConfiguration {
                         Pin providerPin = providerConnection.getPins().get(i);
 
                         List<PinFunction> provideFunctions = providerPin.getFunction();
+                        if (consumerPin.getFunction().get(0) == PinFunction.NO_FUNCTION) {
+                            continue;
+                        }
                         PinFunction function = consumerPin.getFunction().get(0).getPossibleConsume().stream().filter(provideFunctions::contains).findFirst().orElseThrow();
                         if (function.isSingleUsed()) {
                             if (!usedRefPin.containsKey(providerProjectDevice)) {
@@ -557,7 +560,7 @@ public final class ProjectConfiguration {
                     }
                     Map<ActualDevice, List<DeviceConnection>> actualDeviceListMap = compatibleDeviceConnectionMap.get(projectDevice);
                     if (!actualDeviceListMap.containsKey(deviceMap.get(projectDevice))) {
-                        throw new IllegalStateException("Cannot have selected actual device tha is not in the compatibility map");
+                        throw new IllegalStateException("Cannot have selected actual device that is not in the compatibility map");
                     }
                     List<DeviceConnection> deviceConnections = actualDeviceListMap.get(deviceMap.get(projectDevice));
                     if (deviceConnections.isEmpty()) {

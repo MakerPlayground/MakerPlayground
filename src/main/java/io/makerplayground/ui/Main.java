@@ -62,7 +62,7 @@ public class Main extends Application {
 
         focusProject.addListener((observable, oldValue, newValue) -> {
             /* set title name */
-            File file = projectFilesMap.get(focusProject.get());
+            File file = projectFilesMap.get(newValue);
             String fileName = file == null ? "" : file.getName();
             primaryStage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - " + (fileName.isEmpty() ? "Untitled Project" : fileName));
         });
@@ -88,8 +88,6 @@ public class Main extends Application {
         MainWindow mainWindow = new MainWindow(focusProject);
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
-
-
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);
@@ -167,7 +165,7 @@ public class Main extends Application {
             Optional<Project> p = Project.loadProject(selectedFile);
             if (p.isPresent()) {
                 projectFilesMap.put(p.get(), selectedFile);
-                focusProject.set(getFirstProject());
+                focusProject.set(p.get());
                 focusProject.get().calculateCompatibility();
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);

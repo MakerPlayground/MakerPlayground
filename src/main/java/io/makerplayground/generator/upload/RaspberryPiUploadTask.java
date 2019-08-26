@@ -19,6 +19,8 @@ package io.makerplayground.generator.upload;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -65,12 +67,11 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.USER_CANCEL;
         }
 
-        /* TODO: uncomment this */
-//        ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(project);
-//        if (mappingResult != ProjectMappingResult.OK) {
-//            Platform.runLater(()->updateMessage(mappingResult.getErrorMessage()));
-//            return UploadResult.DEVICE_OR_PORT_MISSING;
-//        }
+        ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(project);
+        if (mappingResult != ProjectMappingResult.OK) {
+            Platform.runLater(()->updateMessage(mappingResult.getErrorMessage()));
+            return UploadResult.DEVICE_OR_PORT_MISSING;
+        }
 
         SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {

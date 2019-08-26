@@ -16,29 +16,19 @@
 
 package io.makerplayground.generator.diagram;
 
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectConfiguration;
+import io.makerplayground.project.ProjectDevice;
 import javafx.scene.layout.Pane;
+import lombok.AllArgsConstructor;
+
+import java.util.*;
 
 public class WiringDiagram {
 
-    // TODO: this method and the wiring_method json field are deprecated in flavor of the unified connection diagram in the next release
     public static Pane make(Project project) {
-//        Pane wiringDiagram;
-//        switch(project.getSelectedController().getWiringMethod()) {
-//            case WIRE_AND_BREADBOARD:
-//            case KIDBRIGHT:
-//                wiringDiagram = new WireAndBreadboardDiagram(project);
-//                break;
-//            case MP:
-//            case INEX:
-//            case GROVE:
-//                wiringDiagram = new JSTDiagram(project);
-//                break;
-//            default:
-//                throw new IllegalStateException("Wiring method not found");
-//        }
-//        return wiringDiagram;
-
-        return new Pane();
+        return new DiagramV1(project).make();
     }
 }

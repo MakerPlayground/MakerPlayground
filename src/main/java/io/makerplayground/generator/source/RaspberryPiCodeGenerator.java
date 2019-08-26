@@ -16,9 +16,14 @@
 
 package io.makerplayground.generator.source;
 
+import io.makerplayground.device.actual.Connection;
+import io.makerplayground.device.actual.Pin;
+import io.makerplayground.device.actual.PinFunction;
 import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.Condition;
 import io.makerplayground.project.expression.*;
@@ -43,6 +48,14 @@ class RaspberryPiCodeGenerator {
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
+    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
+            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
+            PinFunction.PWM_OUT,
+            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
+            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
+    );
+
     private RaspberryPiCodeGenerator(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
@@ -52,31 +65,29 @@ class RaspberryPiCodeGenerator {
     }
 
     static SourceCodeResult generateCode(Project project) {
-//        /* TODO: uncomment this */
-//        RaspberryPiCodeGenerator generator = new RaspberryPiCodeGenerator(project);
-//        // Check if the diagram (only the connected nodes) are all valid.
-//        if (!Utility.validateDiagram(project)) {
-//            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
-//        }
-//        // Check if all used devices are assigned.
-//        if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
-//            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
-//        }
-//        if (!Utility.validateDeviceProperty(project)) {
-//            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
-//        }
-//        if (project.getCloudPlatformUsed().size() > 1) {
-//            return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
-//        }
-//        generator.appendHeader();
-//        generator.appendNextRunningTime();
-//        generator.appendTaskVariables();
-//        generator.appendBeginFunctions();
-//        generator.appendSceneFunctions();
-//        generator.appendConditionFunctions();
-//        generator.appendMainCode();
-//        return new SourceCodeResult(generator.builder.toString());
-        return new SourceCodeResult("");
+        RaspberryPiCodeGenerator generator = new RaspberryPiCodeGenerator(project);
+        // Check if the diagram (only the connected nodes) are all valid.
+        if (!Utility.validateDiagram(project)) {
+            return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
+        }
+        // Check if all used devices are assigned.
+        if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
+            return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
+        }
+        if (!Utility.validateDeviceProperty(project)) {
+            return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
+        }
+        if (project.getCloudPlatformUsed().size() > 1) {
+            return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
+        }
+        generator.appendHeader();
+        generator.appendNextRunningTime();
+        generator.appendTaskVariables();
+        generator.appendBeginFunctions();
+        generator.appendSceneFunctions();
+        generator.appendConditionFunctions();
+        generator.appendMainCode();
+        return new SourceCodeResult(generator.builder.toString());
     }
 
 
@@ -402,34 +413,35 @@ class RaspberryPiCodeGenerator {
 
         List<String> args = new ArrayList<>();
 
-        /* TODO: uncomment this & assign port as parameter */
-//        if (projectDevice.isActualDevicePresent() && !projectDevice.getCompatibleDeviceComboItem().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
-//            // port
-//            for (Peripheral p : projectDevice.getCompatibleDeviceComboItem().getConnectivity()) {
-//                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
-//                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-//                    if (port == null) {
-//                        throw new IllegalStateException("Port hasn't been selected!!!");
-//                    }
-//                    // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
-//                    for (DevicePort devicePort : port) {
-//                        if (p.isI2C1() || p.isI2C() || p == Peripheral.RPI_CAMERA) {
-//                            continue;
-//                        }
-//                        if (!devicePort.getAlias().isEmpty()) {
-//                            if (p.isDual()) {
-//                                args.addAll(devicePort.getAlias());
-//                            } else {
-//                                // TODO: addAll should be used here, so we can avoid the if statement. (Must be checked)
-//                                args.add(devicePort.getAlias().get(0));
-//                            }
-//                        } else {
-//                            args.add(devicePort.getDisplayName());
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
+        if (connection != DeviceConnection.NOT_CONNECTED) {
+            Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+            for (Connection connectionConsume: connectionMap.keySet()) {
+                Connection connectionProvide = connectionMap.get(connectionConsume);
+                for (int i=0; i<connectionConsume.getPins().size(); i++) {
+                    Pin pinConsume = connectionConsume.getPins().get(i);
+                    Pin pinProvide = connectionProvide.getPins().get(i);
+                    if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
+                        continue;
+                    }
+                    List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
+                    for (PinFunction function: possibleFunctionConsume) {
+                        if (pinProvide.getFunction().contains(function)) {
+                            if (PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                if (!pinProvide.getCodingName().isEmpty()) {
+                                    args.add(pinProvide.getCodingName());
+                                }
+                                else {
+                                    args.add(pinProvide.getRefTo());
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         // property for the generic device
         for (Property p : configuration.getActualDevice(projectDevice).orElseThrow().getProperty()) {
             Object value = configuration.getPropertyValue(projectDevice, p);

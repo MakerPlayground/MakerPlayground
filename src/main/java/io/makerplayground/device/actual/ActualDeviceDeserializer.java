@@ -76,6 +76,8 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         /* DeviceType */
         DeviceType deviceType = DeviceType.valueOf(node.get("type").asText());
 
+        boolean needBreadboard = node.has("need_breadboard") && node.get("need_breadboard").asBoolean();
+
         /* PioBoardId */
         String pioBoardId = "";
         if (deviceType == DeviceType.CONTROLLER) {
@@ -209,6 +211,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .platformSourceCodeLibrary(platformSourceCodeLibrary)
                 .cloudPlatformSourceCodeLibrary(cloudPlatformSourceCodeLibrary)
                 .deviceType(deviceType)
+                .needBreadboard(needBreadboard)
                 .pioBoardId(pioBoardId)
                 .cloudConsume(cloudConsume)
                 .connectionConsume(connectionConsume)

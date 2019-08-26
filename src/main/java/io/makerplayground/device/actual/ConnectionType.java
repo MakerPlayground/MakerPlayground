@@ -24,11 +24,11 @@ import java.util.List;
 
 @Getter
 public enum ConnectionType {
-    WIRE(List.of(Color.YELLOW), 2, false),
-    GROVE(List.of(Color.WHITE, Color.YELLOW, Color.RED, Color.BLACK), 2, true),
-    MAKER_PLAYGROUND(List.of(Color.YELLOW, Color.WHITE, Color.RED, Color.BLACK), 2, true),
-    M5STACK(List.of(Color.WHITE, Color.YELLOW, Color.RED, Color.BLACK), 2, true),
-    INEX3(List.of(Color.RED, Color.WHITE, Color.BLACK), 2, true),
+    WIRE(List.of(Color.BLUE), 2, false),
+    GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, false),
+    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4, true),
+    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, true),
+    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 2, true),
     UNO_SHIELD(Collections.emptyList(), 0, true),
     CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5, false);
 

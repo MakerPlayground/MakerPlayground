@@ -166,7 +166,6 @@ class ArduinoCodeGenerator {
                     .append(" ").append(parseDeviceVariableName(configuration, projectDevice));
             List<String> args = new ArrayList<>();
 
-            /* TODO: uncomment this & assign port as parameter */
             DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
             if (connection != DeviceConnection.NOT_CONNECTED) {
                 Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
@@ -175,6 +174,9 @@ class ArduinoCodeGenerator {
                     for (int i=0; i<connectionConsume.getPins().size(); i++) {
                         Pin pinConsume = connectionConsume.getPins().get(i);
                         Pin pinProvide = connectionProvide.getPins().get(i);
+                        if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
+                            continue;
+                        }
                         List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
                         for (PinFunction function: possibleFunctionConsume) {
                             if (pinProvide.getFunction().contains(function)) {

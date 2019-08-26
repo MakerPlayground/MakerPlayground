@@ -39,6 +39,7 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final double height;
     protected final String pioBoardId;
     protected final DeviceType deviceType;
+    protected final boolean needBreadboard;
     protected final String pinTemplate;
     @Getter(AccessLevel.NONE) protected final List<Connection> connectionProvide;
     @Getter(AccessLevel.NONE) protected final List<Connection> connectionConsume;
