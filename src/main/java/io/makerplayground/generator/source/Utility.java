@@ -90,10 +90,10 @@ class Utility {
             // check only device that has a property
             if (configuration.getActualDevice(device).isPresent() && configuration.getActualDevice(device).get().getProperty() != null && !configuration.getActualDevice(device).get().getProperty().isEmpty()) {
                 for (Property p : configuration.getActualDevice(device).get().getProperty()) {
-                    Optional<Object> value = configuration.getPropertyValue(device, p);
-                    if (value.isEmpty()) {
+                    Object value = configuration.getPropertyValue(device, p);
+                    if (value == null) {
                         return false;
-                    } else if ((value.get() instanceof String) && ((String) value.get()).isEmpty()) {
+                    } else if ((value instanceof String) && ((String) value).isEmpty()) {
                         return false;
                     }
                 }

@@ -17,7 +17,7 @@
 package io.makerplayground.device.actual;
 
 public enum VoltageLevel {
-    LEVEL_3v3, LEVEL_5, LEVEL_3v3_5, LEVEL_1;
+    LEVEL_3v3, LEVEL_5, LEVEL_3v3_5, LEVEL_1, LEVEL_12;
 
     public boolean canConsume(VoltageLevel provideVoltageLevel) {
         if (this == provideVoltageLevel) {

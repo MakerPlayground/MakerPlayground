@@ -384,11 +384,11 @@ public final class ProjectConfiguration {
         return Optional.empty();
     }
 
-    public Optional<Object> getPropertyValue(ProjectDevice device, Property p) {
+    public Object getPropertyValue(ProjectDevice device, Property p) {
         if (devicePropertyValueMap.containsKey(device) && devicePropertyValueMap.get(device).containsKey(p)) {
-            return Optional.of(devicePropertyValueMap.get(device).get(p));
+            return devicePropertyValueMap.get(device).get(p);
         }
-        return Optional.empty();
+        return null;
     }
 
     public Optional<ProjectDevice> getIdenticalDevice(ProjectDevice projectDevice) {

@@ -152,7 +152,7 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    Optional<Object> getPropertyValue(ProjectDevice projectDevice, Property p) {
+    Object getPropertyValue(ProjectDevice projectDevice, Property p) {
         return project.getProjectConfiguration().getPropertyValue(projectDevice, p);
     }
 

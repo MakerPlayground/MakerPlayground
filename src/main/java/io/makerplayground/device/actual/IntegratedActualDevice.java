@@ -30,7 +30,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 public class IntegratedActualDevice extends ActualDevice {
 
-    @Getter protected ActualDevice parent;
+    @EqualsAndHashCode.Exclude @Getter protected ActualDevice parent;
 
     public void setParent(ActualDevice parent) {
         if (this.parent != null) {

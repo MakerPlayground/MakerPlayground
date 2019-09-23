@@ -459,17 +459,17 @@ public class ConfigActualDeviceView extends VBox{
 //                        } else {
 //                            portName = projectDevice.getActualDevice().getPort(p).get(0).getDisplayName();
 //                        }
-//
-//                        Label portLabel = new Label(portName);
-//
-//                        HBox portHBox = new HBox();
-//                        portHBox.getChildren().addAll(portLabel, portComboBox);
-//                        portHBox.setSpacing(5);
-//
-//                        portPane.getChildren().addAll(portHBox);
-//                    }
-//                    entireComboBoxDevice.getChildren().add(portPane);
-//                }
+////
+////                        Label portLabel = new Label(portName);
+////
+////                        HBox portHBox = new HBox();
+////                        portHBox.getChildren().addAll(portLabel, portComboBox);
+////                        portHBox.setSpacing(5);
+////
+////                        portPane.getChildren().addAll(portHBox);
+////                    }
+////                    entireComboBoxDevice.getChildren().add(portPane);
+////                }
 
                 // property
                 if (viewModel.getActualDevice(projectDevice).orElseThrow().getProperty() != null && !viewModel.getActualDevice(projectDevice).orElseThrow().getProperty().isEmpty()) {
@@ -486,11 +486,7 @@ public class ConfigActualDeviceView extends VBox{
                         GridPane.setColumnIndex(propertyLabel, 0);
                         propertyGridPane.getChildren().add(propertyLabel);
 
-                        Optional<Object> propertyValue = viewModel.getPropertyValue(projectDevice, p);
-                        if (propertyValue.isEmpty()) {
-                            continue;
-                        }
-                        Object currentValue = propertyValue.get();
+                        Object currentValue = viewModel.getPropertyValue(projectDevice, p);
                         if (p.getDataType() == DataType.STRING && p.getControlType() == ControlType.TEXTBOX) {
                             TextField textField = new TextField((String) currentValue);
                             textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
@@ -509,7 +505,11 @@ public class ConfigActualDeviceView extends VBox{
                             // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            if (currentValue == null) {
+                                comboBox.getSelectionModel().select(null);
+                            } else {
+                                comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            }
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Integer.parseInt(newValue)));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
@@ -517,7 +517,11 @@ public class ConfigActualDeviceView extends VBox{
                         } else if (p.getDataType() == DataType.BOOLEAN_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            if (currentValue == null) {
+                                comboBox.getSelectionModel().select(null);
+                            } else {
+                                comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            }
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Boolean.parseBoolean(newValue)));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);

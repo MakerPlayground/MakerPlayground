@@ -34,6 +34,7 @@ public enum PinFunction {
     MOSI, MISO, SCK,
     MOSI1, MISO1, SCK1,
     AREF, NO_FUNCTION,
+    RS485_Negative, RS485_Positive,
     SCI1, SCI2, SCI3, SCI4, SCI5, SCI6, SCI7, SCI8, SCI9, SCI10, SCI11, SCI12, SCI13, SCI14, SCI15;
 
     public boolean isSingleUsed() {
@@ -50,6 +51,8 @@ public enum PinFunction {
             case SCL1:
             case SDA:
             case SDA1:
+            case RS485_Negative:
+            case RS485_Positive:
             case NO_FUNCTION:
                 return false;
             case INTERRUPT_LOW:
@@ -137,6 +140,10 @@ public enum PinFunction {
                 return List.of(SCK1);
             case AREF:
                 return List.of();
+            case RS485_Negative:
+                return List.of(RS485_Negative);
+            case RS485_Positive:
+                return List.of(RS485_Positive);
             case NO_FUNCTION:
                 return List.of(PinFunction.values());
         }

@@ -150,12 +150,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
             String inTemplateName = inNode.get("pin_template").asText();
             if (!this.allPinTemplateMap.containsKey(inTemplateName)) {
-                throw new IllegalStateException("There is no pin_template named " + templateName);
+                throw new IllegalStateException("There is no pin_template named " + inTemplateName);
             }
-            Map<String, PinTemplate> inDevicePinTemplate = this.allPinTemplateMap.get(templateName);
+            Map<String, PinTemplate> inDevicePinTemplate = this.allPinTemplateMap.get(inTemplateName);
 
             List<Connection> inConnection = new ArrayList<>();
-            for (JsonNode integratedConnectionNode: node.get("integrated_connection")) {
+            for (JsonNode integratedConnectionNode: inNode.get("integrated_connection")) {
                 throwIfMissingField(integratedConnectionNode, "ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
                 throwIfMissingField(integratedConnectionNode, "host_ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
                 String refTo = integratedConnectionNode.get("ref_to").asText();
