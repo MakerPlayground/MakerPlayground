@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public enum Peripheral {
     NOT_CONNECTED(ConnectionType.NONE),
 
+    GPIO_0(ConnectionType.GPIO),
     GPIO_1(ConnectionType.GPIO),
     GPIO_2(ConnectionType.GPIO),
     GPIO_3(ConnectionType.GPIO),
@@ -160,6 +161,11 @@ public enum Peripheral {
     ANALOG_10(ConnectionType.ANALOG),
     ANALOG_11(ConnectionType.ANALOG),
     ANALOG_12(ConnectionType.ANALOG),
+    ANALOG_13(ConnectionType.ANALOG),
+    ANALOG_14(ConnectionType.ANALOG),
+    ANALOG_15(ConnectionType.ANALOG),
+    ANALOG_16(ConnectionType.ANALOG),
+
 
     MP_INT_UART_1(ConnectionType.MP_INT_UART),
 
