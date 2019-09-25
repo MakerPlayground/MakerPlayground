@@ -104,6 +104,7 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
             jsonGenerator.writeStringField("actualDevice", actualDevice != null ? actualDevice.getId() : "");
+            jsonGenerator.writeBooleanField("isIntegrated", actualDevice instanceof IntegratedActualDevice);
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

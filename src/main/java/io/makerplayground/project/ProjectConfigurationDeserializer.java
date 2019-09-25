@@ -31,6 +31,7 @@ import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectConfiguration> {
 
@@ -59,18 +60,32 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
         JsonNode node = mapper.readTree(jsonParser);
         Platform platform = Platform.valueOf(node.get("platform").asText());
 
+        SortedMap<ProjectDevice, String> tempIntegratedDeviceMap = new TreeMap<>();
+
         /* deviceMap */
         SortedMap<ProjectDevice, ActualDevice> deviceMap = new TreeMap<>();
         for (JsonNode deviceMapNode: node.get("deviceMap")) {
             String projectDeviceName = deviceMapNode.get("projectDevice").asText();
             String actualDeviceId = deviceMapNode.get("actualDevice").asText();
             ProjectDevice projectDevice = searchProjectDevice(projectDeviceName);
-            ActualDevice actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
-            deviceMap.put(projectDevice, actualDevice);
+            if (deviceMapNode.get("isIntegrated").asBoolean()) {
+                tempIntegratedDeviceMap.put(projectDevice, actualDeviceId);
+            }
+            else {
+                ActualDevice actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
+                deviceMap.put(projectDevice, actualDevice);
+            }
         }
 
         /* controller */
         ActualDevice controller = deviceMap.getOrDefault(ProjectDevice.CONTROLLER, null);
+
+        if (controller != null) {
+            for (ProjectDevice projectDevice: tempIntegratedDeviceMap.keySet()) {
+                Optional<IntegratedActualDevice> deviceOptional = controller.getIntegratedDevices(tempIntegratedDeviceMap.get(projectDevice));
+                deviceOptional.ifPresent(a -> deviceMap.put(projectDevice, a));
+            }
+        }
 
         /* devicePropertyValueMap */
         Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap = new HashMap<>();
