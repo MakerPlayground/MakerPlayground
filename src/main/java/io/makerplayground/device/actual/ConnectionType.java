@@ -68,10 +68,13 @@ public enum ConnectionType {
     /* JR3 Family */
     JR3_SERVO,
 
-    KMM_RS_485,
 
     /* RPI */
-    RPI_CAMERA;
+    RPI_CAMERA,
+
+    /* KOMOMI */
+    KMM_RS_485,
+    RS_485_A, RS_485_B, RS_485_GND, RS_485_12V;
 
     public boolean isGPIO() {
         return (this == MP_GPIO_SINGLE) || (this == MP_GPIO_DUAL) || (this == GROVE_GPIO_SINGLE)

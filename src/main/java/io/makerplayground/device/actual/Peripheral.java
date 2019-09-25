@@ -333,7 +333,13 @@ public enum Peripheral {
 
     POWER(ConnectionType.POWER),
 
-    KMM_RS_485_1(ConnectionType.KMM_RS_485);
+    // Komomi
+    KMM_RS_485_1(ConnectionType.KMM_RS_485),
+
+    RS_485_A(ConnectionType.RS_485_A),
+    RS_485_B(ConnectionType.RS_485_B),
+    RS_485_GND(ConnectionType.RS_485_GND),
+    RS_485_12V(ConnectionType.RS_485_12V);
 
 
     private ConnectionType connectionType;
@@ -465,6 +471,10 @@ public enum Peripheral {
     public boolean isRS485() {
         switch (this.getConnectionType()) {
             case KMM_RS_485:
+            case RS_485_A:
+            case RS_485_B:
+            case RS_485_GND:
+            case RS_485_12V:
                 return true;
             default:
                 return false;

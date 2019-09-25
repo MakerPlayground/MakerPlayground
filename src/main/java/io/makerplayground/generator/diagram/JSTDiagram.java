@@ -394,9 +394,9 @@ class JSTDiagram extends Pane {
 
         boolean drawPower = controllerVccPort.isPresent() && deviceVccPort.isPresent();
         boolean drawGround = controllerGroundPort.isPresent() && deviceGroundPort.isPresent();
-        if (!drawPower && !drawGround) {
-            throw new IllegalStateException("The controller has insufficient power/ground port or the device doesn't define both power and ground port.");
-        }
+//        if (!drawPower && !drawGround) {
+//            throw new IllegalStateException("The controller has insufficient power/ground port or the device doesn't define both power and ground port.");
+//        }
         if (drawPower) {
             usedPowerPort.add(controllerVccPort.get());
             drawWire(getTransformPortLocation(device, deviceVccPort.get()).getX(), getTransformPortLocation(device, deviceVccPort.get()).getY()
