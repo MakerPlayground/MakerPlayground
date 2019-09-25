@@ -17,20 +17,21 @@
 package io.makerplayground.device.actual;
 
 import io.makerplayground.device.generic.GenericDevice;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import io.makerplayground.project.ProjectDevice;
+import lombok.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class IntegratedActualDevice extends ActualDevice {
 
-    @EqualsAndHashCode.Exclude @Getter protected ActualDevice parent;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @Getter protected ActualDevice parent;
 
     public void setParent(ActualDevice parent) {
         if (this.parent != null) {

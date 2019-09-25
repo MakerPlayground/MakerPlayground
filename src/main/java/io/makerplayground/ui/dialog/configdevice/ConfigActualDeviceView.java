@@ -207,7 +207,11 @@ public class ConfigActualDeviceView extends VBox{
                         } else {
                             if (item.getCompatibleDevice().getActualDevice().isPresent()) {
                                 ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
-                                setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                                if (actualDevice instanceof IntegratedActualDevice) {
+                                    setText(actualDevice.getId());
+                                } else {
+                                    setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                                }
                             } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
                                 ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
                                 setText("Same as " + projectDevice.getName());
@@ -247,7 +251,11 @@ public class ConfigActualDeviceView extends VBox{
                 } else {
                     if (item.getCompatibleDevice().getActualDevice().isPresent()) {
                         ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
-                        setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                        if (actualDevice instanceof IntegratedActualDevice) {
+                            setText(actualDevice.getId());
+                        } else {
+                            setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                        }
                     } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
                         ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
                         setText("Same as " + projectDevice.getName());
@@ -392,84 +400,6 @@ public class ConfigActualDeviceView extends VBox{
 
             // We only show port combobox and property textfield when the device has been selected
             if (viewModel.isActualDevicePresent(projectDevice)) {
-//                ActualDevice actualDevice = viewModel.getActualDevice(projectDevice).orElseThrow();
-
-                /* TODO: uncomment this */
-//                if (!actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
-//                    viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
-//                } else {
-//                    // loop for each peripheral
-//                    for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
-//                        if (combo.get(p) == null)
-//                            continue;
-//
-//                        ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
-//                        portComboBox.setId("portComboBox");
-//                        portComboBox.setCellFactory(new Callback<>() {
-//                            @Override
-//                            public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
-//                                return new ListCell<>() {
-//                                    @Override
-//                                    protected void updateItem(List<DevicePort> item, boolean empty) {
-//                                        super.updateItem(item, empty);
-//                                        if (empty) {
-//                                            setText("");
-//                                        } else {
-//                                            setText(String.join(",", item.stream().map(DevicePort::getDisplayName).collect(Collectors.toList())));
-//                                        }
-//                                    }
-//                                };
-//                            }
-//                        });
-//                        portComboBox.setButtonCell(new ListCell<>() {
-//                            @Override
-//                            protected void updateItem(List<DevicePort> item, boolean empty) {
-//                                super.updateItem(item, empty);
-//                                if (empty) {
-//                                    setText("");
-//                                } else {
-//                                    setText(String.join(",", item.stream().map(DevicePort::getDisplayName).collect(Collectors.toList())));
-//                                }
-//                            }
-//                        });
-
-//                        if (!projectDevice.getDeviceConnection().isEmpty()) {
-//                            // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
-//                            portComboBox.getItems().add(1, Collections.emptyList());
-//                            portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-//                        } else {
-//                            // add dummy value to allow the selected port to be cleared
-//                            portComboBox.getItems().add(0, Collections.emptyList());
-//                            portComboBox.getSelectionModel().select(Collections.emptyList());
-//                        }
-//                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//                            if (newValue.isEmpty()) {
-//                                viewModel.clearPeripheral(projectDevice, p);
-//                            } else {
-//                                viewModel.setPeripheral(projectDevice, p, newValue);
-//                            }
-//                        });
-//
-//                        // TODO: handle other type (UART, SPI, etc.)
-//                        String portName;
-//                        if (p.getConnectionType() == ConnectionType.I2C) {
-//                            portName = "I2C";
-//                        } else if (p.getConnectionType() == ConnectionType.UART) {
-//                            portName = "UART";
-//                        } else {
-//                            portName = projectDevice.getActualDevice().getPort(p).get(0).getDisplayName();
-//                        }
-////
-////                        Label portLabel = new Label(portName);
-////
-////                        HBox portHBox = new HBox();
-////                        portHBox.getChildren().addAll(portLabel, portComboBox);
-////                        portHBox.setSpacing(5);
-////
-////                        portPane.getChildren().addAll(portHBox);
-////                    }
-////                    entireComboBoxDevice.getChildren().add(portPane);
-////                }
 
                 // property
                 if (viewModel.getActualDevice(projectDevice).orElseThrow().getProperty() != null && !viewModel.getActualDevice(projectDevice).orElseThrow().getProperty().isEmpty()) {

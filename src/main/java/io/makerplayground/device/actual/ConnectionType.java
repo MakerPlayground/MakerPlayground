@@ -24,6 +24,7 @@ import java.util.List;
 
 @Getter
 public enum ConnectionType {
+    INTEGRATED(List.of(), 0, false),
     WIRE(List.of(Color.BLUE), 2, false),
     GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, false),
     M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4, true),

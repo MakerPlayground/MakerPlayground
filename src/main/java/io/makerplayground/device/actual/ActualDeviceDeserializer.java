@@ -119,15 +119,6 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         List<Connection> connectionConsume = loadConnection(node.get("connection_consume"), devicePinTemplate);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
-        List<String> allConnectionName = Stream.of(connectionProvide.stream(), connectionConsume.stream())
-                .reduce(Stream::concat)
-                .orElseGet(Stream::empty)
-                .map(Connection::getName)
-                .collect(Collectors.toList());
-        if (allConnectionName.stream().anyMatch(s -> Collections.frequency(allConnectionName, s) > 1)) {
-            throw new IllegalStateException("There is a duplicate connection's name.");
-        }
-
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
 
@@ -155,15 +146,27 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             Map<String, PinTemplate> inDevicePinTemplate = this.allPinTemplateMap.get(inTemplateName);
 
             List<Connection> inConnection = new ArrayList<>();
+            List<Pin> inPins = new ArrayList<>();
+            List<Pin> hostPins = new ArrayList<>();
             for (JsonNode integratedConnectionNode: inNode.get("integrated_connection")) {
                 throwIfMissingField(integratedConnectionNode, "ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
                 throwIfMissingField(integratedConnectionNode, "host_ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
                 String refTo = integratedConnectionNode.get("ref_to").asText();
                 String hostRefTo = integratedConnectionNode.get("host_ref_to").asText();
-                PinTemplate template = inDevicePinTemplate.get(refTo);
-                Pin pin = new Pin(refTo, template.getCodingName(), template.getVoltageLevel(), template.getFunction(), -1, -1);
-                inConnection.add(new IntegratedConnection(template.getName(), ConnectionType.WIRE, List.of(pin), null, hostRefTo));
+                if (!inDevicePinTemplate.containsKey(refTo)) {
+                    throw new IllegalStateException("There is no pin named " + refTo + "in " + inTemplateName);
+                }
+                if (!devicePinTemplate.containsKey(hostRefTo)) {
+                    throw new IllegalStateException("There is no pin named " + hostRefTo + "in " + templateName);
+                }
+                PinTemplate inPinTemplate = inDevicePinTemplate.get(refTo);
+                inPins.add(new Pin(refTo, inPinTemplate.getCodingName(), inPinTemplate.getVoltageLevel(), inPinTemplate.getFunction(), -1, -1));
+
+                PinTemplate hostPinTemplate = devicePinTemplate.get(hostRefTo);
+                hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), hostPinTemplate.getFunction(), -1, -1));
             }
+            inConnection.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, inPins, null));
+            connectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
 
             /* Extract platformSourceCodeLibrary */
             Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
@@ -192,6 +195,22 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     .platformSourceCodeLibrary(inPlatformSourceCodeLibrary)
                     .build()
             );
+        }
+
+        List<String> allIntegratedDeviceName = integratedDevices.stream()
+                .map(IntegratedActualDevice::getId)
+                .collect(Collectors.toList());
+        if (allIntegratedDeviceName.stream().anyMatch(s -> Collections.frequency(allIntegratedDeviceName, s) > 1)) {
+            throw new IllegalStateException("There is a duplicate integrated device's name.");
+        }
+
+        List<String> allConnectionName = Stream.of(connectionProvide.stream(), connectionConsume.stream())
+                .reduce(Stream::concat)
+                .orElseGet(Stream::empty)
+                .map(Connection::getName)
+                .collect(Collectors.toList());
+        if (allConnectionName.stream().anyMatch(s -> Collections.frequency(allConnectionName, s) > 1)) {
+            throw new IllegalStateException("There is a duplicate connection's name.");
         }
 
         /* deallocate the created empty list and set to the shared static empty list instead */

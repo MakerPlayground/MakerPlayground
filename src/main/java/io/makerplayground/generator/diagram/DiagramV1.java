@@ -333,6 +333,9 @@ class DiagramV1 {
             .filter(projectDevice -> DRAWABLE_DEVICE_TYPES.contains(deviceMap.get(projectDevice).getDeviceType()))
             .forEach(projectDevice -> {
                 ActualDevice actualDevice = deviceMap.get(projectDevice);
+                if (actualDevice instanceof IntegratedActualDevice) {
+                    return;
+                }
                 if (actualDevice.isNeedBreadboard()) {
                     deviceNeedBreadboard.add(projectDevice);
                     return;
@@ -464,6 +467,9 @@ class DiagramV1 {
     }
 
     private void drawDevice(Pane drawingPane, ProjectDevice projectDevice) {
+        if (deviceMap.get(projectDevice) instanceof IntegratedActualDevice) {
+            return;
+        }
         try(InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, deviceMap.get(projectDevice).getId(), "asset", "device.png"))) {
             Image image = new Image(deviceImageStream);
             ImageView imageView = new ImageView(image);
@@ -515,6 +521,9 @@ class DiagramV1 {
             List<PinFunction> pinFunctions = deviceConnection.getProviderFunction().get(providerConnection);
             ProjectDevice consumerDevice = consumerConnection.getOwnerProjectDevice();
             ProjectDevice providerDevice = providerConnection.getOwnerProjectDevice();
+            if (deviceMap.get(consumerDevice) instanceof IntegratedActualDevice) {
+                continue;
+            }
             List<Pin> consumerPins = consumerConnection.getPins();
             List<Pin> providerPins = providerConnection.getPins();
             List<Color> pinColors = consumerConnection.getType().getPinColors();

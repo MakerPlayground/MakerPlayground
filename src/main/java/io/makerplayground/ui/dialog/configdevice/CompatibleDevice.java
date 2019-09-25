@@ -12,7 +12,7 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
     private ProjectDevice projectDevice;
 
     private static final Comparator<ProjectDevice> PROJECT_DEVICE_COMPARATOR = Comparator.comparing(ProjectDevice::getName);
-    private static final Comparator<ActualDevice> ACTUAL_DEVICE_COMPARATOR = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel);
+    private static final Comparator<ActualDevice> ACTUAL_DEVICE_COMPARATOR = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel).thenComparing(ActualDevice::getId);
 
     public CompatibleDevice(ActualDevice actualDevice) {
         this.actualDevice = actualDevice;

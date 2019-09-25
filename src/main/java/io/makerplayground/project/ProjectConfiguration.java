@@ -107,6 +107,7 @@ public final class ProjectConfiguration {
     private void generateDeviceSelectableMapAndConnection() {
         Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap = new HashMap<>();
         Map<ProjectDevice, Map<ActualDevice, List<DeviceConnection>>> deviceConnectionMap = new HashMap<>();
+
         /* add all device that is the same generic with "OK" mapping result */
         for (ProjectDevice device: nonControllerDevices) {
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = DeviceLibrary.INSTANCE.getActualDevice(getPlatform())
@@ -246,7 +247,6 @@ public final class ProjectConfiguration {
                         });
                     });
                     // TODO: add connection to be deallocated in case that there is the dependent device
-
 
                     DeviceConnectionResult result = DeviceConnectionLogic.generateOneStepPossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice);
                     if (result.getStatus() == DeviceConnectionResultStatus.ERROR) {

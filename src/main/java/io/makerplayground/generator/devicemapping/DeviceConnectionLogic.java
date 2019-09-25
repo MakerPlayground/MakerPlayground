@@ -43,9 +43,9 @@ public class DeviceConnectionLogic {
                                                                                  ActualDevice actualDevice)
     {
         List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
-        List<Connection> allPortsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
-        boolean[][] connectionMatching = getConnectionMatchingArray(allPortsConsume, allConnectionsProvide, usedRefPin);
-        List<DeviceConnection> deviceConnections = generateAllPossibleDeviceConnection(connectionMatching, allConnectionsProvide, allPortsConsume);
+        List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
+        boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
+        List<DeviceConnection> deviceConnections = generateAllPossibleDeviceConnection(connectionMatching, allConnectionsProvide, allConnectionsConsume);
         deviceConnections.sort(LESS_PROVIDER_DEPENDENCY);
         if (deviceConnections.isEmpty()) {
             return DeviceConnectionResult.ERROR;
@@ -65,21 +65,28 @@ public class DeviceConnectionLogic {
                     connectionMatching[i][j] = false;
                     continue;
                 }
+                if (connectionConsumer.getType() == ConnectionType.INTEGRATED
+                        && !connectionConsumer.getName().equals(connectionProvider.getName())) {
+                    connectionMatching[i][j] = false;
+                    continue;
+                }
                 if (connectionProvider.getPins().size() != connectionConsumer.getPins().size()) {
                     connectionMatching[i][j] = false;
                     continue;
                 }
-                for (int k = 0; k< connectionProvider.getPins().size(); k++) {
-                    List<PinFunction> provideFunctions = connectionProvider.getPins().get(k).getFunction();
-                    if (connectionConsumer.getPins().get(k).getFunction().get(0).getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
-                        connectionMatching[i][j] = false;
-                        break;
-                    }
-                    VoltageLevel consumerVoltageLevel = connectionConsumer.getPins().get(k).getVoltageLevel();
-                    VoltageLevel providerVoltageLevel = connectionProvider.getPins().get(k).getVoltageLevel();
-                    if (!consumerVoltageLevel.canConsume(providerVoltageLevel)) {
-                        connectionMatching[i][j] = false;
-                        break;
+                if (connectionConsumer.getType() != ConnectionType.INTEGRATED) {
+                    for (int k = 0; k< connectionProvider.getPins().size(); k++) {
+                        List<PinFunction> provideFunctions = connectionProvider.getPins().get(k).getFunction();
+                        if (connectionConsumer.getPins().get(k).getFunction().get(0).getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
+                            connectionMatching[i][j] = false;
+                            break;
+                        }
+                        VoltageLevel consumerVoltageLevel = connectionConsumer.getPins().get(k).getVoltageLevel();
+                        VoltageLevel providerVoltageLevel = connectionProvider.getPins().get(k).getVoltageLevel();
+                        if (!consumerVoltageLevel.canConsume(providerVoltageLevel)) {
+                            connectionMatching[i][j] = false;
+                            break;
+                        }
                     }
                 }
             }
