@@ -419,11 +419,11 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                         .build());
             }
 
-            if (connectionType.isSplittable()) {
-                for (int i=0; i<pins.size(); i++) {
-                    connectionList.add(new Connection(connectionName+"_"+(i+1), ConnectionType.WIRE, List.of(pins.get(i)), null));
-                }
-            }
+//            if (connectionType.isSplittable()) {
+//                for (int i=0; i<pins.size(); i++) {
+//                    connectionList.add(new Connection(connectionName+"_"+(i+1), ConnectionType.WIRE, List.of(pins.get(i)), null));
+//                }
+//            }
 
             connectionList.add(new Connection(connectionName, connectionType, pins, null));
         }
