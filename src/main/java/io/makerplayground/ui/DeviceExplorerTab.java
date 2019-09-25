@@ -70,6 +70,7 @@ public class DeviceExplorerTab extends SplitPane {
         });
 
         leftSplitPane = new SplitPane();
+        leftSplitPane.setMaxWidth(600);
         leftSplitPane.setDividerPositions(0.5);
         leftSplitPane.setOrientation(Orientation.VERTICAL);
 
@@ -136,6 +137,7 @@ public class DeviceExplorerTab extends SplitPane {
                             }
                         }
                     });
+                    uploadTask.exceptionProperty().addListener((observable, oldValue, newValue) -> newValue.printStackTrace());
                     new Thread(uploadTask).start();
 
                     UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask, true);

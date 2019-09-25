@@ -127,11 +127,11 @@ class WireAndBreadboardDiagram extends Pane {
                 getChildren().add(breadBoardExtend);
                 lastY += BREADBOARD_EXTEND_HEIGHT;
 
-                controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
+                controllerPosition = new Point2D(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + Math.floor((BREADBOARD_EXTEND_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0) * HOLE_SPACE - offsetY);
                 currentRow += leftHoleOffset + calculateNumberOfHoleWithoutLeftWing(controller);
             } else {
-                controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
+                controllerPosition = new Point2D(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
                         , BREADBOARD_TOP_MARGIN + J1_POS_Y + Math.floor((BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0) * HOLE_SPACE - offsetY);
                 currentRow += leftHoleOffset + calculateNumberOfHoleWithoutLeftWing(controller);
             }

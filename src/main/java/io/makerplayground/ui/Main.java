@@ -85,7 +85,7 @@ public class Main extends Application {
         borderPane.setTop(toolbar);
         borderPane.setCenter(mainWindow);
 
-        final Scene scene = new Scene(borderPane, 800, 600);
+        final Scene scene = new Scene(borderPane, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 

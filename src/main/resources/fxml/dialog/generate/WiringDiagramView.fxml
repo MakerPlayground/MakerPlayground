@@ -18,8 +18,8 @@
                 <HBox alignment="CENTER_LEFT" layoutY="20.0" spacing="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                     <children>
                         <Label text="Port" />
-                        <ComboBox fx:id="portCombobox" />
-                        <Button fx:id="startInteractiveModeButton" text="Start Interactive Mode" />
+                        <ComboBox id="interactivePortCombobox" fx:id="portCombobox" />
+                        <Button id="startInteractiveButton" fx:id="startInteractiveModeButton" text="Start Interactive Mode" />
                     </children>
                 </HBox>
                 <VBox id="zoomControl" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">

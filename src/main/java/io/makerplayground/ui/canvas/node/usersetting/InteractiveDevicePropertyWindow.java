@@ -6,6 +6,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.explorer.InteractiveModel;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
@@ -49,6 +50,7 @@ public class InteractiveDevicePropertyWindow extends PopOver {
             }
         }
         vBox.setSpacing(10);
+        vBox.setAlignment(Pos.TOP_CENTER);
         vBox.setPadding(new Insets(20));
 
         setTitle(actualDeviceName);

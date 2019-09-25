@@ -1,0 +1,140 @@
+#titlePane {
+    -fx-background-color: background-color;
+}
+
+.titled-pane {
+    -fx-text-fill: text-color-hilight;
+}
+
+.titled-pane > .title {
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-padding: 5px 10px 5px 5px;
+    -fx-text-fill: text-color-hilight;
+}
+
+.titled-pane > .title > .arrow-button .arrow{
+    -fx-background-color: text-color-hilight;
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow{
+    -fx-background-color: text-color-hilight;
+    /* remove the scale effect by setting the same insets and padding when it is not focused
+     * (value from modena.css from JDK 10.0.1)
+     */
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.25em 0.3125em 0.25em 0.3125em;
+    -fx-effect: null;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: background-color;
+    -fx-box-border: transparent;
+}
+
+.scroll-pane{
+    -fx-background-color: background-color;
+    -fx-border-color : background-color;
+    -fx-border-width : 1px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .increment-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .decrement-arrow{
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius: 0.5em;
+}
+
+.scroll-bar .thumb{
+    -fx-background-color: scrollbar-thumb-color;
+    -fx-border-radius: 0.5em;
+    -fx-background-insets: 2, 0, 0;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+
+#searchTextField {
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-pref-width: 200;
+}
+
+#searchTextField:focused{
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-focus-color: transparent;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/*#filterLabel {
+    -fx-text-fill: #707070;
+}*/
+
+/* -------- Segmented Button ---------------- */
+.segmented-button .toggle-button {
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-text-fill: #707070;
+ }
+
+.segmented-button .toggle-button:selected,
+.segmented-button .toggle-button:focused {
+    -fx-background-color: #cccccc;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-text-fill: #313644;
+}
+
+.segmented-button .toggle-button.left-pill {
+    -fx-border-radius: 3 0 0 3;
+    -fx-background-radius: 3 0 0 3;
+}
+
+.segmented-button .toggle-button.right-pill {
+    -fx-border-radius: 0 3 3 0;
+    -fx-background-radius: 0 3 3 0;
+}

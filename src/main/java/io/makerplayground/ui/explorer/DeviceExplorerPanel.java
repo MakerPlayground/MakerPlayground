@@ -41,6 +41,7 @@ public class DeviceExplorerPanel extends VBox {
         this.hostServices = hostServices;
 
         TextField searchTextField = new TextField();
+        searchTextField.setId("searchTextField");
         searchTextField.setPromptText("Search...");
         searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             currentSearchKeyword = newValue.toLowerCase();
@@ -49,6 +50,9 @@ public class DeviceExplorerPanel extends VBox {
 
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+
+//        Label filterLabel = new Label("Filter");
+//        filterLabel.setId("filterLabel");
 
         ToggleButton typeToggleButton = new ToggleButton("Type");
         typeToggleButton.setSelected(true);
@@ -72,9 +76,13 @@ public class DeviceExplorerPanel extends VBox {
         });
 
         HBox hbox = new HBox();
-        hbox.getChildren().addAll(searchTextField, spacer, segmentedButton);
+        hbox.setId("titlePane");
+        hbox.setPadding(new Insets(8, 8, 8, 8));
+        hbox.setSpacing(5);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.getChildren().addAll(searchTextField, spacer/*, filterLabel*/, segmentedButton);
 
-        setSpacing(10);
+        getStylesheets().add(getClass().getResource("/css/DeviceExplorer.css").toExternalForm());
         getChildren().add(hbox);
 
         initViewDeviceType();
@@ -176,7 +184,7 @@ public class DeviceExplorerPanel extends VBox {
             imageView.setFitHeight(80);
             imageView.setPreserveRatio(true);
             StackPane imageViewWrapper = new StackPane();
-            imageViewWrapper.setStyle("-fx-border-color: black");
+//            imageViewWrapper.setStyle("-fx-border-color: black");
             imageViewWrapper.setMinSize(80, 80);
             imageViewWrapper.setPrefSize(80, 80);
             imageViewWrapper.setMaxSize(80, 80);
@@ -188,22 +196,23 @@ public class DeviceExplorerPanel extends VBox {
             nameLabel.setMaxHeight(40);
             nameLabel.setAlignment(Pos.TOP_CENTER);
             nameLabel.setWrapText(true);
-            nameLabel.setStyle("-fx-border-color: black");
+//            nameLabel.setStyle("-fx-border-color: black");
 
-            Hyperlink url = new Hyperlink("more info");
-            url.setStyle("-fx-border-color: black; -fx-padding: 0");
-            url.setOnAction(event -> hostServices.showDocument(actualDevice.getUrl()));
-
-            Hyperlink addToProject = new Hyperlink("add");
-            addToProject.setStyle("-fx-border-color: black; -fx-padding: 0");
+            Hyperlink addToProject = new Hyperlink("add to project");
+            addToProject.setStyle("-fx-padding: 0");
             addToProject.setOnAction(event -> {
                 if (actualDeviceConsumer != null) {
                     actualDeviceConsumer.accept(actualDevice);
                 }
             });
 
+            Hyperlink url = new Hyperlink("More info");
+            url.setStyle("-fx-padding: 0");
+            url.setOnAction(event -> hostServices.showDocument(actualDevice.getUrl()));
+
             HBox tmp = new HBox();
-            tmp.getChildren().addAll(url, addToProject);    // TODO: fix
+            tmp.setAlignment(Pos.TOP_CENTER);
+            tmp.getChildren().addAll(addToProject/*, url*/);    // TODO: fix
 
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.TOP_CENTER);
@@ -213,11 +222,12 @@ public class DeviceExplorerPanel extends VBox {
             AnchorPane.setLeftAnchor(vBox, 0.0);
             AnchorPane.setRightAnchor(vBox, 0.0);
 
+            setAlignment(Pos.TOP_CENTER);
             setPadding(new Insets(10));
             setMinSize(160, 160);
             setPrefSize(160, 160);
             setMaxSize(160, 160);
-            setStyle("-fx-border-color: black");
+            setStyle("-fx-border-color: #cccccc;  -fx-border-radius: 10 10 10 10; ");
             getChildren().add(vBox);
         }
 
