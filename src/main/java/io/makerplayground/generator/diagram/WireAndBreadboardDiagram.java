@@ -41,8 +41,10 @@ class WireAndBreadboardDiagram extends Pane {
     private static final double BREADBOARD_LEFT_MARGIN = 30;
     private static final double BREADBOARD_WIDTH = 936.48;
     private static final double BREADBOARD_HEIGHT = 302.4;
+    private static final double BREADBOARD_EXTEND_HEIGHT = 258.4;
     private static final int    BREADBOARD_NUM_COLUMN = 5;
-    private static final int    BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE = 11;
+    private static final int    BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE = 12;
+    private static final int    BREADBOARD_EXTEND_NUM_COLUMN_WITH_CENTER_SPACE = 30;
     private static final double BREADBOARD_GND_BOT_X = 50.769;
     private static final double BREADBOARD_GND_BOT_Y = 274.145;
     private static final double BREADBOARD_PWR_BOT_X = 50.769;
@@ -106,16 +108,32 @@ class WireAndBreadboardDiagram extends Pane {
             e.printStackTrace();
         }
         if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
-            currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
-            DevicePort topLeftPort = getTopLeftHole(controller);
-            controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - topLeftPort.getX()
-                                            , BREADBOARD_TOP_MARGIN + J1_POS_Y - topLeftPort.getY());
-        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {   // TODO: not tested yet
-            currentRow += calculateNumberOfHoleWithoutLeftWing(controller);
-            int heightHole = (int) ((getBottomLeftHole(controller).getY() - getTopLeftHole(controller).getY()) / HOLE_SPACE);
+            throw new IllegalStateException();
+        } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {
+            // (bottom.y - top.y) / HOLE_SPACE should be an integer but we may get 7.9X which is actually 8 not 7
+            int heightHole = (int) Math.ceil((getBottomLeftHole(controller).getY() - getTopLeftHole(controller).getY()) / HOLE_SPACE);
+
+            double leftHoleOffset = Math.ceil(getTopLeftHole(controller).getX() / HOLE_SPACE);
             double offsetY = getTopLeftHole(controller).getY();
-            controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X - getTopLeftHole(controller).getX()
-                                            , BREADBOARD_TOP_MARGIN + J1_POS_Y + ((Math.floor(BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0)) * HOLE_SPACE - offsetY);
+
+            // if number of hole left is less than 2, we extend the baseboard vertically
+            if ((BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) < 2) {
+                // TODO: we should also draw the extend baseboard when there is a very wide device with BREAKOUT_BOARD_TWOSIDE formfactor
+                // draw the extend baseboard
+                ImageView breadBoardExtend = new ImageView(new Image(getClass().getResourceAsStream("/device/breadboard_large_extend@2x.png")));
+                breadBoardExtend.setLayoutX(BREADBOARD_LEFT_MARGIN);
+                breadBoardExtend.setLayoutY(BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT);
+                getChildren().add(breadBoardExtend);
+                lastY += BREADBOARD_EXTEND_HEIGHT;
+
+                controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
+                        , BREADBOARD_TOP_MARGIN + J1_POS_Y + Math.floor((BREADBOARD_EXTEND_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0) * HOLE_SPACE - offsetY);
+                currentRow += leftHoleOffset + calculateNumberOfHoleWithoutLeftWing(controller);
+            } else {
+                controllerPosition = new Position(BREADBOARD_LEFT_MARGIN + J1_POS_X + (currentRow * HOLE_SPACE) + (leftHoleOffset * HOLE_SPACE) - getTopLeftHole(controller).getX()
+                        , BREADBOARD_TOP_MARGIN + J1_POS_Y + Math.floor((BREADBOARD_NUM_COLUMN_WITH_CENTER_SPACE - heightHole) / 2.0) * HOLE_SPACE - offsetY);
+                currentRow += leftHoleOffset + calculateNumberOfHoleWithoutLeftWing(controller);
+            }
         } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
             controllerPosition = new Position(BREADBOARD_LEFT_MARGIN, lastY);
             lastY = lastY + controller.getHeight();
@@ -230,12 +248,12 @@ class WireAndBreadboardDiagram extends Pane {
                     if (!connectVcc && p.isVcc()) {
                         // TODO: there is a case that use multiple voltages in the same project.
                         createPowerLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_PWR_BOT_X + (numberOfPwrPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_PWR_BOT_Y,
-                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                                BREADBOARD_LEFT_MARGIN + p.getX(), controllerPosition.getY() + p.getY());
                         numberOfPwrPinUsed++;
                         connectVcc = true;
                     } else if (!connectGnd && p.isGnd()) {
                         createGndLine(BREADBOARD_LEFT_MARGIN + BREADBOARD_GND_BOT_X + (numberOfGndPinUsed * HOLE_SPACE), BREADBOARD_TOP_MARGIN + BREADBOARD_GND_BOT_Y,
-                                BREADBOARD_LEFT_MARGIN + p.getX(), BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN + p.getY());
+                                BREADBOARD_LEFT_MARGIN + p.getX(), controllerPosition.getY() + p.getY());
                         numberOfGndPinUsed++;
                         connectGnd = true;
                     }
@@ -380,31 +398,31 @@ class WireAndBreadboardDiagram extends Pane {
             if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_TWOSIDE) {  // TODO: not tested yet
                 // SDA: top side - go up
                 if (startSDA.getY() == getTopLeftHole(controller).getY()) {
-                    sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
-                    sdaStartY = startSDA.getY() - HOLE_SPACE;
+                    sdaStartX = controllerPosition.getX() + startSDA.getX();
+                    sdaStartY = controllerPosition.getY() + startSDA.getY() - HOLE_SPACE;
                 }
                 // SDA: Bottom side - go down
                 if (startSDA.getY() != getTopLeftHole(controller).getY()) {
-                    sdaStartX = startSDA.getX();
-                    sdaStartY = startSDA.getY() + HOLE_SPACE;
+                    sdaStartX = controllerPosition.getX() + startSDA.getX();
+                    sdaStartY = controllerPosition.getY() + startSDA.getY() + HOLE_SPACE;
                 }
                 // SCL: top side - go up
                 if (startSCL.getY() == getTopLeftHole(controller).getY()) {
-                    sclStartX = startSCL.getX() + BREADBOARD_LEFT_MARGIN;
-                    sclStartY = startSCL.getY() - HOLE_SPACE;
+                    sclStartX = controllerPosition.getX() + startSCL.getX() + BREADBOARD_LEFT_MARGIN;
+                    sclStartY = controllerPosition.getY() + startSCL.getY() - HOLE_SPACE;
                 }
                 // SCL: bottom side - go down
                 if (startSCL.getY() != getTopLeftHole(controller).getY()) {
-                    sclStartX = startSCL.getX();
-                    sclStartY = startSCL.getY() + HOLE_SPACE;
+                    sclStartX = controllerPosition.getX() + startSCL.getX();
+                    sclStartY = controllerPosition.getY() + startSCL.getY() + HOLE_SPACE;
                 }
             } else if (controller.getFormFactor() == FormFactor.BREAKOUT_BOARD_ONESIDE) {
                 //TODO: Implement this
             } else if (controller.getFormFactor() == FormFactor.STANDALONE) {
                 sdaStartX = startSDA.getX() + BREADBOARD_LEFT_MARGIN;
-                sdaStartY = startSDA.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
+                sdaStartY = startSDA.getY() + controllerPosition.getY();
                 sclStartX = startSCL.getX() + BREADBOARD_LEFT_MARGIN;
-                sclStartY = startSCL.getY() + BREADBOARD_TOP_MARGIN + BREADBOARD_HEIGHT + CONTROLLER_Y_MARGIN;
+                sclStartY = startSCL.getY() + controllerPosition.getY();
             }
 
             for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
@@ -529,6 +547,9 @@ class WireAndBreadboardDiagram extends Pane {
         List<FormFactor> formFactors = List.of(FormFactor.BREAKOUT_BOARD_ONESIDE,
                                                 FormFactor.BREAKOUT_BOARD_TWOSIDE,
                                                 FormFactor.BREADBOARD_CUSTOM);
+        if (formFactors.contains(project.getController().getFormFactor())){
+            return true;
+        }
         int countStandAlone = 0;
         for(ProjectDevice device : project.getAllDeviceUsed()) {
             if (device.isMergeToOtherDevice()) {
