@@ -38,13 +38,13 @@ jlink {
         name = project.name
         jvmArgs = ['--add-modules javafx.controls',
                 '--add-modules javafx.fxml',
-                "--add-reads ${project.name}.merged.module=javafx.base,javafx.graphics,javafx.controls",
-                "--add-exports=javafx.base/com.sun.javafx.runtime=${project.name}.merged.module",
-                "--add-exports=javafx.base/com.sun.javafx.collections=${project.name}.merged.module",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control=${project.name}.merged.module",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=${project.name}.merged.module",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=${project.name}.merged.module",
-                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=${project.name}.merged.module"]
+                "--add-reads org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
     }
     mergedModule {
         requires 'java.sql'
@@ -68,13 +68,13 @@ task createBundle(type: Exec) {
             '--module', "${moduleName}",
             '--jvm-args', '--add-modules javafx.controls',
             '--jvm-args', '--add-modules javafx.fxml',
-            '--jvm-args', "--add-reads ${project.name}.merged.module=javafx.base,javafx.graphics,javafx.controls",
-            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=${project.name}.merged.module",
-            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=${project.name}.merged.module",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control=${project.name}.merged.module",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=${project.name}.merged.module",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=${project.name}.merged.module",
-            '--jvm-args', "--add-exports javafx.graphics/com.sun.javafx.scene.traversal=${project.name}.merged.module",
+            '--jvm-args', "--add-reads org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+            '--jvm-args', "--add-exports javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
             '--jvm-args', "-m ${mainClassName}",
             '--verbose'
     ]
