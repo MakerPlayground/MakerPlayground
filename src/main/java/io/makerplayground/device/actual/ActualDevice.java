@@ -506,4 +506,10 @@ public class ActualDevice {
                 ", property=" + property +
                 '}';
     }
+
+    public List<List<DevicePort>> getRS485Port() {
+        List<List<DevicePort>> result = new ArrayList<>();
+        port.stream().filter(port->port.getPeripheral(ConnectionType.KMM_RS_485).isPresent()).collect(Collectors.toList()).forEach(p->result.add(List.of(p)));
+        return result;
+    }
 }

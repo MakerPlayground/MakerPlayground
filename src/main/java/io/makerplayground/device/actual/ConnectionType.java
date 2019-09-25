@@ -68,6 +68,8 @@ public enum ConnectionType {
     /* JR3 Family */
     JR3_SERVO,
 
+    KMM_RS_485,
+
     /* RPI */
     RPI_CAMERA;
 
@@ -92,5 +94,9 @@ public enum ConnectionType {
 
     public boolean isUART() {
         return (this == GROVE_UART) || (this == INEX_UART);
+    }
+
+    public boolean isHWSerial() {
+        return this == KMM_RS_485;
     }
 }

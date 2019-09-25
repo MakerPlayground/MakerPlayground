@@ -142,7 +142,7 @@ class ArduinoCodeGenerator {
                         }
                         // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
                         for (DevicePort devicePort : port) {
-                            if (p.isI2C1() || p.isI2C() || p.isSPI()) {
+                            if (p.isI2C1() || p.isI2C() || p.isSPI() || p.isRS485()) {
                                 continue;
                             }
                             if (!devicePort.getAlias().isEmpty()) {
@@ -225,7 +225,8 @@ class ArduinoCodeGenerator {
     private void appendSetupFunction() {
         // generate setup function
         builder.append("void setup() {").append(NEW_LINE);
-        builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
+//        builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
+        builder.append(INDENT).append("Serial.begin(9600);").append(NEW_LINE);
 
         if (project.getPlatform().equals(Platform.ARDUINO_ESP32)) {
             builder.append(INDENT).append("analogSetWidth(10);").append(NEW_LINE);
@@ -235,7 +236,7 @@ class ArduinoCodeGenerator {
             String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
             builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
+//            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -248,7 +249,7 @@ class ArduinoCodeGenerator {
             String variableName = parseDeviceVariableName(projectDevice);
             builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
             builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
+//            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
             builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
             builder.append(NEW_LINE);
@@ -327,16 +328,16 @@ class ArduinoCodeGenerator {
         // log status of each devices
         builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
-                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+//            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
+//                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }
-            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(projectDevice))
-                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+//            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(projectDevice))
+//                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
         builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);

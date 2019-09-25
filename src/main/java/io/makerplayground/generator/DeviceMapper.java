@@ -219,7 +219,7 @@ public class DeviceMapper {
         Set<DevicePort> usedPort = new HashSet<>();
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
-                if (p.getConnectionType() != ConnectionType.I2C) {
+                if (p.getConnectionType() != ConnectionType.I2C && p.getConnectionType() != ConnectionType.KMM_RS_485) {
                     usedPort.addAll(projectDevice.getDeviceConnection().get(p));
                 }
             }
@@ -229,7 +229,7 @@ public class DeviceMapper {
         Map<ProjectDevice, Set<DevicePort>> conflictIfUsedPortMap = new HashMap<>();
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             for (Peripheral p : projectDevice.getDeviceConnection().keySet()) {
-                if (p.getConnectionType() != ConnectionType.I2C) {
+                if (p.getConnectionType() != ConnectionType.I2C && p.getConnectionType() != ConnectionType.KMM_RS_485) {
                     List<DevicePort> ports = projectDevice.getDeviceConnection().get(p);
                     Set<DevicePort> conflictIfUsedPort = processorPort.stream()
                             .filter(devicePort -> ports.stream().anyMatch(devicePort::isConflictedTo))
@@ -303,6 +303,10 @@ public class DeviceMapper {
                     possibleDevice.get(pDevice).add(Collections.emptyList());
                 } else if (pDevice.getConnectionType() == ConnectionType.I2C) {    // I2C can be shared so we handle it separately
                     for (List<DevicePort> port : project.getController().getI2CPort()) {
+                        possibleDevice.get(pDevice).add(port);
+                    }
+                } else if (pDevice.getConnectionType() == ConnectionType.KMM_RS_485) {    // RS485 can be shared so we handle it separately
+                    for (List<DevicePort> port : project.getController().getRS485Port()) {
                         possibleDevice.get(pDevice).add(port);
                     }
                 } else {    // normal port that can be used once including GPIO/PWM/ANALOG, MP_GPIO/PWM/ANALOG/I2C, INEX_GPIO/PWM/ANALOG/WS2812, ...
@@ -461,7 +465,7 @@ public class DeviceMapper {
                     return false;
                 }
 
-                if (devicePeripheral.isI2C()) {
+                if (devicePeripheral.isI2C() || devicePeripheral.isRS485()) {
                     // I2C port of Maker Playground, Grove and INEX platform can be shared by using an external
                     // hub so we try to assign to a free port first before forcing user to add a hub
                     List<DevicePort> unusedPort = port.stream().filter(dp -> !hasPortUsed(project, dp))

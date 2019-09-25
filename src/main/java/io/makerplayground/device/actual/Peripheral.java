@@ -325,7 +325,9 @@ public enum Peripheral {
 
     RPI_CAMERA(ConnectionType.RPI_CAMERA),
 
-    POWER(ConnectionType.POWER);
+    POWER(ConnectionType.POWER),
+
+    KMM_RS_485_1(ConnectionType.KMM_RS_485);
 
 
     private ConnectionType connectionType;
@@ -448,6 +450,15 @@ public enum Peripheral {
         switch (this.getConnectionType()) {
             case SPI:
             case INEX_SPI:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isRS485() {
+        switch (this.getConnectionType()) {
+            case KMM_RS_485:
                 return true;
             default:
                 return false;
