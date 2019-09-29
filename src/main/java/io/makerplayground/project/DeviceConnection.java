@@ -18,6 +18,7 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.actual.Connection;
+import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.PinFunction;
 import lombok.*;
 
@@ -36,10 +37,10 @@ public class DeviceConnection implements Comparable<DeviceConnection> {
     public DeviceConnection(SortedMap<Connection, Connection> consumerProviderConnection, SortedMap<Connection, List<PinFunction>> providerFunction)
     {
         this.consumerProviderConnections = Objects.nonNull(consumerProviderConnection)
-                ? Collections.unmodifiableSortedMap(consumerProviderConnection)
+                ? consumerProviderConnection
                 : Collections.emptySortedMap();
         this.providerFunction = Objects.nonNull(providerFunction)
-                ? Collections.unmodifiableSortedMap(providerFunction)
+                ? providerFunction
                 : Collections.emptySortedMap();
     }
 
@@ -55,5 +56,35 @@ public class DeviceConnection implements Comparable<DeviceConnection> {
     @Override
     public int compareTo(DeviceConnection o) {
         return comparator.compare(this, o);
+    }
+
+    void setConnection(Connection consumerConnection, Connection providerConnection) {
+        if (consumerProviderConnections.containsKey(consumerConnection) && consumerProviderConnections.get(consumerConnection) != null) {
+            providerFunction.remove(consumerProviderConnections.get(consumerConnection));
+        }
+        if (providerConnection == null) {
+            return;
+        }
+        List<Pin> consumerPinList = consumerConnection.getPins();
+        List<Pin> providerPinList = providerConnection.getPins();
+        if (consumerPinList.size() != providerPinList.size()) {
+            throw new IllegalStateException("Two connections have difference size of pin list.");
+        }
+        List<PinFunction> providerPinFunction = new ArrayList<>();
+        for (int k=0; k<providerPinList.size(); k++) {
+            Pin consumerPin = consumerPinList.get(k);
+            Pin providerPin = providerPinList.get(k);
+            for (PinFunction function: consumerPin.getFunction().get(0).getPossibleConsume()) {
+                if (providerPin.getFunction().contains(function)) {
+                    providerPinFunction.add(function);
+                    break;
+                }
+            }
+        }
+        if (providerPinFunction.size() != providerPinList.size()) {
+            throw new IllegalStateException("Pin functions of connections are not matched.");
+        }
+        consumerProviderConnections.put(consumerConnection, providerConnection);
+        providerFunction.put(providerConnection, providerPinFunction);
     }
 }

@@ -16,7 +16,6 @@
 
 package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
@@ -27,13 +26,9 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
 
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ProjectLogic {
 
@@ -100,7 +95,9 @@ public class ProjectLogic {
                 }
                 ProjectDevice root = configuration.getIdenticalDevice(projectDevice).orElse(projectDevice);
                 var projectDeviceConnectionMap = project.getProjectConfiguration().getUnmodifiableDeviceConnections();
-                if (!projectDeviceConnectionMap.containsKey(root) || projectDeviceConnectionMap.get(root) == DeviceConnection.NOT_CONNECTED) {
+                if (!projectDeviceConnectionMap.containsKey(root) ||
+                        projectDeviceConnectionMap.get(root) == DeviceConnection.NOT_CONNECTED ||
+                        projectDeviceConnectionMap.get(root).getConsumerProviderConnections().values().stream().anyMatch(Objects::isNull)) {
                     return ProjectMappingResult.NOT_SELECT_PORT;
                 }
             }

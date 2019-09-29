@@ -16,15 +16,16 @@
 
 package io.makerplayground.generator.devicemapping;
 
-import io.makerplayground.project.DeviceConnection;
+import io.makerplayground.device.actual.Connection;
 import lombok.Data;
 
 import java.util.List;
+import java.util.SortedMap;
 
 @Data
 public class DeviceConnectionResult {
     private final DeviceConnectionResultStatus status;
-    private final List<DeviceConnection> connections;
+    private final SortedMap<Connection, List<Connection>> connections;
 
     public static DeviceConnectionResult ERROR = new DeviceConnectionResult(DeviceConnectionResultStatus.ERROR, null);
 }

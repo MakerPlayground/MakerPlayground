@@ -35,10 +35,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -279,33 +276,25 @@ public class ConfigActualDeviceView extends VBox{
                 .collect(Collectors.joining("-"));
     }
 
-    private ListCell<DeviceConnection> newPinPortConnectionListCell() {
+    private ListCell<Connection> newConnectionListCell() {
         return new ListCell<>() {
             @Override
-            protected void updateItem(DeviceConnection item, boolean empty) {
+            protected void updateItem(Connection item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    setText(item != DeviceConnection.NOT_CONNECTED ? getDeviceConnectionString(item) : null);
-                }
+                setText(empty || item == null ? null : item.getName());
             }
         };
     }
 
-    private Callback<ListView<DeviceConnection>, ListCell<DeviceConnection>> newPinPortConnectionCellFactory() {
+    private Callback<ListView<Connection>, ListCell<Connection>> newConnectionCellFactory() {
         return new Callback<>() {
             @Override
-            public ListCell<DeviceConnection> call(ListView<DeviceConnection> param) {
+            public ListCell<Connection> call(ListView<Connection> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(DeviceConnection item, boolean empty) {
+                    protected void updateItem(Connection item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty) {
-                            setText(null);
-                        } else {
-                            setText(item != DeviceConnection.NOT_CONNECTED ? getDeviceConnectionString(item) : null);
-                        }
+                        setText(empty || item == null ? null : item.getName());
                     }
                 };
             }
@@ -373,27 +362,31 @@ public class ConfigActualDeviceView extends VBox{
                         if (actualDevice.getDeviceType() == DeviceType.VIRTUAL) {
                             return;
                         }
-                        ComboBox<DeviceConnection> portComboBox = new ComboBox<>(FXCollections.observableList(new ArrayList<>(viewModel.getPossibleDeviceConnections(projectDevice, actualDevice))));
-                        portComboBox.setCellFactory(newPinPortConnectionCellFactory());
-                        portComboBox.setButtonCell(newPinPortConnectionListCell());
-                        portComboBox.itemsProperty().get().add(0, DeviceConnection.NOT_CONNECTED);
-                        DeviceConnection connection = viewModel.getSelectedPinPortConnection(projectDevice);
-                        if (connection != DeviceConnection.NOT_CONNECTED) {
+                        FlowPane portListUI = new FlowPane(Orientation.HORIZONTAL, 5.0, 5.0);
+                        Map<Connection, List<Connection>> possibleDeviceConnection = viewModel.getPossibleDeviceConnections(projectDevice, actualDevice);
+                        for (Connection connectionConsume: possibleDeviceConnection.keySet()) {
+                            List<Connection> possibleConnectionProvide = new ArrayList<>(possibleDeviceConnection.get(connectionConsume));
+                            possibleConnectionProvide.add(0, null);
+                            ComboBox<Connection> portComboBox = new ComboBox<>(FXCollections.observableList(possibleConnectionProvide));
+                            portComboBox.setCellFactory(newConnectionCellFactory());
+                            portComboBox.setButtonCell(newConnectionListCell());
+
+                            Connection connection = viewModel.getSelectedConnection(projectDevice, connectionConsume);
                             portComboBox.getSelectionModel().select(connection);
+                            portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setConnection(projectDevice, connectionConsume, newValue));
+
+                            Label portLabel = new Label(connectionConsume.getName());
+                            Tooltip tooltip = new Tooltip(connectionConsume.getName());
+                            tooltip.setShowDelay(Duration.ZERO);
+                            portLabel.setTooltip(tooltip);
+                            portLabel.setMinWidth(Region.USE_PREF_SIZE);
+                            portListUI.setAlignment(Pos.CENTER_LEFT);
+                            HBox hbox = new HBox(5.0);
+                            hbox.setAlignment(Pos.CENTER_LEFT);
+                            hbox.getChildren().addAll(portLabel, portComboBox);
+                            portListUI.getChildren().addAll(hbox);
                         }
-                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevicePinPortConnection(projectDevice, newValue));
-
-                        String label = actualDevice.getConnectionConsumeByOwnerDevice(null).stream().sorted().map(Connection::getName).collect(Collectors.joining("-"));
-
-                        Tooltip tooltip = new Tooltip(label);
-                        tooltip.setShowDelay(Duration.millis(50));
-                        Label portLabel = new Label("Port");
-                        portLabel.setTooltip(tooltip);
-                        HBox portHBox = new HBox();
-                        portHBox.setAlignment(Pos.CENTER_LEFT);
-                        portHBox.getChildren().addAll(portLabel, portComboBox);
-                        portHBox.setSpacing(5);
-                        entireComboBoxDevice.getChildren().add(portHBox);
+                        entireComboBoxDevice.getChildren().add(portListUI);
                     });
                 }
             }

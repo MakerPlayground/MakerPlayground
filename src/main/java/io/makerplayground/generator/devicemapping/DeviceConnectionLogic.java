@@ -17,41 +17,12 @@
 package io.makerplayground.generator.devicemapping;
 
 import io.makerplayground.device.actual.*;
-import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 import lombok.NonNull;
 
 import java.util.*;
 
 public class DeviceConnectionLogic {
-
-    private static final Comparator<DeviceConnection> LESS_PROVIDER_DEPENDENCY = Comparator
-            .comparingInt((DeviceConnection deviceConnection) -> deviceConnection.getConsumerProviderConnections().size())
-            .thenComparingInt((DeviceConnection deviceConnection) -> deviceConnection
-                    .getConsumerProviderConnections()
-                    .values()
-                    .stream()
-                    .flatMap(providerConnection -> providerConnection.getPins().stream())
-                    .map(Pin::getFunction)
-                    .mapToInt(List::size)
-                    .sum())
-            .thenComparing(DeviceConnection::toString);
-
-    public static DeviceConnectionResult generateOneStepPossibleDeviceConnection(Set<Connection> remainingConnectionProvide,
-                                                                                 Map<ProjectDevice, Set<String>> usedRefPin,
-                                                                                 ProjectDevice projectDevice,
-                                                                                 ActualDevice actualDevice)
-    {
-        List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
-        List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
-        boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
-        List<DeviceConnection> deviceConnections = generateAllPossibleDeviceConnection(connectionMatching, allConnectionsProvide, allConnectionsConsume);
-        deviceConnections.sort(LESS_PROVIDER_DEPENDENCY);
-        if (deviceConnections.isEmpty()) {
-            return DeviceConnectionResult.ERROR;
-        }
-        return new DeviceConnectionResult(DeviceConnectionResultStatus.OK, deviceConnections);
-    }
 
     private static boolean[][] getConnectionMatchingArray(List<Connection> allConnectionConsume, List<Connection> remainingConnectionProvide, Map<ProjectDevice, Set<String>> usedRefPin) {
         boolean[][] connectionMatching = new boolean[allConnectionConsume.size()][];
@@ -104,87 +75,6 @@ public class DeviceConnectionLogic {
         return connectionMatching;
     }
 
-    private static List<DeviceConnection> generateAllPossibleDeviceConnection(boolean[][] matching,
-                                                                              List<Connection> allConnectionsProvide,
-                                                                              List<Connection> allConnectionsConsume)
-    {
-        boolean[][] selected = new boolean[matching.length][];
-        for (int i=0; i<matching.length; i++) {
-            selected[i] = new boolean[matching[i].length];
-        }
-        return generateAllPossibleDeviceConnectionRecursive(matching, selected, allConnectionsProvide, allConnectionsConsume, 0);
-    }
-
-    private static List<DeviceConnection> generateAllPossibleDeviceConnectionRecursive(boolean[][] matching,
-                                                                                       boolean[][] selected,
-                                                                                       List<Connection> allConnectionsProvide,
-                                                                                       List<Connection> allConnectionsConsume,
-                                                                                       int currentRow)
-    {
-        if (currentRow >= selected.length) {
-            List<DeviceConnection> result = new ArrayList<>();
-            SortedMap<Connection, Connection> connectionMap = new TreeMap<>();
-            SortedMap<Connection, List<PinFunction>> functionUsed = new TreeMap<>();
-            for (int i=0; i<selected.length; i++) {
-                int trueIndex = -1;
-                for (int j=0; j<selected[i].length; j++) {
-                    if (selected[i][j]) {
-                        trueIndex = j;
-                    }
-                }
-                Connection connectionConsume = allConnectionsConsume.get(i);
-                Connection connectionProvide = allConnectionsProvide.get(trueIndex);
-                List<Pin> consumerPinList = connectionConsume.getPins();
-                List<Pin> providerPinList = connectionProvide.getPins();
-                if (consumerPinList.size() != providerPinList.size()) {
-                    return Collections.emptyList();
-                }
-                List<PinFunction> providerPinFunction = new ArrayList<>();
-                for (int k=0; k<providerPinList.size(); k++) {
-                    Pin consumerPin = consumerPinList.get(k);
-                    Pin providerPin = providerPinList.get(k);
-                    for (PinFunction function: consumerPin.getFunction().get(0).getPossibleConsume()) {
-                        if (providerPin.getFunction().contains(function)) {
-                            providerPinFunction.add(function);
-                            break;
-                        }
-                    }
-                }
-                if (providerPinFunction.size() != providerPinList.size()) {
-                    return Collections.emptyList();
-                }
-                connectionMap.put(connectionConsume, connectionProvide);
-                functionUsed.put(connectionProvide, providerPinFunction);
-            }
-            result.add(new DeviceConnection(connectionMap, functionUsed));
-            return result;
-        }
-        List<DeviceConnection> result = new ArrayList<>();
-        boolean rowHasTrue = false;
-        for (int j=0; j<matching[currentRow].length; j++) {
-            if (matching[currentRow][j]) {
-                rowHasTrue = true;
-                boolean[][] temp = deepCopy(selected);
-                boolean repeat = false;
-                for (int i=0; i<currentRow; i++) {
-                    if (selected[i][j]) {
-                        repeat = true;
-                        break;
-                    }
-                }
-                if (!repeat) {
-                    temp[currentRow][j] = true;
-                    result.addAll(generateAllPossibleDeviceConnectionRecursive(matching, temp, allConnectionsProvide, allConnectionsConsume, currentRow+1));
-                    temp[currentRow][j] = false;
-                }
-            }
-        }
-        if (!rowHasTrue) {
-            return Collections.emptyList();
-        }
-        return result;
-    }
-
     private static boolean[][] deepCopy(@NonNull boolean[][] original) {
         final boolean[][] result = new boolean[original.length][];
         for (int i = 0; i < original.length; i++) {
@@ -193,4 +83,32 @@ public class DeviceConnectionLogic {
         return result;
     }
 
+    private static final Comparator<Connection> LESS_PROVIDER_DEPENDENCY = Comparator
+            .comparingInt((Connection connection) -> connection.getPins().stream().map(Pin::getFunction).mapToInt(List::size).sum())
+            .thenComparing(Connection::getName);
+
+    private static final Comparator<Connection> CONNECTION_NAME_ASCENDING = Comparator.comparing(Connection::getName);
+
+    public static DeviceConnectionResult generatePossibleDeviceConnection(Set<Connection> remainingConnectionProvide, Map<ProjectDevice, Set<String>> usedRefPin, ProjectDevice projectDevice, ActualDevice actualDevice) {
+        List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
+        List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
+        boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
+        SortedMap<Connection, List<Connection>> deviceConnections = new TreeMap<>(CONNECTION_NAME_ASCENDING);
+        for (int i=0; i<allConnectionsConsume.size(); i++) {
+            Connection connectionConsume = allConnectionsConsume.get(i);
+            List<Connection> connectionProvideList = new ArrayList<>();
+            for (int j=0; j<allConnectionsProvide.size(); j++) {
+                if (connectionMatching[i][j]) {
+                    Connection connectionProvide = allConnectionsProvide.get(j);
+                    connectionProvideList.add(connectionProvide);
+                }
+            }
+            if (connectionProvideList.isEmpty()) {
+                return DeviceConnectionResult.ERROR;
+            }
+            connectionProvideList.sort(LESS_PROVIDER_DEPENDENCY);
+            deviceConnections.put(connectionConsume, connectionProvideList);
+        }
+        return new DeviceConnectionResult(DeviceConnectionResultStatus.OK, deviceConnections);
+    }
 }
