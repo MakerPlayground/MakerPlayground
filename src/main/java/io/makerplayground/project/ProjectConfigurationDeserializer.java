@@ -169,16 +169,20 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
                 ActualDevice consumerActualDevice = deviceMap.get(consumerProjectDevice);
                 Optional<Connection> connectionConsume = consumerActualDevice.getConnectionConsumeByOwnerDevice(consumerProjectDevice, consumePortName);
 
-                String providerProjectDeviceName = connectionConsumerProviderNode.get("provideConnectionOwner").asText();
-                String providerPinName = connectionConsumerProviderNode.get("provideConnectionName").asText();
-                ProjectDevice providerProjectDevice = searchProjectDevice(providerProjectDeviceName);
-                ActualDevice providerActualDevice = deviceMap.get(providerProjectDevice);
-                Optional<Connection> connectionProvide = providerActualDevice.getConnectionProvideByOwnerDevice(providerProjectDevice, providerPinName);
+                if (connectionConsumerProviderNode.has("provideConnectionOwner") && connectionConsumerProviderNode.has("provideConnectionName")) {
+                    String providerProjectDeviceName = connectionConsumerProviderNode.get("provideConnectionOwner").asText();
+                    String providerPinName = connectionConsumerProviderNode.get("provideConnectionName").asText();
+                    ProjectDevice providerProjectDevice = searchProjectDevice(providerProjectDeviceName);
+                    ActualDevice providerActualDevice = deviceMap.get(providerProjectDevice);
+                    Optional<Connection> connectionProvide = providerActualDevice.getConnectionProvideByOwnerDevice(providerProjectDevice, providerPinName);
 
-                if (connectionConsume.isEmpty() || connectionProvide.isEmpty()) {
-                    throw new IllegalStateException("The required connection is not in the project");
+                    if (connectionConsume.isEmpty() || connectionProvide.isEmpty()) {
+                        throw new IllegalStateException("The required connection is not in the project");
+                    }
+                    consumerProviderConnection.put(connectionConsume.get(), connectionProvide.get());
+                } else {
+                    consumerProviderConnection.put(connectionConsume.get(), null);
                 }
-                consumerProviderConnection.put(connectionConsume.get(), connectionProvide.get());
             }
 
             SortedMap<Connection, List<PinFunction>> providerFunction = new TreeMap<>();

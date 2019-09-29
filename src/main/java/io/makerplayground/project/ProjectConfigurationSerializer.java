@@ -195,12 +195,14 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
             jsonGenerator.writeStringField("projectDevice", projectDevice.getName());
             jsonGenerator.writeArrayFieldStart("consumerProviderConnection");
             for (Connection consumerConnection : deviceConnection.getConsumerProviderConnections().keySet()) {
-                Connection providerConnection = deviceConnection.getConsumerProviderConnections().get(consumerConnection);
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("consumeConnectionName", consumerConnection.getName());
                 jsonGenerator.writeStringField("consumeConnectionOwner", consumerConnection.getOwnerProjectDevice().getName());
-                jsonGenerator.writeStringField("provideConnectionName", providerConnection.getName());
-                jsonGenerator.writeStringField("provideConnectionOwner", providerConnection.getOwnerProjectDevice().getName());
+                Connection providerConnection = deviceConnection.getConsumerProviderConnections().get(consumerConnection);
+                if (providerConnection != null) {
+                    jsonGenerator.writeStringField("provideConnectionName", providerConnection.getName());
+                    jsonGenerator.writeStringField("provideConnectionOwner", providerConnection.getOwnerProjectDevice().getName());
+                }
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();

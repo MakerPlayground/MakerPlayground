@@ -476,7 +476,7 @@ public final class ProjectConfiguration {
             ActualDevice actualDevice = deviceMap.get(projectDevice);
             for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDevice)) {
                 consumerProviderConnectionMap.put(connectionConsume, null);
-                providerFunctionUsed.put(connectionConsume, new ArrayList<>());
+                providerFunctionUsed.put(providerConnection, new ArrayList<>());
             }
             deviceConnections.put(projectDevice, new DeviceConnection(consumerProviderConnectionMap, providerFunctionUsed));
         }
@@ -538,6 +538,9 @@ public final class ProjectConfiguration {
                 unsetDeviceConnection(projectDevice);
                 deviceConnections.put(projectDevice, connection);
                 connection.getConsumerProviderConnections().forEach((consumerConnection, providerConnection) -> {
+                    if (providerConnection == null) {
+                        return;
+                    }
                     ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
                     if (providerConnection.getType() != ConnectionType.WIRE) {
                         remainingConnectionProvide.remove(providerConnection);
