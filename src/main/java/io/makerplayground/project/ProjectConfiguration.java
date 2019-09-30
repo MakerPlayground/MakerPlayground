@@ -695,7 +695,16 @@ public final class ProjectConfiguration {
                 }
                 return possibleChoiceCount;
             });
-            mrvProjectDevice.ifPresent(projectDevice -> setActualDevice(projectDevice, compatibleDevicesSelectableMap.get(projectDevice).firstKey().getActualDevice().orElseThrow()));
+            if (mrvProjectDevice.isPresent()) {
+                ProjectDevice projectDevice = mrvProjectDevice.get();
+                SortedMap<CompatibleDevice, DeviceMappingResult> deviceMappingResultSortedMap = compatibleDevicesSelectableMap.get(projectDevice);
+                Optional<CompatibleDevice> compatibleDeviceOptional = deviceMappingResultSortedMap.entrySet().stream().filter(entry -> entry.getValue() == DeviceMappingResult.OK).map(Map.Entry::getKey).findFirst();
+                if (compatibleDeviceOptional.isEmpty()) {
+                    return ProjectMappingResult.NO_SUPPORT_DEVICE;
+                } else {
+                    setActualDevice(projectDevice, compatibleDeviceOptional.get().getActualDevice().orElseThrow());
+                }
+            }
         }
         return ProjectMappingResult.OK;
     }

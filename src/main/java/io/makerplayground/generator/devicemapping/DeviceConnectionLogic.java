@@ -50,10 +50,15 @@ public class DeviceConnectionLogic {
                 if (connectionConsumer.getType() != ConnectionType.INTEGRATED) {
                     for (int k = 0; k< connectionProvider.getPins().size(); k++) {
                         List<PinFunction> provideFunctions = connectionProvider.getPins().get(k).getFunction();
-                        if (connectionConsumer.getPins().get(k).getFunction().get(0).getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
-                            connectionMatching[i][j] = false;
-                            break;
+                        boolean flag = false;
+                        for (PinFunction consumerFunction: connectionConsumer.getPins().get(k).getFunction()) {
+                            if (consumerFunction.getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
+                                connectionMatching[i][j] = false;
+                                flag = true;
+                                break;
+                            }
                         }
+                        if (flag) break;
                         VoltageLevel consumerVoltageLevel = connectionConsumer.getPins().get(k).getVoltageLevel();
                         VoltageLevel providerVoltageLevel = connectionProvider.getPins().get(k).getVoltageLevel();
                         if (!consumerVoltageLevel.canConsume(providerVoltageLevel)) {
