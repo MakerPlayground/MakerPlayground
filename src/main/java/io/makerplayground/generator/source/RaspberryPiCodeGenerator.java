@@ -16,10 +16,7 @@
 
 package io.makerplayground.generator.source;
 
-import io.makerplayground.device.actual.Connection;
-import io.makerplayground.device.actual.Pin;
-import io.makerplayground.device.actual.PinFunction;
-import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
@@ -412,11 +409,14 @@ class RaspberryPiCodeGenerator {
         StringBuilder text = new StringBuilder(configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
 
         List<String> args = new ArrayList<>();
-
+        if (configuration.getActualDevice(projectDevice).isEmpty()) {
+            return "";
+        }
+        ActualDevice actualDevice = configuration.getActualDevice(projectDevice).get();
         DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
         if (connection != DeviceConnection.NOT_CONNECTED) {
             Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
-            for (Connection connectionConsume: connectionMap.keySet()) {
+            for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDevice)) {
                 Connection connectionProvide = connectionMap.get(connectionConsume);
                 for (int i=0; i<connectionConsume.getPins().size(); i++) {
                     Pin pinConsume = connectionConsume.getPins().get(i);
