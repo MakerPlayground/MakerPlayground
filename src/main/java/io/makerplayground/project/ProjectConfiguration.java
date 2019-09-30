@@ -621,6 +621,7 @@ public final class ProjectConfiguration {
             // assign the identical device if possible.
             Map<ProjectDevice, List<ProjectDevice>> identicalDeviceMap = compatibleDevicesSelectableMap.entrySet().stream()
                     .filter(entry -> unassignedDevices.contains(entry.getKey()))    // unassigned device only
+                    .filter(entry -> !deviceMap.containsKey(entry.getKey()) || deviceMap.get(entry.getKey()) == null)
                     .collect(Collectors.toMap(Map.Entry::getKey,
                             entry -> entry.getValue().keySet().stream()
                                     .filter(compatibleDevice -> compatibleDevice.getProjectDevice().isPresent())
