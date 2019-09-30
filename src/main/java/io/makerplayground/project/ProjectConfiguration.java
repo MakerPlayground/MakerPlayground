@@ -110,16 +110,19 @@ public final class ProjectConfiguration {
 
         /* add all device that is the same generic with "OK" mapping result */
         for (ProjectDevice device: nonControllerDevices) {
-            SortedMap<CompatibleDevice, DeviceMappingResult> selectable = DeviceLibrary.INSTANCE.getActualDevice(getPlatform())
-                    .stream()
-                    .filter(actualDevice -> actualDevice.getCompatibilityMap().containsKey(device.getGenericDevice()))
-                    .collect(Collectors.toMap(CompatibleDevice::new, o->DeviceMappingResult.OK, (o1, o2)->{throw new IllegalStateException("");}, TreeMap::new));
+            SortedMap<CompatibleDevice, DeviceMappingResult> selectable;
             if (getController() != null) {
+                selectable = DeviceLibrary.INSTANCE.getActualDevice(getPlatform())
+                        .stream()
+                        .filter(actualDevice -> actualDevice.getCompatibilityMap().containsKey(device.getGenericDevice()))
+                        .collect(Collectors.toMap(CompatibleDevice::new, o->DeviceMappingResult.OK, (o1, o2)->{throw new IllegalStateException("");}, TreeMap::new));
                 getController().getIntegratedDevices().forEach(integratedActualDevice -> {
                     if (integratedActualDevice.getCompatibilityMap().containsKey(device.getGenericDevice())) {
                         selectable.put(new CompatibleDevice(integratedActualDevice), DeviceMappingResult.OK);
                     }
                 });
+            } else {
+                selectable = new TreeMap<>();
             }
             deviceSelectableMap.put(device, selectable);
         }
@@ -413,9 +416,10 @@ public final class ProjectConfiguration {
 
         compatibleDevicesSelectableMap.remove(projectDevice);
         compatibleConnectionMap.remove(projectDevice);
+        generateDeviceSelectableMapAndConnection();
     }
 
-    private void unsetAllDevices() {
+    public void unsetAllDevices() {
         deviceMap.keySet().removeIf(projectDevice -> projectDevice != CONTROLLER);
         devicePropertyValueMap.clear();
         identicalDeviceMap.clear();
@@ -427,6 +431,7 @@ public final class ProjectConfiguration {
             ActualDevice controller = deviceMap.get(CONTROLLER);
             remainingConnectionProvide.addAll(controller.getConnectionProvideByOwnerDevice(CONTROLLER));
         }
+        generateDeviceSelectableMapAndConnection();
     }
 
     public void setConnection(ProjectDevice projectDevice, Connection consumerConnection, Connection providerConnection) {

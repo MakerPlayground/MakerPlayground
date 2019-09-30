@@ -50,10 +50,10 @@ public class ConfigActualDeviceViewModel {
         this.project = project;
         this.compatibleDeviceMap = new SimpleObjectProperty<>();
         this.deviceConnectionList = new SimpleObjectProperty<>();
-        applyDeviceMapping();
+        retrieveDeviceMapping();
     }
 
-    private void applyDeviceMapping() {
+    private void retrieveDeviceMapping() {
         compatibleDeviceMap.set(project.getProjectConfiguration().getCompatibleDevicesSelectableMap());
         deviceConnectionList.set(project.getProjectConfiguration().getCompatibleConnectionMap());
     }
@@ -66,7 +66,8 @@ public class ConfigActualDeviceViewModel {
         if (project.getSelectedPlatform() != platform) {
             project.setPlatform(platform);
             project.getProjectConfiguration().unsetDevice(ProjectDevice.CONTROLLER);
-            applyDeviceMapping();
+            project.getProjectConfiguration().unsetAllDevices();
+            retrieveDeviceMapping();
             if (platformChangedCallback != null) {
                 platformChangedCallback.run();
             }
@@ -90,7 +91,7 @@ public class ConfigActualDeviceViewModel {
             if (selectedController != null) {
                 project.setController(selectedController.getActualDevice());
             }
-            applyDeviceMapping();
+            retrieveDeviceMapping();
             if (controllerChangedCallback != null) {
                 controllerChangedCallback.run();
             }
@@ -110,7 +111,7 @@ public class ConfigActualDeviceViewModel {
         if (device == null) {
             if (configuration.getActualDevice(projectDevice).isPresent() || configuration.getIdenticalDevice(projectDevice).isPresent()) {
                 configuration.unsetDevice(projectDevice);
-                applyDeviceMapping();
+                retrieveDeviceMapping();
                 if (deviceConfigChangedCallback != null) {
                     deviceConfigChangedCallback.run();
                 }
@@ -124,7 +125,7 @@ public class ConfigActualDeviceViewModel {
 
             device.getActualDevice().ifPresentOrElse(actualDevice -> configuration.setActualDevice(projectDevice, actualDevice),
                     () -> device.getProjectDevice().ifPresent(identicalDevice -> configuration.setIdenticalDevice(projectDevice, identicalDevice)));
-            applyDeviceMapping();
+            retrieveDeviceMapping();
             if (deviceConfigChangedCallback != null) {
                 deviceConfigChangedCallback.run();
             }
@@ -141,7 +142,7 @@ public class ConfigActualDeviceViewModel {
             } else {
                 project.getProjectConfiguration().setConnection(projectDevice, connectionConsume, connectionProvide);
             }
-            applyDeviceMapping();
+            retrieveDeviceMapping();
             if (deviceConfigChangedCallback != null) {
                 deviceConfigChangedCallback.run();
             }
@@ -223,7 +224,7 @@ public class ConfigActualDeviceViewModel {
 
     ProjectMappingResult autoAssignDevice() {
         ProjectMappingResult result = project.getProjectConfiguration().autoAssignDevices();
-        applyDeviceMapping();
+        retrieveDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();
         }
