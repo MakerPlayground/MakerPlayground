@@ -149,4 +149,10 @@ public enum PinFunction {
         }
         throw new IllegalStateException("");
     }
+
+    public final static List<PinFunction> HWSerialList = List.of(HW_SERIAL_RX, HW_SERIAL_RX1, HW_SERIAL_TX, HW_SERIAL_TX1);
+
+    public boolean isHWSerial() {
+        return HWSerialList.contains(this);
+    }
 }

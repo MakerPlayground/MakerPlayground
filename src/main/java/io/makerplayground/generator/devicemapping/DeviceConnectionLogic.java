@@ -84,8 +84,12 @@ public class DeviceConnectionLogic {
 
     private static final Comparator<Connection> LESS_PROVIDER_DEPENDENCY = Comparator
             .comparingInt((Connection connection) -> connection.getPins().stream()
-                                                        .map(Pin::getFunction)
-                                                        .mapToInt(List::size).sum())
+                                            .map(Pin::getFunction)
+                                            .mapToInt(pinFunctions -> pinFunctions.stream()
+                                                    // Give penalty value to HW Serial, we not recommend using it
+                                                    .mapToInt(pinFunction -> pinFunction.isHWSerial() ? 3 : 1)
+                                                    .sum())
+                                            .sum())
             .thenComparing(Connection::getName);
 
     private static final Comparator<Connection> CONNECTION_NAME_ASCENDING = Comparator.comparing(Connection::getName);
