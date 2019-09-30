@@ -210,7 +210,8 @@ public final class ProjectConfiguration {
         }
     }
 
-    private void setFlagToDeviceIfConnectionIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap, Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> deviceConnectionMap) {
+    private void setFlagToDeviceIfConnectionIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap,
+                                                           Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> deviceConnectionMap) {
         /* set reason for circuit incompatibility */
         for (ProjectDevice projectDevice: nonControllerDevices) {
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(projectDevice);
@@ -218,51 +219,14 @@ public final class ProjectConfiguration {
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
                 if (compatibleDevice.getActualDevice().isPresent() && selectable.get(compatibleDevice) == DeviceMappingResult.OK) {
                     ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
-
-                    /* In order to check the compatible, the assigned pin/port must be temporary deallocated from the remaining pin/port. */
-                    DeviceConnection deviceConnection = deviceConnections.getOrDefault(projectDevice, DeviceConnection.NOT_CONNECTED);
-                    Queue<Connection> deallocatingConnections = new ArrayDeque<>();
-                    Map<ProjectDevice, Set<String>> deallcatingRefTo = new HashMap<>();
-                    deviceConnection.getConsumerProviderConnections().values().forEach(connection -> {
-                        if (connection == null) {
-                            return;
-                        }
-                        if (connection.getType() != ConnectionType.WIRE) {
-                            deallocatingConnections.add(connection);
-                            remainingConnectionProvide.add(connection);
-                        }
-                        else if (connection.getType() == ConnectionType.WIRE &&
-                                connection.getPins().size() == 1 &&
-                                deviceConnection.getProviderFunction().get(connection).get(0).isSingleUsed())
-                        {
-                            deallocatingConnections.add(connection);
-                            remainingConnectionProvide.add(connection);
-                        }
-                        ProjectDevice providerProjectDevice = connection.getOwnerProjectDevice();
-                        connection.getPins().forEach(pin -> {
-                            if (usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())) {
-                                if (!deallcatingRefTo.containsKey(providerProjectDevice)) {
-                                    deallcatingRefTo.put(providerProjectDevice, new HashSet<>());
-                                }
-                                deallcatingRefTo.get(providerProjectDevice).add(pin.getRefTo());
-                                usedRefPin.get(providerProjectDevice).remove(pin.getRefTo());
-                            }
-                        });
-                    });
-                    // TODO: add connection to be deallocated in case that there is the dependent device
-                    DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice);
+                    DeviceConnection currentConnection = deviceConnections.getOrDefault(projectDevice, DeviceConnection.NOT_CONNECTED);
+                    DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice, currentConnection);
                     if (result.getStatus() == DeviceConnectionResultStatus.ERROR) {
                         selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
                     }
                     else {
                         actualDeviceConnectionMap.put(actualDevice, result.getConnections());
                     }
-
-                    deallcatingRefTo.forEach((providerProjectDevice, refTo) ->
-                            usedRefPin.get(providerProjectDevice).addAll(deallcatingRefTo.get(providerProjectDevice))
-                    );
-                    remainingConnectionProvide.removeAll(deallocatingConnections);
-                    // TODO: add pin/port to be removed in case that there is the dependent device
                 }
             }
             deviceConnectionMap.put(projectDevice, actualDeviceConnectionMap);
@@ -466,9 +430,18 @@ public final class ProjectConfiguration {
     }
 
     public void setConnection(ProjectDevice projectDevice, Connection consumerConnection, Connection providerConnection) {
+        // If the project device is not selected
         if (!deviceMap.containsKey(projectDevice)) {
             throw new UnsupportedOperationException("cannot set connection of the device that is not in the deviceMap");
         }
+
+        // If providerConnection == null, use unsetConnection instead
+        if (providerConnection == null) {
+            unsetConnection(projectDevice, consumerConnection);
+            return;
+        }
+
+        // If the connection is never assigned, do lazy initiation
         if (!deviceConnections.containsKey(projectDevice)) {
             /* initial DeviceConnection instance and define map's key */
             SortedMap<Connection, Connection> consumerProviderConnectionMap = new TreeMap<>();
@@ -480,11 +453,28 @@ public final class ProjectConfiguration {
             }
             deviceConnections.put(projectDevice, new DeviceConnection(consumerProviderConnectionMap, providerFunctionUsed));
         }
+
+        // If the value changed, remove the old first
+        if (deviceConnections.get(projectDevice).getConsumerProviderConnections().get(consumerConnection) != providerConnection) {
+            unsetConnection(projectDevice, consumerConnection);
+        }
+
+        // Set value of connection to the deviceConnections mapping.
         deviceConnections.get(projectDevice).setConnection(consumerConnection, providerConnection);
-        ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
+
+        // Reserve the connection by remove the providerConnection from the remainingConnectionProvide
         if (providerConnection.getType() != ConnectionType.WIRE) {
             remainingConnectionProvide.remove(providerConnection);
         }
+        else if (providerConnection.getType() == ConnectionType.WIRE &&
+                providerConnection.getPins().size() == 1 &&
+                deviceConnections.get(projectDevice).getProviderFunction().get(providerConnection).get(0).isSingleUsed())
+        {
+            remainingConnectionProvide.remove(providerConnection);
+        }
+
+        // Add used pins to list
+        ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
         for (int i=0; i<consumerConnection.getPins().size(); i++) {
             Pin consumerPin = consumerConnection.getPins().get(i);
             Pin providerPin = providerConnection.getPins().get(i);
@@ -500,6 +490,7 @@ public final class ProjectConfiguration {
                 usedRefPin.get(providerProjectDevice).add(providerPin.getRefTo());
             }
         }
+
         generateDeviceSelectableMapAndConnection();
     }
 
@@ -518,6 +509,7 @@ public final class ProjectConfiguration {
                 }
             });
             deviceConnection.getConsumerProviderConnections().put(connectionConsume, null);
+            generateDeviceSelectableMapAndConnection();
         }
     }
 
@@ -593,6 +585,24 @@ public final class ProjectConfiguration {
         this.cloudParameterMap.get(cloudPlatform).put(parameterName, value);
     }
 
+    private Comparator<Connection> getLessChoiceOfConnectionComparator(ProjectDevice projectDevice) {
+        return Comparator.comparingInt((Connection connection) -> {
+                    if (getConnection(projectDevice, connection) != null) {
+                        return 0;
+                    } else {
+                        ActualDevice actualDevice = deviceMap.get(projectDevice);
+                        Map<ActualDevice, SortedMap<Connection, List<Connection>>> actualDeviceListMap = compatibleConnectionMap.get(projectDevice);
+                        if (!actualDeviceListMap.containsKey(actualDevice)) {
+                            return 0;
+                        }
+                        Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(actualDevice);
+                        return possibleDeviceConnection.get(connection).size();
+                    }
+                })
+                .thenComparing(Connection::getName);
+    }
+
+
     public ProjectMappingResult autoAssignDevices() {
         if (getController() == null) {
             return ProjectMappingResult.NO_MCU_SELECTED;
@@ -636,19 +646,26 @@ public final class ProjectConfiguration {
                     if (!compatibleDevicesSelectableMap.containsKey(projectDevice)) {
                         throw new IllegalStateException("Cannot have project device that is not in the compatibility map");
                     }
-                    Map<ActualDevice, SortedMap<Connection, List<Connection>>> actualDeviceListMap = compatibleConnectionMap.get(projectDevice);
-                    if (!actualDeviceListMap.containsKey(deviceMap.get(projectDevice))) {
-                        throw new IllegalStateException("Cannot have selected actual device that is not in the compatibility map");
-                    }
-                    Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(deviceMap.get(projectDevice));
-                    for (Connection connectionConsume: possibleDeviceConnection.keySet()) {
+                    ActualDevice actualDevice = deviceMap.get(projectDevice);
+                    List<Connection> allConnectionConsume = new ArrayList<>(actualDevice.getConnectionConsumeByOwnerDevice(projectDevice));
+                    while (!allConnectionConsume.isEmpty()) {
+                        allConnectionConsume.sort(getLessChoiceOfConnectionComparator(projectDevice));
+                        Connection connectionConsume = allConnectionConsume.get(0);
+                        // Do not replace the connection that is already assigned by user.
                         if (getConnection(projectDevice, connectionConsume) != null) {
+                            allConnectionConsume.remove(connectionConsume);
                             continue;
                         }
+                        Map<ActualDevice, SortedMap<Connection, List<Connection>>> actualDeviceListMap = compatibleConnectionMap.get(projectDevice);
+                        if (!actualDeviceListMap.containsKey(actualDevice)) {
+                            throw new IllegalStateException("Cannot have selected actual device that is not in the compatibility map");
+                        }
+                        Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(actualDevice);
                         if (possibleDeviceConnection.get(connectionConsume).isEmpty()) {
                             return ProjectMappingResult.CANT_ASSIGN_PORT;
                         } else {
                             setConnection(projectDevice, connectionConsume, possibleDeviceConnection.get(connectionConsume).get(0));
+                            allConnectionConsume.remove(connectionConsume);
                         }
                     }
                     unassignedDevices.remove(projectDevice);

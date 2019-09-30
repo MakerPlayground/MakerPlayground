@@ -17,14 +17,16 @@
 package io.makerplayground.generator.devicemapping;
 
 import io.makerplayground.device.actual.*;
+import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
-import lombok.NonNull;
 
 import java.util.*;
 
 public class DeviceConnectionLogic {
 
-    private static boolean[][] getConnectionMatchingArray(List<Connection> allConnectionConsume, List<Connection> remainingConnectionProvide, Map<ProjectDevice, Set<String>> usedRefPin) {
+    private static boolean[][] getConnectionMatchingArray(List<Connection> allConnectionConsume,
+                                                          List<Connection> remainingConnectionProvide,
+                                                          Map<ProjectDevice, Set<String>> usedRefPin) {
         boolean[][] connectionMatching = new boolean[allConnectionConsume.size()][];
         for (int i=0; i<connectionMatching.length; i++) {
             connectionMatching[i] = new boolean[remainingConnectionProvide.size()];
@@ -75,27 +77,53 @@ public class DeviceConnectionLogic {
         return connectionMatching;
     }
 
-    private static boolean[][] deepCopy(@NonNull boolean[][] original) {
-        final boolean[][] result = new boolean[original.length][];
-        for (int i = 0; i < original.length; i++) {
-            result[i] = Arrays.copyOf(original[i], original[i].length);
-        }
-        return result;
-    }
-
     private static final Comparator<Connection> LESS_PROVIDER_DEPENDENCY = Comparator
-            .comparingInt((Connection connection) -> connection.getPins().stream().map(Pin::getFunction).mapToInt(List::size).sum())
+            .comparingInt((Connection connection) -> connection.getPins().stream()
+                                                        .map(Pin::getFunction)
+                                                        .mapToInt(List::size).sum())
             .thenComparing(Connection::getName);
 
     private static final Comparator<Connection> CONNECTION_NAME_ASCENDING = Comparator.comparing(Connection::getName);
 
-    public static DeviceConnectionResult generatePossibleDeviceConnection(Set<Connection> remainingConnectionProvide, Map<ProjectDevice, Set<String>> usedRefPin, ProjectDevice projectDevice, ActualDevice actualDevice) {
+    public static DeviceConnectionResult generatePossibleDeviceConnection(Set<Connection> remainingConnectionProvide,
+                                                                          Map<ProjectDevice, Set<String>> usedRefPin,
+                                                                          ProjectDevice projectDevice,
+                                                                          ActualDevice actualDevice,
+                                                                          DeviceConnection currentConnection) {
         List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
         List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
-        boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
-        SortedMap<Connection, List<Connection>> deviceConnections = new TreeMap<>(CONNECTION_NAME_ASCENDING);
+        SortedMap<Connection, List<Connection>> possibleConnections = new TreeMap<>(CONNECTION_NAME_ASCENDING);
         for (int i=0; i<allConnectionsConsume.size(); i++) {
             Connection connectionConsume = allConnectionsConsume.get(i);
+            /* In order to check the compatible, the assigned pin/port must be temporary deallocated from the remaining pin/port. */
+            Queue<Connection> deallocatingConnections = new ArrayDeque<>();
+            Map<ProjectDevice, Set<String>> deallcatingRefTo = new HashMap<>();
+            Connection connection = currentConnection.getConsumerProviderConnections().get(connectionConsume);
+            if (connection != null) {
+                if (connection.getType() != ConnectionType.WIRE) {
+                    deallocatingConnections.add(connection);
+                    allConnectionsProvide.add(connection);
+                }
+                else if (connection.getType() == ConnectionType.WIRE &&
+                        connection.getPins().size() == 1 &&
+                        currentConnection.getProviderFunction().get(connection).get(0).isSingleUsed())
+                {
+                    deallocatingConnections.add(connection);
+                    allConnectionsProvide.add(connection);
+                }
+                ProjectDevice providerProjectDevice = connection.getOwnerProjectDevice();
+                connection.getPins().forEach(pin -> {
+                    if (usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())) {
+                        if (!deallcatingRefTo.containsKey(providerProjectDevice)) {
+                            deallcatingRefTo.put(providerProjectDevice, new HashSet<>());
+                        }
+                        deallcatingRefTo.get(providerProjectDevice).add(pin.getRefTo());
+                        usedRefPin.get(providerProjectDevice).remove(pin.getRefTo());
+                    }
+                });
+            }
+
+            boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
             List<Connection> connectionProvideList = new ArrayList<>();
             for (int j=0; j<allConnectionsProvide.size(); j++) {
                 if (connectionMatching[i][j]) {
@@ -107,8 +135,13 @@ public class DeviceConnectionLogic {
                 return DeviceConnectionResult.ERROR;
             }
             connectionProvideList.sort(LESS_PROVIDER_DEPENDENCY);
-            deviceConnections.put(connectionConsume, connectionProvideList);
+            possibleConnections.put(connectionConsume, connectionProvideList);
+
+            deallcatingRefTo.forEach((providerProjectDevice, refTo) ->
+                    usedRefPin.get(providerProjectDevice).addAll(deallcatingRefTo.get(providerProjectDevice))
+            );
+            allConnectionsProvide.removeAll(deallocatingConnections);
         }
-        return new DeviceConnectionResult(DeviceConnectionResultStatus.OK, deviceConnections);
+        return new DeviceConnectionResult(DeviceConnectionResultStatus.OK, possibleConnections);
     }
 }
