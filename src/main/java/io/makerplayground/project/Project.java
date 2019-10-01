@@ -138,7 +138,7 @@ public class Project {
         devices.add(projectDevice);
     }
 
-    public ProjectDevice addDevice(GenericDevice genericDevice) {
+    public void addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
         ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
         devices.add(projectDevice);

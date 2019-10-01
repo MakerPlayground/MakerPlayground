@@ -780,10 +780,10 @@ class ArduinoCodeGenerator {
         return "_" + cloudPlatform.getLibName().replace(" ", "_");
     }
 
-    private static String parseDeviceVariableName(Project project, ProjectDevice projectDevice) {
-        if (project.isUsedSameDevice(projectDevice)) {
-            return "_" + project.getParentDevice(projectDevice).orElseThrow().getName();
-        } else if (project.isActualDeviceSelected(projectDevice)) {
+    private static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+        if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+            return "_" + configuration.getIdenticalDevice(projectDevice).orElseThrow().getName();
+        } else if (configuration.getActualDevice(projectDevice).isPresent()) {
             return "_" + projectDevice.getName();
         } else {
             throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");

@@ -215,7 +215,7 @@ public enum DeviceLibrary {
     }
 
     public List<ActualDevice> getActualDevice(GenericDevice genericDevice) {
-        return actualDevice.stream().filter(device -> device.getSupportedGenericDevice().contains(genericDevice))
+        return actualDevice.stream().filter(device -> device.getCompatibilityMap().containsKey(genericDevice))
                 .collect(Collectors.toUnmodifiableList());
     }
 }
