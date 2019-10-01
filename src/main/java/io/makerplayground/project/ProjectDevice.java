@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.generic.GenericDevice;
+import javafx.beans.property.SimpleStringProperty;
 import lombok.*;
 
 @JsonSerialize (using = ProjectDeviceSerializer.class)
@@ -29,11 +30,30 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
     @JsonIgnore
     public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
-    private String name;
-    @Getter @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
+    @JsonIgnore @EqualsAndHashCode.Exclude @Getter(AccessLevel.NONE)
+    private final SimpleStringProperty nameProperty = new SimpleStringProperty();
+
+    @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
+
+    public ProjectDevice(String name, GenericDevice genericDevice) {
+        this.nameProperty.set(name);
+        this.genericDevice = genericDevice;
+    }
 
     @Override
     public int compareTo(ProjectDevice o) {
         return getName().compareTo(o.getName());
+    }
+
+    public SimpleStringProperty NameProperty() {
+        return nameProperty;
+    }
+
+    public String getName() {
+        return nameProperty.get();
+    }
+
+    public void setName(String name) {
+        nameProperty.set(name);
     }
 }

@@ -43,7 +43,7 @@ public class SceneDeviceIconViewModel {
 
     public SceneDeviceIconViewModel(UserSetting userSetting, NodeElement nodeElement, Project project) {
         this.userSetting = userSetting;
-        this.name = new SimpleStringProperty(userSetting.getDevice().getName());
+        this.name = userSetting.getDevice().NameProperty(); // new SimpleStringProperty(userSetting.getDevice().getName());
         this.nodeElement = nodeElement;
         this.project = project;
     }
