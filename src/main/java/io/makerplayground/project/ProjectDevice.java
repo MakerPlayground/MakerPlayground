@@ -30,7 +30,7 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
     @JsonIgnore
     public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
-    @JsonIgnore @EqualsAndHashCode.Exclude @Getter(AccessLevel.NONE)
+    @JsonIgnore @Getter(AccessLevel.NONE)
     private final SimpleStringProperty nameProperty = new SimpleStringProperty();
 
     @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
@@ -43,6 +43,16 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
     @Override
     public int compareTo(ProjectDevice o) {
         return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof ProjectDevice) && getName().equals(((ProjectDevice) obj).getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
     }
 
     public SimpleStringProperty NameProperty() {
