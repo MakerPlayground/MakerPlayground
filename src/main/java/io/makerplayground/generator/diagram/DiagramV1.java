@@ -7,7 +7,6 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -23,6 +22,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /* 1) The devices are placing in one of the following regions
  *      -----------------------------
@@ -33,13 +33,14 @@ import java.util.*;
  *      |      | bottom-mid |       |
  *      -----------------------------
  * 2) To know the device region
- *      2.1 On the controller, calculate the center of the positions of all pins that connect to the device.
- * 3) The devices in each region would be rotated to make the shortest line to the controller.
- * 4) On left and right region, the devices would be sorted by the y-position of the center of the connection on the controller.
- * 5) On top-mid and bottom-mid, the devices would be sorted by the x-position of the center of the connection on the controller.
- * 6) Breadboards will always in the top-mid region.
- * 7) The width and height of each region is calculated by the device in the region.
- * 8) The total width and height of diagram is calculated to recenter the diagram.
+ *      2.1 For each device, calculate the centroid of all pins on controller that connect to the device.
+ *      2.2 The centroid will be used for determining the region of the device. Call the getDeviceRegionNoBreadboard method to know the region
+ *      2.3 In case that breadboard is needed. The top-mid region will be reserved for breadboard. Call the getDeviceRegionNoBreadboard method instead
+ * 3) The devices in each region would be rotated to make the shortest line to the controller except the device that needs breadboard.
+ * 4) On left and right region, the devices would be sorted by the y-position of centroid.
+ * 5) On top-mid and bottom-mid, the devices would be sorted by the x-position of centroid.
+ * 6) The width and height of each region is calculated by the device in the region.
+ * 7) The total width and height of diagram is calculated to recenter the diagram.
  */
 
 class DiagramV1 {
@@ -79,6 +80,9 @@ class DiagramV1 {
     private static List<DeviceType> DRAWABLE_DEVICE_TYPES = List.of(DeviceType.CONTROLLER, DeviceType.MODULE);
 
     private static final double DEVICE_NAME_FONT_SIZE = 18.0;
+
+    private static final double GLOBAL_TOP_MARGIN = 50.0;
+    private static final double GLOBAL_LEFT_MARGIN = 50.0;
 
     private static final double LEFT_REGION_V_GAP = 30.0;
     private static final double LEFT_REGION_H_MARGIN = 80.0;
@@ -149,8 +153,6 @@ class DiagramV1 {
     }
 
     private void calculateRegionSizeAndDeviceCoordinates() {
-
-
         Size controllerPreferredSize = new Size(config.getController().getWidth(), config.getController().getHeight());
         Size topMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnTopRegion, TOP_MID_REGION_H_GAP, TOP_MID_REGION_V_MARGIN);
         Size bottomMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnBottomRegion, BOTTOM_MID_REGION_H_GAP, BOTTOM_MID_REGION_V_MARGIN);
@@ -229,7 +231,7 @@ class DiagramV1 {
         double totalHeight = 0.0;
         for (ProjectDevice projectDevice: projectDeviceList) {
             Size size = deviceSizeAfterRotation.get(projectDevice);
-            totalWidth += Math.max(totalWidth, size.getWidth());
+            totalWidth = Math.max(totalWidth, size.getWidth());
             totalHeight += size.getHeight();
         }
         if (!projectDeviceList.isEmpty()) {
@@ -328,10 +330,15 @@ class DiagramV1 {
     }
 
     private void assignDeviceRegion() {
-        deviceMap.keySet().stream()
-            .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
-            .filter(projectDevice -> DRAWABLE_DEVICE_TYPES.contains(deviceMap.get(projectDevice).getDeviceType()))
-            .forEach(projectDevice -> {
+        List<ProjectDevice> allDevices = deviceMap.keySet().stream()
+                .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
+                .filter(projectDevice -> DRAWABLE_DEVICE_TYPES.contains(deviceMap.get(projectDevice).getDeviceType()))
+                .collect(Collectors.toList());
+
+        boolean useBreadboard = allDevices.stream().anyMatch(projectDevice -> deviceMap.get(projectDevice).isNeedBreadboard());
+
+        if (useBreadboard) {
+            allDevices.forEach(projectDevice -> {
                 ActualDevice actualDevice = deviceMap.get(projectDevice);
                 if (actualDevice instanceof IntegratedActualDevice) {
                     return;
@@ -340,7 +347,28 @@ class DiagramV1 {
                     deviceNeedBreadboard.add(projectDevice);
                     return;
                 }
-                Region region = getDeviceRegion(projectDevice);
+                Region region = getDeviceRegionHaveBreadboard(projectDevice);
+                if (region == Region.LEFT) {
+                    deviceOnLeftRegion.add(projectDevice);
+                } else if (region == Region.RIGHT) {
+                    deviceOnRightRegion.add(projectDevice);
+                } else if (region == Region.BOTTOM_MID) {
+                    deviceOnBottomRegion.add(projectDevice);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            });
+        } else {
+            allDevices.forEach(projectDevice -> {
+                ActualDevice actualDevice = deviceMap.get(projectDevice);
+                if (actualDevice instanceof IntegratedActualDevice) {
+                    return;
+                }
+                if (actualDevice.isNeedBreadboard()) {
+                    deviceNeedBreadboard.add(projectDevice);
+                    return;
+                }
+                Region region = getDeviceRegionNoBreadboard(projectDevice);
                 if (region == Region.LEFT) {
                     deviceOnLeftRegion.add(projectDevice);
                 } else if (region == Region.RIGHT) {
@@ -353,6 +381,7 @@ class DiagramV1 {
                     throw new UnsupportedOperationException();
                 }
             });
+        }
     }
 
     private List<Pin> getAllConnectedPin(ProjectDevice device) {
@@ -423,7 +452,7 @@ class DiagramV1 {
          *                            top
          *     A (-w/2, h/2)   \ ----------- /  B (w/2, h/2)
          *                     | \         / |
-         *                     |   \     /   |
+         *                     |   DEVICE/   |
          *                     |     \ /   o <------(x-w/2, h/2-y)
          *              left   |     / \     | right
          *                     |   /     \   |
@@ -451,7 +480,20 @@ class DiagramV1 {
         return ConnectionPosition.RIGHT;
     }
 
-    private Region getDeviceRegion(ProjectDevice module) {
+
+    /* Use connection centroid on the controller to determine the region of the module.
+     *                         top-mid
+     *                     ---------------
+     *                     |  |       |  |
+     *                     |  CONTROLLER |
+     *                     |  |_______|  |
+     *              left   |  |       |  | right
+     *                     |  |       |  |
+     *                     |  |       |  |
+     *                     ---------------
+     *                        bottom-mid
+     */
+    private Region getDeviceRegionNoBreadboard(ProjectDevice module) {
         Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, module);
         ActualDevice controller = config.getController();
         if (coordinate.getX() < 0.2 * controller.getWidth()) {
@@ -466,30 +508,65 @@ class DiagramV1 {
         return Region.TOP_MID;
     }
 
+    /* Use connection centroid on the controller to determine the region of the module.
+     *                 top-mid zone is reserved for breadboard
+     *                     ---------------
+     *                     |      |      |
+     *                left |      |      | right
+     *                     |  CONTROLLER |
+     *                     |      |      |
+     *                     |-------------|
+     *                     |             |
+     *                     ---------------
+     *                        bottom-mid
+     */
+    private Region getDeviceRegionHaveBreadboard(ProjectDevice module) {
+        Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, module);
+        ActualDevice controller = config.getController();
+        if (coordinate.getY() > 0.65 * controller.getHeight()) {
+            return Region.BOTTOM_MID;
+        }
+        if (coordinate.getX() < 0.5 * controller.getWidth()) {
+            return Region.LEFT;
+        }
+        if (coordinate.getX() > 0.5 * controller.getWidth()) {
+            return Region.RIGHT;
+        }
+        return Region.TOP_MID;
+    }
+
     private void drawDevice(Pane drawingPane, ProjectDevice projectDevice) {
         if (deviceMap.get(projectDevice) instanceof IntegratedActualDevice) {
             return;
         }
         try(InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, deviceMap.get(projectDevice).getId(), "asset", "device.png"))) {
+            double deviceAngle = deviceRotationAngle.get(projectDevice);
             Image image = new Image(deviceImageStream);
             ImageView imageView = new ImageView(image);
             Coordinate coordinate = deviceCoordinates.get(projectDevice);
             ActualDevice actualDevice = deviceMap.get(projectDevice);
-            imageView.setLayoutX(coordinate.getX() - 0.5 * actualDevice.getWidth());
-            imageView.setLayoutY(coordinate.getY() - 0.5 * actualDevice.getHeight());
-            imageView.setRotate(deviceRotationAngle.get(projectDevice));
+            imageView.setLayoutX(coordinate.getX() - 0.5 * actualDevice.getWidth() + GLOBAL_LEFT_MARGIN);
+            imageView.setLayoutY(coordinate.getY() - 0.5 * actualDevice.getHeight() + GLOBAL_TOP_MARGIN);
+            imageView.setRotate(deviceAngle);
+            Size sizeAfterRotation = deviceSizeAfterRotation.get(projectDevice);
             drawingPane.getChildren().add(imageView);
             if (deviceOnBottomRegion.contains(projectDevice)) {
                 Text text = new Text(projectDevice.getName());
-                text.setX(coordinate.getX() - 0.5 * actualDevice.getWidth());
-                text.setY(coordinate.getY() + 0.5 * actualDevice.getHeight() + DEVICE_NAME_FONT_SIZE);
+                text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
+                text.setY(coordinate.getY() + 0.5 * sizeAfterRotation.getHeight() + DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             }
-            else if (deviceOnTopRegion.contains(projectDevice) || deviceOnLeftRegion.contains(projectDevice) || deviceOnRightRegion.contains(projectDevice)) {
+            else if (deviceOnTopRegion.contains(projectDevice)) {
                 Text text = new Text(projectDevice.getName());
-                text.setX(coordinate.getX() - 0.5 * actualDevice.getWidth());
-                text.setY(coordinate.getY() - 0.5 * actualDevice.getHeight());
+                text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE  + GLOBAL_TOP_MARGIN);
+                text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
+                drawingPane.getChildren().add(text);
+            } else if (deviceOnLeftRegion.contains(projectDevice) || deviceOnRightRegion.contains(projectDevice)) {
+                Text text = new Text(projectDevice.getName());
+                text.setX(coordinate.getX() - 0.45 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             }
@@ -500,8 +577,8 @@ class DiagramV1 {
 
     Pane make() {
         Pane wiringDiagram = new Pane();
-        wiringDiagram.setPrefWidth(globalRegionSize.getWidth());
-        wiringDiagram.setPrefHeight(globalRegionSize.getHeight());
+        wiringDiagram.setPrefWidth(globalRegionSize.getWidth() + GLOBAL_TOP_MARGIN);
+        wiringDiagram.setPrefHeight(globalRegionSize.getHeight() + GLOBAL_LEFT_MARGIN);
         for (ProjectDevice projectDevice: deviceCoordinates.keySet()) {
             drawDevice(wiringDiagram, projectDevice);
         }
@@ -551,32 +628,29 @@ class DiagramV1 {
                     throw new UnsupportedOperationException();
                 }
                 CubicCurve curve = new CubicCurve();
-                curve.setStartX(pinProvidePosition.getX());
-                curve.setStartY(pinProvidePosition.getY());
-                curve.setControlX1(pinProvidePosition.getX() + controlRatioX1 * (pinConsumePosition.getX() - pinProvidePosition.getX()));
-                curve.setControlY1(pinProvidePosition.getY() + controlRatioY1 * (pinConsumePosition.getY() - pinProvidePosition.getY()));
-                curve.setControlX2(pinProvidePosition.getX() + controlRatioX2 * (pinConsumePosition.getX() - pinProvidePosition.getX()));
-                curve.setControlY2(pinProvidePosition.getY() + controlRatioY2 * (pinConsumePosition.getY() - pinProvidePosition.getY()));
-                curve.setEndX(pinConsumePosition.getX());
-                curve.setEndY(pinConsumePosition.getY());
+                curve.setStartX(pinProvidePosition.getX() + GLOBAL_LEFT_MARGIN);
+                curve.setStartY(pinProvidePosition.getY() + GLOBAL_TOP_MARGIN);
+                curve.setControlX1(pinProvidePosition.getX() + controlRatioX1 * (pinConsumePosition.getX() - pinProvidePosition.getX()) + GLOBAL_LEFT_MARGIN);
+                curve.setControlY1(pinProvidePosition.getY() + controlRatioY1 * (pinConsumePosition.getY() - pinProvidePosition.getY()) + GLOBAL_TOP_MARGIN);
+                curve.setControlX2(pinProvidePosition.getX() + controlRatioX2 * (pinConsumePosition.getX() - pinProvidePosition.getX()) + GLOBAL_LEFT_MARGIN);
+                curve.setControlY2(pinProvidePosition.getY() + controlRatioY2 * (pinConsumePosition.getY() - pinProvidePosition.getY()) + GLOBAL_TOP_MARGIN);
+                curve.setEndX(pinConsumePosition.getX() + GLOBAL_LEFT_MARGIN);
+                curve.setEndY(pinConsumePosition.getY() + GLOBAL_TOP_MARGIN);
                 curve.setStrokeWidth(lineWidth);
-                Effect effect;
+                Color color;
                 if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.GND) {
-                    effect = new DropShadow(1.0, Color.BLACK);
-                    curve.setStroke(Color.BLACK);
+                    color = Color.BLACK;
                 } else if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.VCC) {
-                    effect = new DropShadow(1.0, Color.RED);
-                    curve.setStroke(Color.RED);
+                    color = Color.RED;
                 } else if (providerConnection.getType() == ConnectionType.WIRE) {
-                    effect = new DropShadow(1.0, WIRE_COLOR_LIST.get(countConnection % WIRE_COLOR_LIST.size()));
-                    curve.setStroke(WIRE_COLOR_LIST.get(countConnection % WIRE_COLOR_LIST.size()));
+                    color = WIRE_COLOR_LIST.get(countConnection % WIRE_COLOR_LIST.size());
                     countConnection++;
                 } else {
-                    effect = new DropShadow(1.0, pinColors.get(i));
-                    curve.setStroke(pinColors.get(i));
+                    color = pinColors.get(i);
                 }
+                curve.setStroke(color);
                 curve.setFill(Color.TRANSPARENT);
-                curve.setEffect(effect);
+                curve.setEffect(new DropShadow(1.0, color.darker().darker()));
                 drawingPane.getChildren().add(curve);
             }
         }
