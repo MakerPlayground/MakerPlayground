@@ -78,6 +78,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
         boolean needBreadboard = node.has("need_breadboard") && node.get("need_breadboard").asBoolean();
 
+        BreadboardPlacement breadboardPlacement = null;
+        if (needBreadboard) {
+            throwIfMissingField(node, "breadboard_placement");
+            breadboardPlacement = BreadboardPlacement.valueOf(node.get("breadboard_placement").asText());
+        }
+
         /* PioBoardId */
         String pioBoardId = "";
         if (deviceType == DeviceType.CONTROLLER) {
@@ -231,6 +237,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .cloudPlatformSourceCodeLibrary(cloudPlatformSourceCodeLibrary)
                 .deviceType(deviceType)
                 .needBreadboard(needBreadboard)
+                .breadboardPlacement(breadboardPlacement)
                 .pioBoardId(pioBoardId)
                 .cloudConsume(cloudConsume)
                 .connectionConsume(connectionConsume)
