@@ -19,6 +19,7 @@ import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InteractiveCodeGenerator {
@@ -55,7 +56,8 @@ public class InteractiveCodeGenerator {
         this.project = project;
         // TODO: checked
         this.devices = project.getDevice().stream()
-                .filter(projectDevice -> projectDevice.getActualDevice().getDeviceType() != DeviceType.VIRTUAL)
+                .filter(projectDevice -> !projectDevice.isMergeToOtherDevice() &&
+                        projectDevice.getActualDevice().getDeviceType() != DeviceType.VIRTUAL)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -99,7 +101,7 @@ public class InteractiveCodeGenerator {
                         }
                         // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
                         for (DevicePort devicePort : port) {
-                            if (p.isI2C1() || p.isI2C() || p.isSPI()) {
+                            if (p.isI2C1() || p.isI2C() || p.isSPI() || p.isRS485()) {
                                 continue;
                             }
                             if (!devicePort.getAlias().isEmpty()) {
@@ -266,7 +268,8 @@ public class InteractiveCodeGenerator {
                     sb.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("());").append(NEW_LINE);
                 }
                 // value
-                for (Value value : projectDevice.getGenericDevice().getValue()) {
+                Set<Value> supportedValue = projectDevice.getActualDevice().getSupportedValue().get(projectDevice.getGenericDevice()).keySet();
+                for (Value value : supportedValue) {
                     sb.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
                     sb.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName()).append("());").append(NEW_LINE);
                 }

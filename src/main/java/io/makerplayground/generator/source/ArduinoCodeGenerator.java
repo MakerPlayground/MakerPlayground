@@ -328,16 +328,16 @@ public class ArduinoCodeGenerator {
         // log status of each devices
         builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
         for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-//            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
-//                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
+                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
         }
 
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.isMergeToOtherDevice()) {
                 continue;
             }
-//            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(projectDevice))
-//                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(projectDevice))
+                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
         }
         builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
