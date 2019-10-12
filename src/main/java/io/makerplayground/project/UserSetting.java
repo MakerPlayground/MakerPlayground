@@ -43,7 +43,6 @@ public class UserSetting {
     }
 
     @Getter private final ProjectDevice device;
-    private final ReadOnlyObjectWrapper<Type> type;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
     @Getter private final ObservableMap<Parameter, Expression> valueMap;
@@ -52,7 +51,6 @@ public class UserSetting {
 
     private UserSetting(ProjectDevice device) {
         this.device = device;
-        this.type = new ReadOnlyObjectWrapper<>();
         this.action = new ReadOnlyObjectWrapper<>();
         this.condition = new ReadOnlyObjectWrapper<>();
         this.valueMap = FXCollections.observableHashMap();
@@ -85,13 +83,11 @@ public class UserSetting {
 
     UserSetting(ProjectDevice device, Action supportingAction) {
         this(device);
-        this.type.set(Type.SCENE);
         this.action.set(supportingAction);
     }
 
     UserSetting(ProjectDevice device, Condition supportingCondition) {
         this(device);
-        this.type.set(Type.CONDITION);
         this.condition.set(supportingCondition);
     }
 
@@ -115,11 +111,9 @@ public class UserSetting {
 
     UserSetting(UserSetting u) {
         this(u.device);
-        if (u.type.get() == Type.SCENE) {
-            this.action.set(u.action.get());
-        } else if(u.type.get() == Type.CONDITION) {
-            this.condition.set(u.condition.get());
-        }
+
+        this.action.set(u.action.get());
+        this.condition.set(u.condition.get());
 
         // replace values by the deepCopy version
         for (var entry: u.valueMap.entrySet()) {
