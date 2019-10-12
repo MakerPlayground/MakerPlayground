@@ -16,28 +16,17 @@
 
 package io.makerplayground.device.actual;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Data
-public class Pin implements Comparable<Pin>{
-
-    @JsonIgnore
-    protected static final Comparator<Pin> COMPARATOR = Comparator.comparing(Pin::getCodingName).thenComparing(Pin::getVoltageLevel).thenComparing(Pin::getX).thenComparing(Pin::getY);
-
+public class Pin {
     private final String refTo;
     private final String codingName;
     private final VoltageLevel voltageLevel;
     private final List<PinFunction> function;
     @ToString.Exclude private final double x;
     @ToString.Exclude private final double y;
-
-    @Override
-    public int compareTo(Pin o) {
-        return COMPARATOR.compare(this, o);
-    }
 }

@@ -32,5 +32,5 @@ public enum Platform {
     }
 
     private String displayName;
-    @ToString.Exclude private String libFolderName;
+    private String libFolderName;
 }

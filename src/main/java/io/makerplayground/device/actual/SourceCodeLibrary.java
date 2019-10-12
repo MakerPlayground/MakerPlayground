@@ -24,5 +24,5 @@ import java.util.List;
 @Data
 public class SourceCodeLibrary {
     private final String className;
-    @ToString.Exclude private final List<String> dependency;
+    private final List<String> dependency;
 }
