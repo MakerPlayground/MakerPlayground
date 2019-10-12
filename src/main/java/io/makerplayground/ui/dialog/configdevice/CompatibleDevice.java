@@ -35,11 +35,11 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
     }
 
     public Optional<ActualDevice> getActualDevice() {
-        return actualDevice != null ? Optional.of(actualDevice) : Optional.empty();
+        return Optional.ofNullable(actualDevice);
     }
 
     public Optional<ProjectDevice> getProjectDevice() {
-        return projectDevice != null ? Optional.of(projectDevice) : Optional.empty();
+        return Optional.ofNullable(projectDevice);
     }
 
     @Override

@@ -68,7 +68,7 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
         return nameProperty.get();
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         nameProperty.set(name);
     }
 }

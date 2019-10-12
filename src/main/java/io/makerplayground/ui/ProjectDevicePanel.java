@@ -25,11 +25,13 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,10 +142,23 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
                     String newName = nameTextField.getText();
-                    if (!newName.matches("^[a-zA-Z_][a-zA-Z0-9_]*") || project.isNameDuplicate(newName)){
+                    Project.SetNameResult result = project.setProjectDeviceName(projectDevice, newName);
+                    if (result != Project.SetNameResult.OK) {
+                        Label errorMessage = new Label();
+                        if (result == Project.SetNameResult.DUPLICATE_NAME) {
+                            errorMessage.setText("Duplicate device name");
+                        } else if (result == Project.SetNameResult.INCORRECT_PATTERN) {
+                            errorMessage.setText("Incorrect pattern. The name must starts with a-z, A-Z, and 0-9.");
+                        }
+                        errorMessage.setLabelFor(nameTextField);
+                        errorMessage.setPadding(new Insets(5));
+                        PopOver popOver = new PopOver(errorMessage);
+                        popOver.setCornerRadius(5.0);
+                        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+                        popOver.setDetachable(true);
+                        popOver.setOnShown(event -> popOver.detach());
+                        popOver.show(nameTextField);
                         nameTextField.setText(projectDevice.getName());
-                    } else {
-                        projectDevice.setName(newName);
                     }
                 }
             });

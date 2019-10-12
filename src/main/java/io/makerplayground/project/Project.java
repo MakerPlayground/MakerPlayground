@@ -637,4 +637,22 @@ public class Project {
 
         projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility);
     }
+
+    public Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String newName) {
+        if (projectDevice.getName().equals(newName)) {
+            return SetNameResult.OK;
+        }
+        if (!newName.matches("^[a-zA-Z0-9_]+")){
+            return SetNameResult.INCORRECT_PATTERN;
+        }
+        if (isNameDuplicate(newName)) {
+            return SetNameResult.DUPLICATE_NAME;
+        }
+        projectDevice.setName(newName);
+        return SetNameResult.OK;
+    }
+
+    public enum SetNameResult {
+        OK, DUPLICATE_NAME, INCORRECT_PATTERN
+    }
 }
