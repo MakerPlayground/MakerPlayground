@@ -17,32 +17,16 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.actual.*;
-import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.*;
-import io.makerplayground.project.expression.*;
-import io.makerplayground.project.term.*;
-import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHubDevice;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by USER on 14-Jul-17.

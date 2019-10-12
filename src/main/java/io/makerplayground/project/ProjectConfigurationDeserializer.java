@@ -31,7 +31,6 @@ import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectConfiguration> {
 

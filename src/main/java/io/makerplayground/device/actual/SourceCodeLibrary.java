@@ -17,7 +17,6 @@
 package io.makerplayground.device.actual;
 
 import lombok.Data;
-import lombok.ToString;
 
 import java.util.List;
 

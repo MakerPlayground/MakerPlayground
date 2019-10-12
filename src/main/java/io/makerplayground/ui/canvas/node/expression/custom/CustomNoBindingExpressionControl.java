@@ -16,20 +16,14 @@
 
 package io.makerplayground.ui.canvas.node.expression.custom;
 
-import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
-import io.makerplayground.project.expression.Expression;
-import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import java.util.List;
 

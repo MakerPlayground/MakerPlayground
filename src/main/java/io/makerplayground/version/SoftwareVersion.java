@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.control.Alert;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;

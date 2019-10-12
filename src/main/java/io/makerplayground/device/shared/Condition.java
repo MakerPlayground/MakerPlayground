@@ -31,9 +31,9 @@ public class Condition {
     private final List<Parameter> parameter;
 
     /**
-     * Create a new action. The constructor should only be invoked by the DeviceLibrary in order to
+     * Create a new condition. The constructor should only be invoked by the DeviceLibrary in order to
      * rebuild the library from file.
-     * @param name name of this action ex. on, off, etc.
+     * @param name name of this condition ex. on, off, etc.
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator

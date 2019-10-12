@@ -27,5 +27,5 @@ public class DeviceConnectionResult {
     private final DeviceConnectionResultStatus status;
     private final SortedMap<Connection, List<Connection>> connections;
 
-    public static DeviceConnectionResult ERROR = new DeviceConnectionResult(DeviceConnectionResultStatus.ERROR, null);
+    public static final DeviceConnectionResult ERROR = new DeviceConnectionResult(DeviceConnectionResultStatus.ERROR, null);
 }

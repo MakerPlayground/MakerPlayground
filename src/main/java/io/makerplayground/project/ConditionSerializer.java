@@ -17,24 +17,16 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 
 /**
  * Created by USER on 13-Jul-17.
  */
-public class ConditionSerializer extends StdSerializer<Condition> {
-    public ConditionSerializer() {
-        this(null);
-    }
-
-    public ConditionSerializer(Class<Condition> t) {
-        super(t);
-    }
-
+public class ConditionSerializer extends JsonSerializer<Condition> {
     @Override
     public void serialize(Condition condition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = new ObjectMapper();

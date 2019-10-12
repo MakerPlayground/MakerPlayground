@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;

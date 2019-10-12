@@ -22,12 +22,10 @@ import io.makerplayground.project.term.Term;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
-import java.text.DecimalFormat;
-
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
 

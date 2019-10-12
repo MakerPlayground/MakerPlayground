@@ -17,7 +17,6 @@
 package io.makerplayground.device.actual;
 
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 public enum Platform {

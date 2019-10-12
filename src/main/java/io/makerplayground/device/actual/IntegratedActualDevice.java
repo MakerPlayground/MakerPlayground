@@ -17,13 +17,14 @@
 package io.makerplayground.device.actual;
 
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.project.ProjectDevice;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -25,10 +25,9 @@ import lombok.*;
 import java.util.*;
 
 @Data
-public class DeviceConnection implements Comparable<DeviceConnection> {
+public class DeviceConnection {
 
     @JsonIgnore public static final DeviceConnection NOT_CONNECTED = new DeviceConnection(null, null);
-    @JsonIgnore private static final Comparator<DeviceConnection> NAME_COMPARATOR = Comparator.comparing(DeviceConnection::getDeviceConnectionString);
 
     /* Note that: the pin that is the elements of port will not be contained in this map */
     private final SortedMap<Connection, Connection> consumerProviderConnections;
@@ -42,20 +41,6 @@ public class DeviceConnection implements Comparable<DeviceConnection> {
         this.providerFunction = Objects.nonNull(providerFunction)
                 ? providerFunction
                 : Collections.emptySortedMap();
-    }
-
-    private String getDeviceConnectionString() {
-        List<String> connectionStr = new ArrayList<>();
-        for(Connection connection : consumerProviderConnections.keySet()) {
-            connectionStr.add(connection.getName());
-            connectionStr.add(consumerProviderConnections.get(connection).getName());
-        }
-        return String.join(",", connectionStr);
-    }
-
-    @Override
-    public int compareTo(DeviceConnection o) {
-        return NAME_COMPARATOR.compare(this, o);
     }
 
     void setConnection(Connection consumerConnection, Connection providerConnection) {

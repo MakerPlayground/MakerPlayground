@@ -4,7 +4,6 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.Operator;
-import io.makerplayground.ui.canvas.node.expression.custom.ChipField;
 import io.makerplayground.ui.canvas.node.expression.custom.NumericChipField;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

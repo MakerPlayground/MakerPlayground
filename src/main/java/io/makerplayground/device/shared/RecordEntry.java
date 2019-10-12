@@ -17,7 +17,6 @@
 package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.project.expression.*;
 
 public class RecordEntry {

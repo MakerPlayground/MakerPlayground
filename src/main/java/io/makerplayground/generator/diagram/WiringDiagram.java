@@ -16,15 +16,8 @@
 
 package io.makerplayground.generator.diagram;
 
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectConfiguration;
-import io.makerplayground.project.ProjectDevice;
 import javafx.scene.layout.Pane;
-import lombok.AllArgsConstructor;
-
-import java.util.*;
 
 public class WiringDiagram {
 

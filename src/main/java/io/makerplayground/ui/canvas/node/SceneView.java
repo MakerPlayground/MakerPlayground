@@ -17,15 +17,14 @@
 package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.DiagramError;
-import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Scene;
 import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.control.AutoResizeTextField;
-import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
+import io.makerplayground.ui.control.AutoResizeTextField;
+import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

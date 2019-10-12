@@ -16,19 +16,16 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
-import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
-import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -36,7 +33,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;

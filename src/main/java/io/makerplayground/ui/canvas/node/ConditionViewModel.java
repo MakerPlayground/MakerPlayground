@@ -17,11 +17,13 @@
 package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.project.*;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
-import javafx.beans.InvalidationListener;
+import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 
 import java.util.List;

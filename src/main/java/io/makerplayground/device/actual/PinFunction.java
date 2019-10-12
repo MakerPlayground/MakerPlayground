@@ -17,7 +17,6 @@
 package io.makerplayground.device.actual;
 
 import java.util.List;
-import java.util.Set;
 
 public enum PinFunction {
     VCC, GND,

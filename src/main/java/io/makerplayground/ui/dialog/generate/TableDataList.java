@@ -16,13 +16,8 @@
 
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.project.ProjectDevice;
 import javafx.scene.control.Hyperlink;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class TableDataList {

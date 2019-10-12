@@ -17,11 +17,10 @@
 package io.makerplayground.device.shared.constraint;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.makerplayground.device.shared.Unit;
 
 import java.io.IOException;
@@ -32,20 +31,13 @@ import java.util.List;
  * A helper class used by jackson's {@link ObjectMapper} to deserialize a {@link Constraint}
  * from a json file
  */
-public class ConstraintDeserializer extends StdDeserializer<Constraint> {
-    public ConstraintDeserializer() {
-        this(null);
-    }
-
-    public ConstraintDeserializer(Class<Constraint> t) {
-        super(t);
-    }
+public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
 
     @Override
-    public Constraint deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Constraint deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
-        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+        JsonNode node = deserializationContext.readValue(jsonParser, JsonNode.class);
 
         if (node.isArray() && node.size() == 0) {
             return Constraint.NONE;

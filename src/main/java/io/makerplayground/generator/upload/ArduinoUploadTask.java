@@ -24,7 +24,6 @@ import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
