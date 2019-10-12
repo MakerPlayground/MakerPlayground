@@ -70,8 +70,7 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
             ProjectDevice projectDevice = searchProjectDevice(projectDeviceName);
             if (deviceMapNode.get("isIntegrated").asBoolean()) {
                 tempIntegratedDeviceMap.put(projectDevice, actualDeviceId);
-            }
-            else {
+            } else {
                 ActualDevice actualDevice = DeviceLibrary.INSTANCE.getActualDevice(actualDeviceId);
                 deviceMap.put(projectDevice, actualDevice);
             }

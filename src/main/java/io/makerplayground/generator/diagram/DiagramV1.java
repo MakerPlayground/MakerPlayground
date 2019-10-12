@@ -183,8 +183,7 @@ class DiagramV1 {
                 } catch (IOException e) {
                     throw new IllegalStateException("Image not found for breadboard: " + SMALL);
                 }
-            }
-            else if (this == LARGE) {
+            } else if (this == LARGE) {
                 String path = "/device/breadboard_large@2x.png";
                 try(InputStream deviceImageStream = getClass().getResourceAsStream(path)) {
                     Image image = new Image(deviceImageStream);
@@ -195,8 +194,7 @@ class DiagramV1 {
                 } catch (IOException e) {
                     throw new IllegalStateException("Image not found for breadboard: " + LARGE);
                 }
-            }
-            else if (this == LARGE_EXTEND) {
+            } else if (this == LARGE_EXTEND) {
                 String path1 = "/device/breadboard_large@2x.png";
                 String path2 = "/device/breadboard_large_extend@2x.png";
                 try(InputStream deviceImageStream1 = getClass().getResourceAsStream(path1);
@@ -968,8 +966,7 @@ class DiagramV1 {
                 text.setY(coordinate.getY() + 0.5 * sizeAfterRotation.getHeight() + DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
-            }
-            else if (deviceOnTopRegion.contains(projectDevice)) {
+            } else if (deviceOnTopRegion.contains(projectDevice)) {
                 Text text = new Text(projectDevice.getName());
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
                 text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE  + GLOBAL_TOP_MARGIN);

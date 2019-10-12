@@ -261,8 +261,7 @@ public class SceneView extends InteractiveNode {
         statePane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
                 showHilight(true);
-            }
-            else if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+            } else if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
                 showHilight(true);
             }
         });

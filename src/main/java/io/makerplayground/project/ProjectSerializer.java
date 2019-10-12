@@ -95,18 +95,19 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         for(Line line : project.getUnmodifiableLine()) {
             jsonGenerator.writeStartObject();
 
-            if (line.getSource() instanceof Scene)
+            if (line.getSource() instanceof Scene) {
                 jsonGenerator.writeStringField("source", ((Scene) line.getSource()).getName());
-            else if (line.getSource() instanceof Condition)
+            } else if (line.getSource() instanceof Condition) {
                 jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
-            else if (line.getSource() instanceof Begin)
+            } else if (line.getSource() instanceof Begin) {
                 jsonGenerator.writeStringField("source", ((Begin) line.getSource()).getName()); // TODO: hardcode as begin
+            }
 
-            if (line.getDestination() instanceof Scene)
+            if (line.getDestination() instanceof Scene) {
                 jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
-            else if (line.getDestination() instanceof Condition)
+            } else if (line.getDestination() instanceof Condition) {
                 jsonGenerator.writeStringField("destination", ((Condition) line.getDestination()).getName());
-
+            }
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

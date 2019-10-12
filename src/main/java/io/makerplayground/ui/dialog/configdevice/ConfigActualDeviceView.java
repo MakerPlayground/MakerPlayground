@@ -225,8 +225,7 @@ public class ConfigActualDeviceView extends VBox{
                     if (!cell.isEmpty()) {
                         if (cell.getItem().getDeviceMappingResult() != DeviceMappingResult.OK) {
                             cell.setBackground(GREY_BG);
-                        }
-                        else if (!isNowHover) {
+                        } else if (!isNowHover) {
                             cell.setBackground(Background.EMPTY);
                         }
                     }

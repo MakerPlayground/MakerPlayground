@@ -32,8 +32,7 @@ public class CompatibleDeviceComboItem implements Comparable<CompatibleDeviceCom
     public int compareTo(CompatibleDeviceComboItem that) {
         if (this.deviceMappingResult == DeviceMappingResult.OK && that.deviceMappingResult != DeviceMappingResult.OK) {
             return -1;
-        }
-        else if (this.deviceMappingResult != DeviceMappingResult.OK && that.deviceMappingResult == DeviceMappingResult.OK) {
+        } else if (this.deviceMappingResult != DeviceMappingResult.OK && that.deviceMappingResult == DeviceMappingResult.OK) {
             return 1;
         }
         return this.compatibleDevice.compareTo(that.compatibleDevice);

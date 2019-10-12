@@ -112,8 +112,7 @@ public class DeviceConnectionLogic {
                 if (connection.getType() != ConnectionType.WIRE) {
                     deallocatingConnections.add(connection);
                     allConnectionsProvide.add(connection);
-                }
-                else if (connection.getType() == ConnectionType.WIRE &&
+                } else if (connection.getType() == ConnectionType.WIRE &&
                         connection.getPins().size() == 1 &&
                         currentConnection.getProviderFunction().get(connection).get(0).isSingleUsed())
                 {

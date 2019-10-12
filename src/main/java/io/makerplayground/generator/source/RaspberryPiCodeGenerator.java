@@ -289,8 +289,7 @@ class RaspberryPiCodeGenerator {
                         throw new IllegalStateException("Cannot process the node with zero or more than one root");
                     }
                     root = roots.iterator().next();
-                }
-                else if (node instanceof Begin) {
+                } else if (node instanceof Begin) {
                     root = node;
                 } else {
                     throw new IllegalStateException("Not support operation");
@@ -321,8 +320,7 @@ class RaspberryPiCodeGenerator {
                     for (UserSetting setting : condition.getSetting()) {
                         if (setting.getAction() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s action must be set ");
-                        }
-                        else if (!setting.getAction().getName().equals("Compare")) {
+                        } else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
                             setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
@@ -430,8 +428,7 @@ class RaspberryPiCodeGenerator {
                             if (PIN_FUNCTION_WITH_CODES.contains(function)) {
                                 if (!pinProvide.getCodingName().isEmpty()) {
                                     args.add(pinProvide.getCodingName());
-                                }
-                                else {
+                                } else {
                                     args.add(pinProvide.getRefTo());
                                 }
                             }

@@ -320,15 +320,13 @@ public class Project {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
                 // No device in Begin Scene
-            }
-            else if (current instanceof Scene) {
+            } else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
                     deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
-            }
-            else if (current instanceof Condition) {
+            } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
@@ -360,15 +358,13 @@ public class Project {
             NodeElement current = queue.remove();
             if (current instanceof Begin) {
                 // No Value in Begin Scene
-            }
-            else if (current instanceof Scene) {
+            } else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
                 temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
-            }
-            else if (current instanceof Condition) {
+            } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
@@ -607,8 +603,7 @@ public class Project {
 //                        });
 //                    });
                 });
-            }
-            else if (current instanceof Condition) {
+            } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s->{
                     ProjectDevice projectDevice = s.getDevice();

@@ -61,14 +61,11 @@ public class CompatibleDevice implements Comparable<CompatibleDevice> {
     public int compareTo(CompatibleDevice that) {
         if (projectDevice != null && that.projectDevice != null) {
             return PROJECT_DEVICE_COMPARATOR.compare(projectDevice, that.projectDevice);
-        }
-        else if (actualDevice != null && that.actualDevice != null) {
+        } else if (actualDevice != null && that.actualDevice != null) {
             return ACTUAL_DEVICE_COMPARATOR.compare(actualDevice, that.actualDevice);
-        }
-        else if (projectDevice != null) { // that.projectDevice always null in this case
+        } else if (projectDevice != null) { // that.projectDevice always null in this case
             return -1;
-        }
-        else if (that.projectDevice != null) { // this.projectDevice always null in this case
+        } else if (that.projectDevice != null) { // this.projectDevice always null in this case
             return 1;
         }
         throw new IllegalStateException("CompatibleDevice must contains neither projectDevice nor actualDevice");

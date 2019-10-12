@@ -78,8 +78,9 @@ public class CustomNumberExpression extends Expression {
         int countParen = 0;
         for (Term term : terms) {
             if (term instanceof OperatorTerm) {
-                if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
-                else if(Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) {
+                    countParen++;
+                } else if(Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
                     countParen--;
                     if (countParen < 0) { return false; }
                 }

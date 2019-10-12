@@ -50,8 +50,7 @@ public class RTCExpressionControl extends HBox {
         if (expression.get().getTerms().size() > 0) {
             if (expression.get().getRealTimeClock().getMode() == RealTimeClock.Mode.SPECIFIC) {
                 datetime = expression.get().getRealTimeClock().getLocalDateTime();
-            }
-            else {
+            } else {
                 // TODO: Support mode NOW
                 System.err.println("No implementation for NOW mode right now.");
             }

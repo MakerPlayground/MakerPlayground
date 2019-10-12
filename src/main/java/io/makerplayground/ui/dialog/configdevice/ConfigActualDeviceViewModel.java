@@ -119,8 +119,7 @@ public class ConfigActualDeviceViewModel {
                     configChangedCallback.run();
                 }
             }
-        }
-        else if (configuration.getActualDevice(projectDevice) != device.getActualDevice()
+        } else if (configuration.getActualDevice(projectDevice) != device.getActualDevice()
                 || configuration.getIdenticalDevice(projectDevice) != device.getProjectDevice()) {
 
             device.getActualDevice().ifPresentOrElse(actualDevice -> configuration.setActualDevice(projectDevice, actualDevice),

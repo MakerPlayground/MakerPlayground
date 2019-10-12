@@ -226,8 +226,7 @@ public final class ProjectConfiguration {
                     DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice, currentConnection);
                     if (result.getStatus() == DeviceConnectionResultStatus.ERROR) {
                         selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
-                    }
-                    else {
+                    } else {
                         actualDeviceConnectionMap.put(actualDevice, result.getConnections());
                     }
                 }
@@ -346,8 +345,7 @@ public final class ProjectConfiguration {
     public Optional<CloudPlatform> getCloudConsume(ProjectDevice projectDevice) {
         if (unmodifiableDeviceMap.containsKey(projectDevice) && Objects.nonNull(unmodifiableDeviceMap.get(projectDevice).getCloudConsume())) {
             return Optional.of(unmodifiableDeviceMap.get(projectDevice).getCloudConsume());
-        }
-        else if (unmodifiableIdenticalDeviceMap.containsKey(projectDevice)) {
+        } else if (unmodifiableIdenticalDeviceMap.containsKey(projectDevice)) {
             return getCloudConsume(unmodifiableIdenticalDeviceMap.get(projectDevice));
         }
         return Optional.empty();

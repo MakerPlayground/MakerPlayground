@@ -172,8 +172,7 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         }
         if (logitems.size() > 0) {
             return Optional.of(logitems);
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
