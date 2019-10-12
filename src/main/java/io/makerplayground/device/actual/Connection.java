@@ -18,17 +18,16 @@ package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.project.ProjectDevice;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Comparator;
 import java.util.List;
 
-@Data @Builder
+@Data
 public class Connection implements Comparable<Connection> {
 
     @JsonIgnore
-    private static final Comparator<Connection> comparator = Comparator.comparing(Connection::getName).thenComparing(Connection::getType);
+    private static final Comparator<Connection> NAME_TYPE_COMPARATOR = Comparator.comparing(Connection::getName).thenComparing(Connection::getType);
 
     private final String name;
     private final ConnectionType type;
@@ -38,6 +37,6 @@ public class Connection implements Comparable<Connection> {
 
     @Override
     public int compareTo(Connection o) {
-        return comparator.compare(this, o);
+        return NAME_TYPE_COMPARATOR.compare(this, o);
     }
 }

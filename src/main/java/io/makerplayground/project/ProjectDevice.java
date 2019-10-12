@@ -23,10 +23,15 @@ import io.makerplayground.device.generic.GenericDevice;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.*;
 
+import java.util.Comparator;
+
 @JsonSerialize (using = ProjectDeviceSerializer.class)
 @JsonDeserialize (using = ProjectDeviceDeserializer.class)
 @Data @AllArgsConstructor
 public class ProjectDevice implements Comparable<ProjectDevice>{
+
+    public static final Comparator<ProjectDevice> NAME_COMPARATOR = Comparator.comparing(ProjectDevice::getName);
+
     @JsonIgnore
     public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
@@ -42,7 +47,7 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
 
     @Override
     public int compareTo(ProjectDevice o) {
-        return getName().compareTo(o.getName());
+        return NAME_COMPARATOR.compare(this, o);
     }
 
     @Override

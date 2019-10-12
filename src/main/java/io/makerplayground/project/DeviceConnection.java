@@ -28,7 +28,7 @@ import java.util.*;
 public class DeviceConnection implements Comparable<DeviceConnection> {
 
     @JsonIgnore public static final DeviceConnection NOT_CONNECTED = new DeviceConnection(null, null);
-    @JsonIgnore private static final Comparator<DeviceConnection> comparator = Comparator.comparing(DeviceConnection::getDeviceConnectionString);
+    @JsonIgnore private static final Comparator<DeviceConnection> NAME_COMPARATOR = Comparator.comparing(DeviceConnection::getDeviceConnectionString);
 
     /* Note that: the pin that is the elements of port will not be contained in this map */
     private final SortedMap<Connection, Connection> consumerProviderConnections;
@@ -55,7 +55,7 @@ public class DeviceConnection implements Comparable<DeviceConnection> {
 
     @Override
     public int compareTo(DeviceConnection o) {
-        return comparator.compare(this, o);
+        return NAME_COMPARATOR.compare(this, o);
     }
 
     void setConnection(Connection consumerConnection, Connection providerConnection) {

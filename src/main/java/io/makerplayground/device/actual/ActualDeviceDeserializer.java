@@ -192,15 +192,14 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             /* Compatibility */
             Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
 
-            integratedDevices.add(IntegratedActualDevice.IntegratedActualDeviceBuilder()
-                    .name(inDeviceName)
-                    .integratedConnection(inConnection)
-                    .property(inProperty)
-                    .compatibilityMap(inCompatibilityMap)
-                    .pinTemplate(inTemplateName)
-                    .platformSourceCodeLibrary(inPlatformSourceCodeLibrary)
-                    .build()
-            );
+            IntegratedActualDevice inDevice = new IntegratedActualDevice(inDeviceName,
+                                                                            inProperty,
+                                                                            inTemplateName,
+                                                                            inConnection,
+                                                                            inCompatibilityMap,
+                                                                            inPlatformSourceCodeLibrary);
+
+            integratedDevices.add(inDevice);
         }
 
         List<String> allIntegratedDeviceName = integratedDevices.stream()
@@ -416,14 +415,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     }
                 }
 
-                pins.add(Pin.builder()
-                        .refTo(refTo)
-                        .codingName(pinTemplate.getCodingName())
-                        .voltageLevel(voltageLevel)
-                        .function(function)
-                        .x(x)
-                        .y(y)
-                        .build());
+                pins.add(new Pin(refTo, pinTemplate.getCodingName(), voltageLevel, function, x, y));
             }
 
 //            if (connectionType.isSplittable()) {

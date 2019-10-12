@@ -601,8 +601,7 @@ public final class ProjectConfiguration {
                         Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(actualDevice);
                         return possibleDeviceConnection.get(connection).size();
                     }
-                })
-                .thenComparing(Connection::getName);
+                }).thenComparing(Connection::getName);
     }
 
 

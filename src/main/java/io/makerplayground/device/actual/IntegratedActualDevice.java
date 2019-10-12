@@ -40,7 +40,6 @@ public class IntegratedActualDevice extends ActualDevice {
         this.parent = parent;
     }
 
-    @Builder(builderMethodName = "IntegratedActualDeviceBuilder")
     IntegratedActualDevice(String name,
                            List<Property> property,
                            String pinTemplate,

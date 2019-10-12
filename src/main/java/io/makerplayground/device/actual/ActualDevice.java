@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,9 @@ import java.util.stream.Stream;
 
 @Data @Builder
 public class ActualDevice implements Comparable<ActualDevice> {
+
+    public static final Comparator<ActualDevice> NAME_COMPARATOR = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel).thenComparing(ActualDevice::getId);
+
     protected final String id;
     protected final String brand;
     protected final String model;
@@ -101,12 +105,7 @@ public class ActualDevice implements Comparable<ActualDevice> {
     private Stream<Connection> queryConnection(List<Connection> connectionList, ProjectDevice projectDevice, String portName) {
         return connectionList.stream()
                 .filter(port -> portName == null || port.getName().equals(portName))
-                .map(port -> Connection.builder()
-                        .name(port.getName())
-                        .type(port.getType())
-                        .pins(port.getPins())
-                        .ownerProjectDevice(projectDevice)
-                        .build());
+                .map(port -> new Connection(port.getName(), port.getType(), port.getPins(), projectDevice));
     }
 
     public List<Connection> getConnectionProvideByOwnerDevice(ProjectDevice projectDevice) {
