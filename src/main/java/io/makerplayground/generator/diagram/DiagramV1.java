@@ -29,10 +29,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.text.Text;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,23 +60,9 @@ import java.util.stream.Collectors;
 
 class DiagramV1 {
 
-    @Data @AllArgsConstructor
+    @Value @AllArgsConstructor
     static class Coordinate {
         double x, y;
-
-        void increaseX(double dx) {
-            x += dx;
-        }
-
-        void increaseY(double dy) {
-            y += dy;
-        }
-
-        void increaseXY(double dx, double dy) {
-            x += dx;
-            y += dy;
-        }
-
         Coordinate add(double dx, double dy) {
             return new Coordinate(x + dx, y + dy);
         }
@@ -118,7 +101,11 @@ class DiagramV1 {
                 new Coordinate(22.0, 72.0 + 29 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 25 * UNIT_HOLE_DISTANCE),
                 new Coordinate(50.0, 491.0),
-                new Coordinate(50.0, 505.4));
+                new Coordinate(50.0, 505.4),
+                new Coordinate(22.0, 72.0 + 7 * UNIT_HOLE_DISTANCE),
+                new Coordinate(22.0, 72.0 + 11 * UNIT_HOLE_DISTANCE),
+                new Coordinate(22.0, 72.0 + 18 * UNIT_HOLE_DISTANCE),
+                new Coordinate(22.0, 72.0 + 22 * UNIT_HOLE_DISTANCE));
 
 /*
  *  Layout for normal version
@@ -149,6 +136,8 @@ class DiagramV1 {
         @Getter private final Coordinate lowerVccHoleCoordinate;
         @Getter private final Coordinate lowerGndHoleCoordinate;
         @Getter private final Coordinate upperCenterTopLeftHoleCoordinate;
+        @Getter private final Coordinate upperCenterBottomLeftHoleCoordinate;
+        @Getter private final Coordinate lowerCenterTopLeftHoleCoordinate;
         @Getter private final Coordinate lowerCenterBottomLeftHoleCoordinate;
 
         Breadboard(int numColumns, double width, double height,
@@ -164,6 +153,8 @@ class DiagramV1 {
                     lowerVccHoleCoordinate,
                     lowerGndHoleCoordinate,
                     null,
+                    null,
+                    null,
                     null);
         }
 
@@ -174,6 +165,8 @@ class DiagramV1 {
                    Coordinate lowerVccHoleCoordinate,
                    Coordinate lowerGndHoleCoordinate,
                    Coordinate upperCenterTopLeftHoleCoordinate,
+                   Coordinate upperCenterBottomLeftHoleCoordinate,
+                   Coordinate lowerCenterTopLeftHoleCoordinate,
                    Coordinate lowerCenterBottomLeftHoleCoordinate) {
             this.numColumns = numColumns;
             this.width = width;
@@ -184,6 +177,8 @@ class DiagramV1 {
             this.lowerVccHoleCoordinate = lowerVccHoleCoordinate;
             this.lowerGndHoleCoordinate = lowerGndHoleCoordinate;
             this.upperCenterTopLeftHoleCoordinate = upperCenterTopLeftHoleCoordinate;
+            this.upperCenterBottomLeftHoleCoordinate = upperCenterBottomLeftHoleCoordinate;
+            this.lowerCenterTopLeftHoleCoordinate = lowerCenterTopLeftHoleCoordinate;
             this.lowerCenterBottomLeftHoleCoordinate = lowerCenterBottomLeftHoleCoordinate;
         }
 
@@ -258,28 +253,24 @@ class DiagramV1 {
             }
             double xShift = UNIT_HOLE_DISTANCE * Math.ceil(device.getXLeftHolePixel() / UNIT_HOLE_DISTANCE) - device.getXLeftHolePixel();
             x += device.getXLeftHolePixel() + xShift + device.getOffsetXHoles().get(pin) * UNIT_HOLE_DISTANCE;
-            double y;
-            if (breadboard == Breadboard.LARGE_EXTEND) {
-                if (device.getBreadboardPlacement() == BreadboardPlacement.TWO_SIDES) {
-                    if (pin.getY() <= 0.5 * device.getActualDevice().getHeight()) {
-                        y = breadboardCoordinate.getY() + breadboard.getUpperCenterTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
-                    } else {
-                        y = breadboardCoordinate.getY() + breadboard.getLowerCenterBottomLeftHoleCoordinate().getY() - device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
-                    }
-                } else if (device.getBreadboardPlacement() == BreadboardPlacement.ONE_SIDE) {
-                    y = breadboardCoordinate.getY() + breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
-                } else {
-                    throw new IllegalStateException("No implementation for placement: " + device.getBreadboardPlacement());
-                }
-            } else if (breadboard == Breadboard.LARGE || breadboard == Breadboard.SMALL) {
-                if (device.getBreadboardPlacement() == BreadboardPlacement.TWO_SIDES) {
-                    if (pin.getY() <= 0.5 * device.getActualDevice().getHeight()) {
-                        y = breadboardCoordinate.getY() + breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
-                    } else {
-                        y = breadboardCoordinate.getY() + breadboard.getLowerBottomLeftHoleCoordinate().getY() - device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
-                    }
-                } else if (device.getBreadboardPlacement() == BreadboardPlacement.ONE_SIDE) {
-                    y = breadboardCoordinate.getY() + breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
+            double y = breadboardCoordinate.getY();
+            boolean upperPin = pin.getY() <= 0.5 * device.getActualDevice().getHeight();
+            if (device.getBreadboardPlacement() == BreadboardPlacement.ONE_SIDE) {
+                y += breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
+            }
+            else if (device.getBreadboardPlacement() == BreadboardPlacement.TWO_SIDES) {
+                if (device.needExtendedBreadboard() && breadboard == Breadboard.LARGE_EXTEND) {
+                    y += (upperPin ?
+                            breadboard.getUpperCenterTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE :
+                            breadboard.getLowerCenterBottomLeftHoleCoordinate().getY() - device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE);
+                } else if (!device.needExtendedBreadboard() && (breadboard == Breadboard.LARGE || breadboard == Breadboard.SMALL)) {
+                    y += (upperPin ?
+                            breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE :
+                            breadboard.getLowerBottomLeftHoleCoordinate().getY() - device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE);
+                } else if (!device.needExtendedBreadboard() && (breadboard == Breadboard.LARGE_EXTEND)) {
+                    y += (upperPin ?
+                            breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE :
+                            breadboard.getUpperCenterBottomLeftHoleCoordinate().getY() - device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE);
                 } else {
                     throw new IllegalStateException("No implementation for placement: " + device.getBreadboardPlacement());
                 }
@@ -306,10 +297,12 @@ class DiagramV1 {
         BreadboardDevice(ProjectDevice projectDevice, ActualDevice actualDevice) {
             this.projectDevice = projectDevice;
             this.actualDevice = actualDevice;
-            List<Connection> connectionConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
+            List<Connection> connections = new ArrayList<>();
+            connections.addAll(actualDevice.getConnectionConsumeByOwnerDevice(projectDevice));
+            connections.addAll(actualDevice.getConnectionProvideByOwnerDevice(projectDevice));
 
             // Find the top and left holes
-            for (Connection connection: connectionConsume) {
+            for (Connection connection: connections) {
                 // we care only the pin that uses hole
                 if (connection.getType() != ConnectionType.WIRE) {
                     continue;
@@ -321,7 +314,7 @@ class DiagramV1 {
             }
 
             // Calculate Hole offset
-            for (Connection connection: connectionConsume) {
+            for (Connection connection: connections) {
                 if (connection.getType() != ConnectionType.WIRE) {
                     continue;
                 }
@@ -347,7 +340,7 @@ class DiagramV1 {
         }
 
         boolean needExtendedBreadboard() {
-            return actualDevice.getHeight() > Breadboard.LARGE.getLowerBottomLeftHoleCoordinate().getY() - Breadboard.LARGE.getUpperTopLeftHoleCoordinate().getY() + 2 * UNIT_HOLE_DISTANCE;
+            return yBottomHolePixel - yTopHolePixel + 2 * UNIT_HOLE_DISTANCE > Breadboard.LARGE.getLowerBottomLeftHoleCoordinate().getY() - Breadboard.LARGE.getUpperTopLeftHoleCoordinate().getY();
         }
     }
 
@@ -360,7 +353,7 @@ class DiagramV1 {
     private static final double GLOBAL_LEFT_MARGIN = 50.0;
 
     private static final double BREADBOARD_REGION_H_GAP = 50.0;
-    private static final double BREADBOARD_REGION_V_MARGIN = 120.0;
+    private static final double BREADBOARD_REGION_V_MARGIN = 80.0;
 
     private static final double TOP_MID_REGION_H_GAP = 30.0;
     private static final double TOP_MID_REGION_V_MARGIN = 80.0;
@@ -499,46 +492,27 @@ class DiagramV1 {
                     double dy = device.getYBottomHolePixel() - device.getYTopHolePixel();
                     int devicePinRows = (int) Math.ceil(dy / UNIT_HOLE_DISTANCE) + 1;
                     double centerX = breadboardTopLeftCoordinate.getX() + breadboard.getUpperTopLeftHoleCoordinate().getX() + xShift + holeOffsetX * UNIT_HOLE_DISTANCE + 0.5 * device.getActualDevice().getWidth();
-                    double centerY;
-                    if (breadboard == Breadboard.LARGE_EXTEND) {
-                        if (devicePinRows % 2 == 0) {
-                            centerY = breadboardTopLeftCoordinate.getY()
-                                    + breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                    + 0.5 * (breadboard.getLowerCenterBottomLeftHoleCoordinate().getY()
-                                            - breadboard.getUpperCenterTopLeftHoleCoordinate().getY()
-                                            - (devicePinRows - 1) * UNIT_HOLE_DISTANCE
-                                            + device.getActualDevice().getHeight())
-                                    - device.getYTopHolePixel();
-                        } else {
-                            centerY = breadboardTopLeftCoordinate.getY()
-                                    + breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                    + 0.5 * (breadboard.getLowerCenterBottomLeftHoleCoordinate().getY()
-                                            - breadboard.getUpperCenterTopLeftHoleCoordinate().getY()
-                                            - devicePinRows * UNIT_HOLE_DISTANCE
-                                            + device.getActualDevice().getHeight())
-                                    - device.getYTopHolePixel();
-                        }
-                    } else if (breadboard == Breadboard.LARGE || breadboard == Breadboard.SMALL) {
-                        if (devicePinRows % 2 == 0) {
-                            centerY = breadboardTopLeftCoordinate.getY()
-                                    + breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                    + 0.5 * (breadboard.getLowerBottomLeftHoleCoordinate().getY()
-                                            - breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                            - (devicePinRows - 1) * UNIT_HOLE_DISTANCE
-                                            + device.getActualDevice().getHeight())
-                                    - device.getYTopHolePixel();
-                        } else {
-                            centerY = breadboardTopLeftCoordinate.getY()
-                                    + breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                    + 0.5 * (breadboard.getLowerBottomLeftHoleCoordinate().getY()
-                                            - breadboard.getUpperTopLeftHoleCoordinate().getY()
-                                            - devicePinRows * UNIT_HOLE_DISTANCE
-                                            + device.getActualDevice().getHeight())
-                                    - device.getYTopHolePixel();
-                        }
+                    double topLeftY;
+                    double bottomLeftY;
+                    boolean halfHole = devicePinRows % 2 == 0;
+                    if (device.needExtendedBreadboard() && breadboard == Breadboard.LARGE_EXTEND) {
+                        bottomLeftY = breadboard.getLowerCenterBottomLeftHoleCoordinate().getY();
+                        topLeftY = breadboard.getUpperCenterTopLeftHoleCoordinate().getY();
+                    } else if (!device.needExtendedBreadboard() && (breadboard == Breadboard.LARGE || breadboard == Breadboard.SMALL)) {
+                        bottomLeftY = breadboard.getLowerBottomLeftHoleCoordinate().getY();
+                        topLeftY = breadboard.getUpperTopLeftHoleCoordinate().getY();
+                    } else if (!device.needExtendedBreadboard() && (breadboard == Breadboard.LARGE_EXTEND)) {
+                        bottomLeftY = breadboard.getUpperCenterBottomLeftHoleCoordinate().getY();
+                        topLeftY = breadboard.getUpperTopLeftHoleCoordinate().getY();
                     } else {
                         throw new IllegalStateException("There is no implementation for " + breadboard + " breadboard");
                     }
+                    double centerY = breadboardTopLeftCoordinate.getY()
+                                    + 0.5 * (bottomLeftY
+                                            + topLeftY
+                                            - (devicePinRows - (halfHole ? 1 : 0)) * UNIT_HOLE_DISTANCE
+                                            + device.getActualDevice().getHeight())
+                                    - device.getYTopHolePixel();
                     this.deviceCenterCoordinates.put(device.getProjectDevice(), new Coordinate(centerX, centerY));
                 } else {
                     throw new IllegalStateException("There is no implementation for " + device.getBreadboardPlacement());
