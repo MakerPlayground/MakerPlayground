@@ -27,7 +27,18 @@ import java.util.List;
 public class Connection implements Comparable<Connection> {
 
     @JsonIgnore
-    private static final Comparator<Connection> NAME_TYPE_COMPARATOR = Comparator.comparing(Connection::getName).thenComparing(Connection::getType);
+    public static final Comparator<Connection> NAME_TYPE_COMPARATOR = Comparator.comparing(Connection::getName).thenComparing(Connection::getType);
+
+    @JsonIgnore
+    public static final Comparator<Connection> LESS_PROVIDER_DEPENDENCY = Comparator
+            .comparingInt((Connection connection) -> connection.getPins().stream()
+                    .map(Pin::getFunction)
+                    .mapToInt(pinFunctions -> pinFunctions.stream()
+                            // Give penalty value to HW Serial, we not recommend using it
+                            .mapToInt(pinFunction -> pinFunction.isHWSerial() ? 3 : 1)
+                            .sum())
+                    .sum())
+            .thenComparing(Connection::getName);
 
     private final String name;
     private final ConnectionType type;

@@ -82,18 +82,6 @@ public class DeviceConnectionLogic {
         return connectionMatching;
     }
 
-    private static final Comparator<Connection> LESS_PROVIDER_DEPENDENCY = Comparator
-            .comparingInt((Connection connection) -> connection.getPins().stream()
-                                            .map(Pin::getFunction)
-                                            .mapToInt(pinFunctions -> pinFunctions.stream()
-                                                    // Give penalty value to HW Serial, we not recommend using it
-                                                    .mapToInt(pinFunction -> pinFunction.isHWSerial() ? 3 : 1)
-                                                    .sum())
-                                            .sum())
-            .thenComparing(Connection::getName);
-
-    private static final Comparator<Connection> CONNECTION_NAME_ASCENDING = Comparator.comparing(Connection::getName);
-
     public static DeviceConnectionResult generatePossibleDeviceConnection(Set<Connection> remainingConnectionProvide,
                                                                           Map<ProjectDevice, Set<String>> usedRefPin,
                                                                           ProjectDevice projectDevice,
@@ -101,7 +89,7 @@ public class DeviceConnectionLogic {
                                                                           DeviceConnection currentConnection) {
         List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
         List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
-        SortedMap<Connection, List<Connection>> possibleConnections = new TreeMap<>(CONNECTION_NAME_ASCENDING);
+        SortedMap<Connection, List<Connection>> possibleConnections = new TreeMap<>(Connection.NAME_TYPE_COMPARATOR);
         for (int i=0; i<allConnectionsConsume.size(); i++) {
             Connection connectionConsume = allConnectionsConsume.get(i);
             /* In order to check the compatible, the assigned pin/port must be temporary deallocated from the remaining pin/port. */
@@ -142,7 +130,7 @@ public class DeviceConnectionLogic {
             if (connectionProvideList.isEmpty()) {
                 return DeviceConnectionResult.ERROR;
             }
-            connectionProvideList.sort(LESS_PROVIDER_DEPENDENCY);
+            connectionProvideList.sort(Connection.LESS_PROVIDER_DEPENDENCY);
             possibleConnections.put(connectionConsume, connectionProvideList);
 
             deallcatingRefTo.forEach((providerProjectDevice, refTo) ->
