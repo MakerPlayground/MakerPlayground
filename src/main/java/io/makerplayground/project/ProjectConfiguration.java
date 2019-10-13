@@ -24,6 +24,7 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.*;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
@@ -43,6 +44,7 @@ public final class ProjectConfiguration {
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
     @JsonIgnore private Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility;
+    @JsonIgnore private Map<ProjectDevice, Set<Value>> valueCompatibility;
 
     /* state variables: the variable used in calculation and cached the sub-solution */
     @JsonIgnore private ObservableList<ProjectDevice> usedDevices = FXCollections.observableArrayList();
@@ -86,13 +88,16 @@ public final class ProjectConfiguration {
     }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
-                             Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility) {
+                             Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility,
+                             Map<ProjectDevice, Set<Value>> valueCompatibility) {
         this.actionCompatibility = actionCompatibility;
         this.conditionCompatibility = conditionCompatibility;
+        this.valueCompatibility = valueCompatibility;
 
         this.usedDevices.clear();
         this.usedDevices.addAll(this.actionCompatibility.keySet());
         this.usedDevices.addAll(this.conditionCompatibility.keySet());
+        this.usedDevices.addAll(this.valueCompatibility.keySet());
         this.usedDevices.add(CONTROLLER);
 
         /* remove the unused device from the data structure */
@@ -126,7 +131,7 @@ public final class ProjectConfiguration {
             }
             deviceSelectableMap.put(device, selectable);
         }
-        setFlagToDeviceIfActionConditionIsIncompatible(deviceSelectableMap);
+        setFlagToDeviceIfActionConditionValueIsIncompatible(deviceSelectableMap);
         setFlagToDeviceIfCloudIsNotSupport(deviceSelectableMap);
         setFlagToDeviceIfConnectionIsIncompatible(deviceSelectableMap, deviceConnectionMap);
 
@@ -235,6 +240,18 @@ public final class ProjectConfiguration {
         }
     }
 
+    private DeviceMappingResult checkValueCompatibility(ProjectDevice device, ActualDevice actualDevice) {
+        if (valueCompatibility.containsKey(device) &&
+                !actualDevice.getCompatibilityMap()
+                        .get(device.getGenericDevice())
+                        .getDeviceValue()
+                        .keySet()
+                        .containsAll(valueCompatibility.get(device))) {
+            return DeviceMappingResult.NO_SUPPORTING_VALUE;
+        }
+        return DeviceMappingResult.OK;
+    }
+
     private DeviceMappingResult checkConditionCompatibility(ProjectDevice device, ActualDevice actualDevice) {
         if (conditionCompatibility.containsKey(device)) {
             for (Condition condition : conditionCompatibility.get(device).keySet()) {
@@ -287,17 +304,14 @@ public final class ProjectConfiguration {
         return DeviceMappingResult.OK;
     }
 
-    private void setFlagToDeviceIfActionConditionIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap) {
+    private void setFlagToDeviceIfActionConditionValueIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap) {
         /* set reason for incompatible actual device */
         for (ProjectDevice device: this.actionCompatibility.keySet()) {
             var selectable = deviceSelectableMap.get(device);
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
                 if (selectable.get(compatibleDevice) == DeviceMappingResult.OK && compatibleDevice.getActualDevice().isPresent()) {
                     ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
-                    DeviceMappingResult result = checkActionCompatibility(device, actualDevice);
-                    if (result!= DeviceMappingResult.OK) {
-                        selectable.put(compatibleDevice, result);
-                    }
+                    selectable.put(compatibleDevice, checkActionCompatibility(device, actualDevice));
                 }
             }
         }
@@ -306,10 +320,16 @@ public final class ProjectConfiguration {
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
                 if (selectable.get(compatibleDevice) == DeviceMappingResult.OK && compatibleDevice.getActualDevice().isPresent()) {
                     ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
-                    DeviceMappingResult result = checkConditionCompatibility(device, actualDevice);
-                    if (result!= DeviceMappingResult.OK) {
-                        selectable.put(compatibleDevice, result);
-                    }
+                    selectable.put(compatibleDevice, checkConditionCompatibility(device, actualDevice));
+                }
+            }
+        }
+        for (ProjectDevice device: this.valueCompatibility.keySet()) {
+            var selectable = deviceSelectableMap.get(device);
+            for (CompatibleDevice compatibleDevice: selectable.keySet()) {
+                if (selectable.get(compatibleDevice) == DeviceMappingResult.OK && compatibleDevice.getActualDevice().isPresent()) {
+                    ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
+                    selectable.put(compatibleDevice, checkValueCompatibility(device, actualDevice));
                 }
             }
         }

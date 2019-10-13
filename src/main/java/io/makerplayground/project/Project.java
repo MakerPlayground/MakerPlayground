@@ -563,6 +563,7 @@ public class Project {
     public void calculateCompatibility() {
         Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility = new HashMap<>();
         Map<ProjectDevice, Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>>> conditionCompatibility = new HashMap<>();
+        Map<ProjectDevice, Set<Value>> valueCompatibility = new HashMap<>();
         Set<NodeElement> visited = new HashSet<>();
         Deque<NodeElement> queue = new ArrayDeque<>(this.begins);
         while(!queue.isEmpty()) {
@@ -588,20 +589,14 @@ public class Project {
                             actionCompatibility.get(projectDevice).get(action).put(parameter, newConstraint);
                         }
                     });
-//                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
-//                        if (!compatibilityUsed.containsKey(projectDevice1)) {
-//                            Map<Parameter, Constraint> parameterConstraintMap = new TreeMap<>(Comparator.comparing(Parameter::getDisplayName));
-//                            compatibilityUsed.put(projectDevice1, parameterConstraintMap);
-//                        }
-//                        s.getValueMap().forEach((parameter, expression) -> {
-//                            if (!compatibilityUsed.get(projectDevice1).containsKey(parameter)) {
-//                                compatibilityUsed.get(projectDevice1).put(parameter, expression.getConstraint());
-//                            } else {
-//                                Constraint constraint = compatibilityUsed.get(projectDevice1).get(parameter);
-//                                compatibilityUsed.get(projectDevice1).put(parameter, constraint.union(expression.getConstraint()));
-//                            }
-//                        });
-//                    });
+                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
+                        if (valueCompatibility.containsKey(projectDevice1)) {
+                            valueCompatibility.get(projectDevice1).addAll(values);
+                        }
+                        else {
+                            valueCompatibility.put(projectDevice1, new HashSet<>(values));
+                        }
+                    });
                 });
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
@@ -635,7 +630,7 @@ public class Project {
             queue.addAll(unvisitedAdj);
         }
 
-        projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility);
+        projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility);
     }
 
     public Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String newName) {

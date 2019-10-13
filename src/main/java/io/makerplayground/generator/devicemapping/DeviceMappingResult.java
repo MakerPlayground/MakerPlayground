@@ -25,6 +25,7 @@ public enum DeviceMappingResult {
     OK(""),
     NO_SUPPORTING_ACTION("device not provide a required action"),
     NO_SUPPORTING_CONDITION("device not provide a required condition"),
+    NO_SUPPORTING_VALUE("device not provide a required value"),
     CONDITION_PARAMETER_NOT_COMPATIBLE("some condition contains incompatible parameters"),
     ACTION_PARAMETER_NOT_COMPATIBLE("some action contains incompatible parameters"),
     CONSTRAINT_NOT_COMPATIBLE("project requires more capability than the device can provide"),
