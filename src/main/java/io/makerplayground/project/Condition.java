@@ -121,11 +121,11 @@ public class Condition extends NodeElement {
             }
         }
         for (UserSetting userSetting : setting) {
-            for (Parameter parameter : userSetting.getValueMap().keySet()) {
-                Expression expression = userSetting.getValueMap().get(parameter);
+            for (Parameter parameter : userSetting.getParameterMap().keySet()) {
+                Expression expression = userSetting.getParameterMap().get(parameter);
                 if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
                         && (((ProjectValue) term.getValue()).getDevice() == device))) {
-                    userSetting.getValueMap().replace(parameter, Expression.fromDefaultParameter(parameter));
+                    userSetting.getParameterMap().replace(parameter, Expression.fromDefaultParameter(parameter));
                 }
             }
             for (Value value : userSetting.getExpression().keySet()) {
@@ -158,7 +158,7 @@ public class Condition extends NodeElement {
                     return DiagramError.CONDITION_INVALID_EXPRESSION;
                 }
             } else {    // otherwise value of every parameters should not be null and should be valid
-                if (userSetting.getValueMap().values().stream().anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
+                if (userSetting.getParameterMap().values().stream().anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
                     return DiagramError.CONDITION_INVALID_PARAM;
                 }
             }

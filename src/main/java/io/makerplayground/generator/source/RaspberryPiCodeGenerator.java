@@ -197,7 +197,7 @@ class RaspberryPiCodeGenerator {
                     if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
                         int parameterIndex = 0;
                         for (Parameter p : parameters) {
-                            Expression e = setting.getValueMap().get(p);
+                            Expression e = setting.getParameterMap().get(p);
                             if (setting.isDataBindingUsed(p)) {
                                 parameterIndex++;
                                 builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
@@ -223,7 +223,7 @@ class RaspberryPiCodeGenerator {
                         }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpressionForParameter(p, setting.getValueMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
                         }
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(")").append(NEW_LINE);
@@ -322,7 +322,7 @@ class RaspberryPiCodeGenerator {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s action must be set ");
                         } else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
+                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {

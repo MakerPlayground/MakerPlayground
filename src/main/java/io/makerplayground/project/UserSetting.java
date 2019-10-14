@@ -45,7 +45,7 @@ public class UserSetting {
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
-    @Getter private final ObservableMap<Parameter, Expression> valueMap;
+    @Getter private final ObservableMap<Parameter, Expression> parameterMap;
     @Getter private final ObservableMap<Value, Expression> expression;
     @Getter private final ObservableMap<Value, Boolean> expressionEnable;
 
@@ -53,21 +53,21 @@ public class UserSetting {
         this.device = device;
         this.action = new ReadOnlyObjectWrapper<>();
         this.condition = new ReadOnlyObjectWrapper<>();
-        this.valueMap = FXCollections.observableHashMap();
+        this.parameterMap = FXCollections.observableHashMap();
         this.expression = FXCollections.observableHashMap();
         this.expressionEnable = FXCollections.observableHashMap();
 
         this.action.addListener((observable, oldValue, newValue) -> {
-            valueMap.clear();
+            parameterMap.clear();
             for (Parameter param : newValue.getParameter()) {
-                valueMap.put(param, Expression.fromDefaultParameter(param));
+                parameterMap.put(param, Expression.fromDefaultParameter(param));
             }
         });
 
         this.condition.addListener((observable, oldValue, newValue) -> {
-            valueMap.clear();
+            parameterMap.clear();
             for (Parameter param : newValue.getParameter()) {
-                valueMap.put(param, Expression.fromDefaultParameter(param));
+                parameterMap.put(param, Expression.fromDefaultParameter(param));
             }
         });
 
@@ -91,20 +91,20 @@ public class UserSetting {
         this.condition.set(supportingCondition);
     }
 
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
         this(device, action);
 
         // replace all default map values with these maps
-        this.valueMap.putAll(valueMap);
+        this.parameterMap.putAll(parameterMap);
         this.expression.putAll(expression);
         this.expressionEnable.putAll(enable);
     }
 
-    UserSetting(ProjectDevice device, Condition condition, Map<Parameter, Expression> valueMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+    UserSetting(ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
         this(device, condition);
 
         // replace all default map values with these maps
-        this.valueMap.putAll(valueMap);
+        this.parameterMap.putAll(parameterMap);
         this.expression.putAll(expression);
         this.expressionEnable.putAll(enable);
     }
@@ -116,8 +116,8 @@ public class UserSetting {
         this.condition.set(u.condition.get());
 
         // replace values by the deepCopy version
-        for (var entry: u.valueMap.entrySet()) {
-            this.valueMap.put(entry.getKey(), entry.getValue().deepCopy());
+        for (var entry: u.parameterMap.entrySet()) {
+            this.parameterMap.put(entry.getKey(), entry.getValue().deepCopy());
         }
         for (var entry : u.expression.entrySet()) {
             this.expression.put(entry.getKey(), entry.getValue().deepCopy());
@@ -126,9 +126,9 @@ public class UserSetting {
     }
 
     private void initValueMap() {
-        valueMap.clear();
+        parameterMap.clear();
         for (Parameter param : action.get().getParameter()) {
-            valueMap.put(param, Expression.fromDefaultParameter(param));
+            parameterMap.put(param, Expression.fromDefaultParameter(param));
         }
     }
 
@@ -162,7 +162,7 @@ public class UserSetting {
         Map<ProjectDevice, Set<Value>> result = new HashMap<>();
 
         // list value use in parameters ex. show value of 7-Segment / LCD
-        for (Map.Entry<Parameter, Expression> entry : valueMap.entrySet()) {
+        for (Map.Entry<Parameter, Expression> entry : parameterMap.entrySet()) {
             Expression exp = entry.getValue();
             for (Term term: exp.getTerms()) {
                 if (term instanceof ValueTerm) {
@@ -211,16 +211,16 @@ public class UserSetting {
     }
 
     public boolean isDataBindingUsed() {
-        return getValueMap().values().stream()
+        return getParameterMap().values().stream()
                 .anyMatch(expression1 -> (expression1.getRefreshInterval() != Expression.RefreshInterval.ONCE));
     }
 
     public boolean isDataBindingUsed(Parameter p) {
-        return valueMap.get(p).getRefreshInterval() != Expression.RefreshInterval.ONCE;
+        return parameterMap.get(p).getRefreshInterval() != Expression.RefreshInterval.ONCE;
     }
 
     public long getNumberOfDatabindParams() {
-        return getValueMap().keySet().stream()
+        return getParameterMap().keySet().stream()
                 .filter(parameter -> (parameter.getDataType() == DataType.DOUBLE)
                         || (parameter.getDataType() == DataType.INTEGER))
                 .count();

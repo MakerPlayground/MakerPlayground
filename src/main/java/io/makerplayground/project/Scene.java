@@ -120,11 +120,11 @@ public class Scene extends NodeElement {
             }
         }
         for (UserSetting userSetting : setting) {
-            for (Parameter parameter : userSetting.getValueMap().keySet()) {
-                Expression expression = userSetting.getValueMap().get(parameter);
+            for (Parameter parameter : userSetting.getParameterMap().keySet()) {
+                Expression expression = userSetting.getParameterMap().get(parameter);
                 if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
                         && (((ProjectValue) term.getValue()).getDevice() == device))) {
-                    userSetting.getValueMap().replace(parameter, Expression.fromDefaultParameter(parameter));
+                    userSetting.getParameterMap().replace(parameter, Expression.fromDefaultParameter(parameter));
                 }
             }
         }
@@ -191,7 +191,7 @@ public class Scene extends NodeElement {
         }
 
         // parameter should not be null and should be valid
-        if (setting.stream().flatMap(userSetting -> userSetting.getValueMap().values().stream())
+        if (setting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
                 .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
             return DiagramError.SCENE_INVALID_PARAM;
         }

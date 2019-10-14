@@ -576,7 +576,7 @@ public class Project {
                         Map<Action, Map<Parameter, Constraint>> actionParameterMap = new TreeMap<>(Comparator.comparing(Action::getName));
                         actionCompatibility.put(projectDevice, actionParameterMap);
                     }
-                    s.getValueMap().forEach((parameter, expression) -> {
+                    s.getParameterMap().forEach((parameter, expression) -> {
                         Action action = s.getAction();
                         if (!actionCompatibility.get(projectDevice).containsKey(action)){
                             actionCompatibility.get(projectDevice).put(action, new TreeMap<>(Comparator.comparing(Parameter::getName)));
@@ -606,7 +606,7 @@ public class Project {
                         Map<io.makerplayground.device.shared.Condition, Map<Parameter, Constraint>> conditionParameterMap = new TreeMap<>(Comparator.comparing(io.makerplayground.device.shared.Condition::getName));
                         conditionCompatibility.put(projectDevice, conditionParameterMap);
                     }
-                    s.getValueMap().forEach((parameter, expression) -> {
+                    s.getParameterMap().forEach((parameter, expression) -> {
                         var condition = s.getCondition();
                         if (!conditionCompatibility.get(projectDevice).containsKey(condition)){
                             conditionCompatibility.get(projectDevice).put(condition, new TreeMap<>(Comparator.comparing(Parameter::getName)));
@@ -617,6 +617,14 @@ public class Project {
                             Constraint oldConstraint = conditionCompatibility.get(projectDevice).get(condition).get(parameter);
                             Constraint newConstraint = oldConstraint.union(ProjectLogic.extractConstraint(parameter, expression));
                             conditionCompatibility.get(projectDevice).get(condition).put(parameter, newConstraint);
+                        }
+                    });
+                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
+                        if (valueCompatibility.containsKey(projectDevice1)) {
+                            valueCompatibility.get(projectDevice1).addAll(values);
+                        }
+                        else {
+                            valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
                 });

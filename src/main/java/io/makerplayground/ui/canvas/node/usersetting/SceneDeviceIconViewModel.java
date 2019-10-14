@@ -90,13 +90,13 @@ public class SceneDeviceIconViewModel {
 
     public Expression getParameterValue(Parameter p) {
         //System.out.println("will return " + userSetting.getValueMap().get(p));
-        return userSetting.getValueMap().get(p);
+        return userSetting.getParameterMap().get(p);
     }
 
     public Expression setParameterValue(Parameter p, Expression o) {
         //System.out.println("will set " + o);
         //System.out.println(userSetting.getValueMap());
-        return userSetting.getValueMap().replace(p, o);
+        return userSetting.getParameterMap().replace(p, o);
     }
 
     public Expression getExpression(Value v) {

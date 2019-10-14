@@ -94,10 +94,13 @@ public final class ProjectConfiguration {
         this.conditionCompatibility = conditionCompatibility;
         this.valueCompatibility = valueCompatibility;
 
+        Set<ProjectDevice> allDevices = new HashSet<>();
+        allDevices.addAll(this.actionCompatibility.keySet());
+        allDevices.addAll(this.conditionCompatibility.keySet());
+        allDevices.addAll(this.valueCompatibility.keySet());
+
         this.usedDevices.clear();
-        this.usedDevices.addAll(this.actionCompatibility.keySet());
-        this.usedDevices.addAll(this.conditionCompatibility.keySet());
-        this.usedDevices.addAll(this.valueCompatibility.keySet());
+        this.usedDevices.addAll(allDevices);
         this.usedDevices.add(CONTROLLER);
 
         /* remove the unused device from the data structure */
