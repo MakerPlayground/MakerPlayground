@@ -23,9 +23,9 @@ import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -38,21 +38,16 @@ import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
-/**
- * Created by Nuntipat Narkthong on 6/6/2017 AD.
- */
 public class Main extends Application {
 
     private Toolbar toolbar;
+    private ObjectProperty<Project> project;
     private File latestProjectDirectory;
-    private ObservableMap<Project, File> projectFilesMap = FXCollections.observableHashMap();
-    private ObjectProperty<Project> focusProject = new SimpleObjectProperty<>();
-
-    private Project getFirstProject() {
-        return projectFilesMap.keySet().iterator().next();
-    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -60,32 +55,23 @@ public class Main extends Application {
 
         DeviceLibrary.INSTANCE.loadDeviceFromFiles();
 
-        focusProject.addListener((observable, oldValue, newValue) -> {
-            /* set title name */
-            File file = projectFilesMap.get(newValue);
-            String fileName = file == null ? "" : file.getName();
-            primaryStage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - " + (fileName.isEmpty() ? "Untitled Project" : fileName));
-        });
-
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();
         if (!parameters.isEmpty()) {
             File f = new File(parameters.get(parameters.size() - 1));
-            Project.loadProject(f).ifPresentOrElse(project -> projectFilesMap.put(project, f), () -> projectFilesMap.put(new Project(), null));
+            project = new SimpleObjectProperty<>(Project.loadProject(f).orElseGet(Project::new));
         } else {
-            projectFilesMap.put(new Project(), null);
+            project = new SimpleObjectProperty<>(new Project());
         }
 
-        focusProject.set(getFirstProject());
-
-        toolbar = new Toolbar(focusProject);
+        toolbar = new Toolbar(project);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
         toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
-        MainWindow mainWindow = new MainWindow(focusProject);
+        MainWindow mainWindow = new MainWindow(project);
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
 
@@ -93,13 +79,23 @@ public class Main extends Application {
         borderPane.setTop(toolbar);
         borderPane.setCenter(mainWindow);
 
-        final Scene scene = new Scene(borderPane, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
+        ChangeListener<String> projectPathListener = (observable, oldValue, newValue) -> updatePath(primaryStage, newValue);
+        project.get().filePathProperty().addListener(projectPathListener);
+        updatePath(primaryStage, project.get().getFilePath());
+        project.addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.filePathProperty().removeListener(projectPathListener);
+            }
+            newValue.filePathProperty().addListener(projectPathListener);
+            updatePath(primaryStage, newValue.getFilePath());
+        });
+
         // close program
         primaryStage.setOnCloseRequest(event -> {
-            if (focusProject.get().hasUnsavedModification(projectFilesMap.get(focusProject.get()))) {
+            if (project.get().hasUnsavedModification()) {
                 UnsavedDialog.Response retVal = new UnsavedDialog(scene.getWindow()).showAndGetResponse();
                 if (retVal == UnsavedDialog.Response.CANCEL) {
                     event.consume();
@@ -129,29 +125,33 @@ public class Main extends Application {
         new UpdateNotifier(scene.getWindow(), getHostServices()).start();
     }
 
+    private void updatePath(Stage stage, String path) {
+        if (path.isEmpty()) {
+            stage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - Untitled Project");
+        } else {
+            stage.setTitle(SoftwareVersion.getCurrentVersion().getBuildName() + " - " + path);
+        }
+    }
+
     public void newProject(Window window) {
-        /* TODO: Allow to create newProject without closing the current project when adding support of many tabs. */
-        if (focusProject.get().hasUnsavedModification(projectFilesMap.get(focusProject.get()))) {
+        if (project.get().hasUnsavedModification()) {
             UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
             if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
             } else if (retVal == UnsavedDialog.Response.SAVE) {
                 saveProject(window);
-                projectFilesMap.remove(focusProject.get());
             }
         }
-        projectFilesMap.put(new Project(), null);
-        focusProject.set(getFirstProject());
+        project.set(new Project());
     }
 
     public void loadProject(Window window) {
-        if (focusProject.get().hasUnsavedModification(projectFilesMap.get(focusProject.get()))) {
+        if (project.get().hasUnsavedModification()) {
             UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
             if (retVal == UnsavedDialog.Response.CANCEL) {
                 return;
             } else if (retVal == UnsavedDialog.Response.SAVE) {
                 saveProject(window);
-                projectFilesMap.remove(focusProject.get());
             }
         }
 
@@ -164,9 +164,7 @@ public class Main extends Application {
         if (selectedFile != null) {
             Optional<Project> p = Project.loadProject(selectedFile);
             if (p.isPresent()) {
-                projectFilesMap.put(p.get(), selectedFile);
-                focusProject.set(p.get());
-                focusProject.get().calculateCompatibility();
+                project.set(p.get());
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
                 alert.showAndWait();
@@ -177,8 +175,8 @@ public class Main extends Application {
     public void saveProject(Window window) {
         toolbar.setStatusMessage("Saving...");
         try {
-            File selectedFile = projectFilesMap.get(focusProject.get());
-            if (selectedFile == null) {
+            File selectedFile;
+            if (project.get().getFilePath().isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Save File");
                 if (latestProjectDirectory != null) {
@@ -187,13 +185,15 @@ public class Main extends Application {
                 fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MakerPlayground Projects", "*.mp"));
                 fileChooser.setInitialFileName("*.mp");
                 selectedFile = fileChooser.showSaveDialog(window);
+            } else {
+                selectedFile = new File(project.get().getFilePath());
             }
 
             if (selectedFile != null) {
                 latestProjectDirectory = selectedFile.getParentFile();
                 ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(selectedFile, focusProject.get());
-                projectFilesMap.replace(focusProject.get(), selectedFile);
+                mapper.writeValue(selectedFile, project.get());
+                project.get().setFilePath(selectedFile.getAbsolutePath());
                 toolbar.setStatusMessage("Saved");
                 new Timer().schedule(new TimerTask() {
                     @Override
@@ -201,6 +201,8 @@ public class Main extends Application {
                         Platform.runLater(() -> toolbar.setStatusMessage(""));
                     }
                 }, 3000);
+            } else {
+                toolbar.setStatusMessage("");
             }
         } catch (IOException x) {
             x.printStackTrace();
@@ -225,8 +227,8 @@ public class Main extends Application {
             if (selectedFile != null) {
                 latestProjectDirectory = selectedFile.getParentFile();
                 ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(selectedFile, focusProject.get());
-                projectFilesMap.replace(focusProject.get(), selectedFile);
+                mapper.writeValue(selectedFile, project.get());
+                project.get().setFilePath(selectedFile.getAbsolutePath());
                 toolbar.setStatusMessage("Saved");
                 new Timer().schedule(new TimerTask() {
                     @Override
@@ -234,6 +236,8 @@ public class Main extends Application {
                         Platform.runLater(() -> toolbar.setStatusMessage(""));
                     }
                 }, 3000);
+            } else {
+                toolbar.setStatusMessage("");
             }
         } catch (IOException x) {
             x.printStackTrace();

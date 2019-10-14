@@ -32,6 +32,8 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -39,8 +41,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = ProjectDeserializer.class)
 public class Project {
     @Getter @Setter private String projectName;
+    private final StringProperty filePath;
     private final ObservableList<ProjectDevice> devices;
     private final ObservableList<Scene> scenes;
     private final ObservableList<Condition> conditions;
@@ -79,6 +80,7 @@ public class Project {
 
     public Project() {
         this.projectName = "Untitled Project";
+        this.filePath = new SimpleStringProperty("");
 
         this.devices = FXCollections.observableArrayList();
         this.unmodifiableProjectDevice = FXCollections.unmodifiableObservableList(devices);
@@ -114,6 +116,18 @@ public class Project {
             e.printStackTrace();    // this should not happen as we're parsing an in-memory stream
         }
         return newProject;
+    }
+
+    public String getFilePath() {
+        return filePath.get();
+    }
+
+    public StringProperty filePathProperty() {
+        return filePath;
+    }
+
+    public void setFilePath(String path) {
+        filePath.set(path);
     }
 
     public Platform getSelectedPlatform() {
@@ -382,42 +396,23 @@ public class Project {
         return allValueUsed;
     }
 
-    public boolean hasUnsavedModification(File currentFile) {
-        if (currentFile == null) {
-            // A hack way to check for project modification in case that it hasn't been saved
-            int beginCount = begins.size();
-            Begin firstBegin = null;
-            if(!begins.isEmpty()) {
-                firstBegin = begins.get(0);
-            }
-            return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
-                    && projectConfiguration.getController() == null
-                    && devices.isEmpty()
-                    && scenes.isEmpty()
-                    && conditions.isEmpty()
-                    && lines.isEmpty()
-                    && beginCount == 1
-                    && firstBegin != null
-                    && firstBegin.getTop() == 200
-                    && firstBegin.getLeft() == 20); // begin hasn't been moved
-        } else {
-            ObjectMapper mapper = new ObjectMapper();
-            String newContent;
-            try {
-                newContent = mapper.writeValueAsString(this);
-            } catch (JsonProcessingException e) {
-                return true;
-            }
-
-            String oldContent;
-            try {
-                oldContent = new String(Files.readAllBytes(currentFile.toPath()));
-            } catch (IOException e) {
-                return true;
-            }
-
-            return !oldContent.equals(newContent);
+    public boolean hasUnsavedModification() {
+        // A hack way to check for project modification in case that it hasn't been saved
+        int beginCount = begins.size();
+        Begin firstBegin = null;
+        if(!begins.isEmpty()) {
+            firstBegin = begins.get(0);
         }
+        return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
+                && projectConfiguration.getController() == null
+                && devices.isEmpty()
+                && scenes.isEmpty()
+                && conditions.isEmpty()
+                && lines.isEmpty()
+                && beginCount == 1
+                && firstBegin != null
+                && firstBegin.getTop() == 200
+                && firstBegin.getLeft() == 20); // begin hasn't been moved
     }
 
     public static Optional<Project> loadProject(File f) {
