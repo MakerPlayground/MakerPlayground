@@ -40,12 +40,12 @@ import java.util.stream.Stream;
 
 class ArduinoCodeGenerator {
 
-    private static final String INDENT = "    ";
-    private static final String NEW_LINE = "\n";
+    static final String INDENT = "    ";
+    static final String NEW_LINE = "\n";
 
-    private final Project project;
-    private final ProjectConfiguration configuration;
-    private final StringBuilder builder = new StringBuilder();
+    final Project project;
+    final ProjectConfiguration configuration;
+    final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
@@ -59,7 +59,7 @@ class ArduinoCodeGenerator {
     );
 
 
-    private ArduinoCodeGenerator(Project project) {
+    ArduinoCodeGenerator(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
@@ -105,7 +105,7 @@ class ArduinoCodeGenerator {
         project.getBegin().forEach(begin -> builder.append("void (*").append(parsePointerName(begin)).append(")(void);").append(NEW_LINE));
     }
 
-    private void appendHeader() {
+    void appendHeader() {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
 
         // generate include
@@ -142,7 +142,7 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    private void appendInstanceVariables() {
+    void appendInstanceVariables() {
         // create cloud singleton variables
         for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
             String cloudPlatformLibName = cloudPlatform.getLibName();
@@ -256,7 +256,7 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    private void appendSetupFunction() {
+    void appendSetupFunction() {
         // generate setup function
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
@@ -773,11 +773,11 @@ class ArduinoCodeGenerator {
         throw new IllegalStateException("Not support condition function displayName for {" + nodeBeforeConditions + "}");
     }
 
-    private static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {
+    static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {
         return "_" + cloudPlatform.getLibName().replace(" ", "_");
     }
 
-    private static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+    static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
         if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
             return "_" + configuration.getIdenticalDevice(projectDevice).orElseThrow().getName();
         } else if (configuration.getActualDevice(projectDevice).isPresent()) {

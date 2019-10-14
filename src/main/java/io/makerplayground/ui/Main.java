@@ -18,13 +18,13 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -64,7 +64,9 @@ public class Main extends Application {
             project = new SimpleObjectProperty<>(new Project());
         }
 
-        toolbar = new Toolbar(project);
+        UploadManager uploadManager = new UploadManager(project);
+
+        toolbar = new Toolbar(project, uploadManager);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
@@ -79,6 +81,7 @@ public class Main extends Application {
         borderPane.setTop(toolbar);
         borderPane.setCenter(mainWindow);
 
+        final Scene scene = new Scene(borderPane, 960, 600);
         scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 

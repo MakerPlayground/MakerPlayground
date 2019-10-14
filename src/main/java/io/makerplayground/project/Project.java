@@ -77,6 +77,7 @@ public class Project {
     private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
+    @Getter private InteractiveModel interactiveModel;
 
     public Project() {
         this.projectName = "Untitled Project";
@@ -102,6 +103,7 @@ public class Project {
         this.unmodifiableLine = FXCollections.unmodifiableObservableList(lines);
 
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
+        this.interactiveModel = new InteractiveModel(this);
         this.newBegin();
     }
 
@@ -150,12 +152,14 @@ public class Project {
 
     void addDevice(ProjectDevice projectDevice) {
         devices.add(projectDevice);
+        interactiveModel.stop();
     }
 
     public void addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
         ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
         devices.add(projectDevice);
+        interactiveModel.stop();
     }
 
     public void removeDevice(ProjectDevice genericDevice) {
@@ -165,6 +169,7 @@ public class Project {
             throw new IllegalStateException("");
         }
         this.calculateCompatibility();
+        interactiveModel.stop();
     }
 
     public void setPlatform(Platform platform) {

@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.upload;
 
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
@@ -46,8 +47,8 @@ public class RaspberryPiUploadTask extends UploadTask {
     private final String url;
     private final String ip;
 
-    public RaspberryPiUploadTask(Project project, String ip) {
-        super(project);
+    public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort, String ip) {
+        super(project, sourceCode, serialPort);
         this.ip = ip;
         this.url = "http://" + ip + ":6212";
     }
@@ -72,7 +73,6 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
-        SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
             Platform.runLater(()->updateMessage("Error: " + sourcecode.getError().getDescription()));
             return UploadResult.CANT_GENERATE_CODE;

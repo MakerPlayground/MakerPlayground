@@ -71,11 +71,15 @@ public class GenericDevice {
         return value.stream().filter(value1 -> value1.getName().equals(name)).findFirst();
     }
 
+    public boolean hasValue() {
+        return !value.isEmpty();
+    }
+
     public boolean hasAction() {
-        return !this.getAction().isEmpty();
+        return !action.isEmpty();
     }
 
     public boolean hasCondition() {
-        return !this.getCondition().isEmpty();
+        return !condition.isEmpty();
     }
 }

@@ -33,16 +33,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
 
@@ -77,8 +71,16 @@ public class SceneDevicePropertyWindow extends PopOver {
         Label customName = new Label(viewModel.getName());
         customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
 
+        ImageView interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
+        interactiveStartImageView.setFitWidth(20);
+        interactiveStartImageView.setFitHeight(20);
+        Button sendActionButton = new Button();
+        sendActionButton.setText("Send Action");
+        sendActionButton.setGraphic(interactiveStartImageView);
+        sendActionButton.setOnAction(event -> viewModel.getProject().getInteractiveModel().sendCommand(viewModel.getUserSetting()));
+
         HBox titleHBox = new HBox();
-        titleHBox.getChildren().addAll(imageView, customName);
+        titleHBox.getChildren().addAll(imageView, customName, sendActionButton);
         titleHBox.setAlignment(Pos.CENTER_LEFT);
         titleHBox.setSpacing(10);
 
