@@ -401,6 +401,14 @@ public final class ProjectConfiguration {
             }
             deviceMap.put(projectDevice, actualDevice);
             generateDeviceSelectableMapAndConnection();
+
+            if(!this.devicePropertyValueMap.containsKey(projectDevice)) {
+                this.devicePropertyValueMap.put(projectDevice, new HashMap<>());
+            }
+            Map<Property, Object> propertyMap = this.devicePropertyValueMap.get(projectDevice);
+            for (Property property: actualDevice.getProperty()) {
+                propertyMap.putIfAbsent(property, property.getDefaultValue());
+            }
         } else {
             unsetDevice(projectDevice);
         }
