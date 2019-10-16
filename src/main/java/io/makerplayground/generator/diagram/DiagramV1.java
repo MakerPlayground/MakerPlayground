@@ -25,9 +25,12 @@ import io.makerplayground.project.ProjectDevice;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import lombok.*;
 
@@ -1200,20 +1203,24 @@ class DiagramV1 {
                                 double controlRatioX1, double controlRatioY1,
                                 double controlRatioX2, double controlRatioY2,
                                 double lineWidth, Color color) {
-        CubicCurve gndCurve = new CubicCurve();
-        gndCurve.setStartX(coordinateFrom.getX() + GLOBAL_LEFT_MARGIN);
-        gndCurve.setStartY(coordinateFrom.getY() + GLOBAL_TOP_MARGIN);
-        gndCurve.setControlX1(coordinateFrom.getX() + controlRatioX1 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
-        gndCurve.setControlY1(coordinateFrom.getY() + controlRatioY1 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
-        gndCurve.setControlX2(coordinateFrom.getX() + controlRatioX2 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
-        gndCurve.setControlY2(coordinateFrom.getY() + controlRatioY2 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
-        gndCurve.setEndX(coordinateTo.getX() + GLOBAL_LEFT_MARGIN);
-        gndCurve.setEndY(coordinateTo.getY() + GLOBAL_TOP_MARGIN);
-        gndCurve.setStrokeWidth(lineWidth);
-        gndCurve.setStroke(color);
-        gndCurve.setFill(Color.TRANSPARENT);
-        gndCurve.setEffect(new DropShadow(1.0, color.darker().darker()));
-        drawingPane.getChildren().add(gndCurve);
+        CubicCurve curve = new CubicCurve();
+        curve.setStartX(coordinateFrom.getX() + GLOBAL_LEFT_MARGIN);
+        curve.setStartY(coordinateFrom.getY() + GLOBAL_TOP_MARGIN);
+        curve.setControlX1(coordinateFrom.getX() + controlRatioX1 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
+        curve.setControlY1(coordinateFrom.getY() + controlRatioY1 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
+        curve.setControlX2(coordinateFrom.getX() + controlRatioX2 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
+        curve.setControlY2(coordinateFrom.getY() + controlRatioY2 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
+        curve.setEndX(coordinateTo.getX() + GLOBAL_LEFT_MARGIN);
+        curve.setEndY(coordinateTo.getY() + GLOBAL_TOP_MARGIN);
+        curve.setStrokeWidth(lineWidth);
+        curve.setStroke(color);
+        curve.setStrokeLineCap(StrokeLineCap.ROUND);
+        curve.setSmooth(true);
+        curve.setFill(Color.TRANSPARENT);
+        curve.setEffect(new DropShadow(1.0, color.darker().darker()));
+        curve.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, event -> curve.setEffect(new DropShadow(5.0, color.brighter().brighter())));
+        curve.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, event -> curve.setEffect(new DropShadow(1.0, color.darker().darker())));
+        drawingPane.getChildren().add(curve);
     }
 
     private static void drawLineSegment(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo, double lineWidth, Color color) {
