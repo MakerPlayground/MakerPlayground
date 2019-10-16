@@ -30,7 +30,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import lombok.*;
 
@@ -139,10 +138,10 @@ class DiagramV1 {
                 new Coordinate(22.0, 72.0),
                 new Coordinate(22.0, 72.0 + 29 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 25 * UNIT_HOLE_DISTANCE),
-                new Coordinate(50.0, 505.4),
-                new Coordinate(50.0, 491.0),
-                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 505.4),
-                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 491.0),
+                new Coordinate(50.0, 549.4),
+                new Coordinate(50.0, 535.0),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 549.4),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 535.0),
                 new Coordinate(50.0, 29.4),
                 new Coordinate(50.0, 15.0),
                 new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 29.4),
@@ -322,23 +321,31 @@ class DiagramV1 {
             return currentHoleOffset;
         }
 
-        public int getStartPowerHoleOffsetX(int voltageIndex) {
-            if (voltageIndex > 3) {
-                throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
-            }
-            return 1;
-        }
-
-        public int getStartGndHoleOffsetX() {
-            return 1;
-        }
-
         public int getNextGndHoleOffsetX(int currentHoleOffset) {
             currentHoleOffset += 1;
             if (currentHoleOffset % 6 == 5) {
                 currentHoleOffset += 1;
             }
             return currentHoleOffset;
+        }
+
+        public List<Double> getAllPowerOffsetFromLeftX() {
+            List<Double> offsetXList = new ArrayList<>();
+            double offsetX = 0;
+            double distance = getGndRightHoleCoordinate().getX() - getGndLeftHoleCoordinate().getX();
+            int count = 0;
+            while(distance > 0) {
+                offsetXList.add(offsetX);
+                offsetX += UNIT_HOLE_DISTANCE;
+                distance -= UNIT_HOLE_DISTANCE;
+                count += 1;
+                if (count % 6 == 5) {
+                    offsetX += UNIT_HOLE_DISTANCE;
+                    distance -= UNIT_HOLE_DISTANCE;
+                    count += 1;
+                }
+            }
+            return offsetXList;
         }
     }
 
@@ -348,12 +355,22 @@ class DiagramV1 {
         @Setter @Getter Coordinate breadboardCoordinate;
         private boolean isGndConnected;
         private Map<Integer, Boolean> isVoltageConnected = new HashMap<>();
-        private Map<Integer, Integer> pinVccUsedIndex = new HashMap<>();
-        private int gndHoleOffset = -1;
+        private Map<Integer, List<Double>> availableVccOffsetX;
+        private List<Double> availableGndOffsetX;
 
         BreadboardDeviceGroup(Breadboard breadboard) {
             this.breadboard = breadboard;
             this.deviceList = new ArrayList<>();
+            this.availableGndOffsetX = new ArrayList<>(breadboard.getAllPowerOffsetFromLeftX());
+            this.availableGndOffsetX.remove(0);
+            this.availableGndOffsetX.remove(this.availableGndOffsetX.size()-1);
+            this.availableVccOffsetX = new HashMap<>();
+            for (int i=0; i<3; i++) {
+                List<Double> temp = new ArrayList<>(breadboard.getAllPowerOffsetFromLeftX());
+                temp.remove(0);
+                temp.remove(temp.size()-1);
+                this.availableVccOffsetX.put(i, temp);
+            }
         }
 
         void drawBreadboard(Pane drawingPane) {
@@ -413,23 +430,24 @@ class DiagramV1 {
             return this.isVoltageConnected.containsKey(voltageIndex) && this.isVoltageConnected.get(voltageIndex);
         }
 
-        public Coordinate reserveVccCoordinate(int voltageIndex) {
-            if (!pinVccUsedIndex.containsKey(voltageIndex)) {
-                pinVccUsedIndex.put(voltageIndex, breadboard.getStartPowerHoleOffsetX(voltageIndex));
+        Coordinate reserveVccCoordinate(int voltageIndex, double prefer_x) {
+            double temp = this.getBreadboardCoordinate().add(breadboard.getVccLeftHoleCoordinate(voltageIndex)).getX();
+            Optional<Double> offset = availableVccOffsetX.get(voltageIndex).stream().min(Comparator.comparing(value->Math.abs(prefer_x - (temp+value))));
+            if (offset.isEmpty()) {
+                throw new IllegalStateException("The breadboard vcc line is not enough for devices");
             }
-            int holeOffset = pinVccUsedIndex.get(voltageIndex);
-            Coordinate retVal = this.getBreadboardCoordinate().add(breadboard.getVccLeftHoleCoordinate(voltageIndex)).add(holeOffset * UNIT_HOLE_DISTANCE, 0);
-            pinVccUsedIndex.put(voltageIndex, breadboard.getNextPowerHoleOffsetX(holeOffset));
-            return retVal;
+            availableVccOffsetX.get(voltageIndex).remove(offset.get());
+            return this.getBreadboardCoordinate().add(breadboard.getVccLeftHoleCoordinate(voltageIndex)).add(offset.get(), 0);
         }
 
-        public Coordinate reserveGndCoordinate() {
-            if (gndHoleOffset == -1) {
-                gndHoleOffset = breadboard.getStartGndHoleOffsetX();
+        Coordinate reserveGndCoordinate(double prefer_x) {
+            double temp = this.getBreadboardCoordinate().add(breadboard.getGndLeftHoleCoordinate()).getX();
+            Optional<Double> offset = availableGndOffsetX.stream().min(Comparator.comparing(value->Math.abs(prefer_x - (temp+value))));
+            if (offset.isEmpty()) {
+                throw new IllegalStateException("The breadboard gnd line is not enough for devices");
             }
-            Coordinate retVal = this.getBreadboardCoordinate().add(breadboard.getGndLeftHoleCoordinate()).add(gndHoleOffset * UNIT_HOLE_DISTANCE, 0);
-            gndHoleOffset = breadboard.getNextGndHoleOffsetX(gndHoleOffset);
-            return retVal;
+            availableGndOffsetX.remove(offset.get());
+            return this.getBreadboardCoordinate().add(breadboard.getGndLeftHoleCoordinate()).add(offset.get(), 0);
         }
     }
 
@@ -717,10 +735,12 @@ class DiagramV1 {
 
     private List<VoltageLevel> getVoltageLevelUsed(ProjectDevice projectDevice) {
         List<VoltageLevel> voltageLevelList = new ArrayList<>();
-        Map<Connection, Connection> connectionMap = deviceConnectionMap.get(projectDevice).getConsumerProviderConnections();
-        for (Connection consumerConnection: connectionMap.keySet()) {
-            Connection providerConnection = connectionMap.get(consumerConnection);
-            voltageLevelList.addAll(providerConnection.getPins().stream().filter(pin -> pin.getFunction().contains(PinFunction.VCC)).map(Pin::getVoltageLevel).collect(Collectors.toList()));
+        if (deviceConnectionMap.containsKey(projectDevice)) {
+            Map<Connection, Connection> connectionMap = deviceConnectionMap.get(projectDevice).getConsumerProviderConnections();
+            for (Connection consumerConnection: connectionMap.keySet()) {
+                Connection providerConnection = connectionMap.get(consumerConnection);
+                voltageLevelList.addAll(providerConnection.getPins().stream().filter(pin -> pin.getFunction().contains(PinFunction.VCC)).map(Pin::getVoltageLevel).collect(Collectors.toList()));
+            }
         }
         return voltageLevelList;
     }
@@ -753,6 +773,11 @@ class DiagramV1 {
         breadboardVoltageLevelList.sort((v1, v2) -> (int) (voltageLevelCount.get(v2) - voltageLevelCount.get(v1)));
 
         breadboardDeviceList.sort((d1, d2) -> {
+            if (d1.getProjectDevice() == ProjectDevice.CONTROLLER) {
+                return -1;
+            } else if (d2.getProjectDevice() == ProjectDevice.CONTROLLER) {
+                return 1;
+            }
             List<VoltageLevel> lvl1 = getVoltageLevelUsed(d1);
             List<VoltageLevel> lvl2 = getVoltageLevelUsed(d2);
             for (VoltageLevel v: breadboardVoltageLevelList) {
@@ -1163,6 +1188,12 @@ class DiagramV1 {
                 text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
+            } else if (deviceNeedBreadboard.contains(projectDevice)) {
+                Text text = new Text(projectDevice.getName());
+                text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE  + GLOBAL_TOP_MARGIN);
+                text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
+                drawingPane.getChildren().add(text);
             }
         } catch (IOException e) {
             throw new IllegalStateException("Image not found for : " + deviceMap.get(projectDevice).getId());
@@ -1243,8 +1274,8 @@ class DiagramV1 {
         if (currentGroup == null) {
             throw new IllegalStateException("Breadboard device must have a group.");
         }
-        Coordinate breadboardGndCoordinate = currentGroup.reserveGndCoordinate();
         Coordinate consumerDeviceGndCoordinate = calculatePinPosition(consumerDevice, consumerPin);
+        Coordinate breadboardGndCoordinate = currentGroup.reserveGndCoordinate(consumerDeviceGndCoordinate.getX());
         drawLineSegment(drawingPane, breadboardGndCoordinate, consumerDeviceGndCoordinate, ConnectionType.WIRE.getLineWidth(), Color.BLACK);
         while (!currentGroup.isGndConnected()) {
             if (!stack.isEmpty()) {
@@ -1279,8 +1310,8 @@ class DiagramV1 {
             throw new IllegalStateException("Breadboard device must have a group.");
         }
         int voltageIndex = breadboardVoltageLevelList.indexOf(voltageLevel);
-        Coordinate breadboardVccCoordinate = currentGroup.reserveVccCoordinate(voltageIndex);
         Coordinate consumerDeviceVccCoordinate = calculatePinPosition(consumerDevice, consumerPin);
+        Coordinate breadboardVccCoordinate = currentGroup.reserveVccCoordinate(voltageIndex, consumerDeviceVccCoordinate.getX());
         drawLineSegment(drawingPane, breadboardVccCoordinate, consumerDeviceVccCoordinate, ConnectionType.WIRE.getLineWidth(), Color.RED);
         while (!currentGroup.isVccConnected(voltageIndex)) {
             if (!stack.isEmpty()) {
@@ -1300,6 +1331,10 @@ class DiagramV1 {
     }
 
     private void drawConnection(Pane drawingPane, DeviceConnection deviceConnection) {
+        // This case is happened when drawing a controller on the breadboard device.
+        if (deviceConnection == null) {
+            return;
+        }
         Map<Connection, Connection> connectionMap = deviceConnection.getConsumerProviderConnections();
         int countConnection = 0;
         for (Connection consumerConnection: connectionMap.keySet()) {
