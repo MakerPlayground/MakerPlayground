@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /* 1) The devices are placing in one of the following regions
@@ -66,6 +67,9 @@ class DiagramV1 {
         Coordinate add(double dx, double dy) {
             return new Coordinate(x + dx, y + dy);
         }
+        Coordinate add(Coordinate coor) {
+            return new Coordinate(x + coor.getX(), y + coor.getY());
+        }
     }
 
     @Data @AllArgsConstructor
@@ -84,48 +88,66 @@ class DiagramV1 {
     public static final double UNIT_HOLE_DISTANCE = 14.4;
 
     enum Breadboard {
+        /*
+         *  Layout for normal version
+         *   ======================
+         *  |         Upper        |
+         *  |======================|
+         *  |         Lower        |
+         *   ======================
+         *
+         *  Layout for EXTEND version
+         *   ======================
+         *  |         Upper        |
+         *  |======================|
+         *  |     Upper Center     |
+         *  |======================|
+         *  |     Lower Center     |
+         *  |======================|
+         *  |         Lower        |
+         *   ======================
+         */
+
         SMALL(30, 468.0, 303.0,
                 new Coordinate(22.0, 72.0),
                 new Coordinate(22.0, 72.0 + 11 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 7 * UNIT_HOLE_DISTANCE),
                 new Coordinate(27.0, 289.0),
-                new Coordinate(27.0, 274.4)),
+                new Coordinate(27.0, 274.4),
+                new Coordinate(27.0 + 58 * UNIT_HOLE_DISTANCE, 289.0),
+                new Coordinate(27.0 + 58 * UNIT_HOLE_DISTANCE, 274.4),
+                new Coordinate(27.0, 29.4),
+                new Coordinate(27.0, 15.0),
+                new Coordinate(27.0 + 58 * UNIT_HOLE_DISTANCE, 29.4),
+                new Coordinate(27.0 + 58 * UNIT_HOLE_DISTANCE, 15.0)),
         LARGE(63, 937.0, 303.0,
                 new Coordinate(22.0, 72.0),
                 new Coordinate(22.0, 72.0 + 11 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 7 * UNIT_HOLE_DISTANCE),
                 new Coordinate(50.0, 289.0),
-                new Coordinate(50.0, 274.4)),
+                new Coordinate(50.0, 274.4),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 289.0),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 274.4),
+                new Coordinate(50.0, 29.4),
+                new Coordinate(50.0, 15.0),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 29.4),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 15.0)),
         LARGE_EXTEND(63, 937.0, 563.0,
                 new Coordinate(22.0, 72.0),
                 new Coordinate(22.0, 72.0 + 29 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 25 * UNIT_HOLE_DISTANCE),
-                new Coordinate(50.0, 491.0),
                 new Coordinate(50.0, 505.4),
+                new Coordinate(50.0, 491.0),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 505.4),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 491.0),
+                new Coordinate(50.0, 29.4),
+                new Coordinate(50.0, 15.0),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 29.4),
+                new Coordinate(50.0 + 58 * UNIT_HOLE_DISTANCE, 15.0),
                 new Coordinate(22.0, 72.0 + 7 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 11 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 18 * UNIT_HOLE_DISTANCE),
                 new Coordinate(22.0, 72.0 + 22 * UNIT_HOLE_DISTANCE));
-
-/*
- *  Layout for normal version
- *   ======================
- *  |         Upper        |
- *  |======================|
- *  |         Lower        |
- *   ======================
- *
- *  Layout for EXTEND version
- *   ======================
- *  |         Upper        |
- *  |======================|
- *  |     Upper Center     |
- *  |======================|
- *  |     Lower Center     |
- *  |======================|
- *  |         Lower        |
- *   ======================
- */
 
         @Getter private final int numColumns;
         @Getter private final double width;
@@ -133,8 +155,14 @@ class DiagramV1 {
         @Getter private final Coordinate upperTopLeftHoleCoordinate;
         @Getter private final Coordinate lowerBottomLeftHoleCoordinate;
         @Getter private final Coordinate lowerTopLeftHoleCoordinate;
-        @Getter private final Coordinate lowerVccHoleCoordinate;
-        @Getter private final Coordinate lowerGndHoleCoordinate;
+        @Getter private final Coordinate lowerPowerBottomLeftHoleCoordinate;
+        @Getter private final Coordinate lowerPowerTopLeftHoleCoordinate;
+        @Getter private final Coordinate lowerPowerBottomRightHoleCoordinate;
+        @Getter private final Coordinate lowerPowerTopRightHoleCoordinate;
+        @Getter private final Coordinate upperPowerBottomLeftHoleCoordinate;
+        @Getter private final Coordinate upperPowerTopLeftHoleCoordinate;
+        @Getter private final Coordinate upperPowerBottomRightHoleCoordinate;
+        @Getter private final Coordinate upperPowerTopRightHoleCoordinate;
         @Getter private final Coordinate upperCenterTopLeftHoleCoordinate;
         @Getter private final Coordinate upperCenterBottomLeftHoleCoordinate;
         @Getter private final Coordinate lowerCenterTopLeftHoleCoordinate;
@@ -144,14 +172,26 @@ class DiagramV1 {
                    Coordinate upperTopLeftHoleCoordinate,
                    Coordinate lowerBottomLeftHoleCoordinate,
                    Coordinate lowerTopLeftHoleCoordinate,
-                   Coordinate lowerVccHoleCoordinate,
-                   Coordinate lowerGndHoleCoordinate) {
+                   Coordinate lowerPowerBottomLeftHoleCoordinate,
+                   Coordinate lowerPowerTopLeftHoleCoordinate,
+                   Coordinate lowerPowerBottomRightHoleCoordinate,
+                   Coordinate lowerPowerTopRightHoleCoordinate,
+                   Coordinate upperPowerBottomLeftHoleCoordinate,
+                   Coordinate upperPowerTopLeftHoleCoordinate,
+                   Coordinate upperPowerBottomRightHoleCoordinate,
+                   Coordinate upperPowerTopRightHoleCoordinate) {
             this(numColumns, width, height,
                     upperTopLeftHoleCoordinate,
                     lowerBottomLeftHoleCoordinate,
                     lowerTopLeftHoleCoordinate,
-                    lowerVccHoleCoordinate,
-                    lowerGndHoleCoordinate,
+                    lowerPowerBottomLeftHoleCoordinate,
+                    lowerPowerTopLeftHoleCoordinate,
+                    lowerPowerBottomRightHoleCoordinate,
+                    lowerPowerTopRightHoleCoordinate,
+                    upperPowerBottomLeftHoleCoordinate,
+                    upperPowerTopLeftHoleCoordinate,
+                    upperPowerBottomRightHoleCoordinate,
+                    upperPowerTopRightHoleCoordinate,
                     null,
                     null,
                     null,
@@ -162,8 +202,15 @@ class DiagramV1 {
                    Coordinate upperTopLeftHoleCoordinate,
                    Coordinate lowerBottomLeftHoleCoordinate,
                    Coordinate lowerTopLeftHoleCoordinate,
-                   Coordinate lowerVccHoleCoordinate,
-                   Coordinate lowerGndHoleCoordinate,
+                   Coordinate lowerPowerBottomLeftHoleCoordinate,
+                   Coordinate lowerPowerTopLeftHoleCoordinate,
+                   Coordinate lowerPowerBottomRightHoleCoordinate,
+                   Coordinate lowerPowerTopRightHoleCoordinate,
+                   Coordinate upperPowerBottomLeftHoleCoordinate,
+                   Coordinate upperPowerTopLeftHoleCoordinate,
+                   Coordinate upperPowerBottomRightHoleCoordinate,
+                   Coordinate upperPowerTopRightHoleCoordinate,
+                   // extended
                    Coordinate upperCenterTopLeftHoleCoordinate,
                    Coordinate upperCenterBottomLeftHoleCoordinate,
                    Coordinate lowerCenterTopLeftHoleCoordinate,
@@ -174,8 +221,15 @@ class DiagramV1 {
             this.upperTopLeftHoleCoordinate = upperTopLeftHoleCoordinate;
             this.lowerBottomLeftHoleCoordinate = lowerBottomLeftHoleCoordinate;
             this.lowerTopLeftHoleCoordinate = lowerTopLeftHoleCoordinate;
-            this.lowerVccHoleCoordinate = lowerVccHoleCoordinate;
-            this.lowerGndHoleCoordinate = lowerGndHoleCoordinate;
+            this.lowerPowerBottomLeftHoleCoordinate = lowerPowerBottomLeftHoleCoordinate;
+            this.lowerPowerTopLeftHoleCoordinate = lowerPowerTopLeftHoleCoordinate;
+            this.lowerPowerBottomRightHoleCoordinate = lowerPowerBottomRightHoleCoordinate;
+            this.lowerPowerTopRightHoleCoordinate = lowerPowerTopRightHoleCoordinate;
+            this.upperPowerBottomLeftHoleCoordinate = upperPowerBottomLeftHoleCoordinate;
+            this.upperPowerTopLeftHoleCoordinate = upperPowerTopLeftHoleCoordinate;
+            this.upperPowerBottomRightHoleCoordinate = upperPowerBottomRightHoleCoordinate;
+            this.upperPowerTopRightHoleCoordinate = upperPowerTopRightHoleCoordinate;
+            // extended
             this.upperCenterTopLeftHoleCoordinate = upperCenterTopLeftHoleCoordinate;
             this.upperCenterBottomLeftHoleCoordinate = upperCenterBottomLeftHoleCoordinate;
             this.lowerCenterTopLeftHoleCoordinate = lowerCenterTopLeftHoleCoordinate;
@@ -226,13 +280,73 @@ class DiagramV1 {
                 }
             }
         }
+
+        public Coordinate getGndRightHoleCoordinate() {
+            return this.lowerPowerBottomRightHoleCoordinate;
+        }
+
+        public Coordinate getGndLeftHoleCoordinate() {
+            return this.lowerPowerBottomLeftHoleCoordinate;
+        }
+
+        public Coordinate getVccRightHoleCoordinate(int index) {
+            if (index == 0) {
+                return this.lowerPowerTopRightHoleCoordinate;
+            } else if (index == 1) {
+                return this.upperPowerBottomRightHoleCoordinate;
+            } else if (index == 2) {
+                return this.upperPowerTopRightHoleCoordinate;
+            }
+            throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
+        }
+
+        public Coordinate getVccLeftHoleCoordinate(int index) {
+            if (index == 0) {
+                return this.lowerPowerTopLeftHoleCoordinate;
+            } else if (index == 1) {
+                return this.upperPowerBottomLeftHoleCoordinate;
+            } else if (index == 2) {
+                return this.upperPowerTopLeftHoleCoordinate;
+            }
+            throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
+        }
+
+        public int getNextPowerHoleOffsetX(int currentHoleOffset) {
+            currentHoleOffset += 1;
+            if (currentHoleOffset % 6 == 5) {
+                currentHoleOffset += 1;
+            }
+            return currentHoleOffset;
+        }
+
+        public int getStartPowerHoleOffsetX(int voltageIndex) {
+            if (voltageIndex > 3) {
+                throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
+            }
+            return 1;
+        }
+
+        public int getStartGndHoleOffsetX() {
+            return 1;
+        }
+
+        public int getNextGndHoleOffsetX(int currentHoleOffset) {
+            currentHoleOffset += 1;
+            if (currentHoleOffset % 6 == 5) {
+                currentHoleOffset += 1;
+            }
+            return currentHoleOffset;
+        }
     }
 
     static class BreadboardDeviceGroup {
         @Getter final Breadboard breadboard;
         @Getter final List<BreadboardDevice> deviceList;
-
         @Setter @Getter Coordinate breadboardCoordinate;
+        private boolean isGndConnected;
+        private Map<Integer, Boolean> isVoltageConnected = new HashMap<>();
+        private Map<Integer, Integer> pinVccUsedIndex = new HashMap<>();
+        private int gndHoleOffset = -1;
 
         BreadboardDeviceGroup(Breadboard breadboard) {
             this.breadboard = breadboard;
@@ -243,7 +357,7 @@ class DiagramV1 {
             this.breadboard.draw(drawingPane, breadboardCoordinate.add(GLOBAL_LEFT_MARGIN, GLOBAL_TOP_MARGIN));
         }
 
-        public Coordinate getPinCoordinate(BreadboardDevice device, Pin pin) {
+        Coordinate getPinCoordinate(BreadboardDevice device, Pin pin) {
             double x = breadboardCoordinate.getX() + breadboard.getUpperTopLeftHoleCoordinate().getX() + UNIT_HOLE_DISTANCE;
             for (BreadboardDevice breadboardDevice: deviceList) {
                 if (breadboardDevice == device) {
@@ -256,7 +370,7 @@ class DiagramV1 {
             double y = breadboardCoordinate.getY();
             boolean upperPin = pin.getY() <= 0.5 * device.getActualDevice().getHeight();
             if (device.getBreadboardPlacement() == BreadboardPlacement.ONE_SIDE) {
-                y += breadboard.getUpperTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
+                y += breadboard.getLowerTopLeftHoleCoordinate().getY() + device.getOffsetYHoles().get(pin) * UNIT_HOLE_DISTANCE;
             }
             else if (device.getBreadboardPlacement() == BreadboardPlacement.TWO_SIDES) {
                 if (device.needExtendedBreadboard() && breadboard == Breadboard.LARGE_EXTEND) {
@@ -278,6 +392,41 @@ class DiagramV1 {
                 throw new IllegalStateException("No implementation for breadboard: " + breadboard);
             }
             return new Coordinate(x, y);
+        }
+
+        void setGndConnected() {
+            this.isGndConnected = true;
+        }
+
+        void setVccConnected(int voltageIndex) {
+            this.isVoltageConnected.put(voltageIndex, true);
+        }
+
+        boolean isGndConnected() {
+            return this.isGndConnected;
+        }
+
+        boolean isVccConnected(int voltageIndex) {
+            return this.isVoltageConnected.containsKey(voltageIndex) && this.isVoltageConnected.get(voltageIndex);
+        }
+
+        public Coordinate reserveVccCoordinate(int voltageIndex) {
+            if (!pinVccUsedIndex.containsKey(voltageIndex)) {
+                pinVccUsedIndex.put(voltageIndex, breadboard.getStartPowerHoleOffsetX(voltageIndex));
+            }
+            int holeOffset = pinVccUsedIndex.get(voltageIndex);
+            Coordinate retVal = this.getBreadboardCoordinate().add(breadboard.getVccLeftHoleCoordinate(voltageIndex)).add(holeOffset * UNIT_HOLE_DISTANCE, 0);
+            pinVccUsedIndex.put(voltageIndex, breadboard.getNextPowerHoleOffsetX(holeOffset));
+            return retVal;
+        }
+
+        public Coordinate reserveGndCoordinate() {
+            if (gndHoleOffset == -1) {
+                gndHoleOffset = breadboard.getStartGndHoleOffsetX();
+            }
+            Coordinate retVal = this.getBreadboardCoordinate().add(breadboard.getGndLeftHoleCoordinate()).add(gndHoleOffset * UNIT_HOLE_DISTANCE, 0);
+            gndHoleOffset = breadboard.getNextGndHoleOffsetX(gndHoleOffset);
+            return retVal;
         }
     }
 
@@ -376,6 +525,8 @@ class DiagramV1 {
     private Size bottomMidRegionSize;
     private Size rightRegionSize;
     private Size globalRegionSize;
+
+    private List<VoltageLevel> breadboardVoltageLevelList = new ArrayList<>();
 
     private List<ProjectDevice> deviceNeedBreadboard = new ArrayList<>();
     private List<ProjectDevice> deviceOnLeftRegion = new ArrayList<>();
@@ -485,8 +636,8 @@ class DiagramV1 {
             for (BreadboardDevice device: group.getDeviceList()) {
                 double xShift = UNIT_HOLE_DISTANCE * Math.ceil(device.getXLeftHolePixel() / UNIT_HOLE_DISTANCE) - device.getXLeftHolePixel();
                 if (device.getBreadboardPlacement() == BreadboardPlacement.ONE_SIDE) {
-                    double centerX = breadboardTopLeftCoordinate.getX() + breadboard.getUpperTopLeftHoleCoordinate().getX() + xShift + holeOffsetX * UNIT_HOLE_DISTANCE + 0.5 * device.getActualDevice().getWidth();
-                    double centerY = breadboardTopLeftCoordinate.getY() + breadboard.getUpperTopLeftHoleCoordinate().getY() - device.getYTopHolePixel() + 0.5 * device.getActualDevice().getHeight();
+                    double centerX = breadboardTopLeftCoordinate.getX() + breadboard.getLowerTopLeftHoleCoordinate().getX() + xShift + holeOffsetX * UNIT_HOLE_DISTANCE + 0.5 * device.getActualDevice().getWidth();
+                    double centerY = breadboardTopLeftCoordinate.getY() + breadboard.getLowerTopLeftHoleCoordinate().getY() - device.getYTopHolePixel() + 0.5 * device.getActualDevice().getHeight();
                     this.deviceCenterCoordinates.put(device.getProjectDevice(), new Coordinate(centerX, centerY));
                 } else if (device.getBreadboardPlacement() == BreadboardPlacement.TWO_SIDES) {
                     double dy = device.getYBottomHolePixel() - device.getYTopHolePixel();
@@ -561,6 +712,20 @@ class DiagramV1 {
         }
     }
 
+    private List<VoltageLevel> getVoltageLevelUsed(ProjectDevice projectDevice) {
+        List<VoltageLevel> voltageLevelList = new ArrayList<>();
+        Map<Connection, Connection> connectionMap = deviceConnectionMap.get(projectDevice).getConsumerProviderConnections();
+        for (Connection consumerConnection: connectionMap.keySet()) {
+            Connection providerConnection = connectionMap.get(consumerConnection);
+            voltageLevelList.addAll(providerConnection.getPins().stream().filter(pin -> pin.getFunction().contains(PinFunction.VCC)).map(Pin::getVoltageLevel).collect(Collectors.toList()));
+        }
+        return voltageLevelList;
+    }
+
+    private List<VoltageLevel> getVoltageLevelUsed(BreadboardDevice breadboardDevice) {
+        return getVoltageLevelUsed(breadboardDevice.getProjectDevice());
+    }
+
     private Size calculateBreadboardRegionSizeAndAssignDeviceToBreadboardGroup(List<ProjectDevice> projectDeviceList, double gapBetweenBreadboard, double gapToController) {
         if (projectDeviceList.isEmpty()) {
             return new Size(0, 0);
@@ -568,6 +733,33 @@ class DiagramV1 {
         List<BreadboardDevice> breadboardDeviceList = projectDeviceList.stream()
                 .map((ProjectDevice projectDevice1) -> new BreadboardDevice(projectDevice1, deviceMap.get(projectDevice1)))
                 .collect(Collectors.toList());
+
+        Map<VoltageLevel, Long> voltageLevelCount = breadboardDeviceList.stream()
+                .map(this::getVoltageLevelUsed)
+                .flatMap(Collection::stream)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        if (voltageLevelCount.size() > 3) {
+            throw new UnsupportedOperationException("Breadboard diagram cannot handle more than 3 voltage levels.");
+        }
+
+        breadboardVoltageLevelList.clear();
+        breadboardVoltageLevelList.addAll(voltageLevelCount.keySet());
+
+        // maximum count comes first
+        breadboardVoltageLevelList.sort((v1, v2) -> (int) (voltageLevelCount.get(v2) - voltageLevelCount.get(v1)));
+
+        breadboardDeviceList.sort((d1, d2) -> {
+            List<VoltageLevel> lvl1 = getVoltageLevelUsed(d1);
+            List<VoltageLevel> lvl2 = getVoltageLevelUsed(d2);
+            for (VoltageLevel v: breadboardVoltageLevelList) {
+                if (lvl1.contains(v) && !lvl2.contains(v)) { return -1; }
+                if (!lvl1.contains(v) && lvl2.contains(v)) { return 1; }
+            }
+            // multiple voltage levels before one voltage level
+            return lvl2.size() - lvl1.size();
+        });
+
         double regionHeight = Breadboard.LARGE.getHeight();
         double regionWidth = 0;
         while(!breadboardDeviceList.isEmpty()) {
@@ -976,23 +1168,131 @@ class DiagramV1 {
 
     Pane make() {
         Pane wiringDiagram = new Pane();
-        wiringDiagram.setPrefWidth(globalRegionSize.getWidth() + GLOBAL_TOP_MARGIN);
-        wiringDiagram.setPrefHeight(globalRegionSize.getHeight() + GLOBAL_LEFT_MARGIN);
-        for (BreadboardDeviceGroup group: this.breadboardDeviceGroupList) {
+        wiringDiagram.setPrefWidth(globalRegionSize.getWidth() + 2 * GLOBAL_TOP_MARGIN);
+        wiringDiagram.setPrefHeight(globalRegionSize.getHeight() + 2 * GLOBAL_LEFT_MARGIN);
+        for (BreadboardDeviceGroup group: breadboardDeviceGroupList) {
             group.drawBreadboard(wiringDiagram);
         }
         for (ProjectDevice projectDevice: deviceCenterCoordinates.keySet()) {
             drawDevice(wiringDiagram, projectDevice);
         }
-        for (ProjectDevice projectDevice: deviceConnectionMap.keySet()) {
-            drawLine(wiringDiagram, deviceConnectionMap.get(projectDevice));
+        for (ProjectDevice projectDevice: deviceOnLeftRegion) {
+            drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
+        }
+        for (ProjectDevice projectDevice: deviceOnRightRegion) {
+            drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
+        }
+        for (ProjectDevice projectDevice: deviceOnTopRegion) {
+            drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
+        }
+        for (ProjectDevice projectDevice: deviceOnBottomRegion) {
+            drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
+        }
+        for (BreadboardDeviceGroup group: breadboardDeviceGroupList) {
+            for (BreadboardDevice device: group.getDeviceList()) {
+                drawConnection(wiringDiagram, deviceConnectionMap.get(device.getProjectDevice()));
+            }
         }
         return wiringDiagram;
     }
 
+    private static void drawCubicCurve(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo,
+                                double controlRatioX1, double controlRatioY1,
+                                double controlRatioX2, double controlRatioY2,
+                                double lineWidth, Color color) {
+        CubicCurve gndCurve = new CubicCurve();
+        gndCurve.setStartX(coordinateFrom.getX() + GLOBAL_LEFT_MARGIN);
+        gndCurve.setStartY(coordinateFrom.getY() + GLOBAL_TOP_MARGIN);
+        gndCurve.setControlX1(coordinateFrom.getX() + controlRatioX1 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
+        gndCurve.setControlY1(coordinateFrom.getY() + controlRatioY1 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
+        gndCurve.setControlX2(coordinateFrom.getX() + controlRatioX2 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
+        gndCurve.setControlY2(coordinateFrom.getY() + controlRatioY2 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
+        gndCurve.setEndX(coordinateTo.getX() + GLOBAL_LEFT_MARGIN);
+        gndCurve.setEndY(coordinateTo.getY() + GLOBAL_TOP_MARGIN);
+        gndCurve.setStrokeWidth(lineWidth);
+        gndCurve.setStroke(color);
+        gndCurve.setFill(Color.TRANSPARENT);
+        gndCurve.setEffect(new DropShadow(1.0, color.darker().darker()));
+        drawingPane.getChildren().add(gndCurve);
+    }
+
+    private static void drawLineSegment(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo, double lineWidth, Color color) {
+        drawCubicCurve(drawingPane, coordinateFrom, coordinateTo, 0, 0, 1, 1, lineWidth, color);
+    }
+
     private static final List<Color> WIRE_COLOR_LIST = List.of(Color.BLUE, Color.ORANGE, Color.YELLOW);
 
-    private void drawLine(Pane drawingPane, DeviceConnection deviceConnection) {
+    private void drawGndBreadboard(Pane drawingPane, ProjectDevice consumerDevice, ProjectDevice providerDevice, Pin consumerPin, Pin providerPin) {
+        BreadboardDeviceGroup currentGroup = null;
+        Deque<BreadboardDeviceGroup> stack = new ArrayDeque<>();
+        for (BreadboardDeviceGroup group: breadboardDeviceGroupList) {
+            if (group.getDeviceList().stream().noneMatch(breadboardDevice -> breadboardDevice.getProjectDevice().equals(consumerDevice))) {
+                stack.push(group);
+            } else {
+                currentGroup = group;
+                break;
+            }
+        }
+        if (currentGroup == null) {
+            throw new IllegalStateException("Breadboard device must have a group.");
+        }
+        Coordinate breadboardGndCoordinate = currentGroup.reserveGndCoordinate();
+        Coordinate consumerDeviceGndCoordinate = calculatePinPosition(consumerDevice, consumerPin);
+        drawLineSegment(drawingPane, breadboardGndCoordinate, consumerDeviceGndCoordinate, ConnectionType.WIRE.getLineWidth(), Color.BLACK);
+        while (!currentGroup.isGndConnected()) {
+            if (!stack.isEmpty()) {
+                BreadboardDeviceGroup prevGroup = stack.pop();
+                Coordinate vccFrom = prevGroup.getBreadboardCoordinate().add(prevGroup.getBreadboard().getGndRightHoleCoordinate());
+                Coordinate vccTo = currentGroup.getBreadboardCoordinate().add(currentGroup.getBreadboard().getGndLeftHoleCoordinate());
+                drawLineSegment(drawingPane, vccFrom, vccTo, ConnectionType.WIRE.getLineWidth(), Color.BLACK);
+                currentGroup.setGndConnected();
+                currentGroup = prevGroup;
+            } else {
+                Coordinate vccFrom = calculatePinPosition(providerDevice, providerPin);
+                Coordinate vccTo = currentGroup.getBreadboardCoordinate().add(currentGroup.getBreadboard().getGndLeftHoleCoordinate());
+                drawLineSegment(drawingPane, vccFrom, vccTo, ConnectionType.WIRE.getLineWidth(), Color.BLACK);
+                currentGroup.setGndConnected();
+            }
+        }
+    }
+
+    private void drawVccBreadboard(Pane drawingPane, ProjectDevice consumerDevice, ProjectDevice providerDevice, Pin consumerPin, Pin providerPin) {
+        VoltageLevel voltageLevel = providerPin.getVoltageLevel();
+        BreadboardDeviceGroup currentGroup = null;
+        Deque<BreadboardDeviceGroup> stack = new ArrayDeque<>();
+        for (BreadboardDeviceGroup group: breadboardDeviceGroupList) {
+            if (group.getDeviceList().stream().noneMatch(breadboardDevice -> breadboardDevice.getProjectDevice().equals(consumerDevice))) {
+                stack.push(group);
+            } else {
+                currentGroup = group;
+                break;
+            }
+        }
+        if (currentGroup == null) {
+            throw new IllegalStateException("Breadboard device must have a group.");
+        }
+        int voltageIndex = breadboardVoltageLevelList.indexOf(voltageLevel);
+        Coordinate breadboardVccCoordinate = currentGroup.reserveVccCoordinate(voltageIndex);
+        Coordinate consumerDeviceVccCoordinate = calculatePinPosition(consumerDevice, consumerPin);
+        drawLineSegment(drawingPane, breadboardVccCoordinate, consumerDeviceVccCoordinate, ConnectionType.WIRE.getLineWidth(), Color.RED);
+        while (!currentGroup.isVccConnected(voltageIndex)) {
+            if (!stack.isEmpty()) {
+                BreadboardDeviceGroup prevGroup = stack.pop();
+                Coordinate vccFrom = prevGroup.getBreadboardCoordinate().add(prevGroup.getBreadboard().getVccRightHoleCoordinate(voltageIndex));
+                Coordinate vccTo = currentGroup.getBreadboardCoordinate().add(currentGroup.getBreadboard().getVccLeftHoleCoordinate(voltageIndex));
+                drawLineSegment(drawingPane, vccFrom, vccTo, ConnectionType.WIRE.getLineWidth(), Color.RED);
+                currentGroup.setVccConnected(voltageIndex);
+                currentGroup = prevGroup;
+            } else {
+                Coordinate vccFrom = calculatePinPosition(providerDevice, providerPin);
+                Coordinate vccTo = currentGroup.getBreadboardCoordinate().add(currentGroup.getBreadboard().getVccLeftHoleCoordinate(voltageIndex));
+                drawLineSegment(drawingPane, vccFrom, vccTo, ConnectionType.WIRE.getLineWidth(), Color.RED);
+                currentGroup.setVccConnected(voltageIndex);
+            }
+        }
+    }
+
+    private void drawConnection(Pane drawingPane, DeviceConnection deviceConnection) {
         Map<Connection, Connection> connectionMap = deviceConnection.getConsumerProviderConnections();
         int countConnection = 0;
         for (Connection consumerConnection: connectionMap.keySet()) {
@@ -1007,58 +1307,56 @@ class DiagramV1 {
             List<Pin> providerPins = providerConnection.getPins();
             List<Color> pinColors = consumerConnection.getType().getPinColors();
             double lineWidth = providerConnection.getType().getLineWidth();
+            boolean needBreadboard = deviceMap.get(consumerDevice).isNeedBreadboard();
             for (int i=0; i<consumerPins.size(); i++) {
-                Coordinate pinConsumePosition = calculatePinPosition(consumerDevice, consumerPins.get(i));
-                Coordinate pinProvidePosition = calculatePinPosition(providerDevice, providerPins.get(i));
-                double controlRatioX1;
-                double controlRatioY1;
-                double controlRatioX2;
-                double controlRatioY2;
-                if (deviceOnRightRegion.contains(consumerDevice) || deviceOnLeftRegion.contains(consumerDevice)) {
-                    // ref: https://cubic-bezier.com/#.5,0,.5,1
-                    controlRatioX1 = 0.5;
-                    controlRatioY1 = 0;
-                    controlRatioX2 = 0.5;
-                    controlRatioY2 = 1;
-                } else if (deviceOnTopRegion.contains(consumerDevice) || deviceOnBottomRegion.contains(consumerDevice)) {
-                    // ref: https://cubic-bezier.com/#.0,.35,1,.65
-                    controlRatioX1 = 0.0;
-                    controlRatioY1 = 0.35;
-                    controlRatioX2 = 1.0;
-                    controlRatioY2 = 0.65;
-                } else if(deviceNeedBreadboard.contains(consumerDevice)) {
-                    controlRatioX1 = 0.0;
-                    controlRatioY1 = 0.0;
-                    controlRatioX2 = 1.0;
-                    controlRatioY2 = 1.0;
+                Pin consumerPin = consumerPins.get(i);
+                Pin providerPin = providerPins.get(i);
+                boolean isVcc = consumerPin.getFunction().contains(PinFunction.VCC);
+                boolean isGnd = consumerPin.getFunction().contains(PinFunction.GND);
+                if (needBreadboard && isVcc) {
+                    drawVccBreadboard(drawingPane, consumerDevice, providerDevice, consumerPin, providerPin);
+                } else if (needBreadboard && isGnd) {
+                    drawGndBreadboard(drawingPane, consumerDevice, providerDevice, consumerPin, providerPin);
                 } else {
-                    throw new UnsupportedOperationException();
+                    Coordinate pinConsumePosition = calculatePinPosition(consumerDevice, consumerPin);
+                    Coordinate pinProvidePosition = calculatePinPosition(providerDevice, providerPin);
+                    double controlRatioX1;
+                    double controlRatioY1;
+                    double controlRatioX2;
+                    double controlRatioY2;
+                    if (deviceOnRightRegion.contains(consumerDevice) || deviceOnLeftRegion.contains(consumerDevice)) {
+                        // ref: https://cubic-bezier.com/#.5,0,.5,1
+                        controlRatioX1 = 0.5;
+                        controlRatioY1 = 0;
+                        controlRatioX2 = 0.5;
+                        controlRatioY2 = 1;
+                    } else if (deviceOnTopRegion.contains(consumerDevice) || deviceOnBottomRegion.contains(consumerDevice)) {
+                        // ref: https://cubic-bezier.com/#.0,.35,1,.65
+                        controlRatioX1 = 0.0;
+                        controlRatioY1 = 0.35;
+                        controlRatioX2 = 1.0;
+                        controlRatioY2 = 0.65;
+                    } else if(deviceNeedBreadboard.contains(consumerDevice)) {
+                        controlRatioX1 = 0.0;
+                        controlRatioY1 = 0.0;
+                        controlRatioX2 = 1.0;
+                        controlRatioY2 = 1.0;
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                    Color color;
+                    if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.GND) {
+                        color = Color.BLACK;
+                    } else if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.VCC) {
+                        color = Color.RED;
+                    } else if (providerConnection.getType() == ConnectionType.WIRE) {
+                        color = WIRE_COLOR_LIST.get(countConnection % WIRE_COLOR_LIST.size());
+                        countConnection++;
+                    } else {
+                        color = pinColors.get(i);
+                    }
+                    drawCubicCurve(drawingPane, pinProvidePosition, pinConsumePosition, controlRatioX1, controlRatioY1, controlRatioX2, controlRatioY2, lineWidth, color);
                 }
-                CubicCurve curve = new CubicCurve();
-                curve.setStartX(pinProvidePosition.getX() + GLOBAL_LEFT_MARGIN);
-                curve.setStartY(pinProvidePosition.getY() + GLOBAL_TOP_MARGIN);
-                curve.setControlX1(pinProvidePosition.getX() + controlRatioX1 * (pinConsumePosition.getX() - pinProvidePosition.getX()) + GLOBAL_LEFT_MARGIN);
-                curve.setControlY1(pinProvidePosition.getY() + controlRatioY1 * (pinConsumePosition.getY() - pinProvidePosition.getY()) + GLOBAL_TOP_MARGIN);
-                curve.setControlX2(pinProvidePosition.getX() + controlRatioX2 * (pinConsumePosition.getX() - pinProvidePosition.getX()) + GLOBAL_LEFT_MARGIN);
-                curve.setControlY2(pinProvidePosition.getY() + controlRatioY2 * (pinConsumePosition.getY() - pinProvidePosition.getY()) + GLOBAL_TOP_MARGIN);
-                curve.setEndX(pinConsumePosition.getX() + GLOBAL_LEFT_MARGIN);
-                curve.setEndY(pinConsumePosition.getY() + GLOBAL_TOP_MARGIN);
-                curve.setStrokeWidth(lineWidth);
-                Color color;
-                if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.GND) {
-                    color = Color.BLACK;
-                } else if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.VCC) {
-                    color = Color.RED;
-                } else if (providerConnection.getType() == ConnectionType.WIRE) {
-                    color = WIRE_COLOR_LIST.get(countConnection % WIRE_COLOR_LIST.size());
-                    countConnection++;
-                } else {
-                    color = pinColors.get(i);
-                }
-                curve.setStroke(color);
-                curve.setFill(Color.TRANSPARENT);
-                curve.setEffect(new DropShadow(1.0, color.darker().darker()));
-                drawingPane.getChildren().add(curve);
             }
         }
     }
