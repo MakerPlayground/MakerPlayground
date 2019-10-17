@@ -28,6 +28,8 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.*;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -40,6 +42,8 @@ import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 
 @JsonSerialize(using = ProjectConfigurationSerializer.class)
 public final class ProjectConfiguration {
+
+    @JsonIgnore ObjectProperty<ProjectConfigurationStatus> statusProperty = new SimpleObjectProperty<>(ProjectConfigurationStatus.OK);
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
@@ -85,6 +89,35 @@ public final class ProjectConfiguration {
         this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
         this.unmodifiableDeviceConnections = Collections.unmodifiableSortedMap(deviceConnections);
         this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudParameterMap);
+
+        this.updateStatusProperty();
+    }
+
+    void updateStatusProperty() {
+        ProjectConfigurationStatus status = ProjectConfigurationStatus.OK;
+        for (ProjectDevice projectDevice: this.usedDevices) {
+            // Device
+            if (!deviceMap.containsKey(projectDevice) && !identicalDeviceMap.containsKey(projectDevice)) {
+                status = ProjectConfigurationStatus.ERROR;
+                break;
+            }
+            // Connection
+            if (deviceMap.containsKey(projectDevice)) {
+                if (!deviceConnections.containsKey(projectDevice) || deviceConnections.get(projectDevice) == DeviceConnection.NOT_CONNECTED) {
+                    status = ProjectConfigurationStatus.ERROR;
+                    break;
+                } else if (deviceConnections.get(projectDevice).getConsumerProviderConnections().entrySet().stream().anyMatch(entry -> entry.getKey() == null || entry.getValue() == null)) {
+                    status = ProjectConfigurationStatus.ERROR;
+                    break;
+                }
+            }
+            // Property
+            if (this.devicePropertyValueMap.get(projectDevice).entrySet().stream().anyMatch(entry->entry.getValue() instanceof String && ((String) entry.getValue()).isBlank())) {
+                status = ProjectConfigurationStatus.ERROR;
+                break;
+            }
+        }
+        this.statusProperty.set(status);
     }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
@@ -110,6 +143,7 @@ public final class ProjectConfiguration {
         }
 
         generateDeviceSelectableMapAndConnection();
+        updateStatusProperty();
     }
 
     private void generateDeviceSelectableMapAndConnection() {
@@ -351,6 +385,7 @@ public final class ProjectConfiguration {
             usedRefPin.clear();
 
             generateDeviceSelectableMapAndConnection();
+            updateStatusProperty();
         }
     }
 
@@ -412,6 +447,7 @@ public final class ProjectConfiguration {
         } else {
             unsetDevice(projectDevice);
         }
+        updateStatusProperty();
     }
 
     public void setIdenticalDevice(ProjectDevice projectDevice, ProjectDevice parentDevice) {
@@ -423,6 +459,7 @@ public final class ProjectConfiguration {
             }
             identicalDeviceMap.put(projectDevice, parentDevice);
             generateDeviceSelectableMapAndConnection();
+            updateStatusProperty();
         } else {
             unsetDevice(projectDevice);
         }
@@ -433,6 +470,7 @@ public final class ProjectConfiguration {
             this.devicePropertyValueMap.put(projectDevice, new HashMap<>());
         }
         this.devicePropertyValueMap.get(projectDevice).put(p, value);
+        updateStatusProperty();
     }
 
     public void unsetDevice(ProjectDevice projectDevice) {
@@ -446,6 +484,7 @@ public final class ProjectConfiguration {
         compatibleDevicesSelectableMap.remove(projectDevice);
         compatibleConnectionMap.remove(projectDevice);
         generateDeviceSelectableMapAndConnection();
+        updateStatusProperty();
     }
 
     public void unsetAllDevices() {
@@ -461,6 +500,7 @@ public final class ProjectConfiguration {
             remainingConnectionProvide.addAll(controller.getConnectionProvideByOwnerDevice(CONTROLLER));
         }
         generateDeviceSelectableMapAndConnection();
+        updateStatusProperty();
     }
 
     public void setConnection(ProjectDevice projectDevice, Connection consumerConnection, Connection providerConnection) {
@@ -472,6 +512,7 @@ public final class ProjectConfiguration {
         // If providerConnection == null, use unsetConnection instead
         if (providerConnection == null) {
             unsetConnection(projectDevice, consumerConnection);
+            updateStatusProperty();
             return;
         }
 
@@ -526,6 +567,7 @@ public final class ProjectConfiguration {
         }
 
         generateDeviceSelectableMapAndConnection();
+        updateStatusProperty();
     }
 
     public void unsetConnection(ProjectDevice projectDevice, Connection connectionConsume) {
@@ -544,6 +586,7 @@ public final class ProjectConfiguration {
             });
             deviceConnection.getConsumerProviderConnections().put(connectionConsume, null);
             generateDeviceSelectableMapAndConnection();
+            updateStatusProperty();
         }
     }
 
@@ -589,6 +632,7 @@ public final class ProjectConfiguration {
                     }
                 });
                 generateDeviceSelectableMapAndConnection();
+                updateStatusProperty();
             }
         }
     }
@@ -605,6 +649,7 @@ public final class ProjectConfiguration {
                     }
                 });
             });
+            updateStatusProperty();
         }
     }
 
