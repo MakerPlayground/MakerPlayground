@@ -48,6 +48,10 @@ public class SceneDeviceIconViewModel {
         this.project = project;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
     public String getName() {
         return name.get();
     }

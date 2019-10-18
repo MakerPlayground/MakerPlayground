@@ -19,6 +19,7 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
@@ -26,6 +27,8 @@ import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.*;
@@ -51,6 +54,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
 
     // Create a grid pane as a main layout for this property sheet
     private final GridPane propertyPane = new GridPane();
+    private final GridPane interactivePane = new GridPane();
 
     private Label conditionLabel;
     private ComboBox<Condition> conditionComboBox;
@@ -121,11 +125,12 @@ public class ConditionDevicePropertyWindow extends PopOver {
         propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
         redrawProperty();
+        initInteractivePane();
 
         // arrange title and property sheet
         VBox mainPane = new VBox();
         mainPane.getStylesheets().add(this.getClass().getResource("/css/canvas/node/usersetting/DevicePropertyWindow.css").toExternalForm());
-        mainPane.getChildren().addAll(titleHBox, propertyPane);
+        mainPane.getChildren().addAll(titleHBox, propertyPane, interactivePane);
         mainPane.setSpacing(5.0);
         mainPane.setPadding(new Insets(20, 20, 20, 20));
 
@@ -254,5 +259,61 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setColumnIndex(expressionControl, 1);
 
         propertyPane.getChildren().addAll(enableCheckbox, expressionControl);
+    }
+
+    private void initInteractivePane() {
+        // skip if the interactive mode hasn't been initialized
+        if (!viewModel.getProject().getInteractiveModel().isInitialized()) {
+            return;
+        }
+
+        int currentRow = 0;
+        for (Condition condition : viewModel.getGenericDevice().getCondition()) {
+            if (condition.getName().equals("Compare")) {
+                continue;
+            }
+
+            Label nameLabel = new Label(condition.getName());
+            GridPane.setRowIndex(nameLabel, currentRow);
+            GridPane.setColumnIndex(nameLabel, 0);
+
+            Label valueLabel = new Label();
+            valueLabel.textProperty().bind(viewModel.getProject().getInteractiveModel().getConditionProperty(viewModel.getProjectDevice(), condition).asString());
+            GridPane.setRowIndex(valueLabel, currentRow);
+            GridPane.setColumnIndex(valueLabel, 1);
+
+            interactivePane.getChildren().addAll(nameLabel, valueLabel);
+            currentRow++;
+        }
+
+        for (Value value : viewModel.getGenericDevice().getValue()) {
+            Label nameLabel = new Label(value.getName());
+            GridPane.setRowIndex(nameLabel, currentRow);
+            GridPane.setColumnIndex(nameLabel, 0);
+
+            ReadOnlyDoubleProperty valueProperty = viewModel.getProject().getInteractiveModel().getValueProperty(viewModel.getProjectDevice(), value);
+            Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
+            Label valueLabel = new Label();
+            valueLabel.textProperty().bind(new StringBinding() {
+                {
+                    super.bind(valueProperty);
+                }
+
+                @Override
+                protected String computeValue() {
+                    if (unit == Unit.NOT_SPECIFIED) {
+                        return String.valueOf(valueProperty.get());
+                    } else {
+                        return String.valueOf(valueProperty.get()) + unit;
+                    }
+                }
+            });
+            GridPane.setRowIndex(valueLabel, currentRow);
+            GridPane.setColumnIndex(valueLabel, 1);
+
+            interactivePane.getChildren().addAll(nameLabel, valueLabel);
+            currentRow++;
+        }
+
     }
 }

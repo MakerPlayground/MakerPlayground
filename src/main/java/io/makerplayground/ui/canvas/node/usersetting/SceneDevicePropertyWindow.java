@@ -33,17 +33,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 
 import java.util.EnumSet;
@@ -75,10 +70,24 @@ public class SceneDevicePropertyWindow extends PopOver {
         imageView.setPreserveRatio(true);
 
         Label customName = new Label(viewModel.getName());
-        customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
+        customName.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(customName, Priority.ALWAYS);
+
+        ImageView interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
+        interactiveStartImageView.setFitWidth(20);
+        interactiveStartImageView.setFitHeight(20);
+        Tooltip sendActionButtonTooltip = new Tooltip();
+        sendActionButtonTooltip.setShowDelay(Duration.millis(250));
+        sendActionButtonTooltip.setText("Test on real device");
+        Button sendActionButton = new Button();
+        sendActionButton.setTooltip(sendActionButtonTooltip);
+        sendActionButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0px;");
+        sendActionButton.setGraphic(interactiveStartImageView);
+        sendActionButton.setDisable(!viewModel.getProject().getInteractiveModel().isInitialized());
+        sendActionButton.setOnAction(event -> viewModel.getProject().getInteractiveModel().sendCommand(viewModel.getUserSetting()));
 
         HBox titleHBox = new HBox();
-        titleHBox.getChildren().addAll(imageView, customName);
+        titleHBox.getChildren().addAll(imageView, customName, sendActionButton);
         titleHBox.setAlignment(Pos.CENTER_LEFT);
         titleHBox.setSpacing(10);
 

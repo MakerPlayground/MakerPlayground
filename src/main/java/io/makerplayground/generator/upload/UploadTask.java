@@ -16,6 +16,8 @@
 
 package io.makerplayground.generator.upload;
 
+import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -26,11 +28,15 @@ public abstract class UploadTask extends Task<UploadResult> {
 
     protected final Project project;
     protected final ProjectConfiguration configuration;
+    protected final SourceCodeResult sourcecode;
+    protected final SerialPort serialPort;
     protected final ReadOnlyStringWrapper log;
 
-    public UploadTask(Project project) {
+    public UploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
+        this.sourcecode = sourceCode;
+        this.serialPort = serialPort;
         this.log = new ReadOnlyStringWrapper();
     }
 

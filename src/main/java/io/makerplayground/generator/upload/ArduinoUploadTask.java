@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.upload;
 
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
@@ -40,8 +41,8 @@ import java.util.stream.Collectors;
 
 public class ArduinoUploadTask extends UploadTask {
 
-    public ArduinoUploadTask(Project project) {
-        super(project);
+    public ArduinoUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPorts) {
+        super(project, sourceCode, serialPorts);
     }
 
     @Override
@@ -64,7 +65,6 @@ public class ArduinoUploadTask extends UploadTask {
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
-        SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;

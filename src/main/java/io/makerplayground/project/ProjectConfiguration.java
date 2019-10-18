@@ -416,6 +416,10 @@ public final class ProjectConfiguration {
         return null;
     }
 
+    public boolean isMergeToOtherDevice(ProjectDevice projectDevice) {
+        return getIdenticalDevice(projectDevice).isPresent();
+    }
+
     public Optional<ProjectDevice> getIdenticalDevice(ProjectDevice projectDevice) {
         if (!unmodifiableIdenticalDeviceMap.containsKey(projectDevice)) {
             return Optional.empty();
@@ -455,8 +459,8 @@ public final class ProjectConfiguration {
             if(!this.devicePropertyValueMap.containsKey(projectDevice)) {
                 this.devicePropertyValueMap.put(projectDevice, new HashMap<>());
             }
-            Map<Property, Object> propertyMap = this.devicePropertyValueMap.get(projectDevice);
-            for (Property property: actualDevice.getProperty()) {
+            Map<Property, Object> propertyMap = devicePropertyValueMap.get(projectDevice);
+            for (Property property : actualDevice.getProperty()) {
                 propertyMap.putIfAbsent(property, property.getDefaultValue());
             }
         } else {

@@ -68,11 +68,12 @@ public class UploadDialogView extends UndecoratedDialog {
         rt.setCycleCount(Animation.INDEFINITE);
         rt.setInterpolator(Interpolator.LINEAR);
 
-        // initialize ui based on the current state of the task
-        if (uploadTask.isRunning()) {
-            rt.play();
-        } else if (uploadTask.isDone()) {
+        // initialize ui based on the current state of the task. Note that uploadTask.isRunning() shouldn't be used
+        // as task may still be in ready state thus transition won't be played
+        if (uploadTask.isDone()) {
             updateUI();
+        } else {
+            rt.play();
         }
 
         // Cancel the rotation effect when the upload task is cancelled
