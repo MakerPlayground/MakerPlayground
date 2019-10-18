@@ -112,7 +112,7 @@ public final class ProjectConfiguration {
                 }
             }
             // Property
-            if (this.devicePropertyValueMap.get(projectDevice).entrySet().stream().anyMatch(entry->entry.getValue() instanceof String && ((String) entry.getValue()).isBlank())) {
+            if (this.devicePropertyValueMap.containsKey(projectDevice) && this.devicePropertyValueMap.get(projectDevice).entrySet().stream().anyMatch(entry->entry.getValue() instanceof String && ((String) entry.getValue()).isBlank())) {
                 status = ProjectConfigurationStatus.ERROR;
                 break;
             }
@@ -170,7 +170,7 @@ public final class ProjectConfiguration {
         }
         setFlagToDeviceIfActionConditionValueIsIncompatible(deviceSelectableMap);
         setFlagToDeviceIfCloudIsNotSupport(deviceSelectableMap);
-        setFlagToDeviceIfConnectionIsIncompatible(deviceSelectableMap, deviceConnectionMap);
+        setFlagToDeviceIfConnectionIsIncompatibleAndCalculateConnectionMap(deviceSelectableMap, deviceConnectionMap);
 
         /* add identical device to selectable list */
         Map<ProjectDevice, List<CompatibleDevice>> possibleIdenticalDeviceMap = calculatePossibleIdenticalDeviceMap();
@@ -255,8 +255,8 @@ public final class ProjectConfiguration {
         }
     }
 
-    private void setFlagToDeviceIfConnectionIsIncompatible(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap,
-                                                           Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> deviceConnectionMap) {
+    private void setFlagToDeviceIfConnectionIsIncompatibleAndCalculateConnectionMap(Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap,
+                                                                                    Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> deviceConnectionMap) {
         /* set reason for circuit incompatibility */
         for (ProjectDevice projectDevice: nonControllerDevices) {
             SortedMap<CompatibleDevice, DeviceMappingResult> selectable = deviceSelectableMap.get(projectDevice);
@@ -436,6 +436,21 @@ public final class ProjectConfiguration {
             }
             deviceMap.put(projectDevice, actualDevice);
             generateDeviceSelectableMapAndConnection();
+
+            if (actualDevice instanceof IntegratedActualDevice) {
+                // assign if possible
+                List<Connection> allConnectionConsume = new ArrayList<>(actualDevice.getConnectionConsumeByOwnerDevice(projectDevice));
+                for (Connection connectionConsume: allConnectionConsume) {
+                    Map<ActualDevice, SortedMap<Connection, List<Connection>>> actualDeviceListMap = compatibleConnectionMap.get(projectDevice);
+                    if (!actualDeviceListMap.containsKey(actualDevice)) {
+                        continue;
+                    }
+                    Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(actualDevice);
+                    if (!possibleDeviceConnection.get(connectionConsume).isEmpty()) {
+                        setConnection(projectDevice, connectionConsume, possibleDeviceConnection.get(connectionConsume).get(0));
+                    }
+                }
+            }
 
             if(!this.devicePropertyValueMap.containsKey(projectDevice)) {
                 this.devicePropertyValueMap.put(projectDevice, new HashMap<>());
@@ -715,13 +730,11 @@ public final class ProjectConfiguration {
             // assign the connection to the selected actual device.
             List<ProjectDevice> tempMap = new ArrayList<>(unassignedDevices);
             for (ProjectDevice projectDevice: tempMap) {
-                if (deviceMap.containsKey(projectDevice)
-                        && deviceMap.get(projectDevice) != null
-                        && (!deviceConnections.containsKey(projectDevice)
-                                || deviceConnections.get(projectDevice) == DeviceConnection.NOT_CONNECTED
-                                || deviceConnections.get(projectDevice).getConsumerProviderConnections().values().stream().anyMatch(Objects::isNull)
-                        )
-                ) {
+                if (deviceMap.containsKey(projectDevice) && deviceMap.get(projectDevice) != null) {
+                    if (deviceConnections.containsKey(projectDevice) && deviceConnections.get(projectDevice) != DeviceConnection.NOT_CONNECTED && deviceConnections.get(projectDevice).getConsumerProviderConnections().values().stream().allMatch(Objects::nonNull)) {
+                        unassignedDevices.remove(projectDevice);
+                        continue;
+                    }
                     if (!compatibleDevicesSelectableMap.containsKey(projectDevice)) {
                         throw new IllegalStateException("Cannot have project device that is not in the compatibility map");
                     }

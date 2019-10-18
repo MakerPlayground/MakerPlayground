@@ -266,21 +266,19 @@ public class ConfigActualDeviceView extends VBox{
         };
     }
 
-    private String getDeviceConnectionString(DeviceConnection connection) {
-        return connection.getConsumerProviderConnections()
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparing(Map.Entry::getKey))
-                .map(e -> e.getValue().getName())
-                .collect(Collectors.joining("-"));
-    }
-
     private ListCell<Connection> newConnectionListCell() {
         return new ListCell<>() {
             @Override
             protected void updateItem(Connection item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getName());
+                if (item != null) {
+                    setText(empty ? null : item.getName());
+                    if (item.getType() == ConnectionType.INTEGRATED) {
+                        setText(empty ? null : "Yes");
+                    }
+                } else {
+                    setText(null);
+                }
             }
         };
     }
@@ -293,7 +291,14 @@ public class ConfigActualDeviceView extends VBox{
                     @Override
                     protected void updateItem(Connection item, boolean empty) {
                         super.updateItem(item, empty);
-                        setText(empty || item == null ? null : item.getName());
+                        if (item != null) {
+                            setText(empty ? null : item.getName());
+                            if (item.getType() == ConnectionType.INTEGRATED) {
+                                setText(empty ? null : "Yes");
+                            }
+                        } else {
+                            setText(null);
+                        }
                     }
                 };
             }
@@ -374,7 +379,7 @@ public class ConfigActualDeviceView extends VBox{
                             portComboBox.getSelectionModel().select(connection);
                             portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setConnection(projectDevice, connectionConsume, newValue));
 
-                            Label portLabel = new Label(connectionConsume.getName());
+                            Label portLabel = new Label(connectionConsume.getType() == ConnectionType.INTEGRATED ? "Connect" : connectionConsume.getName());
                             Tooltip tooltip = new Tooltip(connectionConsume.getName());
                             tooltip.setShowDelay(Duration.ZERO);
                             portLabel.setTooltip(tooltip);
