@@ -38,6 +38,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 
 import java.util.EnumSet;
@@ -69,14 +70,20 @@ public class SceneDevicePropertyWindow extends PopOver {
         imageView.setPreserveRatio(true);
 
         Label customName = new Label(viewModel.getName());
-        customName.setMaxWidth(Region.USE_COMPUTED_SIZE);
+        customName.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(customName, Priority.ALWAYS);
 
         ImageView interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
         interactiveStartImageView.setFitWidth(20);
         interactiveStartImageView.setFitHeight(20);
+        Tooltip sendActionButtonTooltip = new Tooltip();
+        sendActionButtonTooltip.setShowDelay(Duration.millis(250));
+        sendActionButtonTooltip.setText("Test on real device");
         Button sendActionButton = new Button();
-        sendActionButton.setText("Send Action");
+        sendActionButton.setTooltip(sendActionButtonTooltip);
+        sendActionButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0px;");
         sendActionButton.setGraphic(interactiveStartImageView);
+        sendActionButton.setDisable(!viewModel.getProject().getInteractiveModel().isInitialized());
         sendActionButton.setOnAction(event -> viewModel.getProject().getInteractiveModel().sendCommand(viewModel.getUserSetting()));
 
         HBox titleHBox = new HBox();

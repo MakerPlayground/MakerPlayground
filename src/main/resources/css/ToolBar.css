@@ -107,6 +107,7 @@
     -fx-border-color: transparent;
     -fx-text-fill: text-fill-color;
     -fx-cursor: hand;
+    -fx-padding: 0px;
 }
 
 /* icon of upload button is set in Toolbar.java as we can't set icon size in css */
@@ -115,6 +116,7 @@
     -fx-border-color: transparent;
     -fx-text-fill: text-fill-color;
     -fx-cursor: hand;
+    -fx-padding: 0px;
 }
 
 #uploadStatusButton {
@@ -122,6 +124,7 @@
     -fx-border-color: transparent;
     -fx-text-fill: text-fill-color;
     -fx-cursor: hand;
+    -fx-padding: 0px;
 }
 
 #deviceMonitorMenuButton{

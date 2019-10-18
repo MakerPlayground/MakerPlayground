@@ -59,7 +59,7 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         generator.appendSetupFunction();
         generator.appendProcessCommand();
         generator.appendLoopFunction();
-        System.out.println(generator.builder.toString());
+//        System.out.println(generator.builder.toString());
         return new SourceCodeResult(generator.builder.toString());
     }
 

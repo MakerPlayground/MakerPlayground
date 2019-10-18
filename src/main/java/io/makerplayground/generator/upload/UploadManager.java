@@ -29,10 +29,6 @@ public class UploadManager {
     public boolean startInteractiveMode(SerialPort serialPort) {
         Project clonedProject = Project.newInstance(project.get());
         SourceCodeResult sourceCode = InteractiveSourceCodeGenerator.generate(clonedProject);
-        // TODO: better error
-        if (sourceCode.hasError()) {
-            return false;
-        }
         if (createUploadTask(clonedProject, sourceCode, serialPort)) {
             new Thread(uploadTask).start();
             uploadTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event1 -> {

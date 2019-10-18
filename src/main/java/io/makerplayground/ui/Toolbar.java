@@ -82,6 +82,10 @@ public class Toolbar extends AnchorPane {
             e.printStackTrace();
         }
 
+        Tooltip deviceMonitorButtonTooltip = new Tooltip("Open a device monitor");
+        deviceMonitorButtonTooltip.setShowDelay(Duration.millis(250));
+        deviceMonitorMenuButton.setTooltip(deviceMonitorButtonTooltip);
+
         ToggleGroup toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
 
@@ -163,23 +167,20 @@ public class Toolbar extends AnchorPane {
 
         deviceMonitorMenuButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
 
-        interactiveModeInitialize.addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-//                interactiveButton.setText("Stop Interactive Mode");
-                interactiveButton.setGraphic(uploadStopImageView);
-            } else {
-//                interactiveButton.setText("Start Interactive Mode");
-                interactiveButton.setGraphic(interactiveStartImageView);
-            }
-        });
-//        interactiveButton.setText("Start Interactive Mode");
-        interactiveButton.graphicProperty().bind(Bindings.when(uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE))
+        interactiveButton.graphicProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
                 .then(uploadStopImageView).otherwise(interactiveStartImageView));
+        Tooltip interactiveButtonTooltip = new Tooltip();
+        interactiveButtonTooltip.setShowDelay(Duration.millis(250));
+        interactiveButtonTooltip.textProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
+                .then("Stop interactive mode").otherwise("Start interactive mode"));
+        interactiveButton.setTooltip(interactiveButtonTooltip);
         interactiveButton.disableProperty().bind(portNotSelected.or(uploading));
 
-//        uploadButton.setText("Upload");
-        uploadButton.graphicProperty().bind(Bindings.when(uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING))
-                .then(uploadStopImageView).otherwise(uploadStartImageView));
+        uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
+        Tooltip uploadButtonTooltip = new Tooltip();
+        uploadButtonTooltip.setShowDelay(Duration.millis(250));
+        uploadButtonTooltip.textProperty().bind(Bindings.when(uploading).then("Stop uploading").otherwise("Upload to board"));
+        uploadButton.setTooltip(uploadButtonTooltip);
         uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize));
 
         uploadManager.uploadStatusProperty().addListener((observable, oldValue, newValue) -> {
@@ -236,6 +237,7 @@ public class Toolbar extends AnchorPane {
         if (project.get().getInteractiveModel().isInitialized()) {
             project.get().getInteractiveModel().stop();
         } else if (uploadManager.getUploadStatus() != UploadStatus.STARTING_INTERACTIVE) {
+            // stop the auto hide transition that may have been scheduled to run in a few second
             hideUploadStatus.stop();
             uploadManager.startInteractiveMode(portComboBox.getSelectionModel().getSelectedItem());
         } else {
@@ -250,6 +252,7 @@ public class Toolbar extends AnchorPane {
 
     private void onUploadButtonPressed() {
         if (uploadManager.getUploadStatus() != UploadStatus.UPLOADING) {
+            // stop the auto hide transition that may have been scheduled to run in a few second
             hideUploadStatus.stop();
             uploadManager.startUploadProject(portComboBox.getSelectionModel().getSelectedItem());
         } else {
