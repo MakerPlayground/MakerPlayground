@@ -313,22 +313,6 @@ class DiagramV1 {
             throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
         }
 
-        public int getNextPowerHoleOffsetX(int currentHoleOffset) {
-            currentHoleOffset += 1;
-            if (currentHoleOffset % 6 == 5) {
-                currentHoleOffset += 1;
-            }
-            return currentHoleOffset;
-        }
-
-        public int getNextGndHoleOffsetX(int currentHoleOffset) {
-            currentHoleOffset += 1;
-            if (currentHoleOffset % 6 == 5) {
-                currentHoleOffset += 1;
-            }
-            return currentHoleOffset;
-        }
-
         public List<Double> getAllPowerOffsetFromLeftX() {
             List<Double> offsetXList = new ArrayList<>();
             double offsetX = 0;

@@ -127,8 +127,15 @@ public class UserSetting {
 
     private void initValueMap() {
         parameterMap.clear();
-        for (Parameter param : action.get().getParameter()) {
-            parameterMap.put(param, Expression.fromDefaultParameter(param));
+        if (action.get() != null) {
+            for (Parameter param : action.get().getParameter()) {
+                parameterMap.put(param, Expression.fromDefaultParameter(param));
+            }
+        }
+        if (condition.get() != null) {
+            for (Parameter param : condition.get().getParameter()) {
+                parameterMap.put(param, Expression.fromDefaultParameter(param));
+            }
         }
     }
 
