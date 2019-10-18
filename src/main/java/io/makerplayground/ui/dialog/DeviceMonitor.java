@@ -17,173 +17,213 @@
 package io.makerplayground.ui.dialog;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-
+import com.fazecast.jSerialComm.SerialPortMessageListener;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import javafx.stage.Window;
-import javafx.util.Callback;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by tanyagorn on 7/19/2017.
- */
-public class DeviceMonitor extends Dialog implements InvalidationListener{
+public class DeviceMonitor extends SplitPane implements SerialPortMessageListener {
 
-    private ObservableList<LogItems> logData = FXCollections.observableArrayList();
-    private Thread serialThread = null;
-    private final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)", Pattern.DOTALL); // Regex
-    private FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
+    private static final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)", Pattern.DOTALL); // Regex
+    private static final Pattern numberRegex = Pattern.compile("^(-?\\d+\\.\\d+)$|^(-?\\d+)$");
+
+    private final SerialPort serialPort;
+    private final ObservableList<LogItems> logData = FXCollections.observableArrayList();
+//    private final ObservableList<XYChart.Data<Number, Number>> logChartData = FXCollections.observableArrayList();
+    private final FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
+    private final Map<String, LineChart<Number, Number>> lineChartMap = new HashMap<>();
+
+    private final ObservableList<String> tagList = FXCollections.observableArrayList();
+
     @FXML private TableView<LogItems> deviceMonitorTable;
     @FXML private ComboBox<LogItems.LogLevel> levelComboBox;
     @FXML private CheckComboBox<String> checkTagComboBox;
-    @FXML private Label levelLabel;
-    @FXML private Label tagLabel;
-    @FXML private GridPane gridPane;
-    @FXML private CheckBox onStatus;
+    @FXML private CheckBox autoScrollCheckbox;
+    @FXML private CheckComboBox<String> plotTagComboBox;
+    @FXML private VBox chartPane;
 
-    @FXML private TableColumn<LogItems, String> messageTableColumn;
+    public DeviceMonitor(SerialPort serialPort) {
+        this.serialPort = serialPort;
 
-    public DeviceMonitor(SerialPort comPort) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
-        fxmlLoader.setRoot(this.getDialogPane());
+        fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UTILITY);
-        setTitle("Device Monitor - " + comPort.getSystemPortName());
 
+        // initialize filter ui
 
-        checkTagComboBox.getItems().addAll(FXCollections.observableArrayList(new ArrayList<>()));
         levelComboBox.getItems().addAll(FXCollections.observableArrayList(LogItems.LogLevel.values()));
-
-        checkTagComboBox.getCheckModel().checkAll();
-        levelComboBox.getSelectionModel().selectedItemProperty().addListener(this);
-
-        checkTagComboBox.getCheckModel().getCheckedItems().addListener(this);
         levelComboBox.getSelectionModel().select(0);
+        levelComboBox.getSelectionModel().selectedItemProperty().addListener(observable -> updateLogFilter());
 
-        messageTableColumn.setCellFactory(param -> new TableCell<>() {
-            private Text label;
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isEmpty()) {
-                    setGraphic(null);
-                    return;
-                }
-                System.out.println(item);
-                label = new Text(item);
-                label.setWrappingWidth(this.getWidth());
-                setGraphic(label);
-            }
-        });
+        Bindings.bindContent(checkTagComboBox.getItems(), tagList);
+        checkTagComboBox.getCheckModel().getCheckedItems().addListener((InvalidationListener) observable -> updateLogFilter());
+
+        updateLogFilter();
+
+        // initialize table
+
+        TableColumn<LogItems, String> deviceNameTableColumn = new TableColumn<>("Device Name");
+        deviceNameTableColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getDeviceName()));
+
+        TableColumn<LogItems, String> messageTableColumn = new TableColumn<>("Message");
+        messageTableColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getMessage()));
+
+        deviceMonitorTable.getColumns().addAll(deviceNameTableColumn, messageTableColumn);
         deviceMonitorTable.setItems(logDataFilter);
 
-        initView();
+        // initialize serial port
 
-        // Create thread to read data from serial port
-        serialThread = new Thread(() -> {
-            comPort.openPort();
-            comPort.setBaudRate(115200);
-            while(!serialThread.isInterrupted()) {
-                StringBuilder sb = new StringBuilder();
-                comPort.addDataListener(new SerialPortDataListener() {
-                    @Override
-                    public int getListeningEvents() {
-                        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        serialPort.addDataListener(this);
+        if (!serialPort.openPort()) {
+            // TODO: display error
+            System.err.println("Can't open serial port");
+        }
+
+        // initialize plot
+
+        Bindings.bindContent(plotTagComboBox.getItems(), tagList);
+
+        plotTagComboBox.getCheckModel().getCheckedItems().addListener((InvalidationListener) observable -> {
+            ObservableList<String> tagSelected = plotTagComboBox.getCheckModel().getCheckedItems();
+
+            Set<String> tagToBeRemoved = new HashSet<>(tagList);
+            tagToBeRemoved.removeAll(tagSelected);
+
+            for (String tag : tagToBeRemoved) {
+                if (lineChartMap.containsKey(tag)) {
+                    chartPane.getChildren().remove(lineChartMap.remove(tag));
+                }
+            }
+
+            for (String tag : tagSelected) {
+                if (!lineChartMap.containsKey(tag)) {
+                    createLineChart(tag);
+                }
+            }
+        });
+    }
+
+    private void updateLogFilter() {
+        ObservableList<String> tagList = checkTagComboBox.getCheckModel().getCheckedItems();
+        int selectedPriority = levelComboBox.getSelectionModel().getSelectedItem().getPriority();
+        logDataFilter.setPredicate(logItems -> tagList.contains(logItems.getDeviceName())
+                && logItems.getLevel().getPriority() >= selectedPriority);
+    }
+
+    private void createLineChart(String tag) {
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
+        logData.addListener((ListChangeListener<LogItems>) c -> {
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    throw new UnsupportedOperationException();
+                } else if (c.wasUpdated()) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    for (LogItems removedItem : c.getRemoved()) {
+                        throw new UnsupportedOperationException();
                     }
-
-                    @Override
-                    public void serialEvent(SerialPortEvent serialPortEvent) {
-                        if (serialPortEvent.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-                            return;
-                        byte[] newData = new byte[comPort.bytesAvailable()];
-                        comPort.readBytes(newData, newData.length);
-                        sb.append(new String(newData));
-                        while(sb.indexOf("\0") >= 0) {
-                            int index = sb.indexOf("\0");
-                            String msg = sb.subSequence(0, index).toString();
-                            sb.delete(0, index + 1);
-                            getFormatLog(msg).ifPresent(logItems -> Platform.runLater(() -> {
-                                if (onStatus.isSelected()) {
-                                    logData.addAll(logItems);
-                                    deviceMonitorTable.scrollTo(logItems.get(logItems.size()-1));
-                                }
-                                for (LogItems item: logItems) {
-                                    if(!checkTagComboBox.getItems().contains(item.getDeviceName())){       // use deviceName from flash memory of serial port to generate device deviceName box
-                                        List<Integer> checkedItem = checkTagComboBox.getCheckModel().getCheckedIndices();
-                                        checkTagComboBox.getItems().add(item.getDeviceName());
-                                        checkTagComboBox.getCheckModel().checkIndices(checkedItem.stream().mapToInt(value -> value).toArray());     // get the newest device check
-                                        checkTagComboBox.getCheckModel().check(item.getDeviceName());
-                                    }
-                                }
-                            }));
+                    for (LogItems addedItem : c.getAddedSubList()) {
+                        if (addedItem.getDeviceName().equals(tag)) {
+                            // assume that the format is "value = 10.5"
+                            String[] token = addedItem.getMessage().split(" ");
+                            Matcher matcher = numberRegex.matcher(token[token.length - 1]);
+                            if (matcher.matches()) {
+                                double d = Double.parseDouble(token[token.length - 1]);
+                                series.getData().add(new XYChart.Data<>(series.getData().size(), d));
+                            } else {
+                                series.getData().add(new XYChart.Data<>(series.getData().size(), 0));
+                            }
                         }
                     }
-                });
+                }
             }
-            comPort.closePort();
         });
-        serialThread.start();
+
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Samples");
+        xAxis.setAutoRanging(true);
+//        xAxis.setAnimated(false);
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Value");
+//        yAxis.setAnimated(false);
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle(tag);
+        lineChart.setAnimated(false);
+        lineChart.getData().add(series);
+
+        lineChartMap.put(tag, lineChart);
+        chartPane.getChildren().add(lineChart);
     }
 
-    private void initView() {
-        Window window = getDialogPane().getScene().getWindow();
-        window.setOnCloseRequest(event -> {
-            serialThread.interrupt();
-            try {
-                serialThread.join(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            window.hide();
-        });
+    public boolean closePort() {
+        return serialPort.closePort();
     }
 
-    // Regex Function
-    private Optional<List<LogItems>> getFormatLog(String rawLog) {
-        List<LogItems> logitems = new ArrayList<>();
-        Matcher log = format.matcher(rawLog);
-        while (log.find()) {
-            logitems.add(new LogItems(log.group(1), log.group(2), log.group(3)));
-        }
-        if (logitems.size() > 0) {
-            return Optional.of(logitems);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    // Change display data in table from value of combobox
     @Override
-    public void invalidated(Observable observable) {
-        logDataFilter.setPredicate(
-                logItems -> checkTagComboBox.getCheckModel().getCheckedItems().contains(logItems.getDeviceName())
-                && logItems.getLevel().getPriority() >= levelComboBox.getSelectionModel().getSelectedItem().getPriority()
-        );
+    public byte[] getMessageDelimiter() {
+        return new byte[]{'\r'};
+    }
+
+    @Override
+    public boolean delimiterIndicatesEndOfMessage() {
+        return true;
+    }
+
+    @Override
+    public int getListeningEvents() {
+        return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
+    }
+
+    @Override
+    public void serialEvent(SerialPortEvent event) {
+        String message = new String(event.getReceivedData()).strip();
+        System.out.println(message.strip());
+
+        Matcher log = format.matcher(message);
+        if (log.find() && log.groupCount() == 3) {
+            LogItems logItems = new LogItems(log.group(1), log.group(2), log.group(3));
+            Platform.runLater(() -> {
+                logData.addAll(logItems);
+                if (!tagList.contains(logItems.getDeviceName())) {
+                    tagList.add(logItems.getDeviceName());
+                    checkTagComboBox.getCheckModel().check(logItems.getDeviceName());
+                }
+                if (autoScrollCheckbox.isSelected()) {
+                    deviceMonitorTable.scrollTo(logItems);
+                }
+            });
+        }
     }
 
     public static class LogItems {
@@ -237,7 +277,22 @@ public class DeviceMonitor extends Dialog implements InvalidationListener{
         public String getMessage() {
             return message;
         }
-
-
     }
 }
+
+
+//        messageTableColumn.setCellFactory(param -> new TableCell<>() {
+//            private Text label;
+//            @Override
+//            protected void updateItem(String item, boolean empty) {
+//                super.updateItem(item, empty);
+//                if (empty || item == null || item.isEmpty()) {
+//                    setGraphic(null);
+//                    return;
+//                }
+//                System.out.println(item);
+//                label = new Text(item);
+//                label.setWrappingWidth(this.getWidth());
+//                setGraphic(label);
+//            }
+//        });

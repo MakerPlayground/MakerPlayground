@@ -16,14 +16,17 @@
 
 package io.makerplayground.ui;
 
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
+import io.makerplayground.ui.dialog.DeviceMonitor;
 import javafx.application.HostServices;
-import javafx.beans.property.*;
-import javafx.geometry.Orientation;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 
 public class MainWindow extends BorderPane {
@@ -31,16 +34,21 @@ public class MainWindow extends BorderPane {
     private final HostServices hostServices;
 
     private Project currentProject;
+    private ReadOnlyObjectProperty<SerialPort> serialPort;
+
     private Node diagramEditor;
     private DeviceTab deviceTab;
+    private DeviceMonitor deviceMonitor;
 
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
+    private final BooleanProperty deviceMonitorShowing;
 
-    public MainWindow(ObjectProperty<Project> project, HostServices hostServices) {
+    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<SerialPort> serialPort, HostServices hostServices) {
+        this.currentProject = project.get();
+        this.serialPort = serialPort;
         this.hostServices = hostServices;
 
-        currentProject = project.get();
         diagramEditor = initDiagramEditor();
         deviceTab = new DeviceTab(project.get(), hostServices);
 
@@ -57,15 +65,35 @@ public class MainWindow extends BorderPane {
                 setCenter(deviceTab);
             }
         });
+        deviceMonitorShowing = new SimpleBooleanProperty();
+        deviceMonitorShowing.addListener((observable, oldValue, newValue) -> {
+            if (deviceMonitor != null) {
+                deviceMonitor.closePort();
+                deviceMonitor = null;
+            }
+
+            if (newValue) {
+                deviceMonitor = new DeviceMonitor(serialPort.get());
+                setCenter(deviceMonitor);
+            }
+        });
 
         project.addListener((observable, oldValue, newValue) -> {
             currentProject = newValue;
             diagramEditor = initDiagramEditor();
             deviceTab = new DeviceTab(project.get(), hostServices);
+
+            if (deviceMonitor != null) {
+                deviceMonitor.closePort();
+                deviceMonitor = null;
+            }
             if (diagramEditorShowing.get()) {
                 setCenter(diagramEditor);
-            } else {    // deviceConfigShowing must be true
+            } else if (deviceConfigShowing.get()) {
                 setCenter(deviceTab);
+            } else {
+                deviceMonitor = new DeviceMonitor(serialPort.get());
+                setCenter(deviceMonitor);
             }
         });
     }
@@ -84,6 +112,14 @@ public class MainWindow extends BorderPane {
 
     public BooleanProperty deviceConfigShowingProperty() {
         return deviceConfigShowing;
+    }
+
+    public boolean isDeviceMonitorShowing() {
+        return deviceMonitorShowing.get();
+    }
+
+    public BooleanProperty deviceMonitorShowingProperty() {
+        return deviceMonitorShowing;
     }
 
     private Node initDiagramEditor() {

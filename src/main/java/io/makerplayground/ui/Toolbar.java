@@ -57,17 +57,15 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem exportMenuItem;
     @FXML private MenuItem uploadMenuItem;
     @FXML private MenuItem uploadStatusMenuItem;
-    @FXML private MenuItem deviceMonitorMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
     private ImageView deviceConfigProblemImageView;
-
+    @FXML private RadioButton deviceMonitorButton;
     @FXML private Label statusLabel;
     @FXML private Label portLabel;
     @FXML private ComboBox<SerialPort> portComboBox;
-    @FXML private Button deviceMonitorMenuButton;
     @FXML private Button interactiveButton;
     @FXML private Button uploadButton;
     @FXML private Separator separator;
@@ -98,12 +96,8 @@ public class Toolbar extends AnchorPane {
             closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
         }
 
-        Tooltip deviceMonitorButtonTooltip = new Tooltip("Open a device monitor");
-        deviceMonitorButtonTooltip.setShowDelay(Duration.millis(250));
-        deviceMonitorMenuButton.setTooltip(deviceMonitorButtonTooltip);
-
         ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton, deviceMonitorButton);
 
         deviceConfigButton.setSelected(true);
 
@@ -163,12 +157,19 @@ public class Toolbar extends AnchorPane {
         return deviceConfigButton.selectedProperty();
     }
 
+    public BooleanProperty deviceMonitorSelectProperty() {
+        return deviceMonitorButton.selectedProperty();
+    }
+
+    public ReadOnlyObjectProperty<SerialPort> selectingSerialPortProperty() {
+        return portComboBox.getSelectionModel().selectedItemProperty();
+    }
+
     public void setStatusMessage(String message) {
         statusLabel.setText(message);
     }
 
     private void initUI() {
-
         deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
                 .then(deviceConfigProblemImageView).otherwise((ImageView) null));
 
@@ -193,7 +194,8 @@ public class Toolbar extends AnchorPane {
         });
         portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize));
 
-        deviceMonitorMenuButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
+        // TODO: add case when uploading
+        deviceMonitorButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
 
         interactiveButton.graphicProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
                 .then(uploadStopImageView).otherwise(interactiveStartImageView));
@@ -243,10 +245,7 @@ public class Toolbar extends AnchorPane {
         uploadMenuItem.disableProperty().bind(uploadButton.disableProperty());
         uploadStatusMenuItem.setOnAction(event -> showUploadDialog());
         uploadStatusMenuItem.disableProperty().bind(Bindings.not(uploadStatusButton.visibleProperty()));
-        deviceMonitorMenuItem.setOnAction(event -> onDeviceMonitorPressed());
-        deviceMonitorMenuItem.disableProperty().bind(deviceMonitorMenuButton.disableProperty());
 
-        deviceMonitorMenuButton.setOnAction(event -> onDeviceMonitorPressed());
         interactiveButton.setOnAction(event -> onInteractiveButtonPressed());
         uploadButton.setOnAction(event -> onUploadButtonPressed());
         uploadStatusButton.setOnAction(event -> {
@@ -295,10 +294,5 @@ public class Toolbar extends AnchorPane {
             }
             uploadManager.cancelUpload();
         }
-    }
-
-    private void onDeviceMonitorPressed() {
-        DeviceMonitor deviceMonitor = new DeviceMonitor(portComboBox.getSelectionModel().getSelectedItem());
-        deviceMonitor.showAndWait();
     }
 }

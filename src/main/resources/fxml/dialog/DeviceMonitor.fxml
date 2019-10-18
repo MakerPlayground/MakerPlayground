@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <?import org.controlsfx.control.CheckComboBox?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+
 <!--
   ~ Copyright (c) 2019. The Maker Playground Authors.
   ~
@@ -23,32 +30,33 @@
   ~ limitations under the License.
   -->
 
-<fx:root type="DialogPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <content>
-        <GridPane prefHeight="450" prefWidth="600" hgap="4" vgap="2">
-            <padding>
-                <Insets top="5" right="5" bottom="5" left="5"/>
-            </padding>
-            <Label fx:id="levelLabel" text="Level" minWidth="30" maxWidth="70" GridPane.columnIndex="5" GridPane.rowIndex="2"/>
-            <ComboBox fx:id="levelComboBox" minWidth="100" GridPane.columnIndex="10" GridPane.rowIndex="2"/>
-            <Label text="Device Tag" GridPane.columnIndex="19" GridPane.rowIndex="2"/>
-            <CheckComboBox fx:id="checkTagComboBox" maxWidth="300" GridPane.columnIndex="24" GridPane.rowIndex="2"/>
-            <TableView fx:id="deviceMonitorTable" GridPane.columnIndex="2" GridPane.rowIndex="6"
-                       GridPane.columnSpan="30" GridPane.rowSpan="30">
-                <columns>
-                    <TableColumn text="Device Tag" minWidth="200">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="DeviceName"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn fx:id="messageTableColumn" text="Message" minWidth="400">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="Message"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                </columns>
-            </TableView>
-            <CheckBox fx:id="onStatus" text="On" selected="true" GridPane.columnIndex="4" GridPane.rowIndex="47"/>
-        </GridPane>
-    </content>
+<fx:root dividerPositions="0.5" type="SplitPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <items>
+      <GridPane hgap="10.0" vgap="10.0">
+          <children>
+              <Label text="Log Level" />
+              <ComboBox fx:id="levelComboBox" GridPane.columnIndex="1" />
+              <Label text="Device Tag" GridPane.columnIndex="2" />
+              <CheckComboBox fx:id="checkTagComboBox" GridPane.columnIndex="3" />
+              <TableView fx:id="deviceMonitorTable" GridPane.columnSpan="5" GridPane.rowIndex="1" />
+              <CheckBox fx:id="autoScrollCheckbox" selected="true" text="Auto scroll" GridPane.columnIndex="4" />
+          </children>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+      </GridPane>
+      <VBox fx:id="chartPane" prefHeight="200.0" prefWidth="100.0" >
+          <children>
+              <CheckComboBox fx:id="plotTagComboBox" />
+          </children>
+      </VBox>
+   </items>
 </fx:root>

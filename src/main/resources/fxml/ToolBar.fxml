@@ -83,26 +83,27 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem fx:id="deviceMonitorMenuItem" mnemonicParsing="false" text="Device Monitor">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="M" control="UP" meta="UP" shift="DOWN"
-                                                    shortcut="DOWN"/>
-                            </accelerator>
-                        </MenuItem>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
-                        <!-- set keyboard shortcut in code as it is different in macos and window -->
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                         </MenuItem>
                     </items>
                 </MenuButton>
+
                 <RadioButton id="deviceConfigButton" fx:id="deviceConfigButton" mnemonicParsing="false"
                              prefHeight="35.0" text="Device" textAlignment="CENTER">
                     <padding>
                         <Insets left="10.0" right="10.0"/>
                     </padding>
                 </RadioButton>
+
                 <RadioButton id="diagramEditorButton" fx:id="diagramEditorButton" mnemonicParsing="false"
                              prefHeight="35.0" text="Diagram" textAlignment="CENTER">
+                    <padding>
+                        <Insets left="10.0" right="10.0"/>
+                    </padding>
+                </RadioButton>
+
+                <RadioButton fx:id="deviceMonitorButton" mnemonicParsing="false"
+                             prefHeight="35.0" text="Device Monitor" textAlignment="CENTER">
                     <padding>
                         <Insets left="10.0" right="10.0"/>
                     </padding>
@@ -115,7 +116,7 @@
                 <Label id="statusLabel" fx:id="statusLabel" />
                 <Label fx:id="portLabel" text="Port" />
                 <ComboBox id="portComboBox" fx:id="portComboBox" />
-                <Button id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" prefHeight="30.0" prefWidth="30.0" />
+<!--                <Button id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" prefHeight="30.0" prefWidth="30.0" />-->
                 <Button id="interactiveButton" fx:id="interactiveButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
                 <Button id="uploadButton" fx:id="uploadButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
                 <Separator fx:id="separator" orientation="VERTICAL" prefHeight="200.0">

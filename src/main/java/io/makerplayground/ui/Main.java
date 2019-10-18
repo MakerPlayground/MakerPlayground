@@ -81,9 +81,10 @@ public class Main extends Application {
         toolbar.setOnExportButtonPressed(event -> exportProject(primaryStage.getScene().getWindow()));
         toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
-        MainWindow mainWindow = new MainWindow(project, getHostServices());
+        MainWindow mainWindow = new MainWindow(project, toolbar.selectingSerialPortProperty(), getHostServices());
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
+        mainWindow.deviceMonitorShowingProperty().bind(toolbar.deviceMonitorSelectProperty());
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);
