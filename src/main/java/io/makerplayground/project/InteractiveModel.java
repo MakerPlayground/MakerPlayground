@@ -3,6 +3,7 @@ package io.makerplayground.project;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
+import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
@@ -19,6 +20,7 @@ public class InteractiveModel implements SerialPortMessageListener {
 
     private final Map<ProjectDevice, Map<Condition, ReadOnlyBooleanWrapper>> conditionMap = new HashMap<>();
     private final Map<ProjectDevice, Map<Value, ReadOnlyDoubleWrapper>> valueMap = new HashMap<>();
+    private final Map<ProjectDevice, List<Action>> actionMap = new HashMap<>();
 
     private final Project project;
     private SerialPort serialPort;
@@ -28,12 +30,17 @@ public class InteractiveModel implements SerialPortMessageListener {
         this.project = project;
     }
 
-
     public ReadOnlyBooleanProperty getConditionProperty(ProjectDevice projectDevice, Condition condition) {
+        if (!conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
+            return null;
+        }
         return conditionMap.get(projectDevice).get(condition).getReadOnlyProperty();
     }
 
     public ReadOnlyDoubleProperty getValueProperty(ProjectDevice projectDevice, Value value) {
+        if (!valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
+            return null;
+        }
         return valueMap.get(projectDevice).get(value).getReadOnlyProperty();
     }
 
@@ -54,6 +61,7 @@ public class InteractiveModel implements SerialPortMessageListener {
         // initialize storage for conditions and values
         conditionMap.clear();
         valueMap.clear();
+        actionMap.clear();
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.getGenericDevice().hasCondition()) {
                 conditionMap.put(projectDevice, new HashMap<>());
@@ -66,6 +74,9 @@ public class InteractiveModel implements SerialPortMessageListener {
                 for (Value value : projectDevice.getGenericDevice().getValue()) {
                     valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
                 }
+            }
+            if (projectDevice.getGenericDevice().hasAction()) {
+                actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
             }
         }
 
@@ -252,5 +263,9 @@ public class InteractiveModel implements SerialPortMessageListener {
                             }
                         })
                 );
+    }
+
+    public boolean hasCommand(ProjectDevice projectDevice, Action action) {
+        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
     }
 }

@@ -152,14 +152,13 @@ public class Project {
 
     void addDevice(ProjectDevice projectDevice) {
         devices.add(projectDevice);
-        interactiveModel.stop();
+        this.calculateCompatibility();
     }
 
     public void addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
         ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
         devices.add(projectDevice);
-        interactiveModel.stop();
     }
 
     public void removeDevice(ProjectDevice genericDevice) {
@@ -169,11 +168,11 @@ public class Project {
             throw new IllegalStateException("");
         }
         this.calculateCompatibility();
-        interactiveModel.stop();
     }
 
     public void setPlatform(Platform platform) {
         this.projectConfiguration.setPlatform(platform);
+        this.calculateCompatibility();
     }
 
     public Optional<Scene> getUnmodifiableScene(String name) {
@@ -220,6 +219,7 @@ public class Project {
             }
         }
         checkAndInvalidateDiagram();
+        this.calculateCompatibility();
     }
 
     public Optional<Condition> getUnmodifiableCondition(String name) {
@@ -266,6 +266,7 @@ public class Project {
             }
         }
         checkAndInvalidateDiagram();
+        this.calculateCompatibility();
     }
 
     public void addLine(NodeElement source, NodeElement destination) {
@@ -275,11 +276,13 @@ public class Project {
             lines.add(l);
         }
         checkAndInvalidateDiagram();
+        this.calculateCompatibility();
     }
 
     public void removeLine(Line l) {
         lines.remove(l);
         checkAndInvalidateDiagram();
+        this.calculateCompatibility();
     }
 
     public boolean hasLine(NodeElement source, NodeElement destination) {
@@ -535,6 +538,7 @@ public class Project {
                 }
             }
             checkAndInvalidateDiagram();
+            this.calculateCompatibility();
         }
     }
 

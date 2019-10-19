@@ -19,6 +19,8 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.project.InteractiveModel;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
@@ -26,8 +28,15 @@ import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -43,6 +52,7 @@ import org.controlsfx.control.PopOver;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -83,7 +93,31 @@ public class SceneDevicePropertyWindow extends PopOver {
         sendActionButton.setTooltip(sendActionButtonTooltip);
         sendActionButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0px;");
         sendActionButton.setGraphic(interactiveStartImageView);
-        sendActionButton.setDisable(!viewModel.getProject().getInteractiveModel().isInitialized());
+        ReadOnlyBooleanProperty initializedProperty = viewModel.getProject().getInteractiveModel().initializeProperty();
+        ReadOnlyObjectProperty<Action> actionProperty = viewModel.getActionReadonlyProperty();
+        ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty =  viewModel.getUserSetting().allValueUsedProperty();
+        ObservableMap<Value, Expression> expressionMap = viewModel.getUserSetting().getExpression();
+        ObservableMap<Parameter, Expression> parameterMap = viewModel.getUserSetting().getParameterMap();
+        BooleanBinding disableBinding = Bindings.createBooleanBinding(()-> {
+            if (!initializedProperty.get()) {
+                return true;
+            }
+            InteractiveModel interactiveModel = viewModel.getProject().getInteractiveModel();
+            if (!interactiveModel.hasCommand(viewModel.getProjectDevice(), actionProperty.get())) {
+                return true;
+            }
+            if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> entry.getValue().stream().anyMatch(value -> interactiveModel.getValueProperty(entry.getKey(), value) == null))) {
+                return true;
+            }
+            if (!expressionMap.values().stream().allMatch(Expression::isValid)) {
+                return true;
+            }
+            if (!parameterMap.values().stream().allMatch(Expression::isValid)) {
+                return true;
+            }
+            return false;
+        }, initializedProperty, actionProperty, allValueUsedProperty, expressionMap, parameterMap);
+        sendActionButton.disableProperty().bind(disableBinding);
         sendActionButton.setOnAction(event -> viewModel.getProject().getInteractiveModel().sendCommand(viewModel.getUserSetting()));
 
         HBox titleHBox = new HBox();

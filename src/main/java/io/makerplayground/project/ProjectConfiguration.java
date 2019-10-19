@@ -43,7 +43,7 @@ import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 @JsonSerialize(using = ProjectConfigurationSerializer.class)
 public final class ProjectConfiguration {
 
-    @JsonIgnore ObjectProperty<ProjectConfigurationStatus> statusProperty = new SimpleObjectProperty<>(ProjectConfigurationStatus.OK);
+    @JsonIgnore private ObjectProperty<ProjectConfigurationStatus> status = new SimpleObjectProperty<>(ProjectConfigurationStatus.OK);
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
@@ -93,9 +93,17 @@ public final class ProjectConfiguration {
         this.updateStatusProperty();
     }
 
+    public ProjectConfigurationStatus getStatus() {
+        return status.get();
+    }
+
+    public ObjectProperty<ProjectConfigurationStatus> statusProperty() {
+        return status;
+    }
+
     void updateStatusProperty() {
         ProjectConfigurationStatus status = ProjectConfigurationStatus.OK;
-        for (ProjectDevice projectDevice: this.usedDevices) {
+        for (ProjectDevice projectDevice: this.nonControllerDevices) {
             // Device
             if (!deviceMap.containsKey(projectDevice) && !identicalDeviceMap.containsKey(projectDevice)) {
                 status = ProjectConfigurationStatus.ERROR;
@@ -117,7 +125,7 @@ public final class ProjectConfiguration {
                 break;
             }
         }
-        this.statusProperty.set(status);
+        this.status.set(status);
     }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,

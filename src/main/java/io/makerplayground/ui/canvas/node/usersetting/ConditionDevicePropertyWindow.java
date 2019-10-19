@@ -28,6 +28,8 @@ import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,6 +42,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.util.Callback;
 import org.controlsfx.control.PopOver;
 
@@ -273,12 +277,20 @@ public class ConditionDevicePropertyWindow extends PopOver {
                 continue;
             }
 
-            Label nameLabel = new Label(condition.getName());
+            Label nameLabel = new Label(condition.getName() + " ");
             GridPane.setRowIndex(nameLabel, currentRow);
             GridPane.setColumnIndex(nameLabel, 0);
 
             Label valueLabel = new Label();
-            valueLabel.textProperty().bind(viewModel.getProject().getInteractiveModel().getConditionProperty(viewModel.getProjectDevice(), condition).asString());
+            ReadOnlyBooleanProperty property = viewModel.getProject().getInteractiveModel().getConditionProperty(viewModel.getProjectDevice(), condition);
+            if (property == null) {
+                valueLabel.setText("Unavailable");
+                Font font = valueLabel.getFont();
+                valueLabel.setFont(Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize()));
+                valueLabel.setStyle("-fx-text-fill: grey;");
+            } else {
+                valueLabel.textProperty().bind(property.asString());
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 
@@ -287,27 +299,34 @@ public class ConditionDevicePropertyWindow extends PopOver {
         }
 
         for (Value value : viewModel.getGenericDevice().getValue()) {
-            Label nameLabel = new Label(value.getName());
+            Label nameLabel = new Label(value.getName() + " ");
             GridPane.setRowIndex(nameLabel, currentRow);
             GridPane.setColumnIndex(nameLabel, 0);
 
             ReadOnlyDoubleProperty valueProperty = viewModel.getProject().getInteractiveModel().getValueProperty(viewModel.getProjectDevice(), value);
             Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
             Label valueLabel = new Label();
-            valueLabel.textProperty().bind(new StringBinding() {
-                {
-                    super.bind(valueProperty);
-                }
-
-                @Override
-                protected String computeValue() {
-                    if (unit == Unit.NOT_SPECIFIED) {
-                        return String.valueOf(valueProperty.get());
-                    } else {
-                        return String.valueOf(valueProperty.get()) + unit;
+            if (valueProperty == null) {
+                valueLabel.setText("Unavailable");
+                Font font = valueLabel.getFont();
+                valueLabel.setFont(Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize()));
+                valueLabel.setStyle("-fx-text-fill: grey;");
+            } else {
+                valueLabel.textProperty().bind(new StringBinding() {
+                    {
+                        super.bind(valueProperty);
                     }
-                }
-            });
+
+                    @Override
+                    protected String computeValue() {
+                        if (unit == Unit.NOT_SPECIFIED) {
+                            return String.valueOf(valueProperty.get());
+                        } else {
+                            return String.valueOf(valueProperty.get()) + unit;
+                        }
+                    }
+                });
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 

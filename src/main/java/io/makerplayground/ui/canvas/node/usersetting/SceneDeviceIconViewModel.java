@@ -64,8 +64,16 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getName();
     }
 
+    public ReadOnlyObjectProperty<Action> getActionReadonlyProperty() {
+        return userSetting.actionProperty();
+    }
+
     public Action getAction() {
         return userSetting.getAction();
+    }
+
+    public ReadOnlyObjectProperty<Condition> getConditionReadonlyProperty() {
+        return userSetting.conditionProperty();
     }
 
     public Condition getCondition() {

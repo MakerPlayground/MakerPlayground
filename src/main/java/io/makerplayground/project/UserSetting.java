@@ -24,6 +24,7 @@ import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -45,6 +46,9 @@ public class UserSetting {
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
+
+    private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allValueUsed = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
+
     @Getter private final ObservableMap<Parameter, Expression> parameterMap;
     @Getter private final ObservableMap<Value, Expression> expression;
     @Getter private final ObservableMap<Value, Boolean> expressionEnable;
@@ -79,6 +83,10 @@ public class UserSetting {
             }
             expressionEnable.put(v, false);
         }
+
+        parameterMap.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+        expression.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+        expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
     }
 
     UserSetting(ProjectDevice device, Action supportingAction) {
@@ -161,6 +169,10 @@ public class UserSetting {
         return action.getReadOnlyProperty();
     }
 
+    public ReadOnlyObjectProperty<Condition> conditionProperty() {
+        return condition.getReadOnlyProperty();
+    }
+
     public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
         return this.getAllValueUsed(Set.of(DataType.values()));
     }
@@ -215,6 +227,14 @@ public class UserSetting {
         }
 
         return result;
+    }
+
+    public ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty() {
+        return allValueUsed.getReadOnlyProperty();
+    }
+
+    public void calculateAllValueUsed() {
+        allValueUsed.setValue(getAllValueUsed(EnumSet.allOf(DataType.class)));
     }
 
     public boolean isDataBindingUsed() {
