@@ -29,6 +29,8 @@ import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.*;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +45,7 @@ import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 @JsonSerialize(using = ProjectConfigurationSerializer.class)
 public final class ProjectConfiguration {
 
-    @JsonIgnore private ObjectProperty<ProjectConfigurationStatus> status = new SimpleObjectProperty<>(ProjectConfigurationStatus.OK);
+    @JsonIgnore private ReadOnlyObjectWrapper<ProjectConfigurationStatus> status = new ReadOnlyObjectWrapper<>(ProjectConfigurationStatus.OK);
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
@@ -97,35 +99,38 @@ public final class ProjectConfiguration {
         return status.get();
     }
 
-    public ObjectProperty<ProjectConfigurationStatus> statusProperty() {
-        return status;
+    public ReadOnlyObjectProperty<ProjectConfigurationStatus> statusProperty() {
+        return status.getReadOnlyProperty();
     }
 
-    void updateStatusProperty() {
-        ProjectConfigurationStatus status = ProjectConfigurationStatus.OK;
-        for (ProjectDevice projectDevice: this.nonControllerDevices) {
+    private void updateStatusProperty() {
+        if (getController() == null) {
+            status.set(ProjectConfigurationStatus.ERROR);
+            return;
+        }
+        for (ProjectDevice projectDevice: nonControllerDevices) {
             // Device
             if (!deviceMap.containsKey(projectDevice) && !identicalDeviceMap.containsKey(projectDevice)) {
-                status = ProjectConfigurationStatus.ERROR;
-                break;
+                status.set(ProjectConfigurationStatus.ERROR);
+                return;
             }
             // Connection
             if (deviceMap.containsKey(projectDevice)) {
                 if (!deviceConnections.containsKey(projectDevice) || deviceConnections.get(projectDevice) == DeviceConnection.NOT_CONNECTED) {
-                    status = ProjectConfigurationStatus.ERROR;
-                    break;
+                    status.set(ProjectConfigurationStatus.ERROR);
+                    return;
                 } else if (deviceConnections.get(projectDevice).getConsumerProviderConnections().entrySet().stream().anyMatch(entry -> entry.getKey() == null || entry.getValue() == null)) {
-                    status = ProjectConfigurationStatus.ERROR;
-                    break;
+                    status.set(ProjectConfigurationStatus.ERROR);
+                    return;
                 }
             }
             // Property
             if (this.devicePropertyValueMap.containsKey(projectDevice) && this.devicePropertyValueMap.get(projectDevice).entrySet().stream().anyMatch(entry->entry.getValue() instanceof String && ((String) entry.getValue()).isBlank())) {
-                status = ProjectConfigurationStatus.ERROR;
-                break;
+                status.set(ProjectConfigurationStatus.ERROR);
+                return;
             }
         }
-        this.status.set(status);
+        status.set(ProjectConfigurationStatus.OK);
     }
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,

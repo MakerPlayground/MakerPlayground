@@ -31,7 +31,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -40,7 +39,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 public class Toolbar extends AnchorPane {
 
@@ -57,7 +55,6 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
-    private ImageView diagramEditorProblemImageView;
     @FXML private RadioButton deviceConfigButton;
     private ImageView deviceConfigProblemImageView;
 
@@ -97,22 +94,11 @@ public class Toolbar extends AnchorPane {
 
         diagramEditorButton.setSelected(true);
 
-        ObjectProperty<ProjectConfigurationStatus> configStatusProperty = project.get().getProjectConfiguration().statusProperty();
         deviceConfigProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
         deviceConfigProblemImageView.setFitWidth(15);
         deviceConfigProblemImageView.setFitHeight(15);
-        deviceConfigButton.graphicProperty().bind(Bindings.createObjectBinding(() -> configStatusProperty.get() == ProjectConfigurationStatus.OK ? null : deviceConfigProblemImageView, configStatusProperty));
-
-        diagramEditorProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
-        diagramEditorProblemImageView.setFitWidth(15);
-        diagramEditorProblemImageView.setFitHeight(15);
-        Bindings.equal(project.get().getProjectConfiguration().statusProperty(), ProjectConfigurationStatus.ERROR).addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                diagramEditorButton.setGraphic(diagramEditorProblemImageView);
-            } else {
-                diagramEditorButton.setGraphic(null);
-            }
-        });
+        deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
+                .then(deviceConfigProblemImageView).otherwise((ImageView) null));
 
         interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
         interactiveStartImageView.setFitWidth(20);
@@ -130,7 +116,7 @@ public class Toolbar extends AnchorPane {
             uploadStatusButton.setVisible(false);
         }));
 
-//        project.addListener((observable, oldValue, newValue) -> initUI());
+        project.addListener((observable, oldValue, newValue) -> initUI());
         initUI();
     }
 
