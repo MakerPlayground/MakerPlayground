@@ -84,11 +84,8 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
+                        <!-- set keyboard shortcut in code as it is different in macos and window -->
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP"
-                                                    shortcut="UP"/>
-                            </accelerator>
                         </MenuItem>
                     </items>
                 </MenuButton>

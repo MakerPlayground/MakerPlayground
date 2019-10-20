@@ -22,6 +22,7 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
 import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UploadDialogView;
+import io.makerplayground.util.OSInfo;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -34,6 +35,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
@@ -83,6 +88,13 @@ public class Toolbar extends AnchorPane {
             fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        // macos uses Command+Q to close the program rather than Alt+F4 and there isn't any platform independent way to handle this in javafx
+        if (OSInfo.getOs() == OSInfo.OS.MAC) {
+            closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        } else {
+            closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
         }
 
         Tooltip deviceMonitorButtonTooltip = new Tooltip("Open a device monitor");
