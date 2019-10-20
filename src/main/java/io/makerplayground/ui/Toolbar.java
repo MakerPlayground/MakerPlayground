@@ -155,7 +155,7 @@ public class Toolbar extends AnchorPane {
     private void initUI() {
         BooleanBinding uploading = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING);
         BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);
-        ReadOnlyBooleanProperty interactiveModeInitialize = project.get().getInteractiveModel().initializeProperty();
+        ReadOnlyBooleanProperty interactiveModeInitialize = project.get().getInteractiveModel().startedProperty();
         BooleanBinding portNotSelected = portComboBox.getSelectionModel().selectedItemProperty().isNull();
 
         portLabel.disableProperty().bind(portComboBox.disableProperty());
@@ -243,7 +243,7 @@ public class Toolbar extends AnchorPane {
     }
 
     private void onInteractiveButtonPressed() {
-        if (project.get().getInteractiveModel().isInitialized()) {
+        if (project.get().getInteractiveModel().isStarted()) {
             project.get().getInteractiveModel().stop();
         } else if (uploadManager.getUploadStatus() != UploadStatus.STARTING_INTERACTIVE) {
             // stop the auto hide transition that may have been scheduled to run in a few second

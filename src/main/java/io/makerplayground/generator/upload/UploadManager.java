@@ -30,10 +30,11 @@ public class UploadManager {
         Project clonedProject = Project.newInstance(project.get());
         SourceCodeResult sourceCode = InteractiveSourceCodeGenerator.generate(clonedProject);
         if (createUploadTask(clonedProject, sourceCode, serialPort)) {
+            project.get().getInteractiveModel().initialize();
             new Thread(uploadTask).start();
             uploadTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event1 -> {
                 if (uploadTask.getValue() == UploadResult.OK) {
-                    project.get().getInteractiveModel().initialize(serialPort);
+                    project.get().getInteractiveModel().start(serialPort);
                 }
             });
             uploadStatus.set(UploadStatus.STARTING_INTERACTIVE);

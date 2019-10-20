@@ -19,7 +19,6 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.generic.ControlType;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
@@ -28,9 +27,6 @@ import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SliderNumberWithUnitExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitExpressionControl;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.*;
@@ -42,9 +38,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 
 import java.util.EnumSet;
@@ -129,7 +124,6 @@ public class ConditionDevicePropertyWindow extends PopOver {
         propertyPane.getChildren().addAll(conditionLabel, conditionComboBox);
 
         redrawProperty();
-        initInteractivePane();
 
         // arrange title and property sheet
         VBox mainPane = new VBox();
@@ -144,6 +138,33 @@ public class ConditionDevicePropertyWindow extends PopOver {
 
     private void redrawProperty() {
         propertyPane.getChildren().retainAll(conditionLabel, conditionComboBox);
+
+        if (viewModel.getProject().getInteractiveModel().isStarted()
+                && !viewModel.getCondition().getName().equals("Compare")) { // TODO: compare with condition name is dangerous
+            Label valueLabel = new Label();
+            valueLabel.setStyle("-fx-text-fill: grey;");
+            viewModel.getProject().getInteractiveModel().getConditionProperty(viewModel.getProjectDevice(), viewModel.getCondition())
+                    .ifPresentOrElse(valueProperty ->
+                        valueLabel.textProperty().bind(new StringBinding() {
+                            {
+                                super.bind(valueProperty);
+                            }
+
+                            @Override
+                            protected String computeValue() {
+                                return "(" + valueProperty.get() + ")";
+                            }
+                        })
+                        , () -> {
+                            valueLabel.setText("(status unavailable)");
+                            Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime status");
+                            tooltip.setShowDelay(Duration.millis(250));
+                            valueLabel.setTooltip(tooltip);
+                        });
+            GridPane.setRowIndex(valueLabel, 0);
+            GridPane.setColumnIndex(valueLabel, 2);
+            propertyPane.getChildren().add(valueLabel);
+        }
 
         List<Parameter> params = viewModel.getCondition().getParameter();
         for (int i=0; i<params.size(); i++) {
@@ -263,76 +284,33 @@ public class ConditionDevicePropertyWindow extends PopOver {
         GridPane.setColumnIndex(expressionControl, 1);
 
         propertyPane.getChildren().addAll(enableCheckbox, expressionControl);
-    }
 
-    private void initInteractivePane() {
-        // skip if the interactive mode hasn't been initialized
-        if (!viewModel.getProject().getInteractiveModel().isInitialized()) {
-            return;
-        }
-
-        int currentRow = 0;
-        for (Condition condition : viewModel.getGenericDevice().getCondition()) {
-            if (condition.getName().equals("Compare")) {
-                continue;
-            }
-
-            Label nameLabel = new Label(condition.getName() + " ");
-            GridPane.setRowIndex(nameLabel, currentRow);
-            GridPane.setColumnIndex(nameLabel, 0);
-
+        if (viewModel.getProject().getInteractiveModel().isStarted()) {
             Label valueLabel = new Label();
-            ReadOnlyBooleanProperty property = viewModel.getProject().getInteractiveModel().getConditionProperty(viewModel.getProjectDevice(), condition);
-            if (property == null) {
-                valueLabel.setText("Unavailable");
-                Font font = valueLabel.getFont();
-                valueLabel.setFont(Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize()));
-                valueLabel.setStyle("-fx-text-fill: grey;");
-            } else {
-                valueLabel.textProperty().bind(property.asString());
-            }
-            GridPane.setRowIndex(valueLabel, currentRow);
-            GridPane.setColumnIndex(valueLabel, 1);
+            valueLabel.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
+            valueLabel.setStyle("-fx-text-fill: grey;");
+            viewModel.getProject().getInteractiveModel().getValueProperty(viewModel.getProjectDevice(), value)
+                    .ifPresentOrElse(valueProperty ->
+                        valueLabel.textProperty().bind(new StringBinding() {
+                            {
+                                super.bind(valueProperty);
+                            }
 
-            interactivePane.getChildren().addAll(nameLabel, valueLabel);
-            currentRow++;
+                            @Override
+                            protected String computeValue() {
+                                return "(value = " + valueProperty.get() + ")";
+                            }
+                        })
+                    , () -> {
+                        valueLabel.setText("(value unavailable)");
+                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                        tooltip.setShowDelay(Duration.millis(250));
+                        valueLabel.setTooltip(tooltip);
+                    });
+            GridPane.setRowIndex(valueLabel, i + 1);
+            GridPane.setColumnIndex(valueLabel, 2);
+            GridPane.setValignment(valueLabel, VPos.TOP);
+            propertyPane.getChildren().add(valueLabel);
         }
-
-        for (Value value : viewModel.getGenericDevice().getValue()) {
-            Label nameLabel = new Label(value.getName() + " ");
-            GridPane.setRowIndex(nameLabel, currentRow);
-            GridPane.setColumnIndex(nameLabel, 0);
-
-            ReadOnlyDoubleProperty valueProperty = viewModel.getProject().getInteractiveModel().getValueProperty(viewModel.getProjectDevice(), value);
-            Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
-            Label valueLabel = new Label();
-            if (valueProperty == null) {
-                valueLabel.setText("Unavailable");
-                Font font = valueLabel.getFont();
-                valueLabel.setFont(Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize()));
-                valueLabel.setStyle("-fx-text-fill: grey;");
-            } else {
-                valueLabel.textProperty().bind(new StringBinding() {
-                    {
-                        super.bind(valueProperty);
-                    }
-
-                    @Override
-                    protected String computeValue() {
-                        if (unit == Unit.NOT_SPECIFIED) {
-                            return String.valueOf(valueProperty.get());
-                        } else {
-                            return String.valueOf(valueProperty.get()) + unit;
-                        }
-                    }
-                });
-            }
-            GridPane.setRowIndex(valueLabel, currentRow);
-            GridPane.setColumnIndex(valueLabel, 1);
-
-            interactivePane.getChildren().addAll(nameLabel, valueLabel);
-            currentRow++;
-        }
-
     }
 }

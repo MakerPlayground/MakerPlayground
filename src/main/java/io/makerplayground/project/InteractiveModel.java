@@ -24,35 +24,40 @@ public class InteractiveModel implements SerialPortMessageListener {
 
     private final Project project;
     private SerialPort serialPort;
-    private final ReadOnlyBooleanWrapper interactiveModeInitialized = new ReadOnlyBooleanWrapper();
+    private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
 
     public InteractiveModel(Project project) {
         this.project = project;
     }
 
-    public ReadOnlyBooleanProperty getConditionProperty(ProjectDevice projectDevice, Condition condition) {
+    public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
         if (!conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
-            return null;
+            return Optional.empty();
         }
-        return conditionMap.get(projectDevice).get(condition).getReadOnlyProperty();
+        return Optional.of(conditionMap.get(projectDevice).get(condition).getReadOnlyProperty());
     }
 
-    public ReadOnlyDoubleProperty getValueProperty(ProjectDevice projectDevice, Value value) {
+    public Optional<ReadOnlyDoubleProperty> getValueProperty(ProjectDevice projectDevice, Value value) {
         if (!valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
-            return null;
+            return Optional.empty();
         }
-        return valueMap.get(projectDevice).get(value).getReadOnlyProperty();
+        return Optional.of(valueMap.get(projectDevice).get(value).getReadOnlyProperty());
     }
 
-    public boolean isInitialized() {
-        return interactiveModeInitialized.get();
+    public boolean isStarted() {
+        return interactiveModeStarted.get();
     }
 
-    public ReadOnlyBooleanProperty initializeProperty() {
-        return interactiveModeInitialized.getReadOnlyProperty();
+    public ReadOnlyBooleanProperty startedProperty() {
+        return interactiveModeStarted.getReadOnlyProperty();
     }
 
-    public boolean initialize(SerialPort serialPort) {
+    /**
+     * This method must be called to initialize internal state before calling the start method every time. We must called this
+     * method before start uploading interactive firmware to the board as project may changed while uploading by user but we want
+     * to initialize internal state based on the project status at the time that the interactive firmware code was generated.
+     */
+    public void initialize() {
         // check for precondition
         if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
             throw new IllegalStateException("Actual device and port must have been selected before creating InteractiveModel");
@@ -79,16 +84,17 @@ public class InteractiveModel implements SerialPortMessageListener {
                 actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
             }
         }
+    }
 
+    public boolean start(SerialPort serialPort) {
         // initialize and open the serial port
         this.serialPort = serialPort;
         serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         serialPort.addDataListener(this);
         if (serialPort.openPort()) {
-            interactiveModeInitialized.set(true);
+            interactiveModeStarted.set(true);
             return true;
         }
-
         return false;
     }
 
@@ -98,11 +104,11 @@ public class InteractiveModel implements SerialPortMessageListener {
                 System.err.println("Warning: Serial Port can't be closed");
             }
         }
-        interactiveModeInitialized.set(false);
+        interactiveModeStarted.set(false);
     }
 
     public void sendCommand(UserSetting userSetting) {
-        if (isInitialized() && serialPort != null && serialPort.isOpen()) {
+        if (isStarted() && serialPort != null && serialPort.isOpen()) {
             List<String> args = new ArrayList<>();
             args.add("\"" + userSetting.getDevice().getName() + "\"");
             args.add("\"" + userSetting.getAction().getName() + "\"");
@@ -111,7 +117,7 @@ public class InteractiveModel implements SerialPortMessageListener {
             }
 
             byte[] command = (String.join(" ", args) + "\r").getBytes();
-            System.out.println(new String(command));
+//            System.out.println(new String(command));
             serialPort.writeBytes(command, command.length);
         }
     }
@@ -230,7 +236,7 @@ public class InteractiveModel implements SerialPortMessageListener {
     @Override
     public void serialEvent(SerialPortEvent event) {
         String message = new String(event.getReceivedData()).strip();
-        System.out.println(message.strip());
+//        System.out.println(message.strip());
         String[] args = message.split(" ");
 
         project.getAllDeviceUsed().stream()
