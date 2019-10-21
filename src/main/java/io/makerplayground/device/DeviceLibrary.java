@@ -115,13 +115,33 @@ public enum DeviceLibrary {
         return temp;
     }
 
-    private final List<String> libraryPaths = List.of(
+    private static final List<String> libraryPaths = List.of(
             "library",               // default path for Windows installer and when running from the IDE
             "../Resources/library"   // default path for macOS installer
     );
 
-    public Optional<String> getLibraryPath() {
+    public static Optional<String> getLibraryPath() {
+        // TODO: handle case that the library path is missing
         return libraryPaths.stream().filter(s -> new File(s).exists()).findFirst();
+    }
+
+    public static String getDeviceDirectoryPath() {
+        // TODO: handle case that the library path is missing
+        return getLibraryPath().get() + File.separator + "devices";
+    }
+
+    public static Path getDeviceImagePath(ActualDevice actualDevice) {
+        // TODO: handle case that the image is missing
+        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), actualDevice.getId(), "asset", "device.png");
+    }
+
+    public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
+        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), actualDevice.getId(), "asset", "device_thumbnail.png");
+        if (Files.exists(thumbnailPath)) {
+            return thumbnailPath;
+        } else {
+            return getDeviceImagePath(actualDevice);
+        }
     }
 
     private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate){

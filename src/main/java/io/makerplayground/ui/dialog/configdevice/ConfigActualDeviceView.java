@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
@@ -23,7 +24,6 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
@@ -40,14 +40,13 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends VBox{
 
@@ -149,8 +148,27 @@ public class ConfigActualDeviceView extends VBox{
                         if (empty) {
                             setText("");
                         } else {
-                            setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
-                            setBackground(item.getMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+                            try {
+                                ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
+                                        DeviceLibrary.getDeviceThumbnailPath(item.getActualDevice()))));
+                                deviceImageView.setFitWidth(75);
+                                deviceImageView.setFitHeight(75);
+                                deviceImageView.setSmooth(true);
+                                deviceImageView.setPreserveRatio(true);
+
+                                HBox hbox = new HBox();
+                                hbox.setPrefWidth(75);
+                                hbox.setAlignment(Pos.CENTER);
+                                hbox.getChildren().add(deviceImageView);
+
+                                setGraphic(hbox);
+                                setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
+                                if (item.getMappingResult() != DeviceMappingResult.OK) {
+                                   setOpacity(0.5);
+                                }
+                            } catch (IOException e) {
+                                throw new IllegalStateException("Error: image can't be found");
+                            }
                         }
                     }
                 };
@@ -164,7 +182,9 @@ public class ConfigActualDeviceView extends VBox{
                     setText("");
                 } else {
                     setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
-                    setBackground(item.getMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+                    if (item.getMappingResult() != DeviceMappingResult.OK) {
+                        setOpacity(0.5);
+                    }
                 }
             }
         });
@@ -193,7 +213,6 @@ public class ConfigActualDeviceView extends VBox{
         return new Callback<>() {
             @Override
             public ListCell<CompatibleDeviceComboItem> call(ListView<CompatibleDeviceComboItem> param) {
-                final Background GREY_BG = new Background(new BackgroundFill(Color.gray(0.8), CornerRadii.EMPTY, Insets.EMPTY));
                 ListCell<CompatibleDeviceComboItem> cell = new ListCell<>() {
                     @Override
                     protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
@@ -202,34 +221,51 @@ public class ConfigActualDeviceView extends VBox{
                             setText(null);
                             setTooltip(null);
                         } else {
+                            ActualDevice thumbnailActualDevice = null;
+                            // set text
                             if (item.getCompatibleDevice().getActualDevice().isPresent()) {
                                 ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
                                 if (actualDevice instanceof IntegratedActualDevice) {
+                                    thumbnailActualDevice = ((IntegratedActualDevice) actualDevice).getParent();
                                     setText(actualDevice.getId());
                                 } else {
+                                    thumbnailActualDevice = actualDevice;
                                     setText(actualDevice.getBrand() + " " + actualDevice.getModel());
                                 }
                             } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
                                 ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
-                                setText("Same as " + projectDevice.getName());
+                                thumbnailActualDevice = viewModel.getActualDevice(projectDevice)
+                                        .orElseThrow(() -> new IllegalStateException("Actual device of the parent device must have been set"));
+                                setText("Use the same device as " + projectDevice.getName());
                             }
-                            setBackground(item.getDeviceMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : GREY_BG);
+                            // set device's display image
+                            try {
+                                ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
+                                        DeviceLibrary.getDeviceThumbnailPath(thumbnailActualDevice))));
+                                deviceImageView.setFitWidth(75);
+                                deviceImageView.setFitHeight(75);
+                                deviceImageView.setSmooth(true);
+                                deviceImageView.setPreserveRatio(true);
+
+                                HBox hbox = new HBox();
+                                hbox.setPrefWidth(75);
+                                hbox.setAlignment(Pos.CENTER);
+                                hbox.getChildren().add(deviceImageView);
+
+                                setGraphic(hbox);
+                            } catch (IOException e) {
+                                throw new IllegalStateException("Error: image can't be found");
+                            }
+                            // grey out and show tooltip if this device isn't compatible
                             if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
-                                Tooltip tooltip = new Tooltip("Device not supported (reason: " + item.getDeviceMappingResult().getErrorMessage() + ")");
+                                setOpacity(0.5);
+                                Tooltip tooltip = new Tooltip(item.getDeviceMappingResult().getErrorMessage());
+                                tooltip.setShowDelay(Duration.millis(250));
                                 setTooltip(tooltip);
                             }
                         }
                     }
                 };
-                cell.hoverProperty().addListener((observable, wasHover, isNowHover) -> {
-                    if (!cell.isEmpty()) {
-                        if (cell.getItem().getDeviceMappingResult() != DeviceMappingResult.OK) {
-                            cell.setBackground(GREY_BG);
-                        } else if (!isNowHover) {
-                            cell.setBackground(Background.EMPTY);
-                        }
-                    }
-                });
                 return cell;
             }
         };
@@ -237,7 +273,6 @@ public class ConfigActualDeviceView extends VBox{
 
     private ListCell<CompatibleDeviceComboItem> newDeviceComboItemListCell() {
         return new ListCell<>() {
-            final Background GREY_BG = new Background(new BackgroundFill(Color.gray(0.8), CornerRadii.EMPTY, Insets.EMPTY));
             @Override
             protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
                 super.updateItem(item, empty);
@@ -254,12 +289,10 @@ public class ConfigActualDeviceView extends VBox{
                         }
                     } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
                         ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
-                        setText("Same as " + projectDevice.getName());
+                        setText("Use the same device as " + projectDevice.getName());
                     }
-                    setBackground(item.getDeviceMappingResult() == DeviceMappingResult.OK ? Background.EMPTY : GREY_BG);
                     if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
-                        Tooltip tooltip = new Tooltip("Device not supported (reason: " + item.getDeviceMappingResult().getErrorMessage() + ")");
-                        setTooltip(tooltip);
+                        setOpacity(0.5);
                     }
                 }
             }
@@ -352,6 +385,12 @@ public class ConfigActualDeviceView extends VBox{
                     .findFirst()
                     .ifPresent(compatibleDeviceComboItem -> deviceComboBox.getSelectionModel().select(compatibleDeviceComboItem));
             deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevice(projectDevice, newValue.getCompatibleDevice()));
+            CompatibleDeviceComboItem selectedItem = deviceComboBox.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && selectedItem.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                Tooltip tooltip = new Tooltip(selectedItem.getDeviceMappingResult().getErrorMessage());
+                tooltip.setShowDelay(Duration.millis(250));
+                deviceComboBox.setTooltip(tooltip);
+            }
 
             VBox entireComboBoxDevice = new VBox();
             entireComboBoxDevice.setSpacing(10.0);

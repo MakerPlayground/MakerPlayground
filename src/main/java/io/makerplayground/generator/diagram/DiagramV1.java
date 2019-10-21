@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1143,7 +1142,7 @@ class DiagramV1 {
         if (deviceMap.get(projectDevice) instanceof IntegratedActualDevice) {
             return;
         }
-        try(InputStream deviceImageStream = Files.newInputStream(Paths.get(deviceDirectoryPath, deviceMap.get(projectDevice).getId(), "asset", "device.png"))) {
+        try (InputStream deviceImageStream = Files.newInputStream(DeviceLibrary.getDeviceImagePath(deviceMap.get(projectDevice)))) {
             double deviceAngle = deviceRotationAngle.get(projectDevice);
             Image image = new Image(deviceImageStream);
             ImageView imageView = new ImageView(image);

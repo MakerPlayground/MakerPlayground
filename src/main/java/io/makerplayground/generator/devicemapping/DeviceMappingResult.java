@@ -23,14 +23,16 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public enum DeviceMappingResult {
     OK(""),
-    NO_SUPPORTING_ACTION("device not provide a required action"),
-    NO_SUPPORTING_CONDITION("device not provide a required condition"),
-    NO_SUPPORTING_VALUE("device not provide a required value"),
-    CONDITION_PARAMETER_NOT_COMPATIBLE("some condition contains incompatible parameters"),
-    ACTION_PARAMETER_NOT_COMPATIBLE("some action contains incompatible parameters"),
-    CONSTRAINT_NOT_COMPATIBLE("project requires more capability than the device can provide"),
-    NO_AVAILABLE_PIN_PORT("no available pin or port"),
-    NO_AVAILABLE_CLOUD_PLATFORM("no available cloud platform in this circuit");
+    NO_SUPPORTING_ACTION("device doesn't support action used in the diagram"),
+    NO_SUPPORTING_CONDITION("device doesn't support condition used in the diagram"),
+    NO_SUPPORTING_VALUE("device doesn't provide value used in the diagram"),
+    CONDITION_PARAMETER_NOT_COMPATIBLE("device doesn't support every configurable parameter of the condition used"),
+    ACTION_PARAMETER_NOT_COMPATIBLE("device doesn't support every configurable parameter of the action used"),
+    CONSTRAINT_NOT_COMPATIBLE("device doesn't meet the capability required by the diagram"),
+    // TODO: edit the description when device can be connected to other device rather than the controller
+    NO_AVAILABLE_PIN_PORT("controller doesn't have enough port or the available port doesn't compatible with the device"),
+    // TODO: edit the description in case that cloud platform can be provided by other device than the controller
+    NO_AVAILABLE_CLOUD_PLATFORM("controller doesn't support this cloud platform");
 
     @Getter
     private final String errorMessage;
