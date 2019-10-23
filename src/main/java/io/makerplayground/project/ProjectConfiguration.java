@@ -767,7 +767,7 @@ public final class ProjectConfiguration {
                         }
                         Map<ActualDevice, SortedMap<Connection, List<Connection>>> actualDeviceListMap = compatibleConnectionMap.get(projectDevice);
                         if (!actualDeviceListMap.containsKey(actualDevice)) {
-                            throw new IllegalStateException("Cannot have selected actual device that is not in the compatibility map");
+                            return ProjectMappingResult.NO_CONNECTION_FOR_DEVICE;
                         }
                         Map<Connection, List<Connection>> possibleDeviceConnection = actualDeviceListMap.get(actualDevice);
                         if (possibleDeviceConnection.get(connectionConsume).isEmpty()) {
@@ -810,5 +810,9 @@ public final class ProjectConfiguration {
             }
         }
         return ProjectMappingResult.OK;
+    }
+
+    public Set<CloudPlatform> getCloudPlatformProvide() {
+        return deviceMap.values().stream().flatMap(actualDevice -> actualDevice.getCloudPlatformSourceCodeLibrary().keySet().stream()).collect(Collectors.toSet());
     }
 }

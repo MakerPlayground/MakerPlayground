@@ -171,7 +171,7 @@ class ArduinoCodeGenerator {
                 Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
                 for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDevice)) {
                     Connection connectionProvide = connectionMap.get(connectionConsume);
-                    for (int i=0; i<connectionConsume.getPins().size(); i++) {
+                    for (int i=connectionConsume.getPins().size()-1; i>=0; i--) {
                         Pin pinConsume = connectionConsume.getPins().get(i);
                         Pin pinProvide = connectionProvide.getPins().get(i);
                         if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {

@@ -65,7 +65,6 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         throwIfMissingField(node, "height", id);
         throwIfMissingField(node, "pin_template", id);
         throwIfFieldIsNotArray(node, "platforms", id);
-        throwIfOneOfTheseFieldsNotExist(node, List.of("connection_provide", "connection_consume"), id);
 
         createArrayNodeIfMissing(node, "cloud_provide");
         createArrayNodeIfMissing(node, "connection_provide", "connection_consume");
@@ -75,6 +74,9 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
         /* DeviceType */
         DeviceType deviceType = DeviceType.valueOf(node.get("type").asText());
+        if (deviceType != DeviceType.VIRTUAL) {
+            throwIfOneOfTheseFieldsNotExist(node, List.of("connection_provide", "connection_consume"), id);
+        }
 
         boolean needBreadboard = node.has("need_breadboard") && node.get("need_breadboard").asBoolean();
 

@@ -16,6 +16,7 @@
 
 package io.makerplayground.generator.devicemapping;
 
+import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
@@ -28,6 +29,7 @@ import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.expression.*;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 public class ProjectLogic {
@@ -82,7 +84,10 @@ public class ProjectLogic {
         if (configuration.getController() == null) {
             return ProjectMappingResult.NO_MCU_SELECTED;
         }
-
+        Set<CloudPlatform> cloudPlatformProvide = configuration.getCloudPlatformProvide();
+        if (!cloudPlatformProvide.containsAll(project.getCloudPlatformUsed())) {
+            return ProjectMappingResult.NO_SUPPORT_CLOUD_PLATFORM;
+        }
         for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (configuration.getActualDevice(projectDevice).isEmpty() && configuration.getIdenticalDevice(projectDevice).isEmpty()) {
                 return ProjectMappingResult.NOT_SELECT_DEVICE;
