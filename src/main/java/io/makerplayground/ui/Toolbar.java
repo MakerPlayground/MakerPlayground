@@ -54,6 +54,7 @@ public class Toolbar extends AnchorPane {
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
+    @FXML private MenuItem exportMenuItem;
     @FXML private MenuItem uploadMenuItem;
     @FXML private MenuItem uploadStatusMenuItem;
     @FXML private MenuItem deviceMonitorMenuItem;
@@ -146,6 +147,10 @@ public class Toolbar extends AnchorPane {
 
     public void setOnSaveAsButtonPressed(EventHandler<ActionEvent> event) {
         saveAsMenuItem.setOnAction(event);
+    }
+
+    public void setOnExportButtonPressed(EventHandler<ActionEvent> event) {
+        exportMenuItem.setOnAction(event);
     }
 
     public void setOnCloseButtonPressed(EventHandler<ActionEvent> event) {

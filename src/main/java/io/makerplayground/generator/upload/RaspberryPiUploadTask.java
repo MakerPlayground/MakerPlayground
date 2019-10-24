@@ -22,10 +22,10 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.MultipartUtility;
+import io.makerplayground.util.PythonUtility;
 import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
@@ -82,7 +82,7 @@ public class RaspberryPiUploadTask extends UploadTask {
         updateMessage("Checking required dependencies");
 
         // Test ping to device and check if it has makerplayground runtime.
-        Platform.runLater(() -> log.set("Install directory is at " + Utility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
         try {
             URL url = new URL(this.url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -157,7 +157,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         updateMessage("Generating project");
 
-        String projectPath = Utility.MP_WORKSPACE + File.separator + "script";
+        String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "script";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
@@ -167,7 +167,7 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.CANT_CREATE_PROJECT;
         }
 
-        String projectZipPath = Utility.MP_WORKSPACE + File.separator + "script.zip";
+        String projectZipPath = PythonUtility.MP_WORKSPACE + File.separator + "script.zip";
         File zipFile = new File(projectZipPath);
         try {
             if (zipFile.exists()) {

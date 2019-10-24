@@ -32,4 +32,8 @@ public enum Platform {
 
     private String displayName;
     private String libFolderName;
+
+    public boolean isArduino() {
+        return this == ARDUINO_AVR8 || this == ARDUINO_ESP32 || this == ARDUINO_ESP8266;
+    }
 }

@@ -31,12 +31,17 @@ public class ZipArchiver {
     }
 
     public static ArchiveResult archiveDirectory(String directory, String zipFilePath){
+        File fileToZip = new File(directory);
+        return archiveDirectory(directory, zipFilePath, fileToZip.getName());
+    }
+
+    public static ArchiveResult archiveDirectory(String directory, String zipFilePath, String dirNameInZip) {
         try {
             FileOutputStream fos = new FileOutputStream(zipFilePath);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
             File fileToZip = new File(directory);
 
-            zipFile(fileToZip, fileToZip.getName(), zipOut);
+            zipFile(fileToZip, dirNameInZip, zipOut);
             zipOut.close();
             fos.close();
         } catch (IOException e) {

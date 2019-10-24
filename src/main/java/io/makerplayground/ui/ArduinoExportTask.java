@@ -1,34 +1,19 @@
-/*
- * Copyright (c) 2019. The Maker Playground Authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package io.makerplayground.ui;
 
-package io.makerplayground.generator.upload;
-
-import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
+import io.makerplayground.generator.upload.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.PythonUtility;
+import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.util.ZipResourceExtractor;
-import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,71 +24,37 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArduinoUploadTask extends UploadTask {
-
-    public ArduinoUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPorts) {
-        super(project, sourceCode, serialPorts);
+public class ArduinoExportTask extends ProjectExportTask {
+    ArduinoExportTask(Project project, SourceCodeResult sourcecode, String zipFilePath) {
+        super(project, sourcecode, zipFilePath);
     }
 
     @Override
-    protected UploadResult call() {
+    protected ExportResult call() throws Exception {
         updateProgress(0, 1);
         updateMessage("Checking project");
-
-        // wait for 500ms so that when the upload failed very early, user can see that the upload has started (progress is at 0%)
-        // for a short period of time before seeing the error message
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            updateMessage("Upload has been canceled");
-            return UploadResult.USER_CANCEL;
-        }
 
         ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(project);
         if (mappingResult != ProjectMappingResult.OK) {
             updateMessage(mappingResult.getErrorMessage());
-            return UploadResult.DEVICE_OR_PORT_MISSING;
+            exportResult = ExportResult.DEVICE_OR_PORT_MISSING;
+            throw new IllegalStateException("");
         }
 
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
-            return UploadResult.CANT_GENERATE_CODE;
+            exportResult = ExportResult.CANT_GENERATE_CODE;
+            throw new IllegalStateException("");
         }
 
-        updateProgress(0.10, 1);
-        updateMessage("Checking required dependencies");
-
-        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
-
-        // check platformio installation
-        Optional<String> pythonPath = PythonUtility.getPythonPath();
-        if (pythonPath.isEmpty()) {
-            updateMessage("Error: Can't find python with valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
-            return UploadResult.CANT_FIND_PIO;
-        }
-        Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
-
-        // check platformio home directory
-        Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
-        if (pioHomeDirPath.isPresent()) {
-            Platform.runLater(() -> log.set("Using integrated platformio dependencies at " + pioHomeDirPath.get() + "\n"));
-        } else {
-            Platform.runLater(() -> log.set("Using default platformio dependencies folder (~/.platformio) \n"));
-        }
-
-        updateProgress(0.20, 1);
-        updateMessage("Preparing to generate project");
+        updateProgress(0.2, 1);
+        updateMessage("Checking libraries");
 
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(configuration::getActualDevice)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-        Platform.runLater(() -> log.set("List of actual device used \n"));
-        for (String actualDeviceId :
-                actualDevicesUsed.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
-            Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
-        }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
                 .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
@@ -128,38 +79,39 @@ public class ArduinoUploadTask extends UploadTask {
         }
 
         // SPECIAL CASE: apply fixed for atmega328pb used in MakerPlayground Baseboard
-        if (project.getSelectedController().getPioBoardId().equals("atmega328pb")) {
+        if (project.getSelectedController().getPioBoardId().equals("ATmega328PB")) {
             externalLibraries.add("Wire");
             externalLibraries.add("SPI");
         }
 
-        Platform.runLater(() -> log.set("List of library used \n"));
-        for (String libName : mpLibraries) {
-            Platform.runLater(() -> log.set(" - " + libName + "\n"));
-        }
-        for (String libName : externalLibraries) {
-            Platform.runLater(() -> log.set(" - " + libName + "\n"));
-        }
+        updateProgress(0.4, 1);
+        updateMessage("Generating project code");
 
-        updateMessage("Generating project");
         String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "upload";
-        Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
             FileUtils.forceMkdir(new File(projectPath));
         } catch (IOException e) {
             updateMessage("Error: can't create project directory (permission denied)");
-            return UploadResult.CANT_CREATE_PROJECT;
+            exportResult = ExportResult.CANT_CREATE_PROJECT;
+            throw new IllegalStateException("");
         }
+
+        Optional<String> pythonPath = PythonUtility.getPythonPath();
+        Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
+
         UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
                 , List.of("init", "--board", project.getSelectedController().getPioBoardId())
                 , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
         if (result != UploadResult.OK) {
-            return result;
+            updateMessage("Error: can't create project directory (permission denied)");
+            exportResult = ExportResult.CANT_CREATE_PROJECT;
+            throw new IllegalStateException("");
         }
 
-        updateProgress(0.4, 1);
-        updateMessage("Generating source files and libraries");
+        updateProgress(0.6, 1);
+        updateMessage("Generating PlatformIO project files and extracting the libraries");
+
         try {
             FileUtils.forceMkdir(new File(projectPath + File.separator + "src"));
             FileUtils.forceMkdir(new File(projectPath + File.separator + "lib"));
@@ -170,16 +122,17 @@ public class ArduinoUploadTask extends UploadTask {
             }
         } catch (IOException | NullPointerException e) {
             updateMessage("Error: Cannot write code to project directory");
-            return UploadResult.CANT_WRITE_CODE;
+            exportResult = ExportResult.CANT_WRITE_CODE;
+            throw new IllegalStateException("");
         }
 
         // get path to the library directory
-        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+        Optional<String> libraryPath = DeviceLibrary.getLibraryPath();
         if (libraryPath.isEmpty()) {
             updateMessage("Error: Missing library directory");
-            return UploadResult.MISSING_LIBRARY_DIR;
+            exportResult = ExportResult.MISSING_LIBRARY_DIR;
+            throw new IllegalStateException("");
         }
-        Platform.runLater(() -> log.set("Using libraries stored at " + libraryPath.get() + "\n"));
 
         // copy mp library
         for (String libName: mpLibraries) {
@@ -188,11 +141,12 @@ public class ArduinoUploadTask extends UploadTask {
             try {
                 FileUtils.copyDirectory(source, destination);
             } catch (IOException e) {
-                Platform.runLater(() -> log.set("Error: Missing some libraries (" + libName + ")\n"));
                 updateMessage("Error: Missing some libraries");
-                return UploadResult.CANT_FIND_LIBRARY;
+                exportResult = ExportResult.CANT_FIND_LIBRARY;
+                throw new IllegalStateException("CANT_FIND_LIBRARY");
             }
         }
+
 
         //copy and extract external Libraries
         for (String libName : externalLibraries) {
@@ -200,35 +154,27 @@ public class ArduinoUploadTask extends UploadTask {
             String destinationPath = projectPath + File.separator + "lib";
             ZipResourceExtractor.ExtractResult extractResult = ZipResourceExtractor.extract(sourcePath, destinationPath);
             if (extractResult != ZipResourceExtractor.ExtractResult.SUCCESS) {
-                Platform.runLater(() -> log.set("Error: Failed to extract libraries (" + sourcePath + ")\n"));
                 updateMessage("Error: Failed to extract libraries");
-                return UploadResult.CANT_FIND_LIBRARY;
+                exportResult = ExportResult.CANT_FIND_LIBRARY;
+                throw new IllegalStateException("CANT_FIND_LIBRARY");
             }
         }
 
-        updateProgress(0.6, 1);
-        updateMessage("Building project");
-        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run"),
-                "Error: Can't build the generated sourcecode. Please contact the development team.", UploadResult.CODE_ERROR);
-        if (result != UploadResult.OK) {
-            return result;
-        }
-
         updateProgress(0.8, 1);
-        updateMessage("Uploading to board");
-        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "--target", "upload"),
-                "Error: Can't find board. Please check connection.", UploadResult.CANT_FIND_BOARD);
-        if (result != UploadResult.OK) {
-            return result;
+        updateMessage("Archiving the project");
+
+        if (ZipArchiver.archiveDirectory(projectPath, zipFilePath, FilenameUtils.getBaseName(zipFilePath)) == ZipArchiver.ArchiveResult.FAIL) {
+            exportResult = ExportResult.FAIL_TO_CREATE_ARCHIVE;
+            throw new IllegalStateException("FAIL_TO_CREATE_ARCHIVE");
         }
 
         updateProgress(1, 1);
         updateMessage("Done");
 
-        return UploadResult.OK;
+        return ExportResult.OK;
     }
 
-    private UploadResult runPlatformIOCommand(String pythonPath, String projectPath, Optional<String> pioHomeDirPath, List<String> args
+    protected UploadResult runPlatformIOCommand(String pythonPath, String projectPath, Optional<String> pioHomeDirPath, List<String> args
             , String errorMessage, UploadResult error) {
         Process p = null;
         try {
@@ -246,8 +192,7 @@ public class ArduinoUploadTask extends UploadTask {
                     if (isCancelled()) {
                         throw new InterruptedException();
                     }
-                    String line = s.nextLine();
-                    Platform.runLater(() -> log.set(line + "\n"));
+                    s.nextLine();
                 }
             }
             int result = p.waitFor();
@@ -271,7 +216,6 @@ public class ArduinoUploadTask extends UploadTask {
         return UploadResult.OK;
     }
 
-
     private void killProcess(Process p) {
         try {
             if (OSInfo.getOs() == OSInfo.OS.WINDOWS) {
@@ -283,5 +227,4 @@ public class ArduinoUploadTask extends UploadTask {
             e.printStackTrace();
         }
     }
-
 }

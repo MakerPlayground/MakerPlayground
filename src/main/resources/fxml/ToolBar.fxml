@@ -63,6 +63,12 @@
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
+                        <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="uploadMenuItem" mnemonicParsing="false" text="Upload">
                             <accelerator>
