@@ -96,4 +96,7 @@ public class DynamicViewModelCreator<T, U> {
             throw new IllegalStateException();
     }
 
+    ObservableList<T> getUnmodifiableModel() {
+        return FXCollections.unmodifiableObservableList(model);
+    }
 }
