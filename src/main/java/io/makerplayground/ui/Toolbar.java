@@ -104,7 +104,7 @@ public class Toolbar extends AnchorPane {
         ToggleGroup toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
 
-        diagramEditorButton.setSelected(true);
+        deviceConfigButton.setSelected(true);
 
         deviceConfigProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
         deviceConfigProblemImageView.setFitWidth(15);

@@ -384,6 +384,12 @@ public class ConfigActualDeviceView extends VBox{
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
+            ImageView removeButton = new ImageView(new Image(getClass().getResourceAsStream("/icons/device-delete.png")));
+            removeButton.setOnMousePressed(event -> viewModel.removeDevice(projectDevice));
+            removeButton.setFitHeight(25.0);
+            removeButton.setFitWidth(25.0);
+            GridPane.setConstraints(removeButton, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+
             if (deviceComboBox.getSelectionModel().getSelectedItem() != null) {
                 CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
                 if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
@@ -508,7 +514,7 @@ public class ConfigActualDeviceView extends VBox{
                 }
             }
 
-            allDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
+            allDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice, removeButton);
             currentRow++;
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);

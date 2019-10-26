@@ -156,11 +156,12 @@ public class Project {
         this.calculateCompatibility();
     }
 
-    public void addDevice(GenericDevice genericDevice) {
+    public ProjectDevice addDevice(GenericDevice genericDevice) {
         String varName = getDeviceVarName(genericDevice);
         ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
         devices.add(projectDevice);
-        this.calculateCompatibility();
+        calculateCompatibility();
+        return projectDevice;
     }
 
     public void removeDevice(ProjectDevice genericDevice) {

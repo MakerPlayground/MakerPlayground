@@ -89,14 +89,14 @@
                         </MenuItem>
                     </items>
                 </MenuButton>
-                <RadioButton id="diagramEditorButton" fx:id="diagramEditorButton" mnemonicParsing="false"
-                             prefHeight="35.0" text="Diagram Editor" textAlignment="CENTER">
+                <RadioButton id="deviceConfigButton" fx:id="deviceConfigButton" mnemonicParsing="false"
+                             prefHeight="35.0" text="Device" textAlignment="CENTER">
                     <padding>
                         <Insets left="10.0" right="10.0"/>
                     </padding>
                 </RadioButton>
-                <RadioButton id="deviceConfigButton" fx:id="deviceConfigButton" mnemonicParsing="false"
-                             prefHeight="35.0" text="Circuit &amp; Sourcecode" textAlignment="CENTER">
+                <RadioButton id="diagramEditorButton" fx:id="diagramEditorButton" mnemonicParsing="false"
+                             prefHeight="35.0" text="Diagram" textAlignment="CENTER">
                     <padding>
                         <Insets left="10.0" right="10.0"/>
                     </padding>

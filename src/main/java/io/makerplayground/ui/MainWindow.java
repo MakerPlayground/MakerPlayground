@@ -16,17 +16,21 @@
 
 package io.makerplayground.ui;
 
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
 import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
 import io.makerplayground.ui.dialog.generate.GenerateView;
 import io.makerplayground.ui.dialog.generate.GenerateViewModel;
+import io.makerplayground.ui.explorer.DeviceExplorerPanel;
+import javafx.application.HostServices;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -41,7 +45,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class MainWindow extends BorderPane {
+
+    private final HostServices hostServices;
 
     private Project currentProject;
     private Node diagramEditor;
@@ -52,7 +62,9 @@ public class MainWindow extends BorderPane {
     private final IntegerProperty currentTabIndex;
     private final DoubleProperty deviceDiagramZoomLevel;
 
-    public MainWindow(ObjectProperty<Project> project) {
+    public MainWindow(ObjectProperty<Project> project, HostServices hostServices) {
+        this.hostServices = hostServices;
+
         currentProject = project.get();
         diagramEditor = initDiagramEditor();
 
@@ -125,7 +137,29 @@ public class MainWindow extends BorderPane {
     private Node initConfigDevice() {
         StackPane rightView = new StackPane();
 
+        // device explorer
+        DeviceExplorerPanel deviceExplorerPanel = new DeviceExplorerPanel(currentProject.getSelectedController(), hostServices);
+        deviceExplorerPanel.setOnAddButtonPressed(actualDevice -> {
+            List<ProjectDevice> projectDevices = new ArrayList<>();
+            for (GenericDevice genericDevice : actualDevice.getSupportedGenericDevice()) {
+                projectDevices.add(currentProject.addDevice(genericDevice));
+            }
+
+            // sort by name so that the top most device will be the parent device for the other project device
+            projectDevices.sort(Comparator.comparing(ProjectDevice::getName));
+
+            ProjectDevice parentDevice = projectDevices.get(0);
+            currentProject.getProjectConfiguration().setActualDevice(parentDevice, actualDevice);
+            for (int i=1; i<projectDevices.size(); i++) {
+                currentProject.getProjectConfiguration().setIdenticalDevice(projectDevices.get(i), parentDevice);
+            }
+
+            setCenter(initConfigDevice());
+        });
+
         Runnable generateViewCreator = () -> {
+            deviceExplorerPanel.setController(currentProject.getSelectedController());
+
             rightView.getChildren().clear();
 
             ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(currentProject);
@@ -166,13 +200,19 @@ public class MainWindow extends BorderPane {
         configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
 
+        SplitPane leftLayout = new SplitPane();
+        leftLayout.setMaxWidth(710);
+        leftLayout.setDividerPositions(0.5);
+        leftLayout.setOrientation(Orientation.VERTICAL);
+        leftLayout.getItems().addAll(configActualDeviceView, deviceExplorerPanel);
+
         // generate view
         generateViewCreator.run();
 
         SplitPane mainLayout = new SplitPane();
         mainLayout.setDividerPositions(0.5);
         mainLayout.setOrientation(Orientation.HORIZONTAL);
-        mainLayout.getItems().addAll(configActualDeviceView, rightView);
+        mainLayout.getItems().addAll(leftLayout, rightView);
         return mainLayout;
     }
 }

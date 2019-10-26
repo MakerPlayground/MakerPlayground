@@ -134,6 +134,18 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
+    void removeDevice(ProjectDevice projectDevice) {
+        project.removeDevice(projectDevice);
+
+        retrieveDeviceMapping();
+        if (deviceConfigChangedCallback != null) {
+            deviceConfigChangedCallback.run();
+        }
+        if (configChangedCallback != null) {
+            configChangedCallback.run();
+        }
+    }
+
     void setConnection(ProjectDevice projectDevice, Connection connectionConsume, Connection connectionProvide) {
         if (project.getProjectConfiguration().getDeviceConnection(projectDevice).getConsumerProviderConnections().get(connectionConsume) != connectionProvide) {
             if (connectionProvide == null) {

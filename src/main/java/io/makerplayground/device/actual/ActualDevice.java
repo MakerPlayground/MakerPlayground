@@ -23,10 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,6 +61,10 @@ public class ActualDevice implements Comparable<ActualDevice> {
 
     public Optional<Property> getProperty(String name) {
         return property.stream().filter(property1 -> property1.getName().equals(name)).findFirst();
+    }
+
+    public Set<GenericDevice> getSupportedGenericDevice() {
+        return compatibilityMap.keySet();
     }
 
     public Optional<IntegratedActualDevice> getIntegratedDevices(String name) {
