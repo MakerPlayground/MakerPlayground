@@ -265,27 +265,29 @@ class ArduinoCodeGenerator {
             builder.append(INDENT).append("analogSetWidth(10);").append(NEW_LINE);
         }
 
-        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-            String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
-            builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
-            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
-            builder.append(INDENT).append("}").append(NEW_LINE);
-            builder.append(NEW_LINE);
-        }
-
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
-                continue;
+        if (!project.getProjectConfiguration().useHwSerialProperty().get()) {
+            for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+                String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
+                builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
+                builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
+                builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
+                builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
+                builder.append(INDENT).append("}").append(NEW_LINE);
+                builder.append(NEW_LINE);
             }
-            String variableName = parseDeviceVariableName(configuration, projectDevice);
-            builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
-            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
-            builder.append(INDENT).append("}").append(NEW_LINE);
-            builder.append(NEW_LINE);
+
+            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+                if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+                    continue;
+                }
+                String variableName = parseDeviceVariableName(configuration, projectDevice);
+                builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
+                builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
+                builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDevice.getName()).append("\", status_code);").append(NEW_LINE);
+                builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
+                builder.append(INDENT).append("}").append(NEW_LINE);
+                builder.append(NEW_LINE);
+            }
         }
         project.getBegin().forEach(begin -> builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(begin)).append(";").append(NEW_LINE));
         builder.append("}").append(NEW_LINE);
@@ -359,21 +361,24 @@ class ArduinoCodeGenerator {
         }
 
         // log status of each devices
-        builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
-        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-            builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
-                    .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+        if (!project.getProjectConfiguration().useHwSerialProperty().get()) {
+            builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
+            for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+                builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(parseCloudPlatformVariableName(cloudPlatform))
+                        .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+            }
+
+            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+                if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+                    continue;
+                }
+                builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
+                        .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+            }
+            builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
+            builder.append(INDENT).append("}").append(NEW_LINE);
         }
 
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
-                continue;
-            }
-            builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
-                    .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
-        }
-        builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
-        builder.append(INDENT).append("}").append(NEW_LINE);
         if (project.getSelectedPlatform() == Platform.ARDUINO_ESP8266) {
             builder.append(INDENT).append("yield();").append(NEW_LINE);
         }

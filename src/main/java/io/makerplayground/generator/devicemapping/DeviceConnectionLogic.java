@@ -30,7 +30,7 @@ public class DeviceConnectionLogic {
                                                           List<Connection> remainingConnectionProvide,
                                                           Map<ProjectDevice, Set<String>> usedRefPin) {
         /* All device must used the same voltage level */
-        Map<VoltageLevel, Long> nonPowerPinCountGroupByVoltageLevel = remainingConnectionProvide.stream()
+        Map<VoltageLevel, Long> countNonPowerPinGroupByVoltageLevel = remainingConnectionProvide.stream()
                 .map(Connection::getPins)
                 .flatMap(Collection::stream)
                 .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
@@ -39,13 +39,14 @@ public class DeviceConnectionLogic {
                 .stream()
                 .map(Pin::getVoltageLevel)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        Long numNonPowerPinUsed = allConnectionConsume.stream()
+        int numNonPowerPinUsed = allConnectionConsume.stream()
                 .map(Connection::getPins)
                 .flatMap(Collection::stream)
                 .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
                 .filter(pin -> !pin.getFunction().contains(PinFunction.GND))
-                .count();
-        List<VoltageLevel> possibleVoltageLevels = nonPowerPinCountGroupByVoltageLevel.entrySet().stream().filter(entry -> entry.getValue() > numNonPowerPinUsed).map(Map.Entry::getKey).collect(Collectors.toList());
+                .collect(Collectors.toSet())
+                .size();
+        List<VoltageLevel> possibleVoltageLevels = countNonPowerPinGroupByVoltageLevel.entrySet().stream().filter(entry -> entry.getValue() >= numNonPowerPinUsed).map(Map.Entry::getKey).collect(Collectors.toList());
 
         boolean[][] connectionMatching = new boolean[allConnectionConsume.size()][];
         for (int i=0; i<connectionMatching.length; i++) {
