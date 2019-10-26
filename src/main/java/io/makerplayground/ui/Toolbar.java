@@ -195,7 +195,7 @@ public class Toolbar extends AnchorPane {
         interactiveButtonTooltip.textProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
                 .then("Stop interactive mode").otherwise("Start interactive mode"));
         interactiveButton.setTooltip(interactiveButtonTooltip);
-        interactiveButton.disableProperty().bind(portNotSelected.or(uploading));
+        interactiveButton.disableProperty().bind(portNotSelected.or(uploading).or(project.get().getProjectConfiguration().useHwSerialProperty()));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
         Tooltip uploadButtonTooltip = new Tooltip();

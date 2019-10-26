@@ -168,10 +168,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     throw new IllegalStateException("There is no pin named " + hostRefTo + "in " + templateName);
                 }
                 PinTemplate inPinTemplate = inDevicePinTemplate.get(refTo);
-                inPins.add(new Pin(refTo, inPinTemplate.getCodingName(), inPinTemplate.getVoltageLevel(), inPinTemplate.getFunction(), -1, -1));
+                boolean hasHwSerial = inPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_TX) || inPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_RX);
+                inPins.add(new Pin(refTo, inPinTemplate.getCodingName(), inPinTemplate.getVoltageLevel(), inPinTemplate.getFunction(), hasHwSerial, -1, -1));
 
                 PinTemplate hostPinTemplate = devicePinTemplate.get(hostRefTo);
-                hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), hostPinTemplate.getFunction(), -1, -1));
+                boolean hostHasHwSerial = hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_TX) || hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_RX);
+                hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), hostPinTemplate.getFunction(), hostHasHwSerial, -1, -1));
             }
             inConnection.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, inPins, null));
             connectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
@@ -409,6 +411,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 VoltageLevel voltageLevel = pinNode.has("voltage_level") ? VoltageLevel.valueOf(pinNode.get("voltage_level").asText()) : pinTemplate.getVoltageLevel();
 
                 List<PinFunction> function = pinTemplate.getFunction();
+                boolean hasHwSerial = function.contains(PinFunction.HW_SERIAL_TX) || function.contains(PinFunction.HW_SERIAL_RX);
                 if (pinNode.has("function")) {
                     if (pinNode.get("function").isArray()) {
                         function = mapper.readValue(pinNode.get("function").traverse(), new TypeReference<List<PinFunction>>() {});
@@ -417,7 +420,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                     }
                 }
 
-                pins.add(new Pin(refTo, pinTemplate.getCodingName(), voltageLevel, function, x, y));
+                pins.add(new Pin(refTo, pinTemplate.getCodingName(), voltageLevel, function, hasHwSerial, x, y));
             }
 
 //            if (connectionType.isSplittable()) {

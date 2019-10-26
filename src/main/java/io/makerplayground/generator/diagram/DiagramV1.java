@@ -996,6 +996,9 @@ class DiagramV1 {
         List<Pin> allPins = new ArrayList<>();
         for (DeviceConnection connection: deviceConnectionMap.values()) {
             connection.getConsumerProviderConnections().forEach((connection1, connection2) -> {
+                if (Objects.isNull(connection1) || Objects.isNull(connection2)) {
+                    return;
+                }
                 if (connection1.getOwnerProjectDevice() == device || connection2.getOwnerProjectDevice() == device) {
                     allPins.addAll(connection1.getPins());
                 }
@@ -1008,13 +1011,14 @@ class DiagramV1 {
         List<Pin> allPins = new ArrayList<>();
         for (DeviceConnection connection: deviceConnectionMap.values()) {
             connection.getConsumerProviderConnections().forEach((connection1, connection2) -> {
-                if (Objects.nonNull(connection1) && Objects.nonNull(connection2)) {
-                    if (connection1.getOwnerProjectDevice() == device && connection2.getOwnerProjectDevice() == deviceTo) {
-                        allPins.addAll(connection1.getPins());
-                    }
-                    if (connection1.getOwnerProjectDevice() == deviceTo && connection2.getOwnerProjectDevice() == device) {
-                        allPins.addAll(connection2.getPins());
-                    }
+                if (Objects.isNull(connection1) || Objects.isNull(connection2)) {
+                    return;
+                }
+                if (connection1.getOwnerProjectDevice() == device && connection2.getOwnerProjectDevice() == deviceTo) {
+                    allPins.addAll(connection1.getPins());
+                }
+                if (connection1.getOwnerProjectDevice() == deviceTo && connection2.getOwnerProjectDevice() == device) {
+                    allPins.addAll(connection2.getPins());
                 }
             });
         }

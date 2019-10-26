@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
+import io.makerplayground.device.actual.Property;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
@@ -28,14 +29,14 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.*;
 import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 public final class ProjectConfiguration {
 
     @JsonIgnore private ReadOnlyObjectWrapper<ProjectConfigurationStatus> status = new ReadOnlyObjectWrapper<>(ProjectConfigurationStatus.OK);
+    @JsonIgnore private BooleanProperty useHwSerial = new SimpleBooleanProperty();
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
@@ -53,8 +55,8 @@ public final class ProjectConfiguration {
     @JsonIgnore private Map<ProjectDevice, Set<Value>> valueCompatibility;
 
     /* state variables: the variable used in calculation and cached the sub-solution */
-    @JsonIgnore private ObservableList<ProjectDevice> usedDevices = FXCollections.observableArrayList();
-    @JsonIgnore private FilteredList<ProjectDevice> nonControllerDevices = new FilteredList<>(usedDevices, projectDevice -> projectDevice != CONTROLLER);
+    @JsonIgnore private ObservableList<ProjectDevice> devices = FXCollections.observableArrayList();
+    @JsonIgnore private FilteredList<ProjectDevice> nonControllerDevices = new FilteredList<>(devices, projectDevice -> projectDevice != CONTROLLER);
     @JsonIgnore private Set<Connection> remainingConnectionProvide = new HashSet<>();
     @JsonIgnore private Map<ProjectDevice, Set<String>> usedRefPin = new HashMap<>();
     @JsonIgnore private List<CloudPlatform> remainingCloudPlatform = new ArrayList<>();
@@ -103,6 +105,23 @@ public final class ProjectConfiguration {
         return status.getReadOnlyProperty();
     }
 
+    private void updateUseHwSerialProperty() {
+        for (ProjectDevice projectDevice: this.devices) {
+            if (deviceConnections.containsKey(projectDevice)) {
+                DeviceConnection deviceConnection = deviceConnections.get(projectDevice);
+                for (Connection connectionProvide: deviceConnection.getProviderFunction().keySet()) {
+                    for (Pin pin: connectionProvide.getPins()) {
+                        if (pin.hasHwSerial()) {
+                            useHwSerial.set(true);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        useHwSerial.set(false);
+    }
+
     private void updateStatusProperty() {
         if (getController() == null) {
             status.set(ProjectConfigurationStatus.ERROR);
@@ -141,9 +160,9 @@ public final class ProjectConfiguration {
         this.conditionCompatibility = conditionCompatibility;
         this.valueCompatibility = valueCompatibility;
 
-        this.usedDevices.clear();
-        this.usedDevices.addAll(allDevices);
-        this.usedDevices.add(CONTROLLER);
+        this.devices.clear();
+        this.devices.addAll(allDevices);
+        this.devices.add(CONTROLLER);
 
         generateDeviceSelectableMapAndConnection();
         updateStatusProperty();
@@ -152,13 +171,13 @@ public final class ProjectConfiguration {
     private void generateDeviceSelectableMapAndConnection() {
         /* remove all items that are not used  */
         for (ProjectDevice projectDevice: deviceConnections.keySet()) {
-            if (this.usedDevices.contains(projectDevice)) {
+            if (this.devices.contains(projectDevice)) {
                 continue;
             }
             unsetDeviceConnection(projectDevice);
         }
         for (ProjectDevice projectDevice: deviceMap.keySet()) {
-            if (this.usedDevices.contains(projectDevice)) {
+            if (this.devices.contains(projectDevice)) {
                 continue;
             }
             unsetDevice(projectDevice);
@@ -403,6 +422,7 @@ public final class ProjectConfiguration {
 
             generateDeviceSelectableMapAndConnection();
             updateStatusProperty();
+            updateUseHwSerialProperty();
         }
     }
 
@@ -537,6 +557,7 @@ public final class ProjectConfiguration {
         }
         generateDeviceSelectableMapAndConnection();
         updateStatusProperty();
+        updateUseHwSerialProperty();
     }
 
     public void setConnection(ProjectDevice projectDevice, Connection consumerConnection, Connection providerConnection) {
@@ -549,6 +570,7 @@ public final class ProjectConfiguration {
         if (providerConnection == null) {
             unsetConnection(projectDevice, consumerConnection);
             updateStatusProperty();
+            updateUseHwSerialProperty();
             return;
         }
 
@@ -604,6 +626,7 @@ public final class ProjectConfiguration {
 
         generateDeviceSelectableMapAndConnection();
         updateStatusProperty();
+        updateUseHwSerialProperty();
     }
 
     public void unsetConnection(ProjectDevice projectDevice, Connection connectionConsume) {
@@ -620,9 +643,11 @@ public final class ProjectConfiguration {
                     usedRefPin.get(providerProjectDevice).remove(providerPin.getRefTo());
                 }
             });
+            deviceConnection.getProviderFunction().remove(connectionProvide);
             deviceConnection.getConsumerProviderConnections().put(connectionConsume, null);
             generateDeviceSelectableMapAndConnection();
             updateStatusProperty();
+            updateUseHwSerialProperty();
         }
     }
 
@@ -669,6 +694,7 @@ public final class ProjectConfiguration {
                 });
                 generateDeviceSelectableMapAndConnection();
                 updateStatusProperty();
+                updateUseHwSerialProperty();
             }
         }
     }
@@ -677,6 +703,9 @@ public final class ProjectConfiguration {
         DeviceConnection connection = deviceConnections.remove(projectDevice);
         if (connection != null) {
             connection.getConsumerProviderConnections().forEach((consumerPort, providerConnection) -> {
+                if (providerConnection == null) {
+                    return;
+                }
                 ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
                 remainingConnectionProvide.add(providerConnection);
                 providerConnection.getPins().forEach(providerPin -> {
@@ -686,6 +715,7 @@ public final class ProjectConfiguration {
                 });
             });
             updateStatusProperty();
+            updateUseHwSerialProperty();
         }
     }
 
@@ -698,6 +728,14 @@ public final class ProjectConfiguration {
             cloudParameterMap.put(cloudPlatform, new HashMap<>());
         }
         this.cloudParameterMap.get(cloudPlatform).put(parameterName, value);
+    }
+
+    public boolean isUseHwSerial() {
+        return useHwSerial.get();
+    }
+
+    public BooleanProperty useHwSerialProperty() {
+        return useHwSerial;
     }
 
     private Comparator<Connection> getLessChoiceOfConnectionComparator(ProjectDevice projectDevice) {
@@ -722,7 +760,7 @@ public final class ProjectConfiguration {
             return ProjectMappingResult.NO_MCU_SELECTED;
         }
 
-        List<ProjectDevice> unassignedDevices = new ArrayList<>(usedDevices);
+        List<ProjectDevice> unassignedDevices = new ArrayList<>(devices);
         unassignedDevices.remove(CONTROLLER);
         unassignedDevices.removeAll(identicalDeviceMap.keySet());
         deviceConnections.forEach((projectDevice, deviceConnection) -> {
