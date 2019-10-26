@@ -150,6 +150,20 @@ public final class ProjectConfiguration {
     }
 
     private void generateDeviceSelectableMapAndConnection() {
+        /* remove all items that are not used  */
+        for (ProjectDevice projectDevice: deviceConnections.keySet()) {
+            if (this.usedDevices.contains(projectDevice)) {
+                continue;
+            }
+            unsetDeviceConnection(projectDevice);
+        }
+        for (ProjectDevice projectDevice: deviceMap.keySet()) {
+            if (this.usedDevices.contains(projectDevice)) {
+                continue;
+            }
+            unsetDevice(projectDevice);
+        }
+
         Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>> deviceSelectableMap = new HashMap<>();
         Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> deviceConnectionMap = new HashMap<>();
 

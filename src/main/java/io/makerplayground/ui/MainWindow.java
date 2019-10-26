@@ -162,7 +162,6 @@ public class MainWindow extends BorderPane {
         };
 
         // device config
-        currentProject.calculateCompatibility();
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);

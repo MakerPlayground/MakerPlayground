@@ -105,6 +105,7 @@ public class Project {
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
         this.newBegin();
+        this.calculateCompatibility();
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -159,6 +160,7 @@ public class Project {
         String varName = getDeviceVarName(genericDevice);
         ProjectDevice projectDevice = new ProjectDevice(varName + getNextId(genericDevice), genericDevice);
         devices.add(projectDevice);
+        this.calculateCompatibility();
     }
 
     public void removeDevice(ProjectDevice genericDevice) {
@@ -301,7 +303,6 @@ public class Project {
 
     public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
         projectConfiguration.setCloudPlatformParameter(cloudPlatform, parameterName, value);
-//        projectConfiguration = ProjectLogic.changeCloudPlatformParameter(projectConfiguration, cloudPlatform, parameterName, value);
     }
 
     public Set<CloudPlatform> getCloudPlatformUsed() {
