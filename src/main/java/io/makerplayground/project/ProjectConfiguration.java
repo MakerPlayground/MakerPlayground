@@ -734,7 +734,7 @@ public final class ProjectConfiguration {
         return useHwSerial.get();
     }
 
-    public BooleanProperty useHwSerialProperty() {
+    public ReadOnlyBooleanProperty useHwSerialProperty() {
         return useHwSerial;
     }
 

@@ -195,14 +195,18 @@ public class Toolbar extends AnchorPane {
         interactiveButtonTooltip.textProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
                 .then("Stop interactive mode").otherwise("Start interactive mode"));
         interactiveButton.setTooltip(interactiveButtonTooltip);
-        interactiveButton.disableProperty().bind(portNotSelected.or(uploading).or(project.get().getProjectConfiguration().useHwSerialProperty()));
+
+        ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
+        BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
+
+        interactiveButton.disableProperty().bind(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
         Tooltip uploadButtonTooltip = new Tooltip();
         uploadButtonTooltip.setShowDelay(Duration.millis(250));
         uploadButtonTooltip.textProperty().bind(Bindings.when(uploading).then("Stop uploading").otherwise("Upload to board"));
         uploadButton.setTooltip(uploadButtonTooltip);
-        uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize));
+        uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize).or(projectNotOk));
 
         uploadManager.uploadStatusProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UploadStatus.UPLOADING || newValue == UploadStatus.STARTING_INTERACTIVE) {
