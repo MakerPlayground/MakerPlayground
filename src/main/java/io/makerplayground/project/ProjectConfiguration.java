@@ -40,6 +40,7 @@ import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.makerplayground.project.ProjectDevice.CONTROLLER;
 
@@ -170,16 +171,11 @@ public final class ProjectConfiguration {
 
     private void generateDeviceSelectableMapAndConnection() {
         /* remove all items that are not used  */
-        for (ProjectDevice projectDevice: deviceConnections.keySet()) {
-            if (this.devices.contains(projectDevice)) {
-                continue;
-            }
+        Set<ProjectDevice> allDeviceRemain = Stream.concat(deviceConnections.keySet().stream(), deviceMap.keySet().stream())
+                .filter(projectDevice -> !this.devices.contains(projectDevice))
+                .collect(Collectors.toSet());
+        for (ProjectDevice projectDevice: allDeviceRemain) {
             unsetDeviceConnection(projectDevice);
-        }
-        for (ProjectDevice projectDevice: deviceMap.keySet()) {
-            if (this.devices.contains(projectDevice)) {
-                continue;
-            }
             unsetDevice(projectDevice);
         }
 

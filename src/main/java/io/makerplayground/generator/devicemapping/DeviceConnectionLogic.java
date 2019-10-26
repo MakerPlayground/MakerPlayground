@@ -21,12 +21,32 @@ import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DeviceConnectionLogic {
 
     private static boolean[][] getConnectionMatchingArray(List<Connection> allConnectionConsume,
                                                           List<Connection> remainingConnectionProvide,
                                                           Map<ProjectDevice, Set<String>> usedRefPin) {
+        /* All device must used the same voltage level */
+        Map<VoltageLevel, Long> nonPowerPinCountGroupByVoltageLevel = remainingConnectionProvide.stream()
+                .map(Connection::getPins)
+                .flatMap(Collection::stream)
+                .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
+                .filter(pin -> !pin.getFunction().contains(PinFunction.GND))
+                .collect(Collectors.toSet())
+                .stream()
+                .map(Pin::getVoltageLevel)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        Long numNonPowerPinUsed = allConnectionConsume.stream()
+                .map(Connection::getPins)
+                .flatMap(Collection::stream)
+                .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
+                .filter(pin -> !pin.getFunction().contains(PinFunction.GND))
+                .count();
+        List<VoltageLevel> possibleVoltageLevels = nonPowerPinCountGroupByVoltageLevel.entrySet().stream().filter(entry -> entry.getValue() > numNonPowerPinUsed).map(Map.Entry::getKey).collect(Collectors.toList());
+
         boolean[][] connectionMatching = new boolean[allConnectionConsume.size()][];
         for (int i=0; i<connectionMatching.length; i++) {
             connectionMatching[i] = new boolean[remainingConnectionProvide.size()];
@@ -61,7 +81,7 @@ public class DeviceConnectionLogic {
                         if (flag) break;
                         VoltageLevel consumerVoltageLevel = connectionConsumer.getPins().get(k).getVoltageLevel();
                         VoltageLevel providerVoltageLevel = connectionProvider.getPins().get(k).getVoltageLevel();
-                        if (!consumerVoltageLevel.canConsume(providerVoltageLevel)) {
+                        if (!consumerVoltageLevel.canConsume(providerVoltageLevel) || !possibleVoltageLevels.contains(providerVoltageLevel)) {
                             connectionMatching[i][j] = false;
                             break;
                         }
@@ -70,9 +90,9 @@ public class DeviceConnectionLogic {
             }
         }
         for (int j = 0; j<remainingConnectionProvide.size(); j++) {
-            Connection connectionProvider = remainingConnectionProvide.get(j);
-            ProjectDevice providerProjectDevice = connectionProvider.getOwnerProjectDevice();
-            if (connectionProvider.getPins().stream().anyMatch(pin -> usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())))
+            Connection connectionProvide = remainingConnectionProvide.get(j);
+            ProjectDevice providerProjectDevice = connectionProvide.getOwnerProjectDevice();
+            if (connectionProvide.getPins().stream().anyMatch(pin -> usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())))
             {
                 for (int i=0; i<connectionMatching.length; i++) {
                     connectionMatching[i][j] = false;

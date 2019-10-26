@@ -168,7 +168,6 @@
 #unusedLabel {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-font-weight: bold;
 }
 
 #additionalLabel {
