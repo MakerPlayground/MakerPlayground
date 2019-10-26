@@ -62,11 +62,11 @@
                 <VBox fx:id="usedDevice" spacing="20" visible="false">
                     <Separator/>
                     <HBox alignment="CENTER">
-                        <Label id="usedLabel" text="Used devices"/>
+<!--                        <Label id="usedLabel" text="Used devices"/>-->
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Button fx:id="autoButton" text="Auto Select"/>
                     </HBox>
-                    <GridPane fx:id="usedDeviceSettingPane" hgap="20.0" vgap="10.0">
+                    <GridPane fx:id="allDeviceSettingPane" hgap="20.0" vgap="10.0">
                         <columnConstraints>
                             <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="90.0"/>
@@ -87,14 +87,6 @@
                             <ColumnConstraints hgrow="NEVER"/>
                         </columnConstraints>
                     </GridPane>
-                </VBox>
-                <VBox fx:id="unusedDevice" spacing="20" visible="false">
-                    <Separator/>
-                    <HBox>
-                        <Label id="unusedLabel" text="Unused devices"/>
-                    </HBox>
-                    <FlowPane fx:id="unusedDevicePane" hgap="10" vgap="10">
-                    </FlowPane>
                 </VBox>
             </VBox>
             <VBox.margin>

@@ -53,10 +53,8 @@ public class ConfigActualDeviceView extends VBox{
     private final ConfigActualDeviceViewModel viewModel;
 
     @FXML private VBox usedDevice;
-    @FXML private GridPane usedDeviceSettingPane;
+    @FXML private GridPane allDeviceSettingPane;
     @FXML private Button autoButton;
-    @FXML private VBox unusedDevice;
-    @FXML private FlowPane unusedDevicePane;
     @FXML private VBox cloudPlatformParameterSection;
     @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
@@ -94,7 +92,6 @@ public class ConfigActualDeviceView extends VBox{
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
 
         autoButton.setOnAction(event -> {
-            /* TODO: uncomment this */
             ProjectMappingResult result = viewModel.autoAssignDevice();
             if (result != ProjectMappingResult.OK) {
                 WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
@@ -198,14 +195,11 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControl() {
-        usedDevice.setVisible(false);
-        usedDevice.setManaged(false);
-        unusedDevice.setVisible(false);
-        unusedDevice.setManaged(false);
+        usedDevice.setVisible(true);
+        usedDevice.setManaged(true);
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
         initDeviceControlChildren();
-        initUnusedDeviceControl();
         initCloudPlatformPropertyControl();
     }
 
@@ -339,18 +333,10 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControlChildren() {
-        if (viewModel.getUsedDevice().isEmpty()) {
-            usedDevice.setVisible(false);
-            usedDevice.setManaged(false);
-        } else {
-            usedDevice.setVisible(true);
-            usedDevice.setManaged(true);
-        }
-
-        usedDeviceSettingPane.getChildren().clear();
+        allDeviceSettingPane.getChildren().clear();
         viewModel.clearDeviceConfigChangedCallback();
         int currentRow = 0;
-        for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
+        for (ProjectDevice projectDevice : viewModel.getAllDevices()) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(30.0);
@@ -522,46 +508,46 @@ public class ConfigActualDeviceView extends VBox{
                 }
             }
 
-            usedDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
+            allDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
             currentRow++;
         }
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
 
-    private void initUnusedDeviceControl() {
-        if (viewModel.getUnusedDevice().isEmpty()) {
-            unusedDevice.setVisible(false);
-            unusedDevice.setManaged(false);
-        } else {
-            unusedDevice.setVisible(true);
-            unusedDevice.setManaged(true);
-            unusedDevicePane.getChildren().clear();
-            for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                        + projectDevice.getGenericDevice().getName() + ".png")));
-                imageView.setFitHeight(30.0);
-                imageView.setFitWidth(30.0);
-
-                Label name = new Label(projectDevice.getName());
-                name.setTextAlignment(TextAlignment.LEFT);
-                name.setAlignment(Pos.CENTER_LEFT);
-                name.setId("nameLabel");
-
-                HBox devicePic = new HBox();
-                devicePic.setSpacing(10.0);
-                devicePic.setAlignment(Pos.CENTER_LEFT);
-                devicePic.setMaxHeight(25.0);
-                devicePic.getChildren().addAll(imageView, name);
-
-                HBox entireDevice = new HBox();
-                entireDevice.setSpacing(10.0);
-                entireDevice.setAlignment(Pos.TOP_LEFT);
-                entireDevice.getChildren().addAll(devicePic);
-
-                unusedDevicePane.getChildren().add(entireDevice);
-            }
-        }
-    }
+//    private void initUnusedDeviceControl() {
+//        if (viewModel.getUnusedDevice().isEmpty()) {
+//            unusedDevice.setVisible(false);
+//            unusedDevice.setManaged(false);
+//        } else {
+//            unusedDevice.setVisible(true);
+//            unusedDevice.setManaged(true);
+//            unusedDevicePane.getChildren().clear();
+//            for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
+//                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
+//                        + projectDevice.getGenericDevice().getName() + ".png")));
+//                imageView.setFitHeight(30.0);
+//                imageView.setFitWidth(30.0);
+//
+//                Label name = new Label(projectDevice.getName());
+//                name.setTextAlignment(TextAlignment.LEFT);
+//                name.setAlignment(Pos.CENTER_LEFT);
+//                name.setId("nameLabel");
+//
+//                HBox devicePic = new HBox();
+//                devicePic.setSpacing(10.0);
+//                devicePic.setAlignment(Pos.CENTER_LEFT);
+//                devicePic.setMaxHeight(25.0);
+//                devicePic.getChildren().addAll(imageView, name);
+//
+//                HBox entireDevice = new HBox();
+//                entireDevice.setSpacing(10.0);
+//                entireDevice.setAlignment(Pos.TOP_LEFT);
+//                entireDevice.getChildren().addAll(devicePic);
+//
+//                unusedDevicePane.getChildren().add(entireDevice);
+//            }
+//        }
+//    }
 
     private void initCloudPlatformPropertyControl() {
         if (viewModel.getCloudPlatformUsed().isEmpty()) {

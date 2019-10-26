@@ -722,7 +722,12 @@ class DiagramV1 {
             Map<Connection, Connection> connectionMap = deviceConnectionMap.get(projectDevice).getConsumerProviderConnections();
             for (Connection consumerConnection: connectionMap.keySet()) {
                 Connection providerConnection = connectionMap.get(consumerConnection);
-                voltageLevelList.addAll(providerConnection.getPins().stream().filter(pin -> pin.getFunction().contains(PinFunction.VCC)).map(Pin::getVoltageLevel).collect(Collectors.toList()));
+                if (providerConnection != null) {
+                    voltageLevelList.addAll(providerConnection.getPins().stream()
+                            .filter(pin -> pin.getFunction().contains(PinFunction.VCC))
+                            .map(Pin::getVoltageLevel)
+                            .collect(Collectors.toList()));
+                }
             }
         }
         return voltageLevelList;
@@ -1003,11 +1008,13 @@ class DiagramV1 {
         List<Pin> allPins = new ArrayList<>();
         for (DeviceConnection connection: deviceConnectionMap.values()) {
             connection.getConsumerProviderConnections().forEach((connection1, connection2) -> {
-                if (connection1.getOwnerProjectDevice() == device && connection2.getOwnerProjectDevice() == deviceTo) {
-                    allPins.addAll(connection1.getPins());
-                }
-                if (connection1.getOwnerProjectDevice() == deviceTo && connection2.getOwnerProjectDevice() == device) {
-                    allPins.addAll(connection2.getPins());
+                if (Objects.nonNull(connection1) && Objects.nonNull(connection2)) {
+                    if (connection1.getOwnerProjectDevice() == device && connection2.getOwnerProjectDevice() == deviceTo) {
+                        allPins.addAll(connection1.getPins());
+                    }
+                    if (connection1.getOwnerProjectDevice() == deviceTo && connection2.getOwnerProjectDevice() == device) {
+                        allPins.addAll(connection2.getPins());
+                    }
                 }
             });
         }
@@ -1322,6 +1329,9 @@ class DiagramV1 {
         int countConnection = 0;
         for (Connection consumerConnection: connectionMap.keySet()) {
             Connection providerConnection = connectionMap.get(consumerConnection);
+            if (providerConnection == null) {
+                continue;
+            }
             List<PinFunction> pinFunctions = deviceConnection.getProviderFunction().get(providerConnection);
             ProjectDevice consumerDevice = consumerConnection.getOwnerProjectDevice();
             ProjectDevice providerDevice = providerConnection.getOwnerProjectDevice();

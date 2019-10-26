@@ -135,25 +135,15 @@ public final class ProjectConfiguration {
 
     void updateCompatibility(Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility,
                              Map<ProjectDevice, Map<Condition, Map<Parameter, Constraint>>> conditionCompatibility,
-                             Map<ProjectDevice, Set<Value>> valueCompatibility) {
+                             Map<ProjectDevice, Set<Value>> valueCompatibility,
+                             List<ProjectDevice> allDevices) {
         this.actionCompatibility = actionCompatibility;
         this.conditionCompatibility = conditionCompatibility;
         this.valueCompatibility = valueCompatibility;
 
-        Set<ProjectDevice> allDevices = new HashSet<>();
-        allDevices.addAll(this.actionCompatibility.keySet());
-        allDevices.addAll(this.conditionCompatibility.keySet());
-        allDevices.addAll(this.valueCompatibility.keySet());
-
         this.usedDevices.clear();
         this.usedDevices.addAll(allDevices);
         this.usedDevices.add(CONTROLLER);
-
-        /* remove the unused device from the data structure */
-        Set<ProjectDevice> unusedDevices = deviceMap.keySet().stream().filter(projectDevice -> !usedDevices.contains(projectDevice)).collect(Collectors.toSet());
-        for (ProjectDevice removingDevice: unusedDevices) {
-            unsetDevice(removingDevice);
-        }
 
         generateDeviceSelectableMapAndConnection();
         updateStatusProperty();

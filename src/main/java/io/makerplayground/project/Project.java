@@ -642,7 +642,7 @@ public class Project {
             queue.addAll(unvisitedAdj);
         }
 
-        projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility);
+        projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility, this.devices);
     }
 
     public Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String newName) {
@@ -657,6 +657,10 @@ public class Project {
         }
         projectDevice.setName(newName);
         return SetNameResult.OK;
+    }
+
+    public List<ProjectDevice> getAllDevices() {
+        return Collections.unmodifiableList(this.devices);
     }
 
     public enum SetNameResult {

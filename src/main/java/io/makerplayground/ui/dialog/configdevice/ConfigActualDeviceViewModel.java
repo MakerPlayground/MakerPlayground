@@ -232,4 +232,8 @@ public class ConfigActualDeviceViewModel {
         }
         return result;
     }
+
+    public List<ProjectDevice> getAllDevices() {
+        return project.getAllDevices();
+    }
 }

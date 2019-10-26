@@ -68,6 +68,9 @@ public class GenerateViewModel {
         Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
         for(Connection consumerConnection : connectionMap.keySet()) {
             Connection providerConnection = connectionMap.get(consumerConnection);
+            if (Objects.isNull(consumerConnection) || Objects.isNull(providerConnection)) {
+                continue;
+            }
             stringBuilder.append("(");
             stringBuilder.append(consumerConnection.getOwnerProjectDevice().getName()).append("'s ").append(consumerConnection.getName());
             stringBuilder.append(" -> ");
