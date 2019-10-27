@@ -110,8 +110,6 @@ public class Toolbar extends AnchorPane {
         deviceConfigProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
         deviceConfigProblemImageView.setFitWidth(15);
         deviceConfigProblemImageView.setFitHeight(15);
-        deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
-                .then(deviceConfigProblemImageView).otherwise((ImageView) null));
 
         interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
         interactiveStartImageView.setFitWidth(20);
@@ -170,6 +168,10 @@ public class Toolbar extends AnchorPane {
     }
 
     private void initUI() {
+
+        deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
+                .then(deviceConfigProblemImageView).otherwise((ImageView) null));
+
         BooleanBinding uploading = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING);
         BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);
         ReadOnlyBooleanProperty interactiveModeInitialize = project.get().getInteractiveModel().startedProperty();
