@@ -39,6 +39,8 @@ public class IntegratedActualDevice extends ActualDevice {
             throw new UnsupportedOperationException("parent couldn't be set multiple time.");
         }
         this.parent = parent;
+        this.brand = parent.getBrand();
+        this.model = parent.getModel() + "'s " + getId();
     }
 
     IntegratedActualDevice(String name,

@@ -18,10 +18,7 @@ package io.makerplayground.device.actual;
 
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.ProjectDevice;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,8 +30,8 @@ public class ActualDevice implements Comparable<ActualDevice> {
     public static final Comparator<ActualDevice> NAME_COMPARATOR = Comparator.comparing(ActualDevice::getBrand).thenComparing(ActualDevice::getModel).thenComparing(ActualDevice::getId);
 
     protected final String id;
-    protected final String brand;
-    protected final String model;
+    @Setter(AccessLevel.NONE) protected String brand;
+    @Setter(AccessLevel.NONE) protected String model;
     protected final String url;
     protected final double width;
     protected final double height;

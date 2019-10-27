@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -49,6 +50,7 @@ public enum DeviceLibrary {
     private List<GenericDevice> genericInterfaceDevice;
     private List<GenericDevice> allGenericDevice;
     private List<ActualDevice> actualDevice;
+    private List<ActualDevice> actualAndIntegratedDevice;
 
     DeviceLibrary() {}
 
@@ -66,6 +68,9 @@ public enum DeviceLibrary {
         this.allGenericDevice.addAll(genericInterfaceDevice);
         Map<String, Map<String, PinTemplate>> pinTemplate = loadPinTemplateList();
         this.actualDevice = loadActualDeviceList(pinTemplate);
+        this.actualAndIntegratedDevice = Stream.concat(actualDevice.stream(), actualDevice.stream()
+                .flatMap(actualDevice1 -> actualDevice1.getIntegratedDevices().stream()))
+                .collect(Collectors.toList());
     }
 
     private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
@@ -131,12 +136,24 @@ public enum DeviceLibrary {
     }
 
     public static Path getDeviceImagePath(ActualDevice actualDevice) {
-        // TODO: handle case that the image is missing
-        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), actualDevice.getId(), "asset", "device.png");
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        // TODO: Should we handle case that the image is missing or let the caller check for path existence?
+        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device.png");
     }
 
     public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
-        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), actualDevice.getId(), "asset", "device_thumbnail.png");
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device_thumbnail.png");
         if (Files.exists(thumbnailPath)) {
             return thumbnailPath;
         } else {
@@ -233,6 +250,15 @@ public enum DeviceLibrary {
 
     public List<ActualDevice> getActualDevice(GenericDevice genericDevice) {
         return actualDevice.stream().filter(device -> device.getCompatibilityMap().containsKey(genericDevice))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<ActualDevice> getActualAndIntegratedDevice() {
+        return actualAndIntegratedDevice;
+    }
+
+    public List<ActualDevice> getActualAndIntegratedDevice(GenericDevice genericDevice) {
+        return actualAndIntegratedDevice.stream().filter(device -> device.getCompatibilityMap().containsKey(genericDevice))
                 .collect(Collectors.toUnmodifiableList());
     }
 }
