@@ -156,7 +156,7 @@ public class DeviceExplorerPanel extends VBox {
         Set<Connection> allConnectionProvide = new HashSet<>(currentController.getConnectionProvideByOwnerDevice(ProjectDevice.CONTROLLER));
         DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(allConnectionProvide
                 , Collections.emptyMap(), null, actualDevice, DeviceConnection.NOT_CONNECTED);
-        return result.getStatus() == DeviceConnectionResultStatus.OK;
+        return result.getStatus() == DeviceConnectionResultStatus.OK && actualDevice.getPlatformSourceCodeLibrary().keySet().containsAll(currentController.getPlatformSourceCodeLibrary().keySet());
     }
 
     private void applyFilterByController() {
