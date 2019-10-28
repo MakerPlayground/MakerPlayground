@@ -31,6 +31,7 @@ import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -56,6 +57,8 @@ public class ConfigActualDeviceView extends VBox{
     @FXML private GridPane usedDeviceSettingPane;
     @FXML private Button autoButton1;
     @FXML private Button autoButton2;
+    @FXML private VBox warningPane;
+    @FXML private Label warningLabel;
     @FXML private VBox unusedDevice;
     @FXML private GridPane unusedDevicePane;
     @FXML private VBox cloudPlatformParameterSection;
@@ -82,6 +85,14 @@ public class ConfigActualDeviceView extends VBox{
         initControllerControl();
         initDeviceControl();
         initEvent();
+
+        warningPane.visibleProperty().bind(Bindings.isEmpty(viewModel.getAllDevices()));
+        warningPane.managedProperty().bind(warningPane.visibleProperty());
+        if (viewModel.getSelectedController() == null) {
+            warningLabel.setText("Select a controller to get started");
+        } else if (viewModel.getAllDevices().isEmpty()) {
+            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+        }
     }
 
     private void initEvent() {
@@ -141,6 +152,10 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initControllerControl() {
+        if (viewModel.getSelectedController() == null) {
+            warningLabel.setText("Select a controller to get started");
+        }
+
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<ActualDeviceComboItem> call(ListView<ActualDeviceComboItem> param) {
@@ -201,6 +216,10 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initDeviceControl() {
+        if (viewModel.getAllDevices().isEmpty()) {
+            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+        }
+
         usedDevice.setVisible(false);
         usedDevice.setManaged(false);
         unusedDevice.setVisible(false);

@@ -661,10 +661,6 @@ public class Project {
         return SetNameResult.OK;
     }
 
-    public List<ProjectDevice> getAllDevices() {
-        return Collections.unmodifiableList(this.devices);
-    }
-
     public enum SetNameResult {
         OK, DUPLICATE_NAME, INCORRECT_PATTERN
     }

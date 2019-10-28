@@ -25,6 +25,7 @@ import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import lombok.Setter;
 
 import java.util.*;
@@ -245,7 +246,7 @@ public class ConfigActualDeviceViewModel {
         return result;
     }
 
-    public List<ProjectDevice> getAllDevices() {
-        return project.getAllDevices();
+    public ObservableList<ProjectDevice> getAllDevices() {
+        return project.getUnmodifiableProjectDevice();
     }
 }
