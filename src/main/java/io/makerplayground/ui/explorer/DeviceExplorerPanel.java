@@ -12,6 +12,8 @@ import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.ProjectDevice;
 import javafx.application.HostServices;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,6 +21,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import org.controlsfx.control.SegmentedButton;
 
 import java.nio.file.Files;
@@ -50,7 +53,9 @@ public class DeviceExplorerPanel extends VBox {
         searchTextField.setPromptText("Search...");
         searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             currentSearchKeyword = newValue.toLowerCase();
-            applyFilterBySearchKeyword();
+            applyFilter();
+            // auto scroll to the first matched category
+            deviceInfoPanes.stream().filter(Node::isVisible).findFirst().ifPresent(this::ensureVisible);
         });
 
         HBox spacer = new HBox();
@@ -145,13 +150,12 @@ public class DeviceExplorerPanel extends VBox {
 
         getChildren().add(scrollPane);
 
-        applyFilterByController();
-        applyFilterBySearchKeyword();
+        applyFilter();
     }
 
     public void setController(ActualDevice controller) {
         currentController = controller;
-        applyFilterByController();
+        applyFilter();
     }
 
     public void setOnAddButtonPressed(Consumer<ActualDevice> consumer) {
@@ -165,68 +169,42 @@ public class DeviceExplorerPanel extends VBox {
         return result.getStatus() == DeviceConnectionResultStatus.OK && actualDevice.getPlatformSourceCodeLibrary().keySet().containsAll(currentController.getPlatformSourceCodeLibrary().keySet());
     }
 
-    private void applyFilterByController() {
+    private void applyFilter() {
+        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
+            deviceInfoPane.setDisable(true);
+            deviceInfoPane.setVisible(false);
+            deviceInfoPane.setManaged(false);
+        }
+
+        // enable device that is supported by the current controller
         for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
             if (currentController != null && isSupportByController(deviceInfoPane.getActualDevice())) {
                 deviceInfoPane.setDisable(false);
-            } else {
-                deviceInfoPane.setDisable(true);
             }
         }
 
-        applyIntegratedDeviceFilter();
-        applyTitlePaneFilter();
-    }
-
-    private void applyFilterBySearchKeyword() {
+        // show device based on the search keyword
         for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
             if (deviceInfoPaneParentMap.get(deviceInfoPane).getText().toLowerCase().contains(currentSearchKeyword)
                     || deviceInfoPane.getActualDevice().getBrand().toLowerCase().contains(currentSearchKeyword)
                     || deviceInfoPane.getActualDevice().getModel().toLowerCase().contains(currentSearchKeyword)) {
                 deviceInfoPane.setVisible(true);
                 deviceInfoPane.setManaged(true);
-            } else {
-                deviceInfoPane.setVisible(false);
-                deviceInfoPane.setManaged(false);
             }
         }
 
-        applyIntegratedDeviceFilter();
-        applyTitlePaneFilter();
-
-        // auto scroll to the first matched category
-        deviceInfoPanes.stream().filter(Node::isVisible).findFirst().ifPresent(this::ensureVisible);
-    }
-
-    private void ensureVisible(DeviceInfoPane pane) {
-        double height = scrollPane.getContent().getBoundsInLocal().getHeight();
-        double y = deviceInfoPaneParentMap.get(pane).getBoundsInParent().getMinY();
-        double vValue = y / height;
-        scrollPane.setVvalue(Double.isNaN(vValue) ? 0 : vValue);
-    }
-
-    private void applyIntegratedDeviceFilter() {
-        if (currentController != null) {
-            for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-                if (deviceInfoPane.getActualDevice() instanceof IntegratedActualDevice) {
-                    boolean isIntegratedDeviceOfCurrentController = ((IntegratedActualDevice) deviceInfoPane.getActualDevice()).getParent() == currentController;
-                    deviceInfoPane.setDisable(!isIntegratedDeviceOfCurrentController);
-                    deviceInfoPane.setVisible(isIntegratedDeviceOfCurrentController);
-                    deviceInfoPane.setManaged(isIntegratedDeviceOfCurrentController);
-                }
-            }
-        } else {
-            for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-                if (deviceInfoPane.getActualDevice() instanceof IntegratedActualDevice) {
+        // hide integrated device of the other controllers
+        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
+            if (deviceInfoPane.getActualDevice() instanceof IntegratedActualDevice) {
+                if (((IntegratedActualDevice) deviceInfoPane.getActualDevice()).getParent() != currentController) {
                     deviceInfoPane.setDisable(true);
                     deviceInfoPane.setVisible(false);
                     deviceInfoPane.setManaged(false);
                 }
             }
         }
-    }
 
-    private void applyTitlePaneFilter() {
+        // hide category that doesn't have any devices left after filter
         for (TitledPane pane : titledPanes) {
             if (((FlowPane) pane.getContent()).getChildren().stream().noneMatch(Node::isVisible)) {
                 pane.setVisible(false);
@@ -236,6 +214,13 @@ public class DeviceExplorerPanel extends VBox {
                 pane.setManaged(true);
             }
         }
+    }
+
+    private void ensureVisible(DeviceInfoPane pane) {
+        double height = scrollPane.getContent().getBoundsInLocal().getHeight();
+        double y = deviceInfoPaneParentMap.get(pane).getBoundsInParent().getMinY();
+        double vValue = y / height;
+        scrollPane.setVvalue(Double.isNaN(vValue) ? 0 : vValue);
     }
 
     private class DeviceInfoPane extends AnchorPane {
