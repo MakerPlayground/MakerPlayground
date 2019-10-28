@@ -659,6 +659,7 @@ public class Project {
             return SetNameResult.DUPLICATE_NAME;
         }
         projectDevice.setName(newName);
+        calculateCompatibility();
         return SetNameResult.OK;
     }
 
