@@ -229,11 +229,14 @@ public class DeviceExplorerPanel extends VBox {
         public DeviceInfoPane(HostServices hostServices, ActualDevice actualDevice) {
             this.actualDevice = actualDevice;
 
-            Path deviceImagePath = DeviceLibrary.getDeviceThumbnailPath(actualDevice);
+            DoubleBinding imageOpacity = Bindings.when(disabledProperty()).then(0.5).otherwise(1.0);
+
             StackPane imageViewWrapper = new StackPane();
             imageViewWrapper.setMinSize(80, 80);
             imageViewWrapper.setPrefSize(80, 80);
             imageViewWrapper.setMaxSize(80, 80);
+            imageViewWrapper.opacityProperty().bind(imageOpacity);
+            Path deviceImagePath = DeviceLibrary.getDeviceThumbnailPath(actualDevice);
             if (Files.exists(deviceImagePath)) {
                 ImageView imageView = new ImageView(new Image(deviceImagePath.toUri().toString()));
                 imageView.setFitWidth(80);
@@ -241,45 +244,51 @@ public class DeviceExplorerPanel extends VBox {
                 imageView.setPreserveRatio(true);
                 imageViewWrapper.getChildren().add(imageView);
             }
+            AnchorPane.setTopAnchor(imageViewWrapper, 8.0);
+            AnchorPane.setLeftAnchor(imageViewWrapper, 10.0);
+            AnchorPane.setRightAnchor(imageViewWrapper, 10.0);
 
             Label nameLabel = new Label(actualDevice.getBrand() + " " + actualDevice.getModel());
-            nameLabel.setMinHeight(40);
-            nameLabel.setPrefHeight(40);
-            nameLabel.setMaxHeight(40);
-            nameLabel.setAlignment(Pos.TOP_CENTER);
+            nameLabel.setMinSize(120, 48);
+            nameLabel.setPrefSize(120, 48);
+            nameLabel.setMaxSize(120, 48);
+            nameLabel.setAlignment(Pos.CENTER);
+            nameLabel.setTextAlignment(TextAlignment.CENTER);
             nameLabel.setWrapText(true);
+            nameLabel.setStyle("-fx-font-size: 11px");
+            AnchorPane.setBottomAnchor(nameLabel, 0.0);
+            AnchorPane.setLeftAnchor(nameLabel, 10.0);
+            AnchorPane.setRightAnchor(nameLabel, 10.0);
 
-            Hyperlink addToProject = new Hyperlink("add to project");
-            addToProject.setStyle("-fx-padding: 0");
-            addToProject.setOnAction(event -> {
+            ImageView addDeviceButton = new ImageView(new Image(getClass().getResourceAsStream("/css/add-project-device.png")));
+            addDeviceButton.opacityProperty().bind(imageOpacity);
+            addDeviceButton.setFitWidth(18);
+            addDeviceButton.setFitHeight(18);
+            addDeviceButton.setPickOnBounds(true);
+            addDeviceButton.setOnMousePressed(event -> {
                 if (actualDeviceConsumer != null) {
                     actualDeviceConsumer.accept(actualDevice);
                 }
             });
 
-            Hyperlink url = new Hyperlink("More info");
-            url.setStyle("-fx-padding: 0");
-            url.setOnAction(event -> hostServices.showDocument(actualDevice.getUrl()));
+            ImageView urlButton = new ImageView(new Image(getClass().getResourceAsStream("/css/url.png")));
+            urlButton.opacityProperty().bind(imageOpacity);
+            urlButton.setFitWidth(18);
+            urlButton.setFitHeight(18);
+            urlButton.setOnMousePressed(event -> hostServices.showDocument(actualDevice.getUrl()));
 
-            HBox tmp = new HBox();
-            tmp.setAlignment(Pos.TOP_CENTER);
-            tmp.getChildren().addAll(addToProject/*, url*/);    // TODO: fix
-
-            VBox vBox = new VBox();
-            vBox.setAlignment(Pos.TOP_CENTER);
-            vBox.getChildren().addAll(imageViewWrapper, nameLabel, tmp);
-            AnchorPane.setTopAnchor(vBox, 0.0);
-            AnchorPane.setBottomAnchor(vBox, 0.0);
-            AnchorPane.setLeftAnchor(vBox, 0.0);
-            AnchorPane.setRightAnchor(vBox, 0.0);
+            VBox buttonLayout = new VBox();
+            buttonLayout.setSpacing(0);
+            buttonLayout.getChildren().addAll(addDeviceButton, urlButton);
+            AnchorPane.setTopAnchor(buttonLayout, 5.0);
+            AnchorPane.setRightAnchor(buttonLayout, 5.0);
 
             setAlignment(Pos.TOP_CENTER);
-            setPadding(new Insets(10));
-            setMinSize(160, 160);
-            setPrefSize(160, 160);
-            setMaxSize(160, 160);
+            setMinSize(140, 140);
+            setPrefSize(140, 140);
+            setMaxSize(140, 140);
             setStyle("-fx-border-color: #cccccc;  -fx-border-radius: 10 10 10 10; ");
-            getChildren().add(vBox);
+            getChildren().addAll(imageViewWrapper, nameLabel, buttonLayout);
         }
 
         public ActualDevice getActualDevice() {
