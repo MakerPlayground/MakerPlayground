@@ -24,6 +24,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
@@ -31,6 +32,8 @@ import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,7 +44,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -370,13 +372,26 @@ public class ConfigActualDeviceView extends VBox{
             imageView.setFitWidth(30.0);
             GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
-            Label name = new Label(projectDevice.getName());
-            name.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
-            name.setTextAlignment(TextAlignment.LEFT);
-            name.setAlignment(Pos.CENTER_LEFT);
-            name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-            name.setId("nameLabel");
-            GridPane.setConstraints(name, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+            TextField nameTextField = new TextField();
+            nameTextField.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
+            nameTextField.setId("nameTextField");
+            nameTextField.setText(projectDevice.getName());
+            nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    Project.SetNameResult result = viewModel.setProjectDeviceName(projectDevice, nameTextField.getText());
+                    if (result != Project.SetNameResult.OK) {
+                        Point2D textFieldPosition = nameTextField.localToScreen(0, 0);
+                        Tooltip tooltip = new Tooltip(result.getErrorMessage());
+                        tooltip.setAutoHide(true);
+                        tooltip.show(nameTextField, textFieldPosition.getX() + 3
+                                , textFieldPosition.getY() + nameTextField.getBoundsInLocal().getHeight() + 3);
+                        new Timeline(new KeyFrame(Duration.seconds(2), event -> tooltip.hide())).play();
+
+                        nameTextField.setText(projectDevice.getName());
+                    }
+                }
+            });
+            GridPane.setConstraints(nameTextField, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
             ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDeviceComboItem(projectDevice)));
@@ -541,7 +556,7 @@ public class ConfigActualDeviceView extends VBox{
                 }
             }
 
-            settingPane.getChildren().addAll(imageView, name, entireComboBoxDevice, removeButton);
+            settingPane.getChildren().addAll(imageView, nameTextField, entireComboBoxDevice, removeButton);
             currentRow++;
         }
     }

@@ -38,6 +38,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.File;
@@ -661,7 +662,12 @@ public class Project {
         return SetNameResult.OK;
     }
 
+    @RequiredArgsConstructor
     public enum SetNameResult {
-        OK, DUPLICATE_NAME, INCORRECT_PATTERN
+        OK(""),
+        DUPLICATE_NAME("Name has been used by another device"),
+        INCORRECT_PATTERN("Device name must contain only a-z, A-Z and 0-9");
+
+        @Getter private final String errorMessage;
     }
 }

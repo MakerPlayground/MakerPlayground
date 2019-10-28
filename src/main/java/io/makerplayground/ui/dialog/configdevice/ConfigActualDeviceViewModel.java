@@ -135,6 +135,10 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
+    Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String name) {
+        return project.setProjectDeviceName(projectDevice, name);
+    }
+
     void removeDevice(ProjectDevice projectDevice) {
         project.removeDevice(projectDevice);
 

@@ -19,19 +19,21 @@ package io.makerplayground.ui;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.controlsfx.control.PopOver;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,23 +143,15 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.setText(projectDevice.getName());
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    String newName = nameTextField.getText();
-                    Project.SetNameResult result = project.setProjectDeviceName(projectDevice, newName);
+                    Project.SetNameResult result = project.setProjectDeviceName(projectDevice, nameTextField.getText());
                     if (result != Project.SetNameResult.OK) {
-                        Label errorMessage = new Label();
-                        if (result == Project.SetNameResult.DUPLICATE_NAME) {
-                            errorMessage.setText("Duplicate device name");
-                        } else if (result == Project.SetNameResult.INCORRECT_PATTERN) {
-                            errorMessage.setText("Incorrect pattern. The name must starts with a-z, A-Z, and 0-9.");
-                        }
-                        errorMessage.setLabelFor(nameTextField);
-                        errorMessage.setPadding(new Insets(5));
-                        PopOver popOver = new PopOver(errorMessage);
-                        popOver.setCornerRadius(5.0);
-                        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-                        popOver.setDetachable(true);
-                        popOver.setOnShown(event -> popOver.detach());
-                        popOver.show(nameTextField);
+                        Point2D textFieldPosition = nameTextField.localToScreen(0, 0);
+                        Tooltip tooltip = new Tooltip(result.getErrorMessage());
+                        tooltip.setAutoHide(true);
+                        tooltip.show(nameTextField, textFieldPosition.getX() + 3
+                                , textFieldPosition.getY() + nameTextField.getBoundsInLocal().getHeight() + 3);
+                        new Timeline(new KeyFrame(Duration.seconds(2), event -> tooltip.hide())).play();
+
                         nameTextField.setText(projectDevice.getName());
                     }
                 }

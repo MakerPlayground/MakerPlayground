@@ -244,3 +244,10 @@
 .spinner .decrement-arrow-button:pressed .arrow {
     -fx-background-color: derive(black,30%);
 }
+
+#nameTextField {
+    -fx-background-color : transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-padding: 0px;
+}
