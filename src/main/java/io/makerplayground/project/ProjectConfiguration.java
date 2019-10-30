@@ -433,6 +433,20 @@ public final class ProjectConfiguration {
         return Optional.empty();
     }
 
+    public Optional<ActualDevice> getActualDeviceOrActualDeviceOfIdenticalDevice(ProjectDevice projectDevice) {
+        Optional<ActualDevice> actualDevice = getActualDevice(projectDevice);
+        if (actualDevice.isPresent()) {
+            return actualDevice;
+        }
+
+        Optional<ProjectDevice> identicalDevice = getIdenticalDevice(projectDevice);
+        if (identicalDevice.isPresent()) {
+            return getActualDevice(identicalDevice.get());
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<CloudPlatform> getCloudConsume(ProjectDevice projectDevice) {
         if (unmodifiableDeviceMap.containsKey(projectDevice) && Objects.nonNull(unmodifiableDeviceMap.get(projectDevice).getCloudConsume())) {
             return Optional.of(unmodifiableDeviceMap.get(projectDevice).getCloudConsume());
@@ -447,10 +461,6 @@ public final class ProjectConfiguration {
             return devicePropertyValueMap.get(device).get(p);
         }
         return null;
-    }
-
-    public boolean isMergeToOtherDevice(ProjectDevice projectDevice) {
-        return getIdenticalDevice(projectDevice).isPresent();
     }
 
     public Optional<ProjectDevice> getIdenticalDevice(ProjectDevice projectDevice) {

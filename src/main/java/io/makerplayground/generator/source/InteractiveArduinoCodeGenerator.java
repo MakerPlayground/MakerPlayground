@@ -29,18 +29,11 @@ import io.makerplayground.project.ProjectDevice;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
 
-    private List<ProjectDevice> devices;
-
     private InteractiveArduinoCodeGenerator(Project project) {
         super(project);
-        this.devices = project.getAllDeviceUsed().stream()
-                .filter(projectDevice -> !configuration.isMergeToOtherDevice(projectDevice) &&
-                        configuration.getActualDevice(projectDevice).orElseThrow().getDeviceType() != DeviceType.VIRTUAL)
-                .collect(Collectors.toUnmodifiableList());
     }
 
     static SourceCodeResult generateCode(Project project) {
@@ -127,7 +120,7 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         builder.append(NEW_LINE);
 
         boolean firstCondition = true;
-        for (ProjectDevice projectDevice : devices) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.getGenericDevice().hasAction()) {
                 String variableName = ArduinoCodeGenerator.parseDeviceVariableName(configuration, projectDevice);
                 builder.append(INDENT).append(firstCondition ? "if " : "else if ").append("(strcmp_P(commandArgs[0], (PGM_P) F(\"")
@@ -176,14 +169,17 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         builder.append(INDENT).append("currentTime = millis();").append(NEW_LINE);
         builder.append(NEW_LINE);
 
-        for (ProjectDevice projectDevice : devices) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+                continue;
+            }
             String variableName = ArduinoCodeGenerator.parseDeviceVariableName(configuration, projectDevice);
             builder.append(INDENT).append(variableName).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
         builder.append(INDENT).append("if (currentTime - lastSendTime >= SEND_INTERVAL) {").append(NEW_LINE);
-        for (ProjectDevice projectDevice : devices) {
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
             if (projectDevice.getGenericDevice().hasCondition() || projectDevice.getGenericDevice().hasValue()) {
                 String variableName = ArduinoCodeGenerator.parseDeviceVariableName(configuration, projectDevice);
                 builder.append(INDENT).append(INDENT).append("Serial.print(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
@@ -196,7 +192,8 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
                     builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("());").append(NEW_LINE);
                 }
                 // value
-                Set<Value> supportedValue = configuration.getActualDevice(projectDevice).orElseThrow().getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceValue().keySet();
+                Set<Value> supportedValue = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElseThrow()
+                        .getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceValue().keySet();
                 for (Value value : supportedValue) {
                     builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
                     builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName()).append("());").append(NEW_LINE);
