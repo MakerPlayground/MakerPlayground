@@ -86,25 +86,7 @@ public class MainWindow extends BorderPane {
     }
 
     private Node initDiagramEditor() {
-        DeviceLibraryPanel deviceLibraryPanel = new DeviceLibraryPanel();
-        deviceLibraryPanel.setOnDevicePressed(currentProject::addDevice);
-
-        ProjectDevicePanel projectDevicePanel = new ProjectDevicePanel(currentProject);
-
-        SplitPane panelSplitPane = new SplitPane();
-        panelSplitPane.setMinWidth(200);
-        panelSplitPane.setMaxWidth(300);
-        panelSplitPane.setOrientation(Orientation.VERTICAL);
-        panelSplitPane.getItems().addAll(projectDevicePanel, deviceLibraryPanel);
-
         CanvasViewModel canvasViewModel = new CanvasViewModel(currentProject);
-        CanvasView canvasView = new CanvasView(canvasViewModel);
-
-        SplitPane mainSplitPane = new SplitPane();
-        mainSplitPane.setDividerPositions(0.75);
-        mainSplitPane.setOrientation(Orientation.HORIZONTAL);
-        mainSplitPane.getItems().addAll(canvasView, panelSplitPane);
-
-        return mainSplitPane;
+        return new CanvasView(canvasViewModel);
     }
 }
