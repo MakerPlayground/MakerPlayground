@@ -16,4 +16,5 @@ open module io.makerplayground.frontend {
     requires org.semver4j;
     requires static lombok;
     requires java.desktop;
+    requires info.picocli;
 }
