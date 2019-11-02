@@ -46,14 +46,13 @@
 #addSceneBtn{
      -fx-focus-color: transparent;
      -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
+     -fx-background-radius: 15px;
      -fx-border-color: add-scene-background-color;
-     -fx-border-radius: 5px;
+     -fx-border-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-font-weight: bold;
      -fx-text-fill : add-scene-text-color;
-     -fx-min-width: 150;
  }
 
  #addSceneBtn:hover {
@@ -71,16 +70,13 @@
  #addConditionBtn{
      -fx-focus-color: transparent;
      -fx-border-color : add-scene-background-color;
-     -fx-border-radius: 5px;
+     -fx-border-radius: 15px;
      -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
+     -fx-background-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-text-fill : add-scene-text-color;
      -fx-font-weight: bold;
-     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
-     -fx-cursor: hand;
-     -fx-min-width: 150;
  }
 
   #addConditionBtn:hover {
@@ -99,14 +95,13 @@
 #addBeginBtn{
      -fx-focus-color: transparent;
      -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
+     -fx-background-radius: 15px;
      -fx-border-color: add-scene-background-color;
-     -fx-border-radius: 5px;
+     -fx-border-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-font-weight: bold;
      -fx-text-fill : add-scene-text-color;
-     -fx-min-width: 150;
  }
 
  #addBeginBtn:hover {
