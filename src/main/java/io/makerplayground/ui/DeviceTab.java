@@ -70,7 +70,7 @@ public class DeviceTab extends SplitPane {
         refreshDiagramAndExplorer();
     }
 
-    private void refreshConfigDevicePane() {
+    void refreshConfigDevicePane() {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(this::refreshDiagramAndExplorer);
         ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);

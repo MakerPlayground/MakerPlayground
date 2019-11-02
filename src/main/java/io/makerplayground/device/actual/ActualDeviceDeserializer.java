@@ -269,7 +269,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             createArrayNodeIfMissing(compatibilityNode, "condition");
             createArrayNodeIfMissing(compatibilityNode, "value");
 
-            Map<Action, Map<Parameter, Constraint>> deviceAction = new HashMap<>();
+            LinkedHashMap<Action, Map<Parameter, Constraint>> deviceAction = new LinkedHashMap<>();
             for (JsonNode actionNode : compatibilityNode.get("action")) {
 
                 /* Check and Preprocess */
@@ -312,7 +312,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 deviceAction.put(action.get(), supportedParam);
             }
 
-            Map<Condition, Map<Parameter, Constraint>> deviceCondition = new HashMap<>();
+            LinkedHashMap<Condition, Map<Parameter, Constraint>> deviceCondition = new LinkedHashMap<>();
             for (JsonNode conditionNode : compatibilityNode.get("condition")) {
 
                 /* Check and Preprocess */
@@ -355,7 +355,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 deviceCondition.put(condition.get(), supportedParam);
             }
 
-            Map<Value, Constraint> deviceValue = new HashMap<>();
+            LinkedHashMap<Value, Constraint> deviceValue = new LinkedHashMap<>();
             for (JsonNode valueNode : compatibilityNode.get("value")) {
 
                 /* Check and Preprocess */

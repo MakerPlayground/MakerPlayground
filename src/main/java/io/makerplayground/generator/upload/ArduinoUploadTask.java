@@ -94,24 +94,24 @@ public class ArduinoUploadTask extends UploadTask {
         updateProgress(0.20, 1);
         updateMessage("Preparing to generate project");
 
-        List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
+        List<ActualDevice> allActualDevices = project.getUnmodifiableProjectDevice().stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(configuration::getActualDevice)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
-                actualDevicesUsed.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
+                allActualDevices.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
             Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
         }
 
-        Set<String> mpLibraries = actualDevicesUsed.stream()
+        Set<String> mpLibraries = allActualDevices.stream()
                 .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
         mpLibraries.add("MP_DEVICE");
 
-        Set<String> externalLibraries = actualDevicesUsed.stream()
+        Set<String> externalLibraries = allActualDevices.stream()
                 .map(actualDevice -> actualDevice.getExternalLibrary(project.getSelectedPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 

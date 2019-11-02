@@ -32,7 +32,7 @@ public class MainWindow extends BorderPane {
 
     private Project currentProject;
     private Node diagramEditor;
-    private Node deviceTab;
+    private DeviceTab deviceTab;
 
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
@@ -53,6 +53,7 @@ public class MainWindow extends BorderPane {
         deviceConfigShowing = new SimpleBooleanProperty();
         deviceConfigShowing.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
+                deviceTab.refreshConfigDevicePane();
                 setCenter(deviceTab);
             }
         });

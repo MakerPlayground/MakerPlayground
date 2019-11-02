@@ -24,7 +24,7 @@ public enum ProjectMappingResult {
     NO_SUPPORT_DEVICE("Can't find support device"),
     CANT_ASSIGN_PORT("Can't automatically assigned port for some devices"),
     NO_SUPPORT_CLOUD_PLATFORM("Some cloud platform is not supported for this configuration"),
-    NO_CONNECTION_FOR_DEVICE("Some devices are not supported by the controller.");
+    NO_CONNECTION_FOR_DEVICE("Some device cannot connect to controller.");
 
     private final String errorMessage;
 

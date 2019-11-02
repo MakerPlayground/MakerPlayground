@@ -179,8 +179,8 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    Set<CloudPlatform> getCloudPlatformUsed() {
-        return project.getCloudPlatformUsed();
+    Set<CloudPlatform> getAllCloudPlatforms() {
+        return project.getAllCloudPlatforms();
     }
 
     String getCloudPlatformParameterValue(CloudPlatform cloudPlatform, String name) {

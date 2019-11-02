@@ -19,8 +19,8 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.device.actual.*;
 import io.makerplayground.device.actual.Property;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
@@ -129,13 +129,29 @@ public final class ProjectConfiguration {
             return;
         }
         for (ProjectDevice projectDevice: nonControllerDevices) {
-            // Device
+            // Device is not chosen
             if (!deviceMap.containsKey(projectDevice) && !identicalDeviceMap.containsKey(projectDevice)) {
                 status.set(ProjectConfigurationStatus.ERROR);
                 return;
             }
-            // Connection
             if (deviceMap.containsKey(projectDevice)) {
+                // chosen device is not selectable
+                ActualDevice actualDevice = deviceMap.get(projectDevice);
+                if (compatibleDevicesSelectableMap.get(projectDevice).entrySet().stream()
+                        .anyMatch(entry -> entry.getKey().getActualDevice().isPresent()
+                                && entry.getKey().getActualDevice().get().equals(actualDevice)
+                                && !entry.getValue().equals(DeviceMappingResult.OK)))
+                {
+                    status.set(ProjectConfigurationStatus.ERROR);
+                    return;
+                }
+
+                // chosen device has no connection
+                if (actualDevice.getConnectionConsumeByOwnerDevice(projectDevice).isEmpty()) {
+                    continue;
+                }
+
+                // device connection has not set
                 if (!deviceConnections.containsKey(projectDevice) || deviceConnections.get(projectDevice) == DeviceConnection.NOT_CONNECTED) {
                     status.set(ProjectConfigurationStatus.ERROR);
                     return;
@@ -144,10 +160,31 @@ public final class ProjectConfiguration {
                     return;
                 }
             }
-            // Property
+        }
+        // Property
+        for (ProjectDevice projectDevice: nonControllerDevices) {
             if (this.devicePropertyValueMap.containsKey(projectDevice) && this.devicePropertyValueMap.get(projectDevice).entrySet().stream().anyMatch(entry->entry.getValue() instanceof String && ((String) entry.getValue()).isBlank())) {
                 status.set(ProjectConfigurationStatus.ERROR);
                 return;
+            }
+        }
+        // Cloud Parameter
+        for (ProjectDevice projectDevice: nonControllerDevices) {
+            if (deviceMap.containsKey(projectDevice)) {
+                CloudPlatform cloudPlatform = deviceMap.get(projectDevice).getCloudConsume();
+                if (cloudPlatform != null) {
+                    if (!cloudParameterMap.containsKey(cloudPlatform)) {
+                        status.set(ProjectConfigurationStatus.ERROR);
+                        return;
+                    }
+                    Map<String, String> parameter = cloudParameterMap.get(cloudPlatform);
+                    for(String key: cloudPlatform.getParameter()) {
+                        if (!parameter.containsKey(key) || parameter.get(key).isBlank()) {
+                            status.set(ProjectConfigurationStatus.ERROR);
+                            return;
+                        }
+                    }
+                }
             }
         }
         status.set(ProjectConfigurationStatus.OK);
@@ -734,6 +771,7 @@ public final class ProjectConfiguration {
             cloudParameterMap.put(cloudPlatform, new HashMap<>());
         }
         this.cloudParameterMap.get(cloudPlatform).put(parameterName, value);
+        updateStatusProperty();
     }
 
     public boolean isUseHwSerial() {

@@ -591,7 +591,7 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initCloudPlatformPropertyControl() {
-        if (viewModel.getCloudPlatformUsed().isEmpty()) {
+        if (viewModel.getAllCloudPlatforms().isEmpty()) {
             cloudPlatformParameterSection.setVisible(false);
             cloudPlatformParameterSection.setManaged(false);
         } else {
@@ -600,7 +600,7 @@ public class ConfigActualDeviceView extends VBox{
 
             int currentRow = 0;
             cloudPlatformParameterPane.getChildren().clear();
-            for (CloudPlatform cloudPlatform : viewModel.getCloudPlatformUsed()) {
+            for (CloudPlatform cloudPlatform : viewModel.getAllCloudPlatforms()) {
                 ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + cloudPlatform.getDisplayName() + ".png")));
                 cloudPlatformIcon.setFitHeight(30.0);

@@ -3,6 +3,9 @@ package io.makerplayground.project;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.Compatibility;
+import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Action;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.Parameter;
@@ -63,25 +66,37 @@ public class InteractiveModel implements SerialPortMessageListener {
             throw new IllegalStateException("Actual device and port must have been selected before creating InteractiveModel");
         }
 
+        ProjectConfiguration configuration = project.getProjectConfiguration();
+        Map<ProjectDevice, ActualDevice> deviceMap = configuration.getDeviceMap();
+
         // initialize storage for conditions and values
         conditionMap.clear();
         valueMap.clear();
         actionMap.clear();
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-            if (projectDevice.getGenericDevice().hasCondition()) {
-                conditionMap.put(projectDevice, new HashMap<>());
-                for (Condition condition : projectDevice.getGenericDevice().getCondition()) {
-                    conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
+        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
+            if (deviceMap.containsKey(projectDevice)) {
+                ActualDevice actualDevice = deviceMap.get(projectDevice);
+                for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
+                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
+                    Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
+                    if (!conditions.isEmpty()) {
+                        conditionMap.put(projectDevice, new HashMap<>());
+                        for (Condition condition: conditions) {
+                            conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
+                        }
+                    }
+                    Set<Value> values = compatibility.getDeviceValue().keySet();
+                    if (!values.isEmpty()) {
+                        valueMap.put(projectDevice, new HashMap<>());
+                        for (Value value: values) {
+                            valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
+                        }
+                    }
+                    Set<Action> actions = compatibility.getDeviceAction().keySet();
+                    if (!actions.isEmpty()) {
+                        actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
+                    }
                 }
-            }
-            if (projectDevice.getGenericDevice().hasValue()) {
-                valueMap.put(projectDevice, new HashMap<>());
-                for (Value value : projectDevice.getGenericDevice().getValue()) {
-                    valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
-                }
-            }
-            if (projectDevice.getGenericDevice().hasAction()) {
-                actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
             }
         }
     }

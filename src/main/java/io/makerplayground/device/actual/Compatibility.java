@@ -23,11 +23,12 @@ import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import lombok.Data;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
 public class Compatibility {
-    private final Map<Action, Map<Parameter, Constraint>> deviceAction;
-    private final Map<Condition, Map<Parameter, Constraint>> deviceCondition;
-    private final Map<Value, Constraint> deviceValue;
+    private final LinkedHashMap<Action, Map<Parameter, Constraint>> deviceAction;
+    private final LinkedHashMap<Condition, Map<Parameter, Constraint>> deviceCondition;
+    private final LinkedHashMap<Value, Constraint> deviceValue;
 }

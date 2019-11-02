@@ -307,6 +307,14 @@ public class Project {
         projectConfiguration.setCloudPlatformParameter(cloudPlatform, parameterName, value);
     }
 
+    public Set<CloudPlatform> getAllCloudPlatforms() {
+        return devices.stream()
+                .filter(projectDevice -> projectConfiguration.getActualDevice(projectDevice).isPresent())
+                .filter(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).isPresent())
+                .map(projectDevice -> projectConfiguration.getCloudConsume(projectDevice).orElseThrow())
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
     public Set<CloudPlatform> getCloudPlatformUsed() {
         return getAllDeviceUsed().stream()
                 .filter(projectDevice -> projectConfiguration.getActualDevice(projectDevice).isPresent())

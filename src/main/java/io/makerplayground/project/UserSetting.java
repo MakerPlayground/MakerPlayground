@@ -39,10 +39,6 @@ import java.util.*;
  */
 @JsonSerialize(using = UserSettingSerializer.class)
 public class UserSetting {
-    public enum Type {
-        SCENE, CONDITION
-    }
-
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
