@@ -50,7 +50,7 @@ class ArduinoCodeGenerator {
     private final List<Condition> allConditionUsed;
 
 
-    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+    protected static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
             PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
             PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
             PinFunction.PWM_OUT,
@@ -83,13 +83,13 @@ class ArduinoCodeGenerator {
         if (project.getCloudPlatformUsed().size() > 1) {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
-        generator.appendHeader();
+        generator.appendHeader(project.getAllDeviceUsed(), project.getCloudPlatformUsed());
         generator.appendNextRunningTime();
         generator.appendPointerVariables();
         generator.appendProjectValue();
         generator.appendFunctionDeclaration();
         generator.appendTaskVariables();
-        generator.appendInstanceVariables();
+        generator.appendInstanceVariables(project.getCloudPlatformUsed(), project.getAllDeviceUsed());
         generator.appendSetupFunction();
         generator.appendLoopFunction();
         generator.appendUpdateFunction();
@@ -105,14 +105,14 @@ class ArduinoCodeGenerator {
         project.getBegin().forEach(begin -> builder.append("void (*").append(parsePointerName(begin)).append(")(void);").append(NEW_LINE));
     }
 
-    void appendHeader() {
+    void appendHeader(Collection<ProjectDevice> devices, Collection<CloudPlatform> cloudPlatforms) {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream()
+        Stream<String> device_libs = devices.stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
-        Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
+        Stream<String> cloud_libs = cloudPlatforms.stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseIncludeStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
@@ -142,9 +142,9 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
     }
 
-    void appendInstanceVariables() {
+    void appendInstanceVariables(Collection<CloudPlatform> cloudPlatforms, Collection<ProjectDevice> projectDevices) {
         // create cloud singleton variables
-        for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+        for (CloudPlatform cloudPlatform: cloudPlatforms) {
             String cloudPlatformLibName = cloudPlatform.getLibName();
             String specificCloudPlatformLibName = project.getSelectedController().getCloudPlatformSourceCodeLibrary().get(cloudPlatform).getClassName();
 
@@ -156,7 +156,7 @@ class ArduinoCodeGenerator {
         }
 
         // instantiate object(s) for each device
-        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+        for (ProjectDevice projectDevice : projectDevices) {
             // skip device that share actual device with other project device
             if (configuration.getActualDevice(projectDevice).isEmpty()) {
                 continue;

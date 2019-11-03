@@ -19,15 +19,20 @@ package io.makerplayground.generator.source;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
 
@@ -45,9 +50,9 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         }
 
         InteractiveArduinoCodeGenerator generator = new InteractiveArduinoCodeGenerator(project);
-        generator.appendHeader();
+        generator.appendHeader(project.getUnmodifiableProjectDevice(), project.getAllCloudPlatforms());
         generator.appendGlobalVariable();
-        generator.appendInstanceVariables();
+        generator.appendInstanceVariables(project.getAllCloudPlatforms(), project.getUnmodifiableProjectDevice());
         generator.appendSetupFunction();
         generator.appendProcessCommand();
         generator.appendLoopFunction();
@@ -173,6 +178,11 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
 
         builder.append(INDENT).append("currentTime = millis();").append(NEW_LINE);
         builder.append(NEW_LINE);
+
+        // allow all cloudplatform maintains their own tasks (e.g. connection)
+        for (CloudPlatform cloudPlatform : project.getAllCloudPlatforms()) {
+            builder.append(INDENT).append(parseCloudPlatformVariableName(cloudPlatform)).append("->update(currentTime);").append(NEW_LINE);
+        }
 
         for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
             if (configuration.getIdenticalDevice(projectDevice).isPresent()) {

@@ -116,7 +116,7 @@ public class ArduinoUploadTask extends UploadTask {
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries
-        for(CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
+        for(CloudPlatform cloudPlatform: project.getAllCloudPlatforms()) {
             // add abstract .h library for the cloudPlatform.
             mpLibraries.add(cloudPlatform.getLibName());
 
