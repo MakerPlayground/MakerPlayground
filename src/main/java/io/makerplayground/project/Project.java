@@ -42,6 +42,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -416,22 +420,35 @@ public class Project {
     }
 
     public boolean hasUnsavedModification() {
-        // A hack way to check for project modification in case that it hasn't been saved
-        int beginCount = begins.size();
-        Begin firstBegin = null;
-        if(!begins.isEmpty()) {
-            firstBegin = begins.get(0);
+        if (filePath.get().isEmpty()) {
+            // a hack way to check for project modification in case that it hasn't been saved
+            return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
+                    && projectConfiguration.getController() == null
+                    && devices.isEmpty()
+                    && scenes.isEmpty()
+                    && conditions.isEmpty()
+                    && lines.isEmpty()
+                    && begins.size() == 1
+                    && begins.get(0).getTop() == 200
+                    && begins.get(0).getLeft() == 20); // begin hasn't been moved
+        } else {
+            ObjectMapper mapper = new ObjectMapper();
+            String newContent;
+            try {
+                newContent = mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                return true;
+            }
+
+            String oldContent;
+            try {
+                oldContent = new String(Files.readAllBytes(Path.of(filePath.get())));
+            } catch (IOException e) {
+                return true;
+            }
+
+            return !oldContent.equals(newContent);
         }
-        return !(projectConfiguration.getPlatform() == Platform.ARDUINO_AVR8
-                && projectConfiguration.getController() == null
-                && devices.isEmpty()
-                && scenes.isEmpty()
-                && conditions.isEmpty()
-                && lines.isEmpty()
-                && beginCount == 1
-                && firstBegin != null
-                && firstBegin.getTop() == 200
-                && firstBegin.getLeft() == 20); // begin hasn't been moved
     }
 
     public static Optional<Project> loadProject(File f) {
@@ -441,6 +458,7 @@ public class Project {
                 String projectVersion = ProjectVersionControl.readProjectVersion(f);
                 if (ProjectVersionControl.canOpen(projectVersion)) {
                     Project project = mapper.readValue(f, Project.class);
+                    project.setFilePath(f.getAbsolutePath());
                     return Optional.of(project);
                 }
             } catch (Exception e) {

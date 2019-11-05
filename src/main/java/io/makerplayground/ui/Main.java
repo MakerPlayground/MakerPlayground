@@ -215,10 +215,9 @@ public class Main extends Application {
             } else {
                 toolbar.setStatusMessage("");
             }
-        } catch (IOException x) {
-            x.printStackTrace();
-        } finally {
+        } catch (Exception e) {
             toolbar.setStatusMessage("");
+            e.printStackTrace();
         }
     }
 
@@ -250,51 +249,46 @@ public class Main extends Application {
             } else {
                 toolbar.setStatusMessage("");
             }
-        } catch (IOException x) {
-            x.printStackTrace();
-        } finally {
+        } catch (Exception e) {
             toolbar.setStatusMessage("");
+            e.printStackTrace();
         }
     }
 
     private void exportProject(Window window) {
         toolbar.setStatusMessage("Exporting...");
-        try {
-            File selectedFile;
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Export File As");
-            if (latestProjectDirectory != null) {
-                fileChooser.setInitialDirectory(latestProjectDirectory);
-            }
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Zip Archive File", "*.zip"));
-            fileChooser.setInitialFileName("*.zip");
-            selectedFile = fileChooser.showSaveDialog(window);
 
-            if (selectedFile != null) {
-                SourceCodeResult sourceCode = SourceCodeGenerator.generate(project.get());
-                if (project.get().getProjectConfiguration().getPlatform().isArduino()) {
-                    ProjectExportTask exportTask = new ArduinoExportTask(project.get(), sourceCode, selectedFile.getAbsolutePath());
-                    TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");
-                    dialogView.show();
-                    new Thread(exportTask).start();
-                } else {
-                    throw new IllegalStateException("Not implemented yet");
-                }
-                toolbar.setStatusMessage("Exported");
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Platform.runLater(() -> toolbar.setStatusMessage(""));
-                    }
-                }, 3000);
+        File selectedFile;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export File As");
+        if (latestProjectDirectory != null) {
+            fileChooser.setInitialDirectory(latestProjectDirectory);
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Zip Archive File", "*.zip"));
+        fileChooser.setInitialFileName("*.zip");
+        selectedFile = fileChooser.showSaveDialog(window);
+
+        if (selectedFile != null) {
+            SourceCodeResult sourceCode = SourceCodeGenerator.generate(project.get());
+            if (project.get().getProjectConfiguration().getPlatform().isArduino()) {
+                ProjectExportTask exportTask = new ArduinoExportTask(project.get(), sourceCode, selectedFile.getAbsolutePath());
+                TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");
+                dialogView.show();
+                new Thread(exportTask).start();
             } else {
-                toolbar.setStatusMessage("");
+                throw new IllegalStateException("Not implemented yet");
             }
-        } finally {
+            toolbar.setStatusMessage("Exported");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> toolbar.setStatusMessage(""));
+                }
+            }, 3000);
+        } else {
             toolbar.setStatusMessage("");
         }
     }
-
 
     public static void main(String[] args) {
         launch(args);
