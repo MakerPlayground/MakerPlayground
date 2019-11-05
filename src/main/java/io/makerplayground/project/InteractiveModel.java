@@ -254,7 +254,7 @@ public class InteractiveModel implements SerialPortMessageListener {
 //        System.out.println(message.strip());
         String[] args = message.split(" ");
 
-        project.getAllDeviceUsed().stream()
+        project.getUnmodifiableProjectDevice().stream()
                 .filter(projectDevice -> projectDevice.getName().equals(args[0]))
                 .findAny()
                 .ifPresent(projectDevice ->
