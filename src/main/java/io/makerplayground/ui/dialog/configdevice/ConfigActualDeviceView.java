@@ -278,7 +278,7 @@ public class ConfigActualDeviceView extends VBox{
 
                                 setGraphic(hbox);
                             } catch (IOException e) {
-                                throw new IllegalStateException("Error: image can't be found");
+                                throw new IllegalStateException("Error: image can't be found (" + thumbnailActualDevice + ")");
                             }
                             // grey out and show tooltip if this device isn't compatible
                             if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {

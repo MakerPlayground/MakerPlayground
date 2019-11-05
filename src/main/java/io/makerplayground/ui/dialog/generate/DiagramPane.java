@@ -37,7 +37,7 @@ public class DiagramPane extends HBox {
     @FXML private Button zoomOutButton;
     @FXML private Button zoomDefaultButton;
 
-    public static final double DEFAULT_ZOOM_SCALE = 0.5;
+    public static final double DEFAULT_ZOOM_SCALE = 0.7;
     private final DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
 
     public DiagramPane(Project project) {

@@ -16,23 +16,21 @@
 
 package io.makerplayground.generator.source;
 
-import io.makerplayground.device.actual.*;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Compatibility;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHubDevice;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
 
@@ -65,7 +63,7 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         builder.append("unsigned long lastSendTime = 0;").append(NEW_LINE);
 //        builder.append("unsigned long currentTime = 0;").append(NEW_LINE);
         builder.append("const int SEND_INTERVAL = 100;").append(NEW_LINE);
-        builder.append("char serialBuffer[128];").append(NEW_LINE);
+        builder.append("char serialBuffer[256];").append(NEW_LINE);
         builder.append("uint8_t serialBufferIndex = 0;").append(NEW_LINE);
         builder.append("char* commandArgs[10];").append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -142,24 +140,46 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
                                     .append(action.getName()).append("\")) == 0 && argsCount == ").append(action.getParameter().size() + 2)
                                     .append(") {").append(NEW_LINE);
 
-                            List<String> taskParameter = new ArrayList<>();
-                            for (int i=0; i<action.getParameter().size(); i++) {
-                                Parameter parameter = action.getParameter().get(i);
-                                switch (parameter.getDataType()) {
-                                    case DOUBLE:
-                                        taskParameter.add("atof(commandArgs[" + (i+2) + "])");
-                                        break;
-                                    case INTEGER:
-                                        taskParameter.add("atoi(commandArgs[" + (i+2) + "])");
-                                        break;
-                                    default:
-                                        taskParameter.add("commandArgs[" + (i+2) + "]");
-                                        break;
-                                }
+                            if (action.getParameter().size() == 1 && action.getParameter().get(0).getDataType() == DataType.RECORD) {
+                                builder.append(INDENT).append(INDENT).append(INDENT).append("Record rec;").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append("uint8_t j = 0, keyValueCount = 0, length_rec = strlen(commandArgs[2]);").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append("char* keyValues[20];").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append("while (j < length_rec && keyValueCount < 20) {").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("if (commandArgs[2][j++] == '[') {").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("keyValues[keyValueCount++] = &(commandArgs[2][j]);").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("while (j < length_rec && commandArgs[2][j] != ',') {").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("j++;").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("commandArgs[2][j++] = '\\0';").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("keyValues[keyValueCount++] = &(commandArgs[2][j]);").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("while (j < length_rec && commandArgs[2][j] != ']') {").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("j++;").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("commandArgs[2][j++] = '\\0';").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("rec.put(keyValues[keyValueCount-2], atof(keyValues[keyValueCount-1]));").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(variableName).append(".").append(action.getFunctionName()).append("(rec);").append(NEW_LINE);
+                            } else {
+                                List<String> taskParameter = new ArrayList<>();
+                                for (int i=0; i<action.getParameter().size(); i++) {
+                                    Parameter parameter = action.getParameter().get(i);
+                                    switch (parameter.getDataType()) {
+                                        case DOUBLE:
+                                            taskParameter.add("atof(commandArgs[" + (i+2) + "])");
+                                            break;
+                                        case INTEGER:
+                                            taskParameter.add("atoi(commandArgs[" + (i+2) + "])");
+                                            break;
+                                        default:
+                                            taskParameter.add("commandArgs[" + (i+2) + "]");
+                                            break;
+                                    }
 
+                                }
+                                builder.append(INDENT).append(INDENT).append(INDENT).append(variableName).append(".").append(action.getFunctionName())
+                                        .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
                             }
-                            builder.append(INDENT).append(INDENT).append(INDENT).append(variableName).append(".").append(action.getFunctionName())
-                                    .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
 
                             builder.append(INDENT).append(INDENT).append("} ");
                         });

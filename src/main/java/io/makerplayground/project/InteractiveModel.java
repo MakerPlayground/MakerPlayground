@@ -6,10 +6,8 @@ import com.fazecast.jSerialComm.SerialPortMessageListener;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Compatibility;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.expression.*;
@@ -18,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InteractiveModel implements SerialPortMessageListener {
 
@@ -154,8 +153,27 @@ public class InteractiveModel implements SerialPortMessageListener {
                 }
             }
             return sb.toString();
+        } else if (expression instanceof RecordExpression) {
+            StringBuilder sb = new StringBuilder();
+            List<RecordEntry> entryList = ((RecordExpression) expression).getRecord().getEntryList();
+            sb.append(entryList.stream().map(recordEntry -> {
+                String str = "[" + recordEntry.getField() + ",";
+                if (recordEntry.getValue() instanceof CustomNumberExpression) {
+                    str += String.valueOf(evaluateCustomNumberExpression((CustomNumberExpression) recordEntry.getValue()));
+                } else if (recordEntry.getValue() instanceof NumberWithUnitExpression) {
+                    str += String.valueOf(((NumberWithUnitExpression) recordEntry.getValue()).getNumberWithUnit().getValue());
+                } else if (recordEntry.getValue() instanceof ProjectValueExpression) {
+                    ProjectValue projectValue = ((ProjectValueExpression) recordEntry.getValue()).getProjectValue();
+                    ReadOnlyDoubleProperty currentValue = valueMap.get(projectValue.getDevice()).get(projectValue.getValue());
+                    str += currentValue.get();
+                } else {
+                    throw new IllegalStateException();
+                }
+                return str + "]";
+            }).collect(Collectors.joining()));
+            return sb.toString();
         }
-        // SimpleRTCExpression, ImageExpression, RecordExpression
+        // SimpleRTCExpression, ImageExpression
         throw new UnsupportedOperationException();
     }
 
