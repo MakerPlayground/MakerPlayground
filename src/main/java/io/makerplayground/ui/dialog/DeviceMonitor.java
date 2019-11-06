@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 
 public class DeviceMonitor extends SplitPane implements SerialPortMessageListener {
 
-    private static final Pattern format = Pattern.compile("(\\[\\[ERROR]]\\s)?\\[\\[(.*)]]\\s(.+)", Pattern.DOTALL); // Regex
+    private static final Pattern format = Pattern.compile("(\\[\\[I]]|\\[\\[E]]|\\[\\[V]])?\\s\"(.*)\"\\s(.+)", Pattern.DOTALL); // Regex
     private static final Pattern numberRegex = Pattern.compile("^(-?\\d+\\.\\d+)$|^(-?\\d+)$");
 
     private final SerialPort serialPort;
@@ -228,8 +228,9 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
 
     public static class LogItems {
         enum LogLevel {
-            INFO("[[INFO]]", 0),
-            ERROR("[[ERROR]]", 1);
+            INFO("[[I]]", 0),
+            VALUE("[[V]]", 1),
+            ERROR("[[E]]", 2);
 
             String levelTag;
             int priority;
@@ -258,9 +259,6 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         private final String message;
 
         LogItems(String level, String tag, String message) {
-            if (level == null) {
-                level = "[[INFO]]";
-            }
             this.level = LogLevel.fromString(level);
             this.deviceName = tag;
             this.message = message;

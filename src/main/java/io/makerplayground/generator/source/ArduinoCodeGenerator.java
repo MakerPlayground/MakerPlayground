@@ -17,6 +17,7 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
@@ -332,7 +333,7 @@ class ArduinoCodeGenerator {
         builder.append(NEW_LINE);
 
 //        // retrieve all project values
-//        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
+        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
 //        for (ProjectDevice projectDevice : valueUsed.keySet()) {
 //            for (Value v : valueUsed.get(projectDevice)) {
 //                builder.append(INDENT).append(parseValueVariableTerm(configuration, projectDevice, v)).append(" = ")
@@ -367,6 +368,24 @@ class ArduinoCodeGenerator {
                         .append(", \"").append(projectDeviceList.stream().map(ProjectDevice::getName).collect(Collectors.joining(", ")))
                         .append("\");").append(NEW_LINE);
             }
+//            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+//                if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+//                    continue;
+//                }
+//                builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
+//                        .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+//            }
+
+            for (ProjectDevice projectDevice : valueUsed.keySet()) {
+                if (!valueUsed.get(projectDevice).isEmpty()) {
+                    builder.append(INDENT).append(INDENT).append("PR_VAL(); PR_DEVICE(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append(valueUsed.get(projectDevice).stream()
+                            .map(value -> "Serial.print(\"" + value.getName() + "=\"); Serial.print(" + ArduinoCodeUtility.parseValueVariableTerm(searchGroup(projectDevice), value) + ");")
+                            .collect(Collectors.joining(" Serial.print(\",\");" + NEW_LINE + INDENT + INDENT)));
+                    builder.append("PR_END();").append(NEW_LINE);
+                }
+            }
+
             builder.append(INDENT).append(INDENT).append("latestLogTime = millis();").append(NEW_LINE);
             builder.append(INDENT).append("}").append(NEW_LINE);
         }
