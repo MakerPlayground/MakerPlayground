@@ -280,29 +280,22 @@ public class InteractiveModel implements SerialPortMessageListener {
                 .findAny()
                 .ifPresent(projectDevice ->
                         Platform.runLater(() -> {
-
-//                            List<Condition> conditions = projectDevice.getGenericDevice().getCondition();
-//                            List<Value> values = projectDevice.getGenericDevice().getValue();
-//
-//                            int expectedArgumentCount = conditions.size() + values.size();
-//                            if (conditions.stream().anyMatch(condition -> condition.getName().equals("Compare"))) {
-//                                expectedArgumentCount -= 1;
-//                            }
-//                            if (expectedArgumentCount != args.length - 1 ) {
-//                                return;
-//                            }
-
-
-                            AtomicInteger argsIndex = new AtomicInteger(1);
-                            conditionMap.get(projectDevice).forEach((condition, readOnlyBooleanWrapper) -> {
-                                if (condition.getName().equals("Compare")) {
-                                    return;
+                            int argsIndex = 1;
+                            if (conditionMap.containsKey(projectDevice)) {
+                                for (Condition condition : conditionMap.get(projectDevice).keySet()) {
+                                    if (condition.getName().equals("Compare")) {
+                                        continue;
+                                    }
+                                    conditionMap.get(projectDevice).get(condition).set(!args[argsIndex].equals("0"));
+                                    argsIndex++;
                                 }
-                                conditionMap.get(projectDevice).get(condition).set(!args[argsIndex.getAndIncrement()].equals("0"));
-                            });
-                            valueMap.get(projectDevice).forEach((value, readOnlyDoubleWrapper) -> {
-                                valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex.getAndIncrement()]));
-                            });
+                            }
+                            if (valueMap.containsKey(projectDevice)) {
+                                for (Value value : valueMap.get(projectDevice).keySet()) {
+                                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
+                                    argsIndex++;
+                                }
+                            }
                         })
                 );
     }
