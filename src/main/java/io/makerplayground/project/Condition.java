@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- *
- */
 @JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
     private final StringProperty name;
@@ -103,6 +100,11 @@ public class Condition extends NodeElement {
 
     public void setName(String name) {
         this.name.set(name);
+        invalidate();
+        // invalidate other condition as every condition needs to check for duplicate name
+        for (Condition c : project.getUnmodifiableCondition()) {
+            c.invalidate();
+        }
     }
 
     public void addDevice(ProjectDevice device) {
@@ -146,6 +148,18 @@ public class Condition extends NodeElement {
     protected DiagramError checkError() {
         if (setting.isEmpty()) {
             return DiagramError.CONDITION_EMPTY;
+        }
+
+        // name should contain only english alphabets and an underscore and it should not be empty
+        if (!name.get().matches("\\w+")) {
+            return DiagramError.CONDITION_INVALID_NAME;
+        }
+
+        // name should be unique
+        for (Condition c : project.getUnmodifiableCondition()) {
+            if ((this != c) && name.get().equals(c.name.get())) {
+                return DiagramError.CONDITION_DUPLICATE_NAME;
+            }
         }
 
         for (UserSetting userSetting : setting) {

@@ -22,37 +22,44 @@ import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
 import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
+import io.makerplayground.ui.control.AutoResizeTextField;
 import io.makerplayground.ui.dialog.devicepane.input.InputDeviceSelector;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.util.Duration;
 
 import java.io.IOException;
 
-/**
- * Created by USER on 05-Jul-17.
- */
 public class ConditionView extends InteractiveNode {
     private VBox root = new VBox();
+
+    @FXML private AutoResizeTextField nameTextField;
+    @FXML private ImageView removeButton;
+
+    @FXML private HBox mainLayout;
+    @FXML private VBox contentPane;
+    @FXML private ScrollPane scrollPane;
+    @FXML private VBox deviceConfigIconPane;
+    @FXML private Button addDeviceButton;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
-    @FXML private FlowPane deviceIconFlowPane;
-    @FXML private Button removeConditionBtn;
-    @FXML private Button addInputButton;
-    @FXML private ScrollPane scrollPane;
-    @FXML private HBox conditionPane;
 
     private final ConditionViewModel conditionViewModel;
     private InputDeviceSelector inputDeviceSelector = null;
+    private static final Color highlightColor = Color.web("#ffab00");
 
     public ConditionView(ConditionViewModel conditionViewModel, InteractivePane interactivePane) {
         super(interactivePane);
@@ -73,10 +80,24 @@ public class ConditionView extends InteractiveNode {
         }
         getChildren().add(root);
 
+        // TODO: refactor into InteractiveNode
+        // bind port location to the model
+        boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+            if (getParent() != null) {
+                Bounds inPortCanvasBound = getParent().sceneToLocal(inPort.localToScene(inPort.getBoundsInLocal()));
+                conditionViewModel.sourcePortXProperty().set(inPortCanvasBound.getMinX());
+                conditionViewModel.sourcePortYProperty().set(inPortCanvasBound.getCenterY());
+
+                Bounds outPortCanvasBound = getParent().sceneToLocal(outPort.localToScene(outPort.getBoundsInLocal()));
+                conditionViewModel.destPortXProperty().set(outPortCanvasBound.getMaxX());
+                conditionViewModel.destPortYProperty().set(outPortCanvasBound.getCenterY());
+            }
+        });
+
         // dynamically create device configuration icons
-        DynamicViewCreator<FlowPane, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
-                new DynamicViewCreatorBuilder<FlowPane, SceneDeviceIconViewModel, ConditionDeviceIconView>()
-                        .setParent(deviceIconFlowPane)
+        DynamicViewCreator<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
+                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
+                        .setParent(deviceConfigIconPane)
                         .setModelLoader(conditionViewModel.getDynamicViewModelCreator())
                         .setViewFactory(conditionDeviceIconViewModel -> {
                             ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
@@ -87,21 +108,25 @@ public class ConditionView extends InteractiveNode {
                         .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                         .createDynamicViewCreator();
 
+        // bind condition's name to the model
+        nameTextField.setText(conditionViewModel.getName());
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> conditionViewModel.setName(newValue));
+
         // bind condition's location to the model
         translateXProperty().bindBidirectional(conditionViewModel.xProperty());
         translateYProperty().bindBidirectional(conditionViewModel.yProperty());
 
         // show add output device button when there are devices left to be added
-        addInputButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
-        addInputButton.managedProperty().bind(addInputButton.visibleProperty());
-
-        // show remove button when select
-        removeConditionBtn.visibleProperty().bind(selectedProperty());
+        addDeviceButton.visibleProperty().bind(conditionViewModel.hasDeviceToAddProperty());
+        addDeviceButton.managedProperty().bind(addDeviceButton.visibleProperty());
 
         showHilight(false);
 
         // update hilight when error property of the condition is changed
         conditionViewModel.getCondition().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
+
+        // show remove button when select
+        removeButton.visibleProperty().bind(selectedProperty());
 
         // install tooltip to display error message to the user
         Tooltip tooltip = new Tooltip();
@@ -123,21 +148,43 @@ public class ConditionView extends InteractiveNode {
 
     private void initEvent() {
         // allow node to be dragged
-        makeMovable(scrollPane);
-        makeMovable(deviceIconFlowPane);
+        makeMovableWithEventHandler(contentPane);
+        makeMovableWithEventHandler(deviceConfigIconPane);
+        // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
+        // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
+        // native method to check the visibility of the scroll bar)
+        if (conditionViewModel.getConditionDevice().size() >= 3) {
+            removeEventFilter(scrollPane);
+        } else {
+            makeMovableWithEventFilter(scrollPane);
+        }
+        Bindings.size(conditionViewModel.getConditionDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                removeEventFilter(scrollPane);
+            } else {
+                makeMovableWithEventFilter(scrollPane);
+            }
+        });
+
+        // update scene name after the text field lose focus
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                conditionViewModel.setName(nameTextField.getText());
+            }
+        });
 
         // show device selector dialog to add device to this condition
-        addInputButton.setOnAction(e -> {
+        addDeviceButton.setOnAction(e -> {
             if (inputDeviceSelector != null) {
                 inputDeviceSelector.hide();
             }
             InputDeviceSelector inputDeviceSel = new InputDeviceSelector(conditionViewModel);
-            inputDeviceSel.show(addInputButton,0);
+            inputDeviceSel.show(addDeviceButton,0);
             inputDeviceSelector = inputDeviceSel;
         });
 
         // remove condition when press the remove button
-        removeConditionBtn.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
+        removeButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
                 , null, null, 0, 0)));
 
         // TODO: refactor into InteractiveNode
@@ -147,11 +194,7 @@ public class ConditionView extends InteractiveNode {
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
-                    , conditionViewModel.getCondition(), null
-                    , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                    + (outPort.getBoundsInLocal().getWidth() / 2)
-                    , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                    + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
+                    , conditionViewModel.getCondition(), null, conditionViewModel.getDestPortX(), conditionViewModel.getDestPortY()));
         });
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our inPort if mouse is being dragged from other outPort
@@ -165,11 +208,7 @@ public class ConditionView extends InteractiveNode {
             if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , interactivePane.getSourceNode(), conditionViewModel.getCondition()
-                        , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                        + (inPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                        + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
+                        , interactivePane.getSourceNode(), conditionViewModel.getCondition(), 0, 0));
             }
         });
 
@@ -178,11 +217,7 @@ public class ConditionView extends InteractiveNode {
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
-                    , null, conditionViewModel.getCondition()
-                    , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                    + (inPort.getBoundsInLocal().getWidth() / 2)
-                    , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                    + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
+                    , null, conditionViewModel.getCondition(), conditionViewModel.getSourcePortX(), conditionViewModel.getSourcePortY()));
         });
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
@@ -196,16 +231,12 @@ public class ConditionView extends InteractiveNode {
             if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , conditionViewModel.getCondition(), interactivePane.getDestNode()
-                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                        + (outPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                        + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
+                        , conditionViewModel.getCondition(), interactivePane.getDestNode(), 0, 0));
             }
         });
 
 
-        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+        contentPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             if (interactivePane.getSourceNode() != null && !conditionViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
                 showHilight(true);
             }
@@ -214,27 +245,19 @@ public class ConditionView extends InteractiveNode {
             }
         });
 
-        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
+        contentPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
 
-        scrollPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+        contentPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
             if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , interactivePane.getSourceNode(), conditionViewModel.getCondition()
-                        , getBoundsInParent().getMinX() + (inPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                        + (inPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                        + inPort.getBoundsInParent().getMinY() + (inPort.getBoundsInLocal().getHeight() / 2)));
+                        , interactivePane.getSourceNode(), conditionViewModel.getCondition(), 0, 0));
             }
             if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getConditionViewModel().getCondition()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , conditionViewModel.getCondition(), interactivePane.getDestNode()
-                        , getBoundsInParent().getMinX() + (outPort.getBoundsInParent().getMinX() - getBoundsInLocal().getMinX())
-                        + (outPort.getBoundsInLocal().getWidth() / 2)
-                        , getBoundsInParent().getMinY() + (conditionPane.getBoundsInParent().getMinY() - getBoundsInLocal().getMinY())
-                        + outPort.getBoundsInParent().getMinY() + (outPort.getBoundsInLocal().getHeight() / 2)));
+                        , conditionViewModel.getCondition(), interactivePane.getDestNode(), 0, 0));
             }
         });
     }
@@ -246,5 +269,15 @@ public class ConditionView extends InteractiveNode {
     @Override
     protected boolean isError() {
         return conditionViewModel.getError() != DiagramError.NONE;
+    }
+
+    @Override
+    protected Node getHighlightNode() {
+        return mainLayout;
+    }
+
+    @Override
+    protected Color getHighlightColor() {
+        return highlightColor;
     }
 }

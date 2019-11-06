@@ -4,9 +4,12 @@
     -fx-font-size:12px;
 }
 
-#statePane {
-    -fx-background-radius: 12;
+#contentPane {
+    -fx-background-radius: 14px;
     -fx-background-color: scene-header-background-color;
+    -fx-border-color: scene-theme-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
 }
 
 #nameStateTextField {
@@ -29,26 +32,10 @@
     /*-fx-font-weight : bold;*/
 }
 
-#stateBottomHBox{
-    -fx-background-color: scene-header-background-color;
-    -fx-background-radius: 0 0 10 10;
-}
-
-#delayText {
-    -fx-fill: text-color;
-    -fx-font-size: 11px;
-    /* -fx-fill: #707070; */
-}
-
-.flow-pane{
-    -fx-background-color : transparent;
-    -fx-border-color : null;
-}
-
 .scroll-pane{
-    -fx-background-color: scene-background-color;
-    -fx-border-color : border-color;
-    -fx-border-width : 1px 0px 1px 0px;
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px 0px 0px 0px;
 }
 
 .scroll-pane > .viewport{
@@ -60,12 +47,12 @@
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding: 0 4 0 0;
 }
 .scroll-bar .decrement-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding: 0 4 0 0;
 }
 .scroll-bar .increment-arrow{
     -fx-shape: " ";
@@ -78,76 +65,43 @@
 .scroll-bar .track{
     -fx-background-color: transparent;
     -fx-border-color : transparent;
-    -fx-border-radius:0.5em;
+    -fx-border-radius: 0.5em;
 }
 .scroll-bar .thumb{
     -fx-background-color: scrollbar-thumb-color;
     -fx-border-radius: 0.5em;
-    -fx-background-insets: 2, 0, 0;
+    -fx-background-insets: 0, 0, 0;
 }
 .scroll-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-#TimeUnitComboBox{
-    -fx-font-size: 12px;
-    -fx-border-color: transparent;
+#addDeviceButton{
+    -fx-background-image: url('add-device-diagram.png');
+    -fx-background-size : 100px 30px;
     -fx-background-color: transparent;
+    -fx-cursor: hand;
 }
-#TimeUnitComboBox .list-cell {
-    -fx-font-size: 12px;
-    -fx-text-fill: text-color;
-}
-#TimeUnitComboBox .combo-box-popup .list-cell{
-    -fx-font-size: 12px;
-    -fx-text-fill: text-color;
-    -fx-background-color: background-color;
-}
-#TimeUnitComboBox .list-view .list-cell:filled:hover
-{
-    -fx-font-size: 12px;
-    -fx-background-color: accent-color;
-    -fx-text-fill: text-color-invert;
-}
-#TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
-    -fx-background-color: control-background-color;
-    -fx-background-radius:0;
-    -fx-text-fill: text-color-hilight;
-}
-
-#TimeUnitComboBox .arrow{
-    -fx-background-color:  control-background-color-dark;
-    -fx-scale-x: 0.9;
-    -fx-scale-y: 0.9;
-}
-#TimeUnitComboBox:pressed .arrow-button {
-    -fx-background-color: background-color;
-}
-#TimeUnitComboBox:pressed .arrow {
-    -fx-background-color:  control-background-color-dark;
-}
-
-#addOutputButton:pressed{
+#addDeviceButton:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('add-2-toggle.png');
-    -fx-background-size : 60px;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
     -fx-cursor: hand;
 }
-#addOutputButton{
-    -fx-background-image: url('add-2.png');
-    -fx-background-size : 60px;
+#addDeviceButton:pressed{
+    -fx-focus-color: transparent;
     -fx-background-color: transparent;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
     -fx-cursor: hand;
 }
+
 #arcNode {
-    -fx-fill: border-color;
-    -fx-stroke: border-color;
+    -fx-fill: scene-theme-color;
+    -fx-stroke: scene-theme-color;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;
-}
-#headerPane {
-    -fx-background-color: transparent;
 }

@@ -21,30 +21,34 @@ import io.makerplayground.ui.canvas.node.InteractiveNode;
 import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
+import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
-/**
- *
- */
 public class LineView extends InteractiveNode {
 
-    private static final int REMOVE_BTN_GAP = 20;
+    private static final int REMOVE_BTN_GAP = 15;
 
     private final LineViewModel viewModel;
+    private final Path path;
+    private static final Color highlightColor = Color.BLACK.deriveColor(0, 1.0, 5.0, 1.0);
 
     public LineView(LineViewModel viewModel, InteractivePane interactivePane) {
         super(interactivePane);
         this.viewModel = viewModel;
 
-        Image removeButtonImage = new Image(getClass().getResourceAsStream("/icons/cancel-line-2.png"));
+        Image removeButtonImage = new Image(getClass().getResourceAsStream("/icons/diagram-element-delete.png"));
         ImageView removeButton = new ImageView(removeButtonImage);
-        removeButton.layoutXProperty().bind(viewModel.centerXProperty().subtract(removeButtonImage.getWidth()/2)
+        removeButton.setFitWidth(15.0);
+        removeButton.setFitHeight(15.0);
+        removeButton.setPreserveRatio(true);
+        removeButton.layoutXProperty().bind(viewModel.centerXProperty().subtract(removeButton.getFitWidth()/2)
                 .add(viewModel.centerUnitTangentXProperty().multiply(REMOVE_BTN_GAP)));
-        removeButton.layoutYProperty().bind(viewModel.centerYProperty().subtract(removeButtonImage.getHeight()/2)
+        removeButton.layoutYProperty().bind(viewModel.centerYProperty().subtract(removeButton.getFitHeight()/2)
                 .add(viewModel.centerUnitTangentYProperty().multiply(REMOVE_BTN_GAP)));
         removeButton.visibleProperty().bind(selectedProperty());
         removeButton.setStyle("-fx-cursor: hand;");
@@ -52,7 +56,7 @@ public class LineView extends InteractiveNode {
         removeButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null
                 , InteractiveNodeEvent.REMOVED, null, null, 0, 0)));
 
-        Path path = new Path();
+        path = new Path();
         path.setStrokeWidth(2.25);
         path.setStyle("-fx-stroke: #707070; -fx-cursor: hand;");
         Bindings.bindContentBidirectional(path.getElements(), viewModel.getPoint());
@@ -87,6 +91,16 @@ public class LineView extends InteractiveNode {
 
     public LineViewModel getLineViewModel() {
         return viewModel;
+    }
+
+    @Override
+    protected Node getHighlightNode() {
+        return path;
+    }
+
+    @Override
+    protected Color getHighlightColor() {
+        return highlightColor;
     }
 
     @Override

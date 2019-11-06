@@ -27,6 +27,8 @@ public enum DiagramError {
     SCENE_DUPLICATE_NAME("duplicate scene name"),
     SCENE_INVALID_PARAM("some parameters are invalid"),
     CONDITION_EMPTY("there isn't any condition"),
+    CONDITION_INVALID_NAME("name shouldn't be empty and should contain only A-Z, a-z, 0-9 and _"),
+    CONDITION_DUPLICATE_NAME("duplicate scene name"),
     CONDITION_INVALID_PARAM("some parameters are invalid"),
     CONDITION_INVALID_EXPRESSION("some expression are invalid"),
     CONDITION_NO_ENABLE_EXPRESSION("at least one expression should be enabled for each devices"),

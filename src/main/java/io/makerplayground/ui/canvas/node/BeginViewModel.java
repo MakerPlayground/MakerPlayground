@@ -21,9 +21,6 @@ import io.makerplayground.project.NodeElement;
 import io.makerplayground.project.Project;
 import javafx.beans.property.DoubleProperty;
 
-/**
- * Created by Mai.Manju on 13-Jul-17.
- */
 public class BeginViewModel {
     private final Begin begin;
     private final Project project;
@@ -52,6 +49,22 @@ public class BeginViewModel {
 
     public DoubleProperty yProperty() {
         return begin.topProperty();
+    }
+
+    public double getDestPortX() {
+        return begin.getDestPortX();
+    }
+
+    public DoubleProperty destPortXProperty() {
+        return begin.destPortXProperty();
+    }
+
+    public double getDestPortY() {
+        return begin.getDestPortY();
+    }
+
+    public DoubleProperty destPortYProperty() {
+        return begin.destPortYProperty();
     }
 
     public boolean hasConnectionTo(NodeElement other) {

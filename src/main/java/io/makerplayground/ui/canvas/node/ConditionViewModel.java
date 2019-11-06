@@ -53,6 +53,14 @@ public class ConditionViewModel {
         return dynamicViewModelCreator;
     }
 
+    public String getName() {
+        return condition.getName();
+    }
+
+    public void setName(String name) {
+        condition.setName(name);
+    }
+
     public double getX() { return condition.getLeft(); }
 
     public DoubleProperty xProperty() { return condition.leftProperty();}
@@ -60,6 +68,38 @@ public class ConditionViewModel {
     public double getY() { return condition.getTop(); }
 
     public DoubleProperty yProperty() { return condition.topProperty(); }
+
+    public double getSourcePortX() {
+        return condition.getSourcePortX();
+    }
+
+    public DoubleProperty sourcePortXProperty() {
+        return condition.sourcePortXProperty();
+    }
+
+    public double getSourcePortY() {
+        return condition.getSourcePortY();
+    }
+
+    public DoubleProperty sourcePortYProperty() {
+        return condition.sourcePortYProperty();
+    }
+
+    public double getDestPortX() {
+        return condition.getDestPortX();
+    }
+
+    public DoubleProperty destPortXProperty() {
+        return condition.destPortXProperty();
+    }
+
+    public double getDestPortY() {
+        return condition.getDestPortY();
+    }
+
+    public DoubleProperty destPortYProperty() {
+        return condition.destPortYProperty();
+    }
 
     public List<ProjectDevice> getProjectInputDevice() {
         return project.getDeviceWithCondition();

@@ -78,7 +78,7 @@ public class Project {
 
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
-    private static final Pattern conditionNameRegex = Pattern.compile("condition\\d+");
+    private static final Pattern conditionNameRegex = Pattern.compile("Condition\\d+");
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
     @Getter private InteractiveModel interactiveModel;
@@ -241,7 +241,7 @@ public class Project {
                 .orElse(0);
 
         Condition c = new Condition(this);
-        c.setName("condition" + (id + 1));
+        c.setName("Condition" + (id + 1));
         conditions.add(c);
         checkAndInvalidateDiagram();
         return c;
@@ -254,7 +254,7 @@ public class Project {
                 .max()
                 .orElse(0);
 
-        Condition newCondition = new Condition(c, "condition" + (id + 1), this);
+        Condition newCondition = new Condition(c, "Condition" + (id + 1), this);
         conditions.add(newCondition);
         checkAndInvalidateDiagram();
         return newCondition;
