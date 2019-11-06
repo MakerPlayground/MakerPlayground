@@ -216,28 +216,30 @@ public class InteractiveArduinoCodeGenerator extends ArduinoCodeGenerator {
         if (!project.getUnmodifiableProjectDevice().isEmpty()) {
             builder.append(INDENT).append("if (currentTime - lastSendTime >= SEND_INTERVAL) {").append(NEW_LINE);
             for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-                if (project.getProjectConfiguration().getActualDevice(projectDevice).isPresent()) {
-                    ActualDevice actualDevice = project.getProjectConfiguration().getActualDevice(projectDevice).get();
+                if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent()) {
+                    ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
                     for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
-                        Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
-                        if (!compatibility.getDeviceCondition().isEmpty() || !compatibility.getDeviceValue().isEmpty()) {
-                            String variableName = ArduinoCodeGenerator.parseDeviceVariableName(configuration, projectDevice);
-                            builder.append(INDENT).append(INDENT).append("Serial.print(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
-                            // condition
-                            compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
-                                if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
-                                    return;
-                                }
-                                builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-                                builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("());").append(NEW_LINE);
-                            });
-                            // value
-                            compatibility.getDeviceValue().forEach((value, constraint) -> {
-                                builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-                                builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName()).append("());").append(NEW_LINE);
-                            });
-                            builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
-                            builder.append(NEW_LINE);
+                        if (genericDevice == projectDevice.getGenericDevice()) {
+                            Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
+                            if (!compatibility.getDeviceCondition().isEmpty() || !compatibility.getDeviceValue().isEmpty()) {
+                                String variableName = ArduinoCodeGenerator.parseDeviceVariableName(configuration, projectDevice);
+                                builder.append(INDENT).append(INDENT).append("Serial.print(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
+                                // condition
+                                compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
+                                    if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
+                                        return;
+                                    }
+                                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
+                                    builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("());").append(NEW_LINE);
+                                });
+                                // value
+                                compatibility.getDeviceValue().forEach((value, constraint) -> {
+                                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
+                                    builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName()).append("());").append(NEW_LINE);
+                                });
+                                builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
+                                builder.append(NEW_LINE);
+                            }
                         }
                     }
                 }

@@ -66,34 +66,36 @@ public class InteractiveModel implements SerialPortMessageListener {
         }
 
         ProjectConfiguration configuration = project.getProjectConfiguration();
-        Map<ProjectDevice, ActualDevice> deviceMap = configuration.getDeviceMap();
+//        Map<ProjectDevice, ActualDevice> deviceMap = configuration.getDeviceMap();
 
         // initialize storage for conditions and values
         conditionMap.clear();
         valueMap.clear();
         actionMap.clear();
         for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-            if (deviceMap.containsKey(projectDevice)) {
-                ActualDevice actualDevice = deviceMap.get(projectDevice);
+            if (configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent()) {
+                ActualDevice actualDevice = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
                 for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
-                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
-                    Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
-                    if (!conditions.isEmpty()) {
-                        conditionMap.put(projectDevice, new HashMap<>());
-                        for (Condition condition: conditions) {
-                            conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
+                    if (genericDevice == projectDevice.getGenericDevice()) {
+                        Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
+                        Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
+                        if (!conditions.isEmpty()) {
+                            conditionMap.put(projectDevice, new HashMap<>());
+                            for (Condition condition: conditions) {
+                                conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
+                            }
                         }
-                    }
-                    Set<Value> values = compatibility.getDeviceValue().keySet();
-                    if (!values.isEmpty()) {
-                        valueMap.put(projectDevice, new HashMap<>());
-                        for (Value value: values) {
-                            valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
+                        Set<Value> values = compatibility.getDeviceValue().keySet();
+                        if (!values.isEmpty()) {
+                            valueMap.put(projectDevice, new HashMap<>());
+                            for (Value value: values) {
+                                valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
+                            }
                         }
-                    }
-                    Set<Action> actions = compatibility.getDeviceAction().keySet();
-                    if (!actions.isEmpty()) {
-                        actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
+                        Set<Action> actions = compatibility.getDeviceAction().keySet();
+                        if (!actions.isEmpty()) {
+                            actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
+                        }
                     }
                 }
             }
