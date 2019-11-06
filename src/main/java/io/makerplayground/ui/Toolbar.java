@@ -206,7 +206,7 @@ public class Toolbar extends AnchorPane {
         ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
         BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
 
-        interactiveButton.disableProperty().bind(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk));
+        interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk)));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
         Tooltip uploadButtonTooltip = new Tooltip();

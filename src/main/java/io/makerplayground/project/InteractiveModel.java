@@ -16,11 +16,11 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class InteractiveModel implements SerialPortMessageListener {
 
+    private final Map<ProjectDevice, UserSetting> userSettings = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
@@ -31,6 +31,20 @@ public class InteractiveModel implements SerialPortMessageListener {
 
     public InteractiveModel(Project project) {
         this.project = project;
+    }
+
+    public UserSetting getOrCreateUserSetting(ProjectDevice projectDevice) {
+        if (userSettings.containsKey(projectDevice)) {
+            return userSettings.get(projectDevice);
+        } else {
+            if (projectDevice.getGenericDevice().hasAction()) {
+                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0));
+                userSettings.put(projectDevice, userSetting);
+                return userSetting;
+            } else {
+                throw new IllegalStateException("Device doesn't have any action");
+            }
+        }
     }
 
     public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
@@ -64,6 +78,16 @@ public class InteractiveModel implements SerialPortMessageListener {
         // check for precondition
         if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
             throw new IllegalStateException("Actual device and port must have been selected before creating InteractiveModel");
+        }
+
+        // TODO: fix to remember old setting after we fix project device equals method to prevent key collision with future device with identical name
+        // initialize user setting
+        userSettings.clear();
+        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice())
+        {
+            if (projectDevice.getGenericDevice().hasAction()) {
+                userSettings.put(projectDevice, new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0)));
+            }
         }
 
         ProjectConfiguration configuration = project.getProjectConfiguration();
@@ -280,29 +304,22 @@ public class InteractiveModel implements SerialPortMessageListener {
                 .findAny()
                 .ifPresent(projectDevice ->
                         Platform.runLater(() -> {
-
-//                            List<Condition> conditions = projectDevice.getGenericDevice().getCondition();
-//                            List<Value> values = projectDevice.getGenericDevice().getValue();
-//
-//                            int expectedArgumentCount = conditions.size() + values.size();
-//                            if (conditions.stream().anyMatch(condition -> condition.getName().equals("Compare"))) {
-//                                expectedArgumentCount -= 1;
-//                            }
-//                            if (expectedArgumentCount != args.length - 1 ) {
-//                                return;
-//                            }
-
-
-                            AtomicInteger argsIndex = new AtomicInteger(1);
-                            conditionMap.get(projectDevice).forEach((condition, readOnlyBooleanWrapper) -> {
-                                if (condition.getName().equals("Compare")) {
-                                    return;
+                            int argsIndex = 1;
+                            if (conditionMap.containsKey(projectDevice)) {
+                                for (Condition condition : conditionMap.get(projectDevice).keySet()) {
+                                    if (condition.getName().equals("Compare")) {
+                                        continue;
+                                    }
+                                    conditionMap.get(projectDevice).get(condition).set(!args[argsIndex].equals("0"));
+                                    argsIndex++;
                                 }
-                                conditionMap.get(projectDevice).get(condition).set(!args[argsIndex.getAndIncrement()].equals("0"));
-                            });
-                            valueMap.get(projectDevice).forEach((value, readOnlyDoubleWrapper) -> {
-                                valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex.getAndIncrement()]));
-                            });
+                            }
+                            if (valueMap.containsKey(projectDevice)) {
+                                for (Value value : valueMap.get(projectDevice).keySet()) {
+                                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
+                                    argsIndex++;
+                                }
+                            }
                         })
                 );
     }
