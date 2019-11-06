@@ -16,13 +16,14 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class InteractiveModel implements SerialPortMessageListener {
 
-    private final Map<ProjectDevice, Map<Condition, ReadOnlyBooleanWrapper>> conditionMap = new HashMap<>();
-    private final Map<ProjectDevice, Map<Value, ReadOnlyDoubleWrapper>> valueMap = new HashMap<>();
-    private final Map<ProjectDevice, List<Action>> actionMap = new HashMap<>();
+    private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
+    private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
+    private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
 
     private final Project project;
     private SerialPort serialPort;
@@ -80,14 +81,14 @@ public class InteractiveModel implements SerialPortMessageListener {
                         Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
                         Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
                         if (!conditions.isEmpty()) {
-                            conditionMap.put(projectDevice, new HashMap<>());
+                            conditionMap.put(projectDevice, new LinkedHashMap<>());
                             for (Condition condition: conditions) {
                                 conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
                             }
                         }
                         Set<Value> values = compatibility.getDeviceValue().keySet();
                         if (!values.isEmpty()) {
-                            valueMap.put(projectDevice, new HashMap<>());
+                            valueMap.put(projectDevice, new LinkedHashMap<>());
                             for (Value value: values) {
                                 valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
                             }
@@ -279,29 +280,29 @@ public class InteractiveModel implements SerialPortMessageListener {
                 .findAny()
                 .ifPresent(projectDevice ->
                         Platform.runLater(() -> {
-                            List<Condition> conditions = projectDevice.getGenericDevice().getCondition();
-                            List<Value> values = projectDevice.getGenericDevice().getValue();
 
-                            int expectedArgumentCount = conditions.size() + values.size();
-                            if (conditions.stream().anyMatch(condition -> condition.getName().equals("Compare"))) {
-                                expectedArgumentCount -= 1;
-                            }
-                            if (expectedArgumentCount != args.length - 1 ) {
-                                return;
-                            }
+//                            List<Condition> conditions = projectDevice.getGenericDevice().getCondition();
+//                            List<Value> values = projectDevice.getGenericDevice().getValue();
+//
+//                            int expectedArgumentCount = conditions.size() + values.size();
+//                            if (conditions.stream().anyMatch(condition -> condition.getName().equals("Compare"))) {
+//                                expectedArgumentCount -= 1;
+//                            }
+//                            if (expectedArgumentCount != args.length - 1 ) {
+//                                return;
+//                            }
 
-                            int argsIndex = 1;
-                            for (Condition condition : conditions) {
+
+                            AtomicInteger argsIndex = new AtomicInteger(1);
+                            conditionMap.get(projectDevice).forEach((condition, readOnlyBooleanWrapper) -> {
                                 if (condition.getName().equals("Compare")) {
-                                    continue;
+                                    return;
                                 }
-                                conditionMap.get(projectDevice).get(condition).set(args[argsIndex].equals("1"));
-                                argsIndex++;
-                            }
-                            for (Value value : values) {
-                                valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
-                                argsIndex++;
-                            }
+                                conditionMap.get(projectDevice).get(condition).set(!args[argsIndex.getAndIncrement()].equals("0"));
+                            });
+                            valueMap.get(projectDevice).forEach((value, readOnlyDoubleWrapper) -> {
+                                valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex.getAndIncrement()]));
+                            });
                         })
                 );
     }
