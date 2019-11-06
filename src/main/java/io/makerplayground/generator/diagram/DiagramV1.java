@@ -18,10 +18,8 @@ package io.makerplayground.generator.diagram;
 
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
-import io.makerplayground.project.DeviceConnection;
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectConfiguration;
-import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.*;
+import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -32,6 +30,7 @@ import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import lombok.*;
+import org.controlsfx.control.PopOver;
 
 import java.io.File;
 import java.io.IOException;
@@ -517,7 +516,9 @@ class DiagramV1 {
     private static final double RIGHT_REGION_V_GAP = 30.0;
     private static final double RIGHT_REGION_H_MARGIN = 80.0;
 
+    private final Project project;
     private final ProjectConfiguration config;
+    private final InteractiveModel interactiveModel;
     private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
     private final SortedMap<ProjectDevice, DeviceConnection> deviceConnectionMap;
 
@@ -543,6 +544,8 @@ class DiagramV1 {
     private Map<ProjectDevice, Double> deviceRotationAngle = new HashMap<>();     // keep the angle that the device must be turned when drawing
     private Map<ProjectDevice, Size> deviceSizeAfterRotation = new HashMap<>();   // keep the device size after the rotation.
 
+    private InteractiveDevicePropertyWindow interactiveDevicePropertyWindow;
+
     private static double max(double... items) {
         if (items.length == 0) {
             throw new UnsupportedOperationException();
@@ -557,7 +560,9 @@ class DiagramV1 {
     }
 
     DiagramV1(Project project) {
+        this.project = project;
         this.config = project.getProjectConfiguration();
+        this.interactiveModel = project.getInteractiveModel();
         this.deviceMap = config.getUnmodifiableDeviceMap();
         this.deviceConnectionMap = config.getUnmodifiableDeviceConnections();
 
@@ -1159,11 +1164,27 @@ class DiagramV1 {
             ImageView imageView = new ImageView(image);
             Coordinate coordinate = deviceCenterCoordinates.get(projectDevice);
             ActualDevice actualDevice = deviceMap.get(projectDevice);
+            imageView.setOnMouseEntered(event -> {
+                if (interactiveModel.isStarted()) {
+                    imageView.setEffect(new DropShadow(20.0, Color.web("#2673fd")));
+                }
+            });
+            imageView.setOnMousePressed(event -> {
+                if (interactiveModel.isStarted()) {
+                    showInteractiveDevicePropertyWindow(imageView, projectDevice);
+                }
+            });
+            imageView.setOnMouseExited(event -> {
+                if (interactiveModel.isStarted()) {
+                    imageView.setEffect(null);
+                }
+            });
             imageView.setLayoutX(coordinate.getX() - 0.5 * actualDevice.getWidth() + GLOBAL_LEFT_MARGIN);
             imageView.setLayoutY(coordinate.getY() - 0.5 * actualDevice.getHeight() + GLOBAL_TOP_MARGIN);
             imageView.setRotate(deviceAngle);
             Size sizeAfterRotation = deviceSizeAfterRotation.get(projectDevice);
             drawingPane.getChildren().add(imageView);
+
             if (deviceOnBottomRegion.contains(projectDevice)) {
                 Text text = new Text(projectDevice.getName());
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
@@ -1191,6 +1212,33 @@ class DiagramV1 {
             }
         } catch (IOException e) {
             throw new IllegalStateException("Image not found for : " + deviceMap.get(projectDevice).getId());
+        }
+    }
+
+    private void showInteractiveDevicePropertyWindow(Node button, ProjectDevice device) {
+        if (interactiveDevicePropertyWindow == null) {
+            List<ProjectDevice> deviceList;
+            if (device == ProjectDevice.CONTROLLER) {
+                deviceList = project.getUnmodifiableProjectDevice().stream()
+                        .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
+                        .collect(Collectors.toUnmodifiableList());
+            } else {
+                deviceList = new ArrayList<>();
+                deviceList.add(device);
+                // add device(s) that are sharing an actual device with this device to the same property window
+                for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
+                    Optional<ProjectDevice> identicalDevice = config.getIdenticalDevice(pd);
+                    if (identicalDevice.isPresent() && identicalDevice.get() == device) {
+                        deviceList.add(pd);
+                    }
+                }
+            }
+            if (!deviceList.isEmpty()) {
+                interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);
+                interactiveDevicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                interactiveDevicePropertyWindow.setOnHidden(event1 -> interactiveDevicePropertyWindow = null);
+                interactiveDevicePropertyWindow.show(button);
+            }
         }
     }
 
