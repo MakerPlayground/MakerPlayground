@@ -99,6 +99,7 @@ public class Main extends Application {
         project.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
                 oldValue.filePathProperty().removeListener(projectPathListener);
+                oldValue.getInteractiveModel().stop();
             }
             newValue.filePathProperty().addListener(projectPathListener);
             updatePath(primaryStage, newValue.getFilePath());
