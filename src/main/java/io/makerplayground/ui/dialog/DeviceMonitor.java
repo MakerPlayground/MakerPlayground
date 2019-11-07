@@ -96,6 +96,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         messageTableColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getMessage()));
 
         deviceMonitorTable.getColumns().addAll(deviceNameTableColumn, messageTableColumn);
+        deviceMonitorTable.resizeColumn(deviceNameTableColumn, 50);
+        deviceMonitorTable.resizeColumn(messageTableColumn, 100);
         deviceMonitorTable.setItems(logDataFilter);
 
         // initialize serial port
@@ -139,7 +141,20 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     }
 
     private void createLineChart(String tag) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        Map<String, XYChart.Series<Number, Number>> valueSeriesMap = new HashMap<>();
+
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Samples");
+        xAxis.setAutoRanging(true);
+//        xAxis.setAnimated(false);
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Value");
+//        yAxis.setAnimated(false);
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle(tag);
+        lineChart.setAnimated(false);
 
         logData.addListener((ListChangeListener<LogItems>) c -> {
             while (c.next()) {
@@ -154,33 +169,28 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
                     for (LogItems addedItem : c.getAddedSubList()) {
                         if (addedItem.getDeviceName().equals(tag)) {
                             // assume that the format is "value = 10.5"
-                            String[] token = addedItem.getMessage().split(" ");
-                            Matcher matcher = numberRegex.matcher(token[token.length - 1]);
-                            if (matcher.matches()) {
-                                double d = Double.parseDouble(token[token.length - 1]);
-                                series.getData().add(new XYChart.Data<>(series.getData().size(), d));
-                            } else {
-                                series.getData().add(new XYChart.Data<>(series.getData().size(), 0));
+                            String[] valuePairs = addedItem.getMessage().split(",");
+                            for (String valuePair : valuePairs) {
+                                String[] tokens = valuePair.split("=");
+                                String valueName = tokens[0];
+                                Matcher matcher = numberRegex.matcher(tokens[1]);
+                                if (matcher.matches()) {
+                                    double value = Double.parseDouble(tokens[1]);
+                                    if (!valueSeriesMap.containsKey(valueName)) {
+                                        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                                        series.setName(valueName);
+                                        valueSeriesMap.put(valueName, series);
+                                        lineChart.getData().add(series);
+                                    }
+                                    XYChart.Series<Number, Number> series = valueSeriesMap.get(valueName);
+                                    series.getData().add(new XYChart.Data<>(series.getData().size(), value));
+                                }
                             }
                         }
                     }
                 }
             }
         });
-
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Samples");
-        xAxis.setAutoRanging(true);
-//        xAxis.setAnimated(false);
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Value");
-//        yAxis.setAnimated(false);
-
-        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle(tag);
-        lineChart.setAnimated(false);
-        lineChart.getData().add(series);
 
         lineChartMap.put(tag, lineChart);
         chartPane.getChildren().add(lineChart);
