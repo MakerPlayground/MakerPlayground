@@ -123,7 +123,7 @@
     -fx-background-repeat: no-repeat;
     -fx-padding: 5px;
 }
-#zoomDefaultButton:pressed{
+#zoomFitButton:pressed{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
     -fx-background-image: url('../../canvas/zoom-default-toggle.png');
@@ -132,7 +132,7 @@
     -fx-background-repeat: no-repeat;
     -fx-padding: 10px 10px 10px 10px;
  }
-#zoomDefaultButton{
+#zoomFitButton{
     -fx-background-image: url('../../canvas/zoom-default.png');
     -fx-background-size : 25px;
     -fx-background-color: transparent;

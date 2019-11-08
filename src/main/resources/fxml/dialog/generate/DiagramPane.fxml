@@ -35,7 +35,7 @@
                     <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25"/>
                     <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25"/>
                     <Pane prefHeight="9"/>
-                    <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25"
+                    <Button id="zoomFitButton" fx:id="zoomFitButton" prefHeight="25"
                             prefWidth="25"/>
                 </VBox>
             </children>

@@ -35,7 +35,7 @@ public class DiagramPane extends HBox {
     @FXML private ScrollPane diagramScrollPane;
     @FXML private Button zoomInButton;
     @FXML private Button zoomOutButton;
-    @FXML private Button zoomDefaultButton;
+    @FXML private Button zoomFitButton;
 
     public static final double DEFAULT_ZOOM_SCALE = 0.7;
     private final DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
@@ -59,13 +59,23 @@ public class DiagramPane extends HBox {
     }
 
     private void initView() {
-        zoomInButton.setOnAction(event -> scale.set(scale.get() + 0.1));
-        zoomOutButton.setOnAction(event -> scale.set(Math.max(0.1, scale.get() - 0.1)));
-        zoomDefaultButton.setOnAction(event -> scale.set(0.5));
-
         Pane wiringDiagram = WiringDiagram.make(project);
         wiringDiagram.scaleXProperty().bind(scale);
         wiringDiagram.scaleYProperty().bind(scale);
+
+        zoomInButton.setOnAction(event -> scale.set(scale.get() + 0.1));
+        zoomOutButton.setOnAction(event -> scale.set(Math.max(0.1, scale.get() - 0.1)));
+        zoomFitButton.setOnAction(event -> {
+            // add 5 pixels to the actual diagram dimension to prevent it from being too fit to the scroll pane and force
+            // the scroll pane to show unnecessary horizontal scrollbar
+            double width = wiringDiagram.getBoundsInLocal().getWidth() + 5;
+            double height = wiringDiagram.getBoundsInLocal().getHeight() + 5;
+            if (width > height) {
+                scale.set(diagramScrollPane.getBoundsInLocal().getWidth() / width);
+            } else {
+                scale.set(diagramScrollPane.getBoundsInLocal().getHeight() / height);
+            }
+        });
 
         diagramScrollPane.setContent(new Group(wiringDiagram));
     }
