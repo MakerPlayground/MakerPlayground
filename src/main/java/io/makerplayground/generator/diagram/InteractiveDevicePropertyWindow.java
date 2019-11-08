@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InteractiveDevicePropertyWindow extends PopOver {
 
@@ -30,6 +31,7 @@ public class InteractiveDevicePropertyWindow extends PopOver {
         vBox.setAlignment(Pos.TOP_CENTER);
         vBox.setPadding(new Insets(20));
 
+        setTitle(devices.stream().map(ProjectDevice::getName).collect(Collectors.joining(",")));
         setDetachable(true);
         setContentNode(vBox);
     }

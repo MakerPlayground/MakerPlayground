@@ -544,8 +544,6 @@ class DiagramV1 {
     private Map<ProjectDevice, Double> deviceRotationAngle = new HashMap<>();     // keep the angle that the device must be turned when drawing
     private Map<ProjectDevice, Size> deviceSizeAfterRotation = new HashMap<>();   // keep the device size after the rotation.
 
-    private InteractiveDevicePropertyWindow interactiveDevicePropertyWindow;
-
     private static double max(double... items) {
         if (items.length == 0) {
             throw new UnsupportedOperationException();
@@ -1224,29 +1222,26 @@ class DiagramV1 {
     }
 
     private void showInteractiveDevicePropertyWindow(Node button, ProjectDevice device) {
-        if (interactiveDevicePropertyWindow == null) {
-            List<ProjectDevice> deviceList;
-            if (device == ProjectDevice.CONTROLLER) {
-                deviceList = project.getUnmodifiableProjectDevice().stream()
-                        .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
-                        .collect(Collectors.toUnmodifiableList());
-            } else {
-                deviceList = new ArrayList<>();
-                deviceList.add(device);
-                // add device(s) that are sharing an actual device with this device to the same property window
-                for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
-                    Optional<ProjectDevice> identicalDevice = config.getIdenticalDevice(pd);
-                    if (identicalDevice.isPresent() && identicalDevice.get() == device) {
-                        deviceList.add(pd);
-                    }
+        List<ProjectDevice> deviceList;
+        if (device == ProjectDevice.CONTROLLER) {
+            deviceList = project.getUnmodifiableProjectDevice().stream()
+                    .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
+                    .collect(Collectors.toUnmodifiableList());
+        } else {
+            deviceList = new ArrayList<>();
+            deviceList.add(device);
+            // add device(s) that are sharing an actual device with this device to the same property window
+            for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
+                Optional<ProjectDevice> identicalDevice = config.getIdenticalDevice(pd);
+                if (identicalDevice.isPresent() && identicalDevice.get() == device) {
+                    deviceList.add(pd);
                 }
             }
-            if (!deviceList.isEmpty()) {
-                interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);
-                interactiveDevicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-                interactiveDevicePropertyWindow.setOnHidden(event1 -> interactiveDevicePropertyWindow = null);
-                interactiveDevicePropertyWindow.show(button);
-            }
+        }
+        if (!deviceList.isEmpty()) {
+            InteractiveDevicePropertyWindow interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);
+            interactiveDevicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+            interactiveDevicePropertyWindow.show(button);
         }
     }
 
