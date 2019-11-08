@@ -154,7 +154,7 @@
             "name": "Start Index",
             "value": 1.0,
             "constraint": {
-              "min": 0.0,
+              "min": 1.0,
               "max": 10000.0,
               "unit": "NOT_SPECIFIED"
             },
@@ -165,7 +165,7 @@
             "name": "End Index",
             "value": 1.0,
             "constraint": {
-              "min": 0.0,
+              "min": 1.0,
               "max": 10000.0,
               "unit": "NOT_SPECIFIED"
             },
