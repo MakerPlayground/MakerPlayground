@@ -1185,28 +1185,36 @@ class DiagramV1 {
             Size sizeAfterRotation = deviceSizeAfterRotation.get(projectDevice);
             drawingPane.getChildren().add(imageView);
 
+            // this actual device may be shared by multiple project device so we list their name separate by a comma as the actual device name
+            List<ProjectDevice> projectDeviceList = new ArrayList<>();
+            projectDeviceList.add(projectDevice);
+            projectDeviceList.addAll(config.getDeviceWithSameIdenticalDevice(projectDevice));
+            String deviceName = projectDeviceList.stream().map(ProjectDevice::getName).collect(Collectors.joining(",\n"));
+            // DEVICE_NAME_FONT_SIZE * projectDeviceList.size() is not the theoretically correct way to measure text height as text height
+            // is not equal to the font size for every font (most of them don't) but it works fine with the standard font we use and JavaFX
+            // doesn't provide a pubic API for measure text size yet so we do it this way for now
             if (deviceOnBottomRegion.contains(projectDevice)) {
-                Text text = new Text(projectDevice.getName());
+                Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
-                text.setY(coordinate.getY() + 0.5 * sizeAfterRotation.getHeight() + DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
+                text.setY(coordinate.getY() + 0.5 * sizeAfterRotation.getHeight() + (DEVICE_NAME_FONT_SIZE * projectDeviceList.size()) + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             } else if (deviceOnTopRegion.contains(projectDevice)) {
-                Text text = new Text(projectDevice.getName());
+                Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
-                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE  + GLOBAL_TOP_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * projectDeviceList.size())  + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             } else if (deviceOnLeftRegion.contains(projectDevice) || deviceOnRightRegion.contains(projectDevice)) {
-                Text text = new Text(projectDevice.getName());
+                Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.45 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
-                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE + GLOBAL_TOP_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * projectDeviceList.size()) + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             } else if (deviceNeedBreadboard.contains(projectDevice)) {
-                Text text = new Text(projectDevice.getName());
+                Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
-                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - DEVICE_NAME_FONT_SIZE  + GLOBAL_TOP_MARGIN);
+                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * projectDeviceList.size())  + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
             }

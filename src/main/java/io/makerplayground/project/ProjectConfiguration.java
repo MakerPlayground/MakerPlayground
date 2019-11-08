@@ -511,6 +511,13 @@ public final class ProjectConfiguration {
         return getIdenticalDevice(candidate);
     }
 
+    public List<ProjectDevice> getDeviceWithSameIdenticalDevice(ProjectDevice projectDevice) {
+        return unmodifiableIdenticalDeviceMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(projectDevice))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     public void setActualDevice(ProjectDevice projectDevice, ActualDevice actualDevice) {
         if (actualDevice != null) {
             boolean differToPreviousActual = getActualDevice(projectDevice).isPresent() && getActualDevice(projectDevice).get() != actualDevice;
