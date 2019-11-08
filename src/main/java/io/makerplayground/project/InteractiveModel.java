@@ -5,7 +5,6 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Compatibility;
-import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
@@ -21,9 +20,10 @@ import java.util.stream.Collectors;
 public class InteractiveModel implements SerialPortMessageListener {
 
     private final Map<ProjectDevice, UserSetting> userSettings = new HashMap<>();
+    private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
+    private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
-    private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
 
     private final Project project;
     private SerialPort serialPort;
@@ -47,15 +47,24 @@ public class InteractiveModel implements SerialPortMessageListener {
         }
     }
 
+    private boolean isActualDeviceIdentical(ProjectDevice projectDevice) {
+        Optional<ActualDevice> currentDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice);
+        return currentDevice.isPresent() && currentDevice.get().equals(deviceMap.get(projectDevice));
+    }
+
+    public boolean hasCommand(ProjectDevice projectDevice, Action action) {
+        return isActualDeviceIdentical(projectDevice) && actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
+    }
+
     public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
-        if (!conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
+        if (!isActualDeviceIdentical(projectDevice) || !conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
             return Optional.empty();
         }
         return Optional.of(conditionMap.get(projectDevice).get(condition).getReadOnlyProperty());
     }
 
     public Optional<ReadOnlyDoubleProperty> getValueProperty(ProjectDevice projectDevice, Value value) {
-        if (!valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
+        if (!isActualDeviceIdentical(projectDevice) || !valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
             return Optional.empty();
         }
         return Optional.of(valueMap.get(projectDevice).get(value).getReadOnlyProperty());
@@ -80,50 +89,47 @@ public class InteractiveModel implements SerialPortMessageListener {
             throw new IllegalStateException("Actual device and port must have been selected before creating InteractiveModel");
         }
 
-        // TODO: fix to remember old setting after we fix project device equals method to prevent key collision with future device with identical name
-        // initialize user setting
-        userSettings.clear();
-        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice())
-        {
-            if (projectDevice.getGenericDevice().hasAction()) {
-                userSettings.put(projectDevice, new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0)));
+        ProjectConfiguration configuration = project.getProjectConfiguration();
+
+        // initialize storage for actions, conditions, values and current device selection
+
+        // remove usersetting only if the project device has been removed or the actual device selected has changed so
+        // that we can retain user setting from previous session
+        for (ProjectDevice projectDevice : new ArrayList<>(userSettings.keySet())) {
+            if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
+                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
+                userSettings.remove(projectDevice);
             }
         }
 
-        ProjectConfiguration configuration = project.getProjectConfiguration();
-//        Map<ProjectDevice, ActualDevice> deviceMap = configuration.getDeviceMap();
+        deviceMap.clear();
+        deviceMap.putAll(configuration.getDeviceMap());
 
-        // initialize storage for conditions and values
+        actionMap.clear();
         conditionMap.clear();
         valueMap.clear();
-        actionMap.clear();
         for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-            if (configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent()) {
-                ActualDevice actualDevice = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
-                for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
-                    if (genericDevice == projectDevice.getGenericDevice()) {
-                        Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
-                        Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
-                        if (!conditions.isEmpty()) {
-                            conditionMap.put(projectDevice, new LinkedHashMap<>());
-                            for (Condition condition: conditions) {
-                                conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
-                            }
-                        }
-                        Set<Value> values = compatibility.getDeviceValue().keySet();
-                        if (!values.isEmpty()) {
-                            valueMap.put(projectDevice, new LinkedHashMap<>());
-                            for (Value value: values) {
-                                valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
-                            }
-                        }
-                        Set<Action> actions = compatibility.getDeviceAction().keySet();
-                        if (!actions.isEmpty()) {
-                            actionMap.put(projectDevice, new ArrayList<>(projectDevice.getGenericDevice().getAction()));
-                        }
+            configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).ifPresent(actualDevice -> {
+                Compatibility compatibility = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice());
+                Set<Action> actions = compatibility.getDeviceAction().keySet();
+                if (!actions.isEmpty()) {
+                    actionMap.put(projectDevice, projectDevice.getGenericDevice().getAction());
+                }
+                Set<Condition> conditions = compatibility.getDeviceCondition().keySet();
+                if (!conditions.isEmpty()) {
+                    conditionMap.put(projectDevice, new LinkedHashMap<>());
+                    for (Condition condition: conditions) {
+                        conditionMap.get(projectDevice).put(condition, new ReadOnlyBooleanWrapper(false));
                     }
                 }
-            }
+                Set<Value> values = compatibility.getDeviceValue().keySet();
+                if (!values.isEmpty()) {
+                    valueMap.put(projectDevice, new LinkedHashMap<>());
+                    for (Value value: values) {
+                        valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
+                    }
+                }
+            });
         }
     }
 
@@ -322,9 +328,5 @@ public class InteractiveModel implements SerialPortMessageListener {
                             }
                         })
                 );
-    }
-
-    public boolean hasCommand(ProjectDevice projectDevice, Action action) {
-        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
     }
 }
