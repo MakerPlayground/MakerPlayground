@@ -98,10 +98,23 @@ public class ConditionView extends InteractiveNode {
         DynamicViewCreator<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =
                 new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
                         .setParent(deviceConfigIconPane)
-                        .setModelLoader(conditionViewModel.getDynamicViewModelCreator())
+                        .setModelLoader(conditionViewModel.getDeviceViewModelCreator())
                         .setViewFactory(conditionDeviceIconViewModel -> {
                             ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
-                            conditionDeviceIconView.setOnRemove(event -> conditionViewModel.removeConditionDevice(conditionDeviceIconViewModel.getProjectDevice()));
+                            conditionDeviceIconView.setOnRemove(event -> conditionViewModel.removeUserSetting(conditionDeviceIconViewModel.getUserSetting()));
+                            return conditionDeviceIconView;
+                        })
+                        .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
+                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                        .createDynamicViewCreator();
+
+        DynamicViewCreator<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator2 =
+                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView>()
+                        .setParent(deviceConfigIconPane)
+                        .setModelLoader(conditionViewModel.getVirtualDeviceViewModelCreator())
+                        .setViewFactory(conditionDeviceIconViewModel -> {
+                            ConditionDeviceIconView conditionDeviceIconView = new ConditionDeviceIconView(conditionDeviceIconViewModel);
+                            conditionDeviceIconView.setOnRemove(event -> conditionViewModel.removeUserSetting(conditionDeviceIconViewModel.getUserSetting()));
                             return conditionDeviceIconView;
                         })
                         .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
@@ -153,12 +166,12 @@ public class ConditionView extends InteractiveNode {
         // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
         // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
         // native method to check the visibility of the scroll bar)
-        if (conditionViewModel.getConditionDevice().size() >= 3) {
+        if (conditionViewModel.getDeviceSetting().size() >= 3) {
             removeEventFilter(scrollPane);
         } else {
             makeMovableWithEventFilter(scrollPane);
         }
-        Bindings.size(conditionViewModel.getConditionDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
+        Bindings.size(conditionViewModel.getDeviceSetting()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 removeEventFilter(scrollPane);
             } else {

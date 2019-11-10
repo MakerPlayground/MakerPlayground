@@ -26,11 +26,9 @@ import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 
-/**
- * Created by USER on 05-Jul-17.
- */
 public class InputDeviceSelector extends PopOver {
-        @FXML FlowPane flowPane;
+    @FXML private FlowPane flowPane;
+
     public InputDeviceSelector(ConditionViewModel viewModel) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/devicepane/input/InputDeviceSelector.fxml"));
         fxmlLoader.setRoot(this);
@@ -40,8 +38,25 @@ public class InputDeviceSelector extends PopOver {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        viewModel.getVirtualDevices().stream().filter(device -> {
+            for (UserSetting userSetting : viewModel.getVirtualDeviceSetting()) {
+                if (userSetting.getDevice() == device) {
+                    return false;
+                }
+            }
+            return true;
+        }).forEachOrdered(device -> {
+            InputDeviceIconSelectorView inputIconView = new InputDeviceIconSelectorView(device);
+            flowPane.getChildren().add(inputIconView);
+            inputIconView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                viewModel.getCondition().addVirtualDevice(device);
+                flowPane.getChildren().remove(inputIconView);
+            });
+        });
+
         viewModel.getProjectInputDevice().stream().filter(device -> {
-            for (UserSetting userSetting : viewModel.getConditionDevice()) {
+            for (UserSetting userSetting : viewModel.getDeviceSetting()) {
                 if (userSetting.getDevice() == device) {
                     return false;
                 }

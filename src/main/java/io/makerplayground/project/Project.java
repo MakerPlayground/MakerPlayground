@@ -25,10 +25,7 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
@@ -240,8 +237,7 @@ public class Project {
                 .max()
                 .orElse(0);
 
-        Condition c = new Condition(this);
-        c.setName("Condition" + (id + 1));
+        Condition c = new Condition("Condition" + (id + 1), this);
         conditions.add(c);
         checkAndInvalidateDiagram();
         return c;

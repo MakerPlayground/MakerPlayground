@@ -74,6 +74,9 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
 //        project.setController(controller);
 
         List<ProjectDevice> devices = mapper.readValue(node.get("devices").traverse(), new TypeReference<List<ProjectDevice>>() {});
+        if (devices.size() != devices.stream().map(ProjectDevice::getName).distinct().count()) {
+            throw new IllegalStateException("Cannot parse mp file because multiple devices share the same name.");
+        }
         devices.forEach(project::addDevice);
 
 //        for (ProjectDevice projectDevice : shareActualDeviceMap.keySet()) {

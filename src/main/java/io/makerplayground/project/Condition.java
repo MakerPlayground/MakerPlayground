@@ -36,6 +36,8 @@ public class Condition extends NodeElement {
     private final StringProperty name;
     private final ObservableList<UserSetting> setting;
     private final ObservableList<UserSetting> unmodifiableSetting;
+    private final ObservableList<UserSetting> virtualSetting;
+    private final ObservableList<UserSetting> unmodifiableVirtualSetting;
 
     private final Set<NodeElement> roots = new HashSet<>();
 
@@ -55,25 +57,29 @@ public class Condition extends NodeElement {
         roots.clear();
     }
 
-    Condition(Project project) {
+    Condition(String name, Project project) {
         super(20,20,118,75, project);
 
-        this.name = new SimpleStringProperty();
+        this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableArrayList();
+        this.virtualSetting = FXCollections.observableArrayList();
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(virtualSetting);
         invalidate();
     }
 
     public Condition(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, Project project) {
+            , String name, List<UserSetting> setting, List<UserSetting> virtualSetting, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as condition can't be resized anyway
         super(top, left, 118, 75, project);
 
         this.name = new SimpleStringProperty(name);
         this.setting = FXCollections.observableArrayList(setting);
+        this.virtualSetting = FXCollections.observableArrayList(virtualSetting);
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
         invalidate();
     }
 
@@ -85,8 +91,13 @@ public class Condition extends NodeElement {
         for (UserSetting u : c.setting) {
             this.setting.add(new UserSetting(u));
         }
+        this.virtualSetting = FXCollections.observableArrayList();
+        for (UserSetting u : c.virtualSetting) {
+            this.virtualSetting.add(new UserSetting(u));
+        }
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
         invalidate();
     }
 
@@ -116,6 +127,14 @@ public class Condition extends NodeElement {
         invalidate();
     }
 
+    public void addVirtualDevice(ProjectDevice device) {
+        if (!VirtualProjectDevice.virtualDevices.contains(device)) {
+            throw new IllegalStateException("Device to be added is not a virtual device");
+        }
+        virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+        invalidate();
+    }
+
     public void removeDevice(ProjectDevice device) {
         for (int i = setting.size() - 1; i >= 0; i--) {
             if (setting.get(i).getDevice() == device) {
@@ -140,13 +159,23 @@ public class Condition extends NodeElement {
         invalidate();
     }
 
+    public void removeUserSetting(UserSetting userSetting) {
+        setting.remove(userSetting);
+        virtualSetting.remove(userSetting);
+        invalidate();
+    }
+
     public ObservableList<UserSetting> getSetting() {
         return unmodifiableSetting;
     }
 
+    public ObservableList<UserSetting> getVirtualDeviceSetting() {
+        return unmodifiableVirtualSetting;
+    }
+
     @Override
     protected DiagramError checkError() {
-        if (setting.isEmpty()) {
+        if (setting.isEmpty() && virtualSetting.isEmpty()) {
             return DiagramError.CONDITION_EMPTY;
         }
 
@@ -163,6 +192,22 @@ public class Condition extends NodeElement {
         }
 
         for (UserSetting userSetting : setting) {
+            // at least one expression must be enable and every expression mush be valid when the action is "Compare"
+            if (userSetting.getCondition().getName().equals("Compare")) {
+                if (!userSetting.getExpressionEnable().values().contains(true)) {
+                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+                }
+                if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
+                    return DiagramError.CONDITION_INVALID_EXPRESSION;
+                }
+            } else {    // otherwise value of every parameters should not be null and should be valid
+                if (userSetting.getParameterMap().values().stream().anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
+                    return DiagramError.CONDITION_INVALID_PARAM;
+                }
+            }
+        }
+
+        for (UserSetting userSetting : virtualSetting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
             if (userSetting.getCondition().getName().equals("Compare")) {
                 if (!userSetting.getExpressionEnable().values().contains(true)) {

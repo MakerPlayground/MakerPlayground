@@ -28,14 +28,12 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-/**
- * Created by USER on 05-Jul-17.
- */
 public class ConditionViewModel {
     private final Condition condition;
     private final Project project;
 
-    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
+    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> deviceViewModelCreator;
+    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> virtualDeviceViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
 
@@ -43,14 +41,20 @@ public class ConditionViewModel {
         this.condition = condition;
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
+        this.deviceViewModelCreator = new DynamicViewModelCreator<>(condition.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
+        this.virtualDeviceViewModelCreator = new DynamicViewModelCreator<>(condition.getVirtualDeviceSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).greaterThan(Bindings.size(condition.getSetting())));
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualProjectDevice.virtualDevices.size())
+                .greaterThan(Bindings.size(condition.getSetting()).add(Bindings.size(condition.getVirtualDeviceSetting()))));
     }
 
-    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
-        return dynamicViewModelCreator;
+    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDeviceViewModelCreator() {
+        return deviceViewModelCreator;
+    }
+
+    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getVirtualDeviceViewModelCreator() {
+        return virtualDeviceViewModelCreator;
     }
 
     public String getName() {
@@ -105,11 +109,21 @@ public class ConditionViewModel {
         return project.getDeviceWithCondition();
     }
 
+    public List<ProjectDevice> getVirtualDevices() {
+        return VirtualProjectDevice.virtualDevices;
+    }
+
     public Condition getCondition() { return condition; }
 
-    public ObservableList<UserSetting> getConditionDevice() { return condition.getSetting(); }
+    public ObservableList<UserSetting> getDeviceSetting() {
+        return condition.getSetting();
+    }
 
-    public void removeConditionDevice(ProjectDevice projectDevice) { condition.removeDevice(projectDevice); }
+    public ObservableList<UserSetting> getVirtualDeviceSetting() {
+        return condition.getVirtualDeviceSetting();
+    }
+
+    public void removeUserSetting(UserSetting setting) { condition.removeUserSetting(setting); }
 
     public BooleanProperty hasDeviceToAddProperty() { return hasDeviceToAdd; }
 

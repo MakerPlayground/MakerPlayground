@@ -38,7 +38,7 @@ public class NumericConstraint implements Constraint {
      * @param max the maximum value (inclusive)
      * @param unit the unit of the value
      */
-    NumericConstraint(double min, double max, Unit unit) {
+    public NumericConstraint(double min, double max, Unit unit) {
         this.min = min;
         this.max = max;
         this.unit = unit;

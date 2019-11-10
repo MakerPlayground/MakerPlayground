@@ -28,30 +28,39 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
 
-    private final List<ProjectDevice> deviceList;
+    private final Project project;
     private final ObjectMapper mapper = new ObjectMapper();
 
     UserSettingDeserializer(Project project) {
-        this.deviceList = project.getUnmodifiableProjectDevice();
+        this.project = project;
     }
 
     @Override
     public UserSetting deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         JsonNode node = mapper.readTree(jsonParser);
-        List<ProjectDevice> possibleProjectDevices = deviceList.stream().filter(projectDevice -> projectDevice.getName().equals(node.get("device").asText())).collect(Collectors.toList());
-        if (possibleProjectDevices.isEmpty()) {
-            throw new InvalidObjectException("Cannot parse mp file because no support device.");
-        } else if (possibleProjectDevices.size() > 1) {
-            throw new InvalidObjectException("Cannot parse mp file because multiple devices share the same name.");
+
+        String deviceName = node.get("device").asText();
+        ProjectDevice projectDevice = null;
+        for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
+            if (pd.getName().equals(deviceName)) {
+                projectDevice = pd;
+                break;
+            }
         }
-        ProjectDevice projectDevice = possibleProjectDevices.get(0);
+        for (ProjectDevice pd : VirtualProjectDevice.virtualDevices) {
+            if (pd.getName().equals(deviceName)) {
+                projectDevice = pd;
+                break;
+            }
+        }
+        if (projectDevice == null) {
+            throw new IllegalStateException("Cannot parse mp file because no support device.");
+        }
 
         boolean hasAction = node.has("action");
         boolean hasCondition = node.has("condition");
@@ -79,7 +88,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             JsonNode valueNode = parameterNode.get("value");
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(mapper, parameter, term_node, deviceList));
+                terms.add(deserializeTerm(mapper, parameter, term_node, project.getUnmodifiableProjectDevice()));
             }
             if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
@@ -123,7 +132,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             String type = valueNode.get("type").asText();
             List<Term> terms = new ArrayList<>();
             for (JsonNode term_node : valueNode.get("expression")) {
-                terms.add(deserializeTerm(mapper, null, term_node, deviceList));
+                terms.add(deserializeTerm(mapper, null, term_node, project.getUnmodifiableProjectDevice()));
             }
             Expression expression;
             if (NumberInRangeExpression.class.getName().contains(type)) {

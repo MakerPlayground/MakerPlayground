@@ -85,12 +85,12 @@ public class UserSetting {
         expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
     }
 
-    UserSetting(ProjectDevice device, Action supportingAction) {
+    public UserSetting(ProjectDevice device, Action supportingAction) {
         this(device);
         this.action.set(supportingAction);
     }
 
-    UserSetting(ProjectDevice device, Condition supportingCondition) {
+    public UserSetting(ProjectDevice device, Condition supportingCondition) {
         this(device);
         this.condition.set(supportingCondition);
     }
