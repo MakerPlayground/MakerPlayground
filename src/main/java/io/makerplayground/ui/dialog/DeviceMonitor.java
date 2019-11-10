@@ -22,6 +22,8 @@ import com.fazecast.jSerialComm.SerialPortMessageListener;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -49,7 +51,9 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     private static final Pattern format = Pattern.compile("(\\[\\[I]]|\\[\\[E]]|\\[\\[V]])?\\s\"(.*)\"\\s(.+)", Pattern.DOTALL); // Regex
     private static final Pattern numberRegex = Pattern.compile("^(-?\\d+\\.\\d+)$|^(-?\\d+)$");
 
-    private final SerialPort serialPort;
+    private SerialPort serialPort;
+    private ReadOnlyBooleanWrapper initialized = new ReadOnlyBooleanWrapper(false);
+
     private final ObservableList<LogItems> logData = FXCollections.observableArrayList();
 //    private final ObservableList<XYChart.Data<Number, Number>> logChartData = FXCollections.observableArrayList();
     private final FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
@@ -64,9 +68,7 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     @FXML private CheckComboBox<String> plotTagComboBox;
     @FXML private VBox chartPane;
 
-    public DeviceMonitor(SerialPort serialPort) {
-        this.serialPort = serialPort;
-
+    public DeviceMonitor() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -99,15 +101,6 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         deviceMonitorTable.resizeColumn(deviceNameTableColumn, 50);
         deviceMonitorTable.resizeColumn(messageTableColumn, 100);
         deviceMonitorTable.setItems(logDataFilter);
-
-        // initialize serial port
-
-        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        serialPort.addDataListener(this);
-        if (!serialPort.openPort()) {
-            // TODO: display error
-            System.err.println("Can't open serial port");
-        }
 
         // initialize plot
 
@@ -196,8 +189,33 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         chartPane.getChildren().add(lineChart);
     }
 
+    public boolean isInitilized() {
+        return initialized.get();
+    }
+
+    public ReadOnlyBooleanProperty initializedProperty() {
+        return initialized.getReadOnlyProperty();
+    }
+
+    public boolean initialize(SerialPort port) {
+        serialPort = port;
+        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        serialPort.addDataListener(this);
+        if (!serialPort.openPort()) {
+            return false;
+        }
+        initialized.set(true);
+        return true;
+    }
+
     public boolean closePort() {
-        return serialPort.closePort();
+        if (serialPort != null) {
+            serialPort.removeDataListener();
+            initialized.set(false);
+            return serialPort.closePort();
+        } else {
+            return true;
+        }
     }
 
     @Override

@@ -20,7 +20,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
-import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.ui.dialog.UploadDialogView;
 import io.makerplayground.util.OSInfo;
 import javafx.animation.KeyFrame;
@@ -38,7 +37,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
@@ -177,6 +175,7 @@ public class Toolbar extends AnchorPane {
         BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);
         ReadOnlyBooleanProperty interactiveModeInitialize = project.get().getInteractiveModel().startedProperty();
         BooleanBinding portNotSelected = portComboBox.getSelectionModel().selectedItemProperty().isNull();
+        BooleanProperty deviceMonitorShowing = deviceMonitorButton.selectedProperty();  // we disable other controls whether it is successfully initialized or not as a precaution
 
         portLabel.disableProperty().bind(portComboBox.disableProperty());
 
@@ -192,7 +191,7 @@ public class Toolbar extends AnchorPane {
                         .ifPresent(serialPort -> portComboBox.getSelectionModel().select(serialPort));
             }
         });
-        portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize));
+        portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(deviceMonitorShowing));
 
         // TODO: add case when uploading
         deviceMonitorButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
@@ -208,14 +207,14 @@ public class Toolbar extends AnchorPane {
         ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
         BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
 
-        interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk)));
+        interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk).or(deviceMonitorShowing)));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
         Tooltip uploadButtonTooltip = new Tooltip();
         uploadButtonTooltip.setShowDelay(Duration.millis(250));
         uploadButtonTooltip.textProperty().bind(Bindings.when(uploading).then("Stop uploading").otherwise("Upload to board"));
         uploadButton.setTooltip(uploadButtonTooltip);
-        uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize).or(projectNotOk));
+        uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize).or(projectNotOk).or(deviceMonitorShowing));
 
         uploadManager.uploadStatusProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UploadStatus.UPLOADING || newValue == UploadStatus.STARTING_INTERACTIVE) {

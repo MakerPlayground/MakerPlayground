@@ -51,6 +51,7 @@ public class MainWindow extends BorderPane {
 
         diagramEditor = initDiagramEditor();
         deviceTab = new DeviceTab(project.get(), hostServices);
+        deviceMonitor = new DeviceMonitor();
 
         diagramEditorShowing = new SimpleBooleanProperty();
         diagramEditorShowing.addListener((observable, oldValue, newValue) -> {
@@ -67,32 +68,28 @@ public class MainWindow extends BorderPane {
         });
         deviceMonitorShowing = new SimpleBooleanProperty();
         deviceMonitorShowing.addListener((observable, oldValue, newValue) -> {
-            if (deviceMonitor != null) {
+            if (!newValue) {
                 deviceMonitor.closePort();
-                deviceMonitor = null;
-            }
-
-            if (newValue) {
-                deviceMonitor = new DeviceMonitor(serialPort.get());
+            } else {
+                // TODO: handle the case when initialize failed by switch to the old tab
+                deviceMonitor.initialize(serialPort.get());
                 setCenter(deviceMonitor);
             }
         });
 
         project.addListener((observable, oldValue, newValue) -> {
             currentProject = newValue;
+
             diagramEditor = initDiagramEditor();
             deviceTab = new DeviceTab(project.get(), hostServices);
+            deviceMonitor.closePort();
+            deviceMonitor = new DeviceMonitor();
 
-            if (deviceMonitor != null) {
-                deviceMonitor.closePort();
-                deviceMonitor = null;
-            }
             if (diagramEditorShowing.get()) {
                 setCenter(diagramEditor);
             } else if (deviceConfigShowing.get()) {
                 setCenter(deviceTab);
             } else {
-                deviceMonitor = new DeviceMonitor(serialPort.get());
                 setCenter(deviceMonitor);
             }
         });
