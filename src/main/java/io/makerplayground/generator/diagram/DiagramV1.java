@@ -42,16 +42,22 @@ import java.util.stream.Collectors;
 
 /* 1) The devices are placing in one of the following regions
  *      -----------------------------
+ *      |           Top             |
+ *      -----------------------------
  *      |      |  top-mid   |       |
  *      |      |------------|       |
  *      | left | controller | right |
  *      |      |------------|       |
  *      |      | bottom-mid |       |
  *      -----------------------------
+ *      |          Bottom           |
+ *      -----------------------------
  * 2) To know the device region
  *      2.1 For each device, calculate the centroid of all pins on controller that connect to the device.
  *      2.2 The centroid will be used for determining the region of the device. Call the getDeviceRegionNoBreadboard method to know the region
  *      2.3 In case that breadboard is needed. The top-mid region will be reserved for breadboard. Call the getDeviceRegionNoBreadboard method instead
+ *      2.4 Cloud device should be in the Top region (No line to controller)
+ *      2.5 Not connected device should be in the Bottom region (No line to controller)
  * 3) The devices in each region would be rotated to make the shortest line to the controller except the device that needs breadboard.
  * 4) On left and right region, the devices would be sorted by the y-position of centroid.
  * 5) On top-mid and bottom-mid, the devices would be sorted by the x-position of centroid.
@@ -82,7 +88,7 @@ class DiagramV1 {
     }
 
     enum Region {
-        LEFT, RIGHT, TOP_MID, BOTTOM_MID, CONTROLLER;
+        LEFT, RIGHT, TOP_MID, BOTTOM_MID, TOP, BOTTOM, CONTROLLER;
     }
 
     public static final double UNIT_HOLE_DISTANCE = 14.4;
@@ -497,7 +503,7 @@ class DiagramV1 {
     }
 
     private static final String deviceDirectoryPath = DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
-    private static List<DeviceType> DRAWABLE_DEVICE_TYPES = List.of(DeviceType.CONTROLLER, DeviceType.MODULE);
+    private static List<DeviceType> DRAWABLE_DEVICE_TYPES = List.of(DeviceType.CONTROLLER, DeviceType.MODULE, DeviceType.VIRTUAL);
 
     private static final double DEVICE_NAME_FONT_SIZE = 18.0;
 
@@ -507,6 +513,10 @@ class DiagramV1 {
     private static final double BREADBOARD_REGION_H_GAP = 50.0;
     private static final double BREADBOARD_REGION_V_MARGIN = 80.0;
 
+    private static final double TOP_REGION_H_GAP = 60.0;
+    private static final double TOP_REGION_V_MARGIN = 50.0;
+    private static final double BOTTOM_REGION_H_GAP = 30.0;
+    private static final double BOTTOM_REGION_V_MARGIN = 50.0;
     private static final double TOP_MID_REGION_H_GAP = 30.0;
     private static final double TOP_MID_REGION_V_MARGIN = 80.0;
     private static final double BOTTOM_MID_REGION_H_GAP = 30.0;
@@ -525,9 +535,11 @@ class DiagramV1 {
     private boolean controllerUseBreadboard;
     private Size breadboardRegionSize;
     private Size topMidRegionSize;
+    private Size topRegionSize;
     private Size leftRegionSize;
     private Size controllerRegionSize;
     private Size bottomMidRegionSize;
+    private Size bottomRegionSize;
     private Size rightRegionSize;
     private Size globalRegionSize;
 
@@ -536,6 +548,8 @@ class DiagramV1 {
     private List<ProjectDevice> deviceNeedBreadboard = new ArrayList<>();
     private List<ProjectDevice> deviceOnLeftRegion = new ArrayList<>();
     private List<ProjectDevice> deviceOnRightRegion = new ArrayList<>();
+    private List<ProjectDevice> deviceOnTopMidRegion = new ArrayList<>();
+    private List<ProjectDevice> deviceOnBottomMidRegion = new ArrayList<>();
     private List<ProjectDevice> deviceOnTopRegion = new ArrayList<>();
     private List<ProjectDevice> deviceOnBottomRegion = new ArrayList<>();
 
@@ -591,36 +605,46 @@ class DiagramV1 {
         }
 
         Size breadboardRegionPreferredSize = calculateBreadboardRegionSizeAndAssignDeviceToBreadboardGroup(deviceNeedBreadboard, BREADBOARD_REGION_H_GAP, BREADBOARD_REGION_V_MARGIN);
-        Size topMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnTopRegion, TOP_MID_REGION_H_GAP, TOP_MID_REGION_V_MARGIN);
-        Size bottomMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnBottomRegion, BOTTOM_MID_REGION_H_GAP, BOTTOM_MID_REGION_V_MARGIN);
+        Size topMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnTopMidRegion, TOP_MID_REGION_H_GAP, TOP_MID_REGION_V_MARGIN);
+        Size bottomMidPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnBottomMidRegion, BOTTOM_MID_REGION_H_GAP, BOTTOM_MID_REGION_V_MARGIN);
         Size leftPreferredSize = calculateVerticalAlignedDevicesSize(deviceOnLeftRegion, LEFT_REGION_V_GAP, LEFT_REGION_H_MARGIN);
         Size rightPreferredSize = calculateVerticalAlignedDevicesSize(deviceOnRightRegion, RIGHT_REGION_V_GAP, RIGHT_REGION_H_MARGIN);
+        Size topPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnTopRegion, TOP_REGION_H_GAP, TOP_REGION_V_MARGIN);
+        Size bottomPreferredSize = calculateHorizontalAlignedDevicesSize(deviceOnBottomRegion, BOTTOM_REGION_H_GAP, BOTTOM_REGION_V_MARGIN);
 
         double midActualWidth = max(controllerPreferredSize.getWidth(), topMidPreferredSize.getWidth(), bottomMidPreferredSize.getWidth(), breadboardRegionPreferredSize.getWidth());
         double midPreferredHeight = controllerPreferredSize.getHeight() + topMidPreferredSize.getHeight() + bottomMidPreferredSize.getHeight() + breadboardRegionPreferredSize.getHeight();
-        double globalActualWidth = midActualWidth + leftPreferredSize.getWidth() + rightPreferredSize.getWidth();
-        double globalActualHeight = max(midPreferredHeight, leftPreferredSize.getHeight(), rightPreferredSize.getHeight());
+        double innerActualWidth = midActualWidth + leftPreferredSize.getWidth() + rightPreferredSize.getWidth();
+        double innerActualHeight = max(midPreferredHeight, leftPreferredSize.getHeight(), rightPreferredSize.getHeight());
+        double outerActualWidth = max(innerActualWidth, topPreferredSize.getWidth(), bottomPreferredSize.getWidth());
+        double outerActualHeight = innerActualHeight + topPreferredSize.getHeight() + bottomPreferredSize.getHeight();
 
         this.controllerRegionSize = new Size(midActualWidth, controllerPreferredSize.getHeight());
         this.breadboardRegionSize = new Size(midActualWidth, breadboardRegionPreferredSize.getHeight());
         this.topMidRegionSize = new Size(midActualWidth, topMidPreferredSize.getHeight());
         this.bottomMidRegionSize = new Size(midActualWidth, bottomMidPreferredSize.getHeight());
-        this.leftRegionSize = new Size(leftPreferredSize.getWidth(), globalActualHeight);
-        this.rightRegionSize = new Size(rightPreferredSize.getWidth(), globalActualHeight);
-        this.globalRegionSize = new Size(globalActualWidth, globalActualHeight);
+        this.leftRegionSize = new Size(leftPreferredSize.getWidth(), innerActualHeight);
+        this.rightRegionSize = new Size(rightPreferredSize.getWidth(), innerActualHeight);
+        this.topRegionSize = new Size(outerActualWidth, topPreferredSize.getHeight());
+        this.bottomRegionSize = new Size(outerActualWidth, bottomPreferredSize.getHeight());
+        this.globalRegionSize = new Size(outerActualWidth, outerActualHeight);
 
-        Coordinate leftRegionTopLeft = new Coordinate(0.0, 0.0);
-        Coordinate topMidRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), 0.0);
-        Coordinate breadboardRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topMidRegionSize.getHeight());
-        Coordinate controllerRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topMidRegionSize.getHeight() + breadboardRegionSize.getHeight());
-        Coordinate bottomMidRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topMidRegionSize.getHeight() + breadboardRegionSize.getHeight() + controllerRegionSize.getHeight());
-        Coordinate rightRegionTopLeft = new Coordinate(leftRegionSize.getWidth() + midActualWidth, 0.0);
+        Coordinate topRegionTopLeft = new Coordinate(0.0, 0.0);
+        Coordinate leftRegionTopLeft = new Coordinate(0.0, topRegionSize.getHeight());
+        Coordinate topMidRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topRegionSize.getHeight());
+        Coordinate breadboardRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topRegionSize.getHeight() + topMidRegionSize.getHeight());
+        Coordinate controllerRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topRegionSize.getHeight() + topMidRegionSize.getHeight() + breadboardRegionSize.getHeight());
+        Coordinate bottomMidRegionTopLeft = new Coordinate(leftRegionSize.getWidth(), topRegionSize.getHeight() + topMidRegionSize.getHeight() + breadboardRegionSize.getHeight() + controllerRegionSize.getHeight());
+        Coordinate rightRegionTopLeft = new Coordinate(leftRegionSize.getWidth() + midActualWidth, topRegionSize.getHeight());
+        Coordinate bottomRegionTopLeft = new Coordinate(0.0, topRegionSize.getHeight() + topMidRegionSize.getHeight() + breadboardRegionSize.getHeight() + controllerRegionSize.getHeight() + bottomMidPreferredSize.getHeight());
 
         double breadboardSpaceBegin = 0.5 * (breadboardRegionSize.getWidth() - breadboardRegionPreferredSize.getWidth());
         double topMidSpaceBegin = 0.5 * (topMidRegionSize.getWidth() - topMidPreferredSize.getWidth());
         double bottomMidSpaceBegin = 0.5 * (bottomMidRegionSize.getWidth() - bottomMidPreferredSize.getWidth());
         double leftSpaceBegin = 0.5 * (leftRegionSize.getHeight() - leftPreferredSize.getHeight());
         double rightSpaceBegin = 0.5 * (rightRegionSize.getHeight() - rightPreferredSize.getHeight());
+        double topSpaceBegin = 0.5 * (topRegionSize.getWidth() - topPreferredSize.getWidth());
+        double bottomSpaceBegin = 0.5 * (bottomRegionSize.getWidth() - bottomPreferredSize.getWidth());
 
         /* calculate global coordinate */
         if (!controllerUseBreadboard) {
@@ -631,6 +655,8 @@ class DiagramV1 {
         calculateBottomMidDeviceCoordinates(bottomMidRegionTopLeft, bottomMidSpaceBegin);
         calculateLeftDeviceCoordinates(leftRegionTopLeft, leftSpaceBegin);
         calculateRightDeviceCoordinates(rightRegionTopLeft, rightSpaceBegin);
+        calculateBottomDeviceCoordinates(bottomRegionTopLeft, bottomSpaceBegin);
+        calculateTopDeviceCoordinates(topRegionTopLeft, topSpaceBegin);
     }
 
     private void calculateBreadboardDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
@@ -682,6 +708,24 @@ class DiagramV1 {
         }
     }
 
+    private void calculateTopDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
+        double accumulateX = spaceBegin;
+        for (ProjectDevice projectDevice: this.deviceOnTopRegion) {
+            Size size = deviceSizeAfterRotation.get(projectDevice);
+            this.deviceCenterCoordinates.put(projectDevice, new Coordinate(regionTopLeft.getX() + accumulateX + 0.5 * size.getWidth(), regionTopLeft.getY() + topRegionSize.getHeight() - 0.5 * size.getHeight() - TOP_REGION_V_MARGIN));
+            accumulateX += (size.getWidth() + TOP_REGION_H_GAP);
+        }
+    }
+
+    private void calculateBottomDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
+        double accumulateX = spaceBegin;
+        for (ProjectDevice projectDevice: this.deviceOnBottomRegion) {
+            Size size = deviceSizeAfterRotation.get(projectDevice);
+            this.deviceCenterCoordinates.put(projectDevice, new Coordinate(regionTopLeft.getX() + accumulateX + 0.5 * size.getWidth(), regionTopLeft.getY() + bottomRegionSize.getHeight() - 0.5 * size.getHeight() - BOTTOM_REGION_V_MARGIN));
+            accumulateX += (size.getWidth() + BOTTOM_REGION_H_GAP);
+        }
+    }
+
     private void calculateRightDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
         double accumulateY = spaceBegin;
         for (ProjectDevice projectDevice: this.deviceOnRightRegion) {
@@ -697,13 +741,13 @@ class DiagramV1 {
             Size size = deviceSizeAfterRotation.get(projectDevice);
             accumulateY += DEVICE_NAME_FONT_SIZE;
             this.deviceCenterCoordinates.put(projectDevice, new Coordinate(regionTopLeft.getX() + leftRegionSize.getWidth() - 0.5 * size.getWidth() - LEFT_REGION_H_MARGIN, regionTopLeft.getY() + accumulateY + 0.5 * size.getHeight()));
-            accumulateY += (size.getHeight() + LEFT_REGION_V_GAP);
+            accumulateY += (size.getHeight() + LEFT_REGION_V_GAP + DEVICE_NAME_FONT_SIZE);
         }
     }
 
     private void calculateTopMidDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
         double accumulateX = spaceBegin;
-        for (ProjectDevice projectDevice: this.deviceOnTopRegion) {
+        for (ProjectDevice projectDevice: this.deviceOnTopMidRegion) {
             Size size = deviceSizeAfterRotation.get(projectDevice);
             this.deviceCenterCoordinates.put(projectDevice, new Coordinate(regionTopLeft.getX() + accumulateX + 0.5 * size.getWidth(), regionTopLeft.getY() + topMidRegionSize.getHeight() - 0.5 * size.getHeight() - TOP_MID_REGION_V_MARGIN));
             accumulateX += (size.getWidth() + TOP_MID_REGION_H_GAP);
@@ -712,7 +756,7 @@ class DiagramV1 {
 
     private void calculateBottomMidDeviceCoordinates(Coordinate regionTopLeft, double spaceBegin) {
         double accumulateX = spaceBegin;
-        for (ProjectDevice projectDevice: this.deviceOnBottomRegion) {
+        for (ProjectDevice projectDevice: this.deviceOnBottomMidRegion) {
             Size size = deviceSizeAfterRotation.get(projectDevice);
             this.deviceCenterCoordinates.put(projectDevice, new Coordinate(regionTopLeft.getX() + accumulateX + 0.5 * size.getWidth(), regionTopLeft.getY() + 0.5 * size.getHeight() + BOTTOM_MID_REGION_V_MARGIN));
             accumulateX += (size.getWidth() + BOTTOM_MID_REGION_H_GAP);
@@ -868,8 +912,10 @@ class DiagramV1 {
     private void sortDevice() {
         deviceOnLeftRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getY()));
         deviceOnRightRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getY()));
-        deviceOnTopRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
-        deviceOnBottomRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
+        deviceOnTopMidRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
+        deviceOnBottomMidRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
+        deviceOnTopRegion.sort(ProjectDevice.NAME_COMPARATOR);
+        deviceOnBottomRegion.sort(ProjectDevice.NAME_COMPARATOR);
         deviceNeedBreadboard.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
     }
 
@@ -903,7 +949,7 @@ class DiagramV1 {
                 throw new UnsupportedOperationException();
             }
         }
-        for (ProjectDevice projectDevice: deviceOnTopRegion) {
+        for (ProjectDevice projectDevice: deviceOnTopMidRegion) {
             ConnectionPosition position = getConnectionPosition(projectDevice);
             if (position == ConnectionPosition.LEFT) {
                 deviceRotationAngle.put(projectDevice, -90.0); // counter clockwise
@@ -917,7 +963,7 @@ class DiagramV1 {
                 throw new UnsupportedOperationException();
             }
         }
-        for (ProjectDevice projectDevice: deviceOnBottomRegion) {
+        for (ProjectDevice projectDevice: deviceOnBottomMidRegion) {
             ConnectionPosition position = getConnectionPosition(projectDevice);
             if (position == ConnectionPosition.LEFT) {
                 deviceRotationAngle.put(projectDevice, 90.0); // clock wise
@@ -930,6 +976,12 @@ class DiagramV1 {
             } else {
                 throw new UnsupportedOperationException();
             }
+        }
+        for (ProjectDevice projectDevice: deviceOnTopRegion) {
+            deviceRotationAngle.put(projectDevice, 0.0); // no rotation
+        }
+        for (ProjectDevice projectDevice: deviceOnBottomRegion) {
+            deviceRotationAngle.put(projectDevice, 0.0); // no rotation
         }
         for (ProjectDevice projectDevice: deviceNeedBreadboard) {
             deviceRotationAngle.put(projectDevice, 0.0); // no rotation
@@ -961,7 +1013,11 @@ class DiagramV1 {
                 } else if (region == Region.RIGHT) {
                     deviceOnRightRegion.add(projectDevice);
                 } else if (region == Region.BOTTOM_MID) {
+                    deviceOnBottomMidRegion.add(projectDevice);
+                } else if (region == Region.BOTTOM) {
                     deviceOnBottomRegion.add(projectDevice);
+                } else if (region == Region.TOP) {
+                    deviceOnTopRegion.add(projectDevice);
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -985,9 +1041,13 @@ class DiagramV1 {
                 } else if (region == Region.RIGHT) {
                     deviceOnRightRegion.add(projectDevice);
                 } else if (region == Region.TOP_MID) {
-                    deviceOnTopRegion.add(projectDevice);
+                    deviceOnTopMidRegion.add(projectDevice);
                 } else if (region == Region.BOTTOM_MID) {
+                    deviceOnBottomMidRegion.add(projectDevice);
+                } else if (region == Region.BOTTOM) {
                     deviceOnBottomRegion.add(projectDevice);
+                } else if (region == Region.TOP) {
+                    deviceOnTopRegion.add(projectDevice);
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -1044,7 +1104,7 @@ class DiagramV1 {
     private Coordinate getConnectionCentroidToDevice(ProjectDevice device, ProjectDevice deviceTo) {
         List<Pin> connectedPins = getAllConnectedPinToDevice(device, deviceTo);
         if (connectedPins.isEmpty()) {
-            return new Coordinate(0, 0);
+            return null;
         }
         double sumX = 0.0, sumY = 0.0;
         for (Pin pin: connectedPins) {
@@ -1111,7 +1171,13 @@ class DiagramV1 {
      *                        bottom-mid
      */
     private Region getDeviceRegionNoBreadboard(ProjectDevice module) {
+        if (DeviceLibrary.INSTANCE.getGenericCloudDevice().contains(module.getGenericDevice())) {
+            return Region.TOP;
+        }
         Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, module);
+        if (coordinate == null) {
+            return Region.BOTTOM;
+        }
         ActualDevice controller = config.getController();
         if (coordinate.getX() < 0.2 * controller.getWidth()) {
             return Region.LEFT;
@@ -1138,7 +1204,13 @@ class DiagramV1 {
      *                        bottom-mid
      */
     private Region getDeviceRegionHaveBreadboard(ProjectDevice module) {
+        if (DeviceLibrary.INSTANCE.getGenericCloudDevice().contains(module.getGenericDevice())) {
+            return Region.TOP;
+        }
         Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, module);
+        if (coordinate == null) {
+            return Region.BOTTOM;
+        }
         ActualDevice controller = config.getController();
         if (coordinate.getY() > 0.65 * controller.getHeight()) {
             return Region.BOTTOM_MID;
@@ -1146,10 +1218,10 @@ class DiagramV1 {
         if (coordinate.getX() < 0.5 * controller.getWidth()) {
             return Region.LEFT;
         }
-        if (coordinate.getX() > 0.5 * controller.getWidth()) {
+        if (coordinate.getX() >= 0.5 * controller.getWidth()) {
             return Region.RIGHT;
         }
-        return Region.TOP_MID;
+        throw new UnsupportedOperationException();
     }
 
     private void drawDevice(Pane drawingPane, ProjectDevice projectDevice) {
@@ -1191,13 +1263,13 @@ class DiagramV1 {
             // DEVICE_NAME_FONT_SIZE * projectDeviceList.size() is not the theoretically correct way to measure text height as text height
             // is not equal to the font size for every font (most of them don't) but it works fine with the standard font we use and JavaFX
             // doesn't provide a pubic API for measure text size yet so we do it this way for now
-            if (deviceOnBottomRegion.contains(projectDevice)) {
+            if (deviceOnBottomMidRegion.contains(projectDevice) || deviceOnBottomRegion.contains(projectDevice)) {
                 Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
                 text.setY(coordinate.getY() + 0.5 * sizeAfterRotation.getHeight() + (DEVICE_NAME_FONT_SIZE * projectDeviceList.size()) + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
                 drawingPane.getChildren().add(text);
-            } else if (deviceOnTopRegion.contains(projectDevice)) {
+            } else if (deviceOnTopMidRegion.contains(projectDevice) || deviceOnTopRegion.contains(projectDevice)) {
                 Text text = new Text(deviceName);
                 text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
                 text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * projectDeviceList.size())  + GLOBAL_TOP_MARGIN);
@@ -1261,10 +1333,10 @@ class DiagramV1 {
         for (ProjectDevice projectDevice: deviceOnRightRegion) {
             drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
         }
-        for (ProjectDevice projectDevice: deviceOnTopRegion) {
+        for (ProjectDevice projectDevice: deviceOnTopMidRegion) {
             drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
         }
-        for (ProjectDevice projectDevice: deviceOnBottomRegion) {
+        for (ProjectDevice projectDevice: deviceOnBottomMidRegion) {
             drawConnection(wiringDiagram, deviceConnectionMap.get(projectDevice));
         }
         for (BreadboardDeviceGroup group: breadboardDeviceGroupList) {
@@ -1420,7 +1492,7 @@ class DiagramV1 {
                         controlRatioY1 = 0;
                         controlRatioX2 = 0.5;
                         controlRatioY2 = 1;
-                    } else if (deviceOnTopRegion.contains(consumerDevice) || deviceOnBottomRegion.contains(consumerDevice)) {
+                    } else if (deviceOnTopMidRegion.contains(consumerDevice) || deviceOnBottomMidRegion.contains(consumerDevice)) {
                         // ref: https://cubic-bezier.com/#.0,.35,1,.65
                         controlRatioX1 = 0.0;
                         controlRatioY1 = 0.35;
