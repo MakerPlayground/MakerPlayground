@@ -67,6 +67,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     @FXML private CheckBox autoScrollCheckbox;
     @FXML private CheckComboBox<String> plotTagComboBox;
     @FXML private VBox chartPane;
+//    @FXML private Button clearTableButton;
+//    @FXML private Button clearChartButton;
 
     public DeviceMonitor() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
@@ -92,15 +94,20 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         // initialize table
 
         TableColumn<LogItems, String> deviceNameTableColumn = new TableColumn<>("Device Name");
+        deviceNameTableColumn.setPrefWidth(130);
         deviceNameTableColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getDeviceName()));
 
         TableColumn<LogItems, String> messageTableColumn = new TableColumn<>("Message");
+        messageTableColumn.setPrefWidth(300);
         messageTableColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getMessage()));
 
         deviceMonitorTable.getColumns().addAll(deviceNameTableColumn, messageTableColumn);
-        deviceMonitorTable.resizeColumn(deviceNameTableColumn, 50);
-        deviceMonitorTable.resizeColumn(messageTableColumn, 100);
         deviceMonitorTable.setItems(logDataFilter);
+
+//        clearTableButton.setOnAction(event -> {
+//            tagList.clear();
+//            logData.clear();
+//        });
 
         // initialize plot
 
@@ -124,6 +131,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
                 }
             }
         });
+
+//        clearChartButton.setOnAction(event -> plotTagComboBox.getCheckModel().clearChecks());
     }
 
     private void updateLogFilter() {
@@ -236,7 +245,7 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     @Override
     public void serialEvent(SerialPortEvent event) {
         String message = new String(event.getReceivedData()).strip();
-        System.out.println(message.strip());
+//        System.out.println(message.strip());
 
         Matcher log = format.matcher(message);
         if (log.find() && log.groupCount() == 3) {
@@ -245,7 +254,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
                 logData.addAll(logItems);
                 if (!tagList.contains(logItems.getDeviceName())) {
                     tagList.add(logItems.getDeviceName());
-                    checkTagComboBox.getCheckModel().check(logItems.getDeviceName());
+                    // A hack to make the checkbox tick became visible properly
+                    Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItems.getDeviceName()));
                 }
                 if (autoScrollCheckbox.isSelected()) {
                     deviceMonitorTable.scrollTo(logItems);
@@ -305,20 +315,3 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         }
     }
 }
-
-
-//        messageTableColumn.setCellFactory(param -> new TableCell<>() {
-//            private Text label;
-//            @Override
-//            protected void updateItem(String item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty || item == null || item.isEmpty()) {
-//                    setGraphic(null);
-//                    return;
-//                }
-//                System.out.println(item);
-//                label = new Text(item);
-//                label.setWrappingWidth(this.getWidth());
-//                setGraphic(label);
-//            }
-//        });

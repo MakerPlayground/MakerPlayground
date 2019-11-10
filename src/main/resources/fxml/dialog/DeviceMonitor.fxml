@@ -4,12 +4,8 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <?import org.controlsfx.control.CheckComboBox?>
@@ -30,33 +26,65 @@
   ~ limitations under the License.
   -->
 
-<fx:root dividerPositions="0.5" type="SplitPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <items>
-      <GridPane hgap="10.0" vgap="10.0">
-          <children>
-              <Label text="Log Level" />
-              <ComboBox fx:id="levelComboBox" GridPane.columnIndex="1" />
-              <Label text="Device Tag" GridPane.columnIndex="2" />
-              <CheckComboBox fx:id="checkTagComboBox" GridPane.columnIndex="3" />
-              <TableView fx:id="deviceMonitorTable" GridPane.columnSpan="5" GridPane.rowIndex="1" />
-              <CheckBox fx:id="autoScrollCheckbox" selected="true" text="Auto scroll" GridPane.columnIndex="4" />
-          </children>
-         <columnConstraints>
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
-      </GridPane>
-      <VBox fx:id="chartPane" prefHeight="200.0" prefWidth="100.0" >
-          <children>
-              <CheckComboBox fx:id="plotTagComboBox" />
-          </children>
-      </VBox>
-   </items>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<!--<?import javafx.scene.control.Button?>-->
+<?import javafx.scene.control.Control?>
+
+<fx:root dividerPositions="0.5" id="mainPane" type="SplitPane" stylesheets="@../../css/dialog/DeviceMonitor.css"
+         xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <items>
+        <VBox spacing="15.0" maxWidth="600.0" >
+            <GridPane hgap="10.0" vgap="10.0">
+                <Label text="Log Level" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <minWidth>
+                        <Control fx:constant="USE_PREF_SIZE"/>
+                    </minWidth>
+                </Label>
+                <ComboBox fx:id="levelComboBox" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Device Name" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <minWidth>
+                        <Control fx:constant="USE_PREF_SIZE"/>
+                    </minWidth>
+                </Label>
+                <CheckComboBox fx:id="checkTagComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <CheckBox fx:id="autoScrollCheckbox" selected="true" text="Auto scroll" GridPane.columnIndex="2"
+                          GridPane.rowIndex="0">
+                    <minWidth>
+                        <Control fx:constant="USE_PREF_SIZE"/>
+                    </minWidth>
+                </CheckBox>
+<!--                <Button text="Clear" fx:id="clearTableButton" GridPane.columnIndex="2" GridPane.rowIndex="1">-->
+<!--                    <minWidth>-->
+<!--                        <Control fx:constant="USE_PREF_SIZE"/>-->
+<!--                    </minWidth>-->
+<!--                </Button>-->
+            </GridPane>
+            <TableView fx:id="deviceMonitorTable" VBox.vgrow="ALWAYS" />
+            <padding>
+                <Insets left="20.0" right="20.0" top="20.0" bottom="20.0"/>
+            </padding>
+        </VBox>
+
+        <VBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0" >
+                <Label text="Plot">
+                    <minWidth><Control fx:constant="USE_PREF_SIZE" /></minWidth>
+                </Label>
+                <CheckComboBox fx:id="plotTagComboBox" HBox.hgrow="ALWAYS" />
+<!--                <Button text="Clear" fx:id="clearChartButton">-->
+<!--                    <minWidth><Control fx:constant="USE_PREF_SIZE" /></minWidth>-->
+<!--                </Button>-->
+                <padding>
+                    <Insets left="20.0" right="20.0" top="20.0" bottom="5.0" />
+                </padding>
+            </HBox>
+            <ScrollPane fitToWidth="true">
+                <VBox fx:id="chartPane" />
+            </ScrollPane>
+        </VBox>
+    </items>
 </fx:root>
