@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -348,6 +347,41 @@ public class Project {
     }
 
     public ObservableList<Begin> getBegin() { return begins; }
+
+    public List<List<ProjectDevice>> getAllDeviceUsedGroupBySameActualDevice() {
+        Set<ProjectDevice> deviceUsed = getAllDeviceUsed();
+        return projectConfiguration.getDeviceMap().keySet().stream()
+                .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
+                .map(projectDevice -> {
+                    List<ProjectDevice> list = new ArrayList<>();
+                    list.add(projectDevice);
+                    list.addAll(projectConfiguration.getDeviceWithSameIdenticalDevice(projectDevice));
+                    list.removeIf(projectDevice1 -> !deviceUsed.contains(projectDevice1));
+                    return list;
+                })
+                .filter(projectDeviceList -> !projectDeviceList.isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    public List<List<ProjectDevice>> getAllDevicesGroupBySameActualDevice() {
+        return projectConfiguration.getDeviceMap().keySet().stream()
+                .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
+                .map(projectDevice -> {
+                    List<ProjectDevice> list = new ArrayList<>();
+                    list.add(projectDevice);
+                    list.addAll(projectConfiguration.getDeviceWithSameIdenticalDevice(projectDevice));
+                    return list;
+                }).collect(Collectors.toList());
+    }
+
+    private List<List<ProjectDevice>> groupBySameActualDevice(Collection<ProjectDevice> devices) {
+        return projectConfiguration.getDeviceMap().keySet().stream().map(projectDevice -> {
+            List<ProjectDevice> list = new ArrayList<>();
+            list.add(projectDevice);
+            list.addAll(projectConfiguration.getDeviceWithSameIdenticalDevice(projectDevice));
+            return list;
+        }).collect(Collectors.toList());
+    }
 
     public Set<ProjectDevice> getAllDeviceUsed() {
         Set<ProjectDevice> deviceUsed = new HashSet<>();

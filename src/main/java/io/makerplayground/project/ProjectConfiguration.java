@@ -908,4 +908,14 @@ public final class ProjectConfiguration {
     public Set<CloudPlatform> getCloudPlatformProvide() {
         return deviceMap.values().stream().flatMap(actualDevice -> actualDevice.getCloudPlatformSourceCodeLibrary().keySet().stream()).collect(Collectors.toSet());
     }
+
+    public ProjectDevice getRootDevice(ProjectDevice projectDevice) {
+        if (identicalDeviceMap.containsKey(projectDevice)) {
+            return identicalDeviceMap.get(projectDevice);
+        }
+        if (deviceMap.containsKey(projectDevice)) {
+            return projectDevice;
+        }
+        throw new IllegalStateException("The project devices must be exist in deviceMap or identicalDevice map.");
+    }
 }
