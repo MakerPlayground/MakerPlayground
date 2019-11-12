@@ -358,22 +358,15 @@ class ArduinoCodeGenerator {
         // log status of each devices
         if (!project.getProjectConfiguration().useHwSerialProperty().get()) {
             builder.append(INDENT).append("if (currentTime - latestLogTime > MP_LOG_INTERVAL) {").append(NEW_LINE);
-            for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-                builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform))
-                        .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
-            }
-
-            for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-                builder.append(INDENT).append(INDENT).append("MP_LOG(").append(ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList))
-                        .append(", \"").append(projectDeviceList.stream().map(ProjectDevice::getName).collect(Collectors.joining(", ")))
-                        .append("\");").append(NEW_LINE);
-            }
-//            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-//                if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
-//                    continue;
-//                }
-//                builder.append(INDENT).append(INDENT).append("MP_LOG(").append(parseDeviceVariableName(configuration, projectDevice))
-//                        .append(", \"").append(projectDevice.getName()).append("\");").append(NEW_LINE);
+//            for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+//                builder.append(INDENT).append(INDENT).append("MP_LOG_P(").append(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform))
+//                        .append(", \"").append(cloudPlatform.getDisplayName()).append("\");").append(NEW_LINE);
+//            }
+//
+//            for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
+//                builder.append(INDENT).append(INDENT).append("MP_LOG(").append(ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList))
+//                        .append(", \"").append(projectDeviceList.stream().map(ProjectDevice::getName).collect(Collectors.joining(", ")))
+//                        .append("\");").append(NEW_LINE);
 //            }
 
             for (ProjectDevice projectDevice : valueUsed.keySet()) {

@@ -53,18 +53,18 @@ public class InteractiveModel implements SerialPortMessageListener {
     }
 
     public boolean hasCommand(ProjectDevice projectDevice, Action action) {
-        return isActualDeviceIdentical(projectDevice) && actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
+        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
     }
 
     public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
-        if (!isActualDeviceIdentical(projectDevice) || !conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
+        if (!conditionMap.containsKey(projectDevice) || !conditionMap.get(projectDevice).containsKey(condition)) {
             return Optional.empty();
         }
         return Optional.of(conditionMap.get(projectDevice).get(condition).getReadOnlyProperty());
     }
 
     public Optional<ReadOnlyDoubleProperty> getValueProperty(ProjectDevice projectDevice, Value value) {
-        if (!isActualDeviceIdentical(projectDevice) || !valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
+        if (!valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
             return Optional.empty();
         }
         return Optional.of(valueMap.get(projectDevice).get(value).getReadOnlyProperty());

@@ -1302,13 +1302,7 @@ class DiagramV1 {
         } else {
             deviceList = new ArrayList<>();
             deviceList.add(device);
-            // add device(s) that are sharing an actual device with this device to the same property window
-            for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
-                Optional<ProjectDevice> identicalDevice = config.getIdenticalDevice(pd);
-                if (identicalDevice.isPresent() && identicalDevice.get() == device) {
-                    deviceList.add(pd);
-                }
-            }
+            deviceList.addAll(config.getDeviceWithSameIdenticalDevice(device));
         }
         if (!deviceList.isEmpty()) {
             InteractiveDevicePropertyWindow interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);
