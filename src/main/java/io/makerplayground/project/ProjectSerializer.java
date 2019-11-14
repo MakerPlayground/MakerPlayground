@@ -91,23 +91,17 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         }
         jsonGenerator.writeEndArray();
 
+        jsonGenerator.writeArrayFieldStart("delays");
+        for(Delay delay : project.getUnmodifiableDelay()) {
+            mapper.writeValue(jsonGenerator, delay);
+        }
+        jsonGenerator.writeEndArray();
+
         jsonGenerator.writeArrayFieldStart("lines");
         for(Line line : project.getUnmodifiableLine()) {
             jsonGenerator.writeStartObject();
-
-            if (line.getSource() instanceof Scene) {
-                jsonGenerator.writeStringField("source", ((Scene) line.getSource()).getName());
-            } else if (line.getSource() instanceof Condition) {
-                jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
-            } else if (line.getSource() instanceof Begin) {
-                jsonGenerator.writeStringField("source", ((Begin) line.getSource()).getName()); // TODO: hardcode as begin
-            }
-
-            if (line.getDestination() instanceof Scene) {
-                jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
-            } else if (line.getDestination() instanceof Condition) {
-                jsonGenerator.writeStringField("destination", ((Condition) line.getDestination()).getName());
-            }
+            jsonGenerator.writeStringField("source", line.getSource().getName());
+            jsonGenerator.writeStringField("destination", line.getDestination().getName());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

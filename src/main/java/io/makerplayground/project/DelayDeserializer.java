@@ -17,41 +17,29 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.makerplayground.device.shared.DelayUnit;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class ConditionDeserializer extends JsonDeserializer<Condition> {
-    ObjectMapper mapper = new ObjectMapper();
-    Project project;
+public class DelayDeserializer extends JsonDeserializer<Delay> {
+    private final Project project;
+    private ObjectMapper mapper = new ObjectMapper();
 
-    ConditionDeserializer(Project project) {
+    DelayDeserializer(Project project) {
         this.project = project;
-
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(UserSetting.class, new UserSettingDeserializer(project));
-        mapper.registerModule(module);
     }
 
     @Override
-    public Condition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public Delay deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = mapper.readTree(jsonParser);
         String name = node.get("name").asText();
 
-        List<UserSetting> settings = mapper.readValue(node.get("setting").traverse(), new TypeReference<List<UserSetting>>() {});
-        List<UserSetting> deviceSettings = settings.stream()
-                .filter(setting -> project.getUnmodifiableProjectDevice().contains(setting.getDevice()))
-                .collect(Collectors.toUnmodifiableList());
-        List<UserSetting> virtualDeviceSettings = settings.stream()
-                .filter(setting -> VirtualProjectDevice.virtualDevices.contains(setting.getDevice()))
-                .collect(Collectors.toUnmodifiableList());
+        double delay = node.get("delay").asDouble();
+        DelayUnit delayUnit = DelayUnit.valueOf(node.get("delayUnit").asText());
 
         JsonNode positionNode = node.get("position");
         double top = positionNode.get("top").asDouble();
@@ -59,6 +47,6 @@ public class ConditionDeserializer extends JsonDeserializer<Condition> {
         double width = positionNode.get("width").asDouble();
         double height = positionNode.get("height").asDouble();
 
-        return new Condition(top, left, width, height, name, deviceSettings, virtualDeviceSettings, project);
+        return new Delay(top, left, width, height, name, delay, delayUnit, project);
     }
 }

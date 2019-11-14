@@ -101,6 +101,38 @@ public class SceneViewModel {
         return scene.topProperty();
     }
 
+    public double getSourcePortX() {
+        return scene.getSourcePortX();
+    }
+
+    public DoubleProperty sourcePortXProperty() {
+        return scene.sourcePortXProperty();
+    }
+
+    public double getSourcePortY() {
+        return scene.getSourcePortY();
+    }
+
+    public DoubleProperty sourcePortYProperty() {
+        return scene.sourcePortYProperty();
+    }
+
+    public double getDestPortX() {
+        return scene.getDestPortX();
+    }
+
+    public DoubleProperty destPortXProperty() {
+        return scene.destPortXProperty();
+    }
+
+    public double getDestPortY() {
+        return scene.getDestPortY();
+    }
+
+    public DoubleProperty destPortYProperty() {
+        return scene.destPortYProperty();
+    }
+
     public List<ProjectDevice> getProjectOutputDevice() {
         return project.getDeviceWithAction();
     }

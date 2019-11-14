@@ -24,21 +24,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 
-/**
- * Created by USER on 05-Jul-17.
- */
-public class ConditionDeviceIconView extends VBox {
+public class ConditionDeviceIconView extends HBox {
 
     private final SceneDeviceIconViewModel viewModel;
     private static ConditionDevicePropertyWindow devicePropertyWindow;
 
     @FXML private Label nameIconImageView;
     @FXML private ImageView iconImageView;
+    @FXML private Label condition;
     @FXML private Button removeConditionDeviceBtn;
 
     public ConditionDeviceIconView(SceneDeviceIconViewModel viewModel) {
@@ -55,6 +53,8 @@ public class ConditionDeviceIconView extends VBox {
         }
 
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
+        condition.setText(viewModel.getCondition().getName());
+        viewModel.conditionProperty().addListener((observable, oldValue, newValue) -> condition.setText(newValue.getName()));
         iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" )));
 
         setOnMouseClicked(e -> {

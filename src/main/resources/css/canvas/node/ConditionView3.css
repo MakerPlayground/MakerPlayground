@@ -1,69 +1,58 @@
-.root{
+.root {
     -fx-focus-color: transparent;
     -fx-effect: null;
     -fx-font-size:12px;
 }
-#conditionPane{
+
+#contentPane {
+    -fx-background-radius: 14px;
+    -fx-background-color: scene-header-background-color;
+    -fx-border-color: condition-theme-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+}
+
+#nameStateTextField {
     -fx-background-color : transparent;
-}
-#contentPane{
-    -fx-background-color : condition-background-color;
-    /*-fx-background-color : #f6f6f6;*/
-    -fx-background-radius : 7.5;
-    /*-fx-border-color : #e3e3e3;
-    -fx-border-radius : 7.5;*/
-}
-
-/*----unused----*/
-/*#nameStateTextField{
-    -fx-background-color : #313644;
-    -fx-text-fill: white;
+    -fx-text-fill: text-color;
     -fx-font-weight: bold;
-    -fx-font-size : 14 px;
-}*/
+    -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
+}
 
-/*----unused----*/
-/*#numberTextField{
-    -fx-background-color : white;
+#numberTextField {
+    -fx-background-color : control-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color : border-color;
+    -fx-border-width : 1px;
+    -fx-border-radius: 5 5 5 5;
+    -fx-text-fill : text-color;
+    -fx-font-size : 11px;
+    /*-fx-font-weight : bold;*/
+}
+
+.scroll-pane{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px 0px 0px 0px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
     -fx-border-color : transparent;
     -fx-border-width : 0px;
-    -fx-text-fill : black;
-    -fx-font-size : 6 px;
-    -fx-font-weight : normal;
-}*/
-
-/*----unused----*/
-/*#stateBottomHBox{
-    -fx-background-color : #ffffff;
-    -fx-border-color: #e3e3e3;
-}*/
-/*.text{
-    -fx-text-fill : white;
-    -fx-font-size: 9 px;
-}*/
-
-/*----doubly to condition-background-color----*/
-/*#deviceIconFlowPane{
-    -fx-background-color : transparent;
-    -fx-background-radius : 5;
-    -fx-border-color : null;
-}*/
-
-#scrollPane > .viewport{
-    -fx-background-color :  condition-scroll-pane-viewport-background-color;
-    -fx-background-radius : 7.5;
-    -fx-border-color : condition-scroll-pane-viewport-border-color;
 }
 
 .scroll-bar .increment-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding: 0 4 0 0;
 }
 .scroll-bar .decrement-button {
     -fx-background-color : transparent;
     -fx-background-radius: 0em;
-    -fx-padding:0 10 0 0;
+    -fx-padding: 0 4 0 0;
 }
 .scroll-bar .increment-arrow{
     -fx-shape: " ";
@@ -76,34 +65,42 @@
 .scroll-bar .track{
     -fx-background-color: transparent;
     -fx-border-color : transparent;
-    -fx-border-radius:0.5em;
+    -fx-border-radius: 0.5em;
 }
 .scroll-bar .thumb{
     -fx-background-color: scrollbar-thumb-color;
     -fx-border-radius: 0.5em;
-    -fx-background-insets: 2, 0, 0;
+    -fx-background-insets: 0, 0, 0;
 }
 .scroll-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-#addOutputButton:pressed{
+#addDeviceButton{
+    -fx-background-image: url('add-device-diagram.png');
+    -fx-background-size : 100px 30px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+#addDeviceButton:hover{
     -fx-focus-color: transparent;
     -fx-background-color: transparent;
-    -fx-background-image: url('add-2-toggle.png');
-    -fx-background-size : 50px;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
     -fx-cursor: hand;
 }
-#addOutputButton{
-    -fx-background-image: url('add-2.png');
-    -fx-background-size : 50px;
+#addDeviceButton:pressed{
+    -fx-focus-color: transparent;
     -fx-background-color: transparent;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
     -fx-cursor: hand;
 }
+
 #arcNode {
-    -fx-fill: condition-port;
-    -fx-stroke: condition-port;
+    -fx-fill: condition-theme-color;
+    -fx-stroke: condition-theme-color;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;

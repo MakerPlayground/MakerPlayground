@@ -31,9 +31,6 @@ import javafx.beans.property.StringProperty;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by tanyagorn on 6/12/2017.
- */
 public class SceneDeviceIconViewModel {
 
     private final UserSetting userSetting;
@@ -64,32 +61,28 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getName();
     }
 
-    public ReadOnlyObjectProperty<Action> getActionReadonlyProperty() {
-        return userSetting.actionProperty();
-    }
-
     public Action getAction() {
         return userSetting.getAction();
-    }
-
-    public ReadOnlyObjectProperty<Condition> getConditionReadonlyProperty() {
-        return userSetting.conditionProperty();
-    }
-
-    public Condition getCondition() {
-        return userSetting.getCondition();
     }
 
     public void setAction(Action action) {
         userSetting.setAction(action);
     }
 
+    public ReadOnlyObjectProperty<Action> actionProperty() {
+        return userSetting.actionProperty();
+    }
+
+    public Condition getCondition() {
+        return userSetting.getCondition();
+    }
+
     public void setCondition(Condition condition) {
         userSetting.setCondition(condition);
     }
 
-    public ReadOnlyObjectProperty<Action> actionProperty() {
-        return userSetting.actionProperty();
+    public ReadOnlyObjectProperty<Condition> conditionProperty() {
+        return userSetting.conditionProperty();
     }
 
     public ProjectDevice getProjectDevice() {

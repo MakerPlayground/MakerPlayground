@@ -16,23 +16,17 @@
 
 package io.makerplayground.ui.canvas.node;
 
+import io.makerplayground.device.shared.DelayUnit;
 import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
-import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
-import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
-import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
-import io.makerplayground.ui.control.AutoResizeTextField;
-import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -43,35 +37,36 @@ import javafx.scene.shape.Arc;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.List;
 
-public class SceneView extends InteractiveNode {
+public class DelayView extends InteractiveNode {
     private final VBox parent = new VBox();
 
-    @FXML private AutoResizeTextField nameTextField;
     @FXML private ImageView removeButton;
 
     @FXML private HBox mainLayout;
     @FXML private VBox contentPane;
-    @FXML private ScrollPane scrollPane;
-    @FXML private VBox deviceConfigIconPane;
-    @FXML private Button addDeviceButton;
+    @FXML private TextField delayTextField;
+    @FXML private ComboBox<DelayUnit> timeUnitComboBox;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
 
-    private final SceneViewModel sceneViewModel;
-    private OutputDeviceSelector outputDeviceSelector = null;
-    private static final Color highlightColor = Color.web("#12cc69");
+    private final DelayViewModel viewModel;
+    private static final Color highlightColor = Color.web("#ffab00");
+    private static final ObservableList<DelayUnit> delayUnitList = FXCollections.observableArrayList(List.of(DelayUnit.values()));
+    private static final DecimalFormat df = new DecimalFormat("0.###");
 
-    public SceneView(SceneViewModel sceneViewModel, InteractivePane interactivePane) {
+    public DelayView(DelayViewModel viewModel, InteractivePane interactivePane) {
         super(interactivePane);
-        this.sceneViewModel = sceneViewModel;
+        this.viewModel = viewModel;
         initView();
         initEvent();
     }
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/StateView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/DelayView.fxml"));
         fxmlLoader.setRoot(parent);
         fxmlLoader.setController(this);
         try {
@@ -81,54 +76,42 @@ public class SceneView extends InteractiveNode {
         }
         getChildren().add(parent);
 
+        // initialize delay text field
+        if (viewModel.getDelayValue() == 0) {
+            delayTextField.setText("0");
+        } else {
+            delayTextField.setText(df.format(viewModel.getDelayValue()));
+        }
+
+        // initialize delay's unit combobox
+        timeUnitComboBox.getItems().addAll(delayUnitList);
+        timeUnitComboBox.getSelectionModel().selectFirst();
+
         // TODO: refactor into InteractiveNode
         // bind port location to the model
         ChangeListener<Bounds> boundsChangeListener = (observable, oldValue, newValue) -> {
             if (getParent() != null) {
                 Bounds inPortCanvasBound = getParent().sceneToLocal(inPort.localToScene(inPort.getBoundsInLocal()));
-                sceneViewModel.sourcePortXProperty().set(inPortCanvasBound.getMinX());
-                sceneViewModel.sourcePortYProperty().set(inPortCanvasBound.getCenterY());
+                viewModel.sourcePortXProperty().set(inPortCanvasBound.getMinX());
+                viewModel.sourcePortYProperty().set(inPortCanvasBound.getCenterY());
 
                 Bounds outPortCanvasBound = getParent().sceneToLocal(outPort.localToScene(outPort.getBoundsInLocal()));
-                sceneViewModel.destPortXProperty().set(outPortCanvasBound.getMaxX());
-                sceneViewModel.destPortYProperty().set(outPortCanvasBound.getCenterY());
+                viewModel.destPortXProperty().set(outPortCanvasBound.getMaxX());
+                viewModel.destPortYProperty().set(outPortCanvasBound.getCenterY());
             }
         };
         boundsInParentProperty().addListener(boundsChangeListener);
         inPort.boundsInParentProperty().addListener(boundsChangeListener);
         outPort.boundsInParentProperty().addListener(boundsChangeListener);
 
-        // dynamically create device configuration icons
-        DynamicViewCreator<VBox, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator =
-                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, SceneDeviceIconView>()
-                        .setParent(deviceConfigIconPane)
-                        .setModelLoader(sceneViewModel.getDynamicViewModelCreator())
-                        .setViewFactory(sceneDeviceIconViewModel -> {
-                            SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
-                            sceneDeviceIconView.setOnRemoved(event ->
-                                    sceneViewModel.removeUserSetting(sceneDeviceIconViewModel.getUserSetting()));
-                            return sceneDeviceIconView;
-                        })
-                        .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
-                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
-                        .createDynamicViewCreator();
-
-        // bind scene's name to the model
-        nameTextField.setText(sceneViewModel.getName());
-        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> sceneViewModel.setName(newValue));
-
         // bind scene's location to the model
-        translateXProperty().bindBidirectional(sceneViewModel.xProperty());
-        translateYProperty().bindBidirectional(sceneViewModel.yProperty());
-
-        // show add output device button when there are devices left to be added
-        addDeviceButton.visibleProperty().bind(sceneViewModel.hasDeviceToAddProperty());
-        addDeviceButton.managedProperty().bind(addDeviceButton.visibleProperty());
+        translateXProperty().bindBidirectional(viewModel.xProperty());
+        translateYProperty().bindBidirectional(viewModel.yProperty());
 
         showHilight(false);
 
         // update hilight when error property of the condition is changed
-        sceneViewModel.getScene().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
+        viewModel.getDelay().errorProperty().addListener((observable, oldValue, newValue) -> showHilight(false));
 
         // display the remove button only when the scene is selected
         removeButton.visibleProperty().bind(selectedProperty());
@@ -136,11 +119,11 @@ public class SceneView extends InteractiveNode {
         // install tooltip to display error message to the user
         Tooltip tooltip = new Tooltip();
         tooltip.setShowDelay(Duration.millis(250));
-        if (sceneViewModel.getError() != DiagramError.NONE) {
-            tooltip.setText("Error: " + sceneViewModel.getError().toString());
+        if (viewModel.getError() != DiagramError.NONE) {
+            tooltip.setText("Error: " + viewModel.getError().toString());
             Tooltip.install(this, tooltip);
         }
-        sceneViewModel.errorProperty().addListener((observable, oldValue, newValue) -> {
+        viewModel.errorProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == DiagramError.NONE) {
                 tooltip.setText("");
                 Tooltip.uninstall(this, tooltip);
@@ -154,39 +137,27 @@ public class SceneView extends InteractiveNode {
     private void initEvent() {
         // allow node to be dragged
         makeMovableWithEventHandler(contentPane);
-        makeMovableWithEventHandler(deviceConfigIconPane);
-        // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
-        // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
-        // native method to check the visibility of the scroll bar)
-        if (sceneViewModel.getStateDevice().size() >= 3) {
-            removeEventFilter(scrollPane);
-        } else {
-            makeMovableWithEventFilter(scrollPane);
-        }
-        Bindings.size(sceneViewModel.getStateDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                removeEventFilter(scrollPane);
+
+        // bind delay amount to the model (revert to old value if new value is invalid)
+        delayTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                viewModel.setDelayValue(0);
+            } else if (newValue.matches("\\d+\\.?\\d*")) {
+                double delay = Double.parseDouble(newValue);
+                viewModel.setDelayValue(delay);
             } else {
-                makeMovableWithEventFilter(scrollPane);
+                delayTextField.setText(oldValue);
+            }
+        });
+        delayTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (delayTextField.getText().isEmpty()) {
+                delayTextField.setText("0");
             }
         });
 
-        // update scene name after the text field lose focus
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                sceneViewModel.setName(nameTextField.getText());
-            }
-        });
-
-        // show device selector dialog to add device to this scene
-        addDeviceButton.setOnAction(e -> {
-            if (outputDeviceSelector != null) {
-                outputDeviceSelector.hide();
-            }
-            OutputDeviceSelector outputDeviceSel = new OutputDeviceSelector(sceneViewModel);
-            outputDeviceSel.show(addDeviceButton, 0);
-            outputDeviceSelector = outputDeviceSel;
-        });
+        // bind unit to the model
+        timeUnitComboBox.getSelectionModel().select(viewModel.getDelayUnit());
+        viewModel.delayUnitProperty().bind(timeUnitComboBox.getSelectionModel().selectedItemProperty());
 
         // remove scene when press the remove button
         removeButton.setOnMousePressed(event -> fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.REMOVED
@@ -199,11 +170,11 @@ public class SceneView extends InteractiveNode {
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
-                    , sceneViewModel.getScene(), null, sceneViewModel.getDestPortX(), sceneViewModel.getDestPortY()));
+                    , viewModel.getDelay(), null, viewModel.getDestPortX(), viewModel.getDestPortY()));
         });
         inPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our inPort if mouse is being dragged from other outPort
-            if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
+            if (interactivePane.getSourceNode() != null && !viewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
                 showHilight(true);
             }
         });
@@ -213,7 +184,7 @@ public class SceneView extends InteractiveNode {
             if (interactivePane.getSourceNode() != null) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , interactivePane.getSourceNode(), sceneViewModel.getScene(), 0, 0));
+                        , interactivePane.getSourceNode(), viewModel.getDelay(), 0, 0));
             }
         });
 
@@ -222,12 +193,12 @@ public class SceneView extends InteractiveNode {
             // outPort.getBoundsInParent() doesn't take effect apply to parent (15px drop shadow) into consideration.
             // So, we need to subtract it with getBoundsInLocal().getMinX() which include effect in it's bound calculation logic.
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_BEGIN
-                    , null, sceneViewModel.getScene(), sceneViewModel.getSourcePortX(), sceneViewModel.getSourcePortY()));
+                    , null, viewModel.getDelay(), viewModel.getSourcePortX(), viewModel.getSourcePortY()));
         });
 
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
             // highlight our outPort if mouse is being dragged from other inPort
-            if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+            if (interactivePane.getDestNode() != null && !viewModel.hasConnectionTo(interactivePane.getDestNode())) {
                 showHilight(true);
             }
         });
@@ -237,14 +208,14 @@ public class SceneView extends InteractiveNode {
             if (interactivePane.getDestNode() != null) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , sceneViewModel.getScene(), interactivePane.getDestNode(), 0, 0));
+                        , viewModel.getDelay(), interactivePane.getDestNode(), 0, 0));
             }
         });
 
         contentPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
-            if (interactivePane.getSourceNode() != null && !sceneViewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
+            if (interactivePane.getSourceNode() != null && !viewModel.hasConnectionFrom(interactivePane.getSourceNode())) {
                 showHilight(true);
-            } else if (interactivePane.getDestNode() != null && !sceneViewModel.hasConnectionTo(interactivePane.getDestNode())) {
+            } else if (interactivePane.getDestNode() != null && !viewModel.hasConnectionTo(interactivePane.getDestNode())) {
                 showHilight(true);
             }
         });
@@ -253,26 +224,26 @@ public class SceneView extends InteractiveNode {
 
         contentPane.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
             // allow drop to our inPort if mouse is being dragged from other outPort
-            if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getSceneViewModel().getScene()) {
+            if (interactivePane.getSourceNode() != null && interactivePane.getSourceNode() != this.getDelayViewModel().getDelay()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , interactivePane.getSourceNode(), sceneViewModel.getScene(), 0, 0));
+                        , interactivePane.getSourceNode(), viewModel.getDelay(), 0, 0));
             }
-            if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getSceneViewModel().getScene()) {
+            if (interactivePane.getDestNode() != null && interactivePane.getDestNode() != this.getDelayViewModel().getDelay()) {
                 showHilight(false);
                 fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.CONNECTION_DONE
-                        , sceneViewModel.getScene(), interactivePane.getDestNode(), 0, 0));
+                        , viewModel.getDelay(), interactivePane.getDestNode(), 0, 0));
             }
         });
     }
 
-    public SceneViewModel getSceneViewModel() {
-        return sceneViewModel;
+    public DelayViewModel getDelayViewModel() {
+        return viewModel;
     }
 
     @Override
     protected boolean isError() {
-        return sceneViewModel.getError() != DiagramError.NONE;
+        return viewModel.getError() != DiagramError.NONE;
     }
 
     @Override

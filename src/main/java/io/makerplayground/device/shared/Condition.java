@@ -37,7 +37,7 @@ public class Condition {
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator
-    Condition(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
+    public Condition(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
         this.functionName = functionName;
         this.parameter = Collections.unmodifiableList(parameter);

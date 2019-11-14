@@ -35,6 +35,9 @@ public class ConditionSerializer extends JsonSerializer<Condition> {
         jsonGenerator.writeStringField("name", condition.getName());
 
         jsonGenerator.writeArrayFieldStart("setting");
+        for (UserSetting setting : condition.getVirtualDeviceSetting()) {
+            mapper.writeValue(jsonGenerator, setting);
+        }
         for (UserSetting setting : condition.getSetting()) {
             mapper.writeValue(jsonGenerator,setting);
         }

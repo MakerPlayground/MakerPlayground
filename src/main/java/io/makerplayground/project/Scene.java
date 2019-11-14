@@ -47,33 +47,14 @@ public class Scene extends NodeElement {
         }
     }
 
-    private final StringProperty name;
     private final ObservableList<UserSetting> setting;
     private final DoubleProperty delay;
     private final ObjectProperty<DelayUnit> delayUnit;
 
-    private final Set<NodeElement> roots = new HashSet<>();
-
-    public Set<NodeElement> getRoots() {
-        return roots;
-    }
-
-    public void addRoot(NodeElement root) {
-        if (root instanceof Begin) {
-            roots.add(root);
-            return;
-        }
-        throw new IllegalStateException("Root must be Begin or Task");
-    }
-
-    public void clearRoot() {
-        roots.clear();
-    }
-
     Scene(Project project) {
         super(20, 20, 205, 124, project);
 
-        this.name = new SimpleStringProperty("");
+        this.name = "";
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.delay = new SimpleDoubleProperty(0);
@@ -85,7 +66,7 @@ public class Scene extends NodeElement {
             , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList(setting);
         this.delay = new SimpleDoubleProperty(delay);
         this.delayUnit = new SimpleObjectProperty<>(delayUnit);
@@ -94,7 +75,7 @@ public class Scene extends NodeElement {
 
     Scene(Scene s, String name, Project project) {
         super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight(), project);
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         for (UserSetting u : s.setting) {
             this.setting.add(new UserSetting(u));
@@ -131,12 +112,9 @@ public class Scene extends NodeElement {
         invalidate();
     }
 
-    public String getName() {
-        return name.get();
-    }
-
+    @Override
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
         invalidate();
         // invalidate other scene as every scene needs to check for duplicate name
         for (Scene s : project.getUnmodifiableScene()) {
@@ -179,13 +157,13 @@ public class Scene extends NodeElement {
     @Override
     protected DiagramError checkError() {
         // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.get().matches("\\w+")) {
+        if (!name.matches("\\w+")) {
             return DiagramError.SCENE_INVALID_NAME;
         }
 
         // name should be unique
         for (Scene s : project.getUnmodifiableScene()) {
-            if ((this != s) && name.get().equals(s.name.get())) {
+            if ((this != s) && name.equals(s.name)) {
                 return DiagramError.SCENE_DUPLICATE_NAME;
             }
         }
