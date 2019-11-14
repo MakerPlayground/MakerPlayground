@@ -124,6 +124,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
 
         /* Pin, Port, Property */
         List<Connection> connectionProvide = loadConnection(node.get("connection_provide"), devicePinTemplate);
+        List<Connection> expandConnectionProvide = expandConnection(connectionProvide);
         List<Connection> connectionConsume = loadConnection(node.get("connection_consume"), devicePinTemplate);
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
@@ -176,7 +177,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), hostPinTemplate.getFunction(), hostHasHwSerial, -1, -1));
             }
             inConnection.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, inPins, null));
-            connectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
+            expandConnectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
 
             /* Extract platformSourceCodeLibrary */
             Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
@@ -244,7 +245,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .pioBoardId(pioBoardId)
                 .cloudConsume(cloudConsume)
                 .connectionConsume(connectionConsume)
-                .connectionProvide(connectionProvide)
+                .connectionProvide(expandConnectionProvide)
                 .property(property)
                 .compatibilityMap(compatibilityMap)
                 .integratedDevices(integratedDevices)
@@ -253,6 +254,20 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         actualDevice.getIntegratedDevices().forEach(inActualDevice -> inActualDevice.setParent(actualDevice));
 
         return actualDevice;
+    }
+
+    private List<Connection> expandConnection(List<Connection> connectionProvide) {
+        List<Connection> retVal = new ArrayList<>(connectionProvide);
+        for (Connection connection: connectionProvide) {
+            if (connection.getType() != ConnectionType.WIRE && connection.getPins().size() != 1) {
+                int i=0;
+                for (Pin pin: connection.getPins()) {
+                    retVal.add(new Connection(connection.getName() + "_" + i, ConnectionType.WIRE, List.of(pin), null));
+                    i++;
+                }
+            }
+        }
+        return retVal;
     }
 
     private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws JsonProcessingException {
