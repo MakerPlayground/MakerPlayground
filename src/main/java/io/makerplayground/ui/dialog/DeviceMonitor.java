@@ -59,7 +59,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     private final FilteredList<LogItems> logDataFilter = new FilteredList<>(logData);
     private final Map<String, LineChart<Number, Number>> lineChartMap = new HashMap<>();
 
-    private final ObservableList<String> tagList = FXCollections.observableArrayList();
+    private final ObservableList<String> tagListForTable = FXCollections.observableArrayList();
+    private final ObservableList<String> tagListForChart = FXCollections.observableArrayList();
 
     @FXML private TableView<LogItems> deviceMonitorTable;
     @FXML private ComboBox<LogItems.LogLevel> levelComboBox;
@@ -67,8 +68,8 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     @FXML private CheckBox autoScrollCheckbox;
     @FXML private CheckComboBox<String> plotTagComboBox;
     @FXML private VBox chartPane;
-//    @FXML private Button clearTableButton;
-//    @FXML private Button clearChartButton;
+    @FXML private Button clearTableButton;
+    @FXML private Button clearChartButton;
 
     public DeviceMonitor() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
@@ -86,7 +87,7 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         levelComboBox.getSelectionModel().select(0);
         levelComboBox.getSelectionModel().selectedItemProperty().addListener(observable -> updateLogFilter());
 
-        Bindings.bindContent(checkTagComboBox.getItems(), tagList);
+        Bindings.bindContent(checkTagComboBox.getItems(), tagListForTable);
         checkTagComboBox.getCheckModel().getCheckedItems().addListener((InvalidationListener) observable -> updateLogFilter());
 
         updateLogFilter();
@@ -104,19 +105,20 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         deviceMonitorTable.getColumns().addAll(deviceNameTableColumn, messageTableColumn);
         deviceMonitorTable.setItems(logDataFilter);
 
-//        clearTableButton.setOnAction(event -> {
-//            tagList.clear();
-//            logData.clear();
-//        });
+        clearTableButton.setOnAction(event -> {
+            checkTagComboBox.getCheckModel().clearChecks();
+            tagListForTable.clear();
+            logData.clear();
+        });
 
         // initialize plot
 
-        Bindings.bindContent(plotTagComboBox.getItems(), tagList);
+        Bindings.bindContent(plotTagComboBox.getItems(), tagListForChart);
 
         plotTagComboBox.getCheckModel().getCheckedItems().addListener((InvalidationListener) observable -> {
             ObservableList<String> tagSelected = plotTagComboBox.getCheckModel().getCheckedItems();
 
-            Set<String> tagToBeRemoved = new HashSet<>(tagList);
+            Set<String> tagToBeRemoved = new HashSet<>(tagListForChart);
             tagToBeRemoved.removeAll(tagSelected);
 
             for (String tag : tagToBeRemoved) {
@@ -132,7 +134,10 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
             }
         });
 
-//        clearChartButton.setOnAction(event -> plotTagComboBox.getCheckModel().clearChecks());
+        clearChartButton.setOnAction(event -> {
+            plotTagComboBox.getCheckModel().clearChecks();
+            tagListForChart.clear();
+        });
     }
 
     private void updateLogFilter() {
@@ -166,7 +171,7 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
                     throw new UnsupportedOperationException();
                 } else {
                     for (LogItems removedItem : c.getRemoved()) {
-                        throw new UnsupportedOperationException();
+//                        throw new UnsupportedOperationException();
                     }
                     for (LogItems addedItem : c.getAddedSubList()) {
                         if (addedItem.getDeviceName().equals(tag)) {
@@ -252,13 +257,19 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
             LogItems logItems = new LogItems(log.group(1), log.group(2), log.group(3));
             Platform.runLater(() -> {
                 logData.addAll(logItems);
-                if (!tagList.contains(logItems.getDeviceName())) {
-                    tagList.add(logItems.getDeviceName());
+                if (!tagListForTable.contains(logItems.getDeviceName())) {
+                    tagListForTable.add(logItems.getDeviceName());
                     // A hack to make the checkbox tick became visible properly
                     Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItems.getDeviceName()));
                 }
                 if (autoScrollCheckbox.isSelected()) {
                     deviceMonitorTable.scrollTo(logItems);
+                }
+
+                if (!tagListForChart.contains(logItems.getDeviceName())) {
+                    tagListForChart.add(logItems.getDeviceName());
+                    // A hack to make the checkbox tick became visible properly
+                    Platform.runLater(() -> plotTagComboBox.getCheckModel().check(logItems.getDeviceName()));
                 }
             });
         }
