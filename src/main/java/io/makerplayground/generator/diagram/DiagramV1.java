@@ -910,13 +910,28 @@ class DiagramV1 {
     }
 
     private void sortDevice() {
-        deviceOnLeftRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getY()));
-        deviceOnRightRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getY()));
-        deviceOnTopMidRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
-        deviceOnBottomMidRegion.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
+        deviceOnLeftRegion.sort(Comparator.comparingDouble(device -> {
+            Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device);
+            return coordinate != null ? coordinate.getY() : Double.MAX_VALUE;
+        }));
+        deviceOnRightRegion.sort(Comparator.comparingDouble(device -> {
+            Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device);
+            return coordinate != null ? coordinate.getY() : Double.MAX_VALUE;
+        }));
+        deviceOnTopMidRegion.sort(Comparator.comparingDouble(device -> {
+            Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device);
+            return coordinate != null ? coordinate.getX() : Double.MAX_VALUE;
+        }));
+        deviceOnBottomMidRegion.sort(Comparator.comparingDouble(device -> {
+            Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device);
+            return coordinate != null ? coordinate.getX() : Double.MAX_VALUE;
+        }));
         deviceOnTopRegion.sort(ProjectDevice.NAME_COMPARATOR);
         deviceOnBottomRegion.sort(ProjectDevice.NAME_COMPARATOR);
-        deviceNeedBreadboard.sort(Comparator.comparingDouble(device -> getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device).getX()));
+        deviceNeedBreadboard.sort(Comparator.comparingDouble(device -> {
+            Coordinate coordinate = getConnectionCentroidToDevice(ProjectDevice.CONTROLLER, device);
+            return coordinate != null ? coordinate.getX() : Double.MAX_VALUE;
+        }));
     }
 
     private void calculateDeviceRotationAngle() {
