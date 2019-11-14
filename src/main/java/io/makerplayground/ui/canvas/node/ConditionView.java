@@ -25,6 +25,7 @@ import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
 import io.makerplayground.ui.dialog.devicepane.input.InputDeviceSelector;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
@@ -82,7 +83,7 @@ public class ConditionView extends InteractiveNode {
 
         // TODO: refactor into InteractiveNode
         // bind port location to the model
-        boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+        ChangeListener<Bounds> boundsChangeListener = (observable, oldValue, newValue) -> {
             if (getParent() != null) {
                 Bounds inPortCanvasBound = getParent().sceneToLocal(inPort.localToScene(inPort.getBoundsInLocal()));
                 conditionViewModel.sourcePortXProperty().set(inPortCanvasBound.getMinX());
@@ -92,7 +93,10 @@ public class ConditionView extends InteractiveNode {
                 conditionViewModel.destPortXProperty().set(outPortCanvasBound.getMaxX());
                 conditionViewModel.destPortYProperty().set(outPortCanvasBound.getCenterY());
             }
-        });
+        };
+        boundsInParentProperty().addListener(boundsChangeListener);
+        inPort.boundsInParentProperty().addListener(boundsChangeListener);
+        outPort.boundsInParentProperty().addListener(boundsChangeListener);
 
         // dynamically create device configuration icons
         DynamicViewCreator<VBox, SceneDeviceIconViewModel, ConditionDeviceIconView> dynamicViewCreator =

@@ -19,6 +19,7 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.device.shared.DelayUnit;
 import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -88,7 +89,7 @@ public class DelayView extends InteractiveNode {
 
         // TODO: refactor into InteractiveNode
         // bind port location to the model
-        boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+        ChangeListener<Bounds> boundsChangeListener = (observable, oldValue, newValue) -> {
             if (getParent() != null) {
                 Bounds inPortCanvasBound = getParent().sceneToLocal(inPort.localToScene(inPort.getBoundsInLocal()));
                 viewModel.sourcePortXProperty().set(inPortCanvasBound.getMinX());
@@ -98,7 +99,10 @@ public class DelayView extends InteractiveNode {
                 viewModel.destPortXProperty().set(outPortCanvasBound.getMaxX());
                 viewModel.destPortYProperty().set(outPortCanvasBound.getCenterY());
             }
-        });
+        };
+        boundsInParentProperty().addListener(boundsChangeListener);
+        inPort.boundsInParentProperty().addListener(boundsChangeListener);
+        outPort.boundsInParentProperty().addListener(boundsChangeListener);
 
         // bind scene's location to the model
         translateXProperty().bindBidirectional(viewModel.xProperty());
