@@ -46,6 +46,7 @@ public class CanvasView extends AnchorPane {
     @FXML private InteractivePane mainPane;
     @FXML private Button addSceneBtn;
     @FXML private Button addConditionBtn;
+    @FXML private Button addDelayBtn;
     @FXML private Button addBeginBtn;
     @FXML private Button zoomInButton;
     @FXML private Button zoomOutButton;
@@ -55,6 +56,7 @@ public class CanvasView extends AnchorPane {
     @FXML private ContextMenu contextMenu;
     @FXML private MenuItem newSceneMenuItem;
     @FXML private MenuItem newConditionMenuItem;
+    @FXML private MenuItem newDelayMenuItem;
     @FXML private MenuItem newBeginMenuItem;
     @FXML private MenuItem cutMenuItem;
     @FXML private MenuItem copyMenuItem;
@@ -148,6 +150,20 @@ public class CanvasView extends AnchorPane {
                 .setNodeRemover(InteractivePane::removeChildren)
                 .createDynamicViewCreator();
 
+        // Dynamically generate the condition UI when condition list is changed
+        new DynamicViewCreatorBuilder<InteractivePane, DelayViewModel, DelayView>()
+                .setParent(mainPane)
+                .setModelLoader(canvasViewModel.getDelayViewModelCreator())
+                .setViewFactory(delayViewModel -> {
+                    DelayView delayView = new DelayView(delayViewModel, mainPane);
+                    addConnectionEvent(delayView);
+                    delayView.addEventHandler(InteractiveNodeEvent.REMOVED, event -> canvasViewModel.project.removeDelay(delayViewModel.getDelay()));
+                    return delayView;
+                })
+                .setNodeAdder(InteractivePane::addChildren)
+                .setNodeRemover(InteractivePane::removeChildren)
+                .createDynamicViewCreator();
+
         // Dynamically generate the taskNode UI when condition list is changed
         new DynamicViewCreatorBuilder<InteractivePane, BeginViewModel, BeginView>()
                 .setParent(mainPane)
@@ -191,6 +207,12 @@ public class CanvasView extends AnchorPane {
         newCondition.setTop(y);
     }
 
+    private void newDelayHandler(double x, double y) {
+        Delay newDelay = canvasViewModel.project.newDelay();
+        newDelay.setLeft(x);
+        newDelay.setTop(y);
+    }
+
     private void newBeginHandler(double x, double y) {
         Begin newTask = canvasViewModel.project.newBegin();
         newTask.setLeft(x);
@@ -216,12 +238,15 @@ public class CanvasView extends AnchorPane {
             return;
         }
         // extract model from view
-        List<NodeElement> elements = clipboard.stream().filter(interactiveNode -> (interactiveNode instanceof SceneView) || (interactiveNode instanceof ConditionView))
+        List<NodeElement> elements = clipboard.stream()
+                .filter(interactiveNode -> (interactiveNode instanceof SceneView) || (interactiveNode instanceof ConditionView) || (interactiveNode instanceof DelayView))
                 .map(interactiveNode -> {
                     if (interactiveNode instanceof SceneView) {
                         return ((SceneView) interactiveNode).getSceneViewModel().getScene();
-                    } else {
+                    } else if (interactiveNode instanceof ConditionView) {
                         return ((ConditionView) interactiveNode).getConditionViewModel().getCondition();
+                    } else {
+                        return ((DelayView) interactiveNode).getDelayViewModel().getDelay();
                     }
                 }).collect(Collectors.toList());
 
@@ -241,11 +266,16 @@ public class CanvasView extends AnchorPane {
                 newScene.setLeft(newX);
                 newScene.setTop(newY);
                 elementsMap.put(element,newScene);
-            } else {
+            } else if (element instanceof Condition) {
                 Condition newCondition = canvasViewModel.project.newCondition((Condition) element);
                 newCondition.setLeft(newX);
                 newCondition.setTop(newY);
                 elementsMap.put(element,newCondition);
+            } else if (element instanceof Delay) {
+                Delay newDelay = canvasViewModel.project.newDelay((Delay) element);
+                newDelay.setLeft(newX);
+                newDelay.setTop(newY);
+                elementsMap.put(element,newDelay);
             }
         }
 
@@ -272,6 +302,8 @@ public class CanvasView extends AnchorPane {
                 canvasViewModel.project.removeScene(((SceneView) interactiveNode).getSceneViewModel().getScene());
             } else if (interactiveNode instanceof ConditionView) {
                 canvasViewModel.project.removeCondition(((ConditionView) interactiveNode).getConditionViewModel().getCondition());
+            } else if (interactiveNode instanceof DelayView) {
+                canvasViewModel.project.removeDelay(((DelayView) interactiveNode).getDelayViewModel().getDelay());
             } else if (interactiveNode instanceof LineView) {
                 canvasViewModel.project.removeLine(((LineView) interactiveNode).getLineViewModel().getLine());
             } else if (interactiveNode instanceof BeginView) {
@@ -318,6 +350,11 @@ public class CanvasView extends AnchorPane {
     }
 
     @FXML
+    private void newDelayContextMenuHandler() {
+        newDelayHandler(mainPane.getMouseX(), mainPane.getMouseY());
+    }
+
+    @FXML
     private void newBeginContextMenuHandler() {
         newBeginHandler(mainPane.getMouseX(), mainPane.getMouseY());
     }
@@ -330,6 +367,11 @@ public class CanvasView extends AnchorPane {
     @FXML
     private void addConditionButtonHandler() {
         newConditionHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
+    }
+
+    @FXML
+    private void addDelayButtonHandler() {
+        newDelayHandler(mainPane.getViewportMinX() + 50, mainPane.getViewportMinY() + 50);
     }
 
     @FXML

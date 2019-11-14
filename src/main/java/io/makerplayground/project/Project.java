@@ -57,6 +57,7 @@ public class Project {
     private final ObservableList<ProjectDevice> devices;
     private final ObservableList<Scene> scenes;
     private final ObservableList<Condition> conditions;
+    private final ObservableList<Delay> delays;
     private final ObservableList<Line> lines;
     private final ObservableList<Begin> begins;
 
@@ -71,11 +72,13 @@ public class Project {
     @Getter private final ObservableList<ProjectDevice> unmodifiableProjectDevice;
     @Getter private final ObservableList<Scene> unmodifiableScene;
     @Getter private final ObservableList<Condition> unmodifiableCondition;
+    @Getter private final ObservableList<Delay> unmodifiableDelay;
     @Getter private final ObservableList<Line> unmodifiableLine;
 
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("Condition\\d+");
+    private static final Pattern delayNameRegex = Pattern.compile("Delay\\d+");
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
     @Getter private InteractiveModel interactiveModel;
@@ -96,11 +99,13 @@ public class Project {
 
         this.scenes = FXCollections.observableArrayList();
         this.conditions = FXCollections.observableArrayList();
+        this.delays = FXCollections.observableArrayList();
         this.lines = FXCollections.observableArrayList();
         this.begins = FXCollections.observableArrayList();
 
         this.unmodifiableScene = FXCollections.unmodifiableObservableList(scenes);
         this.unmodifiableCondition = FXCollections.unmodifiableObservableList(conditions);
+        this.unmodifiableDelay = FXCollections.unmodifiableObservableList(delays);
         this.unmodifiableLine = FXCollections.unmodifiableObservableList(lines);
 
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
@@ -265,6 +270,53 @@ public class Project {
         for (int i = lines.size()-1; i>=0; i--) {
             Line l = lines.get(i);
             if (l.getSource() == c || l.getDestination() == c) {
+                lines.remove(l);
+            }
+        }
+        checkAndInvalidateDiagram();
+        this.calculateCompatibility();
+    }
+
+    public Optional<Delay> getUnmodifiableDelay(String name) {
+        return unmodifiableDelay.stream().filter(d -> d.getName().equals(name)).findFirst();
+    }
+
+    public Delay newDelay() {
+        int id = delays.stream()
+                .filter(delay1 -> delayNameRegex.matcher(delay1.getName()).matches())
+                .mapToInt(delay1 -> Integer.parseInt(delay1.getName().substring(5)))
+                .max()
+                .orElse(0);
+
+        Delay d = new Delay(this);
+        d.setName("Delay" + (id + 1));
+        delays.add(d);
+        checkAndInvalidateDiagram();
+        return d;
+    }
+
+    public Delay newDelay(Delay d) {
+        int id = delays.stream()
+                .filter(delay1 -> delayNameRegex.matcher(delay1.getName()).matches())
+                .mapToInt(delay1 -> Integer.parseInt(delay1.getName().substring(5)))
+                .max()
+                .orElse(0);
+
+        Delay newDelay = new Delay(d, "Delay" + (id + 1), this);
+        delays.add(newDelay);
+        checkAndInvalidateDiagram();
+        return newDelay;
+    }
+
+    void addDelay(Delay d) {
+        delays.add(d);
+    }
+
+    public void removeDelay(Delay d) {
+        delays.remove(d);
+        for (int i = lines.size()-1; i>=0; i--) {
+            Line l = lines.get(i);
+            if (l.getSource() == d || l.getDestination() == d) {
                 lines.remove(l);
             }
         }
@@ -457,6 +509,7 @@ public class Project {
                     && devices.isEmpty()
                     && scenes.isEmpty()
                     && conditions.isEmpty()
+                    && delays.isEmpty()
                     && lines.isEmpty()
                     && begins.size() == 1
                     && begins.get(0).getTop() == 200
@@ -512,6 +565,13 @@ public class Project {
     private void checkAndInvalidateDiagram() {
         Map<List<Line>, DiagramError> error = new HashMap<>();
 
+        // Reassign root to all scene and conditions
+        getUnmodifiableScene().forEach(scene -> scene.setRoot(null));
+        getUnmodifiableCondition().forEach(condition -> condition.setRoot(null));
+        getUnmodifiableDelay().forEach(delay -> delay.setRoot(null));
+        getBegin().forEach(begin -> begin.setRoot(begin));
+        getBegin().forEach(this::traverseAndSetRoot);
+
         Map<NodeElement, List<Line>> lineFromSource = this.lines.stream().collect(Collectors.groupingBy(Line::getSource));
 
         for (NodeElement nodeElement : lineFromSource.keySet()) {
@@ -523,30 +583,30 @@ public class Project {
                 error.put(lineToScene, DiagramError.DIAGRAM_MULTIPLE_SCENE);
             }
 
+            // indicate error if there are lines connect to multiple delays from any node
+            List<Line> lineToDelay = lines.stream().filter(line1 -> line1.getDestination() instanceof Delay).collect(Collectors.toList());
+            if (lineToDelay.size() > 1) {
+                error.put(lineToDelay, DiagramError.DIAGRAM_MULTIPLE_DELAY);
+            }
+
             // indicate error if the current node is a condition and there is another condition in the list of the adjacent node
             List<Line> lineToCondition = lines.stream().filter(line1 -> line1.getDestination() instanceof Condition).collect(Collectors.toList());
-            if ((nodeElement instanceof Condition) && !lineToCondition.isEmpty()) {
-                error.put(lineToCondition, DiagramError.DIAGRAM_CHAIN_CONDITION);
-            }
+//            if ((nodeElement instanceof Condition) && !lineToCondition.isEmpty()) {
+//                error.put(lineToCondition, DiagramError.DIAGRAM_CHAIN_CONDITION);
+//            }
 
-            // indicate error if the current node is a scene/begin and there are both scene and condition connect to it
-            if (!(nodeElement instanceof Condition) && (!lineToScene.isEmpty() && !lineToCondition.isEmpty())) {
+            // indicate error if the current node is connected to both scene and condition
+            if (!lineToScene.isEmpty() && !lineToCondition.isEmpty()) {
                 error.put(lineToCondition, DiagramError.DIAGRAM_CONDITION_IGNORE);
             }
-        }
 
-        // Reassign root to all scene and conditions
-        getUnmodifiableScene().forEach(Scene::clearRoot);
-        getUnmodifiableCondition().forEach(Condition::clearRoot);
-        getBegin().forEach(this::traverseAndSetRoot);
+            // indicate error if the current node is connected to both scene and delay
+            if (!lineToScene.isEmpty() && !lineToDelay.isEmpty()) {
+                error.put(lineToDelay, DiagramError.DIAGRAM_DELAY_IGNORE);
+            }
 
-        Map<NodeElement, List<Line>> lineFromDest = this.lines.stream().collect(Collectors.groupingBy(Line::getDestination));
-        for (NodeElement nodeElement : lineFromDest.keySet()) {
-            List<Line> lines = lineFromDest.get(nodeElement);
-
-            if (nodeElement instanceof Scene && ((Scene) nodeElement).getRoots().size() > 1) {
-                error.put(lines, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
-            } else if (nodeElement instanceof Condition && ((Condition) nodeElement).getRoots().size() > 1) {
+            // indicate error if the there are lines connecting between node with different root (i.e. there shouldn't be any link between task)
+            if (!lines.stream().allMatch(line1 -> line1.getDestination().getRoot() == nodeElement.getRoot())) {
                 error.put(lines, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
             }
         }
@@ -561,7 +621,7 @@ public class Project {
         return getUnmodifiableLine().stream().filter(line1 -> line1.getSource() == from).map(Line::getDestination).collect(Collectors.toSet());
     }
 
-    private void traverseAndSetRoot(NodeElement from) {
+    private void traverseAndSetRoot(Begin from) {
         Set<NodeElement> visited = new HashSet<>();
         Deque<NodeElement> remainingNodes = new ArrayDeque<>(getNextNodeElements(from));
         while(!remainingNodes.isEmpty()) {
@@ -571,11 +631,7 @@ public class Project {
             }
             visited.add(node);
 
-            if (node instanceof Scene) {
-                ((Scene) node).addRoot(from);
-            } else if (node instanceof Condition) {
-                ((Condition) node).addRoot(from);
-            }
+            node.setRoot(from);
 
             Set<NodeElement> nextNodes = getNextNodeElements(node);
             nextNodes.removeAll(visited);

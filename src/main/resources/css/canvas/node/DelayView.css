@@ -1,0 +1,119 @@
+.root {
+    -fx-focus-color: transparent;
+    -fx-effect: null;
+    -fx-font-size:12px;
+}
+
+#contentPane {
+    -fx-background-radius: 14px;
+    -fx-background-color: scene-header-background-color;
+    -fx-border-color: delay-theme-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+}
+
+#delayText {
+    -fx-text-fill: text-color;
+    -fx-font-weight: bold;
+    -fx-font-size : 14px;
+}
+
+/*#numberTextField {
+    -fx-background-color : control-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color : border-color;
+    -fx-border-width : 1px;
+    -fx-border-radius: 5 5 5 5;
+    -fx-text-fill : text-color;
+    -fx-font-size : 11px;
+}*/
+
+.text-field{
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3;
+    -fx-background-inset : 0 0 0;
+    -fx-max-width: 120;
+    -fx-min-width: 40;
+    -fx-min-height: 25;
+    -fx-max-height: 25;
+    -fx-padding: 0 3 0 3;
+}
+.text-field:focused{
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-color: white;
+    -fx-text-fill: #313644;
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-focus-color: transparent;
+    -fx-border-color : #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3;
+    -fx-max-width: 120;
+    -fx-min-width: 40;
+    -fx-min-height: 25;
+    -fx-max-height: 25;
+    -fx-padding: 0 3 0 3;
+}
+
+#TimeUnitComboBox{
+    -fx-font-size: 12px;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+#TimeUnitComboBox .list-cell {
+    -fx-font-size: 12px;
+    -fx-text-fill: text-color;
+    -fx-alignment: center;
+    -fx-background-color: background-color;
+    -fx-padding: 0;
+}
+#TimeUnitComboBox .combo-box-popup .list-cell{
+    -fx-font-size: 12px;
+    -fx-text-fill: text-color;
+    -fx-alignment: left;
+    -fx-background-color: background-color;
+    -fx-padding: 4 0 4 5;
+}
+#TimeUnitComboBox .list-view .list-cell:filled:hover
+{
+    -fx-font-size: 12px;
+    -fx-background-color: accent-color;
+    -fx-text-fill: text-color-invert;
+}
+#TimeUnitComboBox .combo-box-popup .list-view .list-cell:filled:selected{
+    -fx-background-color: control-background-color;
+    -fx-background-radius:0;
+    -fx-text-fill: text-color-hilight;
+}
+
+#TimeUnitComboBox .arrow{
+    -fx-background-color:  control-background-color-dark;
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
+}
+#TimeUnitComboBox .arrow-button {
+    -fx-background-color: background-color;
+    -fx-padding: 0;
+}
+#TimeUnitComboBox:pressed .arrow-button {
+    -fx-background-color: background-color;
+}
+#TimeUnitComboBox:pressed .arrow {
+    -fx-background-color:  control-background-color-dark;
+}
+
+#arcNode {
+    -fx-fill: delay-theme-color;
+    -fx-stroke: delay-theme-color;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+    -fx-cursor: hand;
+}

@@ -48,12 +48,26 @@ class Utility {
                 .map(nodeElement -> (Condition) nodeElement).collect(Collectors.toList());
     }
 
+    static List<Delay> takeDelay(Collection<NodeElement> nodeList) {
+        return nodeList.stream().filter(nodeElement -> nodeElement instanceof Delay)
+                .map(nodeElement -> (Delay) nodeElement).collect(Collectors.toList());
+    }
+
     static List<Condition> findAdjacentConditions(Project project, NodeElement source) {
         return project.getUnmodifiableLine().stream()
                 .filter(line -> line.getSource() == source)
                 .map(Line::getDestination)
                 .filter(nodeElement -> nodeElement instanceof Condition)
                 .map(nodeElement -> (Condition) nodeElement)
+                .collect(Collectors.toList());
+    }
+
+    static List<Delay> findAdjacentDelays(Project project, NodeElement source) {
+        return project.getUnmodifiableLine().stream()
+                .filter(line -> line.getSource() == source)
+                .map(Line::getDestination)
+                .filter(nodeElement -> nodeElement instanceof Delay)
+                .map(nodeElement -> (Delay) nodeElement)
                 .collect(Collectors.toList());
     }
 
@@ -69,6 +83,7 @@ class Utility {
             List<NodeElement> adjacentNodes = findAdjacentNodes(project, current);
             nodeToTraverse.addAll(takeScene(adjacentNodes).stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toList()));
             nodeToTraverse.addAll(takeCondition(adjacentNodes).stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
+            nodeToTraverse.addAll(takeDelay(adjacentNodes).stream().filter(delay -> !visitedNodes.contains(delay)).collect(Collectors.toList()));
         }
         return visitedNodes;
     }
@@ -77,6 +92,7 @@ class Utility {
         Set<NodeElement> visitNodes = getAllUsedNodes(project);
         return takeScene(visitNodes).stream().noneMatch(scene -> scene.getError() != DiagramError.NONE)
                 && takeCondition(visitNodes).stream().noneMatch(condition -> condition.getError() != DiagramError.NONE)
+                && takeDelay(visitNodes).stream().noneMatch(delay -> delay.getError() != DiagramError.NONE)
                 && project.getDiagramStatus().isEmpty();
     }
 

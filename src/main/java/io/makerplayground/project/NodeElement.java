@@ -23,6 +23,8 @@ import javafx.beans.property.*;
 public abstract class NodeElement {
     protected final Project project;
 
+    protected String name;
+
     private final SimpleDoubleProperty top;
     private final SimpleDoubleProperty left;
     private final SimpleDoubleProperty width;
@@ -34,6 +36,7 @@ public abstract class NodeElement {
     private final DoubleProperty destPortY;
 
     private final ReadOnlyObjectWrapper<DiagramError> error;
+    private Begin root;
 
     protected NodeElement(double top,double left,double width, double height, Project project) {
         this.project = project;
@@ -49,6 +52,14 @@ public abstract class NodeElement {
         this.destPortY = new SimpleDoubleProperty();
 
         this.error = new ReadOnlyObjectWrapper<>(DiagramError.NONE);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public final double getTop() {
@@ -137,6 +148,14 @@ public abstract class NodeElement {
 
     public final ReadOnlyObjectProperty<DiagramError> errorProperty() {
         return error.getReadOnlyProperty();
+    }
+
+    public Begin getRoot() {
+        return root;
+    }
+
+    public void setRoot(Begin root) {
+        this.root = root;
     }
 
     protected abstract DiagramError checkError();

@@ -17,14 +17,12 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
+import io.makerplayground.project.Condition;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
@@ -48,8 +46,9 @@ class ArduinoCodeGenerator {
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
     private final List<List<ProjectDevice>> projectDeviceGroup;
+    private final List<Delay> allDelayUsed;
 
-    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+    protected static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
             PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
             PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
             PinFunction.PWM_OUT,
@@ -63,6 +62,7 @@ class ArduinoCodeGenerator {
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
+        this.allDelayUsed = Utility.takeDelay(allNodeUsed);
         this.projectDeviceGroup = project.getAllDeviceUsedGroupBySameActualDevice();
     }
 
@@ -122,21 +122,42 @@ class ArduinoCodeGenerator {
             // generate function declaration for task node scene
             builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(begin)).append("();").append(NEW_LINE);
 
-            // generate function declaration for first level condition(s) connected to the task node block
+            // generate function declaration for first level condition(s) or delay(s) connected to the task node block
             List<Condition> conditions = Utility.findAdjacentConditions(project, begin);
-            if (!conditions.isEmpty()) {
+            List<Delay> delays = Utility.findAdjacentDelays(project, begin);
+            if (!conditions.isEmpty() || !delays.isEmpty()) {
                 builder.append("void ").append(ArduinoCodeUtility.parseConditionFunctionName(begin)).append("();").append(NEW_LINE);
             }
         }
 
-        // generate function declaration for each scene and their conditions
+        // generate function declaration for each scene and their conditions/delays
         for (Scene scene : allSceneUsed) {
             builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(scene)).append("();").append(NEW_LINE);
             List<Condition> adjacentCondition = Utility.findAdjacentConditions(project, scene);
-            if (!adjacentCondition.isEmpty()) {
+            List<Delay> delays = Utility.findAdjacentDelays(project, scene);
+            if (!adjacentCondition.isEmpty() || !delays.isEmpty()) {
                 builder.append("void ").append(ArduinoCodeUtility.parseConditionFunctionName(scene)).append("();").append(NEW_LINE);
             }
         }
+
+        // generate function declaration for each condition that has conditions/delays
+        for (Condition condition : allConditionUsed) {
+            List<Condition> adjacentCondition = Utility.findAdjacentConditions(project, condition);
+            List<Delay> delays = Utility.findAdjacentDelays(project, condition);
+            if (!adjacentCondition.isEmpty() || !delays.isEmpty()) {
+                builder.append("void ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append("();").append(NEW_LINE);
+            }
+        }
+
+        // generate function declaration for each delay that has conditions/delays
+        for (Delay delay : allDelayUsed) {
+            List<Condition> adjacentCondition = Utility.findAdjacentConditions(project, delay);
+            List<Delay> delays = Utility.findAdjacentDelays(project, delay);
+            if (!adjacentCondition.isEmpty() || !delays.isEmpty()) {
+                builder.append("void ").append(ArduinoCodeUtility.parseConditionFunctionName(delay)).append("();").append(NEW_LINE);
+            }
+        }
+
         builder.append(NEW_LINE);
     }
 
@@ -391,6 +412,7 @@ class ArduinoCodeGenerator {
         List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, nodeElement);
         List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
         List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
+        List<Delay> adjacentDelay = Utility.takeDelay(adjacentVertices);
 
         // generate code for begin
         builder.append(NEW_LINE);
@@ -401,7 +423,7 @@ class ArduinoCodeGenerator {
             }
             Scene currentScene = adjacentScene.get(0);
             builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(nodeElement)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(currentScene)).append(";").append(NEW_LINE);
-        } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+        } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
             builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(nodeElement)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(nodeElement)).append(";").append(NEW_LINE);
         }
         // do nothing if there isn't any scene or condition
@@ -413,6 +435,7 @@ class ArduinoCodeGenerator {
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
+        List<Delay> adjacentDelay;
         Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
@@ -427,17 +450,15 @@ class ArduinoCodeGenerator {
             adjacentNodes = Utility.findAdjacentNodes(project, node);
             adjacentScene = Utility.takeScene(adjacentNodes);
             adjacentCondition = Utility.takeCondition(adjacentNodes);
+            adjacentDelay = Utility.takeDelay(adjacentNodes);
             nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toSet()));
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toSet()));
+            nodeToTraverse.addAll(adjacentDelay.stream().filter(delay -> !visitedNodes.contains(delay)).collect(Collectors.toSet()));
 
             // Generate code for node
             if (node instanceof Scene) {
                 Scene currentScene = (Scene) node;
-                Set<NodeElement> roots = ((Scene) node).getRoots();
-                if (roots.size() != 1) {
-                    throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                }
-                NodeElement root = roots.iterator().next();
+                Begin root = node.getRoot();
 
                 // create function header
                 builder.append(NEW_LINE);
@@ -486,8 +507,8 @@ class ArduinoCodeGenerator {
                     }
                 }
 
-                // used for time elapsed condition
-                builder.append(INDENT).append(parseBeginRecentSceneFinishTime((Begin) root)).append(" = millis();").append(NEW_LINE);
+                // used for time elapsed condition and delay
+                builder.append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = millis();").append(NEW_LINE);
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
@@ -495,7 +516,7 @@ class ArduinoCodeGenerator {
                     }
                     Scene s = adjacentScene.get(0);
                     builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
-                } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) {
                     builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
                 } else {
                     builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
@@ -512,6 +533,7 @@ class ArduinoCodeGenerator {
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
+        List<Delay> adjacentDelay;
         Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
@@ -526,28 +548,53 @@ class ArduinoCodeGenerator {
             adjacentNodes = Utility.findAdjacentNodes(project, node);
             adjacentScene = Utility.takeScene(adjacentNodes);
             adjacentCondition = Utility.takeCondition(adjacentNodes);
+            adjacentDelay = Utility.takeDelay(adjacentNodes);
             nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toList()));
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
+            nodeToTraverse.addAll(adjacentDelay.stream().filter(delay -> !visitedNodes.contains(delay)).collect(Collectors.toSet()));
 
-            if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                Begin root;
-                if (node instanceof Scene) {
-                    Set<NodeElement> roots = ((Scene) node).getRoots();
-                    if (roots.size() != 1) {
-                        throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                    }
-                    root = (Begin) roots.iterator().next();
-                } else if (node instanceof Begin) {
-                    root = (Begin) node;
-                } else {
-                    throw new IllegalStateException("Not support operation");
-                }
+            if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) {
+                Begin root = node.getRoot();
 
                 builder.append(NEW_LINE);
                 builder.append("void ").append(ArduinoCodeUtility.parseConditionFunctionName(node)).append("() {").append(NEW_LINE);
 
                 // call the update function
                 builder.append(INDENT).append("update();").append(NEW_LINE);
+                // generate if for delay
+                if (!adjacentDelay.isEmpty()) {
+                    if (adjacentDelay.size() != 1) {
+                        throw new IllegalStateException("Connecting multiple delay to the same node is not allowed");
+                    }
+                    Delay currentDelay = adjacentDelay.get(0);
+                    double delayInMillisecond = 0.0;
+                    if (currentDelay.getDelayUnit() == DelayUnit.SECOND) {
+                        delayInMillisecond = currentDelay.getDelayValue() * 1000.0;
+                    } else if (currentDelay.getDelayUnit() == DelayUnit.MILLISECOND) {
+                        delayInMillisecond = currentDelay.getDelayValue();
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                    builder.append(INDENT).append("if (millis() > ").append(parseBeginRecentSceneFinishTime(root)).append(" + ").append(delayInMillisecond).append(") {").append(NEW_LINE);
+                    List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, currentDelay);
+                    List<Scene> nextScene = Utility.takeScene(nextNodes);
+                    List<Condition> nextCondition = Utility.takeCondition(nextNodes);
+                    List<Delay> nextDelay = Utility.takeDelay(nextNodes);
+
+                    if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
+                        if (nextScene.size() != 1) {
+                            throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
+                        }
+                        Scene s = nextScene.get(0);
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                    } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(currentDelay)).append(";").append(NEW_LINE);
+                    } else {
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
+                    }
+
+                    builder.append(INDENT).append("}").append(NEW_LINE); // end of if
+                }
                 // generate if for each condition
                 for (Condition condition : adjacentCondition) {
                     List<String> booleanExpressions = new ArrayList<>();
@@ -590,9 +637,13 @@ class ArduinoCodeGenerator {
                     builder.append(INDENT).append("if").append("(");
                     builder.append(String.join(" && ", booleanExpressions)).append(") {").append(NEW_LINE);
 
+                    // used for time elapsed condition and delay
+                    builder.append(INDENT).append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = millis();").append(NEW_LINE);
+
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, condition);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
                     List<Condition> nextCondition = Utility.takeCondition(nextNodes);
+                    List<Delay> nextDelay = Utility.takeDelay(nextNodes);
 
                     if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                         if (nextScene.size() != 1) {
@@ -600,8 +651,8 @@ class ArduinoCodeGenerator {
                         }
                         Scene s = nextScene.get(0);
                         builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
-                    } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
-                        throw new IllegalStateException("Nested condition is not allowed");
+                    } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
                     } else {
                         builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
                     }

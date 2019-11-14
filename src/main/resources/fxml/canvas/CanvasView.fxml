@@ -36,6 +36,8 @@
                <MenuItem id="newSceneMenuItem" fx:id="newSceneMenuItem" text="New Scene" onAction="#newSceneContextMenuHandler"/>
                <MenuItem id="newConditionMenuItem" fx:id="newConditionMenuItem" text="New Condition"
                          onAction="#newConditionContextMenuHandler"/>
+               <MenuItem id="newDelayMenuItem" fx:id="newDelayMenuItem" text="New Delay"
+                         onAction="#newDelayContextMenuHandler"/>
                <MenuItem id="newBeginMenuItem" fx:id="newBeginMenuItem" text="New Begin"
                          onAction="#newBeginContextMenuHandler"/>
                <SeparatorMenuItem/>
@@ -54,6 +56,7 @@
    <HBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <Button id="addSceneBtn" fx:id="addSceneBtn" text="+ Add Scene" onAction="#addSceneButtonHandler"/>
       <Button id="addConditionBtn" fx:id="addConditionBtn" text="+ Add Condition" onAction="#addConditionButtonHandler"/>
+      <Button id="addDelayBtn" fx:id="addDelayBtn" text="+ Add Delay" onAction="#addDelayButtonHandler"/>
       <Button id="addBeginBtn" fx:id="addBeginBtn" text="+ Add Begin" onAction="#addBeginButtonHandler"/>
    </HBox>
    <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >

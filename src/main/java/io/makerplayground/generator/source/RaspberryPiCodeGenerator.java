@@ -177,11 +177,7 @@ class RaspberryPiCodeGenerator {
             // Generate code for node
             if (node instanceof Scene) {
                 Scene currentScene = (Scene) node;
-                Set<NodeElement> roots = ((Scene) node).getRoots();
-                if (roots.size() != 1) {
-                    throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                }
-                NodeElement root = roots.iterator().next();
+                Begin root = node.getRoot();
 
                 // create function header
                 builder.append(NEW_LINE);
@@ -282,18 +278,7 @@ class RaspberryPiCodeGenerator {
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
 
             if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                NodeElement root;
-                if (node instanceof Scene) {
-                    Set<NodeElement> roots = ((Scene) node).getRoots();
-                    if (roots.size() != 1) {
-                        throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                    }
-                    root = roots.iterator().next();
-                } else if (node instanceof Begin) {
-                    root = node;
-                } else {
-                    throw new IllegalStateException("Not support operation");
-                }
+                Begin root = node.getRoot();
 
                 Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
                 for (Condition condition : adjacentCondition) {

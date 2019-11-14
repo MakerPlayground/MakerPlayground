@@ -45,6 +45,10 @@
     begin-text-fill: #ffffff;
     begin-outport: #9f31e9;
 
+    /*---delay---*/
+    delay-theme-color: #ffab00;
+    delay-theme-hover-color: #e69a00;
+
     /*---condition---*/
     condition-theme-color: #ffab00;
     condition-theme-hover-color: #e69a00;

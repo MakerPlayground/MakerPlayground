@@ -47,6 +47,7 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
         module.addDeserializer(UserSetting.class, new UserSettingDeserializer(project));
         module.addDeserializer(Scene.class, new SceneDeserializer(project));
         module.addDeserializer(Condition.class, new ConditionDeserializer(project));
+        module.addDeserializer(Delay.class, new DelayDeserializer(project));
 
         mapper.registerModule(module);
 
@@ -102,6 +103,9 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
         List<Condition> conditions = mapper.readValue(node.get("conditions").traverse(), new TypeReference<List<Condition>>() {});
         conditions.forEach(project::addCondition);
 
+        List<Delay> delays = mapper.readValue(node.get("delays").traverse(), new TypeReference<List<Delay>>() {});
+        delays.forEach(project::addDelay);
+
 
         for (JsonNode lineNode : node.get("lines")) {
             NodeElement source = null;
@@ -120,6 +124,10 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
             if (condition.isPresent()) {
                 source = condition.get();
             }
+            Optional<Delay> delay = project.getUnmodifiableDelay(lineNode.get("source").asText());
+            if (delay.isPresent()) {
+                source = delay.get();
+            }
 
             NodeElement destination = null;
             Optional<Scene> s = project.getUnmodifiableScene(lineNode.get("destination").asText());
@@ -129,6 +137,10 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
             Optional<Condition> c = project.getUnmodifiableCondition(lineNode.get("destination").asText());
             if (c.isPresent()) {
                 destination = c.get();
+            }
+            Optional<Delay> d = project.getUnmodifiableDelay(lineNode.get("destination").asText());
+            if (d.isPresent()) {
+                destination = d.get();
             }
             project.addLine(source, destination);
         }

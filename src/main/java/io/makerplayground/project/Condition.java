@@ -33,34 +33,15 @@ import java.util.Set;
 
 @JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
-    private final StringProperty name;
     private final ObservableList<UserSetting> setting;
     private final ObservableList<UserSetting> unmodifiableSetting;
     private final ObservableList<UserSetting> virtualSetting;
     private final ObservableList<UserSetting> unmodifiableVirtualSetting;
 
-    private final Set<NodeElement> roots = new HashSet<>();
-
-    public Set<NodeElement> getRoots() {
-        return roots;
-    }
-
-    public void addRoot(NodeElement root) {
-        if (root instanceof Begin) {
-            roots.add(root);
-            return;
-        }
-        throw new IllegalStateException("Root must be Begin or Task");
-    }
-
-    public void clearRoot() {
-        roots.clear();
-    }
-
     Condition(String name, Project project) {
         super(20,20,118,75, project);
 
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList();
         this.virtualSetting = FXCollections.observableArrayList();
 
@@ -74,7 +55,7 @@ public class Condition extends NodeElement {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as condition can't be resized anyway
         super(top, left, 118, 75, project);
 
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList(setting);
         this.virtualSetting = FXCollections.observableArrayList(virtualSetting);
 
@@ -86,7 +67,7 @@ public class Condition extends NodeElement {
     public Condition(Condition c, String name, Project project) {
         super(c.getTop(), c.getLeft(), c.getWidth(), c.getHeight(), project);
 
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList();
         for (UserSetting u : c.setting) {
             this.setting.add(new UserSetting(u));
@@ -101,16 +82,9 @@ public class Condition extends NodeElement {
         invalidate();
     }
 
-    public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
-
+    @Override
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
         invalidate();
         // invalidate other condition as every condition needs to check for duplicate name
         for (Condition c : project.getUnmodifiableCondition()) {
@@ -180,13 +154,13 @@ public class Condition extends NodeElement {
         }
 
         // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.get().matches("\\w+")) {
+        if (!name.matches("\\w+")) {
             return DiagramError.CONDITION_INVALID_NAME;
         }
 
         // name should be unique
         for (Condition c : project.getUnmodifiableCondition()) {
-            if ((this != c) && name.get().equals(c.name.get())) {
+            if ((this != c) && name.equals(c.name)) {
                 return DiagramError.CONDITION_DUPLICATE_NAME;
             }
         }

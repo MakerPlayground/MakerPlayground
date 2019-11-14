@@ -22,6 +22,7 @@ public enum DiagramError {
     DIAGRAM_MULTIPLE_SCENE("there shouldn't be connection from the same node to multiple scene"),
     DIAGRAM_CHAIN_CONDITION("condition can't be connected together"),
     DIAGRAM_CONDITION_IGNORE("this condition will always be ignored"),
+    DIAGRAM_DELAY_IGNORE("this delay will be ignore"),
     DIAGRAM_MULTIPLE_BEGIN("the scene/condition shouldn't be originated from different begins and tasks."),
     SCENE_INVALID_NAME("name shouldn't be empty and should contain only A-Z, a-z, 0-9 and _"),
     SCENE_DUPLICATE_NAME("duplicate scene name"),
@@ -32,6 +33,11 @@ public enum DiagramError {
     CONDITION_INVALID_PARAM("some parameters are invalid"),
     CONDITION_INVALID_EXPRESSION("some expression are invalid"),
     CONDITION_NO_ENABLE_EXPRESSION("at least one expression should be enabled for each devices"),
+    DIAGRAM_MULTIPLE_DELAY("there shouldn't be connection from the same node to multiple delay block"),
+    DELAY_INVALID_NAME("name shouldn't be empty and should contain only A-Z, a-z, 0-9 and _"),
+    DELAY_DUPLICATE_NAME("duplicate delay name"),
+    DELAY_VALUE_INVALID("delay value should be greater than or equal to 0"),
+    DELAY_UNIT_INVALID("delay unit hasn't been set"),
     TASK_INVALID_NAME("name shouldn't be empty and should contain only A-Z, a-z, 0-9 and _");
 
     private String tooltip;
