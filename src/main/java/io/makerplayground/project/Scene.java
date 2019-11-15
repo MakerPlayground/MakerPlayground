@@ -20,36 +20,19 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.Observable;
-import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  *
  */
 @JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
-    public enum DelayUnit {
-        MilliSecond, Second;
-
-        @Override
-        public String toString() {
-            switch(this) {
-                case MilliSecond: return "ms";
-                case Second: return "s";
-                default: throw new IllegalArgumentException();
-            }
-        }
-    }
 
     private final ObservableList<UserSetting> setting;
-    private final DoubleProperty delay;
-    private final ObjectProperty<DelayUnit> delayUnit;
 
     Scene(Project project) {
         super(20, 20, 205, 124, project);
@@ -57,19 +40,15 @@ public class Scene extends NodeElement {
         this.name = "";
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = new SimpleObjectProperty<>(DelayUnit.Second);
         invalidate();
     }
 
     Scene(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit, Project project) {
+            , String name, List<UserSetting> setting, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
         this.name = name;
         this.setting = FXCollections.observableArrayList(setting);
-        this.delay = new SimpleDoubleProperty(delay);
-        this.delayUnit = new SimpleObjectProperty<>(delayUnit);
         invalidate();
     }
 
@@ -80,8 +59,6 @@ public class Scene extends NodeElement {
         for (UserSetting u : s.setting) {
             this.setting.add(new UserSetting(u));
         }
-        this.delay = new SimpleDoubleProperty(s.getDelay());
-        this.delayUnit = new SimpleObjectProperty<>(s.getDelayUnit());
         invalidate();
     }
 
@@ -120,30 +97,6 @@ public class Scene extends NodeElement {
         for (Scene s : project.getUnmodifiableScene()) {
             s.invalidate();
         }
-    }
-
-    public double getDelay() {
-        return delay.get();
-    }
-
-    public DoubleProperty delayProperty() {
-        return delay;
-    }
-
-    public void setDelay(double delay) {
-        this.delay.set(delay);
-    }
-
-    public DelayUnit getDelayUnit() {
-        return delayUnit.get();
-    }
-
-    public ObjectProperty<DelayUnit> delayUnitProperty() {
-        return delayUnit;
-    }
-
-    public void setDelayUnit(DelayUnit delayUnit) {
-        this.delayUnit.set(delayUnit);
     }
 
     public ObservableList<UserSetting> getSetting() {

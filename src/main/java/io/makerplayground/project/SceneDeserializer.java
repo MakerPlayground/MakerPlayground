@@ -45,14 +45,11 @@ public class SceneDeserializer extends JsonDeserializer<Scene> {
         String name = node.get("name").asText();
         List<UserSetting> settings = mapper.readValue(node.get("setting").traverse(), new TypeReference<List<UserSetting>>() {});
 
-        double delay = node.get("delay").asDouble();
-        Scene.DelayUnit delayUnit = Scene.DelayUnit.valueOf(node.get("delayUnit").asText());
-
         JsonNode positionNode = node.get("position");
         double top = positionNode.get("top").asDouble();
         double left = positionNode.get("left").asDouble();
         double width = positionNode.get("width").asDouble();
         double height = positionNode.get("height").asDouble();
-        return new Scene(top, left, width, height, name, settings, delay, delayUnit, project);
+        return new Scene(top, left, width, height, name, settings, project);
     }
 }

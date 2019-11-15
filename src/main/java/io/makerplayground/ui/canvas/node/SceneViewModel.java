@@ -30,7 +30,6 @@ import java.util.List;
  */
 public class SceneViewModel {
     private final Scene scene;
-    private final SimpleDoubleProperty delay;
     private final Project project;
 
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
@@ -39,8 +38,6 @@ public class SceneViewModel {
 
     public SceneViewModel(Scene scene, Project project) {
         this.scene = scene;
-        this.delay = new SimpleDoubleProperty(scene.getDelay());
-        this.delay.addListener((observable, oldValue, newValue) -> scene.setDelay(newValue.doubleValue()));
         this.project = project;
 
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
@@ -55,30 +52,6 @@ public class SceneViewModel {
 
     public void setName(String name) {
         scene.setName(name);
-    }
-
-    public double getDelay() {
-        return delay.get();
-    }
-
-    public void setDelay(double delay) {
-        this.delay.set(delay);
-    }
-
-    public SimpleDoubleProperty delayProperty() {
-        return delay;
-    }
-
-    public Scene.DelayUnit getDelayUnit() {
-        return scene.getDelayUnit();
-    }
-
-    public void setDelayUnit(Scene.DelayUnit unit) {
-        scene.setDelayUnit(unit);
-    }
-
-    public ObjectProperty<Scene.DelayUnit> delayUnitProperty() {
-        return scene.delayUnitProperty();
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {

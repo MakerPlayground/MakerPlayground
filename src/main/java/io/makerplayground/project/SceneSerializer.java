@@ -42,9 +42,6 @@ public class SceneSerializer extends JsonSerializer<Scene> {
        }
        jsonGenerator.writeEndArray();
 
-       jsonGenerator.writeObjectField("delay",scene.getDelay());
-       jsonGenerator.writeObjectField("delayUnit",scene.getDelayUnit());
-
        jsonGenerator.writeObjectFieldStart("position");
        jsonGenerator.writeNumberField("top",scene.getTop());
        jsonGenerator.writeNumberField("left",scene.getLeft());

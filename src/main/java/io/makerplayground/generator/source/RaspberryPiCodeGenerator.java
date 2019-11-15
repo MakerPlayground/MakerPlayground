@@ -226,16 +226,16 @@ class RaspberryPiCodeGenerator {
                     }
                 }
 
-                // delay
-                if (currentScene.getDelay() != 0) {
-                    double delayDuration = 0;  // in ms
-                    if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
-                        delayDuration = currentScene.getDelay();
-                    } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
-                        delayDuration = currentScene.getDelay() / 1000.0;
-                    }
-                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
-                }
+//                // delay
+//                if (currentScene.getDelay() != 0) {
+//                    double delayDuration = 0;  // in ms
+//                    if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
+//                        delayDuration = currentScene.getDelay();
+//                    } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
+//                        delayDuration = currentScene.getDelay() / 1000.0;
+//                    }
+//                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
+//                }
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
