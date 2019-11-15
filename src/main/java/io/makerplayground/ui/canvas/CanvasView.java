@@ -17,9 +17,8 @@
 package io.makerplayground.ui.canvas;
 
 import io.makerplayground.project.*;
-import io.makerplayground.ui.canvas.node.InteractiveNodeEvent;
-import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
+import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.util.OSInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -27,8 +26,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 

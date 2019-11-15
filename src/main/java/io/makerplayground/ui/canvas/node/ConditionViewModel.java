@@ -20,10 +20,7 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
 import java.util.List;
@@ -36,6 +33,8 @@ public class ConditionViewModel {
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> virtualDeviceViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
+    private final BooleanProperty hasLineIn;
+    private final BooleanProperty hasLineOut;
 
     public ConditionViewModel(Condition condition, Project project) {
         this.condition = condition;
@@ -47,6 +46,13 @@ public class ConditionViewModel {
         hasDeviceToAdd = new SimpleBooleanProperty();
         hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualProjectDevice.virtualDevices.size())
                 .greaterThan(Bindings.size(condition.getSetting()).add(Bindings.size(condition.getVirtualDeviceSetting()))));
+
+
+        hasLineIn = new SimpleBooleanProperty();
+        hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == condition)).greaterThan(0));
+
+        hasLineOut = new SimpleBooleanProperty();
+        hasLineOut.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getSource() == condition)).greaterThan(0));
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDeviceViewModelCreator() {
@@ -126,6 +132,14 @@ public class ConditionViewModel {
     public void removeUserSetting(UserSetting setting) { condition.removeUserSetting(setting); }
 
     public BooleanProperty hasDeviceToAddProperty() { return hasDeviceToAdd; }
+
+    public ReadOnlyBooleanProperty hasLineInProperty() {
+        return hasLineIn;
+    }
+
+    public ReadOnlyBooleanProperty hasLineOutProperty() {
+        return hasLineOut;
+    }
 
     public boolean hasConnectionFrom(NodeElement other) {
         return project.hasLine(other, condition);

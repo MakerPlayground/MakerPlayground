@@ -20,8 +20,10 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.util.List;
 
@@ -35,6 +37,8 @@ public class SceneViewModel {
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
+    private final BooleanProperty hasLineIn;
+    private final BooleanProperty hasLineOut;
 
     public SceneViewModel(Scene scene, Project project) {
         this.scene = scene;
@@ -44,6 +48,12 @@ public class SceneViewModel {
 
         hasDeviceToAdd = new SimpleBooleanProperty();
         hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(0));
+
+        hasLineIn = new SimpleBooleanProperty();
+        hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == scene)).greaterThan(0));
+
+        hasLineOut = new SimpleBooleanProperty();
+        hasLineOut.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getSource() == scene)).greaterThan(0));
     }
 
     public String getName() {
@@ -124,6 +134,14 @@ public class SceneViewModel {
 
     public BooleanProperty hasDeviceToAddProperty() {
         return hasDeviceToAdd;
+    }
+
+    public ReadOnlyBooleanProperty hasLineInProperty() {
+        return hasLineIn;
+    }
+
+    public ReadOnlyBooleanProperty hasLineOutProperty() {
+        return hasLineOut;
     }
 
     public boolean hasConnectionFrom(NodeElement other) {

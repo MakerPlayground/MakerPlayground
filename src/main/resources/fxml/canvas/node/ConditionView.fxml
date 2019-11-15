@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019. The Maker Playground Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import io.makerplayground.ui.control.AutoResizeTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Arc?>
+
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
+<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/ConditionView.css" type="VBox"
+         xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" style="-fx-cursor:move;">
+   <HBox>
+      <HBox fx:id="titleHBox">
+         <AutoResizeTextField id="nameStateTextField" fx:id="nameTextField" />
+         <Region HBox.hgrow="ALWAYS" />
+         <ImageView id="removeButton" fx:id="removeButton" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true"
+                    preserveRatio="true" style="-fx-cursor:hand;">
+            <Image url="@../../../icons/diagram-element-delete.png"/>
+         </ImageView>
+         <padding>
+            <Insets left="10.0" right="10.0"/>
+         </padding>
+      </HBox>
+      <Region HBox.hgrow="ALWAYS" />
+   </HBox>
+
+   <HBox fx:id="mainLayout" alignment="CENTER">
+      <HBox fx:id="mainContent" alignment="CENTER">
+         <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
+              strokeType="INSIDE" strokeWidth="0.0"/>
+         <VBox id="contentPane" fx:id="contentPane" alignment="CENTER" minWidth="118.0" prefWidth="118.0" maxWidth="118.0" >
+            <ScrollPane id="scrollPane" fx:id="scrollPane" fitToWidth="true" minHeight="30" maxHeight="100">  <!-- 30 5 30 5 30 -->
+               <VBox fx:id="deviceConfigIconPane" minWidth="100.0" prefWidth="100.0" maxWidth="100.0" spacing="5.0">
+                  <Button id="addDeviceButton" fx:id="addDeviceButton" alignment="TOP_LEFT" minWidth="100.0" prefWidth="100.0" maxWidth="100.0"
+                          minHeight="30.0" prefHeight="30.0" maxHeight="30.0" mnemonicParsing="false"/>
+               </VBox>
+            </ScrollPane>
+            <padding>
+               <Insets top="8.0" right="0.0" bottom="8.0" left="8.0"/>
+            </padding>
+         </VBox>
+         <Arc id="arcNode" fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
+              rotate="180.0" strokeType="INSIDE" strokeWidth="0.0"/>
+      </HBox>
+      <Line id="hintLine" fx:id="hintLine" strokeWidth="2.0" strokeDashArray="3,10"/>
+      <Text id="hintText" fx:id="hintText" text="Back to Begin" />
+   </HBox>
+</fx:root>

@@ -25,6 +25,7 @@ import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
 import io.makerplayground.ui.dialog.devicepane.output.OutputDeviceSelector;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +41,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -50,6 +53,8 @@ public class SceneView extends InteractiveNode {
     @FXML private AutoResizeTextField nameTextField;
     @FXML private ImageView removeButton;
 
+    @FXML private HBox titleHBox;
+    @FXML private HBox mainContent;
     @FXML private HBox mainLayout;
     @FXML private VBox contentPane;
     @FXML private ScrollPane scrollPane;
@@ -57,6 +62,9 @@ public class SceneView extends InteractiveNode {
     @FXML private Button addDeviceButton;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
+
+    @FXML private Line hintLine;
+    @FXML private Text hintText;
 
     private final SceneViewModel sceneViewModel;
     private OutputDeviceSelector outputDeviceSelector = null;
@@ -71,7 +79,7 @@ public class SceneView extends InteractiveNode {
 
     private void initView() {
         // initialize view from FXML
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/StateView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/SceneView.fxml"));
         fxmlLoader.setRoot(parent);
         fxmlLoader.setController(this);
         try {
@@ -149,6 +157,22 @@ public class SceneView extends InteractiveNode {
                 Tooltip.install(this, tooltip);
             }
         });
+
+        titleHBox.maxWidthProperty().bind(mainContent.widthProperty());
+        titleHBox.minWidthProperty().bind(mainContent.widthProperty());
+
+        hintLine.startXProperty().bind(outPort.centerXProperty());
+        hintLine.startYProperty().bind(outPort.centerYProperty());
+
+        BooleanBinding showBackToBegin = sceneViewModel.hasLineInProperty().and(sceneViewModel.hasLineOutProperty().not());
+
+        hintLine.endXProperty().bind(outPort.centerYProperty().add(50));
+        hintLine.endYProperty().bind(outPort.centerYProperty());
+        hintLine.visibleProperty().bind(showBackToBegin);
+
+        hintText.xProperty().bind(outPort.centerXProperty().add(52));
+        hintText.yProperty().bind(outPort.centerYProperty());
+        hintText.visibleProperty().bind(showBackToBegin);
     }
 
     private void initEvent() {
@@ -277,7 +301,7 @@ public class SceneView extends InteractiveNode {
 
     @Override
     protected Node getHighlightNode() {
-        return mainLayout;
+        return mainContent;
     }
 
     @Override

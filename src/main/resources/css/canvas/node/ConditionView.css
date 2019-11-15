@@ -7,7 +7,7 @@
 #contentPane {
     -fx-background-radius: 14px;
     -fx-background-color: scene-header-background-color;
-    -fx-border-color: scene-theme-color;
+    -fx-border-color: condition-theme-color;
     -fx-border-width: 1px;
     -fx-border-radius: 12px;
 }
@@ -99,9 +99,22 @@
 }
 
 #arcNode {
-    -fx-fill: scene-theme-color;
-    -fx-stroke: scene-theme-color;
+    -fx-fill: condition-theme-color;
+    -fx-stroke: condition-theme-color;
     -fx-strokeType: INSIDE;
     -fx-type: ROUND;
     -fx-cursor: hand;
+}
+
+#hintLine {
+    -fx-stroke: #909090;
+}
+
+#hintText {
+    -fx-background-color : transparent;
+    -fx-fill: #909090;
+    -fx-font-weight: bold;
+    -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
 }

@@ -18,17 +18,25 @@ package io.makerplayground.ui.canvas.node;
 
 import io.makerplayground.device.shared.DelayUnit;
 import io.makerplayground.project.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 
 public class DelayViewModel {
     private final Delay delay;
     private final Project project;
 
+    private final BooleanProperty hasLineIn;
+    private final BooleanProperty hasLineOut;
+
     public DelayViewModel(Delay delay, Project project) {
         this.delay = delay;
         this.project = project;
+
+        hasLineIn = new SimpleBooleanProperty();
+        hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == delay)).greaterThan(0));
+
+        hasLineOut = new SimpleBooleanProperty();
+        hasLineOut.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getSource() == delay)).greaterThan(0));
     }
 
     public Delay getDelay() {
@@ -101,6 +109,14 @@ public class DelayViewModel {
 
     public DoubleProperty destPortYProperty() {
         return delay.destPortYProperty();
+    }
+
+    public ReadOnlyBooleanProperty hasLineInProperty() {
+        return hasLineIn;
+    }
+
+    public ReadOnlyBooleanProperty hasLineOutProperty() {
+        return hasLineOut;
     }
 
     public boolean hasConnectionFrom(NodeElement other) {

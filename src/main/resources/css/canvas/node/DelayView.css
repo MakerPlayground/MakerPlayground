@@ -117,3 +117,16 @@
     -fx-type: ROUND;
     -fx-cursor: hand;
 }
+
+#hintLine {
+    -fx-stroke: #909090;
+}
+
+#hintText {
+    -fx-background-color : transparent;
+    -fx-fill: #909090;
+    -fx-font-weight: bold;
+    -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
+}

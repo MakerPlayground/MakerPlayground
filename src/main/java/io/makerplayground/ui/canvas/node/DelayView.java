@@ -19,6 +19,8 @@ package io.makerplayground.ui.canvas.node;
 import io.makerplayground.device.shared.DelayUnit;
 import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,6 +36,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -45,12 +49,17 @@ public class DelayView extends InteractiveNode {
 
     @FXML private ImageView removeButton;
 
+    @FXML private HBox titleHBox;
+    @FXML private HBox mainContent;
     @FXML private HBox mainLayout;
     @FXML private VBox contentPane;
     @FXML private TextField delayTextField;
     @FXML private ComboBox<DelayUnit> timeUnitComboBox;
     @FXML private Arc inPort;
     @FXML private Arc outPort;
+
+    @FXML private Line hintLine;
+    @FXML private Text hintText;
 
     private final DelayViewModel viewModel;
     private static final Color highlightColor = Color.web("#ffab00");
@@ -132,6 +141,22 @@ public class DelayView extends InteractiveNode {
                 Tooltip.install(this, tooltip);
             }
         });
+
+        titleHBox.maxWidthProperty().bind(mainContent.widthProperty());
+        titleHBox.minWidthProperty().bind(mainContent.widthProperty());
+
+        hintLine.startXProperty().bind(outPort.centerXProperty());
+        hintLine.startYProperty().bind(outPort.centerYProperty());
+
+        BooleanBinding showBackToBegin = viewModel.hasLineInProperty().and(viewModel.hasLineOutProperty().not());
+
+        hintLine.endXProperty().bind(outPort.centerYProperty().add(50));
+        hintLine.endYProperty().bind(outPort.centerYProperty());
+        hintLine.visibleProperty().bind(showBackToBegin);
+
+        hintText.xProperty().bind(outPort.centerXProperty().add(52));
+        hintText.yProperty().bind(outPort.centerYProperty());
+        hintText.visibleProperty().bind(showBackToBegin);
     }
 
     private void initEvent() {
@@ -248,7 +273,7 @@ public class DelayView extends InteractiveNode {
 
     @Override
     protected Node getHighlightNode() {
-        return mainLayout;
+        return mainContent;
     }
 
     @Override
