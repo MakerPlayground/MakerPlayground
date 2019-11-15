@@ -71,14 +71,14 @@
 #TimeUnitComboBox .list-cell {
     -fx-font-size: 12px;
     -fx-text-fill: text-color;
-    -fx-alignment: center;
+    -fx-text-alignment: left;
     -fx-background-color: background-color;
     -fx-padding: 0;
 }
-#TimeUnitComboBox .combo-box-popup .list-cell{
+#TimeUnitComboBox .combo-box-popup .list-cell {
     -fx-font-size: 12px;
     -fx-text-fill: text-color;
-    -fx-alignment: left;
+    -fx-text-alignment: left;
     -fx-background-color: background-color;
     -fx-padding: 4 0 4 5;
 }
