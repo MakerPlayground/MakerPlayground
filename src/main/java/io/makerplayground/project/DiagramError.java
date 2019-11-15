@@ -24,7 +24,7 @@ public enum DiagramError {
     DIAGRAM_CONDITION_IGNORE("this condition will always be ignored"),
     DIAGRAM_DELAY_IGNORE("this delay will be ignore"),
     DIAGRAM_MULTIPLE_BEGIN("the scene/condition shouldn't be originated from different begins and tasks."),
-    SCENE_INVALID_NAME("name shouldn't be empty and should contain only A-Z, a-z, 0-9 and _"),
+    SCENE_INVALID_NAME("name should contain only characters, numbers, and (but not start with) spaces"),
     SCENE_DUPLICATE_NAME("duplicate scene name"),
     SCENE_INVALID_PARAM("some parameters are invalid"),
     CONDITION_EMPTY("there isn't any condition"),

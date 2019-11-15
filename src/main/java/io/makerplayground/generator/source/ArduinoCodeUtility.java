@@ -12,15 +12,15 @@ class ArduinoCodeUtility {
         if (projectDeviceList.isEmpty()) {
             throw new IllegalStateException("Cannot get device name if there is no devices");
         }
-        return "_" + projectDeviceList.stream().map(ProjectDevice::getName).map(s -> s.replace(" ", "_")).collect(Collectors.joining("_"));
+        return "_" + projectDeviceList.stream().map(ProjectDevice::getName).map(s -> s.replace(' ', '_')).collect(Collectors.joining("_"));
     }
 
     static String parseValueVariableTerm(List<ProjectDevice> projectDeviceList, Value value) {
-        return parseDeviceVariableName(projectDeviceList) + ".get" + value.getName().replace(" ", "_") + "()";
+        return parseDeviceVariableName(projectDeviceList) + ".get" + value.getName().replace(' ', '_') + "()";
     }
 
     static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {
-        return "_" + cloudPlatform.getLibName().replace(" ", "_");
+        return "_" + cloudPlatform.getLibName().replace(' ', '_');
     }
 
     static String parseIncludeStatement(String libName) {
@@ -29,16 +29,16 @@ class ArduinoCodeUtility {
 
     static String parseSceneFunctionName(NodeElement node) {
         if (node instanceof Scene) {
-            return "scene_" + ((Scene)node).getName().replace(" ", "_");
+            return "scene_" + ((Scene) node).getName().replace(' ', '_');
         } else if (node instanceof Begin) {
-            return "scene_" + ((Begin) node).getName().replace(" ", "_");
+            return "scene_" + ((Begin) node).getName().replace(' ', '_');
         }
         throw new IllegalStateException("Not support scene function displayName for {" + node + "}");
     }
 
     static String parsePointerName(NodeElement nodeElement) {
         if (nodeElement instanceof Begin) {
-            return "current_" + ((Begin) nodeElement).getName().replace(" ", "_");
+            return "current_" + ((Begin) nodeElement).getName().replace(' ', '_');
         }
         throw new IllegalStateException("No pointer to function for Scene and Condition");
     }

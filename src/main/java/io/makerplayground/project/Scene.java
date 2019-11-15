@@ -110,7 +110,7 @@ public class Scene extends NodeElement {
     @Override
     protected DiagramError checkError() {
         // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.matches("\\w+")) {
+        if (!name.matches("\\w[\\w|\\s]*")) {
             return DiagramError.SCENE_INVALID_NAME;
         }
 
