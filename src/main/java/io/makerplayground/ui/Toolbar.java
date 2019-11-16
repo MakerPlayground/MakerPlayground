@@ -59,7 +59,8 @@ public class Toolbar extends AnchorPane {
 
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
-    private ImageView deviceConfigProblemImageView;
+    private ImageView deviceHasProblemImageView;
+    private ImageView diagramHasProblemImageView;
     @FXML private RadioButton deviceMonitorButton;
     @FXML private Label statusLabel;
     @FXML private Label portLabel;
@@ -99,9 +100,13 @@ public class Toolbar extends AnchorPane {
 
         deviceConfigButton.setSelected(true);
 
-        deviceConfigProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
-        deviceConfigProblemImageView.setFitWidth(15);
-        deviceConfigProblemImageView.setFitHeight(15);
+        deviceHasProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
+        deviceHasProblemImageView.setFitWidth(15);
+        deviceHasProblemImageView.setFitHeight(15);
+
+        diagramHasProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
+        diagramHasProblemImageView.setFitWidth(15);
+        diagramHasProblemImageView.setFitHeight(15);
 
         interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
         interactiveStartImageView.setFitWidth(20);
@@ -169,7 +174,8 @@ public class Toolbar extends AnchorPane {
 
     private void initUI() {
         deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
-                .then(deviceConfigProblemImageView).otherwise((ImageView) null));
+                .then(deviceHasProblemImageView).otherwise((ImageView) null));
+        diagramEditorButton.graphicProperty().bind(Bindings.when(project.get().hasDiagramErrorProperty()).then(diagramHasProblemImageView).otherwise((ImageView) null));
 
         BooleanBinding uploading = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING);
         BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);

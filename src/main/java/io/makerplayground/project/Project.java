@@ -29,6 +29,10 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -60,6 +64,7 @@ public class Project {
     private final ObservableList<Delay> delays;
     private final ObservableList<Line> lines;
     private final ObservableList<Begin> begins;
+    private final BooleanProperty hasDiagramError;
 
     @Getter private final FilteredList<ProjectDevice> sensorDevice;
     @Getter private final FilteredList<ProjectDevice> actuatorDevice;
@@ -82,6 +87,9 @@ public class Project {
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
     @Getter private InteractiveModel interactiveModel;
+
+    private final ObservableList<NodeElement> nodeError;
+    private final ObservableList<Line> lineError;
 
     public Project() {
         this.projectName = "Untitled Project";
@@ -112,6 +120,12 @@ public class Project {
         this.interactiveModel = new InteractiveModel(this);
         this.newBegin();
         this.calculateCompatibility();
+
+        this.nodeError = FXCollections.observableArrayList();
+        this.lineError = FXCollections.observableArrayList();
+
+        this.hasDiagramError = new SimpleBooleanProperty();
+        this.hasDiagramError.bind(Bindings.size(nodeError).greaterThan(0).or(Bindings.size(lineError).greaterThan(0)));
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -125,6 +139,10 @@ public class Project {
             e.printStackTrace();    // this should not happen as we're parsing an in-memory stream
         }
         return newProject;
+    }
+
+    public BooleanProperty hasDiagramErrorProperty() {
+        return hasDiagramError;
     }
 
     public String getFilePath() {
@@ -188,6 +206,31 @@ public class Project {
         return unmodifiableScene.stream().filter(s -> s.getName().equals(name)).findFirst();
     }
 
+    private void addNodeElementErrorListener(NodeElement node) {
+        node.errorProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != DiagramError.NONE) {
+                nodeError.add(node);
+            } else {
+                nodeError.remove(node);
+            }
+        });
+        if (node.getError() != DiagramError.NONE) {
+            nodeError.add(node);
+        }
+    }
+    private void addLineErrorListener(Line line) {
+        line.errorProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != DiagramError.NONE) {
+                lineError.add(line);
+            } else {
+                lineError.remove(line);
+            }
+        });
+        if (line.getError() != DiagramError.NONE) {
+            lineError.add(line);
+        }
+    }
+
     public Scene newScene() {
         int id = scenes.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
@@ -197,6 +240,7 @@ public class Project {
 
         Scene s = new Scene(this);
         s.setName("Scene" + (id + 1));
+        addNodeElementErrorListener(s);
         scenes.add(s);
         checkAndInvalidateDiagram();
         return s;
@@ -210,6 +254,7 @@ public class Project {
                 .orElse(0);
 
         Scene newScene = new Scene(s, "Scene" + (id + 1), this);
+        addNodeElementErrorListener(s);
         scenes.add(newScene);
         checkAndInvalidateDiagram();
         return newScene;
@@ -217,6 +262,7 @@ public class Project {
 
     void addScene(Scene s) {
         scenes.add(s);
+        addNodeElementErrorListener(s);
     }
 
     public void removeScene(Scene s) {
@@ -227,6 +273,7 @@ public class Project {
                 lines.remove(l);
             }
         }
+        nodeError.remove(s);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -243,6 +290,7 @@ public class Project {
                 .orElse(0);
 
         Condition c = new Condition("Condition" + (id + 1), this);
+        addNodeElementErrorListener(c);
         conditions.add(c);
         checkAndInvalidateDiagram();
         return c;
@@ -256,6 +304,7 @@ public class Project {
                 .orElse(0);
 
         Condition newCondition = new Condition(c, "Condition" + (id + 1), this);
+        addNodeElementErrorListener(c);
         conditions.add(newCondition);
         checkAndInvalidateDiagram();
         return newCondition;
@@ -263,6 +312,7 @@ public class Project {
 
     void addCondition(Condition c) {
         conditions.add(c);
+        addNodeElementErrorListener(c);
     }
 
     public void removeCondition(Condition c) {
@@ -273,6 +323,7 @@ public class Project {
                 lines.remove(l);
             }
         }
+        nodeError.remove(c);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -291,6 +342,7 @@ public class Project {
         Delay d = new Delay(this);
         d.setName("Delay" + (id + 1));
         delays.add(d);
+        addNodeElementErrorListener(d);
         checkAndInvalidateDiagram();
         return d;
     }
@@ -304,12 +356,14 @@ public class Project {
 
         Delay newDelay = new Delay(d, "Delay" + (id + 1), this);
         delays.add(newDelay);
+        addNodeElementErrorListener(d);
         checkAndInvalidateDiagram();
         return newDelay;
     }
 
     void addDelay(Delay d) {
         delays.add(d);
+        addNodeElementErrorListener(d);
     }
 
     public void removeDelay(Delay d) {
@@ -320,6 +374,7 @@ public class Project {
                 lines.remove(l);
             }
         }
+        nodeError.remove(d);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -329,6 +384,7 @@ public class Project {
         if (lines.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
             Line l = new Line(source, destination, this);
             lines.add(l);
+            addLineErrorListener(l);
         }
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
@@ -336,6 +392,7 @@ public class Project {
 
     public void removeLine(Line l) {
         lines.remove(l);
+        lineError.remove(l);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -611,7 +668,7 @@ public class Project {
             }
         }
 
-        diagramError =  Collections.unmodifiableMap(error);
+        diagramError = Collections.unmodifiableMap(error);
 
         // invalidate every lines
         lines.forEach(Line::invalidate);
