@@ -42,8 +42,27 @@ public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
         if (node.isArray() && node.size() == 0) {
             return Constraint.NONE;
         } else if (node.isObject()) {
-            return Constraint.createNumericConstraint(node.get("min").doubleValue(), node.get("max").doubleValue()
-                    , Unit.valueOf(node.get("unit").asText()));
+            double min;
+            if (node.get("min").isNumber()) {
+                min = node.get("min").doubleValue();
+            } else if ("MIN_DOUBLE".equals(node.get("min").asText())) {
+                min = -Double.MAX_VALUE;
+            } else if ("MIN_INTEGER".equals(node.get("min").asText())) {
+                min = Integer.MIN_VALUE;
+            } else {
+                throw new IllegalArgumentException("min should be double or the reversed words only.");
+            }
+            double max;
+            if (node.get("max").isNumber()) {
+                max = node.get("max").doubleValue();
+            } else if ("MAX_DOUBLE".equals(node.get("max").asText())) {
+                max = Double.MAX_VALUE;
+            } else if ("MAX_INTEGER".equals(node.get("max").asText())) {
+                max = Integer.MAX_VALUE;
+            } else {
+                throw new IllegalArgumentException("max should be double or the reversed words only.");
+            }
+            return Constraint.createNumericConstraint(min, max, Unit.valueOf(node.get("unit").asText()));
         } else {
             List<String> valueList = new ArrayList<>();
             for (JsonNode jn : node) {

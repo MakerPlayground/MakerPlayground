@@ -26,11 +26,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class MultiFunctionNumericControl extends HBox {
 
     private final ReadOnlyObjectWrapper<CustomNumberExpression> expression;
+
+    private static final DecimalFormat df = new DecimalFormat("0.###E0");
 
     public MultiFunctionNumericControl(Parameter p, List<ProjectValue> projectValues, CustomNumberExpression expression) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
@@ -45,7 +48,23 @@ public class MultiFunctionNumericControl extends HBox {
             getChildren().add(unitLabel);
         }
 
-        Label rangeLabel = new Label("(" + p.getMinimumValue() + "-" + p.getMaximumValue() + ")");
+        String minValue;
+        if (p.getMinimumValue() == -Double.MAX_VALUE || p.getMinimumValue() == Integer.MIN_VALUE) {
+            minValue = "-\u221E";
+        } else if (p.getMinimumValue() > 99999 || p.getMinimumValue() < -99999) {
+            minValue = df.format(p.getMinimumValue());
+        } else {
+            minValue = String.valueOf(p.getMinimumValue());
+        }
+        String maxValue;
+        if (p.getMaximumValue() == Double.MAX_VALUE || p.getMaximumValue() == Integer.MAX_VALUE) {
+            maxValue = "\u221E";
+        } else if (p.getMaximumValue() > 99999 || p.getMaximumValue() < -99999) {
+            maxValue = df.format(p.getMaximumValue());
+        } else {
+            maxValue = String.valueOf(p.getMaximumValue());
+        }
+        Label rangeLabel = new Label("(" + minValue + ", " + maxValue + ")");
         rangeLabel.setMinHeight(27);
         getChildren().add(rangeLabel);
 
