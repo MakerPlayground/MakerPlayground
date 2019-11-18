@@ -69,8 +69,15 @@ public class DeviceConnectionLogic {
                     continue;
                 }
                 if (connectionConsumer.getType() != ConnectionType.INTEGRATED) {
+                    ProjectDevice providerProjectDevice = connectionProvider.getOwnerProjectDevice();
                     for (int k = 0; k< connectionProvider.getPins().size(); k++) {
-                        List<PinFunction> provideFunctions = connectionProvider.getPins().get(k).getFunction();
+                        Pin pin = connectionProvider.getPins().get(k);
+                        if (usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo()) && !connectionConsumer.getPins().get(k).getFunction().contains(PinFunction.NO_FUNCTION))
+                        {
+                            connectionMatching[i][j] = false;
+                            break;
+                        }
+                        List<PinFunction> provideFunctions = pin.getFunction();
                         boolean flag = false;
                         for (PinFunction consumerFunction: connectionConsumer.getPins().get(k).getFunction()) {
                             if (consumerFunction.getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
@@ -90,16 +97,16 @@ public class DeviceConnectionLogic {
                 }
             }
         }
-        for (int j = 0; j<remainingConnectionProvide.size(); j++) {
-            Connection connectionProvide = remainingConnectionProvide.get(j);
-            ProjectDevice providerProjectDevice = connectionProvide.getOwnerProjectDevice();
-            if (connectionProvide.getPins().stream().anyMatch(pin -> usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())))
-            {
-                for (int i=0; i<connectionMatching.length; i++) {
-                    connectionMatching[i][j] = false;
-                }
-            }
-        }
+//        for (int j = 0; j<remainingConnectionProvide.size(); j++) {
+//            Connection connectionProvide = remainingConnectionProvide.get(j);
+//            ProjectDevice providerProjectDevice = connectionProvide.getOwnerProjectDevice();
+//            if (connectionProvide.getPins().stream().anyMatch(pin -> usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())))
+//            {
+//                for (int i=0; i<connectionMatching.length; i++) {
+//                    connectionMatching[i][j] = false;
+//                }
+//            }
+//        }
         return connectionMatching;
     }
 
