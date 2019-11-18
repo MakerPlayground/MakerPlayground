@@ -26,51 +26,49 @@
 <?import javafx.scene.shape.Arc?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Text?>
-<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/DelayView.css" type="VBox" spacing="2.0"
+<fx:root alignment="CENTER" stylesheets="@../../../css/canvas/node/DelayView.css" type="GridPane" pickOnBounds="false" hgap="2.0"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" style="-fx-cursor:move;">
-    <HBox>
-        <HBox fx:id="titleHBox" alignment="BASELINE_CENTER" spacing="5.0" >
-            <ImageView id="delayIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
-                       preserveRatio="true" style="-fx-cursor:hand;">
-                <Image url="@../../../icons/delayIcon.png"/>
-            </ImageView>
-            <Label id="delayText" text="Delay" />
-            <Region HBox.hgrow="ALWAYS" />
-            <ImageView id="removeButton" fx:id="removeButton" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true"
-                       preserveRatio="true" style="-fx-cursor:hand;">
-                <Image url="@../../../icons/diagram-element-delete.png"/>
-            </ImageView>
-            <padding>
-                <Insets left="10.0" right="10.0" bottom="0.0"/>
-            </padding>
-        </HBox>
-        <Region HBox.hgrow="ALWAYS"/>
+    <HBox id="titleHBox" fx:id="titleHBox" alignment="BASELINE_CENTER" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <ImageView id="delayIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-cursor:hand;">
+            <Image url="@../../../icons/delayIcon.png"/>
+        </ImageView>
+        <Label id="delayText" text="Delay" />
+        <Region HBox.hgrow="ALWAYS" />
+        <ImageView id="removeButton" fx:id="removeButton" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-cursor:hand;">
+            <Image url="@../../../icons/diagram-element-delete.png"/>
+        </ImageView>
+        <padding>
+            <Insets left="10.0" right="10.0" bottom="0.0"/>
+        </padding>
     </HBox>
 
-    <HBox fx:id="mainLayout" alignment="CENTER">
-        <HBox fx:id="mainContent" alignment="CENTER">
-            <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
-                 strokeType="INSIDE" strokeWidth="0.0"/>
-            <VBox id="contentPane" fx:id="contentPane" alignment="CENTER" minWidth="90.0" prefWidth="90.0" maxWidth="90.0" > <!-- 118 -->
-                <HBox alignment="CENTER" spacing="2.0" >
-    <!--                <ImageView id="delayIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor:hand;">-->
-    <!--                    <Image url="@../../../icons/delayIcon.png"/>-->
-    <!--                </ImageView>-->
-                    <TextField id="numberTextField" fx:id="delayTextField" HBox.hgrow="ALWAYS">
-                        <HBox.margin>
-                            <Insets />
-                        </HBox.margin>
-                    </TextField>
-                    <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minWidth="30" prefWidth="30" maxWidth="30" />
-                </HBox>
-                <padding>
-                    <Insets top="8.0" right="5.0" bottom="8.0" left="8.0"/>
-                </padding>
-            </VBox>
-            <Arc id="arcNode" fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
-                 rotate="180.0" strokeType="INSIDE" strokeWidth="0.0"/>
-        </HBox>
-        <Line id="hintLine" fx:id="hintLine" strokeWidth="2.0" strokeDashArray="3,10"/>
+    <HBox fx:id="mainContent" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <Arc id="arcNode" fx:id="inPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
+             strokeType="INSIDE" strokeWidth="0.0"/>
+        <VBox id="contentPane" fx:id="contentPane" alignment="CENTER" minWidth="90.0" prefWidth="90.0" maxWidth="90.0" > <!-- 118 -->
+            <HBox alignment="CENTER" spacing="2.0" >
+<!--                <ImageView id="delayIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor:hand;">-->
+<!--                    <Image url="@../../../icons/delayIcon.png"/>-->
+<!--                </ImageView>-->
+                <TextField id="numberTextField" fx:id="delayTextField" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </TextField>
+                <ComboBox id="TimeUnitComboBox" fx:id="timeUnitComboBox" minWidth="30" prefWidth="30" maxWidth="30" />
+            </HBox>
+            <padding>
+                <Insets top="8.0" right="5.0" bottom="8.0" left="8.0"/>
+            </padding>
+        </VBox>
+        <Arc id="arcNode" fx:id="outPort" length="180.0" radiusX="10.0" radiusY="10.0" startAngle="90.0"
+             rotate="180.0" strokeType="INSIDE" strokeWidth="0.0"/>
+    </HBox>
+
+    <HBox fx:id="hintLayout" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" mouseTransparent="true">
+        <Line id="hintLine" fx:id="hintLine" endX="50.0" strokeWidth="2.0" strokeDashArray="3,10" />
         <Text id="hintText" fx:id="hintText" text="Back to Begin" />
     </HBox>
 </fx:root>

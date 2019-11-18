@@ -60,6 +60,7 @@ public class BeginView extends InteractiveNode {
             e.printStackTrace();
         }
         getChildren().add(beginVBox);
+        makeSelectable(mainLayout);
         makeMovableWithEventHandler(labelHBox);
 
         // bind begin's location to the model
@@ -112,9 +113,6 @@ public class BeginView extends InteractiveNode {
             }
         });
         outPort.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> showHilight(false));
-
-        // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
-        setOnMousePressed(Event::consume);
 
         // this is need to indicate error for non connected begin node
         showHilight(false);
