@@ -140,6 +140,8 @@ public class InteractivePane extends ScrollPane {
 
         addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             updateMousePosition(event);
+            sourceNode = null;
+            destNode = null;
             guideLine.setVisible(false);
 
             if (groupSelectionArea.isVisible()) {
