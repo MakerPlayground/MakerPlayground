@@ -408,7 +408,7 @@ class ArduinoCodeGenerator {
         builder.append("}").append(NEW_LINE);
     }
 
-    private void appendBeginFunction(NodeElement nodeElement) {
+    private void appendBeginFunction(Begin nodeElement) {
         List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, nodeElement);
         List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
         List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
@@ -417,6 +417,7 @@ class ArduinoCodeGenerator {
         // generate code for begin
         builder.append(NEW_LINE);
         builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(nodeElement)).append("() {").append(NEW_LINE);
+        builder.append(INDENT).append(parseBeginRecentSceneFinishTime(nodeElement)).append(" = millis();").append(NEW_LINE);
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() != 1) {
                 throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
@@ -601,17 +602,29 @@ class ArduinoCodeGenerator {
                     for (UserSetting setting : condition.getVirtualDeviceSetting()) {
                         if (setting.getCondition() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
-                        } else if (setting.getDevice() == VirtualProjectDevice.timeElapsedProjectDevice) {
-                            Parameter valueParameter = setting.getCondition().getParameter().get(0);
-                            if (setting.getCondition() == VirtualProjectDevice.lessThan) {
-                                booleanExpressions.add("millis() < " + parseBeginRecentSceneFinishTime(root) + " + " +
-                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
-                            } else {
-                                booleanExpressions.add("millis() > " + parseBeginRecentSceneFinishTime(root) + " + " +
-                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                        } else if (setting.getDevice() == VirtualDeviceLibrary.TimeElapse.PROJECT_DEVICE && setting.getCondition() == VirtualDeviceLibrary.TimeElapse.FROM_LAST_BLOCK_CONDITION) {
+                            for (Value value : setting.getExpression().keySet()) {
+                                if (value == VirtualDeviceLibrary.TimeElapse.VALUE) {
+                                    if (setting.getExpression().get(value) instanceof NumberInRangeExpression) {
+                                        NumberInRangeExpression expression = (NumberInRangeExpression) setting.getExpression().get(value);
+                                        String boolExpr1 = "millis() " + parseOperator(expression.getLowOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getLowValue();
+                                        String boolExpr2 = "millis() " + parseOperator(expression.getHighOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getHighOperator();
+                                        booleanExpressions.add(boolExpr1);
+                                        booleanExpressions.add(boolExpr2);
+                                    } else if (setting.getExpression().get(value) instanceof ConditionalExpression) {
+                                        ConditionalExpression expression = (ConditionalExpression) setting.getExpression().get(value);
+                                        for (var entry : expression.getEntries()) {
+                                            String boolExpr = "millis() " + parseOperator(entry.getOperator()) + " " +
+                                                    parseBeginRecentSceneFinishTime(root) + " + " + parseTerms(entry.getExpression().getTerms());
+                                            booleanExpressions.add(boolExpr);
+                                        }
+                                    }
+                                } else {
+                                    throw new IllegalStateException("Found unsupported value {" + value + "}");
+                                }
                             }
                         } else {
-                            throw new IllegalStateException("Found unsupported user setting {" + setting + "}");
+                            throw new IllegalStateException("Found unsupported virtual device setting {" + setting + "}");
                         }
                     }
                     for (UserSetting setting : condition.getSetting()) {
@@ -767,48 +780,51 @@ class ArduinoCodeGenerator {
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
 
+    private String parseOperator(Operator operator) {
+        switch (operator) {
+            case PLUS:
+                return "+";
+            case MINUS:
+                return "-";
+            case MULTIPLY:
+                return "*";
+            case DIVIDE:
+                return "/";
+            case MOD:
+                return "%";
+            case GREATER_THAN:
+                return ">";
+            case LESS_THAN:
+                return "<";
+            case GREATER_THAN_OR_EQUAL:
+                return ">=";
+            case LESS_THAN_OR_EQUAL:
+                return "<=";
+            case AND:
+                return "&&";
+            case OR:
+                return "||";
+            case NOT:
+                return "!";
+            case OPEN_PARENTHESIS:
+                return "(";
+            case CLOSE_PARENTHESIS:
+                return ")";
+            case EQUAL:
+                return "==";
+            case NOT_EQUAL:
+                return "!=";
+            default:
+                throw new IllegalStateException("Operator [" + operator + "] not supported");
+        }
+    }
+
     private String parseTerm(Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
         } else if (term instanceof OperatorTerm) {
-            OperatorTerm term1 = (OperatorTerm) term;
-            switch (term1.getValue()) {
-                case PLUS:
-                    return "+";
-                case MINUS:
-                    return "-";
-                case MULTIPLY:
-                    return "*";
-                case DIVIDE:
-                    return "/";
-                case MOD:
-                    return "%";
-                case GREATER_THAN:
-                    return ">";
-                case LESS_THAN:
-                    return "<";
-                case GREATER_THAN_OR_EQUAL:
-                    return ">=";
-                case LESS_THAN_OR_EQUAL:
-                    return "<=";
-                case AND:
-                    return "&&";
-                case OR:
-                    return "||";
-                case NOT:
-                    return "!";
-                case OPEN_PARENTHESIS:
-                    return "(";
-                case CLOSE_PARENTHESIS:
-                    return ")";
-                case EQUAL:
-                    return "==";
-                case NOT_EQUAL:
-                    return "!=";
-                default:
-                    throw new IllegalStateException("Operator [" + term1.getValue() + "] not supported");
-            }
+            return parseOperator(((OperatorTerm) term).getValue());
         } else if (term instanceof RTCTerm) {
             RTCTerm term1 = (RTCTerm) term;
             LocalDateTime rtc = term1.getValue().getLocalDateTime();

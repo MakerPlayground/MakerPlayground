@@ -20,16 +20,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberInRangeExpression;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
@@ -102,7 +97,7 @@ public class Condition extends NodeElement {
     }
 
     public void addVirtualDevice(ProjectDevice device) {
-        if (!VirtualProjectDevice.virtualDevices.contains(device)) {
+        if (!VirtualDeviceLibrary.DEVICES.contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
         virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
@@ -126,7 +121,7 @@ public class Condition extends NodeElement {
             for (Value value : userSetting.getExpression().keySet()) {
                 Expression expression = userSetting.getExpression().get(value);
                 if (expression.getValueUsed().stream().anyMatch(projectValue -> projectValue.getDevice() == device)) {
-                    userSetting.getExpression().put(value, new NumberInRangeExpression(device, value));
+                    userSetting.getExpression().put(value, Expression.fromProjectDeviceValue(device, value));
                 }
             }
         }
@@ -168,7 +163,7 @@ public class Condition extends NodeElement {
         for (UserSetting userSetting : setting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
             if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
@@ -182,18 +177,12 @@ public class Condition extends NodeElement {
         }
 
         for (UserSetting userSetting : virtualSetting) {
-            // at least one expression must be enable and every expression mush be valid when the action is "Compare"
-            if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
-                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
-                }
-                if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
+            if (userSetting.getCondition() == VirtualDeviceLibrary.TimeElapse.FROM_LAST_BLOCK_CONDITION) {
+                if (!userSetting.getExpression().values().stream().allMatch(Expression::isValid)) {
                     return DiagramError.CONDITION_INVALID_EXPRESSION;
                 }
-            } else {    // otherwise value of every parameters should not be null and should be valid
-                if (userSetting.getParameterMap().values().stream().anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
-                    return DiagramError.CONDITION_INVALID_PARAM;
-                }
+            } else {
+                throw new IllegalStateException("There is no implementation for this case.");
             }
         }
 

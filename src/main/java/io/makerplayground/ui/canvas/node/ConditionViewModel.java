@@ -44,7 +44,7 @@ public class ConditionViewModel {
         this.virtualDeviceViewModelCreator = new DynamicViewModelCreator<>(condition.getVirtualDeviceSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualProjectDevice.virtualDevices.size())
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualDeviceLibrary.DEVICES.size())
                 .greaterThan(Bindings.size(condition.getSetting()).add(Bindings.size(condition.getVirtualDeviceSetting()))));
 
 
@@ -116,7 +116,7 @@ public class ConditionViewModel {
     }
 
     public List<ProjectDevice> getVirtualDevices() {
-        return VirtualProjectDevice.virtualDevices;
+        return VirtualDeviceLibrary.DEVICES;
     }
 
     public Condition getCondition() { return condition; }

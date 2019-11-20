@@ -5,12 +5,10 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.*;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import javafx.beans.binding.StringBinding;
@@ -249,6 +247,26 @@ public class ConditionDevicePropertyPane extends VBox {
             GridPane.setHalignment(control, HPos.LEFT);
             GridPane.setFillWidth(control, false);
             propertyPane.getChildren().addAll(name, control);
+        }
+
+        if (userSetting.getDevice().equals(VirtualDeviceLibrary.TimeElapse.PROJECT_DEVICE) && userSetting.getCondition() == VirtualDeviceLibrary.TimeElapse.FROM_LAST_BLOCK_CONDITION) {
+            List<Value> values = userSetting.getDevice().getGenericDevice().getValue();
+            for (int i=0; i<values.size(); i++) {
+                Value value = values.get(i);
+                Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
+                Label label = new Label(value.getName());
+                GridPane.setValignment(label, VPos.TOP);
+                GridPane.setRowIndex(label, i+1);
+                GridPane.setColumnIndex(label, 0);
+
+                ConditionalExpression expression = (ConditionalExpression) userSetting.getExpression().get(value);
+                CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl(expression, project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)), unit);
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getExpression().put(value, newValue));
+
+                GridPane.setRowIndex(expressionControl, i+1);
+                GridPane.setColumnIndex(expressionControl, 1);
+                propertyPane.getChildren().addAll(label, expressionControl);
+            }
         }
 
         if (userSetting.getCondition().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous

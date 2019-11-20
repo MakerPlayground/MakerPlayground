@@ -52,7 +52,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 break;
             }
         }
-        for (ProjectDevice pd : VirtualProjectDevice.virtualDevices) {
+        for (ProjectDevice pd : VirtualDeviceLibrary.DEVICES) {
             if (pd.getName().equals(deviceName)) {
                 projectDevice = pd;
                 break;
@@ -196,12 +196,19 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 String projectDeviceName = term_node.get("value").get("name").asText();
                 String valueName = term_node.get("value").get("value").asText();
                 Optional<ProjectDevice> deviceOptional = allProjectDevices.stream().filter(pj -> pj.getName().equals(projectDeviceName)).findFirst();
-                if (deviceOptional.isEmpty()) {
+                Optional<ProjectDevice> deviceOptional1 = VirtualDeviceLibrary.DEVICES.stream().filter(pj -> pj.getName().equals(projectDeviceName)).findFirst();
+                if (deviceOptional.isEmpty() && deviceOptional1.isEmpty()) {
                     throw new IllegalStateException("projectDevice for term is needed to be existed.");
                 }
-                ProjectDevice device = deviceOptional.get();
-                Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
-                term = new ValueTerm(new ProjectValue(device, value));
+                if (deviceOptional.isPresent()) {
+                    ProjectDevice device = deviceOptional.get();
+                    Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
+                    term = new ValueTerm(new ProjectValue(device, value));
+                } else {
+                    ProjectDevice device = deviceOptional1.get();
+                    Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
+                    term = new ValueTerm(new ProjectValue(device, value));
+                }
             }
         } else if (Term.Type.STRING.name().equals(term_type)) {
             String word = term_node.get("value").asText();

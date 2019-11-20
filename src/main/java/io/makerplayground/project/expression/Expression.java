@@ -18,11 +18,11 @@ package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.RealTimeClock;
-import io.makerplayground.device.shared.Record;
-import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.term.Operator;
 import io.makerplayground.project.term.Term;
 
 import java.util.ArrayList;
@@ -77,6 +77,23 @@ public abstract class Expression {
     }
 
     public abstract Expression deepCopy();
+
+    public static Expression fromProjectDeviceValue(ProjectDevice projectDevice, Value value) {
+        if (value.getType() == DataType.DOUBLE || value.getType() == DataType.INTEGER) {
+            if (value.getConstraint() instanceof NumericConstraint) {
+                double max = ((NumericConstraint) value.getConstraint()).getMax();
+                double min = ((NumericConstraint) value.getConstraint()).getMin();
+                if (max == Double.MAX_VALUE || max == Integer.MAX_VALUE || min == -Double.MAX_VALUE || min == Integer.MIN_VALUE) {
+                    return new ConditionalExpression(projectDevice, value);
+                } else {
+                    return new NumberInRangeExpression(projectDevice, value);
+                }
+            } else {
+                throw new IllegalStateException("No implementation for value that its constraint is not numeric");
+            }
+        }
+        throw new IllegalStateException("No implementation for value that is not number");
+    }
 
     public static Expression fromDefaultParameter(Parameter param) {
         switch (param.getDataType()) {
