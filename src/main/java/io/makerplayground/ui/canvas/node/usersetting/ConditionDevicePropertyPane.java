@@ -70,7 +70,7 @@ public class ConditionDevicePropertyPane extends VBox {
         titleHBox.setSpacing(10);
 
         // Create ComboBox for user to select a condition
-        conditionLabel = new Label("Action");
+        conditionLabel = new Label("Condition");
         GridPane.setRowIndex(conditionLabel, 0);
         GridPane.setColumnIndex(conditionLabel, 0);
 
