@@ -49,6 +49,10 @@ public abstract class InteractiveNode extends Group implements Selectable {
         // show/hide hi-light when this scene is selected/deselected
         select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
 
+        // consume mouse pressed event in the event handler so that we can differentiate between mouser press in the node
+        // and mouser press in the pane i.e. pressing inside the node will not trigger MOUSE_PRESSED event of the pane
+        addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
+
         // event handler to support node drag
         mousePressedEventHandler = event -> {
             // allow dragging only when the left button is pressed
@@ -106,9 +110,6 @@ public abstract class InteractiveNode extends Group implements Selectable {
                 }
             }
         });
-        // consume mouse pressed event in the event handler so that we can differentiate between mouser press in the node
-        // and mouser press in the pane i.e. pressing inside the node will not trigger MOUSE_PRESSED event of the pane
-        n.addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
     }
 
     protected final void makeMovableWithEventHandler(Node n) {
