@@ -17,7 +17,9 @@
 package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
@@ -37,61 +39,79 @@ import java.util.List;
 public class ConditionalExpressionControl extends HBox {
     private final ProjectDevice projectDevice;
     private final Value value;
+    private final Unit unit;
     private final List<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<Expression> expression = new ReadOnlyObjectWrapper<>();
+    private final boolean customExpressionOnly;
 
     public ConditionalExpressionControl(ProjectDevice projectDevice, Value v, List<ProjectValue> projectValues, Expression expression) {
         this.projectDevice = projectDevice;
         this.value = v;
+        this.unit = ((NumericConstraint) v.getConstraint()).getUnit();
         this.projectValues = projectValues;
         this.expression.set(expression);
+        double min = ((NumericConstraint) v.getConstraint()).getMin();
+        double max = ((NumericConstraint) v.getConstraint()).getMax();
+        this.customExpressionOnly = (min == -Double.MAX_VALUE || min == Integer.MIN_VALUE || max == Double.MAX_VALUE || max == Integer.MAX_VALUE);
         initView();
     }
 
     private void initView() {
         getChildren().clear();
-
-        RadioMenuItem basicRadioMenuItem = new RadioMenuItem("Basic");
-        RadioMenuItem customRadioMenuItem = new RadioMenuItem("Custom");
-
-        ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(basicRadioMenuItem, customRadioMenuItem);
-
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(basicRadioMenuItem, customRadioMenuItem);
-
-        ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting-press.png")));
-        configButton.setFitWidth(25);
-        configButton.setStyle("-fx-cursor: hand;");
-        configButton.setPreserveRatio(true);
-        configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
-
-        Node control;
-        if (getExpression() instanceof NumberInRangeExpression) {
-            SimpleConditionalExpressionControl expressionControl = new SimpleConditionalExpressionControl((NumberInRangeExpression) getExpression(), value);
-            expressionControl.useIntegerOnly(value.getType() == DataType.INTEGER);
-            expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
-            toggleGroup.selectToggle(basicRadioMenuItem);
-            control = expressionControl;
-        } else if (getExpression() instanceof ConditionalExpression) {
-            CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues);
-            toggleGroup.selectToggle(customRadioMenuItem);
-            control = expressionControl;
-        } else {
-            throw new IllegalStateException("Found unsupported expression!!!");
-        }
-
-        getChildren().addAll(control, configButton);
-        setSpacing(5);
-
-        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == basicRadioMenuItem) {
-                expression.set(new NumberInRangeExpression(projectDevice, value));
-            } else if (newValue == customRadioMenuItem) {
-                expression.set(new ConditionalExpression(projectDevice, value));
+        if (this.customExpressionOnly) {
+            if (getExpression() instanceof ConditionalExpression) {
+                CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues, unit);
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+                getChildren().addAll(expressionControl);
+                setSpacing(5);
+            } else {
+                throw new IllegalStateException("Found unsupported expression!!!");
             }
-            initView();
-        });
+        } else {
+            RadioMenuItem basicRadioMenuItem = new RadioMenuItem("Basic");
+            RadioMenuItem customRadioMenuItem = new RadioMenuItem("Custom");
+
+            ToggleGroup toggleGroup = new ToggleGroup();
+            toggleGroup.getToggles().addAll(basicRadioMenuItem, customRadioMenuItem);
+
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.getItems().addAll(basicRadioMenuItem, customRadioMenuItem);
+
+            ImageView configButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/advance-setting.png")));
+            configButton.setFitWidth(25);
+            configButton.setFitHeight(25);
+            configButton.setStyle("-fx-cursor: hand;");
+            configButton.setPreserveRatio(true);
+            configButton.setOnMousePressed(event -> contextMenu.show(configButton, Side.BOTTOM, 0, 0));
+
+            Node control;
+            if (getExpression() instanceof NumberInRangeExpression) {
+                SimpleConditionalExpressionControl expressionControl = new SimpleConditionalExpressionControl((NumberInRangeExpression) getExpression(), value);
+                expressionControl.useIntegerOnly(value.getType() == DataType.INTEGER);
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+                toggleGroup.selectToggle(basicRadioMenuItem);
+                control = expressionControl;
+            } else if (getExpression() instanceof ConditionalExpression) {
+                CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues, unit);
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
+                toggleGroup.selectToggle(customRadioMenuItem);
+                control = expressionControl;
+            } else {
+                throw new IllegalStateException("Found unsupported expression!!!");
+            }
+
+            getChildren().addAll(control, configButton);
+            setSpacing(5);
+
+            toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue == basicRadioMenuItem) {
+                    expression.set(new NumberInRangeExpression(projectDevice, value));
+                } else if (newValue == customRadioMenuItem) {
+                    expression.set(new ConditionalExpression(projectDevice, value));
+                }
+                initView();
+            });
+        }
     }
 
     public Expression getExpression() {

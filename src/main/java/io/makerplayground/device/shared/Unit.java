@@ -65,7 +65,7 @@ public enum Unit {
             case WAV: return "wav";
             case NUMBER: return "Number";
             case PERCENT: return PERCENT;
-            case NOT_SPECIFIED: return "not specified";
+            case NOT_SPECIFIED: return "";
             case HERTZ: return "Hz";
             case BPM: return "BPM";
             default: throw new IllegalStateException();

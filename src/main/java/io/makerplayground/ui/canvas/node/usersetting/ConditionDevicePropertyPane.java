@@ -264,6 +264,7 @@ public class ConditionDevicePropertyPane extends VBox {
         Expression expression = userSetting.getExpression().get(value);
 
         CheckBox enableCheckbox = new CheckBox(value.getName());
+        enableCheckbox.setMinHeight(25);    // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
         enableCheckbox.setSelected(userSetting.getExpressionEnable().get(value));
         enableCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> userSetting.getExpressionEnable().put(value, newValue));
         GridPane.setValignment(enableCheckbox, VPos.TOP);
