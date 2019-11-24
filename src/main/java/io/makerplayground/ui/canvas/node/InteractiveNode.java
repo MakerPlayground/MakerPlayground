@@ -46,23 +46,12 @@ public abstract class InteractiveNode extends Group implements Selectable {
     public InteractiveNode(InteractivePane interactivePane) {
         this.interactivePane = interactivePane;
 
-        // allow this node to be selected (use event filter without consuming the event to allow children of this
-        // node to process mouse press event)
-        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.isPrimaryButtonDown()) {
-                if (interactivePane.getSelectionGroup().isMultipleSelection()) {
-                    select.set(!select.get());
-                } else {
-                    select.set(true);
-                }
-            }
-        });
+        // show/hide hi-light when this scene is selected/deselected
+        select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
+
         // consume mouse pressed event in the event handler so that we can differentiate between mouser press in the node
         // and mouser press in the pane i.e. pressing inside the node will not trigger MOUSE_PRESSED event of the pane
         addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
-
-        // show/hide hi-light when this scene is selected/deselected
-        select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
 
         // event handler to support node drag
         mousePressedEventHandler = event -> {
@@ -107,6 +96,20 @@ public abstract class InteractiveNode extends Group implements Selectable {
         mouseReleasedEventHandler = event -> {
             hasDragged = false;
         };
+    }
+
+    protected final void makeSelectable(Node n) {
+        // allow this node to be selected (use event filter without consuming the event to allow children of this
+        // node to process mouse press event)
+        n.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.isPrimaryButtonDown()) {
+                if (interactivePane.getSelectionGroup().isMultipleSelection()) {
+                    select.set(!select.get());
+                } else {
+                    select.set(true);
+                }
+            }
+        });
     }
 
     protected final void makeMovableWithEventHandler(Node n) {

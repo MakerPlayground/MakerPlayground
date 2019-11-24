@@ -63,8 +63,7 @@ public class LineView extends InteractiveNode {
 
         getChildren().addAll(path, removeButton);
 
-        // TODO: Consume the event to avoid the interactive pane from accepting it and deselect every node
-        setOnMousePressed(Event::consume);
+        makeSelectable(path);
 
         showHilight(false);
 

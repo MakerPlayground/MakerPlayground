@@ -25,7 +25,6 @@ import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
 import io.makerplayground.ui.dialog.devicepane.input.InputDeviceSelector;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,25 +36,23 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.io.IOException;
 
 public class ConditionView extends InteractiveNode {
-    private VBox root = new VBox();
+    private GridPane root = new GridPane();
 
     @FXML private AutoResizeTextField nameTextField;
     @FXML private ImageView removeButton;
 
     @FXML private HBox titleHBox;
     @FXML private HBox mainContent;
-    @FXML private HBox mainLayout;
     @FXML private VBox contentPane;
     @FXML private ScrollPane scrollPane;
     @FXML private VBox deviceConfigIconPane;
@@ -63,8 +60,7 @@ public class ConditionView extends InteractiveNode {
     @FXML private Arc inPort;
     @FXML private Arc outPort;
 
-    @FXML private Line hintLine;
-    @FXML private Text hintText;
+    @FXML private HBox hintLayout;
 
     private final ConditionViewModel conditionViewModel;
     private InputDeviceSelector inputDeviceSelector = null;
@@ -170,27 +166,20 @@ public class ConditionView extends InteractiveNode {
             }
         });
 
-        titleHBox.maxWidthProperty().bind(mainContent.widthProperty());
-        titleHBox.minWidthProperty().bind(mainContent.widthProperty());
-
-        hintLine.startXProperty().bind(outPort.centerXProperty());
-        hintLine.startYProperty().bind(outPort.centerYProperty());
-
-        BooleanBinding showBackToBegin = conditionViewModel.hasLineInProperty().and(conditionViewModel.hasLineOutProperty().not());
-
-        hintLine.endXProperty().bind(outPort.centerYProperty().add(50));
-        hintLine.endYProperty().bind(outPort.centerYProperty());
-        hintLine.visibleProperty().bind(showBackToBegin);
-
-        hintText.xProperty().bind(outPort.centerXProperty().add(52));
-        hintText.yProperty().bind(outPort.centerYProperty());
-        hintText.visibleProperty().bind(showBackToBegin);
+        // display 'back to begin' when this node is the leaf node of the diagram
+        hintLayout.visibleProperty().bind(conditionViewModel.hasLineInProperty().and(conditionViewModel.hasLineOutProperty().not()));
+        hintLayout.managedProperty().bind(hintLayout.visibleProperty());
     }
 
     private void initEvent() {
+        // allow node to be selected
+        makeSelectable(titleHBox);
+        makeSelectable(mainContent);
+
         // allow node to be dragged
         makeMovableWithEventHandler(contentPane);
         makeMovableWithEventHandler(deviceConfigIconPane);
+
         // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
         // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
         // native method to check the visibility of the scroll bar)
