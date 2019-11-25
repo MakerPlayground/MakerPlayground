@@ -607,15 +607,15 @@ class ArduinoCodeGenerator {
                                 if (value == VirtualDeviceLibrary.TimeElapse.VALUE) {
                                     if (setting.getExpression().get(value) instanceof NumberInRangeExpression) {
                                         NumberInRangeExpression expression = (NumberInRangeExpression) setting.getExpression().get(value);
-                                        String boolExpr1 = "millis() " + parseOperator(expression.getLowOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getLowValue();
-                                        String boolExpr2 = "millis() " + parseOperator(expression.getHighOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getHighOperator();
+                                        String boolExpr1 = "millis() " + parseOperator(expression.getLowOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getLowValue() * 1000.0;
+                                        String boolExpr2 = "millis() " + parseOperator(expression.getHighOperator()) + " " + parseBeginRecentSceneFinishTime(root) + " + " + expression.getHighValue() * 1000.0;
                                         booleanExpressions.add(boolExpr1);
                                         booleanExpressions.add(boolExpr2);
                                     } else if (setting.getExpression().get(value) instanceof ConditionalExpression) {
                                         ConditionalExpression expression = (ConditionalExpression) setting.getExpression().get(value);
                                         for (var entry : expression.getEntries()) {
                                             String boolExpr = "millis() " + parseOperator(entry.getOperator()) + " " +
-                                                    parseBeginRecentSceneFinishTime(root) + " + " + parseTerms(entry.getExpression().getTerms());
+                                                    parseBeginRecentSceneFinishTime(root) + " + " + parseTerms(entry.getExpression().getTerms()) + " * 1000.0";
                                             booleanExpressions.add(boolExpr);
                                         }
                                     }
