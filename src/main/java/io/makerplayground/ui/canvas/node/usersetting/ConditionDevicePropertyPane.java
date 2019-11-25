@@ -259,6 +259,8 @@ public class ConditionDevicePropertyPane extends VBox {
                 GridPane.setRowIndex(label, i+1);
                 GridPane.setColumnIndex(label, 0);
 
+                userSetting.getExpressionEnable().put(value, true);
+
                 ConditionalExpression expression = (ConditionalExpression) userSetting.getExpression().get(value);
                 CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl(expression, project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)), unit);
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getExpression().put(value, newValue));

@@ -508,7 +508,13 @@ public class Project {
                     deviceUsed.add(s.getDevice());
                     deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
                 });
+                temp.getVirtualDeviceSetting().forEach(s ->
+                    deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet())
+                );
             }
+            // exclude virtual device(s) if any as their value may be referred in some scene(s)/condition(s)
+            deviceUsed.removeAll(VirtualDeviceLibrary.DEVICES);
+
             visited.add(current);
             Set<NodeElement> unvisitedAdj = lines.stream()
                     .filter(l->l.getSource() == current)
@@ -543,6 +549,10 @@ public class Project {
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
+                    allValueUsed.putIfAbsent(key, new HashSet<>());
+                    allValueUsed.get(key).addAll(value);
+                }));
+                temp.getVirtualDeviceSetting().forEach(s -> s.getAllValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
