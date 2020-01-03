@@ -73,7 +73,7 @@ public class ArduinoUploadTask extends UploadTask {
         updateProgress(0.10, 1);
         updateMessage("Checking required dependencies");
 
-        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Current data directory : " + PythonUtility.MP_WORKSPACE + "\n"));
 
         // check platformio installation
         Optional<String> pythonPath = PythonUtility.getPythonPath();

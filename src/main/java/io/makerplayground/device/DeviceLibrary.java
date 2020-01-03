@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.util.PythonUtility;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -121,8 +122,8 @@ public enum DeviceLibrary {
     }
 
     private static final List<String> libraryPaths = List.of(
-            "library",               // default path for Windows installer and when running from the IDE
-            "../Resources/library"   // default path for macOS installer
+            "library",               // default path when running from the IDE
+            PythonUtility.MP_WORKSPACE + File.separator + "library"     // default path for Windows and macOS installer
     );
 
     public static Optional<String> getLibraryPath() {
@@ -216,6 +217,7 @@ public enum DeviceLibrary {
     public List<GenericDevice> getGenericUtilityDevice() {
         return genericUtilityDevice;
     }
+
 
     public List<GenericDevice> getGenericCloudDevice() {
         return genericCloudDevice;

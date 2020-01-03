@@ -82,7 +82,7 @@ public class RaspberryPiUploadTask extends UploadTask {
         updateMessage("Checking required dependencies");
 
         // Test ping to device and check if it has makerplayground runtime.
-        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Current data directory : " + PythonUtility.MP_WORKSPACE + "\n"));
         try {
             URL url = new URL(this.url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
