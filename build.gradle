@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.5'
@@ -138,11 +140,16 @@ def getVersionName() {
         commandLine 'git', 'describe', '--tags'
         standardOutput = stdout
     }
+
     def versionName = stdout.toString().trim()
+    def versionInfo = JsonOutput.toJson([
+            build_name: 'Maker Playground ' + versionName,
+            version: versionName,
+            channel: 'nightly', // stable, nightly, internal
+            download_url: 'www.makerplayground.io',
+            release_date: new Date().format('yyyy-MM-dd')])
 
-    // write version.txt file
-    def file = new File('version.txt')
-    file.write "version=${versionName}\nrelease-date=${new Date().format('yyyy-MM-dd')}"
-
+    def file = new File('version.json')
+    file.write versionInfo
     return versionName
 }
