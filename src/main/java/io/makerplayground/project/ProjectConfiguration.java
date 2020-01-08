@@ -202,6 +202,8 @@ public final class ProjectConfiguration {
         this.devices.addAll(allDevices);
         this.devices.add(CONTROLLER);
 
+        this.identicalDeviceMap.entrySet().removeIf(entry -> !this.devices.contains(entry.getKey()));
+
         generateDeviceSelectableMapAndConnection();
         updateStatusProperty();
     }

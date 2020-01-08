@@ -209,7 +209,9 @@ public class Project {
     private void addNodeElementErrorListener(NodeElement node) {
         node.errorProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != DiagramError.NONE) {
-                nodeError.add(node);
+                if (!nodeError.contains(node)) {
+                    nodeError.add(node);
+                }
             } else {
                 nodeError.remove(node);
             }
@@ -221,7 +223,9 @@ public class Project {
     private void addLineErrorListener(Line line) {
         line.errorProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != DiagramError.NONE) {
-                lineError.add(line);
+                if (!lineError.contains(line)) {
+                    lineError.add(line);
+                }
             } else {
                 lineError.remove(line);
             }
