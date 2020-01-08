@@ -33,7 +33,7 @@ public class DeviceTab extends SplitPane {
         this.currentProject = currentProject;
 
         // device explorer
-        deviceExplorerPanel = new DeviceExplorerPanel(currentProject.getSelectedController(), hostServices);
+        deviceExplorerPanel = new DeviceExplorerPanel(currentProject, hostServices);
         deviceExplorerPanel.setOnAddButtonPressed(actualDevice -> {
             List<ProjectDevice> projectDevices = new ArrayList<>();
             for (GenericDevice genericDevice : actualDevice.getSupportedGenericDevice()) {

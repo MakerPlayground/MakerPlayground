@@ -9,7 +9,9 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.generator.devicemapping.DeviceConnectionLogic;
 import io.makerplayground.generator.devicemapping.DeviceConnectionResult;
 import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.project.DeviceConnection;
+import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
@@ -41,11 +43,13 @@ public class DeviceExplorerPanel extends VBox {
     private final List<DeviceInfoPane> deviceInfoPanes = new ArrayList<>();
     private final Map<DeviceInfoPane, TitledPane> deviceInfoPaneParentMap = new HashMap<>();
     private Consumer<ActualDevice> actualDeviceConsumer;
+    private Project currentProject;
     private ActualDevice currentController;
     private String currentSearchKeyword = "";
 
-    public DeviceExplorerPanel(ActualDevice currentController, HostServices hostServices) {
-        this.currentController = currentController;
+    public DeviceExplorerPanel(Project project, HostServices hostServices) {
+        this.currentProject = project;
+        this.currentController = project.getSelectedController();
         this.hostServices = hostServices;
 
         TextField searchTextField = new TextField();
@@ -163,10 +167,21 @@ public class DeviceExplorerPanel extends VBox {
     }
 
     private boolean isSupportByController(ActualDevice actualDevice) {
+        if (!actualDevice.getPlatformSourceCodeLibrary().keySet().containsAll(currentController.getPlatformSourceCodeLibrary().keySet())) {
+            return false;
+        }
+
+        if (actualDevice.getCloudConsume() != null && !currentProject.getProjectConfiguration().getCloudPlatformProvide().contains(actualDevice.getCloudConsume())) {
+            return false;
+        }
+
         Set<Connection> allConnectionProvide = new HashSet<>(currentController.getConnectionProvideByOwnerDevice(ProjectDevice.CONTROLLER));
         DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(allConnectionProvide
                 , Collections.emptyMap(), null, actualDevice, DeviceConnection.NOT_CONNECTED);
-        return result.getStatus() == DeviceConnectionResultStatus.OK && actualDevice.getPlatformSourceCodeLibrary().keySet().containsAll(currentController.getPlatformSourceCodeLibrary().keySet());
+        if (result.getStatus() != DeviceConnectionResultStatus.OK) {
+            return false;
+        }
+        return true;
     }
 
     private void applyFilter() {
