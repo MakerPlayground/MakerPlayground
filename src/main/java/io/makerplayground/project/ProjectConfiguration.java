@@ -650,12 +650,19 @@ public final class ProjectConfiguration {
         // Reserve the connection by remove the providerConnection from the remainingConnectionProvide
         if (providerConnection.getType() != ConnectionType.WIRE) {
             remainingConnectionProvide.remove(providerConnection);
+            for (Connection friendConnection: providerConnection.getFriendConnections()) {
+                remainingConnectionProvide.remove(friendConnection);
+            }
         }
         else if (providerConnection.getType() == ConnectionType.WIRE &&
-                providerConnection.getPins().size() == 1 &&
-                deviceConnections.get(projectDevice).getProviderFunction().get(providerConnection).get(0).isSingleUsed())
+                providerConnection.getPins().size() == 1)
         {
-            remainingConnectionProvide.remove(providerConnection);
+            if (deviceConnections.get(projectDevice).getProviderFunction().get(providerConnection).get(0).isSingleUsed()) {
+                remainingConnectionProvide.remove(providerConnection);
+            }
+            for (Connection friendConnection: providerConnection.getFriendConnections()) {
+                remainingConnectionProvide.remove(friendConnection);
+            }
         }
 
         // Add used pins to list
@@ -690,6 +697,12 @@ public final class ProjectConfiguration {
             }
             ProjectDevice providerProjectDevice = connectionProvide.getOwnerProjectDevice();
             remainingConnectionProvide.add(connectionProvide);
+            for (Connection fConnection: connectionProvide.getFriendConnections()) {
+                // If all the friendConnections of the fConnection are available to be plugged, then the fConnection should be available to.
+                if (remainingConnectionProvide.containsAll(fConnection.getFriendConnections())) {
+                    remainingConnectionProvide.add(fConnection);
+                }
+            }
             connectionProvide.getPins().forEach(providerPin -> {
                 if (usedRefPin.containsKey(providerProjectDevice)) {
                     usedRefPin.get(providerProjectDevice).remove(providerPin.getRefTo());
@@ -726,6 +739,9 @@ public final class ProjectConfiguration {
                     ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
                     if (providerConnection.getType() != ConnectionType.WIRE) {
                         remainingConnectionProvide.remove(providerConnection);
+                        for (Connection friendConnection: providerConnection.getFriendConnections()) {
+                            remainingConnectionProvide.remove(friendConnection);
+                        }
                     }
                     for (int i = 0; i<consumerConnection.getPins().size(); i++) {
                         Pin consumerPin = consumerConnection.getPins().get(i);
@@ -760,6 +776,12 @@ public final class ProjectConfiguration {
                 }
                 ProjectDevice providerProjectDevice = providerConnection.getOwnerProjectDevice();
                 remainingConnectionProvide.add(providerConnection);
+                for (Connection fConnection: providerConnection.getFriendConnections()) {
+                    // If all the friendConnections of the fConnection are available to be plugged, then the fConnection should be available to.
+                    if (remainingConnectionProvide.containsAll(fConnection.getFriendConnections())) {
+                        remainingConnectionProvide.add(fConnection);
+                    }
+                }
                 providerConnection.getPins().forEach(providerPin -> {
                     if (usedRefPin.containsKey(providerProjectDevice)) {
                         usedRefPin.get(providerProjectDevice).remove(providerPin.getRefTo());

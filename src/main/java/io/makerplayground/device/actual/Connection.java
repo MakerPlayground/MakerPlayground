@@ -19,7 +19,10 @@ package io.makerplayground.device.actual;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.project.ProjectDevice;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -45,6 +48,10 @@ public class Connection implements Comparable<Connection> {
     private final List<Pin> pins;
 
     private final ProjectDevice ownerProjectDevice;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Connection> friendConnections = Collections.emptyList(); // This connection list will contain the connections that use the same hardware (normally for connections of the split port)
 
     @Override
     public int compareTo(Connection o) {

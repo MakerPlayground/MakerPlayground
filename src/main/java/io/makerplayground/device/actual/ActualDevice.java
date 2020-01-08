@@ -101,9 +101,27 @@ public class ActualDevice implements Comparable<ActualDevice> {
     }
 
     private Stream<Connection> queryConnection(List<Connection> connectionList, ProjectDevice projectDevice, String portName) {
-        return connectionList.stream()
-                .filter(port -> portName == null || port.getName().equals(portName))
-                .map(port -> new Connection(port.getName(), port.getType(), port.getPins(), projectDevice));
+        List<Connection> retVal = connectionList.stream()
+                                    .map(port -> {
+                                        Connection conn = new Connection(port.getName(), port.getType(), port.getPins(), projectDevice);
+                                        conn.setFriendConnections(port.getFriendConnections());
+                                        return conn;
+                                    })
+                                    .collect(Collectors.toList());
+        for (Connection conn: retVal) {
+            List<Connection> newFriendConnection = conn.getFriendConnections().stream()
+                .map(connection -> {
+                    Optional<Connection> foundConnection = retVal.stream().filter(connection1 -> Connection.NAME_TYPE_COMPARATOR.compare(connection, connection1) == 0).findFirst();
+                    if (foundConnection.isEmpty()) {
+                        throw new IllegalStateException("");
+                    } else {
+                        return foundConnection.get();
+                    }
+                })
+                .collect(Collectors.toUnmodifiableList());
+            conn.setFriendConnections(newFriendConnection);
+        }
+        return retVal.stream().filter(port -> portName == null || port.getName().equals(portName));
     }
 
     public List<Connection> getConnectionProvideByOwnerDevice(ProjectDevice projectDevice) {

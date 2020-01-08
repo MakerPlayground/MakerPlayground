@@ -259,13 +259,18 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
     private List<Connection> expandConnection(List<Connection> connectionProvide) {
         List<Connection> retVal = new ArrayList<>(connectionProvide);
         for (Connection connection: connectionProvide) {
+            List<Connection> friendConnection = new ArrayList<>();
             if (connection.getType() != ConnectionType.WIRE && connection.getPins().size() != 1) {
                 int i=0;
                 for (Pin pin: connection.getPins()) {
-                    retVal.add(new Connection(connection.getName() + "_" + i, ConnectionType.WIRE, List.of(pin), null));
+                    Connection wireConnection = new Connection(connection.getName() + "_" + i, ConnectionType.WIRE, List.of(pin), null);
+                    wireConnection.setFriendConnections(List.of(connection));
+                    friendConnection.add(wireConnection);
                     i++;
                 }
             }
+            connection.setFriendConnections(Collections.unmodifiableList(friendConnection));
+            retVal.addAll(friendConnection);
         }
         return retVal;
     }
