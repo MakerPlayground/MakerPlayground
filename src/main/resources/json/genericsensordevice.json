@@ -880,6 +880,52 @@
     "value": []
   },
   {
+    "name": "Weight",
+    "description": "A sensor or sensors to measure the weight",
+    "action": [
+      {
+        "name": "Set zero weight",
+        "funcname": "setZero",
+        "parameter": []
+      },
+      {
+        "name": "Set scale",
+        "funcname": "setScale",
+        "parameter": [
+          {
+            "name": "scale",
+            "value": 20000,
+            "constraint": {
+              "min": -50000,
+              "max": 50000,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      }
+    ],
+    "condition": [
+      {
+        "name": "Compare",
+        "funcname": "",
+        "parameter": []
+      }
+    ],
+    "value": [
+      {
+        "name": "Weight",
+        "dataType": "DOUBLE",
+        "constraint": {
+          "min": -200.0,
+          "max": 200.0,
+          "unit": "KILOGRAM"
+        }
+      }
+    ]
+  },
+  {
     "name": "Energy Meter",
     "description": "A sensor to measure electricity usage.",
     "action": [],
