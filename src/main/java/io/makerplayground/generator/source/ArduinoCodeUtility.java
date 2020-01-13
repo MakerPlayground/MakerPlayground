@@ -27,27 +27,29 @@ class ArduinoCodeUtility {
         return "#include \"" + libName + ".h\"";
     }
 
-    static String parseSceneFunctionName(NodeElement node) {
+    static String parseNodeFunctionName(NodeElement node) {
         if (node instanceof Scene) {
-            return "scene_" + ((Scene) node).getName().replace(' ', '_');
+            return "scene_" + node.getNameSanitized();
         } else if (node instanceof Begin) {
-            return "scene_" + ((Begin) node).getName().replace(' ', '_');
+            return "begin_" + node.getNameSanitized();
+        } else if (node instanceof Delay) {
+            return "delay_" + node.getNameSanitized();
+        } else if (node instanceof Condition) {
+            return "condition_" + node.getNameSanitized();
         }
         throw new IllegalStateException("Not support scene function displayName for {" + node + "}");
     }
 
     static String parsePointerName(NodeElement nodeElement) {
         if (nodeElement instanceof Begin) {
-            return "current_" + ((Begin) nodeElement).getName().replace(' ', '_');
+            return "current_" + nodeElement.getNameSanitized();
         }
         throw new IllegalStateException("No pointer to function for Scene and Condition");
     }
 
     static String parseConditionFunctionName(NodeElement nodeBeforeConditions) {
-        if (nodeBeforeConditions instanceof Begin || nodeBeforeConditions instanceof Scene) {
-            return parseSceneFunctionName(nodeBeforeConditions) + "_conditions";
-        } else if (nodeBeforeConditions instanceof Condition) {
-            throw new IllegalStateException("Not support condition function displayName for condition after condition {" + nodeBeforeConditions + "}");
+        if (nodeBeforeConditions instanceof Begin || nodeBeforeConditions instanceof Scene || nodeBeforeConditions instanceof Delay || nodeBeforeConditions instanceof Condition) {
+            return parseNodeFunctionName(nodeBeforeConditions) + "_options";
         }
         throw new IllegalStateException("Not support condition function displayName for {" + nodeBeforeConditions + "}");
     }

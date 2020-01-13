@@ -16,6 +16,7 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.*;
 
@@ -156,6 +157,11 @@ public abstract class NodeElement {
 
     public void setRoot(Begin root) {
         this.root = root;
+    }
+
+    @JsonIgnore
+    public String getNameSanitized() {
+        return name.replace(" ", "_");
     }
 
     protected abstract DiagramError checkError();

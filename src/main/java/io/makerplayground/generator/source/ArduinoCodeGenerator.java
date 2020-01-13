@@ -120,7 +120,7 @@ class ArduinoCodeGenerator {
     private void appendFunctionDeclaration() {
         for (Begin begin : project.getBegin()) {
             // generate function declaration for task node scene
-            builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(begin)).append("();").append(NEW_LINE);
+            builder.append("void ").append(ArduinoCodeUtility.parseNodeFunctionName(begin)).append("();").append(NEW_LINE);
 
             // generate function declaration for first level condition(s) or delay(s) connected to the task node block
             List<Condition> conditions = Utility.findAdjacentConditions(project, begin);
@@ -132,7 +132,7 @@ class ArduinoCodeGenerator {
 
         // generate function declaration for each scene and their conditions/delays
         for (Scene scene : allSceneUsed) {
-            builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(scene)).append("();").append(NEW_LINE);
+            builder.append("void ").append(ArduinoCodeUtility.parseNodeFunctionName(scene)).append("();").append(NEW_LINE);
             List<Condition> adjacentCondition = Utility.findAdjacentConditions(project, scene);
             List<Delay> delays = Utility.findAdjacentDelays(project, scene);
             if (!adjacentCondition.isEmpty() || !delays.isEmpty()) {
@@ -308,7 +308,7 @@ class ArduinoCodeGenerator {
                 builder.append(NEW_LINE);
             }
         }
-        project.getBegin().forEach(begin -> builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(begin)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(begin)).append(";").append(NEW_LINE));
+        project.getBegin().forEach(begin -> builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(begin)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(begin)).append(";").append(NEW_LINE));
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
@@ -416,13 +416,13 @@ class ArduinoCodeGenerator {
 
         // generate code for begin
         builder.append(NEW_LINE);
-        builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(nodeElement)).append("() {").append(NEW_LINE);
+        builder.append("void ").append(ArduinoCodeUtility.parseNodeFunctionName(nodeElement)).append("() {").append(NEW_LINE);
         if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
             if (adjacentScene.size() != 1) {
                 throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
             }
             Scene currentScene = adjacentScene.get(0);
-            builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(nodeElement)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(currentScene)).append(";").append(NEW_LINE);
+            builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(nodeElement)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(currentScene)).append(";").append(NEW_LINE);
         } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
             builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(nodeElement)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(nodeElement)).append(";").append(NEW_LINE);
         }
@@ -462,7 +462,7 @@ class ArduinoCodeGenerator {
 
                 // create function header
                 builder.append(NEW_LINE);
-                builder.append("void ").append(ArduinoCodeUtility.parseSceneFunctionName(currentScene)).append("() {").append(NEW_LINE);
+                builder.append("void ").append(ArduinoCodeUtility.parseNodeFunctionName(currentScene)).append("() {").append(NEW_LINE);
                 builder.append(INDENT).append("update();").append(NEW_LINE);
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
@@ -515,11 +515,11 @@ class ArduinoCodeGenerator {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
-                    builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(s)).append(";").append(NEW_LINE);
                 } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) {
                     builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
                 } else {
-                    builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(root)).append(";").append(NEW_LINE);
                 }
 
                 // end of scene's function
@@ -586,11 +586,11 @@ class ArduinoCodeGenerator {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(s)).append(";").append(NEW_LINE);
                     } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
                         builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(currentDelay)).append(";").append(NEW_LINE);
                     } else {
-                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(root)).append(";").append(NEW_LINE);
                     }
 
                     builder.append(INDENT).append("}").append(NEW_LINE); // end of if
@@ -650,11 +650,11 @@ class ArduinoCodeGenerator {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(s)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(s)).append(";").append(NEW_LINE);
                     } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
                         builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
                     } else {
-                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseSceneFunctionName(root)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(ArduinoCodeUtility.parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(root)).append(";").append(NEW_LINE);
                     }
 
                     builder.append(INDENT).append("}").append(NEW_LINE); // end of if
