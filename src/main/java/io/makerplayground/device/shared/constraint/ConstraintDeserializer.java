@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Unit;
 
 import java.io.IOException;
@@ -33,9 +34,14 @@ import java.util.List;
  */
 public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
 
+    private DataType dataType;
+
+    public ConstraintDeserializer(DataType type) {
+        dataType = type;
+    }
+
     @Override
     public Constraint deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
 
         JsonNode node = deserializationContext.readValue(jsonParser, JsonNode.class);
 
@@ -64,11 +70,21 @@ public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
             }
             return Constraint.createNumericConstraint(min, max, Unit.valueOf(node.get("unit").asText()));
         } else {
-            List<String> valueList = new ArrayList<>();
-            for (JsonNode jn : node) {
-                valueList.add(jn.asText());
+            if (dataType == DataType.INTEGER_ENUM) {
+                List<Integer> valueList = new ArrayList<>();
+                for (JsonNode jn : node) {
+                    valueList.add(jn.asInt());
+                }
+                return Constraint.createIntegerCategoricalConstraint(valueList);
+            } else if (dataType == DataType.ENUM || dataType == DataType.BOOLEAN_ENUM){
+                List<String> valueList = new ArrayList<>();
+                for (JsonNode jn : node) {
+                    valueList.add(jn.asText());
+                }
+                return Constraint.createCategoricalConstraint(valueList);
+            } else {
+                throw new IllegalArgumentException("The dataType of the array is " + dataType);
             }
-            return Constraint.createCategoricalConstraint(valueList);
         }
     }
 }

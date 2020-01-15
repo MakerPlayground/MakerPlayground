@@ -79,6 +79,11 @@ public class NumericConstraint implements Constraint {
     }
 
     @Override
+    public boolean test(Integer i) {
+        return false;
+    }
+
+    @Override
     public NumericConstraint union(Constraint constraint) {
         if (constraint == Constraint.NONE) {
             return this;

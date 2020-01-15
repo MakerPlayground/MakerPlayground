@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * An interface for a constraint of some values ex. parameters of an action or possible values of an input device
  */
-@JsonDeserialize(using = ConstraintDeserializer.class)
+//@JsonDeserialize(using = ConstraintDeserializer.class)
 public interface Constraint {
 
     /**
@@ -43,6 +43,8 @@ public interface Constraint {
      */
     boolean test(String s);
 
+    boolean test(Integer i);
+
     boolean isCompatible(Constraint constraint);
 
     Constraint union(Constraint constraint);
@@ -60,6 +62,11 @@ public interface Constraint {
 
         @Override
         public boolean test(String s) {
+            return true;
+        }
+
+        @Override
+        public boolean test(Integer i) {
             return true;
         }
 
@@ -118,5 +125,23 @@ public interface Constraint {
      */
     static Constraint createCategoricalConstraint(List<String> value) {
         return new CategoricalConstraint(value);
+    }
+
+    /**
+     * Create a constraint to match a list of integers given
+     * @param value list of integer to be matched
+     * @return an instance of {@link IntegerCategoricalConstraint}
+     */
+    static Constraint createIntegerCategoricalConstraint(Integer value) {
+        return new IntegerCategoricalConstraint(value);
+    }
+
+    /**
+     * Create a constraint to match a list of integers given
+     * @param value list of integers to be matched
+     * @return an instance of {@link IntegerCategoricalConstraint}
+     */
+    static Constraint createIntegerCategoricalConstraint(List<Integer> value) {
+        return new IntegerCategoricalConstraint(value);
     }
 }

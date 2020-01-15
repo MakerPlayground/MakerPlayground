@@ -56,8 +56,12 @@ public class ProjectLogic {
                     throw new IllegalStateException("Constraint is not defined for expression type: " + expression.getClass().getCanonicalName());
                 }
                 break;
-            case BOOLEAN_ENUM:
             case INTEGER_ENUM:
+                if (expression instanceof SimpleIntegerExpression) {
+                    newConstraint = Constraint.createIntegerCategoricalConstraint(((SimpleIntegerExpression) expression).getInteger());
+                }
+                break;
+            case BOOLEAN_ENUM:
             case STRING:
             case ENUM:
                 if (expression instanceof SimpleStringExpression) {

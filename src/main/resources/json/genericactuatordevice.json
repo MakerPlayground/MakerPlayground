@@ -534,5 +534,152 @@
     ],
     "condition": [],
     "value": []
+  },
+  {
+    "name": "MP3 Player",
+    "description": "An MP3 player",
+    "action": [
+      {
+        "name": "Play MP3",
+        "funcname": "playMP3",
+        "parameter": [
+          {
+            "name": "Index",
+            "value": 1,
+            "constraint": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "datatype": "INTEGER_ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Play Next MP3",
+        "funcname": "playNextMP3",
+        "parameter": []
+      },
+      {
+        "name": "Play Previous MP3",
+        "funcname": "playPrevMP3",
+        "parameter": []
+      },
+      {
+        "name": "Pause",
+        "funcname": "pause",
+        "parameter": []
+      },
+      {
+        "name": "Start from pause",
+        "funcname": "startFromPause",
+        "parameter": []
+      },
+      {
+        "name": "Enable Loop",
+        "funcname": "enableLoop",
+        "parameter": []
+      },
+      {
+        "name": "Enable Loop All",
+        "funcname": "enableLoopAll",
+        "parameter": []
+      },
+      {
+        "name": "Disable Loop",
+        "funcname": "disableLoop",
+        "parameter": []
+      },
+      {
+        "name": "Disable Loop All",
+        "funcname": "disableLoopAll",
+        "parameter": []
+      },
+      {
+        "name": "Set Volume",
+        "funcname": "setVolume",
+        "parameter": [
+          {
+            "name": "volume",
+            "value": 15,
+            "constraint": {
+              "min": 0,
+              "max": 30,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Volume Up",
+        "funcname": "volumeUp",
+        "parameter": []
+      },
+      {
+        "name": "Volume Down",
+        "funcname": "volumeDown",
+        "parameter": []
+      },
+      {
+        "name": "Set EQ",
+        "funcname": "setEQ",
+        "parameter": [
+          {
+            "name": "EQ",
+            "value": "NORMAL",
+            "constraint": [
+              "NORMAL",
+              "POP",
+              "ROCK",
+              "JAZZ",
+              "CLASSIC",
+              "BASS"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": [
+      {
+        "name": "Volume",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 30,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "FileCount",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 65535,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "CurrentFileNumber",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 65535,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
   }
 ]

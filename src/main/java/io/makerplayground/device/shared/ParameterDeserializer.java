@@ -21,8 +21,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.ConstraintDeserializer;
 
 import java.io.IOException;
 
@@ -38,8 +40,12 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
         String name = node.get("name").asText();
-        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
         DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+        mapper.registerModule(module);
+        Constraint constraint = mapper.readValue(node.get("constraint").traverse(), Constraint.class);
         ControlType controlType = mapper.treeToValue(node.get("controltype"), ControlType.class);
 
         Object defaultValue = null;

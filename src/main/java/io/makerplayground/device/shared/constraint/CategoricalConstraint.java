@@ -59,6 +59,11 @@ public class CategoricalConstraint implements Constraint {
     }
 
     @Override
+    public boolean test(Integer i) {
+        return false;
+    }
+
+    @Override
     public boolean isCompatible(Constraint constraint) {
         if (!(constraint instanceof CategoricalConstraint))
             return false;

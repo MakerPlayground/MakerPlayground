@@ -4,6 +4,7 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
@@ -191,11 +192,17 @@ public class SceneDevicePropertyPane extends VBox {
                         , project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
                 stringChipField.expressionProperty().addListener((observableValue, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = stringChipField;
-            } else if (p.getControlType() == ControlType.DROPDOWN) {
+            } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.ENUM) {
                 ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<String> comboBox = new ComboBox<>(list);
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new SimpleStringExpression(newValue)));
                 comboBox.getSelectionModel().select(((SimpleStringExpression) userSetting.getParameterMap().get(p)).getString());
+                control = comboBox;
+            } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {
+                ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
+                ComboBox<Integer> comboBox = new ComboBox<>(list);
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new SimpleIntegerExpression(newValue)));
+                comboBox.getSelectionModel().select((((SimpleIntegerExpression) userSetting.getParameterMap().get(p)).getInteger()));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(

@@ -22,14 +22,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.ConstraintDeserializer;
 
 import java.io.IOException;
 import java.util.*;
@@ -275,8 +274,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         return retVal;
     }
 
-    private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws JsonProcessingException {
-        YAMLMapper mapper = new YAMLMapper();
+    private Map<GenericDevice, Compatibility> loadCompatibility(JsonNode node) throws IOException {
         Map<GenericDevice, Compatibility> compatibilityMap = new HashMap<>();
         for (JsonNode compatibilityNode : node.get("compatibility")) {
 
@@ -318,10 +316,16 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                         throw new IllegalStateException("There is no parameter '" + parameterName + "' for action '" + actionName + "' ");
                     }
 
+                    DataType dataType = parameter.get().getDataType();
+                    SimpleModule module = new SimpleModule();
+                    module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+                    YAMLMapper mapper = new YAMLMapper();
+                    mapper.registerModule(module);
+
                     /* Extract Constraint */
                     Constraint constraint = parameter.get().getConstraint();
                     if (parameterNode.has("constraint")) {
-                        constraint = constraint.intersect(mapper.treeToValue(parameterNode.get("constraint"), Constraint.class));
+                        constraint = constraint.intersect(mapper.readValue(parameterNode.get("constraint").traverse(), Constraint.class));
                     }
 
                     /* Put parameter and constraint into Map */
@@ -361,6 +365,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                         throw new IllegalStateException("There is no parameter '" + parameterName + "' for condition '" + conditionName + "' ");
                     }
 
+                    DataType dataType = parameter.get().getDataType();
+                    SimpleModule module = new SimpleModule();
+                    module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+                    YAMLMapper mapper = new YAMLMapper();
+                    mapper.registerModule(module);
+
                     /* Extract Constraint */
                     Constraint constraint = parameter.get().getConstraint();
                     if (parameterNode.has("constraint")) {
@@ -387,6 +397,11 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 if (value.isEmpty()) {
                     throw new IllegalStateException("No value '" + valueName + "' for '" + genericDevice.getName() + "'");
                 }
+
+                DataType dataType = value.get().getType();
+                SimpleModule module = new SimpleModule();
+                module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+                mapper.registerModule(module);
 
                 /* Extract Constraint */
                 Constraint constraint = valueNode.has("constraint") ? mapper.treeToValue(valueNode.get("constraint"), Constraint.class) : Constraint.NONE;

@@ -22,6 +22,7 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
@@ -503,14 +504,14 @@ public class ConfigActualDeviceView extends VBox{
                             propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
-                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                            ComboBox<String> comboBox = new ComboBox<>(list);
+                            ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
+                            ComboBox<Integer> comboBox = new ComboBox<>(list);
                             if (currentValue == null) {
                                 comboBox.getSelectionModel().select(null);
                             } else {
-                                comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                                comboBox.getSelectionModel().select((Integer) currentValue);
                             }
-                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Integer.parseInt(newValue)));
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
                             propertyGridPane.getChildren().add(comboBox);

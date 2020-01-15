@@ -21,11 +21,15 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.ConstraintDeserializer;
+import io.makerplayground.project.ProjectConfiguration;
+import io.makerplayground.project.ProjectConfigurationDeserializer;
 
 import java.io.IOException;
 
@@ -38,8 +42,13 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
         JsonNode node = deserializationContext.readValue(jsonParser, JsonNode.class);
 
         String name = node.get("name").asText();
-        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
         DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+        mapper.registerModule(module);
+        Constraint constraint = mapper.readValue(node.get("constraint").traverse(), Constraint.class);
+//        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
         ControlType controlType = mapper.treeToValue(node.get("controltype"), ControlType.class);
 
         Object defaultValue = null;

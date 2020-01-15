@@ -18,10 +18,12 @@ package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.shared.constraint.Constraint;
 import lombok.Data;
 
 @Data
+@JsonDeserialize(using = ValueDeserializer.class)
 public class Value {
     private final String name;
     private final DataType type;
@@ -34,8 +36,8 @@ public class Value {
      * @param type an enumerated value ({@link DataType}) indicating type of a value
      * @param constraint an enumerated value ({@link Constraint}) indicating type of a constraint
      */
-    @JsonCreator
-    public Value(@JsonProperty("name") String name, @JsonProperty("dataType") DataType type, @JsonProperty("constraint") Constraint constraint) {
+//    @JsonCreator
+    public Value(String name, DataType type, Constraint constraint) {
         this.name = name;
         this.type = type;
         this.constraint = constraint;

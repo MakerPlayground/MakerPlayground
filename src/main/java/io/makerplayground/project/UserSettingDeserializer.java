@@ -112,6 +112,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
             } else if (ComplexStringExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new ComplexStringExpression(terms);
+            } else if (SimpleIntegerExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new SimpleIntegerExpression(((IntegerTerm)(terms.get(0))).getValue());
             } else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }
@@ -225,7 +227,9 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 recordEntryList.add(new RecordEntry(fieldName, expression));
             }
             term = new RecordTerm(new Record(recordEntryList));
-
+        } else if (Term.Type.NUMBER_ONLY.name().equals(term_type)) {
+            int integer = term_node.get("value").asInt();
+            term = new IntegerTerm(integer);
         } else {
             throw new IllegalStateException("deserialize unsupported term");
         }
@@ -259,6 +263,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             expression = new SimpleRTCExpression(((RTCTerm)(terms.get(0))).getValue());
         } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
             expression = new RecordExpression(((RecordTerm)(terms.get(0))).getValue());
+        } else if (SimpleIntegerExpression.class.getSimpleName().equals(expressionType)) {
+            expression = new SimpleIntegerExpression(((IntegerTerm)(terms.get(0))).getValue());
         } else {
             throw new IllegalStateException("expression type not supported");
         }

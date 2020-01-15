@@ -725,6 +725,8 @@ class ArduinoCodeGenerator {
                 }
                 returnValue = "(" + String.join("+", subExpressionString) + ").c_str()";
             }
+        } else if (expression instanceof SimpleIntegerExpression) {
+            returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
         } else {
             throw new IllegalStateException();
         }
@@ -825,6 +827,8 @@ class ArduinoCodeGenerator {
             return "Record(" + term1.getValue().getEntryList().stream()
                     .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(entry.getValue().getTerms()) + ")")
                     .collect(Collectors.joining(",")) + ")";
+        } else if (term instanceof IntegerTerm) {
+            return term.toString();
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
