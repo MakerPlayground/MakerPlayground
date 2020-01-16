@@ -784,6 +784,16 @@
         "name": "Compare",
         "funcname": "",
         "parameter": []
+      },
+      {
+        "name": "Data is valid",
+        "funcname": "isDataValid",
+        "parameter": []
+      },
+      {
+        "name": "Data is not valid",
+        "funcname": "isDataInvalid",
+        "parameter": []
       }
     ],
     "value": [

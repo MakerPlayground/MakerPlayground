@@ -16,7 +16,7 @@ class ArduinoCodeUtility {
     }
 
     static String parseValueVariableTerm(List<ProjectDevice> projectDeviceList, Value value) {
-        return parseDeviceVariableName(projectDeviceList) + ".get" + value.getName().replace(' ', '_') + "()";
+        return parseDeviceVariableName(projectDeviceList) + ".get" + value.getName().replace(' ', '_').replace(".", "_") + "()";
     }
 
     static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {
