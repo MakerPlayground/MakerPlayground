@@ -26,8 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import lombok.*;
 import org.controlsfx.control.PopOver;
@@ -1357,31 +1356,41 @@ class DiagramV1 {
     }
 
     private static void drawCubicCurve(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo,
-                                double controlRatioX1, double controlRatioY1,
-                                double controlRatioX2, double controlRatioY2,
-                                double lineWidth, Color color) {
-        CubicCurve curve = new CubicCurve();
-        curve.setStartX(coordinateFrom.getX() + GLOBAL_LEFT_MARGIN);
-        curve.setStartY(coordinateFrom.getY() + GLOBAL_TOP_MARGIN);
-        curve.setControlX1(coordinateFrom.getX() + controlRatioX1 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
-        curve.setControlY1(coordinateFrom.getY() + controlRatioY1 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
-        curve.setControlX2(coordinateFrom.getX() + controlRatioX2 * (coordinateTo.getX() - coordinateFrom.getX()) + GLOBAL_LEFT_MARGIN);
-        curve.setControlY2(coordinateFrom.getY() + controlRatioY2 * (coordinateTo.getY() - coordinateFrom.getY()) + GLOBAL_TOP_MARGIN);
-        curve.setEndX(coordinateTo.getX() + GLOBAL_LEFT_MARGIN);
-        curve.setEndY(coordinateTo.getY() + GLOBAL_TOP_MARGIN);
-        curve.setStrokeWidth(lineWidth);
-        curve.setStroke(color);
-        curve.setStrokeLineCap(StrokeLineCap.ROUND);
-        curve.setSmooth(true);
-        curve.setFill(Color.TRANSPARENT);
-        curve.setEffect(new DropShadow(1.0, color.darker().darker()));
-        curve.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, event -> curve.setEffect(new DropShadow(5.0, color.brighter().brighter())));
-        curve.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, event -> curve.setEffect(new DropShadow(1.0, color.darker().darker())));
-        drawingPane.getChildren().add(curve);
+                                       double controlX1, double controlY1,
+                                       double controlX2, double controlY2,
+                                       double lineWidth, Color color) {
+        Path path = new Path();
+        path.getElements().add(new MoveTo(coordinateFrom.getX() + GLOBAL_LEFT_MARGIN, coordinateFrom.getY() + GLOBAL_TOP_MARGIN));
+        path.getElements().add(new CubicCurveTo(controlX1 + GLOBAL_LEFT_MARGIN,
+                                                controlY1 + GLOBAL_TOP_MARGIN,
+                                                controlX2 + GLOBAL_LEFT_MARGIN,
+                                                controlY2 + GLOBAL_TOP_MARGIN,
+                                                coordinateTo.getX() + GLOBAL_LEFT_MARGIN,
+                                                coordinateTo.getY() + GLOBAL_TOP_MARGIN));
+        path.setStrokeWidth(lineWidth);
+        path.setStroke(color);
+        path.setStrokeLineCap(StrokeLineCap.ROUND);
+        path.setSmooth(true);
+        path.setEffect(new DropShadow(1.0, color.darker().darker()));
+        path.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, event -> path.setEffect(new DropShadow(5.0, color.brighter().brighter())));
+        path.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, event -> path.setEffect(new DropShadow(1.0, color.darker().darker())));
+        path.setPickOnBounds(false);
+        drawingPane.getChildren().add(path);
+    }
+
+    private static void drawCubicCurveByControlRatio(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo,
+                                                     double controlRatioX1, double controlRatioY1,
+                                                     double controlRatioX2, double controlRatioY2,
+                                                     double lineWidth, Color color) {
+        double controlX1 = coordinateFrom.getX() + controlRatioX1 * (coordinateTo.getX() - coordinateFrom.getX());
+        double controlY1 = coordinateFrom.getY() + controlRatioY1 * (coordinateTo.getY() - coordinateFrom.getY());
+        double controlX2 = coordinateFrom.getX() + controlRatioX2 * (coordinateTo.getX() - coordinateFrom.getX());
+        double controlY2 = coordinateFrom.getY() + controlRatioY2 * (coordinateTo.getY() - coordinateFrom.getY());
+        drawCubicCurve(drawingPane, coordinateFrom, coordinateTo, controlX1, controlY1, controlX2, controlY2, lineWidth, color);
     }
 
     private static void drawLineSegment(Pane drawingPane, Coordinate coordinateFrom, Coordinate coordinateTo, double lineWidth, Color color) {
-        drawCubicCurve(drawingPane, coordinateFrom, coordinateTo, 0, 0, 1, 1, lineWidth, color);
+        drawCubicCurveByControlRatio(drawingPane, coordinateFrom, coordinateTo, 0, 0, 1, 1, lineWidth, color);
     }
 
     private static final List<Color> WIRE_COLOR_LIST = List.of(Color.BLUE, Color.ORANGE, Color.YELLOW);
@@ -1491,30 +1500,7 @@ class DiagramV1 {
                 } else {
                     Coordinate pinConsumePosition = calculatePinPosition(consumerDevice, consumerPin);
                     Coordinate pinProvidePosition = calculatePinPosition(providerDevice, providerPin);
-                    double controlRatioX1;
-                    double controlRatioY1;
-                    double controlRatioX2;
-                    double controlRatioY2;
-                    if (deviceOnRightRegion.contains(consumerDevice) || deviceOnLeftRegion.contains(consumerDevice)) {
-                        // ref: https://cubic-bezier.com/#.5,0,.5,1
-                        controlRatioX1 = 0.5;
-                        controlRatioY1 = 0;
-                        controlRatioX2 = 0.5;
-                        controlRatioY2 = 1;
-                    } else if (deviceOnTopMidRegion.contains(consumerDevice) || deviceOnBottomMidRegion.contains(consumerDevice)) {
-                        // ref: https://cubic-bezier.com/#.0,.35,1,.65
-                        controlRatioX1 = 0.0;
-                        controlRatioY1 = 0.35;
-                        controlRatioX2 = 1.0;
-                        controlRatioY2 = 0.65;
-                    } else if(deviceNeedBreadboard.contains(consumerDevice)) {
-                        controlRatioX1 = 0.0;
-                        controlRatioY1 = 0.0;
-                        controlRatioX2 = 1.0;
-                        controlRatioY2 = 1.0;
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
+
                     Color color;
                     if (providerConnection.getType() == ConnectionType.WIRE && pinFunctions.get(i) == PinFunction.GND) {
                         color = Color.BLACK;
@@ -1526,7 +1512,23 @@ class DiagramV1 {
                     } else {
                         color = pinColors.get(i);
                     }
-                    drawCubicCurve(drawingPane, pinProvidePosition, pinConsumePosition, controlRatioX1, controlRatioY1, controlRatioX2, controlRatioY2, lineWidth, color);
+
+                    if (deviceOnRightRegion.contains(consumerDevice) || deviceOnLeftRegion.contains(consumerDevice)) {
+                        // ref: https://cubic-bezier.com/#.5,0,.5,1
+                        drawCubicCurveByControlRatio(drawingPane, pinProvidePosition, pinConsumePosition, 0.5, 0, 0.5, 1, lineWidth, color);
+                    } else if (deviceOnTopMidRegion.contains(consumerDevice) || deviceOnBottomMidRegion.contains(consumerDevice)) {
+                        // ref: https://cubic-bezier.com/#.0,.35,1,.65
+                        drawCubicCurveByControlRatio(drawingPane, pinProvidePosition, pinConsumePosition, 0, 0.35, 1, 0.65, lineWidth, color);
+                    } else if(deviceNeedBreadboard.contains(consumerDevice) && pinConsumePosition.getY() != pinProvidePosition.getY()) {
+                        drawCubicCurveByControlRatio(drawingPane, pinProvidePosition, pinConsumePosition, 0, 0, 1, 1, lineWidth, color);
+                    } else if(deviceNeedBreadboard.contains(consumerDevice) && pinConsumePosition.getY() == pinProvidePosition.getY()) {
+                        double controlX1 = pinProvidePosition.getX() + 0.33 * (pinConsumePosition.getX() - pinProvidePosition.getX());
+                        double controlX2 = pinProvidePosition.getX() + 0.67 * (pinConsumePosition.getX() - pinProvidePosition.getX());
+                        double controlY = pinProvidePosition.getY() + 25 + 0.05 * (pinConsumePosition.getX() - pinProvidePosition.getX());
+                        drawCubicCurve(drawingPane, pinProvidePosition, pinConsumePosition, controlX1, controlY, controlX2, controlY, lineWidth, color);
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
                 }
             }
         }
