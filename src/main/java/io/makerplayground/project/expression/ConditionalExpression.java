@@ -1,5 +1,23 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.project.expression;
 
+import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
@@ -22,6 +40,7 @@ public class ConditionalExpression extends Expression {
         this.projectDevice = projectDevice;
         this.value = value;
         this.entries = new ArrayList<>();
+        this.entries.add(new ConditionalExpression.Entry(Operator.GREATER_THAN, new CustomNumberExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED))));
     }
 
     public ConditionalExpression(ProjectDevice projectDevice, Value value, List<Term> terms) {
@@ -33,13 +52,13 @@ public class ConditionalExpression extends Expression {
 
         // initialize the entries list
         List<Integer> index = IntStream.range(0, terms.size())
-                .filter(i -> (terms.get(i) instanceof OperatorTerm))
-                .filter(i -> Operator.getComparisonOperator().contains(((OperatorTerm) (terms.get(i))).getValue()))
+                .filter(i -> (terms.get(i) instanceof OperatorTerm) && terms.get(i).getValue().equals(Operator.AND))
                 .boxed().collect(Collectors.toList());
+        index.add(0, -1);
+        index.add(index.size(), terms.size());
         for (int i=0; i<index.size()-1; i++) {
-            entries.add(termToEntry(terms.subList(index.get(i)-2, index.get(i+1)-2)));
+            entries.add(termToEntry(terms.subList(index.get(i)+1, index.get(i+1))));
         }
-        entries.add(termToEntry(terms.subList(index.get(index.size()-1)-2, terms.size())));
     }
 
     ConditionalExpression(ConditionalExpression e) {

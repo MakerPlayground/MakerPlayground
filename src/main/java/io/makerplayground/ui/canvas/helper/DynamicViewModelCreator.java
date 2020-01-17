@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,10 +60,11 @@ public class DynamicViewModelCreator<T, U> {
                 } else if (c.wasUpdated()) {
                     for (T updatedItem : c.getList().subList(c.getFrom(), c.getTo())) {
                         if (filter != null) {
-                            if (filter.test(updatedItem) && !controllerMap.containsKey(updatedItem))
+                            if (filter.test(updatedItem) && !controllerMap.containsKey(updatedItem)) {
                                 addController(updatedItem);
-                            else if (!filter.test(updatedItem) && controllerMap.containsKey(updatedItem))
+                            } else if (!filter.test(updatedItem) && controllerMap.containsKey(updatedItem)) {
                                 removeController(updatedItem);
+                            }
                         }
                     }
                 } else {
@@ -95,4 +96,7 @@ public class DynamicViewModelCreator<T, U> {
             throw new IllegalStateException();
     }
 
+    ObservableList<T> getUnmodifiableModel() {
+        return FXCollections.unmodifiableObservableList(model);
+    }
 }

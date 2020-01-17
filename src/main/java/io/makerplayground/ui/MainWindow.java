@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,42 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
-import io.makerplayground.generator.source.SourceCodeGenerator;
-import io.makerplayground.generator.source.SourceCodeResult;
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
-import io.makerplayground.ui.dialog.generate.GenerateView;
-import io.makerplayground.ui.dialog.generate.GenerateViewModel;
-import javafx.beans.property.*;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
+import io.makerplayground.ui.dialog.DeviceMonitor;
+import javafx.application.HostServices;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 
 public class MainWindow extends BorderPane {
 
+    private final HostServices hostServices;
+
     private Project currentProject;
+    private ReadOnlyObjectProperty<SerialPort> serialPort;
+
     private Node diagramEditor;
+    private DeviceTab deviceTab;
+    private DeviceMonitor deviceMonitor;
 
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
+    private final BooleanProperty deviceMonitorShowing;
 
-    private final IntegerProperty currentTabIndex;
-    private final DoubleProperty deviceDiagramZoomLevel;
+    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<SerialPort> serialPort, HostServices hostServices) {
+        this.currentProject = project.get();
+        this.serialPort = serialPort;
+        this.hostServices = hostServices;
 
-    public MainWindow(ObjectProperty<Project> project) {
-        currentProject = project.get();
         diagramEditor = initDiagramEditor();
+        deviceTab = new DeviceTab(project.get(), hostServices);
+        deviceMonitor = new DeviceMonitor();
 
         diagramEditorShowing = new SimpleBooleanProperty();
         diagramEditorShowing.addListener((observable, oldValue, newValue) -> {
@@ -65,20 +62,35 @@ public class MainWindow extends BorderPane {
         deviceConfigShowing = new SimpleBooleanProperty();
         deviceConfigShowing.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                setCenter(initConfigDevice());
+                deviceTab.refreshConfigDevicePane();
+                setCenter(deviceTab);
+            }
+        });
+        deviceMonitorShowing = new SimpleBooleanProperty();
+        deviceMonitorShowing.addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                deviceMonitor.closePort();
+            } else {
+                // TODO: handle the case when initialize failed by switch to the old tab
+                deviceMonitor.initialize(serialPort.get());
+                setCenter(deviceMonitor);
             }
         });
 
-        currentTabIndex = new SimpleIntegerProperty(GenerateView.DEFAULT_TAB_INDEX);
-        deviceDiagramZoomLevel = new SimpleDoubleProperty(GenerateView.DEFAULT_ZOOM_SCALE);
-
         project.addListener((observable, oldValue, newValue) -> {
             currentProject = newValue;
+
             diagramEditor = initDiagramEditor();
+            deviceTab = new DeviceTab(project.get(), hostServices);
+            deviceMonitor.closePort();
+            deviceMonitor = new DeviceMonitor();
+
             if (diagramEditorShowing.get()) {
                 setCenter(diagramEditor);
-            } else {    // deviceConfigShowing must be true
-                setCenter(initConfigDevice());
+            } else if (deviceConfigShowing.get()) {
+                setCenter(deviceTab);
+            } else {
+                setCenter(deviceMonitor);
             }
         });
     }
@@ -99,80 +111,16 @@ public class MainWindow extends BorderPane {
         return deviceConfigShowing;
     }
 
-    private Node initDiagramEditor() {
-        DeviceLibraryPanel deviceLibraryPanel = new DeviceLibraryPanel();
-        deviceLibraryPanel.setOnDevicePressed(currentProject::addDevice);
-
-        ProjectDevicePanel projectDevicePanel = new ProjectDevicePanel(currentProject);
-
-        SplitPane panelSplitPane = new SplitPane();
-        panelSplitPane.setMinWidth(200);
-        panelSplitPane.setMaxWidth(300);
-        panelSplitPane.setOrientation(Orientation.VERTICAL);
-        panelSplitPane.getItems().addAll(projectDevicePanel, deviceLibraryPanel);
-
-        CanvasViewModel canvasViewModel = new CanvasViewModel(currentProject);
-        CanvasView canvasView = new CanvasView(canvasViewModel);
-
-        SplitPane mainSplitPane = new SplitPane();
-        mainSplitPane.setDividerPositions(0.75);
-        mainSplitPane.setOrientation(Orientation.HORIZONTAL);
-        mainSplitPane.getItems().addAll(canvasView, panelSplitPane);
-
-        return mainSplitPane;
+    public boolean isDeviceMonitorShowing() {
+        return deviceMonitorShowing.get();
     }
 
-    private Node initConfigDevice() {
-        StackPane rightView = new StackPane();
+    public BooleanProperty deviceMonitorShowingProperty() {
+        return deviceMonitorShowing;
+    }
 
-        Runnable generateViewCreator = () -> {
-            rightView.getChildren().clear();
-
-            DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(currentProject);
-            SourceCodeResult codeGeneratorResult = SourceCodeGenerator.generate(currentProject);
-
-            GenerateViewModel generateViewModel = new GenerateViewModel(currentProject, codeGeneratorResult);
-            GenerateView generateView = new GenerateView(generateViewModel);
-            generateView.setZoomLevel(deviceDiagramZoomLevel.get());
-            generateView.setTabIndex(currentTabIndex.get());
-            generateView.setOnZoomLevelChanged(deviceDiagramZoomLevel::set);
-            generateView.setOnTabIndexChanged(currentTabIndex::set);
-
-            rightView.getChildren().add(generateView);
-
-            String errorMessage = null;
-            if (mappingResult != DeviceMapperResult.OK) {
-                errorMessage = mappingResult.getErrorMessage();
-            } else if (codeGeneratorResult.hasError()) {
-                errorMessage = codeGeneratorResult.getError().getDescription();
-            }
-            if (errorMessage != null) {
-                generateView.setDisable(true);
-                // overlay the generate view with a warning icon and an error message
-                ImageView warningIcon = new ImageView(new Image(getClass().getResourceAsStream("/css/dialog/warning.png")));
-                Label warningMessage = new Label(errorMessage);
-                warningMessage.setTextAlignment(TextAlignment.CENTER);
-                warningMessage.setWrapText(true);
-                VBox errorPane = new VBox();
-                errorPane.setPadding(new Insets(20, 20, 20, 20));
-                errorPane.setAlignment(Pos.CENTER);
-                errorPane.getChildren().addAll(warningIcon, warningMessage);
-                rightView.getChildren().add(errorPane);
-            }
-        };
-
-        // device config
-        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
-        configActualDeviceViewModel.setConfigChangedCallback(generateViewCreator);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-
-        // generate view
-        generateViewCreator.run();
-
-        SplitPane mainLayout = new SplitPane();
-        mainLayout.setDividerPositions(0.5);
-        mainLayout.setOrientation(Orientation.HORIZONTAL);
-        mainLayout.getItems().addAll(configActualDeviceView, rightView);
-        return mainLayout;
+    private Node initDiagramEditor() {
+        CanvasViewModel canvasViewModel = new CanvasViewModel(currentProject);
+        return new CanvasView(canvasViewModel);
     }
 }

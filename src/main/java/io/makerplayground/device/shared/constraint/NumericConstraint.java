@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class NumericConstraint implements Constraint {
      * @param max the maximum value (inclusive)
      * @param unit the unit of the value
      */
-    NumericConstraint(double min, double max, Unit unit) {
+    public NumericConstraint(double min, double max, Unit unit) {
         this.min = min;
         this.max = max;
         this.unit = unit;
@@ -75,6 +75,11 @@ public class NumericConstraint implements Constraint {
 
     @Override
     public boolean test(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean test(Integer i) {
         return false;
     }
 

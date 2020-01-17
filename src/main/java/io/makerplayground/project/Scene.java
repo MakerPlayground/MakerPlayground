@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,87 +20,45 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.project.expression.Expression;
 import javafx.beans.Observable;
-import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  *
  */
 @JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
-    public enum DelayUnit {
-        MilliSecond, Second;
 
-        @Override
-        public String toString() {
-            switch(this) {
-                case MilliSecond: return "ms";
-                case Second: return "s";
-                default: throw new IllegalArgumentException();
-            }
-        }
-    }
-
-    private final StringProperty name;
     private final ObservableList<UserSetting> setting;
-    private final DoubleProperty delay;
-    private final ObjectProperty<DelayUnit> delayUnit;
-
-    private final Set<NodeElement> roots = new HashSet<>();
-
-    public Set<NodeElement> getRoots() {
-        return roots;
-    }
-
-    public void addRoot(NodeElement root) {
-        if (root instanceof Begin) {
-            roots.add(root);
-            return;
-        }
-        throw new IllegalStateException("Root must be Begin or Task");
-    }
-
-    public void clearRoot() {
-        roots.clear();
-    }
 
     Scene(Project project) {
         super(20, 20, 205, 124, project);
 
-        this.name = new SimpleStringProperty("");
+        this.name = "";
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        this.delay = new SimpleDoubleProperty(0);
-        this.delayUnit = new SimpleObjectProperty<>(DelayUnit.Second);
         invalidate();
     }
 
     Scene(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, double delay, DelayUnit delayUnit, Project project) {
+            , String name, List<UserSetting> setting, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
-        this.name = new SimpleStringProperty(name);
-        this.setting = FXCollections.observableList(setting);
-        this.delay = new SimpleDoubleProperty(delay);
-        this.delayUnit = new SimpleObjectProperty<>(delayUnit);
+        this.name = name;
+        this.setting = FXCollections.observableArrayList(setting);
         invalidate();
     }
 
     Scene(Scene s, String name, Project project) {
         super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight(), project);
-        this.name = new SimpleStringProperty(name);
+        this.name = name;
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         for (UserSetting u : s.setting) {
             this.setting.add(new UserSetting(u));
         }
-        this.delay = new SimpleDoubleProperty(s.getDelay());
-        this.delayUnit = new SimpleObjectProperty<>(s.getDelayUnit());
         invalidate();
     }
 
@@ -120,52 +78,25 @@ public class Scene extends NodeElement {
             }
         }
         for (UserSetting userSetting : setting) {
-            for (Parameter parameter : userSetting.getValueMap().keySet()) {
-                Expression expression = userSetting.getValueMap().get(parameter);
+            for (Parameter parameter : userSetting.getParameterMap().keySet()) {
+                Expression expression = userSetting.getParameterMap().get(parameter);
                 if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
                         && (((ProjectValue) term.getValue()).getDevice() == device))) {
-                    userSetting.getValueMap().replace(parameter, Expression.fromDefaultParameter(parameter));
+                    userSetting.getParameterMap().replace(parameter, Expression.fromDefaultParameter(parameter));
                 }
             }
         }
         invalidate();
     }
 
-    public String getName() {
-        return name.get();
-    }
-
+    @Override
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
         invalidate();
         // invalidate other scene as every scene needs to check for duplicate name
-        for (Scene s : project.getScene()) {
+        for (Scene s : project.getUnmodifiableScene()) {
             s.invalidate();
         }
-    }
-
-    public double getDelay() {
-        return delay.get();
-    }
-
-    public DoubleProperty delayProperty() {
-        return delay;
-    }
-
-    public void setDelay(double delay) {
-        this.delay.set(delay);
-    }
-
-    public DelayUnit getDelayUnit() {
-        return delayUnit.get();
-    }
-
-    public ObjectProperty<DelayUnit> delayUnitProperty() {
-        return delayUnit;
-    }
-
-    public void setDelayUnit(DelayUnit delayUnit) {
-        this.delayUnit.set(delayUnit);
     }
 
     public ObservableList<UserSetting> getSetting() {
@@ -179,19 +110,19 @@ public class Scene extends NodeElement {
     @Override
     protected DiagramError checkError() {
         // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.get().matches("\\w+")) {
+        if (!name.matches("\\w[\\w|\\s]*")) {
             return DiagramError.SCENE_INVALID_NAME;
         }
 
         // name should be unique
-        for (Scene s : project.getScene()) {
-            if ((this != s) && name.get().equals(s.name.get())) {
+        for (Scene s : project.getUnmodifiableScene()) {
+            if ((this != s) && name.equals(s.name)) {
                 return DiagramError.SCENE_DUPLICATE_NAME;
             }
         }
 
         // parameter should not be null and should be valid
-        if (setting.stream().flatMap(userSetting -> userSetting.getValueMap().values().stream())
+        if (setting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
                 .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
             return DiagramError.SCENE_INVALID_PARAM;
         }

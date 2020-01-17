@@ -1,0 +1,142 @@
+#TabHBox {
+    -fx-background-color: background-color;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+#diagramScrollPane {
+    -fx-background-color: control-background-color;
+    -fx-border-color: border-color;
+    -fx-border-width: 0.5px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.scroll-pane{
+    -fx-padding:0;
+    -fx-background-color: background-color;
+    -fx-border-color: background-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+.scroll-pane:focused {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+        -fx-border-color: transparent;
+}
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.scroll-bar:vertical .increment-button {
+    -fx-background-color : background-color;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color : background-color;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:vertical .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-width: 10;
+}
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-width: 10;
+}
+.scroll-bar:horizontal .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0;
+}
+.scroll-bar:horizontal .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-height: 10;
+}
+.scroll-bar:horizontal .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+    -fx-pref-height: 10;
+}
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    /*-fx-border-radius: 2em;*/
+}
+.scroll-bar .thumb{
+    -fx-background-color: scrollbar-thumb-color;
+    /*-fx-border-radius: 2em;*/
+    /*-fx-background-insets: 2, 0, 0;*/
+}
+.scroll-bar {
+    -fx-background-color: control-background-color;
+    -fx-border: control-background-color;
+}
+
+/* zoom control */
+
+#zoomInButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-in-toggle.png');
+    -fx-background-size : 25px;
+    -fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomInButton{
+    -fx-background-image: url('../../canvas/zoom-in.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomOutButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-out-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomOutButton{
+    -fx-background-image: url('../../canvas/zoom-out.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5px;
+}
+#zoomFitButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../canvas/zoom-default-toggle.png');
+    -fx-background-size : 25px;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
+ }
+#zoomFitButton{
+    -fx-background-image: url('../../canvas/zoom-default.png');
+    -fx-background-size : 25px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 10px 10px 10px 10px;
+ }

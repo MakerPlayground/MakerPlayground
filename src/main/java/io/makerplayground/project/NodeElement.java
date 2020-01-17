@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,29 +16,28 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.*;
 
-/**
- *
- */
 @JsonSerialize(using = NodeElementSerializer.class)
 public abstract class NodeElement {
-    private static final double PORT_RADIUS = 15;
-
     protected final Project project;
+
+    protected String name;
 
     private final SimpleDoubleProperty top;
     private final SimpleDoubleProperty left;
     private final SimpleDoubleProperty width;
     private final SimpleDoubleProperty height;
 
-    private final ReadOnlyDoubleWrapper sourcePortX;
-    private final ReadOnlyDoubleWrapper sourcePortY;
-    private final ReadOnlyDoubleWrapper destPortX;
-    private final ReadOnlyDoubleWrapper destPortY;
+    private final DoubleProperty sourcePortX;
+    private final DoubleProperty sourcePortY;
+    private final DoubleProperty destPortX;
+    private final DoubleProperty destPortY;
 
     private final ReadOnlyObjectWrapper<DiagramError> error;
+    private Begin root;
 
     protected NodeElement(double top,double left,double width, double height, Project project) {
         this.project = project;
@@ -48,17 +47,20 @@ public abstract class NodeElement {
         this.width = new SimpleDoubleProperty(width);
         this.height = new SimpleDoubleProperty(height);
 
-        this.sourcePortX = new ReadOnlyDoubleWrapper();
-        this.sourcePortY = new ReadOnlyDoubleWrapper();
-        this.destPortX = new ReadOnlyDoubleWrapper();
-        this.destPortY = new ReadOnlyDoubleWrapper();
-
-        this.sourcePortX.bind(this.left.add(5));
-        this.sourcePortY.bind(this.top.add(this.height.divide(2.0)));
-        this.destPortX.bind(this.left.add(this.width).add(PORT_RADIUS));
-        this.destPortY.bind(this.top.add(this.height.divide(2.0)));
+        this.sourcePortX = new SimpleDoubleProperty();
+        this.sourcePortY = new SimpleDoubleProperty();
+        this.destPortX = new SimpleDoubleProperty();
+        this.destPortY = new SimpleDoubleProperty();
 
         this.error = new ReadOnlyObjectWrapper<>(DiagramError.NONE);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public final double getTop() {
@@ -113,32 +115,32 @@ public abstract class NodeElement {
         return sourcePortX.get();
     }
 
-    public final ReadOnlyDoubleProperty sourcePortXProperty() {
-        return sourcePortX.getReadOnlyProperty();
+    public final DoubleProperty sourcePortXProperty() {
+        return sourcePortX;
     }
 
     public final double getSourcePortY() {
         return sourcePortY.get();
     }
 
-    public final ReadOnlyDoubleProperty sourcePortYProperty() {
-        return sourcePortY.getReadOnlyProperty();
+    public final DoubleProperty sourcePortYProperty() {
+        return sourcePortY;
     }
 
     public final double getDestPortX() {
         return destPortX.get();
     }
 
-    public final ReadOnlyDoubleProperty destPortXProperty() {
-        return destPortX.getReadOnlyProperty();
+    public final DoubleProperty destPortXProperty() {
+        return destPortX;
     }
 
     public final double getDestPortY() {
         return destPortY.get();
     }
 
-    public final ReadOnlyDoubleProperty destPortYProperty() {
-        return destPortY.getReadOnlyProperty();
+    public final DoubleProperty destPortYProperty() {
+        return destPortY;
     }
 
     public final DiagramError getError() {
@@ -149,9 +151,23 @@ public abstract class NodeElement {
         return error.getReadOnlyProperty();
     }
 
+    public Begin getRoot() {
+        return root;
+    }
+
+    public void setRoot(Begin root) {
+        this.root = root;
+    }
+
+    @JsonIgnore
+    public String getNameSanitized() {
+        return name.replace(" ", "_");
+    }
+
     protected abstract DiagramError checkError();
 
     public final void invalidate() {
+        this.project.calculateCompatibility();
         error.set(checkError());
     }
 }

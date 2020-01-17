@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,10 @@
 
 package io.makerplayground.ui.dialog.generate;
 
-import io.makerplayground.device.actual.DevicePort;
-import io.makerplayground.device.actual.ConnectionType;
-import io.makerplayground.device.actual.Peripheral;
-import io.makerplayground.project.ProjectDevice;
 import javafx.scene.control.Hyperlink;
+import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Created by USER on 20-Jul-17.
- */
+@Data
 public class TableDataList {
     private final String name;
     private final String brand;
@@ -37,49 +28,41 @@ public class TableDataList {
     private final String pin;
     private final String url;
 
-    public TableDataList(ProjectDevice projectDevice) {
-        ProjectDevice actualDevice;
-        if (projectDevice.isMergeToOtherDevice()) {
-            actualDevice = projectDevice.getParentDevice();
-        } else {
-            actualDevice = projectDevice;
-        }
+//    public TableDataList(ProjectDevice projectDevice) {
+//        ProjectDevice actualDevice;
+//        if (projectDevice.isMergeToOtherDevice()) {
+//            actualDevice = projectDevice.getIdenticalDevice();
+//        } else {
+//            actualDevice = projectDevice;
+//        }
+//
+//        this.displayName = projectDevice.getDisplayName();
+//        this.brand = actualDevice.getCompatibleDeviceComboItem().getBrand();
+//        this.model = actualDevice.getCompatibleDeviceComboItem().getModel();
+//        this.id = actualDevice.getCompatibleDeviceComboItem().getId();
+//        List<String> list = new ArrayList<>();
+//
+//        /* TODO: uncomment this */
+////        for (Peripheral p : actualDevice.getCompatibleDeviceComboItem().getConnectivity()) {
+////            if (p.getConnectionType() != ConnectionType.I2C) {
+////                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
+////                if (port == null) {
+////                    throw new IllegalStateException("Port hasn't been selected!!!");
+////                }
+////                list.addAll(port.stream().map(DevicePort::getDisplayName).collect(Collectors.toList()));
+////            } else { //i2c and others
+////                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
+////                if (port == null) {
+////                    throw new IllegalStateException("Port hasn't been selected!!!");
+////                }
+////                list.addAll(port.stream().map(DevicePort::getDisplayName).collect(Collectors.toList()));
+////            }
+////        }
+//        this.pin = String.join(",", list);
+//        this.url = actualDevice.getCompatibleDeviceComboItem().getUrl();
+//    }
 
-        this.name = projectDevice.getName();
-        this.brand = actualDevice.getActualDevice().getBrand();
-        this.model = actualDevice.getActualDevice().getModel();
-        this.id = actualDevice.getActualDevice().getId();
-        List<String> list = new ArrayList<>();
-        for (Peripheral p : actualDevice.getActualDevice().getConnectivity()) {
-            if (p.getConnectionType() != ConnectionType.I2C) {
-                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
-                if (port == null) {
-                    throw new IllegalStateException("Port hasn't been selected!!!");
-                }
-                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
-            } else { //i2c and others
-                List<DevicePort> port = actualDevice.getDeviceConnection().get(p);
-                if (port == null) {
-                    throw new IllegalStateException("Port hasn't been selected!!!");
-                }
-                list.addAll(port.stream().map(DevicePort::getName).collect(Collectors.toList()));
-            }
-        }
-        this.pin = String.join(",", list);
-        this.url = actualDevice.getActualDevice().getUrl();
-    }
-
-    public String getName() { return name; }
-
-    public String getBrand() { return brand; }
-
-    public String getId() { return id; }
-
-    public String getModel() { return model; }
-
-    public String getPin() { return pin;}
-
-    public Hyperlink getUrl() {
+    public Hyperlink getHyperLink() {
         Hyperlink link = new Hyperlink();
 //        link.setOnAction(new EventHandler<ActionEvent>() {
 //            @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,20 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.generator.source.SourceCodeGenerator;
+import io.makerplayground.generator.source.SourceCodeResult;
+import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
+import io.makerplayground.ui.dialog.WarningDialogView;
+import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -38,17 +45,11 @@ import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- * Created by Nuntipat Narkthong on 6/6/2017 AD.
- */
 public class Main extends Application {
 
     private Toolbar toolbar;
@@ -56,9 +57,10 @@ public class Main extends Application {
     private File latestProjectDirectory;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         // TODO: show progress indicator while loading if need
-        DeviceLibrary.INSTANCE.loadDeviceFromJSON();
+
+        DeviceLibrary.INSTANCE.loadDeviceFromFiles();
 
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();
@@ -69,22 +71,26 @@ public class Main extends Application {
             project = new SimpleObjectProperty<>(new Project());
         }
 
-        toolbar = new Toolbar(project);
+        UploadManager uploadManager = new UploadManager(project);
+
+        toolbar = new Toolbar(project, uploadManager);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveAsButtonPressed(event -> saveProjectAs(primaryStage.getScene().getWindow()));
+        toolbar.setOnExportButtonPressed(event -> exportProject(primaryStage.getScene().getWindow()));
         toolbar.setOnCloseButtonPressed(event -> primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
-        MainWindow mainWindow = new MainWindow(project);
+        MainWindow mainWindow = new MainWindow(project, toolbar.selectingSerialPortProperty(), getHostServices());
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
+        mainWindow.deviceMonitorShowingProperty().bind(toolbar.deviceMonitorSelectProperty());
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);
         borderPane.setCenter(mainWindow);
 
-        final Scene scene = new Scene(borderPane, 800, 600);
+        final Scene scene = new Scene(borderPane, 960, 600);
         scene.getStylesheets().add(getClass().getResource("/css/light-theme.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
@@ -94,6 +100,7 @@ public class Main extends Application {
         project.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
                 oldValue.filePathProperty().removeListener(projectPathListener);
+                oldValue.getInteractiveModel().stop();
             }
             newValue.filePathProperty().addListener(projectPathListener);
             updatePath(primaryStage, newValue.getFilePath());
@@ -210,8 +217,9 @@ public class Main extends Application {
             } else {
                 toolbar.setStatusMessage("");
             }
-        } catch (IOException x) {
-            x.printStackTrace();
+        } catch (Exception e) {
+            toolbar.setStatusMessage("");
+            e.printStackTrace();
         }
     }
 
@@ -243,8 +251,44 @@ public class Main extends Application {
             } else {
                 toolbar.setStatusMessage("");
             }
-        } catch (IOException x) {
-            x.printStackTrace();
+        } catch (Exception e) {
+            toolbar.setStatusMessage("");
+            e.printStackTrace();
+        }
+    }
+
+    private void exportProject(Window window) {
+        toolbar.setStatusMessage("Exporting...");
+
+        File selectedFile;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export File As");
+        if (latestProjectDirectory != null) {
+            fileChooser.setInitialDirectory(latestProjectDirectory);
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Zip Archive File", "*.zip"));
+        fileChooser.setInitialFileName("*.zip");
+        selectedFile = fileChooser.showSaveDialog(window);
+
+        if (selectedFile != null) {
+            SourceCodeResult sourceCode = SourceCodeGenerator.generate(project.get());
+            if (project.get().getProjectConfiguration().getPlatform().isArduino()) {
+                ProjectExportTask exportTask = new ArduinoExportTask(project.get(), sourceCode, selectedFile.getAbsolutePath());
+                TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");
+                dialogView.show();
+                new Thread(exportTask).start();
+            } else {
+                throw new IllegalStateException("Not implemented yet");
+            }
+            toolbar.setStatusMessage("Exported");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> toolbar.setStatusMessage(""));
+                }
+            }, 3000);
+        } else {
+            toolbar.setStatusMessage("");
         }
     }
 

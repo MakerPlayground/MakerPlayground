@@ -1,27 +1,35 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.ui.canvas.node.expression;
 
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.ImageExpression;
 import io.makerplayground.project.expression.ProjectValueExpression;
 import io.makerplayground.project.expression.SimpleStringExpression;
-import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import java.util.EnumSet;
 import java.util.List;
 
 public class StringExpressionControl extends HBox {

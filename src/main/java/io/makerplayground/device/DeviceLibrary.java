@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,14 @@ package io.makerplayground.device;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.DeviceType;
-import io.makerplayground.device.actual.IntegratedActualDevice;
-import io.makerplayground.device.actual.Platform;
+import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,25 +50,60 @@ public enum DeviceLibrary {
     private List<GenericDevice> genericInterfaceDevice;
     private List<GenericDevice> allGenericDevice;
     private List<ActualDevice> actualDevice;
+    private List<ActualDevice> actualAndIntegratedDevice;
 
     DeviceLibrary() {}
 
-    public void loadDeviceFromJSON() {
+    public void loadDeviceFromFiles() {
         this.genericSensorDevice = loadGenericDeviceFromJSON("/json/genericsensordevice.json", GenericDeviceType.SENSOR);
         this.genericActuatorDevice = loadGenericDeviceFromJSON("/json/genericactuatordevice.json", GenericDeviceType.ACTUATOR);
         this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json", GenericDeviceType.UTILITY);
         this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json", GenericDeviceType.CLOUD);
         this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json", GenericDeviceType.INTERFACE);
+        this.allGenericDevice = new ArrayList<>();
+        this.allGenericDevice.addAll(genericSensorDevice);
+        this.allGenericDevice.addAll(genericActuatorDevice);
+        this.allGenericDevice.addAll(genericUtilityDevice);
+        this.allGenericDevice.addAll(genericCloudDevice);
+        this.allGenericDevice.addAll(genericInterfaceDevice);
+        Map<String, Map<String, PinTemplate>> pinTemplate = loadPinTemplateList();
+        this.actualDevice = loadActualDeviceList(pinTemplate);
+        this.actualAndIntegratedDevice = Stream.concat(actualDevice.stream(), actualDevice.stream()
+                .flatMap(actualDevice1 -> actualDevice1.getIntegratedDevices().stream()))
+                .collect(Collectors.toList());
+    }
 
-        List<GenericDevice> genericDevices = new ArrayList<>();
-        genericDevices.addAll(genericSensorDevice);
-        genericDevices.addAll(genericActuatorDevice);
-        genericDevices.addAll(genericUtilityDevice);
-        genericDevices.addAll(genericCloudDevice);
-        genericDevices.addAll(genericInterfaceDevice);
-        this.allGenericDevice = Collections.unmodifiableList(genericDevices);
-
-        this.actualDevice = loadActualDeviceList();
+    private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
+        YAMLMapper mapper = new YAMLMapper();
+        Optional<String> libraryPath = getLibraryPath();
+        Map<String, Map<String, PinTemplate>> pinTemplateMap = new HashMap<>();
+        if (libraryPath.isPresent()) {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "pin_templates"))) {
+                for (Path pinTemplatePath : directoryStream) {
+                    if (Files.exists(pinTemplatePath)) {
+                        try {
+                            JsonNode rootNode = mapper.readValue(pinTemplatePath.toFile(), JsonNode.class);
+                            String filename = FilenameUtils.removeExtension(pinTemplatePath.getFileName().toString());
+                            if (!rootNode.has("pins") && !rootNode.get("pins").isArray()) {
+                                throw new IllegalStateException("pin template file must has 'pins' and it must be an array");
+                            }
+                            pinTemplateMap.put(filename, new HashMap<>());
+                            List<PinTemplate> pinTemplateList = mapper.readValue(rootNode.get("pins").traverse(), new TypeReference<List<PinTemplate>>() {});
+                            pinTemplateList.forEach(pinTemplate -> pinTemplateMap.get(filename).put(pinTemplate.getName(), pinTemplate));
+                        } catch (JsonParseException e) {
+                            System.err.println("Found some errors when reading pin_template at " + pinTemplatePath.toAbsolutePath());
+                        } catch (NullPointerException e) {
+                            System.err.println("Found some errors when reading pin_template at " + pinTemplatePath.toAbsolutePath());
+                            throw new IllegalStateException(e);
+                        }
+                    }
+                }
+                return Collections.unmodifiableMap(pinTemplateMap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Collections.emptyMap();
     }
 
     private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName, GenericDeviceType type){
@@ -83,29 +120,61 @@ public enum DeviceLibrary {
         return temp;
     }
 
-    private final List<String> libraryPaths = List.of(
+    private static final List<String> libraryPaths = List.of(
             "library",               // default path for Windows installer and when running from the IDE
             "../Resources/library"   // default path for macOS installer
     );
 
-    public Optional<String> getLibraryPath() {
+    public static Optional<String> getLibraryPath() {
+        // TODO: handle case that the library path is missing
         return libraryPaths.stream().filter(s -> new File(s).exists()).findFirst();
     }
 
-    private List<ActualDevice> loadActualDeviceList(){
+    public static String getDeviceDirectoryPath() {
+        // TODO: handle case that the library path is missing
+        return getLibraryPath().get() + File.separator + "devices";
+    }
+
+    public static Path getDeviceImagePath(ActualDevice actualDevice) {
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        // TODO: Should we handle case that the image is missing or let the caller check for path existence?
+        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device.png");
+    }
+
+    public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device_thumbnail.png");
+        if (Files.exists(thumbnailPath)) {
+            return thumbnailPath;
+        } else {
+            return getDeviceImagePath(actualDevice);
+        }
+    }
+
+    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate){
         List<ActualDevice> temp = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
+        YAMLMapper mapper = new YAMLMapper();
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(ActualDevice.class, new ActualDeviceDeserializer(pinTemplate));
+        mapper.registerModule(simpleModule);
         Optional<String> libraryPath = getLibraryPath();
         if (libraryPath.isPresent()) {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(libraryPath.get(), "devices"))) {
                 for (Path deviceDirectory : directoryStream) {
-                    Path deviceDefinitionPath = deviceDirectory.resolve("device.json");
+                    Path deviceDefinitionPath = deviceDirectory.resolve("device.yaml");
                     if (Files.exists(deviceDefinitionPath)) {
                         try {
-                            ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), new TypeReference<ActualDevice>() {});
-                            for (IntegratedActualDevice integratedActualDevice: actualDevice.getIntegratedDevices()) {
-                                integratedActualDevice.setParent(actualDevice);
-                            }
+                            ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), ActualDevice.class);
                             temp.add(actualDevice);
                         } catch (JsonParseException e) {
                             System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
@@ -161,8 +230,8 @@ public enum DeviceLibrary {
     }
 
     public List<ActualDevice> getActualDevice(Platform platform) {
-        return actualDevice.stream().filter(device -> device.getSupportedPlatform().contains(platform))
-                .collect(Collectors.toUnmodifiableList());
+        return actualDevice.stream().filter(device -> device.getPlatformSourceCodeLibrary().keySet().contains(platform))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
     public ActualDevice getActualDevice(String id) {
@@ -180,7 +249,16 @@ public enum DeviceLibrary {
     }
 
     public List<ActualDevice> getActualDevice(GenericDevice genericDevice) {
-        return actualDevice.stream().filter(device -> device.getSupportedGenericDevice().contains(genericDevice))
+        return actualDevice.stream().filter(device -> device.getCompatibilityMap().containsKey(genericDevice))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<ActualDevice> getActualAndIntegratedDevice() {
+        return actualAndIntegratedDevice;
+    }
+
+    public List<ActualDevice> getActualAndIntegratedDevice(GenericDevice genericDevice) {
+        return actualAndIntegratedDevice.stream().filter(device -> device.getCompatibilityMap().containsKey(genericDevice))
                 .collect(Collectors.toUnmodifiableList());
     }
 }

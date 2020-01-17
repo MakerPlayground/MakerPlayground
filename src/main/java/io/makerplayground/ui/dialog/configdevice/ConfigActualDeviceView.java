@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
-import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
@@ -29,23 +33,24 @@ import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ConfigActualDeviceView extends VBox{
 
@@ -53,15 +58,18 @@ public class ConfigActualDeviceView extends VBox{
 
     @FXML private VBox usedDevice;
     @FXML private GridPane usedDeviceSettingPane;
-    @FXML private Button autoButton;
+    @FXML private Button autoButton1;
+    @FXML private Button autoButton2;
+    @FXML private VBox warningPane;
+    @FXML private Label warningLabel;
     @FXML private VBox unusedDevice;
-    @FXML private FlowPane unusedDevicePane;
+    @FXML private GridPane unusedDevicePane;
     @FXML private VBox cloudPlatformParameterSection;
     @FXML private GridPane cloudPlatformParameterPane;
     @FXML private ImageView platFormImage;
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
-    @FXML private ComboBox<ActualDevice> controllerComboBox;
+    @FXML private ComboBox<ActualDeviceComboItem> controllerComboBox;
     @FXML private Label controllerName;
 
     public ConfigActualDeviceView(ConfigActualDeviceViewModel viewModel) {
@@ -80,6 +88,14 @@ public class ConfigActualDeviceView extends VBox{
         initControllerControl();
         initDeviceControl();
         initEvent();
+
+        warningPane.visibleProperty().bind(Bindings.isEmpty(viewModel.getAllDevices()));
+        warningPane.managedProperty().bind(warningPane.visibleProperty());
+        if (viewModel.getSelectedController() == null) {
+            warningLabel.setText("Select a controller to get started");
+        } else if (viewModel.getAllDevices().isEmpty()) {
+            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+        }
     }
 
     private void initEvent() {
@@ -88,17 +104,20 @@ public class ConfigActualDeviceView extends VBox{
         viewModel.setControllerChangedCallback(this::initDeviceControl);
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
 
-        // write change to the viewmodel
+        // write change to the viewModel
         platFormComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setPlatform(newValue));
         controllerComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setController(newValue));
 
-        autoButton.setOnAction(event -> {
-            DeviceMapperResult result = viewModel.autoAssignDevice();
-            if (result != DeviceMapperResult.OK) {
-                WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
-                warningDialogView.showAndWait();
-            }
-        });
+        autoButton1.setOnAction(event -> onAutoAction());
+        autoButton2.setOnAction(event -> onAutoAction());
+    }
+
+    private void onAutoAction() {
+        ProjectMappingResult result = viewModel.autoAssignDevice();
+        if (result != ProjectMappingResult.OK) {
+            WarningDialogView warningDialogView = new WarningDialogView(getScene().getWindow(), result.getErrorMessage());
+            warningDialogView.showAndWait();
+        }
     }
 
     private void initPlatformControl() {
@@ -136,17 +155,41 @@ public class ConfigActualDeviceView extends VBox{
     }
 
     private void initControllerControl() {
+        if (viewModel.getSelectedController() == null) {
+            warningLabel.setText("Select a controller to get started");
+        }
+
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
-            public ListCell<ActualDevice> call(ListView<ActualDevice> param) {
+            public ListCell<ActualDeviceComboItem> call(ListView<ActualDeviceComboItem> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(ActualDevice item, boolean empty) {
+                    protected void updateItem(ActualDeviceComboItem item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText("");
                         } else {
-                            setText(item.getBrand() + " " + item.getModel());
+                            try {
+                                ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
+                                        DeviceLibrary.getDeviceThumbnailPath(item.getActualDevice()))));
+                                deviceImageView.setFitWidth(75);
+                                deviceImageView.setFitHeight(75);
+                                deviceImageView.setSmooth(true);
+                                deviceImageView.setPreserveRatio(true);
+
+                                HBox hbox = new HBox();
+                                hbox.setPrefWidth(75);
+                                hbox.setAlignment(Pos.CENTER);
+                                hbox.getChildren().add(deviceImageView);
+
+                                setGraphic(hbox);
+                                setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
+                                if (item.getMappingResult() != DeviceMappingResult.OK) {
+                                   setOpacity(0.5);
+                                }
+                            } catch (IOException e) {
+                                throw new IllegalStateException("Error: image can't be found");
+                            }
                         }
                     }
                 };
@@ -154,171 +197,288 @@ public class ConfigActualDeviceView extends VBox{
         });
         controllerComboBox.setButtonCell(new ListCell<>() {
             @Override
-            protected void updateItem(ActualDevice item, boolean empty) {
+            protected void updateItem(ActualDeviceComboItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) {
                     setText("");
                 } else {
-                    setText(item.getBrand() + " " + item.getModel());
+                    setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
+                    if (item.getMappingResult() != DeviceMappingResult.OK) {
+                        setOpacity(0.5);
+                    }
                 }
             }
         });
+        List<ActualDeviceComboItem> controllerList = viewModel.getControllerComboItemList(viewModel.getSelectedPlatform());
         controllerComboBox.getItems().clear();
-        controllerComboBox.getItems().addAll(viewModel.getCompatibleControllerDevice());
-        if (viewModel.getSelectedController() != null) {
-            controllerComboBox.getSelectionModel().select(viewModel.getSelectedController());
-        }
+        controllerComboBox.getItems().addAll(controllerList);
+        controllerComboBox.getItems().stream()
+                .filter(actualDeviceComboItem -> actualDeviceComboItem.getActualDevice() == viewModel.getSelectedController())
+                .findFirst()
+                .ifPresentOrElse(selectedController -> controllerComboBox.getSelectionModel().select(selectedController), this::initDeviceControl);
     }
 
     private void initDeviceControl() {
+        if (viewModel.getAllDevices().isEmpty()) {
+            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+        }
+
         usedDevice.setVisible(false);
         usedDevice.setManaged(false);
         unusedDevice.setVisible(false);
         unusedDevice.setManaged(false);
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
-        initDeviceControlChildren();
+        initUsedDeviceControl();
         initUnusedDeviceControl();
         initCloudPlatformPropertyControl();
     }
 
-    private void initDeviceControlChildren() {
-        if (viewModel.getUsedDevice().isEmpty()) {
-            usedDevice.setVisible(false);
-            usedDevice.setManaged(false);
-        } else {
-            usedDevice.setVisible(true);
-            usedDevice.setManaged(true);
-        }
+    private Callback<ListView<CompatibleDeviceComboItem>, ListCell<CompatibleDeviceComboItem>> newDeviceCellFactory() {
+        return new Callback<>() {
+            @Override
+            public ListCell<CompatibleDeviceComboItem> call(ListView<CompatibleDeviceComboItem> param) {
+                ListCell<CompatibleDeviceComboItem> cell = new ListCell<>() {
+                    @Override
+                    protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                            setTooltip(null);
+                        } else {
+                            ActualDevice thumbnailActualDevice = null;
+                            // set text
+                            if (item.getCompatibleDevice().getActualDevice().isPresent()) {
+                                ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
+                                if (actualDevice instanceof IntegratedActualDevice) {
+                                    thumbnailActualDevice = ((IntegratedActualDevice) actualDevice).getParent();
+                                    setText(actualDevice.getId());
+                                } else {
+                                    thumbnailActualDevice = actualDevice;
+                                    setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                                }
+                            } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
+                                ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
+                                thumbnailActualDevice = viewModel.getActualDevice(projectDevice)
+                                        .orElseThrow(() -> new IllegalStateException("Actual device of the parent device must have been set"));
+                                setText("Use the same device as " + projectDevice.getName());
+                            }
+                            // set device's display image
+                            try {
+                                ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
+                                        DeviceLibrary.getDeviceThumbnailPath(thumbnailActualDevice))));
+                                deviceImageView.setFitWidth(75);
+                                deviceImageView.setFitHeight(75);
+                                deviceImageView.setSmooth(true);
+                                deviceImageView.setPreserveRatio(true);
 
-        usedDeviceSettingPane.getChildren().clear();
-        viewModel.clearDeviceConfigChangedCallback();
+                                HBox hbox = new HBox();
+                                hbox.setPrefWidth(75);
+                                hbox.setAlignment(Pos.CENTER);
+                                hbox.getChildren().add(deviceImageView);
+
+                                setGraphic(hbox);
+                            } catch (IOException e) {
+                                throw new IllegalStateException("Error: image can't be found (" + thumbnailActualDevice + ")");
+                            }
+                            // grey out and show tooltip if this device isn't compatible
+                            if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                                setOpacity(0.5);
+                                Tooltip tooltip = new Tooltip(item.getDeviceMappingResult().getErrorMessage());
+                                tooltip.setShowDelay(Duration.millis(250));
+                                setTooltip(tooltip);
+                            }
+                        }
+                    }
+                };
+                return cell;
+            }
+        };
+    }
+
+    private ListCell<CompatibleDeviceComboItem> newDeviceComboItemListCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(CompatibleDeviceComboItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setTooltip(null);
+                } else {
+                    if (item.getCompatibleDevice().getActualDevice().isPresent()) {
+                        ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
+                        if (actualDevice instanceof IntegratedActualDevice) {
+                            setText(actualDevice.getId());
+                        } else {
+                            setText(actualDevice.getBrand() + " " + actualDevice.getModel());
+                        }
+                    } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
+                        ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
+                        setText("Use the same device as " + projectDevice.getName());
+                    }
+                    if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                        setOpacity(0.5);
+                    }
+                }
+            }
+        };
+    }
+
+    private ListCell<Connection> newConnectionListCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Connection item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(empty ? null : item.getName());
+                    if (item.getType() == ConnectionType.INTEGRATED) {
+                        setText(empty ? null : "Yes");
+                    }
+                } else {
+                    setText(null);
+                }
+            }
+        };
+    }
+
+    private Callback<ListView<Connection>, ListCell<Connection>> newConnectionCellFactory() {
+        return new Callback<>() {
+            @Override
+            public ListCell<Connection> call(ListView<Connection> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Connection item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(empty ? null : item.getName());
+                            if (item.getType() == ConnectionType.INTEGRATED) {
+                                setText(empty ? null : "Yes");
+                            }
+                        } else {
+                            setText(null);
+                        }
+                    }
+                };
+            }
+        };
+    }
+
+    private void initDeviceSettingControl(GridPane settingPane, Set<ProjectDevice> devices) {
+        settingPane.getChildren().clear();
         int currentRow = 0;
-        for (ProjectDevice projectDevice : viewModel.getUsedDevice()) {
+        for (ProjectDevice projectDevice : devices) {
             ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                     + projectDevice.getGenericDevice().getName() + ".png")));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
             GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
-            Label name = new Label(projectDevice.getName());
-            name.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
-            name.setTextAlignment(TextAlignment.LEFT);
-            name.setAlignment(Pos.CENTER_LEFT);
-            name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-            name.setId("nameLabel");
-            GridPane.setConstraints(name, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+            TextField nameTextField = new TextField();
+            nameTextField.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
+            nameTextField.setId("nameTextField");
+            nameTextField.setText(projectDevice.getName());
+            nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    Project.SetNameResult result = viewModel.setProjectDeviceName(projectDevice, nameTextField.getText());
+                    if (result != Project.SetNameResult.OK) {
+                        Point2D textFieldPosition = nameTextField.localToScreen(0, 0);
+                        Tooltip tooltip = new Tooltip(result.getErrorMessage());
+                        tooltip.setAutoHide(true);
+                        tooltip.show(nameTextField, textFieldPosition.getX() + 3
+                                , textFieldPosition.getY() + nameTextField.getBoundsInLocal().getHeight() + 3);
+                        new Timeline(new KeyFrame(Duration.seconds(2), event -> tooltip.hide())).play();
+
+                        nameTextField.setText(projectDevice.getName());
+                    }
+                }
+            });
+            GridPane.setConstraints(nameTextField, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
-            ComboBox<CompatibleDevice> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDevice(projectDevice)));
+            ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDeviceComboItem(projectDevice)));
             deviceComboBox.setId("deviceComboBox");
-            if (projectDevice.isActualDeviceSelected()) {
-                deviceComboBox.getSelectionModel().select(new CompatibleDevice(projectDevice.getActualDevice()));
-            } else if (projectDevice.isMergeToOtherDevice()) {
-                deviceComboBox.getSelectionModel().select(new CompatibleDevice(projectDevice.getParentDevice()));
+            deviceComboBox.setCellFactory(newDeviceCellFactory());
+            deviceComboBox.setButtonCell(newDeviceComboItemListCell());
+            deviceComboBox.getItems().stream()
+                    .filter(compatibleDeviceComboItem -> {
+                        Optional<ActualDevice> actualDevice = compatibleDeviceComboItem.getCompatibleDevice().getActualDevice();
+                        return actualDevice.isPresent() && actualDevice.get() == viewModel.getActualDevice(projectDevice).orElse(null);
+                    })
+                    .findFirst()
+                    .ifPresent(compatibleDeviceComboItem -> deviceComboBox.getSelectionModel().select(compatibleDeviceComboItem));
+            deviceComboBox.getItems().stream()
+                    .filter(compatibleDeviceComboItem -> {
+                        Optional<ProjectDevice> projectDevice1 = compatibleDeviceComboItem.getCompatibleDevice().getProjectDevice();
+                        return projectDevice1.isPresent() && projectDevice1.get() == viewModel.getParentDevice(projectDevice).orElse(null);
+                    })
+                    .findFirst()
+                    .ifPresent(compatibleDeviceComboItem -> deviceComboBox.getSelectionModel().select(compatibleDeviceComboItem));
+            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setDevice(projectDevice, newValue.getCompatibleDevice()));
+            CompatibleDeviceComboItem selectedItem = deviceComboBox.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && selectedItem.getDeviceMappingResult() != DeviceMappingResult.OK) {
+                Tooltip tooltip = new Tooltip(selectedItem.getDeviceMappingResult().getErrorMessage());
+                tooltip.setShowDelay(Duration.millis(250));
+                deviceComboBox.setTooltip(tooltip);
             }
-            deviceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                viewModel.setDevice(projectDevice, newValue);
-            });
 
             VBox entireComboBoxDevice = new VBox();
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
-            entireComboBoxDevice.setDisable(viewModel.getController() == null);
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
             GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
-            FlowPane portPane = new FlowPane();
-            portPane.setHgap(5.0);
-            portPane.setVgap(5.0);
-            portPane.setAlignment(Pos.CENTER_LEFT);
+            ImageView removeButton = new ImageView(new Image(getClass().getResourceAsStream("/icons/device-delete.png")));
+            removeButton.setOnMousePressed(event -> viewModel.removeDevice(projectDevice));
+            removeButton.setFitHeight(25.0);
+            removeButton.setFitWidth(25.0);
+            GridPane.setConstraints(removeButton, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
-            Map<Peripheral, List<List<DevicePort>>> combo = viewModel.getCompatiblePort(projectDevice);
-            // We only show port combobox and property textfield when the device has been selected
-            if (projectDevice.isActualDeviceSelected()) {
-                ActualDevice actualDevice = projectDevice.getActualDevice();
-                if (!actualDevice.getPort(Peripheral.NOT_CONNECTED).isEmpty()) {
-                    viewModel.setPeripheral(projectDevice, Peripheral.NOT_CONNECTED, Collections.emptyList());
-                } else {
-                    // loop for each peripheral
-                    for (Peripheral p : /*combo.keySet()*/ actualDevice.getConnectivity()){
-                        if (combo.get(p) == null)
-                            continue;
-
-                        ComboBox<List<DevicePort>> portComboBox = new ComboBox<>(FXCollections.observableList(combo.get(p)));
-                        portComboBox.setId("portComboBox");
-                        portComboBox.setCellFactory(new Callback<>() {
-                            @Override
-                            public ListCell<List<DevicePort>> call(ListView<List<DevicePort>> param) {
-                                return new ListCell<>() {
-                                    @Override
-                                    protected void updateItem(List<DevicePort> item, boolean empty) {
-                                        super.updateItem(item, empty);
-                                        if (empty) {
-                                            setText("");
-                                        } else {
-                                            setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
-                                        }
-                                    }
-                                };
-                            }
-                        });
-                        portComboBox.setButtonCell(new ListCell<>() {
-                            @Override
-                            protected void updateItem(List<DevicePort> item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty) {
-                                    setText("");
-                                } else {
-                                    setText(String.join(",", item.stream().map(DevicePort::getName).collect(Collectors.toList())));
-                                }
-                            }
-                        });
-                        if (!projectDevice.getDeviceConnection().isEmpty()) {
-                            // add dummy value to position 1 (after the selected item) to allow the selected port to be cleared
-                            portComboBox.getItems().add(1, Collections.emptyList());
-                            portComboBox.getSelectionModel().select(projectDevice.getDeviceConnection().get(p));
-                        } else {
-                            // add dummy value to allow the selected port to be cleared
-                            portComboBox.getItems().add(0, Collections.emptyList());
-                            portComboBox.getSelectionModel().select(Collections.emptyList());
+            if (deviceComboBox.getSelectionModel().getSelectedItem() != null) {
+                CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
+                if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
+                    compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
+                        if (actualDevice.getDeviceType() == DeviceType.VIRTUAL) {
+                            return;
                         }
-                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.isEmpty()) {
-                                viewModel.clearPeripheral(projectDevice, p);
-                            } else {
-                                viewModel.setPeripheral(projectDevice, p, newValue);
-                            }
-                        });
+                        FlowPane portListUI = new FlowPane(Orientation.HORIZONTAL, 5.0, 5.0);
+                        Map<Connection, List<Connection>> possibleDeviceConnection = viewModel.getPossibleDeviceConnections(projectDevice, actualDevice);
+                        for (Connection connectionConsume: possibleDeviceConnection.keySet()) {
+                            List<Connection> possibleConnectionProvide = new ArrayList<>(possibleDeviceConnection.get(connectionConsume));
+                            possibleConnectionProvide.add(0, null);
+                            ComboBox<Connection> portComboBox = new ComboBox<>(FXCollections.observableList(possibleConnectionProvide));
+                            portComboBox.setCellFactory(newConnectionCellFactory());
+                            portComboBox.setButtonCell(newConnectionListCell());
 
-                        // TODO: handle other type (UART, SPI, etc.)
-                        String portName;
-                        if (p.getConnectionType() == ConnectionType.I2C) {
-                            portName = "I2C";
-                        } else if (p.getConnectionType() == ConnectionType.UART) {
-                            portName = "UART";
-                        } else {
-                            portName = projectDevice.getActualDevice().getPort(p).get(0).getName();
+                            Connection connection = viewModel.getSelectedConnection(projectDevice, connectionConsume);
+                            portComboBox.getSelectionModel().select(connection);
+                            portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setConnection(projectDevice, connectionConsume, newValue));
+
+                            Label portLabel = new Label(connectionConsume.getType() == ConnectionType.INTEGRATED ? "Connect" : connectionConsume.getName());
+                            Tooltip tooltip = new Tooltip(connectionConsume.getName());
+                            tooltip.setShowDelay(Duration.ZERO);
+                            portLabel.setTooltip(tooltip);
+                            portLabel.setMinWidth(Region.USE_PREF_SIZE);
+                            portListUI.setAlignment(Pos.CENTER_LEFT);
+                            HBox hbox = new HBox(5.0);
+                            hbox.setAlignment(Pos.CENTER_LEFT);
+                            hbox.getChildren().addAll(portLabel, portComboBox);
+                            portListUI.getChildren().addAll(hbox);
                         }
-
-                        Label portLabel = new Label(portName);
-
-                        HBox portHBox = new HBox();
-                        portHBox.getChildren().addAll(portLabel, portComboBox);
-                        portHBox.setSpacing(5);
-
-                        portPane.getChildren().addAll(portHBox);
-                    }
-                    entireComboBoxDevice.getChildren().add(portPane);
+                        entireComboBoxDevice.getChildren().add(portListUI);
+                    });
                 }
+            }
+
+            // We only show port combobox and property textfield when the device has been selected
+            if (viewModel.isActualDevicePresent(projectDevice)) {
 
                 // property
-                if (!projectDevice.getActualDevice().getProperty().isEmpty()) {
+                if (viewModel.getActualDevice(projectDevice).orElseThrow().getProperty() != null && !viewModel.getActualDevice(projectDevice).orElseThrow().getProperty().isEmpty()) {
                     GridPane propertyGridPane = new GridPane();
                     propertyGridPane.setHgap(10);
                     propertyGridPane.setVgap(10);
 
-                    List<Property> propertyList = projectDevice.getActualDevice().getProperty();
+                    List<Property> propertyList = viewModel.getActualDevice(projectDevice).orElseThrow().getProperty();
                     for (int i=0; i<propertyList.size(); i++) {
                         Property p = propertyList.get(i);
 
@@ -344,17 +504,25 @@ public class ConfigActualDeviceView extends VBox{
                             propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
-                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                            ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
-                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Integer.parseInt(newValue)));
+                            ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
+                            ComboBox<Integer> comboBox = new ComboBox<>(list);
+                            if (currentValue == null) {
+                                comboBox.getSelectionModel().select(null);
+                            } else {
+                                comboBox.getSelectionModel().select((Integer) currentValue);
+                            }
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
                             propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.BOOLEAN_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
                             ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            if (currentValue == null) {
+                                comboBox.getSelectionModel().select(null);
+                            } else {
+                                comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            }
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Boolean.parseBoolean(newValue)));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
@@ -389,9 +557,22 @@ public class ConfigActualDeviceView extends VBox{
                 }
             }
 
-            usedDeviceSettingPane.getChildren().addAll(imageView, name, entireComboBoxDevice);
+            settingPane.getChildren().addAll(imageView, nameTextField, entireComboBoxDevice, removeButton);
             currentRow++;
         }
+    }
+
+    private void initUsedDeviceControl() {
+        if (viewModel.getUsedDevice().isEmpty()) {
+            usedDevice.setVisible(false);
+            usedDevice.setManaged(false);
+        } else {
+            usedDevice.setVisible(true);
+            usedDevice.setManaged(true);
+        }
+
+        viewModel.clearDeviceConfigChangedCallback();
+        initDeviceSettingControl(usedDeviceSettingPane, viewModel.getUsedDevice());
         viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
 
@@ -402,36 +583,16 @@ public class ConfigActualDeviceView extends VBox{
         } else {
             unusedDevice.setVisible(true);
             unusedDevice.setManaged(true);
-            unusedDevicePane.getChildren().clear();
-            for (ProjectDevice projectDevice : viewModel.getUnusedDevice()) {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                        + projectDevice.getGenericDevice().getName() + ".png")));
-                imageView.setFitHeight(30.0);
-                imageView.setFitWidth(30.0);
-
-                Label name = new Label(projectDevice.getName());
-                name.setTextAlignment(TextAlignment.LEFT);
-                name.setAlignment(Pos.CENTER_LEFT);
-                name.setId("nameLabel");
-
-                HBox devicePic = new HBox();
-                devicePic.setSpacing(10.0);
-                devicePic.setAlignment(Pos.CENTER_LEFT);
-                devicePic.setMaxHeight(25.0);
-                devicePic.getChildren().addAll(imageView, name);
-
-                HBox entireDevice = new HBox();
-                entireDevice.setSpacing(10.0);
-                entireDevice.setAlignment(Pos.TOP_LEFT);
-                entireDevice.getChildren().addAll(devicePic);
-
-                unusedDevicePane.getChildren().add(entireDevice);
-            }
         }
+
+        unusedDevicePane.getChildren().clear();
+        viewModel.clearDeviceConfigChangedCallback();
+        initDeviceSettingControl(unusedDevicePane, viewModel.getUnusedDevice());
+        viewModel.setDeviceConfigChangedCallback(this::initDeviceControl);
     }
 
     private void initCloudPlatformPropertyControl() {
-        if (viewModel.getCloudPlatformUsed().isEmpty()) {
+        if (viewModel.getAllCloudPlatforms().isEmpty()) {
             cloudPlatformParameterSection.setVisible(false);
             cloudPlatformParameterSection.setManaged(false);
         } else {
@@ -440,7 +601,7 @@ public class ConfigActualDeviceView extends VBox{
 
             int currentRow = 0;
             cloudPlatformParameterPane.getChildren().clear();
-            for (CloudPlatform cloudPlatform : viewModel.getCloudPlatformUsed()) {
+            for (CloudPlatform cloudPlatform : viewModel.getAllCloudPlatforms()) {
                 ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
                         + cloudPlatform.getDisplayName() + ".png")));
                 cloudPlatformIcon.setFitHeight(30.0);
@@ -454,8 +615,8 @@ public class ConfigActualDeviceView extends VBox{
 
                 cloudPlatformParameterPane.getChildren().addAll(cloudPlatformIcon, cloudPlatformNameLabel);
 
-                for (String parameterName : cloudPlatform.getParameter()) { // use cloudPlatform.getParameter() as the map may not contain every params as key and we want it in the order defined
-                    String value = viewModel.getCloudPlatfromParameterValue(cloudPlatform, parameterName);
+                for (String parameterName : cloudPlatform.getParameter()) { // use cloudPlatform.getUnmodifiableCloudParameterMap() as the map may not contain every params as key and we want it in the order defined
+                    String value = viewModel.getCloudPlatformParameterValue(cloudPlatform, parameterName);
 
                     Label parameterNameLabel = new Label(parameterName);
                     GridPane.setRowIndex(parameterNameLabel, currentRow);

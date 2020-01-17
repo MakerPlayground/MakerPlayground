@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,41 @@
 package io.makerplayground.device.actual;
 
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.shared.Action;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.shared.constraint.Constraint;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class IntegratedActualDevice extends ActualDevice {
 
-    private ActualDevice parent;
-
-    IntegratedActualDevice(String name, Map<Platform, String> classnames, Map<Platform, List<String>> externalLibraries,
-                           List<DevicePort> port, List<Peripheral> connectivity, List<Property> property,
-                           Map<GenericDevice, Map<Action, Map<Parameter, Constraint>>> supportedAction,
-                           Map<GenericDevice, Map<Value, Constraint>> supportedValue) {
-        super("", "", name, "", 0, 0, DeviceType.INTEGRATED, "", null, FormFactor.NONE
-                , classnames, externalLibraries, null, port, connectivity
-                , supportedAction, supportedValue, property
-                , Collections.emptyMap(), Collections.emptyList());
-    }
-
-    public ActualDevice getParent() {
-        return parent;
-    }
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @Getter protected ActualDevice parent;
 
     public void setParent(ActualDevice parent) {
+        if (this.parent != null) {
+            throw new UnsupportedOperationException("parent couldn't be set multiple time.");
+        }
         this.parent = parent;
+        this.brand = parent.getBrand();
+        this.model = parent.getModel() + "'s " + getId();
+    }
+
+    IntegratedActualDevice(String name,
+                           List<Property> property,
+                           String pinTemplate,
+                           List<Connection> integratedConnection,
+                           Map<GenericDevice, Compatibility> compatibilityMap,
+                           Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary) {
+        super(name, "", "", "", 0.0, 0.0, "", DeviceType.MODULE, false, pinTemplate,
+                Collections.emptyList(), integratedConnection, property, null, compatibilityMap,
+                Collections.emptyMap(), platformSourceCodeLibrary, Collections.emptyList(), null);
+        this.parent = null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package io.makerplayground.ui.canvas.helper;
 
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -47,11 +49,11 @@ public class DynamicViewCreator<T extends Parent, U,  V extends Node> {
 
         this.nodeMap = new HashMap<>();
 
-        for (U controller : modelLoader.getControllerMap().values()) {
-            addNode(controller);
-        }
+        ObservableMap<?, U> controllerMap = modelLoader.getControllerMap();
 
-        modelLoader.getControllerMap().addListener((MapChangeListener<Object, U>) change -> {
+        modelLoader.getUnmodifiableModel().forEach(model -> addNode(controllerMap.get(model)));
+
+        controllerMap.addListener((MapChangeListener<Object, U>) change -> {
             if (change.wasRemoved()) {
                 removeNode(change.getValueRemoved());
             } else if (change.wasAdded()) {

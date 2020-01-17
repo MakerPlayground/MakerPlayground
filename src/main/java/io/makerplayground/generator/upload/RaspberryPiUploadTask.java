@@ -1,15 +1,31 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.generator.upload;
 
+import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
-import io.makerplayground.generator.source.SourceCodeGenerator;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.MultipartUtility;
+import io.makerplayground.util.PythonUtility;
 import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
@@ -31,8 +47,8 @@ public class RaspberryPiUploadTask extends UploadTask {
     private final String url;
     private final String ip;
 
-    public RaspberryPiUploadTask(Project project, String ip) {
-        super(project);
+    public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort, String ip) {
+        super(project, sourceCode, serialPort);
         this.ip = ip;
         this.url = "http://" + ip + ":6212";
     }
@@ -51,13 +67,12 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.USER_CANCEL;
         }
 
-        DeviceMapperResult mappingResult = DeviceMapper.validateDeviceAssignment(project);
-        if (mappingResult != DeviceMapperResult.OK) {
+        ProjectMappingResult mappingResult = ProjectLogic.validateDeviceAssignment(project);
+        if (mappingResult != ProjectMappingResult.OK) {
             Platform.runLater(()->updateMessage(mappingResult.getErrorMessage()));
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
-        SourceCodeResult sourcecode = SourceCodeGenerator.generate(project);
         if (sourcecode.getError() != null) {
             Platform.runLater(()->updateMessage("Error: " + sourcecode.getError().getDescription()));
             return UploadResult.CANT_GENERATE_CODE;
@@ -67,7 +82,7 @@ public class RaspberryPiUploadTask extends UploadTask {
         updateMessage("Checking required dependencies");
 
         // Test ping to device and check if it has makerplayground runtime.
-        Platform.runLater(() -> log.set("Install directory is at " + Utility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
         try {
             URL url = new URL(this.url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -75,7 +90,7 @@ public class RaspberryPiUploadTask extends UploadTask {
             con.setConnectTimeout(5000);
             con.setReadTimeout(5000);
             int status = con.getResponseCode();
-            Reader streamReader = null;
+            Reader streamReader;
             if (status > 299) {
                 streamReader = new InputStreamReader(con.getErrorStream());
             } else {
@@ -101,8 +116,9 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         updateMessage("Preparing to generate project");
         List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
-                .filter(ProjectDevice::isActualDeviceSelected)
-                .map(ProjectDevice::getActualDevice)
+                .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
+                .map(configuration::getActualDevice)
+                .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
@@ -111,12 +127,12 @@ public class RaspberryPiUploadTask extends UploadTask {
         }
 
         Set<String> mpLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getMpLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
 
         Set<String> externalLibraries = actualDevicesUsed.stream()
-                .map(actualDevice -> actualDevice.getExternalLibrary(project.getPlatform()))
+                .map(actualDevice -> actualDevice.getExternalLibrary(project.getSelectedPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 
         // Add Cloud Platform libraries
@@ -125,10 +141,10 @@ public class RaspberryPiUploadTask extends UploadTask {
             mpLibraries.add(cloudPlatform.getLibName());
 
             // add controller-specific library when using cloudPlatform.
-            mpLibraries.add(project.getController().getCloudPlatformLibraryName(cloudPlatform));
+            mpLibraries.add(project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform));
 
             // add controller-specific external dependency when using cloudPlatform.
-            externalLibraries.addAll(project.getController().getCloudPlatformLibraryDependency(cloudPlatform));
+            externalLibraries.addAll(project.getSelectedController().getCloudPlatformLibraryDependency(cloudPlatform));
         }
 
         Platform.runLater(() -> log.set("List of library used \n"));
@@ -141,7 +157,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         updateMessage("Generating project");
 
-        String projectPath = Utility.MP_WORKSPACE + File.separator + "script";
+        String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "script";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
@@ -151,7 +167,7 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.CANT_CREATE_PROJECT;
         }
 
-        String projectZipPath = Utility.MP_WORKSPACE + File.separator + "script.zip";
+        String projectZipPath = PythonUtility.MP_WORKSPACE + File.separator + "script.zip";
         File zipFile = new File(projectZipPath);
         try {
             if (zipFile.exists()) {
@@ -167,7 +183,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         // get path to the library directory
         Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
-        if (!libraryPath.isPresent()) {
+        if (libraryPath.isEmpty()) {
             Platform.runLater(()->updateMessage("Error: Missing library directory"));
             return UploadResult.MISSING_LIBRARY_DIR;
         }
@@ -183,7 +199,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         // copy mp library
         for (String libName: mpLibraries) {
-            File source = Paths.get(libraryPath.get(), "lib", project.getPlatform().getLibraryFolderName(), libName).toFile();
+            File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
             File destination = Paths.get(projectPath, libName).toFile();
             try {
                 FileUtils.copyDirectory(source, destination);

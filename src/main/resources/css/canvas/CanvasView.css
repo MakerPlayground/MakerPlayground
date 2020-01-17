@@ -45,79 +45,98 @@
 
 #addSceneBtn{
      -fx-focus-color: transparent;
-     -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
-     -fx-border-color: add-scene-background-color;
-     -fx-border-radius: 5px;
+     -fx-background-color : scene-theme-color;
+     -fx-background-radius: 15px;
+     -fx-border-color: scene-theme-color;
+     -fx-border-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-font-weight: bold;
      -fx-text-fill : add-scene-text-color;
-     -fx-min-width: 150;
  }
 
  #addSceneBtn:hover {
-    -fx-background-color: add-scene-background-color-hover;
-    -fx-border-color : add-scene-background-color-hover;
+    -fx-background-color: scene-theme-hover-color;
+    -fx-border-color : scene-theme-hover-color;
     -fx-cursor: hand;
  }
 
  #addSceneBtn:pressed{
-     -fx-background-color: add-scene-background-color-hover;
-     -fx-border-color : add-scene-background-color-hover;
+     -fx-background-color: scene-theme-hover-color;
+     -fx-border-color : scene-theme-hover-color;
      -fx-cursor: hand;
  }
 
  #addConditionBtn{
      -fx-focus-color: transparent;
-     -fx-border-color : add-scene-background-color;
-     -fx-border-radius: 5px;
-     -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
+     -fx-border-color : condition-theme-color;
+     -fx-border-radius: 15px;
+     -fx-background-color : condition-theme-color;
+     -fx-background-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-text-fill : add-scene-text-color;
      -fx-font-weight: bold;
-     /*-fx-effect : dropshadow(gaussian,derive(black,75%), 5.0 , 0.0, 0.0 , 0.0);*/
-     -fx-cursor: hand;
-     -fx-min-width: 150;
  }
 
   #addConditionBtn:hover {
-     -fx-background-color: add-scene-background-color-hover;
-     -fx-border-color : add-scene-background-color-hover;
+     -fx-background-color: condition-theme-hover-color;
+     -fx-border-color : condition-theme-hover-color;
      -fx-cursor: hand;
   }
 
  #addConditionBtn:pressed{
-     -fx-background-color: add-scene-background-color-hover;
-     -fx-border-color : add-scene-background-color-hover;
+     -fx-background-color: condition-theme-hover-color;
+     -fx-border-color : condition-theme-hover-color;
      -fx-cursor: hand;
  }
+
+  #addDelayBtn{
+      -fx-focus-color: transparent;
+      -fx-border-color : condition-theme-color;
+      -fx-border-radius: 15px;
+      -fx-background-color : condition-theme-color;
+      -fx-background-radius: 15px;
+      -fx-background-insets:0;
+      -fx-font-size : 13px;
+      -fx-text-fill : add-scene-text-color;
+      -fx-font-weight: bold;
+  }
+
+   #addDelayBtn:hover {
+      -fx-background-color: condition-theme-hover-color;
+      -fx-border-color : condition-theme-hover-color;
+      -fx-cursor: hand;
+   }
+
+  #addDelayBtn:pressed{
+      -fx-background-color: condition-theme-hover-color;
+      -fx-border-color : condition-theme-hover-color;
+      -fx-cursor: hand;
+  }
 
 
 #addBeginBtn{
      -fx-focus-color: transparent;
-     -fx-background-color : add-scene-background-color;
-     -fx-background-radius: 5px;
-     -fx-border-color: add-scene-background-color;
-     -fx-border-radius: 5px;
+     -fx-background-color : begin-theme-color;
+     -fx-background-radius: 15px;
+     -fx-border-color: begin-theme-color;
+     -fx-border-radius: 15px;
      -fx-background-insets:0;
-     -fx-font-size : 14px;
+     -fx-font-size : 13px;
      -fx-font-weight: bold;
      -fx-text-fill : add-scene-text-color;
-     -fx-min-width: 150;
  }
 
  #addBeginBtn:hover {
-    -fx-background-color: add-scene-background-color-hover;
-    -fx-border-color : add-scene-background-color-hover;
+    -fx-background-color: begin-theme-hover-color;
+    -fx-border-color : begin-theme-hover-color;
     -fx-cursor: hand;
  }
 
  #addBeginBtn:pressed{
-     -fx-background-color: add-scene-background-color-hover;
-     -fx-border-color : add-scene-background-color-hover;
+     -fx-background-color: begin-theme-hover-color;
+     -fx-border-color : begin-theme-hover-color;
      -fx-cursor: hand;
  }
 

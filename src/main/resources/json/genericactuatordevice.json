@@ -5,8 +5,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Brightness", 
@@ -23,8 +22,7 @@
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -38,7 +36,6 @@
       {
         "name": "On",
         "funcname": "on",
-        "type": "Active",
         "parameter": [
           {
             "name": "Red",
@@ -89,7 +86,6 @@
       {
         "name": "Off",
         "funcname": "off",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -103,7 +99,6 @@
       {
         "name": "Set Color",
         "funcname": "setColor",
-        "type": "Active",
         "parameter": [
           {
             "name": "Index",
@@ -154,13 +149,12 @@
       {
         "name": "Fill Color",
         "funcname": "fillColor",
-        "type": "Active",
         "parameter": [
           {
             "name": "Start Index",
             "value": 1.0,
             "constraint": {
-              "min": 0.0,
+              "min": 1.0,
               "max": 10000.0,
               "unit": "NOT_SPECIFIED"
             },
@@ -171,7 +165,7 @@
             "name": "End Index",
             "value": 1.0,
             "constraint": {
-              "min": 0.0,
+              "min": 1.0,
               "max": 10000.0,
               "unit": "NOT_SPECIFIED"
             },
@@ -216,7 +210,6 @@
       {
         "name": "Set Brightness",
         "funcname": "setBrightness",
-        "type": "Active",
         "parameter": [
           {
             "name": "Brightness",
@@ -234,7 +227,6 @@
       {
         "name": "Clear",
         "funcname": "clear",
-        "type": "Inactive",
         "parameter": []
       }
     ],
@@ -247,14 +239,12 @@
     "action": [
       {
         "name": "Beep", 
-        "funcname": "beep", 
-        "type": "Active", 
+        "funcname": "beep",
         "parameter": []
       }, 
       {
         "name": "Play Tone", 
-        "funcname": "play", 
-        "type": "Active", 
+        "funcname": "play",
         "parameter": [
           {
             "name": "Tone Frequency", 
@@ -290,8 +280,7 @@
     "action": [
       {
         "name": "Show Number", 
-        "funcname": "showData", 
-        "type": "Active",
+        "funcname": "showData",
         "parameter": [
           {
             "name": "Number", 
@@ -309,7 +298,6 @@
       {
         "name": "Show Two Numbers with Colon",
         "funcname": "showTwoIntWithColon",
-        "type": "Active",
         "parameter": [
           {
             "name": "Before colon",
@@ -337,8 +325,7 @@
       },
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active",
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -351,8 +338,7 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": [
           {
             "name": "Direction", 
@@ -379,8 +365,7 @@
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Inactive", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -393,8 +378,7 @@
     "action": [
       {
         "name": "Move To", 
-        "funcname": "moveto", 
-        "type": "Active", 
+        "funcname": "moveto",
         "parameter": [
           {
             "name": "Degree", 
@@ -419,14 +403,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -439,14 +421,12 @@
     "action": [
       {
         "name": "On", 
-        "funcname": "on", 
-        "type": "Active", 
+        "funcname": "on",
         "parameter": []
       }, 
       {
         "name": "Off", 
-        "funcname": "off", 
-        "type": "Active", 
+        "funcname": "off",
         "parameter": []
       }
     ], 
@@ -460,7 +440,6 @@
       {
         "name": "Show Text",
         "funcname": "showTextAtRow",
-        "type": "Active",
         "parameter": [
           {
             "name": "Row",
@@ -533,7 +512,6 @@
       {
         "name": "Clear Row",
         "funcname": "clearRow",
-        "type": "Active",
         "parameter": [
           {
             "name": "Row",
@@ -551,11 +529,157 @@
       {
         "name": "Clear Screen",
         "funcname": "clearScreen",
-        "type": "Inactive",
         "parameter": []
       }
     ],
     "condition": [],
     "value": []
+  },
+  {
+    "name": "MP3 Player",
+    "description": "An MP3 player",
+    "action": [
+      {
+        "name": "Play MP3",
+        "funcname": "playMP3",
+        "parameter": [
+          {
+            "name": "Index",
+            "value": 1,
+            "constraint": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "datatype": "INTEGER_ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      },
+      {
+        "name": "Play Next MP3",
+        "funcname": "playNextMP3",
+        "parameter": []
+      },
+      {
+        "name": "Play Previous MP3",
+        "funcname": "playPrevMP3",
+        "parameter": []
+      },
+      {
+        "name": "Pause",
+        "funcname": "pause",
+        "parameter": []
+      },
+      {
+        "name": "Start from pause",
+        "funcname": "startFromPause",
+        "parameter": []
+      },
+      {
+        "name": "Enable Loop",
+        "funcname": "enableLoop",
+        "parameter": []
+      },
+      {
+        "name": "Enable Loop All",
+        "funcname": "enableLoopAll",
+        "parameter": []
+      },
+      {
+        "name": "Disable Loop",
+        "funcname": "disableLoop",
+        "parameter": []
+      },
+      {
+        "name": "Disable Loop All",
+        "funcname": "disableLoopAll",
+        "parameter": []
+      },
+      {
+        "name": "Set Volume",
+        "funcname": "setVolume",
+        "parameter": [
+          {
+            "name": "volume",
+            "value": 15,
+            "constraint": {
+              "min": 0,
+              "max": 30,
+              "unit": "NOT_SPECIFIED"
+            },
+            "datatype": "INTEGER",
+            "controltype": "SPINBOX"
+          }
+        ]
+      },
+      {
+        "name": "Volume Up",
+        "funcname": "volumeUp",
+        "parameter": []
+      },
+      {
+        "name": "Volume Down",
+        "funcname": "volumeDown",
+        "parameter": []
+      },
+      {
+        "name": "Set EQ",
+        "funcname": "setEQ",
+        "parameter": [
+          {
+            "name": "EQ",
+            "value": "NORMAL",
+            "constraint": [
+              "NORMAL",
+              "POP",
+              "ROCK",
+              "JAZZ",
+              "CLASSIC",
+              "BASS"
+            ],
+            "datatype": "ENUM",
+            "controltype": "DROPDOWN"
+          }
+        ]
+      }
+    ],
+    "condition": [],
+    "value": [
+      {
+        "name": "Volume",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 30,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "FileCount",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 65535,
+          "unit": "NOT_SPECIFIED"
+        }
+      },
+      {
+        "name": "CurrentFileNumber",
+        "dataType": "INTEGER",
+        "constraint": {
+          "min": 0,
+          "max": 65535,
+          "unit": "NOT_SPECIFIED"
+        }
+      }
+    ]
   }
 ]

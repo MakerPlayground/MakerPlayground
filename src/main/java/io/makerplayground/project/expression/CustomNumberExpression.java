@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,9 @@ public class CustomNumberExpression extends Expression {
         int countParen = 0;
         for (Term term : terms) {
             if (term instanceof OperatorTerm) {
-                if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) { countParen++; }
-                else if(Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
+                if (Operator.OPEN_PARENTHESIS.equals(term.getValue())) {
+                    countParen++;
+                } else if(Operator.CLOSE_PARENTHESIS.equals(term.getValue())) {
                     countParen--;
                     if (countParen < 0) { return false; }
                 }
@@ -92,6 +93,12 @@ public class CustomNumberExpression extends Expression {
                 return false;
             }
         }
+
+        /* check first item in the sequence */
+        if (isOperationNotParenTerm(terms.get(0))) {
+            return false;
+        }
+
         /* check valid sequence */
         for (int i=0; i<terms.size()-1; i++) {
             Term term = terms.get(i);

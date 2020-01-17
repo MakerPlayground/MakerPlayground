@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package io.makerplayground.ui.dialog.configdevice;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,116 +35,114 @@ import java.util.stream.Collectors;
  * Created by tanyagorn on 7/11/2017.
  */
 public class ConfigActualDeviceViewModel {
+
     private final Project project;
-    private final ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceList;
-    private final ObjectProperty<Map<ProjectDevice, List<ProjectDevice>>> compatibleShareDeviceList;
-    private final ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortList;
-    private Runnable platformChangedCallback;
-    private Runnable controllerChangedCallback;
-    private Runnable deviceConfigChangedCallback;
-    private Runnable configChangedCallback;
+    private final ObjectProperty<Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>>> compatibleDeviceMap;
+    private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>>> deviceConnectionList;
+
+    private ActualDeviceComboItem selectedController;
+
+    @Setter private Runnable platformChangedCallback;
+    @Setter private Runnable controllerChangedCallback;
+    @Setter private Runnable deviceConfigChangedCallback;
+    @Setter private Runnable configChangedCallback;
 
     public ConfigActualDeviceViewModel(Project project) {
         this.project = project;
-        this.compatibleDeviceList = new SimpleObjectProperty<>();
-        this.compatiblePortList = new SimpleObjectProperty<>();
-        this.compatibleShareDeviceList = new SimpleObjectProperty<>();
-        applyDeviceMapping();
+        this.compatibleDeviceMap = new SimpleObjectProperty<>();
+        this.deviceConnectionList = new SimpleObjectProperty<>();
+        retrieveDeviceMapping();
     }
 
-    private void applyDeviceMapping() {
-        compatibleDeviceList.set(DeviceMapper.getSupportedDeviceList(project));
-        compatibleShareDeviceList.set(DeviceMapper.getShareableDeviceList(project));
-        compatiblePortList.set(DeviceMapper.getDeviceCompatiblePort(project));
-    }
-
-    public void setPlatformChangedCallback(Runnable callback) {
-        platformChangedCallback = callback;
-    }
-
-    public void setControllerChangedCallback(Runnable callback) {
-        controllerChangedCallback = callback;
-    }
-
-    public void setDeviceConfigChangedCallback(Runnable callback) {
-        deviceConfigChangedCallback = callback;
+    private void retrieveDeviceMapping() {
+        compatibleDeviceMap.set(project.getProjectConfiguration().getCompatibleDevicesSelectableMap());
+        deviceConnectionList.set(project.getProjectConfiguration().getCompatibleConnectionMap());
     }
 
     public void clearDeviceConfigChangedCallback() {
         deviceConfigChangedCallback = null;
     }
 
-    public void setConfigChangedCallback(Runnable callback) {
-        configChangedCallback = callback;
-    }
-
-    List<CompatibleDevice> getCompatibleDevice(ProjectDevice projectDevice) {
-        List<CompatibleDevice> compatibleDevices = new ArrayList<>();
-        compatibleDevices.addAll(compatibleShareDeviceList.get().get(projectDevice).stream().map(CompatibleDevice::new).collect(Collectors.toList()));
-        compatibleDevices.addAll(compatibleDeviceList.get().get(projectDevice).stream().map(CompatibleDevice::new).collect(Collectors.toList()));
-        return compatibleDevices;
-    }
-
-    Map<Peripheral, List<List<DevicePort>>> getCompatiblePort(ProjectDevice projectDevice) {
-        return compatiblePortList.get().get(projectDevice);
-    }
-
-    List<ActualDevice> getCompatibleControllerDevice() {
-        return DeviceMapper.getSupportedController(project);
-    }
-
     void setPlatform(Platform platform) {
-        project.setPlatform(platform);
-        applyDeviceMapping();
-        if (platformChangedCallback != null) {
-            platformChangedCallback.run();
-        }
-        if (configChangedCallback != null) {
-            configChangedCallback.run();
+        if (project.getSelectedPlatform() != platform) {
+            project.setPlatform(platform);
+            project.getProjectConfiguration().unsetDevice(ProjectDevice.CONTROLLER);
+            project.getProjectConfiguration().unsetAllDevices();
+            retrieveDeviceMapping();
+            if (platformChangedCallback != null) {
+                platformChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
         }
     }
 
     Platform getSelectedPlatform() {
-        return project.getPlatform();
+        return project.getSelectedPlatform();
     }
 
     ActualDevice getController() {
-        return project.getController();
+        return project.getSelectedController();
     }
 
-    void setController(ActualDevice device) {
-        project.setController(device);
-        applyDeviceMapping();
-        if (controllerChangedCallback != null) {
-            controllerChangedCallback.run();
-        }
-        if (configChangedCallback != null) {
-            configChangedCallback.run();
+    void setController(ActualDeviceComboItem device) {
+        if (selectedController != device) {
+            selectedController = device;
+            if (selectedController != null) {
+                project.setController(selectedController.getActualDevice());
+            }
+            retrieveDeviceMapping();
+            if (controllerChangedCallback != null) {
+                controllerChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
         }
     }
 
     ActualDevice getSelectedController() {
-        return project.getController();
+        return project.getSelectedController();
     }
-
-//    ObjectProperty<Map<ProjectDevice, List<ActualDevice>>> compatibleDeviceListProperty() {
-//        return compatibleDeviceList;
-//    }
-//
-//    ObjectProperty<Map<ProjectDevice, Map<Peripheral, List<List<DevicePort>>>>> compatiblePortListProperty() {
-//        return compatiblePortList;
-//    }
 
     void setDevice(ProjectDevice projectDevice, CompatibleDevice device) {
-        if (projectDevice.isActualDeviceSelected()) {
-            projectDevice.removeAllDeviceConnection();
+        ProjectConfiguration configuration = project.getProjectConfiguration();
+        /* same as previous -> do nothing */
+        if (device == null) {
+            if (configuration.getActualDevice(projectDevice).isPresent() || configuration.getIdenticalDevice(projectDevice).isPresent()) {
+                configuration.unsetDevice(projectDevice);
+                retrieveDeviceMapping();
+                if (deviceConfigChangedCallback != null) {
+                    deviceConfigChangedCallback.run();
+                }
+                if (configChangedCallback != null) {
+                    configChangedCallback.run();
+                }
+            }
+        } else if (configuration.getActualDevice(projectDevice) != device.getActualDevice()
+                || configuration.getIdenticalDevice(projectDevice) != device.getProjectDevice()) {
+
+            device.getActualDevice().ifPresentOrElse(actualDevice -> configuration.setActualDevice(projectDevice, actualDevice),
+                    () -> device.getProjectDevice().ifPresent(identicalDevice -> configuration.setIdenticalDevice(projectDevice, identicalDevice)));
+            retrieveDeviceMapping();
+            if (deviceConfigChangedCallback != null) {
+                deviceConfigChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
         }
-        if (device.getActualDevice() != null) {
-            projectDevice.setActualDevice(device.getActualDevice());
-        } else {
-            projectDevice.setParentDevice(device.getProjectDevice());
-        }
-        applyDeviceMapping();
+    }
+
+    Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String name) {
+        return project.setProjectDeviceName(projectDevice, name);
+    }
+
+    void removeDevice(ProjectDevice projectDevice) {
+        project.removeDevice(projectDevice);
+
+        retrieveDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();
         }
@@ -149,45 +151,39 @@ public class ConfigActualDeviceViewModel {
         }
     }
 
-    void setPeripheral(ProjectDevice projectDevice, Peripheral peripheral, List<DevicePort> port) {
-        // TODO: assume a device only has 1 peripheral
-        projectDevice.setDeviceConnection(peripheral, port);
-        applyDeviceMapping();
-        if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.run();
-        }
-        if (configChangedCallback != null) {
-            configChangedCallback.run();
-        }
-    }
-
-    void clearPeripheral(ProjectDevice projectDevice, Peripheral peripheral) {
-        projectDevice.removeDeviceConnection(peripheral);
-        applyDeviceMapping();
-        if (deviceConfigChangedCallback != null) {
-            deviceConfigChangedCallback.run();
-        }
-        if (configChangedCallback != null) {
-            configChangedCallback.run();
+    void setConnection(ProjectDevice projectDevice, Connection connectionConsume, Connection connectionProvide) {
+        if (project.getProjectConfiguration().getDeviceConnection(projectDevice).getConsumerProviderConnections().get(connectionConsume) != connectionProvide) {
+            if (connectionProvide == null) {
+                project.getProjectConfiguration().unsetConnection(projectDevice, connectionConsume);
+            } else {
+                project.getProjectConfiguration().setConnection(projectDevice, connectionConsume, connectionProvide);
+            }
+            retrieveDeviceMapping();
+            if (deviceConfigChangedCallback != null) {
+                deviceConfigChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
         }
     }
 
     Object getPropertyValue(ProjectDevice projectDevice, Property p) {
-        return projectDevice.getPropertyValue(p);
+        return project.getProjectConfiguration().getPropertyValue(projectDevice, p);
     }
 
     void setPropertyValue(ProjectDevice projectDevice, Property p, Object value) {
-        projectDevice.setPropertyValue(p, value);
+        project.getProjectConfiguration().setPropertyValue(projectDevice, p, value);
         if (configChangedCallback != null) {
             configChangedCallback.run();
         }
     }
 
-    Set<CloudPlatform> getCloudPlatformUsed() {
-        return project.getCloudPlatformUsed();
+    Set<CloudPlatform> getAllCloudPlatforms() {
+        return project.getAllCloudPlatforms();
     }
 
-    String getCloudPlatfromParameterValue(CloudPlatform cloudPlatform, String name) {
+    String getCloudPlatformParameterValue(CloudPlatform cloudPlatform, String name) {
         return project.getCloudPlatformParameter(cloudPlatform, name);
     }
 
@@ -206,9 +202,45 @@ public class ConfigActualDeviceViewModel {
         return  project.getAllDeviceUnused();
     }
 
-    DeviceMapperResult autoAssignDevice() {
-        DeviceMapperResult result = DeviceMapper.autoAssignDevices(project);
-        applyDeviceMapping();
+    public List<ActualDeviceComboItem> getControllerComboItemList(Platform platform) {
+        return DeviceLibrary.INSTANCE
+                .getActualDevice(platform)
+                .stream()
+                .filter(actualDevice -> actualDevice.getDeviceType() == DeviceType.CONTROLLER)
+                .map(actualDevice -> new ActualDeviceComboItem(actualDevice, DeviceMappingResult.OK))
+                .collect(Collectors.toList());
+    }
+
+    public List<CompatibleDeviceComboItem> getCompatibleDeviceComboItem(ProjectDevice projectDevice) {
+        if (!compatibleDeviceMap.get().containsKey(projectDevice)) {
+            return Collections.emptyList();
+        }
+        return compatibleDeviceMap.get().get(projectDevice).entrySet().stream().map(entry -> new CompatibleDeviceComboItem(entry.getKey(), entry.getValue())).sorted().collect(Collectors.toList());
+    }
+
+    public boolean isActualDevicePresent(ProjectDevice projectDevice) {
+        return project.getProjectConfiguration().getActualDevice(projectDevice).isPresent();
+    }
+
+    public Optional<ActualDevice> getActualDevice(ProjectDevice projectDevice) {
+        return project.getProjectConfiguration().getActualDevice(projectDevice);
+    }
+
+    public Optional<ProjectDevice> getParentDevice(ProjectDevice projectDevice) {
+        return project.getProjectConfiguration().getIdenticalDevice(projectDevice);
+    }
+
+    public Map<Connection, List<Connection>> getPossibleDeviceConnections(ProjectDevice projectDevice, ActualDevice actualDevice) {
+        return deviceConnectionList.get().get(projectDevice).get(actualDevice);
+    }
+
+    public Connection getSelectedConnection(ProjectDevice projectDevice, Connection connectionConsume) {
+        return project.getProjectConfiguration().getDeviceConnection(projectDevice).getConsumerProviderConnections().get(connectionConsume);
+    }
+
+    ProjectMappingResult autoAssignDevice() {
+        ProjectMappingResult result = project.getProjectConfiguration().autoAssignDevices();
+        retrieveDeviceMapping();
         if (deviceConfigChangedCallback != null) {
             deviceConfigChangedCallback.run();
         }
@@ -216,5 +248,9 @@ public class ConfigActualDeviceViewModel {
             configChangedCallback.run();
         }
         return result;
+    }
+
+    public ObservableList<ProjectDevice> getAllDevices() {
+        return project.getUnmodifiableProjectDevice();
     }
 }

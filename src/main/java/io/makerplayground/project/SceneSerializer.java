@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,18 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 
 /**
  * Created by USER on 13-Jul-17.
  */
-public class SceneSerializer extends StdSerializer<Scene> {
-   public SceneSerializer() { this(null); }
+public class SceneSerializer extends JsonSerializer<Scene> {
 
-   public SceneSerializer(Class<Scene> t) { super(t); }
-
-   @Override
+    @Override
     public void serialize(Scene scene, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
        ObjectMapper mapper = new ObjectMapper();
 
@@ -44,9 +41,6 @@ public class SceneSerializer extends StdSerializer<Scene> {
           mapper.writeValue(jsonGenerator, setting);
        }
        jsonGenerator.writeEndArray();
-
-       jsonGenerator.writeObjectField("delay",scene.getDelay());
-       jsonGenerator.writeObjectField("delayUnit",scene.getDelayUnit());
 
        jsonGenerator.writeObjectFieldStart("position");
        jsonGenerator.writeNumberField("top",scene.getTop());

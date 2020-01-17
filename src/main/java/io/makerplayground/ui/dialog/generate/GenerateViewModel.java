@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
 
 package io.makerplayground.ui.dialog.generate;
 
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.Connection;
+import io.makerplayground.project.DeviceConnection;
+import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.*;
 
 /**
  * Created by tanyagorn on 7/19/2017.
@@ -36,10 +42,43 @@ public class GenerateViewModel {
         this.observableTableList = FXCollections.observableArrayList();
 
         if (!code.hasError()) {
-            for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
-                observableTableList.add(new TableDataList(projectDevice));
+            ProjectConfiguration configuration = project.getProjectConfiguration();
+            var connections = configuration.getUnmodifiableDeviceConnections();
+            var deviceMap = configuration.getUnmodifiableDeviceMap();
+            for (ProjectDevice device : deviceMap.keySet()) {
+                ActualDevice actualDevice = deviceMap.get(device);
+                if (connections.containsKey(device)) {
+                    var connection = connections.get(device);
+                    observableTableList.add(new TableDataList(device.getName(),
+                            actualDevice.getBrand(),
+                            actualDevice.getModel(),
+                            actualDevice.getId(),
+                            generateDescription(connection),
+                            actualDevice.getUrl())
+                    );
+                }
             }
         }
+    }
+    private static final String NEW_LINE = "\n";
+
+    private String generateDescription(DeviceConnection connection) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+        for(Connection consumerConnection : connectionMap.keySet()) {
+            Connection providerConnection = connectionMap.get(consumerConnection);
+            if (Objects.isNull(consumerConnection) || Objects.isNull(providerConnection)) {
+                continue;
+            }
+            stringBuilder.append("(");
+            stringBuilder.append(consumerConnection.getOwnerProjectDevice().getName()).append("'s ").append(consumerConnection.getName());
+            stringBuilder.append(" -> ");
+            stringBuilder.append(providerConnection.getOwnerProjectDevice().getName()).append("'s ").append(providerConnection.getName());
+            stringBuilder.append(")");
+            stringBuilder.append(NEW_LINE);
+        }
+        return stringBuilder.toString().strip();
     }
 
     public Project getProject() {

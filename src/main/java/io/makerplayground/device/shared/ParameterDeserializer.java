@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import io.makerplayground.device.shared.constraint.Constraint;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.constraint.Constraint;
+import io.makerplayground.device.shared.constraint.ConstraintDeserializer;
 
 import java.io.IOException;
 
@@ -31,15 +32,7 @@ import java.io.IOException;
  * A helper class used by jackson's {@link ObjectMapper} to deserialize a {@link Parameter}
  * from a json file
  */
-public class ParameterDeserializer extends StdDeserializer<Parameter> {
-
-    public ParameterDeserializer() {
-        this(null);
-    }
-
-    public ParameterDeserializer(Class<?> vc) {
-        super(vc);
-    }
+public class ParameterDeserializer extends JsonDeserializer<Parameter> {
 
     @Override
     public Parameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
@@ -47,21 +40,23 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
         String name = node.get("name").asText();
-        Constraint constraint = mapper.treeToValue(node.get("constraint"), Constraint.class);
         DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
+        mapper.registerModule(module);
+        Constraint constraint = mapper.readValue(node.get("constraint").traverse(), Constraint.class);
         ControlType controlType = mapper.treeToValue(node.get("controltype"), ControlType.class);
 
         Object defaultValue = null;
         switch (dataType) {
             case STRING:
+            case ENUM:
                 defaultValue = node.get("value").asText();
                 break;
             case DOUBLE:
                 defaultValue = new NumberWithUnit(node.get("value").asDouble()
                         , Unit.valueOf(node.get("constraint").get("unit").asText()));
-                break;
-            case ENUM:
-                defaultValue = node.get("value").asText();
                 break;
             case INTEGER:
                 defaultValue = new NumberWithUnit(node.get("value").asInt()
@@ -83,6 +78,6 @@ public class ParameterDeserializer extends StdDeserializer<Parameter> {
                 throw new IllegalStateException("Error: found unknown datatype!!!");
         }
 
-        return new Parameter(name, defaultValue, constraint, dataType, controlType);
+        return new Parameter(name, dataType, defaultValue, constraint, controlType);
     }
 }

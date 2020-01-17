@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,81 +16,34 @@
 
 package io.makerplayground.device.actual;
 
-/**
- * Created by tanyagorn on 7/14/2017.
- */
+import javafx.scene.paint.Color;
+import lombok.Getter;
+
+import java.util.Collections;
+import java.util.List;
+
+@Getter
 public enum ConnectionType {
-    GPIO,
-    ANALOG,
-    INT,
-    PWM,
-    I2C,
-    I2C1,
-    SPI,
-    UART,
-    POWER,
-    ONE_WIRE,
-    NONE,
+    INTEGRATED(List.of(), 0, false),
+    WIRE(List.of(Color.BLUE), 4, false),
+    GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, false),
+    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4, true),
+    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, true),
+    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3, true),
+    UNO_SHIELD(Collections.emptyList(), 0, true),
+    CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5, false);
 
-    /* Maker Playground */
-    MP_INT_UART,
-    MP_GPIO_SINGLE,
-    MP_GPIO_DUAL,
-    MP_PWM_SINGLE,
-    MP_PWM_DUAL,
-    MP_ANALOG_SINGLE,
-    MP_ANALOG_DUAL,
-    MP_I2C,
-    MP_I2C1,
+    private final List<Color> pinColors;
+    private final double lineWidth;
+    private final boolean splittable;
 
-    /* Grove */
-    GROVE_GPIO_SINGLE,
-    GROVE_GPIO_SINGLE_INNER,
-    GROVE_GPIO_DUAL,
-    GROVE_PWM_SINGLE,
-    GROVE_PWM_SINGLE_INNER,
-    GROVE_PWM_DUAL,
-    GROVE_ANALOG_SINGLE,
-    GROVE_ANALOG_DUAL,
-    GROVE_I2C,
-    GROVE_UART,
-
-    /* INEX */
-    INEX_GPIO,
-    INEX_PWM,
-    INEX_ANALOG,
-    INEX_I2C,
-    INEX_UART,
-    INEX_WS2812,
-    INEX_ONE_WIRE,
-    INEX_SPI,
-
-    /* JR3 Family */
-    JR3_SERVO,
-
-    /* RPI */
-    RPI_CAMERA;
-
-    public boolean isGPIO() {
-        return (this == MP_GPIO_SINGLE) || (this == MP_GPIO_DUAL) || (this == GROVE_GPIO_SINGLE)
-                || (this == GROVE_GPIO_DUAL) || (this == INEX_GPIO);
+    ConnectionType(List<Color> colors, double lineWeight, boolean splittable) {
+        this.pinColors = colors;
+        this.lineWidth = lineWeight;
+        this.splittable = splittable;
     }
 
-    public boolean isPWM() {
-        return (this == MP_PWM_SINGLE) || (this == MP_PWM_DUAL) || (this == GROVE_PWM_SINGLE)
-                || (this == GROVE_PWM_DUAL) || (this == INEX_PWM);
-    }
-
-    public boolean isAnalog() {
-        return (this == MP_ANALOG_SINGLE) || (this == MP_ANALOG_DUAL) || (this == GROVE_ANALOG_SINGLE)
-                || (this == GROVE_ANALOG_DUAL) || (this == INEX_ANALOG);
-    }
-
-    public boolean isI2C() {
-        return (this == MP_I2C) || (this == GROVE_I2C) || (this == INEX_I2C);
-    }
-
-    public boolean isUART() {
-        return (this == GROVE_UART) || (this == INEX_UART);
+    public boolean canConsume(ConnectionType type) {
+        return this == type;
     }
 }

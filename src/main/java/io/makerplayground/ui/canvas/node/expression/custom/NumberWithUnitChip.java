@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,10 @@ import io.makerplayground.project.term.Term;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
-import java.text.DecimalFormat;
-
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 public class NumberWithUnitChip extends Chip<NumberWithUnit> {
 

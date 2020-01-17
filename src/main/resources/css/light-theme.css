@@ -37,43 +37,25 @@
     scrollbar-border-color: #c2c2c2;
 
     /*---canvas---*/
-    canvas-background-color: #e4e4e4;
+    canvas-background-color: #f4f5f7;
 
-    /*Add Scene/Condition button*/
-    add-scene-background-color: #00cc6a;
-    add-scene-background-color-hover: #04aa53;
-    add-scene-text-color: #ffffff;
-    
     /*---Begin---*/
-    begin-background-color: #6a737d;
+    begin-theme-color: #9f31e9;
+    begin-theme-hover-color: #8b2bcc;
     begin-text-fill: #ffffff;
-    begin-outport: #4d555b;
+    begin-outport: #9f31e9;
+
+    /*---delay---*/
+    delay-theme-color: #ffab00;
+    delay-theme-hover-color: #e69a00;
 
     /*---condition---*/
-    condition-background-color: #f6f6f6;
-    condition-scroll-pane-viewport-background-color: transparent;
-    condition-scroll-pane-viewport-border-color: transparent;
-    condition-port: #e3e3e3;
-
+    condition-theme-color: #ffab00;
+    condition-theme-hover-color: #e69a00;
 
     /*---Scene---*/
+    scene-theme-color: #00cc6a;
+    scene-theme-hover-color: #00b35d;
+    add-scene-text-color: #ffffff;
     scene-header-background-color: #ffffff;
-    scene-background-color: #f6f6f6;
-
 }
-
-/* -fx-base: #ffffff;
-    -fx-background: #ffffff;
-
-    -fx-control-inner-background: #f6f6f6;
-    -fx-control-inner-background-alt: derive(-fx-control-inner-background,-2%);
-
-    -fx-dark-text-color: black;
-    -fx-mid-text-color: #333;
-    -fx-light-text-color: white;
-
-    -fx-accent: #2673fd;
-    -fx-default-button: #2673fd;
-
-    -fx-focus-color: #2673fd;
-    -fx-faint-focus-color: #2673fd; */

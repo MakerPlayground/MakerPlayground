@@ -1,0 +1,120 @@
+.root {
+    -fx-focus-color: transparent;
+    -fx-effect: null;
+    -fx-font-size:12px;
+}
+
+#contentPane {
+    -fx-background-radius: 14px;
+    -fx-background-color: scene-header-background-color;
+    -fx-border-color: condition-theme-color;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+}
+
+#nameStateTextField {
+    -fx-background-color : transparent;
+    -fx-text-fill: text-color;
+    -fx-font-weight: bold;
+    -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
+}
+
+#numberTextField {
+    -fx-background-color : control-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-color : border-color;
+    -fx-border-width : 1px;
+    -fx-border-radius: 5 5 5 5;
+    -fx-text-fill : text-color;
+    -fx-font-size : 11px;
+    /*-fx-font-weight : bold;*/
+}
+
+.scroll-pane{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px 0px 0px 0px;
+}
+
+.scroll-pane > .viewport{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-width : 0px;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 4 0 0;
+}
+.scroll-bar .decrement-button {
+    -fx-background-color : transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 4 0 0;
+}
+.scroll-bar .increment-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+.scroll-bar .track{
+    -fx-background-color: transparent;
+    -fx-border-color : transparent;
+    -fx-border-radius: 0.5em;
+}
+.scroll-bar .thumb{
+    -fx-background-color: scrollbar-thumb-color;
+    -fx-border-radius: 0.5em;
+    -fx-background-insets: 0, 0, 0;
+}
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+#addDeviceButton{
+    -fx-background-image: url('add-device-diagram.png');
+    -fx-background-size : 100px 30px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+#addDeviceButton:hover{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
+    -fx-cursor: hand;
+}
+#addDeviceButton:pressed{
+    -fx-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: url('add-device-diagram-hover.png');
+    -fx-background-size : 100px 30px;
+    -fx-cursor: hand;
+}
+
+#arcNode {
+    -fx-fill: condition-theme-color;
+    -fx-stroke: condition-theme-color;
+    -fx-strokeType: INSIDE;
+    -fx-type: ROUND;
+    -fx-cursor: hand;
+}
+
+#hintLine {
+    -fx-stroke: #909090;
+}
+
+#hintText {
+    -fx-background-color : transparent;
+    -fx-fill: #909090;
+    -fx-font-weight: bold;
+    -fx-font-size : 14px;
+    -fx-padding: 0px;
+    -fx-max-width: 150px;
+}

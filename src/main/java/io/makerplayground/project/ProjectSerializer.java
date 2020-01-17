@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,17 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.version.ProjectVersionControl;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Created by nuntipat on 6/25/2017 AD.
  */
-public class ProjectSerializer extends StdSerializer<Project> {
-    public ProjectSerializer() {
-        this(null);
-    }
-
-    public ProjectSerializer(Class<Project> t) {
-        super(t);
-    }
+public class ProjectSerializer extends JsonSerializer<Project> {
 
     @Override
     public void serialize(Project project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
@@ -47,38 +38,38 @@ public class ProjectSerializer extends StdSerializer<Project> {
         jsonGenerator.writeStringField("projectVersion", ProjectVersionControl.CURRENT_VERSION);
         jsonGenerator.writeStringField("projectName", project.getProjectName());
 
-        jsonGenerator.writeObjectFieldStart("controller");
-        jsonGenerator.writeStringField("platform", project.getPlatform().name());
-        if (project.getController() != null)
-            jsonGenerator.writeStringField("device", project.getController().getId());
-        else
-            jsonGenerator.writeStringField("device", "");
-        jsonGenerator.writeEndObject();
+//        jsonGenerator.writeObjectFieldStart("controller");
+//        jsonGenerator.writeStringField("platform", project.getSelectedPlatform().name());
+//        if (project.getSelectedController() != null)
+//            jsonGenerator.writeStringField("device", project.getSelectedController().getId());
+//        else
+//            jsonGenerator.writeStringField("device", "");
+//        jsonGenerator.writeEndObject();
 
-        jsonGenerator.writeArrayFieldStart("cloudplatform");
-        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("name", cloudPlatform.name());
-            jsonGenerator.writeArrayFieldStart("parameter");
-            for (String parameterName : cloudPlatform.getParameter()) {
-                jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("name", parameterName);
-                jsonGenerator.writeStringField("value", Objects.requireNonNullElse(
-                        project.getCloudPlatformParameter(cloudPlatform, parameterName), ""));
-                jsonGenerator.writeEndObject();
-            }
-            jsonGenerator.writeEndArray();
-            jsonGenerator.writeEndObject();
-        }
-        jsonGenerator.writeEndArray();
+//        jsonGenerator.writeArrayFieldStart("cloudplatform");
+//        for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+//            jsonGenerator.writeStartObject();
+//            jsonGenerator.writeStringField("name", cloudPlatform.name());
+//            jsonGenerator.writeArrayFieldStart("parameter");
+//            for (String parameterName : cloudPlatform.getParameter()) {
+//                jsonGenerator.writeStartObject();
+//                jsonGenerator.writeStringField("name", parameterName);
+//                jsonGenerator.writeStringField("value", Objects.requireNonNullElse(
+//                        project.getCloudPlatformParameter(cloudPlatform, parameterName), ""));
+//                jsonGenerator.writeEndObject();
+//            }
+//            jsonGenerator.writeEndArray();
+//            jsonGenerator.writeEndObject();
+//        }
+//        jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("device");
-        for(ProjectDevice device : project.getDevice()) {
+        jsonGenerator.writeArrayFieldStart("devices");
+        for(ProjectDevice device : project.getUnmodifiableProjectDevice()) {
             mapper.writeValue(jsonGenerator, device);
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("begin");
+        jsonGenerator.writeArrayFieldStart("begins");
         for(Begin begin: project.getBegin()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", begin.getName());
@@ -88,37 +79,34 @@ public class ProjectSerializer extends StdSerializer<Project> {
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("scene");
-        for(Scene scene : project.getScene()) {
+        jsonGenerator.writeArrayFieldStart("scenes");
+        for(Scene scene : project.getUnmodifiableScene()) {
             mapper.writeValue(jsonGenerator, scene);
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("condition");
-        for(Condition condition : project.getCondition()) {
+        jsonGenerator.writeArrayFieldStart("conditions");
+        for(Condition condition : project.getUnmodifiableCondition()) {
             mapper.writeValue(jsonGenerator, condition);
         }
         jsonGenerator.writeEndArray();
 
-        jsonGenerator.writeArrayFieldStart("line");
-        for(Line line : project.getLine()) {
+        jsonGenerator.writeArrayFieldStart("delays");
+        for(Delay delay : project.getUnmodifiableDelay()) {
+            mapper.writeValue(jsonGenerator, delay);
+        }
+        jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeArrayFieldStart("lines");
+        for(Line line : project.getUnmodifiableLine()) {
             jsonGenerator.writeStartObject();
-
-            if (line.getSource() instanceof Scene)
-                jsonGenerator.writeStringField("source", ((Scene) line.getSource()).getName());
-            else if (line.getSource() instanceof Condition)
-                jsonGenerator.writeStringField("source", ((Condition) line.getSource()).getName());
-            else if (line.getSource() instanceof Begin)
-                jsonGenerator.writeStringField("source", ((Begin) line.getSource()).getName()); // TODO: hardcode as begin
-
-            if (line.getDestination() instanceof Scene)
-                jsonGenerator.writeStringField("destination", ((Scene) line.getDestination()).getName());
-            else if (line.getDestination() instanceof Condition)
-                jsonGenerator.writeStringField("destination", ((Condition) line.getDestination()).getName());
-
+            jsonGenerator.writeStringField("source", line.getSource().getName());
+            jsonGenerator.writeStringField("destination", line.getDestination().getName());
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeObjectField("projectConfiguration", project.getProjectConfiguration());
 
         jsonGenerator.writeEndObject();
     }

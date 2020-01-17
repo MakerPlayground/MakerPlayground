@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,28 @@
 package io.makerplayground.ui;
 
 import com.fazecast.jSerialComm.SerialPort;
-import io.makerplayground.generator.upload.ArduinoUploadTask;
-import io.makerplayground.generator.upload.RaspberryPiUploadTask;
-import io.makerplayground.generator.upload.UploadResult;
-import io.makerplayground.generator.upload.UploadTask;
+import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.dialog.DeviceMonitor;
+import io.makerplayground.project.ProjectConfigurationStatus;
 import io.makerplayground.ui.dialog.UploadDialogView;
-import javafx.application.Platform;
+import io.makerplayground.util.OSInfo;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.concurrent.WorkerStateEvent;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -47,31 +46,38 @@ import java.util.Optional;
 public class Toolbar extends AnchorPane {
 
     private final ObjectProperty<Project> project;
+    private final UploadManager uploadManager;
 
     @FXML private MenuItem newMenuItem;
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem saveMenuItem;
     @FXML private MenuItem saveAsMenuItem;
+    @FXML private MenuItem exportMenuItem;
     @FXML private MenuItem uploadMenuItem;
     @FXML private MenuItem uploadStatusMenuItem;
-    @FXML private MenuItem deviceMonitorMenuItem;
     @FXML private MenuItem closeMenuItem;
 
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
+    private ImageView deviceHasProblemImageView;
+    private ImageView diagramHasProblemImageView;
+    @FXML private RadioButton deviceMonitorButton;
     @FXML private Label statusLabel;
-    @FXML private MenuButton deviceMonitorMenuButton;
+    @FXML private Label portLabel;
+    @FXML private ComboBox<SerialPort> portComboBox;
+    @FXML private Button interactiveButton;
     @FXML private Button uploadButton;
     @FXML private Separator separator;
     @FXML private Button uploadStatusButton;
 
-    private UploadTask uploadTask;
-    private StringProperty logProperty;
+    private ImageView interactiveStartImageView;
     private ImageView uploadStartImageView;
     private ImageView uploadStopImageView;
+    private Timeline hideUploadStatus;
 
-    public Toolbar(ObjectProperty<Project> project) {
+    public Toolbar(ObjectProperty<Project> project, UploadManager uploadManager) {
         this.project = project;
+        this.uploadManager = uploadManager;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(this);
@@ -82,24 +88,44 @@ public class Toolbar extends AnchorPane {
             e.printStackTrace();
         }
 
+        // macos uses Command+Q to close the program rather than Alt+F4 and there isn't any platform independent way to handle this in javafx
+        if (OSInfo.getOs() == OSInfo.OS.MAC) {
+            closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        } else {
+            closeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
+        }
+
         ToggleGroup toggleGroup = new ToggleGroup();
-        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton);
+        toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton, deviceMonitorButton);
 
-        diagramEditorButton.setSelected(true);
+        deviceConfigButton.setSelected(true);
 
-        deviceMonitorMenuButton.setOnShowing(this::deviceMonitorMenuShowing);
+        deviceHasProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
+        deviceHasProblemImageView.setFitWidth(15);
+        deviceHasProblemImageView.setFitHeight(15);
 
-        initUploadButton();
-        initMenuItem();
-    }
+        diagramHasProblemImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
+        diagramHasProblemImageView.setFitWidth(15);
+        diagramHasProblemImageView.setFitHeight(15);
 
-    private void initMenuItem() {
-        uploadStatusMenuItem.disableProperty().bind(Bindings.not(uploadStatusButton.visibleProperty()));
+        interactiveStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/interactive-start.png")));
+        interactiveStartImageView.setFitWidth(20);
+        interactiveStartImageView.setFitHeight(20);
 
-        uploadMenuItem.setOnAction(event -> doUpload());
-        uploadStatusMenuItem.setOnAction(event -> showUploadDialog());
+        uploadStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-start.png")));
+        uploadStartImageView.setFitWidth(20);
+        uploadStartImageView.setFitHeight(20);
 
-        deviceMonitorMenuItem.setOnAction(event -> deviceMonitorMenuButton.show());
+        uploadStopImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-stop.png")));
+        uploadStopImageView.setFitWidth(20);
+        uploadStopImageView.setFitHeight(20);
+
+        hideUploadStatus = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
+            uploadStatusButton.setVisible(false);
+        }));
+
+        project.addListener((observable, oldValue, newValue) -> initUI());
+        initUI();
     }
 
     public void setOnNewButtonPressed(EventHandler<ActionEvent> event) {
@@ -118,6 +144,10 @@ public class Toolbar extends AnchorPane {
         saveAsMenuItem.setOnAction(event);
     }
 
+    public void setOnExportButtonPressed(EventHandler<ActionEvent> event) {
+        exportMenuItem.setOnAction(event);
+    }
+
     public void setOnCloseButtonPressed(EventHandler<ActionEvent> event) {
         closeMenuItem.setOnAction(event);
     }
@@ -130,134 +160,144 @@ public class Toolbar extends AnchorPane {
         return deviceConfigButton.selectedProperty();
     }
 
+    public BooleanProperty deviceMonitorSelectProperty() {
+        return deviceMonitorButton.selectedProperty();
+    }
+
+    public ReadOnlyObjectProperty<SerialPort> selectingSerialPortProperty() {
+        return portComboBox.getSelectionModel().selectedItemProperty();
+    }
+
     public void setStatusMessage(String message) {
         statusLabel.setText(message);
     }
 
-    private void initUploadButton() {
-        uploadStartImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-start.png")));
-        uploadStartImageView.setFitWidth(20);
-        uploadStartImageView.setFitHeight(20);
+    private void initUI() {
+        deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
+                .then(deviceHasProblemImageView).otherwise((ImageView) null));
+        diagramEditorButton.graphicProperty().bind(Bindings.when(project.get().hasDiagramErrorProperty()).then(diagramHasProblemImageView).otherwise((ImageView) null));
 
-        uploadStopImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/upload-stop.png")));
-        uploadStopImageView.setFitWidth(20);
-        uploadStopImageView.setFitHeight(20);
+        BooleanBinding uploading = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING);
+        BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);
+        ReadOnlyBooleanProperty interactiveModeInitialize = project.get().getInteractiveModel().startedProperty();
+        BooleanBinding portNotSelected = portComboBox.getSelectionModel().selectedItemProperty().isNull();
+        BooleanProperty deviceMonitorShowing = deviceMonitorButton.selectedProperty();  // we disable other controls whether it is successfully initialized or not as a precaution
 
-        uploadButton.setText("Upload");
-        uploadButton.setGraphic(uploadStartImageView);
+        portLabel.disableProperty().bind(portComboBox.disableProperty());
+
+        portComboBox.getItems().setAll(SerialPort.getCommPorts());
+        portComboBox.setOnShowing(event -> {
+            SerialPort currentSelectedItem = portComboBox.getSelectionModel().getSelectedItem();
+            portComboBox.getItems().setAll(SerialPort.getCommPorts());
+            // find the same port in the updated port list (SerialPort's equals method hasn't been override so we do it manually)
+            if (currentSelectedItem != null) {
+                portComboBox.getItems().stream()
+                        .filter(serialPort -> serialPort.getDescriptivePortName().equals(currentSelectedItem.getDescriptivePortName()))
+                        .findFirst()
+                        .ifPresent(serialPort -> portComboBox.getSelectionModel().select(serialPort));
+            }
+        });
+        portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(deviceMonitorShowing));
+
+        // TODO: add case when uploading
+        deviceMonitorButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
+
+        interactiveButton.graphicProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
+                .then(uploadStopImageView).otherwise(interactiveStartImageView));
+        Tooltip interactiveButtonTooltip = new Tooltip();
+        interactiveButtonTooltip.setShowDelay(Duration.millis(250));
+        interactiveButtonTooltip.textProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
+                .then("Stop interactive mode").otherwise("Start interactive mode"));
+        interactiveButton.setTooltip(interactiveButtonTooltip);
+
+        ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
+        BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
+
+        interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk).or(deviceMonitorShowing)));
+
+        uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
+        Tooltip uploadButtonTooltip = new Tooltip();
+        uploadButtonTooltip.setShowDelay(Duration.millis(250));
+        uploadButtonTooltip.textProperty().bind(Bindings.when(uploading).then("Stop uploading").otherwise("Upload to board"));
+        uploadButton.setTooltip(uploadButtonTooltip);
+        uploadButton.disableProperty().bind(portNotSelected.or(startingInteractiveMode).or(interactiveModeInitialize).or(projectNotOk).or(deviceMonitorShowing));
+
+        uploadManager.uploadStatusProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == UploadStatus.UPLOADING || newValue == UploadStatus.STARTING_INTERACTIVE) {
+                uploadStatusButton.setText("Uploading...");
+                uploadStatusButton.setVisible(true);
+            } else if (newValue == UploadStatus.UPLOAD_DONE) {
+                uploadStatusButton.setText("Done");
+                hideUploadStatus.playFromStart();
+            } else if (newValue == UploadStatus.UPLOAD_FAILED) {
+                uploadStatusButton.setText("Failed");
+            }
+        });
+        uploadManager.uploadProgressProperty().addListener((observable, oldValue, newValue) -> {
+            if (Double.compare(newValue.doubleValue(), 1.0) == 0) {
+                uploadStatusButton.setText("Done");
+            } else {
+                uploadStatusButton.setText("Uploading (" + (int) (newValue.doubleValue() * 100) + "%)");
+            }
+        });
         uploadStatusButton.setVisible(false);
-
         uploadStatusButton.managedProperty().bind(uploadStatusButton.visibleProperty());
+
         separator.visibleProperty().bind(uploadStatusButton.visibleProperty());
         separator.managedProperty().bind(separator.visibleProperty());
 
-        uploadButton.setOnAction(event -> doUpload());
-        uploadStatusButton.setOnAction(event -> showUploadDialog());
+        uploadMenuItem.setOnAction(event -> onUploadButtonPressed());
+        uploadMenuItem.disableProperty().bind(uploadButton.disableProperty());
+        uploadStatusMenuItem.setOnAction(event -> showUploadDialog());
+        uploadStatusMenuItem.disableProperty().bind(Bindings.not(uploadStatusButton.visibleProperty()));
+
+        interactiveButton.setOnAction(event -> onInteractiveButtonPressed());
+        uploadButton.setOnAction(event -> onUploadButtonPressed());
+        uploadStatusButton.setOnAction(event -> {
+            showUploadDialog();
+            if (uploadManager.getUploadStatus() != UploadStatus.UPLOADING && uploadManager.getUploadStatus() != UploadStatus.STARTING_INTERACTIVE) {
+                hideUploadStatus.playFromStart();
+            }
+        });
     }
 
     private void showUploadDialog() {
-        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadTask);
-        uploadDialogView.progressProperty().bind(uploadTask.progressProperty());
-        uploadDialogView.descriptionProperty().bind(uploadTask.messageProperty());
-        uploadDialogView.logProperty().bind(logProperty);
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadManager.getUploadTask());
+        uploadDialogView.progressProperty().bind(uploadManager.getUploadTask().progressProperty());
+        uploadDialogView.descriptionProperty().bind(uploadManager.getUploadTask().messageProperty());
+        uploadDialogView.logProperty().bind(uploadManager.uploadLogProperty());
         uploadDialogView.show();
     }
 
-    private void doUpload() {
-        if (uploadTask == null || !uploadTask.isRunning()) {
-            if (createUploadTask()) {
-                uploadButton.setText("Cancel");
-                uploadButton.setGraphic(uploadStopImageView);
-                uploadStatusButton.setVisible(true);
-            }
+    private void onInteractiveButtonPressed() {
+        if (project.get().getInteractiveModel().isStarted()) {
+            project.get().getInteractiveModel().stop();
+        } else if (uploadManager.getUploadStatus() != UploadStatus.STARTING_INTERACTIVE) {
+            // stop the auto hide transition that may have been scheduled to run in a few second
+            hideUploadStatus.stop();
+            uploadManager.startInteractiveMode(portComboBox.getSelectionModel().getSelectedItem());
         } else {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() != ButtonType.OK) {
                 return;
             }
-            uploadTask.cancel();
-            uploadButton.setText("Upload");
-            uploadButton.setGraphic(uploadStartImageView);
-            uploadStatusButton.setVisible(false);
+            uploadManager.cancelUpload();
         }
     }
 
-    private boolean createUploadTask() {
-        StringBuilder log = new StringBuilder();
-        logProperty = new SimpleStringProperty();
-
-        // we MUST deep copy the project because user can modified the project in the UI thread while the upload thread
-        // access the project
-        switch (project.get().getPlatform()) {
-            case ARDUINO_AVR8:
-            case ARDUINO_ESP32:
-            case ARDUINO_ESP8266:
-                uploadTask = new ArduinoUploadTask(Project.newInstance(project.get()));
-                break;
-            case RASPBERRYPI:
-                String initialIpValue = "192.168.1.100";
-                TextInputDialog textInputDialog = new TextInputDialog(initialIpValue);
-                textInputDialog.setTitle("Connect Raspberry Pi");
-                textInputDialog.setHeaderText("Connect Raspberry Pi in Network: ");
-                textInputDialog.setContentText("IP Address:");
-                Optional<String> ip = textInputDialog.showAndWait();
-                if (ip.isPresent()) {
-                    uploadTask = new RaspberryPiUploadTask(Project.newInstance(project.get()), ip.get());
-                } else {
-                    return false;
-                }
-                break;
-            default:
-                throw new IllegalStateException("No upload method for current platform");
-        }
-        uploadTask.progressProperty().addListener((observable, oldValue, newValue) -> {
-            if (Double.compare(newValue.doubleValue(), 1.0) == 0) {
-                uploadStatusButton.setText("Upload done");
-            } else {
-                uploadStatusButton.setText("Uploading (" + (newValue.doubleValue() * 100.0) + "%)");
-            }
-        });
-        uploadTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event1 -> {
-            if (uploadTask.getValue() == UploadResult.OK) {
-                uploadStatusButton.setText("Upload done");
-            } else {
-                uploadStatusButton.setText("Upload failed");
-            }
-            uploadButton.setText("Upload");
-            uploadButton.setGraphic(uploadStartImageView);
-        });
-        uploadTask.logProperty().addListener((observable, oldValue, newValue) -> {
-            log.append(newValue);
-            logProperty.set(log.toString());
-        });
-
-        new Thread(uploadTask).start();
-        return true;
-    }
-
-    private void deviceMonitorMenuShowing(Event e) {
-        MenuButton deviceMonitorButton = (MenuButton) e.getSource();
-        deviceMonitorButton.getItems().clear();
-        SerialPort[] commPorts = SerialPort.getCommPorts();
-        if (commPorts.length > 0) {
-            for (SerialPort port : commPorts) {
-                MenuItem item = new MenuItem(port.getDescriptivePortName());
-                // runLater to make sure that the menuitem is disappeared before open the DeviceMonitor
-                item.setOnAction(event -> Platform.runLater(() -> openDeviceMonitor(port.getSystemPortName())));
-                deviceMonitorButton.getItems().add(item);
-            }
+    private void onUploadButtonPressed() {
+        if (uploadManager.getUploadStatus() != UploadStatus.UPLOADING) {
+            // stop the auto hide transition that may have been scheduled to run in a few second
+            hideUploadStatus.stop();
+            uploadManager.startUploadProject(portComboBox.getSelectionModel().getSelectedItem());
         } else {
-            MenuItem item = new MenuItem("No connected serial port found.\nPlease connect the board with computer.");
-            item.setDisable(true);
-            deviceMonitorButton.getItems().add(item);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel upload?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() != ButtonType.OK) {
+                return;
+            }
+            uploadManager.cancelUpload();
         }
-    }
-
-    private void openDeviceMonitor(String portName){
-        SerialPort port = SerialPort.getCommPort(portName);
-        //TODO: capture error in rare case the port is disconnected
-        DeviceMonitor deviceMonitor = new DeviceMonitor(port);
-        deviceMonitor.showAndWait();
     }
 }

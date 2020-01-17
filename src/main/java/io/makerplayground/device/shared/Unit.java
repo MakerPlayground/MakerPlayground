@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public enum Unit {
     //INPUT DEVICE
     TIME,METERPERSECSQUARE,HECTOPASCAL,METER,CELSIUS,FAHRENHEIT,KELVIN,RADIUSPERSEC,DEGREEPERSEC,DECIBEL,
     MICROTESLA,CENTIMETER,LUX,DEGREE,AMPERE,MICROGRAMS_PER_CUBIC_METER,VOLT,WATT,VOLT_AMPERE,VOLT_AMPERE_REACTIVE,
-    KILO_WATT_HOUR,KILO_VOLT_AMPERE_REACTIVE_HOUR,POWER_FACTOR,
+    KILO_WATT_HOUR,KILO_VOLT_AMPERE_REACTIVE_HOUR,POWER_FACTOR,KILOGRAM,
     //OUTPUT DEVICE
     SECOND,MILLISECOND, WAV,NUMBER,
     //BASIC
@@ -50,6 +50,7 @@ public enum Unit {
             case MICROTESLA: return MICRO + "T";
             case CENTIMETER: return "cm";
             case LUX: return "lux";
+            case KILOGRAM: return "kg";
             case DEGREE: return DEGREE;
             case AMPERE: return "Amp";
             case MICROGRAMS_PER_CUBIC_METER: return "mg/m^3";
@@ -65,7 +66,7 @@ public enum Unit {
             case WAV: return "wav";
             case NUMBER: return "Number";
             case PERCENT: return PERCENT;
-            case NOT_SPECIFIED: return "not specified";
+            case NOT_SPECIFIED: return "";
             case HERTZ: return "Hz";
             case BPM: return "BPM";
             default: throw new IllegalStateException();

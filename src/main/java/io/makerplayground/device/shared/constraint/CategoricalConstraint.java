@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,11 @@ public class CategoricalConstraint implements Constraint {
     }
 
     @Override
+    public boolean test(Integer i) {
+        return false;
+    }
+
+    @Override
     public boolean isCompatible(Constraint constraint) {
         if (!(constraint instanceof CategoricalConstraint))
             return false;
@@ -79,6 +84,10 @@ public class CategoricalConstraint implements Constraint {
 
     @Override
     public Constraint intersect(Constraint constraint) {
+        if (constraint == Constraint.NONE) {
+            return Constraint.NONE;
+        }
+
         if (!(constraint instanceof CategoricalConstraint))
             throw new ClassCastException();
 

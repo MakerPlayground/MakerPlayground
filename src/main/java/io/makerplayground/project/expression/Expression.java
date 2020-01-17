@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,10 @@ package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.NumberWithUnit;
-import io.makerplayground.device.shared.RealTimeClock;
-import io.makerplayground.device.shared.Record;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +31,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
+        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
     }
 
     public enum RefreshInterval {
@@ -82,9 +78,10 @@ public abstract class Expression {
     public static Expression fromDefaultParameter(Parameter param) {
         switch (param.getDataType()) {
             case DOUBLE:
-                return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
             case INTEGER:
                 return new CustomNumberExpression((NumberWithUnit) param.getDefaultValue());
+            case INTEGER_ENUM:
+                return new SimpleIntegerExpression((Integer) param.getDefaultValue());
             case STRING:
                 return new ComplexStringExpression((String) param.getDefaultValue());
             case ENUM:

@@ -1,11 +1,28 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.ui.dialog.configdevice;
 
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.project.ProjectDevice;
 
 import java.util.Objects;
+import java.util.Optional;
 
-public class CompatibleDevice {
+public class CompatibleDevice implements Comparable<CompatibleDevice> {
     private ActualDevice actualDevice;
     private ProjectDevice projectDevice;
 
@@ -17,12 +34,12 @@ public class CompatibleDevice {
         this.projectDevice = projectDevice;
     }
 
-    public ActualDevice getActualDevice() {
-        return actualDevice;
+    public Optional<ActualDevice> getActualDevice() {
+        return Optional.ofNullable(actualDevice);
     }
 
-    public ProjectDevice getProjectDevice() {
-        return projectDevice;
+    public Optional<ProjectDevice> getProjectDevice() {
+        return Optional.ofNullable(projectDevice);
     }
 
     @Override
@@ -50,5 +67,19 @@ public class CompatibleDevice {
         } else {
             return Objects.hash(projectDevice);
         }
+    }
+
+    @Override
+    public int compareTo(CompatibleDevice that) {
+        if (projectDevice != null && that.projectDevice != null) {
+            return ProjectDevice.NAME_COMPARATOR.compare(projectDevice, that.projectDevice);
+        } else if (actualDevice != null && that.actualDevice != null) {
+            return ActualDevice.NAME_COMPARATOR.compare(actualDevice, that.actualDevice);
+        } else if (projectDevice != null) { // that.projectDevice always null in this case
+            return -1;
+        } else if (that.projectDevice != null) { // this.projectDevice always null in this case
+            return 1;
+        }
+        throw new IllegalStateException("CompatibleDevice must contains neither projectDevice nor actualDevice");
     }
 }

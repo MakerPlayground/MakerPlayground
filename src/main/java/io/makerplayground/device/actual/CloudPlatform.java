@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package io.makerplayground.device.actual;
 
+import lombok.Getter;
+import lombok.ToString;
+
 import java.util.List;
 
+@Getter
 public enum CloudPlatform {
     BLYNK("Blynk", List.of("Auth Token", "Wifi's SSID", "Wifi's Password"), "MP_BLYNK"),
     NETPIE("NETPIE", List.of("App Id", "Key", "Secret", "Alias", "Wifi's SSID", "Wifi's Password"), "MP_NETPIE"),
     REST("Rest API", List.of("Wifi's SSID", "Wifi's Password"), "MP_REST"),
     AZURE("Azure", List.of("Wifi's SSID", "Wifi's Password"), "MP_AZURE");
-
-    private final String displayName;
-    private final List<String> parameter;
-    private final String libName;
 
     CloudPlatform(String displayName, List<String> parameter, String libName) {
         this.displayName = displayName;
@@ -34,15 +34,7 @@ public enum CloudPlatform {
         this.libName = libName;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public List<String> getParameter() {
-        return parameter;
-    }
-
-    public String getLibName() {
-        return libName;
-    }
+    private final String displayName;
+    @ToString.Exclude private final List<String> parameter;
+    @ToString.Exclude private final String libName;
 }

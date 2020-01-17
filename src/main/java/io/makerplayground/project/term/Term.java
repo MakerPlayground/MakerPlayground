@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Objects;
 public abstract class Term {
 
     public enum Type {
-        NUMBER, STRING, VALUE, OPERATOR, DATETIME, RECORD
+        NUMBER_ONLY, NUMBER, STRING, VALUE, OPERATOR, DATETIME, RECORD
     }
     private final Type type;
     protected final Object value;

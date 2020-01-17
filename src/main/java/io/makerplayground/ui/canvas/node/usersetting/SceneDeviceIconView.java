@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import org.controlsfx.control.PopOver;
-
 
 import java.io.IOException;
 
-/**
- * Created by tanyagorn on 6/12/2017.
- */
-public class SceneDeviceIconView extends VBox {
+public class SceneDeviceIconView extends HBox {
 
     private final SceneDeviceIconViewModel viewModel;
     private static SceneDevicePropertyWindow devicePropertyWindow;
@@ -42,7 +38,6 @@ public class SceneDeviceIconView extends VBox {
     @FXML private ImageView iconImageView;
     @FXML private Label action;
     @FXML private Button removeStateDeviceBtn;
-
 
     public SceneDeviceIconView(SceneDeviceIconViewModel viewModel) {
         this.viewModel = viewModel;

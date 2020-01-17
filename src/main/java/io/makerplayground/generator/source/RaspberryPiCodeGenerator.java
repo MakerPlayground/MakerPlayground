@@ -1,15 +1,31 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
-import io.makerplayground.generator.DeviceMapper;
-import io.makerplayground.generator.DeviceMapperResult;
+import io.makerplayground.generator.devicemapping.ProjectLogic;
+import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
+import io.makerplayground.project.Condition;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
-import org.w3c.dom.Node;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -24,12 +40,22 @@ class RaspberryPiCodeGenerator {
     private static final String NEW_LINE = "\n";
 
     private final Project project;
+    private final ProjectConfiguration configuration;
     private final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
 
+    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
+            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
+            PinFunction.PWM_OUT,
+            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
+            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
+    );
+
     private RaspberryPiCodeGenerator(Project project) {
         this.project = project;
+        this.configuration = project.getProjectConfiguration();
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
@@ -42,7 +68,7 @@ class RaspberryPiCodeGenerator {
             return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
         }
         // Check if all used devices are assigned.
-        if (DeviceMapper.validateDeviceAssignment(project) != DeviceMapperResult.OK) {
+        if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
             return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
         }
         if (!Utility.validateDeviceProperty(project)) {
@@ -78,10 +104,10 @@ class RaspberryPiCodeGenerator {
         builder.append("from MakerPlayground import MP").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(ProjectDevice::isActualDeviceSelected)
-                .map(projectDevice -> projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
+                .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
-                .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getController().getCloudPlatformLibraryName(cloudPlatform)));
+                .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
     }
@@ -90,7 +116,7 @@ class RaspberryPiCodeGenerator {
         Set<ProjectDevice> devices = Utility.getUsedDevicesWithTask(project);
         if (!devices.isEmpty()) {
             for (ProjectDevice projectDevice : devices) {
-                builder.append(parseDeviceExpressionVariableName(projectDevice)).append(" = [None]");
+                builder.append(parseDeviceExpressionVariableName(configuration, projectDevice)).append(" = [None]");
                 long noExpr = Utility.getMaximumNumberOfExpression(project, projectDevice);
                 if (noExpr > 1) {
                     builder.append(" * ").append(noExpr);
@@ -151,11 +177,7 @@ class RaspberryPiCodeGenerator {
             // Generate code for node
             if (node instanceof Scene) {
                 Scene currentScene = (Scene) node;
-                Set<NodeElement> roots = ((Scene) node).getRoots();
-                if (roots.size() != 1) {
-                    throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                }
-                NodeElement root = roots.iterator().next();
+                Begin root = node.getRoot();
 
                 // create function header
                 builder.append(NEW_LINE);
@@ -164,56 +186,56 @@ class RaspberryPiCodeGenerator {
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
                     ProjectDevice device = setting.getDevice();
-                    String deviceName = parseDeviceVariableName(device);
+                    String deviceName = parseDeviceVariableName(configuration, device);
                     List<String> taskParameter = new ArrayList<>();
 
                     List<Parameter> parameters = setting.getAction().getParameter();
                     if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
                         int parameterIndex = 0;
                         for (Parameter p : parameters) {
-                            Expression e = setting.getValueMap().get(p);
+                            Expression e = setting.getParameterMap().get(p);
                             if (setting.isDataBindingUsed(p)) {
                                 parameterIndex++;
-                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(device)).append("', ")
+                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
                                         .append(parameterIndex)
                                         .append("lambda:").append(parseExpressionForParameter(p, e)).append(", ")
                                         .append(parseRefreshInterval(e)).append(")").append(NEW_LINE);
-                                taskParameter.add(parseDeviceExpressionVariableName(device) + "[" + parameterIndex + "].value");
+                                taskParameter.add(parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "].value");
                             } else {
                                 taskParameter.add(parseExpressionForParameter(p, e));
                             }
                         }
                         for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
-                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(device))
+                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(configuration, device))
                                     .append("', ").append(i).append(")").append(NEW_LINE);
                         }
-                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(device)).append("', lambda: ")
+                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(configuration, device)).append("', lambda: ")
                                 .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
                                 .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
                     } else {    // generate code to perform action once
-                        // clear task if this device used to have background task set
+                        // unsetDevice task if this device used to have background task set
                         if (Utility.getUsedDevicesWithTask(project).contains(device)) {
-                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(device)).append("')").append(NEW_LINE);
+                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(configuration, device)).append("')").append(NEW_LINE);
                         }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpressionForParameter(p, setting.getValueMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
                         }
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(")").append(NEW_LINE);
                     }
                 }
 
-                // delay
-                if (currentScene.getDelay() != 0) {
-                    double delayDuration = 0;  // in ms
-                    if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
-                        delayDuration = currentScene.getDelay();
-                    } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
-                        delayDuration = currentScene.getDelay() / 1000.0;
-                    }
-                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
-                }
+//                // delay
+//                if (currentScene.getDelay() != 0) {
+//                    double delayDuration = 0;  // in ms
+//                    if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
+//                        delayDuration = currentScene.getDelay();
+//                    } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
+//                        delayDuration = currentScene.getDelay() / 1000.0;
+//                    }
+//                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
+//                }
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
@@ -256,19 +278,7 @@ class RaspberryPiCodeGenerator {
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
 
             if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
-                NodeElement root;
-                if (node instanceof Scene) {
-                    Set<NodeElement> roots = ((Scene) node).getRoots();
-                    if (roots.size() != 1) {
-                        throw new IllegalStateException("Cannot process the node with zero or more than one root");
-                    }
-                    root = roots.iterator().next();
-                }
-                else if (node instanceof Begin) {
-                    root = node;
-                } else {
-                    throw new IllegalStateException("Not support operation");
-                }
+                Begin root = node.getRoot();
 
                 Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
                 for (Condition condition : adjacentCondition) {
@@ -295,11 +305,10 @@ class RaspberryPiCodeGenerator {
                     for (UserSetting setting : condition.getSetting()) {
                         if (setting.getAction() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s action must be set ");
-                        }
-                        else if (!setting.getAction().getName().equals("Compare")) {
+                        } else if (!setting.getAction().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getValueMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(setting.getDevice()) + "." +
+                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
+                            booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
                                     setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
@@ -344,9 +353,9 @@ class RaspberryPiCodeGenerator {
         // TODO: instantiate cloud platform
 //            for (CloudPlatform cloudPlatform: project.getCloudPlatformUsed()) {
 //                String cloudPlatformLibName = cloudPlatform.getLibName();
-//                String specificCloudPlatformLibName = project.getController().getCloudPlatformLibraryName(cloudPlatform);
+//                String specificCloudPlatformLibName = project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform);
 //
-//                List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
+//                List<String> cloudPlatformParameterValues = cloudPlatform.getUnmodifiableCloudParameterMap().stream()
 //                        .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
 //                builder.append(cloudPlatformLibName).append("* ").append(parseCloudPlatformVariableName(cloudPlatform))
 //                        .append(" = new ").append(specificCloudPlatformLibName)
@@ -357,7 +366,7 @@ class RaspberryPiCodeGenerator {
                 .collect(Collectors.toMap(Function.identity(), this::parseConstructorCall));
 
         deviceNameMap.forEach((key, value) ->
-                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(key))
+                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(configuration, key))
                         .append(" = ").append(value).append(NEW_LINE)
         );
 
@@ -380,39 +389,44 @@ class RaspberryPiCodeGenerator {
     }
 
     private String parseConstructorCall(ProjectDevice projectDevice) {
-        StringBuilder text = new StringBuilder(projectDevice.getActualDevice().getMpLibrary(project.getPlatform()));
+        StringBuilder text = new StringBuilder(configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
 
         List<String> args = new ArrayList<>();
-        if (projectDevice.isActualDeviceSelected() && !projectDevice.getActualDevice().getConnectivity().contains(Peripheral.NOT_CONNECTED)) {
-            // port
-            for (Peripheral p : projectDevice.getActualDevice().getConnectivity()) {
-                if ((p.getConnectionType() != ConnectionType.I2C) && (p.getConnectionType() != ConnectionType.MP_I2C)) {
-                    List<DevicePort> port = projectDevice.getDeviceConnection().get(p);
-                    if (port == null) {
-                        throw new IllegalStateException("Port hasn't been selected!!!");
+        if (configuration.getActualDevice(projectDevice).isEmpty()) {
+            return "";
+        }
+        ActualDevice actualDevice = configuration.getActualDevice(projectDevice).get();
+        DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
+        if (connection != DeviceConnection.NOT_CONNECTED) {
+            Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+            for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDevice)) {
+                Connection connectionProvide = connectionMap.get(connectionConsume);
+                for (int i=0; i<connectionConsume.getPins().size(); i++) {
+                    Pin pinConsume = connectionConsume.getPins().get(i);
+                    Pin pinProvide = connectionProvide.getPins().get(i);
+                    if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
+                        continue;
                     }
-                    // prefer alias name over the actual port name if existed as the latter is used for displaying to the user
-                    for (DevicePort devicePort : port) {
-                        if (p.isI2C1() || p.isI2C() || p == Peripheral.RPI_CAMERA) {
-                            continue;
-                        }
-                        if (!devicePort.getAlias().isEmpty()) {
-                            if (p.isDual()) {
-                                args.addAll(devicePort.getAlias());
-                            } else {
-                                // TODO: addAll should be used here, so we can avoid the if statement. (Must be checked)
-                                args.add(devicePort.getAlias().get(0));
+                    List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
+                    for (PinFunction function: possibleFunctionConsume) {
+                        if (pinProvide.getFunction().contains(function)) {
+                            if (PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                if (!pinProvide.getCodingName().isEmpty()) {
+                                    args.add(pinProvide.getCodingName());
+                                } else {
+                                    args.add(pinProvide.getRefTo());
+                                }
                             }
-                        } else {
-                            args.add(devicePort.getName());
+                            break;
                         }
                     }
                 }
             }
         }
+
         // property for the generic device
-        for (Property p : projectDevice.getActualDevice().getProperty()) {
-            Object value = projectDevice.getPropertyValue(p);
+        for (Property p : configuration.getActualDevice(projectDevice).orElseThrow().getProperty()) {
+            Object value = configuration.getPropertyValue(projectDevice, p);
             if (value == null) {
                 throw new IllegalStateException("Property hasn't been set");
             }
@@ -440,7 +454,7 @@ class RaspberryPiCodeGenerator {
             }
         }
             // TODO: add Cloud Platform instance to arg list
-//            CloudPlatform cloudPlatform = projectDevice.getActualDevice().getCloudPlatform();
+//            CloudPlatform cloudPlatform = projectDevice.getCompatibleDeviceComboItem().getCloudPlatform();
 //            if (cloudPlatform != null) {
 //                args.add(parseCloudPlatformVariableName(cloudPlatform));
 //            }
@@ -502,7 +516,7 @@ class RaspberryPiCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return parseProjectValue(value.getDevice(), value.getValue());
+            return parseProjectValue(configuration, value.getDevice(), value.getValue());
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
@@ -525,7 +539,7 @@ class RaspberryPiCodeGenerator {
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "MP.constrain(MP.map(" + parseProjectValue(valueLinkingExpression.getSourceValue().getDevice()
+            returnValue = "MP.constrain(MP.map(" + parseProjectValue(configuration, valueLinkingExpression.getSourceValue().getDevice()
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
@@ -533,7 +547,7 @@ class RaspberryPiCodeGenerator {
             ProjectValue projectValue = projectValueExpression.getProjectValue();
             DataType dataType = projectValue.getValue().getType();
             if (dataType == DataType.STRING) {
-                returnValue = parseProjectValue(projectValue.getDevice(), projectValue.getValue());
+                returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
             } else if (dataType == DataType.DOUBLE || dataType == DataType.INTEGER) {
                 // TODO: separate the datatype for double and integer
                 NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
@@ -548,7 +562,7 @@ class RaspberryPiCodeGenerator {
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
-            returnValue = parseProjectValue(projectValue.getDevice(), projectValue.getValue());
+            returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
         } else if (expression instanceof ComplexStringExpression) {
             List<String> subExpression = new ArrayList<>();
             for (Expression e : ((ComplexStringExpression) expression).getSubExpressions()) {
@@ -606,29 +620,29 @@ class RaspberryPiCodeGenerator {
 //        return "_" + cloudPlatform.getLibName().replace(" ", "_");
 //    }
 
-    private static String parseDeviceName(ProjectDevice projectDevice) {
-        if (projectDevice.isActualDeviceSelected()) {
+    private static String parseDeviceName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+        if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
+            return "_" + configuration.getIdenticalDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
+        } else if (configuration.getActualDevice(projectDevice).isPresent()) {
             return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
-        } else if (projectDevice.isMergeToOtherDevice()) {
-            return "_" + projectDevice.getParentDevice().getName().replace(" ", "_").replace(".", "_");
         } else {
             throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
         }
     }
 
-    private static String parseProjectValue(ProjectDevice projectDevice, Value value) {
-        return parseDeviceVariableName(projectDevice) + ".get" + value.getName().replace(" ", "_") + "()";
+    private static String parseProjectValue(ProjectConfiguration configuration,  ProjectDevice projectDevice, Value value) {
+        return parseDeviceVariableName(configuration, projectDevice) + ".get" + value.getName().replace(" ", "_") + "()";
     }
 
 //    private String parseDeviceTaskVariableName(ProjectDevice device) {
 //        return parseDeviceName(device) + "_Task";
 //    }
 
-    private static String parseDeviceVariableName(ProjectDevice projectDevice) {
-        return "MP.devices['" + parseDeviceName(projectDevice) + "']";
+    private static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
+        return "MP.devices['" + parseDeviceName(configuration, projectDevice) + "']";
     }
 
-    private String parseDeviceExpressionVariableName(ProjectDevice device) {
-        return "MP.expressions['" + parseDeviceName(device) + "']";
+    private String parseDeviceExpressionVariableName(ProjectConfiguration configuration, ProjectDevice device) {
+        return "MP.expressions['" + parseDeviceName(configuration, device) + "']";
     }
 }

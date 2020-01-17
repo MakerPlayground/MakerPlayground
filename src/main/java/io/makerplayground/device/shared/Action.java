@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Represents an action that an output device can perform including all parameters that can be adjusted
- */
+@Data
 public class Action {
     private final String name;
     private final String functionName;
-    private final ActionType type;
     private final List<Parameter> parameter;
 
     /**
@@ -38,51 +37,13 @@ public class Action {
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator
-    Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("type") ActionType type, @JsonProperty("parameter") List<Parameter> parameter) {
+    Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
         this.functionName = functionName;
-        this.type = type;
         this.parameter = Collections.unmodifiableList(parameter);
     }
 
-    /**
-     * Get the name of this action
-     * @return name of this action ex. on, off, blink
-     */
-    public String getName() {
-        return name;
-    }
-
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    public ActionType getType() {
-        return type;
-    }
-
-    /**
-     * Get the list of parameters of this action
-     * @return an unmodifiable list of parameters of this action
-     */
-    public List<Parameter> getParameter() {
-        return parameter;
-    }
-
-    public Parameter getParameter(String name) {
-        for (Parameter p : parameter) {
-            if (p.getName().equals(name)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "Action{" +
-                "name='" + name + '\'' +
-                ", parameter=" + parameter +
-                '}';
+    public Optional<Parameter> getParameter(String name) {
+        return parameter.stream().filter(parameter1 -> parameter1.getName().equals(name)).findFirst();
     }
 }

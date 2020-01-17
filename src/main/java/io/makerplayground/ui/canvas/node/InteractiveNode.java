@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,13 @@ import io.makerplayground.ui.canvas.InteractivePane;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 public abstract class InteractiveNode extends Group implements Selectable {
 
@@ -35,31 +39,22 @@ public abstract class InteractiveNode extends Group implements Selectable {
     private double translateAnchorY;
     private boolean hasDragged;
 
+    private final EventHandler<MouseEvent> mousePressedEventHandler;
+    private final EventHandler<MouseEvent> mouseDraggedEventHandler;
+    private final EventHandler<MouseEvent> mouseReleasedEventHandler;
+
     public InteractiveNode(InteractivePane interactivePane) {
         this.interactivePane = interactivePane;
 
-        // allow this node to be selected (use event filter without consuming the event to allow children of this
-        // node to process mouse press event)
-        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.isPrimaryButtonDown()) {
-                if (interactivePane.getSelectionGroup().isMultipleSelection()) {
-                    select.set(!select.get());
-                } else {
-                    select.set(true);
-                }
-            }
-        });
+        // show/hide hi-light when this scene is selected/deselected
+        select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
+
         // consume mouse pressed event in the event handler so that we can differentiate between mouser press in the node
         // and mouser press in the pane i.e. pressing inside the node will not trigger MOUSE_PRESSED event of the pane
         addEventHandler(MouseEvent.MOUSE_PRESSED, Event::consume);
 
-        // show/hide hi-light when this scene is selected/deselected
-        select.addListener((observable, oldValue, newValue) -> showHilight(newValue));
-    }
-
-    protected void makeMovable(Node n) {
-        // allow node to be dragged
-        n.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+        // event handler to support node drag
+        mousePressedEventHandler = event -> {
             // allow dragging only when the left button is pressed
             if (!event.isPrimaryButtonDown())
                 return;
@@ -70,8 +65,8 @@ public abstract class InteractiveNode extends Group implements Selectable {
             translateAnchorY = getTranslateY();
 
             hasDragged = true;
-        });
-        n.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+        };
+        mouseDraggedEventHandler = event -> {
             // allow dragging only when the left button is pressed and this node is being selected
             if (!event.isPrimaryButtonDown() || !isSelected())
                 return;
@@ -97,10 +92,48 @@ public abstract class InteractiveNode extends Group implements Selectable {
 
             fireEvent(new InteractiveNodeEvent(this, null, InteractiveNodeEvent.MOVED, null, null
                     , deltaX, deltaY));
-        });
-        n.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+        };
+        mouseReleasedEventHandler = event -> {
             hasDragged = false;
+        };
+    }
+
+    protected final void makeSelectable(Node n) {
+        // allow this node to be selected (use event filter without consuming the event to allow children of this
+        // node to process mouse press event)
+        n.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.isPrimaryButtonDown()) {
+                if (interactivePane.getSelectionGroup().isMultipleSelection()) {
+                    select.set(!select.get());
+                } else {
+                    select.set(true);
+                }
+            }
         });
+    }
+
+    protected final void makeMovableWithEventHandler(Node n) {
+        n.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedEventHandler);
+        n.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedEventHandler);
+        n.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseReleasedEventHandler);
+    }
+
+    protected final void makeMovableWithEventFilter(Node n) {
+        n.addEventFilter(MouseEvent.MOUSE_PRESSED, mousePressedEventHandler);
+        n.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseDraggedEventHandler);
+        n.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseReleasedEventHandler);
+    }
+
+    protected final void removeEventHandler(Node n) {
+        n.removeEventHandler(MouseEvent.MOUSE_PRESSED, mousePressedEventHandler);
+        n.removeEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDraggedEventHandler);
+        n.removeEventHandler(MouseEvent.MOUSE_RELEASED,mouseReleasedEventHandler);
+    }
+
+    protected final void removeEventFilter(Node n) {
+        n.removeEventFilter(MouseEvent.MOUSE_PRESSED, mousePressedEventHandler);
+        n.removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouseDraggedEventHandler);
+        n.removeEventFilter(MouseEvent.MOUSE_RELEASED,mouseReleasedEventHandler);
     }
 
     public void moveNode(double deltaX, double deltaY) {
@@ -116,14 +149,11 @@ public abstract class InteractiveNode extends Group implements Selectable {
      */
     protected void showHilight(boolean forceHilight) {
         if (forceHilight || isSelected()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #008ef4, 5.0 , 0.5, 0.0 , 0.0);");
-            /*setStyle("-fx-effect: dropshadow(gaussian, #5ac2ab, 15.0 , 0.5, 0.0 , 0.0);");*/
+            getHighlightNode().setEffect(new DropShadow(BlurType.GAUSSIAN, getHighlightColor(), 6, 0, 0, 0));
         } else if (isError()) {
-            setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
-            /*setStyle("-fx-effect: dropshadow(gaussian, #c25a5a, 15.0 , 0.5, 0.0 , 0.0);");*/
+            getHighlightNode().setEffect(new DropShadow(BlurType.GAUSSIAN, Color.RED, 5, 0.5, 0, 0));
         } else {
-            setStyle("-fx-effect: dropshadow(gaussian, derive(black,85%), 5.0 , 0.0, 0.0 , 0.0);");
-            /*setStyle("-fx-effect: dropshadow(gaussian, derive(black,75%), 15.0 , 0.0, 0.0 , 0.0);");*/
+            getHighlightNode().setEffect(null);
         }
     }
 
@@ -143,5 +173,9 @@ public abstract class InteractiveNode extends Group implements Selectable {
     }
 
     protected abstract boolean isError();
+
+    protected abstract Node getHighlightNode();
+
+    protected abstract Color getHighlightColor();
 }
 

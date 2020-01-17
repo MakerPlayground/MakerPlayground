@@ -1,19 +1,39 @@
+/*
+ * Copyright (c) 2019. The Maker Playground Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.makerplayground.ui;
 
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,11 +70,11 @@ public class ProjectDevicePanel extends TabPane {
             throw new RuntimeException(e);
         }
 
-        actuatorList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
-        sensorList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
-        utilityList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
-        cloudList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
-        interfaceList = project.getDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
+        actuatorList = project.getUnmodifiableProjectDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.ACTUATOR);
+        sensorList = project.getUnmodifiableProjectDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.SENSOR);
+        utilityList = project.getUnmodifiableProjectDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.UTILITY);
+        cloudList = project.getUnmodifiableProjectDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.CLOUD);
+        interfaceList = project.getUnmodifiableProjectDevice().filtered(projectDevice -> projectDevice.getGenericDevice().getType() == GenericDeviceType.INTERFACE);
 
         initView(actuatorVBox, actuatorList);
         initView(sensorVBox, sensorList);
@@ -72,7 +92,7 @@ public class ProjectDevicePanel extends TabPane {
         cloudTitledPane.managedProperty().bind(cloudTitledPane.visibleProperty());
         interfaceTitledPane.visibleProperty().bind(Bindings.isNotEmpty(interfaceList));
         interfaceTitledPane.managedProperty().bind(interfaceTitledPane.visibleProperty());
-        warningPane.visibleProperty().bind(Bindings.isEmpty(project.getDevice()));
+        warningPane.visibleProperty().bind(Bindings.isEmpty(project.getUnmodifiableProjectDevice()));
         warningPane.managedProperty().bind(warningPane.visibleProperty());
     }
 
@@ -123,7 +143,15 @@ public class ProjectDevicePanel extends TabPane {
             nameTextField.setText(projectDevice.getName());
             nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    if (!projectDevice.setName(nameTextField.getText())) {
+                    Project.SetNameResult result = project.setProjectDeviceName(projectDevice, nameTextField.getText());
+                    if (result != Project.SetNameResult.OK) {
+                        Point2D textFieldPosition = nameTextField.localToScreen(0, 0);
+                        Tooltip tooltip = new Tooltip(result.getErrorMessage());
+                        tooltip.setAutoHide(true);
+                        tooltip.show(nameTextField, textFieldPosition.getX() + 3
+                                , textFieldPosition.getY() + nameTextField.getBoundsInLocal().getHeight() + 3);
+                        new Timeline(new KeyFrame(Duration.seconds(2), event -> tooltip.hide())).play();
+
                         nameTextField.setText(projectDevice.getName());
                     }
                 }

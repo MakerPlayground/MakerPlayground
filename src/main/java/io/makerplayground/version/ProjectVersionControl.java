@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class ProjectVersionControl {
 
-    public static final String CURRENT_VERSION = "0.4.0";
+    public static final String CURRENT_VERSION = "0.9.0";
 
     public static boolean canOpen(String projectVersion) {
         if (CURRENT_VERSION.equals(projectVersion)) {

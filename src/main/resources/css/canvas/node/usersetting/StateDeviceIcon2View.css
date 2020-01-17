@@ -3,6 +3,7 @@
     -fx-background-radius: 5px;
     -fx-border-color: #e3e3e3;
     -fx-border-radius: 5px;
+    -fx-border-width: 1px;
 }
 
 #nameIconImageView {
@@ -12,7 +13,7 @@
 }
 
 #actionText {
-    -fx-text-fill: #00CC6A;
+    -fx-text-fill: scene-theme-color;
     -fx-font-size: 0.75em;
     -fx-font-weight: bold;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. The Maker Playground Authors.
+ * Copyright (c) 2019. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.util.List;
 
@@ -30,25 +32,28 @@ import java.util.List;
  */
 public class SceneViewModel {
     private final Scene scene;
-    //private final SimpleStringProperty name;
-    private final SimpleDoubleProperty delay;
     private final Project project;
 
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
+    private final BooleanProperty hasLineIn;
+    private final BooleanProperty hasLineOut;
 
     public SceneViewModel(Scene scene, Project project) {
         this.scene = scene;
-        //this.name = new SimpleStringProperty(scene.getName());
-        this.delay = new SimpleDoubleProperty(scene.getDelay());
-        this.delay.addListener((observable, oldValue, newValue) -> scene.setDelay(newValue.doubleValue()));
         this.project = project;
 
         this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
         hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(0));
+
+        hasLineIn = new SimpleBooleanProperty();
+        hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == scene)).greaterThan(0));
+
+        hasLineOut = new SimpleBooleanProperty();
+        hasLineOut.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getSource() == scene)).greaterThan(0));
     }
 
     public String getName() {
@@ -57,30 +62,6 @@ public class SceneViewModel {
 
     public void setName(String name) {
         scene.setName(name);
-    }
-
-    public double getDelay() {
-        return delay.get();
-    }
-
-    public void setDelay(double delay) {
-        this.delay.set(delay);
-    }
-
-    public SimpleDoubleProperty delayProperty() {
-        return delay;
-    }
-
-    public Scene.DelayUnit getDelayUnit() {
-        return scene.getDelayUnit();
-    }
-
-    public void setDelayUnit(Scene.DelayUnit unit) {
-        scene.setDelayUnit(unit);
-    }
-
-    public ObjectProperty<Scene.DelayUnit> delayUnitProperty() {
-        return scene.delayUnitProperty();
     }
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
@@ -103,6 +84,38 @@ public class SceneViewModel {
         return scene.topProperty();
     }
 
+    public double getSourcePortX() {
+        return scene.getSourcePortX();
+    }
+
+    public DoubleProperty sourcePortXProperty() {
+        return scene.sourcePortXProperty();
+    }
+
+    public double getSourcePortY() {
+        return scene.getSourcePortY();
+    }
+
+    public DoubleProperty sourcePortYProperty() {
+        return scene.sourcePortYProperty();
+    }
+
+    public double getDestPortX() {
+        return scene.getDestPortX();
+    }
+
+    public DoubleProperty destPortXProperty() {
+        return scene.destPortXProperty();
+    }
+
+    public double getDestPortY() {
+        return scene.getDestPortY();
+    }
+
+    public DoubleProperty destPortYProperty() {
+        return scene.destPortYProperty();
+    }
+
     public List<ProjectDevice> getProjectOutputDevice() {
         return project.getDeviceWithAction();
     }
@@ -121,6 +134,14 @@ public class SceneViewModel {
 
     public BooleanProperty hasDeviceToAddProperty() {
         return hasDeviceToAdd;
+    }
+
+    public ReadOnlyBooleanProperty hasLineInProperty() {
+        return hasLineIn;
+    }
+
+    public ReadOnlyBooleanProperty hasLineOutProperty() {
+        return hasLineOut;
     }
 
     public boolean hasConnectionFrom(NodeElement other) {
