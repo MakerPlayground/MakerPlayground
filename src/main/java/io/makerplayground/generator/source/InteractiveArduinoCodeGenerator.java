@@ -368,7 +368,7 @@ public class InteractiveArduinoCodeGenerator {
                                     // value
                                     compatibility.getDeviceValue().forEach((value, constraint) -> {
                                         builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-                                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName()).append("());").append(NEW_LINE);
+                                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
                                     });
                                     builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
                                     builder.append(NEW_LINE);
