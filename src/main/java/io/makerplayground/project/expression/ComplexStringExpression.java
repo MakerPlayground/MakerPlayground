@@ -96,6 +96,12 @@ public class ComplexStringExpression extends Expression {
                 return false;
             }
         }
+
+        /* check first item in the sequence */
+        if (isOperationNotParenTerm(terms.get(0))) {
+            return false;
+        }
+
         /* check valid sequence */
         for (int i=0; i<terms.size()-1; i++) {
             Term term = terms.get(i);
