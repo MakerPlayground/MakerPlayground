@@ -9,7 +9,6 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.generator.devicemapping.DeviceConnectionLogic;
 import io.makerplayground.generator.devicemapping.DeviceConnectionResult;
 import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
-import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -275,14 +274,14 @@ public class DeviceExplorerPanel extends VBox {
             AnchorPane.setLeftAnchor(nameLabel, 10.0);
             AnchorPane.setRightAnchor(nameLabel, 10.0);
 
-            ImageView addDeviceButton = new ImageView(new Image(getClass().getResourceAsStream("/css/add-project-device.png")));
-            addDeviceButton.opacityProperty().bind(imageOpacity);
-            addDeviceButton.setFitWidth(18);
-            addDeviceButton.setFitHeight(18);
-            addDeviceButton.setPickOnBounds(true);
-            addDeviceButton.setOnMousePressed(event -> {
-                if (actualDeviceConsumer != null) {
-                    actualDeviceConsumer.accept(actualDevice);
+            Button addDeviceButton = new Button();
+            addDeviceButton.setId("addDeviceBtn");
+            addDeviceButton.setMinSize(18, 18);
+            addDeviceButton.setPrefSize(18, 18);
+            addDeviceButton.setMaxSize(18, 18);
+            addDeviceButton.setOnAction(event -> {
+                if (DeviceExplorerPanel.this.actualDeviceConsumer != null) {
+                    DeviceExplorerPanel.this.actualDeviceConsumer.accept(actualDevice);
                 }
             });
 
@@ -304,6 +303,8 @@ public class DeviceExplorerPanel extends VBox {
             setMaxSize(140, 140);
             setStyle("-fx-border-color: #cccccc;  -fx-border-radius: 10 10 10 10; ");
             getChildren().addAll(imageViewWrapper, nameLabel, buttonLayout);
+
+            getStylesheets().add(getClass().getResource("/css/DeviceInfoPane.css").toExternalForm());
         }
 
         public ActualDevice getActualDevice() {
