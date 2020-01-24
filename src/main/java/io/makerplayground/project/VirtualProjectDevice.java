@@ -15,9 +15,9 @@ import java.util.List;
 public class VirtualProjectDevice {
     // time elapsed
     public static final io.makerplayground.device.shared.Condition lessThan = new io.makerplayground.device.shared.Condition("Less than", "", List.of(new Parameter("value", DataType.DOUBLE,
-            new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
+            new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND), ControlType.SPINBOX)));
     public static final io.makerplayground.device.shared.Condition greaterThan = new io.makerplayground.device.shared.Condition("More than", "", List.of(new Parameter("value", DataType.DOUBLE,
-            new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
+            new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND), ControlType.SPINBOX)));
     public static final GenericDevice timeGenericDevice = new GenericDevice("Time Elapsed", "", GenericDeviceType.UTILITY,
             Collections.emptyList(), List.of(lessThan, greaterThan), Collections.emptyList());
     public static final ProjectDevice timeElapsedProjectDevice = new ProjectDevice("Time Elapsed", timeGenericDevice);
