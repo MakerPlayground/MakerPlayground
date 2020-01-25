@@ -22,7 +22,7 @@ import javafx.beans.property.*;
 
 @JsonSerialize(using = DelaySerializer.class)
 public class Delay extends NodeElement {
-    private String name;
+
     private final DoubleProperty delayValue = new SimpleDoubleProperty(0.0);
     private final ObjectProperty<DelayUnit> delayUnit = new SimpleObjectProperty<>(DelayUnit.MILLISECOND);
 
