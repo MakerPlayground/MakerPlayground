@@ -42,7 +42,8 @@ public class Begin extends NodeElement{
 
     @Override
     protected DiagramError checkError() {
-        if (name == null || name.isBlank()) {
+        // name should contain only english alphanumeric characters, underscores and spaces and it should not be empty
+        if (!name.matches("\\w[\\w| ]*")) {
             return DiagramError.BEGIN_INVALID_NAME;
         }
         return DiagramError.NONE;

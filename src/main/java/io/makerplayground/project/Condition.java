@@ -142,14 +142,14 @@ public class Condition extends NodeElement {
             return DiagramError.CONDITION_EMPTY;
         }
 
-        // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.matches("\\w+")) {
+        // name should contain only english alphanumeric characters, underscores and spaces and it should not be empty
+        if (!name.matches("\\w[\\w| ]*")) {
             return DiagramError.CONDITION_INVALID_NAME;
         }
 
         // name should be unique
         for (Condition c : project.getUnmodifiableCondition()) {
-            if ((this != c) && name.equals(c.name)) {
+            if ((this != c) && getNameSanitized().equals(c.getNameSanitized())) {
                 return DiagramError.CONDITION_DUPLICATE_NAME;
             }
         }

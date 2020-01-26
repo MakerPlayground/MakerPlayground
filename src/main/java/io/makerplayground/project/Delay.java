@@ -82,14 +82,14 @@ public class Delay extends NodeElement {
 
     @Override
     protected DiagramError checkError() {
-        // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.matches("\\w+")) {
+        // name should contain only english alphanumeric characters, underscores and spaces and it should not be empty
+        if (!name.matches("\\w[\\w| ]*")) {
             return DiagramError.DELAY_INVALID_NAME;
         }
 
         // name should be unique
         for (Delay d : project.getUnmodifiableDelay()) {
-            if ((this != d) && name.equals(d.name)) {
+            if ((this != d) && getNameSanitized().equals(d.getNameSanitized())) {
                 return DiagramError.DELAY_DUPLICATE_NAME;
             }
         }

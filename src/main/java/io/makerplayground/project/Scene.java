@@ -102,14 +102,14 @@ public class Scene extends NodeElement {
 
     @Override
     protected DiagramError checkError() {
-        // name should contain only english alphabets and an underscore and it should not be empty
-        if (!name.matches("\\w[\\w|\\s]*")) {
+        // name should contain only english alphanumeric characters, underscores and spaces and it should not be empty
+        if (!name.matches("\\w[\\w| ]*")) {
             return DiagramError.SCENE_INVALID_NAME;
         }
 
         // name should be unique
         for (Scene s : project.getUnmodifiableScene()) {
-            if ((this != s) && name.equals(s.name)) {
+            if ((this != s) && getNameSanitized().equals(s.getNameSanitized())) {
                 return DiagramError.SCENE_DUPLICATE_NAME;
             }
         }
