@@ -29,7 +29,6 @@ public class Delay extends NodeElement {
     Delay(Project project) {
         super(20,20,118,75, project);
         this.name = "";
-        invalidate();
     }
 
     public Delay(double top, double left, double width, double height
@@ -39,7 +38,6 @@ public class Delay extends NodeElement {
         this.name = name;
         this.delayValue.set(delayValue);
         this.delayUnit.set(delayUnit);
-        invalidate();
     }
 
     public Delay(Delay c, String name, Project project) {
@@ -47,7 +45,6 @@ public class Delay extends NodeElement {
         this.name = name;
         this.delayValue.set(c.delayValue.get());
         this.delayUnit.set(c.delayUnit.get());
-        invalidate();
     }
 
     public String getName() {
@@ -56,12 +53,7 @@ public class Delay extends NodeElement {
 
     public void setName(String name) {
         this.name = name;
-        invalidate();
-        // invalidate other delay as every delay needs to check for duplicate name
-        // note that name should be valid as it is not editable but we check anyway for safety
-        for (Delay d : project.getUnmodifiableDelay()) {
-            d.invalidate();
-        }
+        project.invalidateDiagram();
     }
 
     public DelayUnit getDelayUnit() {

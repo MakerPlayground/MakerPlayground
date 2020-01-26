@@ -19,9 +19,6 @@ package io.makerplayground.project;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  *
  */
@@ -55,10 +52,7 @@ public class Line {
     }
 
     protected DiagramError checkError() {
-        Optional<List<Line>> result = project.getDiagramStatus().keySet().stream()
-                .filter(lines -> lines.contains(this))
-                .findFirst();
-        return result.map(lines -> project.getDiagramStatus().get(lines)).orElse(DiagramError.NONE);
+        return project.getDiagramConnectionStatus().getOrDefault(this, DiagramError.NONE);
     }
 
     public final void invalidate() {

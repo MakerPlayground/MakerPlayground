@@ -21,15 +21,11 @@ import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
@@ -47,7 +43,6 @@ public class Condition extends NodeElement {
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
         this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(virtualSetting);
-        invalidate();
     }
 
     public Condition(double top, double left, double width, double height
@@ -61,7 +56,6 @@ public class Condition extends NodeElement {
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
         this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
-        invalidate();
     }
 
     public Condition(Condition c, String name, Project project) {
@@ -79,17 +73,12 @@ public class Condition extends NodeElement {
 
         this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
         this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
-        invalidate();
     }
 
     @Override
     public void setName(String name) {
         this.name = name;
-        invalidate();
-        // invalidate other condition as every condition needs to check for duplicate name
-        for (Condition c : project.getUnmodifiableCondition()) {
-            c.invalidate();
-        }
+        project.invalidateDiagram();
     }
 
     public void addDevice(ProjectDevice device) {
@@ -98,7 +87,7 @@ public class Condition extends NodeElement {
         } else {
             setting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
         }
-        invalidate();
+        project.invalidateDiagram();
     }
 
     public void addVirtualDevice(ProjectDevice device) {
@@ -106,7 +95,7 @@ public class Condition extends NodeElement {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
         virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
-        invalidate();
+        project.invalidateDiagram();
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -130,13 +119,13 @@ public class Condition extends NodeElement {
                 }
             }
         }
-        invalidate();
+        project.invalidateDiagram();
     }
 
     public void removeUserSetting(UserSetting userSetting) {
         setting.remove(userSetting);
         virtualSetting.remove(userSetting);
-        invalidate();
+        project.invalidateDiagram();
     }
 
     public ObservableList<UserSetting> getSetting() {

@@ -64,7 +64,7 @@ public class ConditionDeviceIconView extends HBox {
             }
             devicePropertyWindow = new ConditionDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+            devicePropertyWindow.setOnHiding(event -> viewModel.getProject().invalidateDiagram());
             devicePropertyWindow.show(ConditionDeviceIconView.this);
         });
     }

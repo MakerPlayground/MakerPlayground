@@ -93,7 +93,7 @@ class Utility {
         return takeScene(visitNodes).stream().noneMatch(scene -> scene.getError() != DiagramError.NONE)
                 && takeCondition(visitNodes).stream().noneMatch(condition -> condition.getError() != DiagramError.NONE)
                 && takeDelay(visitNodes).stream().noneMatch(delay -> delay.getError() != DiagramError.NONE)
-                && project.getDiagramStatus().isEmpty();
+                && project.getDiagramConnectionStatus().isEmpty();
     }
 
     static boolean validateDeviceProperty(Project project) {

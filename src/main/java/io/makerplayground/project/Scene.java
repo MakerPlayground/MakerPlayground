@@ -40,7 +40,6 @@ public class Scene extends NodeElement {
         this.name = "";
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        invalidate();
     }
 
     Scene(double top, double left, double width, double height
@@ -49,7 +48,6 @@ public class Scene extends NodeElement {
         super(top, left, 205, 124, project);
         this.name = name;
         this.setting = FXCollections.observableArrayList(setting);
-        invalidate();
     }
 
     Scene(Scene s, String name, Project project) {
@@ -59,7 +57,6 @@ public class Scene extends NodeElement {
         for (UserSetting u : s.setting) {
             this.setting.add(new UserSetting(u));
         }
-        invalidate();
     }
 
     public void addDevice(ProjectDevice device) {
@@ -68,7 +65,7 @@ public class Scene extends NodeElement {
         } else {
             setting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
         }
-        invalidate();
+        project.invalidateDiagram();
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -86,17 +83,13 @@ public class Scene extends NodeElement {
                 }
             }
         }
-        invalidate();
+        project.invalidateDiagram();
     }
 
     @Override
     public void setName(String name) {
         this.name = name;
-        invalidate();
-        // invalidate other scene as every scene needs to check for duplicate name
-        for (Scene s : project.getUnmodifiableScene()) {
-            s.invalidate();
-        }
+        project.invalidateDiagram();
     }
 
     public ObservableList<UserSetting> getSetting() {

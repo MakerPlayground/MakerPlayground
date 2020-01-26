@@ -175,7 +175,7 @@ public class Toolbar extends AnchorPane {
     private void initUI() {
         deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
                 .then(deviceHasProblemImageView).otherwise((ImageView) null));
-        diagramEditorButton.graphicProperty().bind(Bindings.when(project.get().hasDiagramErrorProperty()).then(diagramHasProblemImageView).otherwise((ImageView) null));
+        diagramEditorButton.graphicProperty().bind(Bindings.when(project.get().diagramErrorProperty()).then(diagramHasProblemImageView).otherwise((ImageView) null));
 
         BooleanBinding uploading = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.UPLOADING);
         BooleanBinding startingInteractiveMode = uploadManager.uploadStatusProperty().isEqualTo(UploadStatus.STARTING_INTERACTIVE);

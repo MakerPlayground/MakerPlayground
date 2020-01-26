@@ -64,7 +64,7 @@ public class SceneDeviceIconView extends HBox {
             }
             devicePropertyWindow = new SceneDevicePropertyWindow(viewModel);
             devicePropertyWindow.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-            devicePropertyWindow.setOnHiding(event -> viewModel.getNodeElement().invalidate());
+            devicePropertyWindow.setOnHiding(event -> viewModel.getProject().invalidateDiagram());
             devicePropertyWindow.show(SceneDeviceIconView.this);
         });
     }

@@ -29,12 +29,7 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -64,7 +59,8 @@ public class Project {
     private final ObservableList<Delay> delays;
     private final ObservableList<Line> lines;
     private final ObservableList<Begin> begins;
-    private final BooleanProperty hasDiagramError;
+    private final ReadOnlyBooleanWrapper diagramError;
+    private Map<Line, DiagramError> lineErrorMap;
 
     @Getter private final FilteredList<ProjectDevice> sensorDevice;
     @Getter private final FilteredList<ProjectDevice> actuatorDevice;
@@ -87,9 +83,6 @@ public class Project {
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
     @Getter private InteractiveModel interactiveModel;
-
-    private final ObservableList<NodeElement> nodeError;
-    private final ObservableList<Line> lineError;
 
     public Project() {
         this.projectName = "Untitled Project";
@@ -116,16 +109,13 @@ public class Project {
         this.unmodifiableDelay = FXCollections.unmodifiableObservableList(delays);
         this.unmodifiableLine = FXCollections.unmodifiableObservableList(lines);
 
+        this.diagramError = new ReadOnlyBooleanWrapper();
+        this.lineErrorMap = Collections.emptyMap();
+
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
         this.newBegin();
         this.calculateCompatibility();
-
-        this.nodeError = FXCollections.observableArrayList();
-        this.lineError = FXCollections.observableArrayList();
-
-        this.hasDiagramError = new SimpleBooleanProperty();
-        this.hasDiagramError.bind(Bindings.size(nodeError).greaterThan(0).or(Bindings.size(lineError).greaterThan(0)));
     }
 
     // it is very difficult to directly clone an instance of the project class for many reasons e.g. UserSetting hold a
@@ -141,8 +131,8 @@ public class Project {
         return newProject;
     }
 
-    public BooleanProperty hasDiagramErrorProperty() {
-        return hasDiagramError;
+    public ReadOnlyBooleanProperty diagramErrorProperty() {
+        return diagramError.getReadOnlyProperty();
     }
 
     public String getFilePath() {
@@ -206,35 +196,6 @@ public class Project {
         return unmodifiableScene.stream().filter(s -> s.getName().equals(name)).findFirst();
     }
 
-    private void addNodeElementErrorListener(NodeElement node) {
-        node.errorProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue != DiagramError.NONE) {
-                if (!nodeError.contains(node)) {
-                    nodeError.add(node);
-                }
-            } else {
-                nodeError.remove(node);
-            }
-        });
-        if (node.getError() != DiagramError.NONE) {
-            nodeError.add(node);
-        }
-    }
-    private void addLineErrorListener(Line line) {
-        line.errorProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue != DiagramError.NONE) {
-                if (!lineError.contains(line)) {
-                    lineError.add(line);
-                }
-            } else {
-                lineError.remove(line);
-            }
-        });
-        if (line.getError() != DiagramError.NONE) {
-            lineError.add(line);
-        }
-    }
-
     public Scene newScene() {
         int id = scenes.stream()
                 .filter(scene1 -> sceneNameRegex.matcher(scene1.getName()).matches())
@@ -244,7 +205,6 @@ public class Project {
 
         Scene s = new Scene(this);
         s.setName("Scene" + (id + 1));
-        addNodeElementErrorListener(s);
         scenes.add(s);
         checkAndInvalidateDiagram();
         return s;
@@ -258,7 +218,6 @@ public class Project {
                 .orElse(0);
 
         Scene newScene = new Scene(s, "Scene" + (id + 1), this);
-        addNodeElementErrorListener(s);
         scenes.add(newScene);
         checkAndInvalidateDiagram();
         return newScene;
@@ -266,7 +225,6 @@ public class Project {
 
     void addScene(Scene s) {
         scenes.add(s);
-        addNodeElementErrorListener(s);
     }
 
     public void removeScene(Scene s) {
@@ -277,7 +235,6 @@ public class Project {
                 lines.remove(l);
             }
         }
-        nodeError.remove(s);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -294,7 +251,6 @@ public class Project {
                 .orElse(0);
 
         Condition c = new Condition("Condition" + (id + 1), this);
-        addNodeElementErrorListener(c);
         conditions.add(c);
         checkAndInvalidateDiagram();
         return c;
@@ -308,7 +264,6 @@ public class Project {
                 .orElse(0);
 
         Condition newCondition = new Condition(c, "Condition" + (id + 1), this);
-        addNodeElementErrorListener(c);
         conditions.add(newCondition);
         checkAndInvalidateDiagram();
         return newCondition;
@@ -316,7 +271,6 @@ public class Project {
 
     void addCondition(Condition c) {
         conditions.add(c);
-        addNodeElementErrorListener(c);
     }
 
     public void removeCondition(Condition c) {
@@ -327,7 +281,6 @@ public class Project {
                 lines.remove(l);
             }
         }
-        nodeError.remove(c);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -346,7 +299,6 @@ public class Project {
         Delay d = new Delay(this);
         d.setName("Delay" + (id + 1));
         delays.add(d);
-        addNodeElementErrorListener(d);
         checkAndInvalidateDiagram();
         return d;
     }
@@ -360,14 +312,12 @@ public class Project {
 
         Delay newDelay = new Delay(d, "Delay" + (id + 1), this);
         delays.add(newDelay);
-        addNodeElementErrorListener(d);
         checkAndInvalidateDiagram();
         return newDelay;
     }
 
     void addDelay(Delay d) {
         delays.add(d);
-        addNodeElementErrorListener(d);
     }
 
     public void removeDelay(Delay d) {
@@ -378,7 +328,6 @@ public class Project {
                 lines.remove(l);
             }
         }
-        nodeError.remove(d);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -388,7 +337,6 @@ public class Project {
         if (lines.stream().noneMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination))) {
             Line l = new Line(source, destination, this);
             lines.add(l);
-            addLineErrorListener(l);
         }
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
@@ -396,7 +344,6 @@ public class Project {
 
     public void removeLine(Line l) {
         lines.remove(l);
-        lineError.remove(l);
         checkAndInvalidateDiagram();
         this.calculateCompatibility();
     }
@@ -621,61 +568,73 @@ public class Project {
         return false;
     }
 
-    private Map<List<Line>, DiagramError> diagramError = Collections.emptyMap();
+    public void invalidateDiagram() {
+        checkAndInvalidateDiagram();
+        calculateCompatibility();
+    }
 
     private void checkAndInvalidateDiagram() {
-        Map<List<Line>, DiagramError> error = new HashMap<>();
-
-        // Reassign root to all scene and conditions
+        // reassign root to all scene and conditions
         getUnmodifiableScene().forEach(scene -> scene.setRoot(null));
         getUnmodifiableCondition().forEach(condition -> condition.setRoot(null));
         getUnmodifiableDelay().forEach(delay -> delay.setRoot(null));
         getBegin().forEach(begin -> begin.setRoot(begin));
         getBegin().forEach(this::traverseAndSetRoot);
 
+        // update line's error map
+        Map<Line, DiagramError> error = new HashMap<>();
         Map<NodeElement, List<Line>> lineFromSource = this.lines.stream().collect(Collectors.groupingBy(Line::getSource));
-
         for (NodeElement nodeElement : lineFromSource.keySet()) {
             List<Line> lines = lineFromSource.get(nodeElement);
 
             // indicate error if there are lines connect to multiple scenes from any node
             List<Line> lineToScene = lines.stream().filter(line1 -> line1.getDestination() instanceof Scene).collect(Collectors.toList());
             if (lineToScene.size() > 1) {
-                error.put(lineToScene, DiagramError.DIAGRAM_MULTIPLE_SCENE);
+                lineToScene.forEach(line -> error.put(line, DiagramError.DIAGRAM_MULTIPLE_SCENE));
             }
 
             // indicate error if there are lines connect to multiple delays from any node
             List<Line> lineToDelay = lines.stream().filter(line1 -> line1.getDestination() instanceof Delay).collect(Collectors.toList());
             if (lineToDelay.size() > 1) {
-                error.put(lineToDelay, DiagramError.DIAGRAM_MULTIPLE_DELAY);
+                lineToDelay.forEach(line -> error.put(line, DiagramError.DIAGRAM_MULTIPLE_DELAY));
             }
 
-            // indicate error if the current node is a condition and there is another condition in the list of the adjacent node
             List<Line> lineToCondition = lines.stream().filter(line1 -> line1.getDestination() instanceof Condition).collect(Collectors.toList());
-//            if ((nodeElement instanceof Condition) && !lineToCondition.isEmpty()) {
-//                error.put(lineToCondition, DiagramError.DIAGRAM_CHAIN_CONDITION);
-//            }
 
             // indicate error if the current node is connected to both scene and condition
             if (!lineToScene.isEmpty() && !lineToCondition.isEmpty()) {
-                error.put(lineToCondition, DiagramError.DIAGRAM_CONDITION_IGNORE);
+                lineToCondition.forEach(line -> error.put(line, DiagramError.DIAGRAM_CONDITION_IGNORE));
             }
 
             // indicate error if the current node is connected to both scene and delay
             if (!lineToScene.isEmpty() && !lineToDelay.isEmpty()) {
-                error.put(lineToDelay, DiagramError.DIAGRAM_DELAY_IGNORE);
+                lineToDelay.forEach(line -> error.put(line, DiagramError.DIAGRAM_DELAY_IGNORE));
             }
 
             // indicate error if the there are lines connecting between node with different root (i.e. there shouldn't be any link between task)
             if (!lines.stream().allMatch(line1 -> line1.getDestination().getRoot() == nodeElement.getRoot())) {
-                error.put(lines, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
+                for (Line line : lines) {
+                    if (line.getSource().getRoot() != line.getDestination().getRoot()) {
+                        error.put(line, DiagramError.DIAGRAM_MULTIPLE_BEGIN);
+                    }
+                }
             }
         }
+        lineErrorMap = Collections.unmodifiableMap(error);
 
-        diagramError = Collections.unmodifiableMap(error);
-
-        // invalidate every lines
+        // invalidate every diagram element
+        scenes.forEach(Scene::invalidate);
+        conditions.forEach(Condition::invalidate);
+        delays.forEach(Delay::invalidate);
+        begins.forEach(Begin::invalidate);
         lines.forEach(Line::invalidate);
+
+        // update diagram error flag
+        diagramError.set(scenes.stream().anyMatch(node -> node.getError() != DiagramError.NONE)
+                || conditions.stream().anyMatch(node -> node.getError() != DiagramError.NONE)
+                || delays.stream().anyMatch(node -> node.getError() != DiagramError.NONE)
+                || begins.stream().anyMatch(node -> node.getError() != DiagramError.NONE)
+                || lines.stream().anyMatch(node -> node.getError() != DiagramError.NONE));
     }
 
     private Set<NodeElement> getNextNodeElements(NodeElement from) {
@@ -700,8 +659,8 @@ public class Project {
         }
     }
 
-    public Map<List<Line>, DiagramError> getDiagramStatus() {
-        return diagramError;
+    public Map<Line, DiagramError> getDiagramConnectionStatus() {
+        return lineErrorMap;
     }
 
     public void removeBegin(Begin begin) {

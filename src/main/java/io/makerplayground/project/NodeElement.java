@@ -167,7 +167,6 @@ public abstract class NodeElement {
     protected abstract DiagramError checkError();
 
     public final void invalidate() {
-        this.project.calculateCompatibility();
         error.set(checkError());
     }
 }
