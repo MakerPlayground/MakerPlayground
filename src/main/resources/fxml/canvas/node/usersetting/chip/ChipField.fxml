@@ -68,6 +68,7 @@
             <ColumnConstraints />
             <ColumnConstraints />
             <ColumnConstraints />
+            <ColumnConstraints />
         </columnConstraints>
         <rowConstraints>
             <RowConstraints />
@@ -168,7 +169,26 @@
                     <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="/" />
                 </children>
             </StackPane>
-            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="4">
+            <StackPane fx:id="moduloChip" GridPane.columnIndex="4">
+                <children>
+                    <Path fill="#ff8b01" stroke="#ffffff">
+                        <elements>
+                            <MoveTo x="10.0" y="0.0" />
+                            <LineTo x="0.0" y="0.0" />
+                            <ArcTo XAxisRotation="90.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="10.0" y="10.0" />
+                            <LineTo x="10.0" y="15.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="0.0" y="25.0" />
+                            <LineTo x="35.0" y="25.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="25.0" y="15.0" />
+                            <LineTo x="25.0" y="10.0" />
+                            <ArcTo XAxisRotation="0.0" largeArcFlag="false" radiusX="10.0" radiusY="10.0" sweepFlag="true" x="35.0" y="0.0" />
+                            <ClosePath />
+                        </elements>
+                    </Path>
+                    <Text fill="#ffffff" strokeType="OUTSIDE" strokeWidth="0.0" text="\%" />
+                </children>
+            </StackPane>
+            <StackPane fx:id="openParenthesisChip" GridPane.columnIndex="5">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
@@ -193,7 +213,7 @@
                     </Text>
                 </children>
             </StackPane>
-            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <StackPane fx:id="closeParenthesisChip" GridPane.columnIndex="5" GridPane.rowIndex="1">
                 <children>
                     <Path fill="#ff8b01" stroke="#ffffff">
                         <elements>
