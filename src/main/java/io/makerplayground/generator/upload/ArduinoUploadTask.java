@@ -20,6 +20,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
@@ -143,19 +144,25 @@ public class ArduinoUploadTask extends UploadTask {
 
         updateMessage("Generating project");
         String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "upload";
+        String iniFilePath = projectPath + File.separator + "platformio.ini";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
-            FileUtils.deleteDirectory(new File(projectPath));
             FileUtils.forceMkdir(new File(projectPath));
+            List<String> params = new ArrayList<>();
+            params.add("init");
+            DeviceLibrary.INSTANCE.getActualDevice(DeviceType.CONTROLLER).stream().map(ActualDevice::getPioBoardId).filter(s -> !s.isBlank()).distinct().forEach(s -> {
+                params.add("--board");
+                params.add(s);
+            });
+            UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
+                    , params
+                    , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
+            if (result != UploadResult.OK) {
+                return result;
+            }
         } catch (IOException e) {
             updateMessage("Error: can't create project directory (permission denied)");
             return UploadResult.CANT_CREATE_PROJECT;
-        }
-        UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
-                , List.of("init", "--board", project.getSelectedController().getPioBoardId())
-                , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
-        if (result != UploadResult.OK) {
-            return result;
         }
 
         updateProgress(0.4, 1);
@@ -165,7 +172,7 @@ public class ArduinoUploadTask extends UploadTask {
             FileUtils.forceMkdir(new File(projectPath + File.separator + "lib"));
 
             // generate source file
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + "src" + File.separator + "main.cpp"))){
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + "src" + File.separator + "main.cpp", false))){
                 bw.write(sourcecode.getCode());
             }
         } catch (IOException | NullPointerException e) {
@@ -181,6 +188,11 @@ public class ArduinoUploadTask extends UploadTask {
         }
         Platform.runLater(() -> log.set("Using libraries stored at " + libraryPath.get() + "\n"));
 
+        try {
+            FileUtils.cleanDirectory(Paths.get(projectPath, "lib").toFile());
+        } catch (IOException e) {
+            // Do nothing
+        }
         // copy mp library
         for (String libName: mpLibraries) {
             File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
@@ -208,7 +220,7 @@ public class ArduinoUploadTask extends UploadTask {
 
         updateProgress(0.6, 1);
         updateMessage("Building project");
-        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run"),
+        UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId()),
                 "Error: Can't build the generated sourcecode. Please contact the development team.", UploadResult.CODE_ERROR);
         if (result != UploadResult.OK) {
             return result;
@@ -216,7 +228,7 @@ public class ArduinoUploadTask extends UploadTask {
 
         updateProgress(0.8, 1);
         updateMessage("Uploading to board");
-        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "--target", "upload"),
+        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId(), "-t", "upload"),
                 "Error: Can't find board. Please check connection.", UploadResult.CANT_FIND_BOARD);
         if (result != UploadResult.OK) {
             return result;
