@@ -23,6 +23,7 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.Condition;
+import io.makerplayground.project.VirtualProjectDevice.TimeElapsed;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 
@@ -429,9 +430,9 @@ public class ArduinoUploadCode {
                     for (UserSetting setting : condition.getVirtualDeviceSetting()) {
                         if (setting.getCondition() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
-                        } else if (setting.getDevice() == VirtualProjectDevice.timeElapsedProjectDevice) {
+                        } else if (setting.getDevice() == TimeElapsed.projectDevice) {
                             Parameter valueParameter = setting.getCondition().getParameter().get(0);
-                            if (setting.getCondition() == VirtualProjectDevice.lessThan) {
+                            if (setting.getCondition() == TimeElapsed.lessThan) {
                                 booleanExpressions.add("millis() < " + parseBeginRecentSceneFinishTime(root) + " + " +
                                         parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
                             } else {

@@ -18,13 +18,10 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.*;
 import io.makerplayground.device.GenericDeviceType;
-import io.makerplayground.device.actual.ActualDevice;
-import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
@@ -33,6 +30,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -44,6 +42,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represent a project
@@ -782,6 +781,65 @@ public class Project {
         }
 
         projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility, this.devices);
+    }
+
+    private static final String cVariableRegex = "[a-zA-Z_]+";
+
+    public VariableAddResult addVariable(String varName) {
+        if (!varName.matches(cVariableRegex)) {
+            return new VariableAddResult(null, VariableError.VARIABLE_NAME_INVALID);
+        }
+        if (VirtualProjectDevice.Memory.variables.stream().anyMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
+            return new VariableAddResult(null, VariableError.DUPLICATE_NAME);
+        }
+        ProjectValue projectValue = new ProjectValue(VirtualProjectDevice.Memory.projectDevice, new Value(varName, DataType.DOUBLE, Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED)));
+        VirtualProjectDevice.Memory.variables.add(projectValue);
+        return new VariableAddResult(projectValue, VariableError.OK);
+    }
+
+    public VariableError renameVariable(String varNameOld, String varNameNew) {
+        if (VirtualProjectDevice.Memory.variables.stream().noneMatch(value -> value.getValue().getName().equals(varNameOld))) {
+            return VariableError.VARIABLE_NOT_EXIST;
+        }
+        if (!varNameNew.matches(cVariableRegex)) {
+            return VariableError.VARIABLE_NAME_INVALID;
+        }
+        if (VirtualProjectDevice.Memory.variables.stream().anyMatch(value -> value.getValue().getName().equals(varNameNew))) {
+            return VariableError.DUPLICATE_NAME;
+        }
+        IntStream.range(0, VirtualProjectDevice.Memory.variables.size())
+                .filter(i -> VirtualProjectDevice.Memory.variables.get(i).getValue().getName().equals(varNameOld))
+                .findFirst()
+                .ifPresent(index -> { // This always present since we are already guaranteed by the first if
+                    ProjectValue prevValue = VirtualProjectDevice.Memory.variables.get(index);
+                    VirtualProjectDevice.Memory.variables.set(index, new ProjectValue(VirtualProjectDevice.Memory.projectDevice, new Value(varNameNew, prevValue.getValue().getType(), prevValue.getValue().getConstraint())));
+                });
+
+        return VariableError.OK;
+    }
+
+    public VariableError removeVariable(String varName) {
+        if (VirtualProjectDevice.Memory.variables.stream().noneMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
+            return VariableError.VARIABLE_NOT_EXIST;
+        }
+        VirtualProjectDevice.Memory.variables.removeIf(projectValue -> projectValue.getValue().getName().equals(varName));
+        return VariableError.OK;
+    }
+
+    @RequiredArgsConstructor
+    public enum VariableError {
+        OK(""),
+        DUPLICATE_NAME("Duplicate variable name"),
+        VARIABLE_NOT_EXIST("Variable does not existed."),
+        VARIABLE_NAME_INVALID("Invalid variable name");
+
+        @Getter private final String errorMessage;
+    }
+
+    @Data
+    public static class VariableAddResult {
+        private final ProjectValue projectValue;
+        private final VariableError error;
     }
 
     public Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String newName) {

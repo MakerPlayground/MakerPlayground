@@ -19,6 +19,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;
@@ -70,6 +71,16 @@ public class UserSetting {
                 parameterMap.put(param, Expression.fromDefaultParameter(param));
             }
         });
+
+        if (VirtualProjectDevice.Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
+                Value v = pv.getValue();
+                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                    expression.put(v, new ConditionalExpression(device, pv.getValue()));
+                }
+                expressionEnable.put(v, false);
+            }
+        }
 
         // Initialize expression list
         // TODO: Expression is not required to be added in Scene

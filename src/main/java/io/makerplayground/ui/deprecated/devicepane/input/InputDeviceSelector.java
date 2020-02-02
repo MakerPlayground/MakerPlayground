@@ -17,6 +17,7 @@
 package io.makerplayground.ui.deprecated.devicepane.input;
 
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.VirtualProjectDevice;
 import io.makerplayground.ui.canvas.node.ConditionViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,9 +41,9 @@ public class InputDeviceSelector extends PopOver {
             e.printStackTrace();
         }
 
-        viewModel.getVirtualDevices().stream().filter(device -> {
+        VirtualProjectDevice.virtualDevicesHaveCondition.stream().filter(device -> {
             for (UserSetting userSetting : viewModel.getVirtualDeviceSetting()) {
-                if (userSetting.getDevice() == device) {
+                if (userSetting.getDevice() == device || device.getGenericDevice().getCondition().isEmpty()) {
                     return false;
                 }
             }

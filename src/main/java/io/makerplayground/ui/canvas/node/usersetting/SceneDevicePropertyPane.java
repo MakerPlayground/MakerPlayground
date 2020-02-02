@@ -7,9 +7,7 @@ import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.*;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import javafx.beans.binding.Bindings;
@@ -261,6 +259,17 @@ public class SceneDevicePropertyPane extends VBox {
                 // a fake parameter to make value linking works as expect
                 RecordExpressionControl expressionControl = new RecordExpressionControl(project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
                         , (RecordExpression) userSetting.getParameterMap().get(p));
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.VARIABLE) {
+                VariableSelectorControl expressionControl = new VariableSelectorControl(
+                        project,
+                        (VariableExpression) (userSetting.getParameterMap().get(p))
+                );
+//                VariableSelectorControl expressionControl = new VariableSelectorControl(
+//                        project,
+//                        (VariableExpression) (userSetting.getParameterMap().get(p))
+//                );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
             } else {
