@@ -38,7 +38,7 @@ public class Action {
      * @param parameter list of parameters of this action ex. brightness, speed, etc.
      */
     @JsonCreator
-    Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
+    public Action(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
         this.functionName = functionName;
         this.parameter = Objects.nonNull(parameter) ? Collections.unmodifiableList(parameter) : Collections.emptyList();

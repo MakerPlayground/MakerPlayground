@@ -73,6 +73,16 @@ public class UserSetting {
             }
         });
 
+        if (VirtualProjectDevice.Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
+                Value v = pv.getValue();
+                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                    expression.put(v, new ConditionalExpression(device, pv.getValue()));
+                }
+                expressionEnable.put(v, false);
+            }
+        }
+
         // Initialize expression list
         // TODO: Expression is not required to be added in Scene
         for (Value v : device.getGenericDevice().getValue()) {

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SceneDeserializer extends JsonDeserializer<Scene> {
     private ObjectMapper mapper = new ObjectMapper();
@@ -45,11 +46,15 @@ public class SceneDeserializer extends JsonDeserializer<Scene> {
         String name = node.get("name").asText();
         List<UserSetting> settings = mapper.readValue(node.get("setting").traverse(), new TypeReference<List<UserSetting>>() {});
 
+        List<UserSetting> virtualDeviceSettings = settings.stream()
+                .filter(setting -> VirtualProjectDevice.virtualDevices.contains(setting.getDevice()))
+                .collect(Collectors.toUnmodifiableList());
+
         JsonNode positionNode = node.get("position");
         double top = positionNode.get("top").asDouble();
         double left = positionNode.get("left").asDouble();
         double width = positionNode.get("width").asDouble();
         double height = positionNode.get("height").asDouble();
-        return new Scene(top, left, width, height, name, settings, project);
+        return new Scene(top, left, width, height, name, settings, virtualDeviceSettings, project);
     }
 }

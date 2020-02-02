@@ -23,7 +23,6 @@ import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -157,7 +156,7 @@ public class Condition extends NodeElement {
         for (UserSetting userSetting : setting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
             if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
@@ -172,8 +171,13 @@ public class Condition extends NodeElement {
 
         for (UserSetting userSetting : virtualSetting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
-            if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
+            if (VirtualProjectDevice.Memory.projectDevice.equals(userSetting.getDevice())) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
+                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+                }
+            }
+            else if (userSetting.getCondition().getName().equals("Compare")) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {

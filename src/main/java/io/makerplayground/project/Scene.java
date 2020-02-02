@@ -34,20 +34,31 @@ public class Scene extends NodeElement {
 
     private final ObservableList<UserSetting> setting;
 
+    private final ObservableList<UserSetting> virtualSetting;
+    private final ObservableList<UserSetting> unmodifiableVirtualSetting;
+
     Scene(Project project) {
         super(20, 20, 205, 124, project);
 
         this.name = "";
+
+        this.virtualSetting = FXCollections.observableArrayList();
+
         // fire update event when actionProperty is invalidated / changed
         this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(virtualSetting);
+        invalidate();
     }
 
     Scene(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, Project project) {
+            , String name, List<UserSetting> setting, List<UserSetting> virtualSetting, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
         this.name = name;
+        this.virtualSetting = FXCollections.observableArrayList(virtualSetting);
         this.setting = FXCollections.observableArrayList(setting);
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
+        invalidate();
     }
 
     Scene(Scene s, String name, Project project) {
@@ -57,6 +68,12 @@ public class Scene extends NodeElement {
         for (UserSetting u : s.setting) {
             this.setting.add(new UserSetting(u));
         }
+        this.virtualSetting = FXCollections.observableArrayList();
+        for (UserSetting u : s.virtualSetting) {
+            this.virtualSetting.add(new UserSetting(u));
+        }
+        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
+        invalidate();
     }
 
     public void addDevice(ProjectDevice device) {
@@ -66,6 +83,15 @@ public class Scene extends NodeElement {
             setting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
         }
         project.invalidateDiagram();
+    }
+
+
+    public void addVirtualDevice(ProjectDevice device) {
+        if (!VirtualProjectDevice.virtualDevices.contains(device)) {
+            throw new IllegalStateException("Device to be added is not a virtual device");
+        }
+        virtualSetting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
+        invalidate();
     }
 
     public void removeDevice(ProjectDevice device) {
@@ -96,6 +122,10 @@ public class Scene extends NodeElement {
         return setting;
     }
 
+    public ObservableList<UserSetting> getVirtualDeviceSetting() {
+        return unmodifiableVirtualSetting;
+    }
+
     public void removeUserSetting(UserSetting userSetting) {
         this.setting.remove(userSetting);
     }
@@ -116,6 +146,11 @@ public class Scene extends NodeElement {
 
         // parameter should not be null and should be valid
         if (setting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
+                .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
+            return DiagramError.SCENE_INVALID_PARAM;
+        }
+
+        if (virtualSetting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
                 .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
             return DiagramError.SCENE_INVALID_PARAM;
         }

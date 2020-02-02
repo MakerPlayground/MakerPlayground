@@ -378,7 +378,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 int endIndex = i;
                 // decrement i until we found any kind of chip or a operator
                 while ((i >= 0) && (nodes.get(i) instanceof Text) && !operator.contains(((Text) nodes.get(i)).getText())) {
-                    i--;
+                        i--;
                 }
 
                 // process block of texts from position i+1 to endIndex (inclusive) and replace them with a chip

@@ -20,6 +20,7 @@ import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
+import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
@@ -117,6 +118,19 @@ public class SceneView extends InteractiveNode {
                         .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                         .createDynamicViewCreator();
 
+        DynamicViewCreator<VBox, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator2 =
+                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, SceneDeviceIconView>()
+                        .setParent(deviceConfigIconPane)
+                        .setModelLoader(sceneViewModel.getVirtualDeviceViewModelCreator())
+                        .setViewFactory(sceneDeviceIconViewModel -> {
+                            SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
+                            sceneDeviceIconView.setOnRemoved(event -> sceneViewModel.removeUserSetting(sceneDeviceIconViewModel.getUserSetting()));
+                            return sceneDeviceIconView;
+                        })
+                        .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
+                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
+                        .createDynamicViewCreator();
+
         // bind scene's name to the model
         nameTextField.setText(sceneViewModel.getName());
         nameTextField.textProperty().addListener((observable, oldValue, newValue) -> sceneViewModel.setName(newValue));
@@ -171,12 +185,12 @@ public class SceneView extends InteractiveNode {
         // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
         // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
         // native method to check the visibility of the scroll bar)
-        if (sceneViewModel.getStateDevice().size() >= 3) {
+        if (sceneViewModel.getSceneDevice().size() >= 3) {
             removeEventFilter(scrollPane);
         } else {
             makeMovableWithEventFilter(scrollPane);
         }
-        Bindings.size(sceneViewModel.getStateDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
+        Bindings.size(sceneViewModel.getSceneDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 removeEventFilter(scrollPane);
             } else {
