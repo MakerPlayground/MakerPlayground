@@ -783,7 +783,7 @@ public class Project {
         projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility, this.devices);
     }
 
-    private static final String cVariableRegex = "[a-zA-Z_]+";
+    private static final String cVariableRegex = "[a-zA-Z_][a-zA-Z0-9_]*";
 
     public VariableAddResult addVariable(String varName) {
         if (!varName.matches(cVariableRegex)) {
@@ -807,14 +807,7 @@ public class Project {
         if (VirtualProjectDevice.Memory.variables.stream().anyMatch(value -> value.getValue().getName().equals(varNameNew))) {
             return VariableError.DUPLICATE_NAME;
         }
-        IntStream.range(0, VirtualProjectDevice.Memory.variables.size())
-                .filter(i -> VirtualProjectDevice.Memory.variables.get(i).getValue().getName().equals(varNameOld))
-                .findFirst()
-                .ifPresent(index -> { // This always present since we are already guaranteed by the first if
-                    ProjectValue prevValue = VirtualProjectDevice.Memory.variables.get(index);
-                    VirtualProjectDevice.Memory.variables.set(index, new ProjectValue(VirtualProjectDevice.Memory.projectDevice, new Value(varNameNew, prevValue.getValue().getType(), prevValue.getValue().getConstraint())));
-                });
-
+        VirtualProjectDevice.Memory.variables.stream().filter(projectValue -> projectValue.getValue().getName().equals(varNameOld)).findFirst().ifPresent(projectValue -> projectValue.getValue().setName(varNameNew));
         return VariableError.OK;
     }
 

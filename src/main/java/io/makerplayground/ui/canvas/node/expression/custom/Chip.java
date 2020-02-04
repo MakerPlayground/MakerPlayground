@@ -19,6 +19,8 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.project.term.Term;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.StackPane;
 
 import java.util.Collections;
@@ -27,13 +29,13 @@ import java.util.List;
 public abstract class Chip<T> extends StackPane {
     private final Term.Type type;
     private final ReadOnlyObjectWrapper<T> value = new ReadOnlyObjectWrapper<>();
-    private final List<T> choices;
+    private final ObservableList<T> choices;
 
     public Chip(T initialValue, Term.Type type) {
-        this(initialValue, type, Collections.emptyList());
+        this(initialValue, type, FXCollections.emptyObservableList());
     }
 
-    public Chip(T initialValue, Term.Type type, List<T> choices) {
+    public Chip(T initialValue, Term.Type type, ObservableList<T> choices) {
         this.type = type;
         this.value.set(initialValue);
         this.choices = choices;
@@ -63,7 +65,7 @@ public abstract class Chip<T> extends StackPane {
         this.value.set(value);
     }
 
-    public List<T> getChoices() {
+    public ObservableList<T> getChoices() {
         return choices;
     }
 }

@@ -185,6 +185,7 @@ public class VariableSelectorControl extends VBox {
                 } else {
                     errorMessage.set("");
                 }
+                valueListView.getSelectionModel().clearSelection();
                 valueListView.getSelectionModel().select(index);
             }
             event.consume();

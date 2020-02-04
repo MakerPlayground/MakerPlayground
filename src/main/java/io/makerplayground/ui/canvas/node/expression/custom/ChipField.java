@@ -19,16 +19,23 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.VirtualProjectDevice;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.binding.ListBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,8 +81,8 @@ public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private StackPane closeParenthesisChip;
 
     private final ReadOnlyObjectWrapper<T> expressionProperty;
-    private final List<ProjectValue> projectValues;
     private final boolean parseStringChip;
+    private final ListBinding<ProjectValue> projectValues;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
@@ -90,8 +97,34 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
     public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
-        this.projectValues = projectValues;
         this.parseStringChip = parseStringChip;
+
+        // In the usersetting's stage, the ProjectValueChip that was created could have ability to know the change of the Memory's ProjectValue.
+        // Such that the newly added variable from the action "set value" could show in the created ProjectValueChip.
+        // Thus, in the implementation, the list bindings always update the value to an observableList object built by concatenate the memory's values and all project values
+        this.projectValues = new ListBinding<>() {
+            {
+                super.bind(VirtualProjectDevice.Memory.unmodifiableVariables);
+
+                // when user adds new variable to the bindings, add name change listener to update the
+                super.addListener((ListChangeListener<? super ProjectValue>) c -> {
+                    while (c.next()) {
+                        if (c.wasAdded()) {
+                            c.getAddedSubList().forEach(o -> o.getValue().nameProperty().addListener((observable, oldValue, newValue) -> {
+                                updateDisplayMode();
+                            }));
+                        }
+                    }
+                });
+            }
+            @Override
+            protected ObservableList<ProjectValue> computeValue() {
+                ObservableList<ProjectValue> concatList = FXCollections.observableList(new ArrayList<>());
+                concatList.addAll(VirtualProjectDevice.Memory.unmodifiableVariables);
+                concatList.addAll(projectValues);
+                return concatList;
+            }
+        };
         initView();
         initEvent();
     }

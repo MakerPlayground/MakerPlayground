@@ -17,15 +17,15 @@
 package io.makerplayground.device.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.shared.constraint.Constraint;
-import lombok.Data;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
-@Data
 @JsonDeserialize(using = ValueDeserializer.class)
 public class Value {
-    private final String name;
+    private StringProperty name;
+
     private final DataType type;
     private final Constraint constraint;
 
@@ -36,10 +36,30 @@ public class Value {
      * @param type an enumerated value ({@link DataType}) indicating type of a value
      * @param constraint an enumerated value ({@link Constraint}) indicating type of a constraint
      */
-//    @JsonCreator
+    @JsonCreator
     public Value(String name, DataType type, Constraint constraint) {
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.type = type;
         this.constraint = constraint;
+    }
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public DataType getType() {
+        return type;
+    }
+
+    public Constraint getConstraint() {
+        return constraint;
     }
 }
