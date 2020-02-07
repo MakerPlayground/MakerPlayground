@@ -41,7 +41,7 @@ public class OutputDeviceSelector extends PopOver {
             e.printStackTrace();
         }
 
-        VirtualProjectDevice.virtualDevicesHaveAction.forEach(device -> {
+        VirtualProjectDevice.All.virtualDevicesHaveAction.forEach(device -> {
             OutputDeviceIconSelectorView inputIconView = new OutputDeviceIconSelectorView(device);
             flowPane.getChildren().add(inputIconView);
             inputIconView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {

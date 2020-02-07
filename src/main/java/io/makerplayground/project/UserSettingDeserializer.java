@@ -54,7 +54,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 break;
             }
         }
-        for (ProjectDevice pd : VirtualProjectDevice.virtualDevices) {
+        for (ProjectDevice pd : VirtualProjectDevice.All.virtualDevices) {
             if (pd.getName().equals(deviceName)) {
                 projectDevice = pd;
                 break;
@@ -123,8 +123,13 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             } else if (DotMatrixExpression.class.getSimpleName().equals(expressionType)) {
                 DotMatrix dotMatrix = ((DotMatrixTerm) terms.get(0)).getValue();
                 expression = new DotMatrixExpression(dotMatrix);
-            }
-            else {
+            } else if (VariableExpression.class.getSimpleName().equals(expressionType)) {
+                if (terms.isEmpty()) {
+                    expression = VariableExpression.NO_VARIABLE_SELECTED;
+                } else {
+                    expression = new VariableExpression(((ValueTerm)(terms.get(0))).getValue());
+                }
+            } else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }
 
@@ -139,7 +144,12 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
         Map<Value, Expression> expressionMap = new HashMap<>();
         Map<Value, Boolean> expressionEnableMap = new HashMap<>();
         for (JsonNode valueNode : node.get("expression")) {
-            Value value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText()).orElseThrow();
+            Value value;
+            if (VirtualProjectDevice.Memory.projectDevice.equals(projectDevice)) {
+                value = VirtualProjectDevice.Memory.unmodifiableVariables.stream().filter(projectValue -> projectValue.getValue().getName().equals(valueNode.get("name").asText())).findFirst().orElseThrow().getValue();
+            } else {
+                value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText()).orElseThrow();
+            }
             boolean enable = valueNode.get("enable").asBoolean();
             String type = valueNode.get("type").asText();
             List<Term> terms = new ArrayList<>();
@@ -207,13 +217,20 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             } else {
                 String projectDeviceName = term_node.get("value").get("name").asText();
                 String valueName = term_node.get("value").get("value").asText();
-                Optional<ProjectDevice> deviceOptional = allProjectDevices.stream().filter(pj -> pj.getName().equals(projectDeviceName)).findFirst();
-                if (deviceOptional.isEmpty()) {
-                    throw new IllegalStateException("projectDevice for term is needed to be existed.");
+                if (VirtualProjectDevice.Memory.projectDevice.getName().equals(projectDeviceName)) {
+                    ProjectValue value = VirtualProjectDevice.Memory.unmodifiableVariables.stream()
+                            .filter(projectValue -> projectValue.getValue().getName().equals(valueName))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("Variable not exist [" + valueName + "]"));
+                    term = new ValueTerm(value);
+                } else {
+                    ProjectDevice device = allProjectDevices.stream()
+                            .filter(pd -> pd.getName().equals(projectDeviceName))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("projectDevice for term is needed to be existed."));
+                    Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
+                    term = new ValueTerm(new ProjectValue(device, value));
                 }
-                ProjectDevice device = deviceOptional.get();
-                Value value = device.getGenericDevice().getValue(valueName).orElseThrow();
-                term = new ValueTerm(new ProjectValue(device, value));
             }
         } else if (Term.Type.STRING.name().equals(term_type)) {
             String word = term_node.get("value").asText();

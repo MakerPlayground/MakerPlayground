@@ -5,7 +5,7 @@ import io.makerplayground.project.term.ValueTerm;
 
 public class VariableExpression extends Expression {
 
-    public static VariableExpression NO_VARIABLE_SELECTED = new VariableExpression();
+    public static final VariableExpression NO_VARIABLE_SELECTED = new VariableExpression();
 
     private VariableExpression() {
         super(Type.VARIABLE);

@@ -80,11 +80,35 @@ public class UserSetting {
             for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
                 Value v = pv.getValue();
                 if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                    expression.put(v, new ConditionalExpression(device, pv.getValue()));
+                    expression.put(v, new ConditionalExpression(device, v));
                 }
                 expressionEnable.put(v, false);
             }
         }
+
+        VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    c.getAddedSubList().forEach(o -> {
+                        Value v = o.getValue();
+                        if (expression.containsKey(v)) {
+                            return;
+                        }
+                        expressionEnable.put(v, false);
+                        if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                            expression.put(v, new ConditionalExpression(device, v));
+                        }
+                    });
+                }
+                if (c.wasRemoved()) {
+                    c.getRemoved().forEach(o -> {
+                        Value v = o.getValue();
+                        expression.remove(v);
+                        expressionEnable.remove(v);
+                    });
+                }
+            }
+        });
 
         // Initialize expression list
         // TODO: Expression is not required to be added in Scene

@@ -41,10 +41,12 @@ public class VirtualProjectDevice extends ProjectDevice {
 
     private final boolean allowRepeat;
 
-    // other virtual device such as the statistic calculator etc. should be defined here
-    public static final List<ProjectDevice> virtualDevices = List.of(TimeElapsed.projectDevice, Memory.projectDevice);
-    public static final List<ProjectDevice> virtualDevicesHaveAction = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getAction().isEmpty()).collect(Collectors.toUnmodifiableList());
-    public static final List<ProjectDevice> virtualDevicesHaveCondition = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getCondition().isEmpty()).collect(Collectors.toUnmodifiableList());
+    public static class All {
+        // other virtual device such as the statistic calculator etc. should be defined here
+        public static final List<ProjectDevice> virtualDevices = List.of(TimeElapsed.projectDevice, Memory.projectDevice);
+        public static final List<ProjectDevice> virtualDevicesHaveCondition = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getCondition().isEmpty()).collect(Collectors.toUnmodifiableList());
+        public static final List<ProjectDevice> virtualDevicesHaveAction = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getAction().isEmpty()).collect(Collectors.toUnmodifiableList());
+    }
 
     public VirtualProjectDevice(String name, GenericDevice genericDevice, boolean allowRepeat) {
         super(name, genericDevice);

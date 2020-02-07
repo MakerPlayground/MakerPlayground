@@ -87,7 +87,7 @@ public class Scene extends NodeElement {
 
 
     public void addVirtualDevice(ProjectDevice device) {
-        if (!VirtualProjectDevice.virtualDevices.contains(device)) {
+        if (!VirtualProjectDevice.All.virtualDevices.contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
         virtualSetting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));

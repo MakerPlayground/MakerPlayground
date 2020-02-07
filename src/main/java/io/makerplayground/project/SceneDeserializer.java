@@ -45,9 +45,11 @@ public class SceneDeserializer extends JsonDeserializer<Scene> {
         JsonNode node = mapper.readTree(jsonParser);
         String name = node.get("name").asText();
         List<UserSetting> settings = mapper.readValue(node.get("setting").traverse(), new TypeReference<List<UserSetting>>() {});
-
+        List<UserSetting> deviceSettings = settings.stream()
+                .filter(setting -> project.getUnmodifiableProjectDevice().contains(setting.getDevice()))
+                .collect(Collectors.toUnmodifiableList());
         List<UserSetting> virtualDeviceSettings = settings.stream()
-                .filter(setting -> VirtualProjectDevice.virtualDevices.contains(setting.getDevice()))
+                .filter(setting -> VirtualProjectDevice.All.virtualDevices.contains(setting.getDevice()))
                 .collect(Collectors.toUnmodifiableList());
 
         JsonNode positionNode = node.get("position");
@@ -55,6 +57,6 @@ public class SceneDeserializer extends JsonDeserializer<Scene> {
         double left = positionNode.get("left").asDouble();
         double width = positionNode.get("width").asDouble();
         double height = positionNode.get("height").asDouble();
-        return new Scene(top, left, width, height, name, settings, virtualDeviceSettings, project);
+        return new Scene(top, left, width, height, name, deviceSettings, virtualDeviceSettings, project);
     }
 }

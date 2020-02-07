@@ -37,6 +37,9 @@ public class SceneSerializer extends JsonSerializer<Scene> {
        jsonGenerator.writeStringField("name",scene.getName());
 
        jsonGenerator.writeArrayFieldStart("setting");
+       for (UserSetting setting : scene.getVirtualDeviceSetting()) {
+          mapper.writeValue(jsonGenerator, setting);
+       }
        for (UserSetting setting : scene.getSetting()) {
           mapper.writeValue(jsonGenerator, setting);
        }
