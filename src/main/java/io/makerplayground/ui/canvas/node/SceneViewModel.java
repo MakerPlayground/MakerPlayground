@@ -47,7 +47,7 @@ public class SceneViewModel {
         this.virtualDeviceViewModelCreator = new DynamicViewModelCreator<>(scene.getVirtualDeviceSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).add(VirtualProjectDevice.virtualDevicesHaveAction.size()).greaterThan(0));
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).add(VirtualProjectDevice.All.virtualDevicesHaveAction.size()).greaterThan(0));
 
         hasLineIn = new SimpleBooleanProperty();
         hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == scene)).greaterThan(0));

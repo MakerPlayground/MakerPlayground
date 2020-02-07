@@ -71,6 +71,12 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         }
         jsonGenerator.writeEndArray();
 
+        jsonGenerator.writeArrayFieldStart("variables");
+        for (ProjectValue value: VirtualProjectDevice.Memory.unmodifiableVariables) {
+            jsonGenerator.writeString(value.getValue().getName());
+        }
+        jsonGenerator.writeEndArray();
+
         jsonGenerator.writeArrayFieldStart("begins");
         for(Begin begin: project.getBegin()) {
             jsonGenerator.writeStartObject();

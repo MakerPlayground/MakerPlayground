@@ -111,6 +111,8 @@ public class Project {
         this.diagramError = new ReadOnlyBooleanWrapper();
         this.lineErrorMap = Collections.emptyMap();
 
+        VirtualProjectDevice.Memory.variables.clear();
+
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
         this.newBegin();

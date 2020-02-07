@@ -266,10 +266,6 @@ public class SceneDevicePropertyPane extends VBox {
                         project,
                         (VariableExpression) (userSetting.getParameterMap().get(p))
                 );
-//                VariableSelectorControl expressionControl = new VariableSelectorControl(
-//                        project,
-//                        (VariableExpression) (userSetting.getParameterMap().get(p))
-//                );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
             } else {
