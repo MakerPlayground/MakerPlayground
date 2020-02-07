@@ -128,6 +128,8 @@ public class Scene extends NodeElement {
 
     public void removeUserSetting(UserSetting userSetting) {
         this.setting.remove(userSetting);
+        virtualSetting.remove(userSetting);
+        project.invalidateDiagram();
     }
 
     @Override

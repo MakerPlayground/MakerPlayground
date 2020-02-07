@@ -26,9 +26,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.binding.ListBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -82,7 +81,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
     private final ReadOnlyObjectWrapper<T> expressionProperty;
     private final boolean parseStringChip;
-    private final ListBinding<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
@@ -105,21 +104,19 @@ public abstract class ChipField<T extends Expression> extends VBox {
         this.projectValues = new ListBinding<>() {
             {
                 super.bind(VirtualProjectDevice.Memory.unmodifiableVariables);
+                VirtualProjectDevice.Memory.unmodifiableVariables.forEach(projectValue -> super.bind(projectValue.getValue().nameProperty()));
 
-                // when user adds new variable to the bindings, add name change listener to update the
-                super.addListener((ListChangeListener<? super ProjectValue>) c -> {
+                // when user adds new variable to memory, add new name change listener by binding to this ListBinding
+                VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
                     while (c.next()) {
-                        if (c.wasAdded()) {
-                            c.getAddedSubList().forEach(o -> o.getValue().nameProperty().addListener((observable, oldValue, newValue) -> {
-                                updateDisplayMode();
-                            }));
-                        }
+                        c.getAddedSubList().forEach(o -> super.bind(o.getValue().nameProperty()));
+                        c.getRemoved().forEach(o -> super.unbind(o.getValue().nameProperty()));
                     }
                 });
             }
             @Override
             protected ObservableList<ProjectValue> computeValue() {
-                ObservableList<ProjectValue> concatList = FXCollections.observableList(new ArrayList<>());
+                ObservableList<ProjectValue> concatList = FXCollections.observableArrayList();
                 concatList.addAll(VirtualProjectDevice.Memory.unmodifiableVariables);
                 concatList.addAll(projectValues);
                 return concatList;
@@ -493,7 +490,25 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
     protected void updateDisplayMode() {
         displayModeTextFlow.getChildren().clear();
-        Text t = new Text(getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" ")));
+        Text t = new Text();
+        StringBinding textBinding = new StringBinding() {
+            {
+                super.bind(expressionProperty);
+                super.bind(VirtualProjectDevice.Memory.unmodifiableVariables);
+                VirtualProjectDevice.Memory.unmodifiableVariables.forEach(projectValue -> super.bind(projectValue.getValue().nameProperty()));
+                VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+                    while (c.next()) {
+                        c.getAddedSubList().forEach(o -> super.bind(o.getValue().nameProperty()));
+                        c.getRemoved().forEach(o -> super.unbind(o.getValue().nameProperty()));
+                    }
+                });
+            }
+            @Override
+            protected String computeValue() {
+                return getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" "));
+            }
+        };
+        t.textProperty().bind(textBinding);
         t.setFill(TEXT_COLOR);
         displayModeTextFlow.getChildren().add(t);
     }
