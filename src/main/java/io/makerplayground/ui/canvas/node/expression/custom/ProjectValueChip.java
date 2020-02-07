@@ -20,8 +20,6 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +30,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ProjectValueChip extends Chip<ProjectValue> {
 
@@ -93,10 +90,18 @@ public class ProjectValueChip extends Chip<ProjectValue> {
                 }
             }
         });
+
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
+
+        getChoices().addListener((InvalidationListener) c -> {
+            ProjectValue selectedValue = comboBox.getSelectionModel().getSelectedItem();
+            if (!comboBox.getItems().contains(selectedValue)) {
+                comboBox.getSelectionModel().clearSelection();
+            }
+        });
     }
 
     @Override

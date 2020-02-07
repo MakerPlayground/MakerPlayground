@@ -27,9 +27,12 @@ import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.MapBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
 

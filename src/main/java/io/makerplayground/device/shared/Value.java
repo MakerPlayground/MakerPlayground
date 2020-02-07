@@ -21,8 +21,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.shared.constraint.Constraint;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lombok.ToString;
 
 @JsonDeserialize(using = ValueDeserializer.class)
+@ToString
 public class Value {
     private StringProperty name;
 

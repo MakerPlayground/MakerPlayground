@@ -87,9 +87,10 @@ public class VariableSelectorControl extends VBox {
                             queue.addAll(((Parent) node).getChildrenUnmodifiable());
                         }
                     }
-                    errorMessage.set("");
                     nameTextField.fireEvent(new ActionEvent());
+                    errorMessage.set("");
                     isEditMode.set(false);
+                    updateHilight();
                 });
             }
         });
@@ -105,6 +106,12 @@ public class VariableSelectorControl extends VBox {
         displayTextField.textProperty().bind(Bindings.createStringBinding(() -> expression.get().getVariableName(), expression));
 
         nameTextField.setOnAction(onAddSubmit);
+
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                nameTextField.fireEvent(new ActionEvent());
+            }
+        });
 
         valueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (Objects.isNull(newValue)) {
@@ -165,10 +172,12 @@ public class VariableSelectorControl extends VBox {
                     if (index < 0 || index > valueListView.getItems().size() - 1) {
                         valueListView.getSelectionModel().selectFirst();
                     } else {
-                        valueListView.getSelectionModel().clearAndSelect(index);
+                        valueListView.getSelectionModel().clearSelection();
+                        valueListView.getSelectionModel().select(index);
                     }
                 }
             }
+            updateHilight();
             event.consume();
         });
         valueListView.setOnEditCancel(event -> errorMessage.set(""));
@@ -188,6 +197,7 @@ public class VariableSelectorControl extends VBox {
                 valueListView.getSelectionModel().clearSelection();
                 valueListView.getSelectionModel().select(index);
             }
+            updateHilight();
             event.consume();
         });
         valueListView.setCellFactory(TextFieldListCell.forListView(valueStringConverter));
@@ -201,4 +211,15 @@ public class VariableSelectorControl extends VBox {
         return expression;
     }
 
+    public VariableExpression getExpression() {
+        return expression.get();
+    }
+
+    private void updateHilight() {
+        if (!getExpression().isValid()) {
+            displayTextField.setStyle("-fx-effect: dropshadow(gaussian, #ff0000, 5.0 , 0.5, 0.0 , 0.0);");
+        } else {
+            displayTextField.setStyle("-fx-effect: null;");
+        }
+    }
 }
