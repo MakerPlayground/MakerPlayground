@@ -18,15 +18,21 @@ package io.makerplayground.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.GenericDeviceType;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
-import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -42,7 +48,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Represent a project
@@ -737,7 +742,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else {
+                        else if (!VirtualProjectDevice.All.virtualDevices.contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
@@ -767,7 +772,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else {
+                        else if (!VirtualProjectDevice.All.virtualDevices.contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
