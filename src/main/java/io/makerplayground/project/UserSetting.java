@@ -26,14 +26,13 @@ import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.beans.InvalidationListener;
-import javafx.beans.binding.MapBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.*;
 
@@ -42,6 +41,7 @@ import java.util.*;
  *
  */
 @JsonSerialize(using = UserSettingSerializer.class)
+@ToString
 public class UserSetting {
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
@@ -75,49 +75,6 @@ public class UserSetting {
             }
         });
 
-        if (VirtualProjectDevice.Memory.projectDevice.equals(device)) {
-            for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
-                Value v = pv.getValue();
-                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                    expression.put(v, new ConditionalExpression(device, v));
-                }
-                expressionEnable.put(v, false);
-            }
-        }
-
-        VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach(o -> {
-                        Value v = o.getValue();
-                        if (expression.containsKey(v)) {
-                            return;
-                        }
-                        expressionEnable.put(v, false);
-                        if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                            expression.put(v, new ConditionalExpression(device, v));
-                        }
-                    });
-                }
-                if (c.wasRemoved()) {
-                    c.getRemoved().forEach(o -> {
-                        Value v = o.getValue();
-                        expression.remove(v);
-                        expressionEnable.remove(v);
-                    });
-                }
-            }
-        });
-
-        // Initialize expression list
-        // TODO: Expression is not required to be added in Scene
-        for (Value v : device.getGenericDevice().getValue()) {
-            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                expression.put(v, new NumberInRangeExpression(device, v));
-            }
-            expressionEnable.put(v, false);
-        }
-
         parameterMap.addListener((InvalidationListener) observable -> calculateAllValueUsed());
         expression.addListener((InvalidationListener) observable -> calculateAllValueUsed());
         expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
@@ -131,6 +88,48 @@ public class UserSetting {
     public UserSetting(ProjectDevice device, Condition supportingCondition) {
         this(device);
         this.condition.set(supportingCondition);
+
+        // Initialize expression list
+        for (Value v : device.getGenericDevice().getValue()) {
+            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                expression.put(v, new NumberInRangeExpression(device, v));
+            }
+            expressionEnable.put(v, false);
+        }
+
+        if (VirtualProjectDevice.Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
+                Value v = pv.getValue();
+                expressionEnable.put(v, false);
+                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                    expression.put(v, new ConditionalExpression(device, v));
+                }
+            }
+
+            VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(o -> {
+                            Value v = o.getValue();
+                            if (expression.containsKey(v)) {
+                                return;
+                            }
+                            expressionEnable.put(v, false);
+                            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                                expression.put(v, new ConditionalExpression(device, v));
+                            }
+                        });
+                    }
+                    if (c.wasRemoved()) {
+                        c.getRemoved().forEach(o -> {
+                            Value v = o.getValue();
+                            expression.remove(v);
+                            expressionEnable.remove(v);
+                        });
+                    }
+                }
+            });
+        }
     }
 
     UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
@@ -165,6 +164,32 @@ public class UserSetting {
             this.expression.put(entry.getKey(), entry.getValue().deepCopy());
         }
         this.expressionEnable.putAll(u.expressionEnable);
+
+        if (VirtualProjectDevice.Memory.projectDevice.equals(u.device)) {
+            VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(o -> {
+                            Value v = o.getValue();
+                            if (this.expression.containsKey(v)) {
+                                return;
+                            }
+                            expressionEnable.put(v, false);
+                            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                                this.expression.put(v, new ConditionalExpression(u.device, v));
+                            }
+                        });
+                    }
+                    if (c.wasRemoved()) {
+                        c.getRemoved().forEach(o -> {
+                            Value v = o.getValue();
+                            this.expression.remove(v);
+                            this.expressionEnable.remove(v);
+                        });
+                    }
+                }
+            });
+        }
     }
 
     private void initValueMap() {
@@ -218,7 +243,7 @@ public class UserSetting {
         for (Map.Entry<Parameter, Expression> entry : parameterMap.entrySet()) {
             Expression exp = entry.getValue();
             for (Term term: exp.getTerms()) {
-                if (term instanceof ValueTerm) {
+                if (term instanceof ValueTerm && !VirtualProjectDevice.Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
                     if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
@@ -233,7 +258,10 @@ public class UserSetting {
             if (exp instanceof RecordExpression) {
                 ((RecordExpression) exp).getRecord().getEntryList().stream().flatMap(recordEntry -> recordEntry.getValue().getTerms().stream()).filter(term -> term instanceof ValueTerm).forEach(term -> {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
-                    if (projectValue != null) {
+                    if (VirtualProjectDevice.Memory.projectDevice.equals(projectValue.getDevice())) {
+                        return;
+                    }
+                    if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
                         if (result.containsKey(projectDevice)) {
                             result.get(projectDevice).add(projectValue.getValue());
@@ -248,7 +276,7 @@ public class UserSetting {
         // list value use in every enable expression in a condition
         for (Value v : expression.keySet()) {
             // skip if this expression is disabled
-            if (expressionEnable.get(v)) {
+            if (expressionEnable.get(v) && !VirtualProjectDevice.Memory.projectDevice.equals(this.getDevice())) {
                 Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
                 for (ProjectValue pv : valueUsed) {
                     if (result.containsKey(pv.getDevice())) {
