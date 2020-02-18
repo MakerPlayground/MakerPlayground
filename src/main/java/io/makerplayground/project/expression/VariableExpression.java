@@ -3,6 +3,8 @@ package io.makerplayground.project.expression;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.ValueTerm;
 
+import java.util.Optional;
+
 public class VariableExpression extends Expression {
 
     public static final VariableExpression NO_VARIABLE_SELECTED = new VariableExpression();
@@ -20,6 +22,13 @@ public class VariableExpression extends Expression {
         super(Type.VARIABLE);
         terms.clear();
         terms.add(new ValueTerm(value));
+    }
+
+    public Optional<ProjectValue> getProjectValue() {
+        if (NO_VARIABLE_SELECTED.equals(this)) {
+            return Optional.empty();
+        }
+        return Optional.of(((ValueTerm) terms.get(0)).getValue());
     }
 
     public String getVariableName() {
