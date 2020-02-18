@@ -116,8 +116,6 @@ public class Project {
         this.diagramError = new ReadOnlyBooleanWrapper();
         this.lineErrorMap = Collections.emptyMap();
 
-        VirtualProjectDevice.Memory.variables.clear();
-
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
         this.newBegin();
@@ -824,6 +822,10 @@ public class Project {
         }
         VirtualProjectDevice.Memory.variables.removeIf(projectValue -> projectValue.getValue().getName().equals(varName));
         return VariableError.OK;
+    }
+
+    public void removeAllVariables() {
+        VirtualProjectDevice.Memory.variables.clear();
     }
 
     @RequiredArgsConstructor

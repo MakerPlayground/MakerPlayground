@@ -149,6 +149,7 @@ public class Main extends Application {
             }
         }
         project.set(new Project());
+        project.get().removeAllVariables();
     }
 
     public void loadProject(Window window) {

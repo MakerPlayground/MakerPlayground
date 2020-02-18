@@ -243,7 +243,7 @@ public class UserSetting {
         for (Map.Entry<Parameter, Expression> entry : parameterMap.entrySet()) {
             Expression exp = entry.getValue();
             for (Term term: exp.getTerms()) {
-                if (term instanceof ValueTerm && !VirtualProjectDevice.Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
+                if (term instanceof ValueTerm && term.isValid() && !VirtualProjectDevice.Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
                     if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
