@@ -33,8 +33,9 @@ public class VirtualProjectDevice extends ProjectDevice {
         static final ObservableList<ProjectValue> variables = FXCollections.observableArrayList();
         public static final ObservableList<ProjectValue> unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
         public static final Condition compare = new Condition("Compare", "", Collections.emptyList());
-        public static final Action setValue = new Action("Set Value", "setValue", List.of(new Parameter("name", DataType.VARIABLE_NAME,
-                "x", Constraint.NONE, ControlType.VARIABLE), new Parameter("Value", DataType.DOUBLE, new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED), ControlType.SPINBOX)));
+        public static final Parameter nameParameter = new Parameter("name", DataType.VARIABLE_NAME, "x", Constraint.NONE, ControlType.VARIABLE);
+        public static final Parameter valueParameter = new Parameter("Value", DataType.DOUBLE, new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED), ControlType.SPINBOX);
+        public static final Action setValue = new Action("Set Value", "setValue", List.of(nameParameter, valueParameter));
         public static final GenericDevice memoryGenericDevice = new GenericDevice("Memory", "", GenericDeviceType.UTILITY, List.of(setValue), List.of(compare), new ArrayList<>());
         public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Memory", memoryGenericDevice, true);
     }

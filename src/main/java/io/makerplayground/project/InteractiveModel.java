@@ -11,6 +11,7 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.upload.UploadMode;
 import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
@@ -134,6 +135,13 @@ public class InteractiveModel {
                 }
             });
         }
+
+        /* Initialize the map for the virtual devices i.e. memory */
+        actionMap.put(Memory.projectDevice, List.of(Memory.setValue));
+        conditionMap.put(Memory.projectDevice, new LinkedHashMap<>());
+        conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
+        valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
+        Memory.unmodifiableVariables.forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
     }
 
     /*
@@ -243,24 +251,29 @@ public class InteractiveModel {
     }
 
     public void sendCommand(UserSetting userSetting) {
-        List<String> args = new ArrayList<>();
-        args.add("\"" + userSetting.getDevice().getName() + "\"");
-        args.add("\"" + userSetting.getAction().getName() + "\"");
-        for (Parameter parameter : userSetting.getAction().getParameter()) {
-            args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
+        if (userSetting.getDevice().equals(Memory.projectDevice) && userSetting.getAction().equals(Memory.setValue)) {
+            VariableExpression expression = (VariableExpression) userSetting.getParameterMap().get(Memory.nameParameter);
+            expression.getProjectValue().ifPresent(projectValue -> valueMap.get(Memory.projectDevice).get(projectValue.getValue()).set(evaluateCustomNumberExpression((CustomNumberExpression) (userSetting.getParameterMap().get(Memory.valueParameter)))));
         }
-        String commandString = (String.join(" ", args) + "\r");
-
-        if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
-            SerialPort serialPort = this.uploadTarget.getSerialPort();
-            if (isStarted() && serialPort != null && serialPort.isOpen()) {
-                byte[] command = commandString.getBytes();
-                serialPort.writeBytes(command, command.length);
+        else {
+            List<String> args = new ArrayList<>();
+            args.add("\"" + userSetting.getDevice().getName() + "\"");
+            args.add("\"" + userSetting.getAction().getName() + "\"");
+            for (Parameter parameter : userSetting.getAction().getParameter()) {
+                args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
             }
-        } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
-            webSocketClient.send(commandString);
-        } else {
-            throw new IllegalStateException("Not supported yet");
+            String commandString = (String.join(" ", args) + "\r");
+            if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
+                SerialPort serialPort = this.uploadTarget.getSerialPort();
+                if (isStarted() && serialPort != null && serialPort.isOpen()) {
+                    byte[] command = commandString.getBytes();
+                    serialPort.writeBytes(command, command.length);
+                }
+            } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
+                webSocketClient.send(commandString);
+            } else {
+                throw new IllegalStateException("Not supported yet");
+            }
         }
     }
 
