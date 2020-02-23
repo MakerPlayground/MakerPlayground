@@ -110,7 +110,6 @@ public class Main extends Application {
                     saveProject(scene.getWindow());
                 }
             }
-
             primaryStage.close();
             Platform.exit();
             System.exit(0);

@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ArduinoExportTask extends ProjectExportTask {
-    ArduinoExportTask(Project project, SourceCodeResult sourcecode, String zipFilePath) {
+    public ArduinoExportTask(Project project, SourceCodeResult sourcecode, String zipFilePath) {
         super(project, sourcecode, zipFilePath);
     }
 
