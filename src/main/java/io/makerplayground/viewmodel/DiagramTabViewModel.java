@@ -6,7 +6,7 @@ import io.makerplayground.scope.AppScope;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class CanvasViewModel implements ViewModel {
+public class DiagramTabViewModel implements ViewModel {
 
     private StringProperty canvasText = new SimpleStringProperty("test");
 

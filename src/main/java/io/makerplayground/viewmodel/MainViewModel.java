@@ -1,19 +1,13 @@
 package io.makerplayground.viewmodel;
 
 import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import io.makerplayground.scope.AppScope;
-import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.version.SoftwareVersion;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-
-import java.io.File;
 
 public class MainViewModel implements ViewModel {
 
@@ -50,18 +44,6 @@ public class MainViewModel implements ViewModel {
 
     public void setTitle(String title) {
         this.title.set(title);
-    }
-
-    public void setToolbarStatusMessage(String message) {
-        appScope.setToolbarStatusMessage(message);
-    }
-
-    public StringProperty currentProjectFilePathProperty() {
-        return appScope.getCurrentProject().filePathProperty();
-    }
-
-    public ObjectProperty<File> latestProjectDirectory() {
-        return appScope.latestProjectDirectoryProperty();
     }
 
     public Window getWindow() {

@@ -3,15 +3,12 @@ package io.makerplayground.view;
 import de.saxsys.mvvmfx.FxmlPath;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
-import io.makerplayground.ui.DeviceTab;
-import io.makerplayground.ui.canvas.CanvasViewModel;
-import io.makerplayground.ui.dialog.DeviceMonitor;
 import io.makerplayground.viewmodel.MainWindowViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,14 +16,28 @@ import java.util.ResourceBundle;
 @FxmlPath("/io/makerplayground/view/MainWindowView.fxml")
 public class MainWindowView implements FxmlView<MainWindowViewModel>, Initializable {
 
-    @FXML
-    BorderPane root;
+    @InjectViewModel
+    private MainWindowViewModel viewModel;
 
     @FXML
-    private AnchorPane canvasView;
+    private StackPane root;
+
+    @FXML
+    private AnchorPane diagramTab;
+
+    @FXML
+    private SplitPane deviceConfigTab;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        diagramTab.visibleProperty().bind(viewModel.diagramEditorShowingProperty());
+        diagramTab.managedProperty().bind(diagramTab.visibleProperty());
+
+        deviceConfigTab.visibleProperty().bind(viewModel.deviceConfigShowingProperty());
+        deviceConfigTab.managedProperty().bind(deviceConfigTab.visibleProperty());
+
+
 //        diagramEditor = initDiagramEditor();
 //        deviceTab = new DeviceTab(currentProject, hostServices);
 //        deviceMonitor = new DeviceMonitor();
@@ -81,8 +92,6 @@ public class MainWindowView implements FxmlView<MainWindowViewModel>, Initializa
 //    private DeviceTab deviceTab;
 //    private DeviceMonitor deviceMonitor;
 
-    @InjectViewModel
-    private MainWindowViewModel vm;
 
 //    public MainWindowView(ObjectProperty<Project> project, ReadOnlyObjectProperty<SerialPort> serialPort, HostServices hostServices) {
 //        this.currentProject = project.get();

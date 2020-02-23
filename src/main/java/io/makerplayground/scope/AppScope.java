@@ -6,16 +6,14 @@ import de.saxsys.mvvmfx.Scope;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.generator.upload.UploadManager;
+import io.makerplayground.generator.upload.UploadStatus;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.ArduinoExportTask;
 import io.makerplayground.ui.ProjectExportTask;
 import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
@@ -31,14 +29,11 @@ import java.util.TimerTask;
 public class AppScope implements Scope {
 
     private ObjectProperty<File> latestProjectDirectory = new SimpleObjectProperty<>();
-    private ObjectProperty<Stage> rootStage = new SimpleObjectProperty<>();
-    private StringProperty toolbarStatusMessage = new SimpleStringProperty();
     private ObjectProperty<Project> currentProject = new SimpleObjectProperty<>();
-    private ObjectProperty<UploadManager> uploadManager = new SimpleObjectProperty<>(new UploadManager(currentProject));
+    private StringProperty toolbarStatusMessage = new SimpleStringProperty();
 
-    public ObjectProperty<File> latestProjectDirectoryProperty() {
-        return latestProjectDirectory;
-    }
+    private Stage rootStage = null;
+    private UploadManager uploadManager = new UploadManager(currentProject);
 
     public void setLatestProjectDirectory(File latestProjectDirectory) {
         this.latestProjectDirectory.set(latestProjectDirectory);
@@ -53,14 +48,10 @@ public class AppScope implements Scope {
     }
 
     public void setRootStage(Stage stage) {
-        rootStage.set(stage);
+        rootStage = stage;
     }
 
     public Stage getRootStage() {
-        return rootStage.get();
-    }
-
-    public ObjectProperty<Stage> rootStageProperty() {
         return rootStage;
     }
 
@@ -77,15 +68,7 @@ public class AppScope implements Scope {
     }
 
     public UploadManager getUploadManager() {
-        return uploadManager.get();
-    }
-
-    public ObjectProperty<UploadManager> uploadManagerProperty() {
         return uploadManager;
-    }
-
-    public void setUploadManager(UploadManager uploadManager) {
-        this.uploadManager.set(uploadManager);
     }
 
     public void saveProjectToFile(File selectedFile) {
@@ -249,5 +232,21 @@ public class AppScope implements Scope {
         getRootStage().close();
         Platform.exit();
         System.exit(0);
+    }
+
+    private BooleanProperty diagramTabSelected = new SimpleBooleanProperty();
+    private BooleanProperty deviceConfigTabSelected = new SimpleBooleanProperty();
+    private BooleanProperty deviceMonitorTabSelected = new SimpleBooleanProperty();
+
+    public BooleanProperty diagramTabSelectedProperty() {
+        return diagramTabSelected;
+    }
+
+    public BooleanProperty deviceConfigTabSelectedProperty() {
+        return deviceConfigTabSelected;
+    }
+
+    public BooleanProperty deviceMonitorTabSelectedProperty() {
+        return deviceMonitorTabSelected;
     }
 }

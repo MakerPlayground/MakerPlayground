@@ -12,6 +12,8 @@ import javafx.beans.property.*;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+import java.net.DatagramSocket;
+
 public class ToolbarViewModel implements ViewModel {
     @InjectScope
     AppScope appScope;
@@ -138,5 +140,17 @@ public class ToolbarViewModel implements ViewModel {
 
     public void exportProject() {
         appScope.exportProject();
+    }
+
+    public BooleanProperty diagramTabSelectedProperty() {
+        return appScope.diagramTabSelectedProperty();
+    }
+
+    public BooleanProperty deviceConfigTabSelectedProperty() {
+        return appScope.deviceConfigTabSelectedProperty();
+    }
+
+    public BooleanProperty deviceMonitorTabSelectedProperty() {
+        return appScope.deviceMonitorTabSelectedProperty();
     }
 }

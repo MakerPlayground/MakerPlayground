@@ -6,11 +6,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
+<StackPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="io.makerplayground.view.MainWindowView"
             prefHeight="400.0" prefWidth="600.0"
             fx:id="root">
-    <fx:include fx:id="canvasView" source="CanvasView.fxml"/>
-
-</BorderPane>
+    <fx:include fx:id="diagramTab" source="DiagramTabView.fxml"/>
+    <fx:include fx:id="deviceConfigTab" source="DeviceTabView.fxml"/>
+<!--    <fx:include fx:id="deviceMonitorTab" source="DeviceTabView.fxml"/>-->
+</StackPane>

@@ -18,15 +18,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     @InjectViewModel
     private MainViewModel viewModel;
 
-    @FXML
-    private BorderPane root;
-
-    @FXML
-    private AnchorPane toolbar;
-
-    @FXML
-    private BorderPane mainWindow;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 

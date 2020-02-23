@@ -8,8 +8,6 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="io.makerplayground.view.CanvasView"
-            prefHeight="400.0" prefWidth="600.0">
-    <Label fx:id="label"></Label>
-
+            fx:controller="io.makerplayground.view.DiagramTabView">
+    <Label fx:id="label" text="DiagramTab"/>
 </AnchorPane>

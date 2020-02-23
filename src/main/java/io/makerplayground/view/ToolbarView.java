@@ -42,6 +42,7 @@ public class ToolbarView implements FxmlView<ToolbarViewModel>, Initializable {
     @FXML private RadioButton diagramEditorButton;
     @FXML private RadioButton deviceConfigButton;
     @FXML private RadioButton deviceMonitorButton;
+
     @FXML private Label statusLabel;
     @FXML private Label portLabel;
     @FXML private ComboBox<SerialPort> portComboBox;
@@ -73,6 +74,9 @@ public class ToolbarView implements FxmlView<ToolbarViewModel>, Initializable {
 
         ToggleGroup toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(diagramEditorButton, deviceConfigButton, deviceMonitorButton);
+        viewModel.diagramTabSelectedProperty().bind(diagramEditorButton.selectedProperty());
+        viewModel.deviceConfigTabSelectedProperty().bind(deviceConfigButton.selectedProperty());
+        viewModel.deviceMonitorTabSelectedProperty().bind(deviceMonitorButton.selectedProperty());
 
         newMenuItem.setOnAction(event -> viewModel.requestNewProject());
         openMenuItem.setOnAction(event -> viewModel.requestLoadProject());
