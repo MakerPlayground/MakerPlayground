@@ -13,5 +13,5 @@
             fx:id="root">
     <fx:include fx:id="diagramTab" source="DiagramTabView.fxml"/>
     <fx:include fx:id="deviceConfigTab" source="DeviceTabView.fxml"/>
-<!--    <fx:include fx:id="deviceMonitorTab" source="DeviceTabView.fxml"/>-->
+    <fx:include fx:id="deviceMonitorTab" source="DeviceTabView.fxml"/>
 </StackPane>

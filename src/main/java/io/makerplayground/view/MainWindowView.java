@@ -28,6 +28,9 @@ public class MainWindowView implements FxmlView<MainWindowViewModel>, Initializa
     @FXML
     private SplitPane deviceConfigTab;
 
+    @FXML
+    private SplitPane deviceMonitorTab;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -37,24 +40,9 @@ public class MainWindowView implements FxmlView<MainWindowViewModel>, Initializa
         deviceConfigTab.visibleProperty().bind(viewModel.deviceConfigShowingProperty());
         deviceConfigTab.managedProperty().bind(deviceConfigTab.visibleProperty());
 
+        deviceMonitorTab.visibleProperty().bind(viewModel.deviceMonitorShowingProperty());
+        deviceMonitorTab.managedProperty().bind(deviceMonitorTab.visibleProperty());
 
-//        diagramEditor = initDiagramEditor();
-//        deviceTab = new DeviceTab(currentProject, hostServices);
-//        deviceMonitor = new DeviceMonitor();
-
-//        vm.diagramEditorShowingProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue) {
-//                root.setCenter(diagramEditor);
-//            }
-//        });
-//
-//        vm.deviceConfigShowingProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue) {
-////                deviceTab.refreshConfigDevicePane();
-//                root.setCenter(deviceTab);
-//            }
-//        });
-//
 //        vm.deviceMonitorShowingProperty().addListener((observable, oldValue, newValue) -> {
 //            if (!newValue) {
 //                deviceMonitor.closePort();
