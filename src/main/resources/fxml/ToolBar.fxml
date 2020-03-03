@@ -114,7 +114,7 @@
               AnchorPane.topAnchor="0.0">
             <children>
                 <Label id="statusLabel" fx:id="statusLabel" />
-                <Label fx:id="portLabel" text="Port" />
+                <Label fx:id="portLabel" text="Upload Method" />
                 <ComboBox id="portComboBox" fx:id="portComboBox" />
 <!--                <Button id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" prefHeight="30.0" prefWidth="30.0" />-->
                 <Button id="interactiveButton" fx:id="interactiveButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>

@@ -147,6 +147,10 @@ public class Project {
         filePath.set(path);
     }
 
+    public ReadOnlyObjectProperty<Platform> platformProperty() {
+        return projectConfiguration.platformProperty();
+    }
+
     public Platform getSelectedPlatform() {
         return projectConfiguration.getPlatform();
     }

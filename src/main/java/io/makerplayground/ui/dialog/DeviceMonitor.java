@@ -19,6 +19,7 @@ package io.makerplayground.ui.dialog;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
+import io.makerplayground.generator.upload.UploadConnection;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
@@ -211,7 +212,15 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
         return initialized.getReadOnlyProperty();
     }
 
-    public boolean initialize(SerialPort port) {
+    public boolean initialize(UploadConnection uploadConnection) {
+        if (uploadConnection.getType().equals(UploadConnection.Type.SERIALPORT)) {
+            return initialize(uploadConnection.getSerialPort());
+        } else {
+            throw new IllegalStateException("Rpi Device Monitor not supported");
+        }
+    }
+
+    private boolean initialize(SerialPort port) {
         serialPort = port;
         serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         serialPort.addDataListener(this);

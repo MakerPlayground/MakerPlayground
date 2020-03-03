@@ -16,7 +16,6 @@
 
 package io.makerplayground.ui;
 
-import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
@@ -38,6 +37,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class Toolbar extends AnchorPane {
     @FXML private RadioButton deviceMonitorButton;
     @FXML private Label statusLabel;
     @FXML private Label portLabel;
-    @FXML private ComboBox<SerialPort> portComboBox;
+    @FXML private ComboBox<UploadConnection> portComboBox;
     @FXML private Button interactiveButton;
     @FXML private Button uploadButton;
     @FXML private Separator separator;
@@ -164,7 +164,7 @@ public class Toolbar extends AnchorPane {
         return deviceMonitorButton.selectedProperty();
     }
 
-    public ReadOnlyObjectProperty<SerialPort> selectingSerialPortProperty() {
+    public ReadOnlyObjectProperty<UploadConnection> selectingSerialPortProperty() {
         return portComboBox.getSelectionModel().selectedItemProperty();
     }
 
@@ -185,14 +185,23 @@ public class Toolbar extends AnchorPane {
 
         portLabel.disableProperty().bind(portComboBox.disableProperty());
 
-        portComboBox.getItems().setAll(SerialPort.getCommPorts());
+        project.get().platformProperty().addListener((observable, oldValue, newValue) -> {
+            uploadManager.run();
+            portComboBox.getSelectionModel().clearSelection();
+        });
+
+        portComboBox.setCellFactory(getListViewListCellCallback());
+        portComboBox.setButtonCell(getListViewListCellCallback().call(null));
+        portComboBox.setItems(uploadManager.getUploadMethod());
+        uploadManager.run();
         portComboBox.setOnShowing(event -> {
-            SerialPort currentSelectedItem = portComboBox.getSelectionModel().getSelectedItem();
-            portComboBox.getItems().setAll(SerialPort.getCommPorts());
+            UploadConnection currentSelectedItem = portComboBox.getSelectionModel().getSelectedItem();
+            uploadManager.run();
+            portComboBox.setItems(uploadManager.getUploadMethod());
             // find the same port in the updated port list (SerialPort's equals method hasn't been override so we do it manually)
             if (currentSelectedItem != null) {
                 portComboBox.getItems().stream()
-                        .filter(serialPort -> serialPort.getDescriptivePortName().equals(currentSelectedItem.getDescriptivePortName()))
+                        .filter(uploadConnection -> uploadConnection.equals(currentSelectedItem))
                         .findFirst()
                         .ifPresent(serialPort -> portComboBox.getSelectionModel().select(serialPort));
             }
@@ -259,6 +268,26 @@ public class Toolbar extends AnchorPane {
                 hideUploadStatus.playFromStart();
             }
         });
+    }
+
+    private Callback<ListView<UploadConnection>, ListCell<UploadConnection>> getListViewListCellCallback() {
+        return param -> new ListCell<>() {
+            @Override
+            protected void updateItem(UploadConnection item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    if (item.getType().equals(UploadConnection.Type.SERIALPORT)) {
+                        setText(item.getSerialPort().getDescriptivePortName());
+                    }
+                    else if (item.getType().equals(UploadConnection.Type.RPI)) {
+                        setText("Raspberry Pi on Network (" + item.getRpiHostName() + ")");
+                    }
+                    else {
+                        setText("Not Supported Yet");
+                    }
+                }
+            }
+        };
     }
 
     private void showUploadDialog() {

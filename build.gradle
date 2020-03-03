@@ -18,6 +18,7 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
+    compile 'commons-net:commons-net:3.6'
 }
 
 javafx {

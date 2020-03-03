@@ -1,32 +1,93 @@
 package io.makerplayground.generator.upload;
 
 import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.source.InteractiveSourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.util.MakerPlaygroundRpiScanner;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.scene.control.TextInputDialog;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class UploadManager {
+public class UploadManager implements Runnable {
     private final ObjectProperty<Project> project;
 
     private final ReadOnlyObjectWrapper<UploadStatus> uploadStatus = new ReadOnlyObjectWrapper<>(UploadStatus.IDLE);
     private final ReadOnlyStringWrapper uploadLog = new ReadOnlyStringWrapper();
     private final ReadOnlyDoubleWrapper uploadProgress = new ReadOnlyDoubleWrapper();
+    private final MakerPlaygroundRpiScanner rpiScanner = new MakerPlaygroundRpiScanner();
 
     private UploadTask uploadTask;
+
+    ObservableList<UploadConnection> resultSerialList = FXCollections.observableArrayList();
 
     public UploadManager(ObjectProperty<Project> project) {
         this.project = project;
         // cancel pending upload task when user load or create a new project
-        project.addListener((observable, oldValue, newValue) -> cancelUpload());
+        project.addListener((observable, oldValue, newValue) -> {
+            cancelUpload();
+        });
     }
 
-    public boolean startInteractiveMode(SerialPort serialPort) {
+    @Override
+    public void run() {
+        List<UploadConnection.Type> supportTypes = project.get().getSelectedPlatform().getSupportUploadConnectionTypes();
+        if (supportTypes.contains(UploadConnection.Type.SERIALPORT)) {
+            resultSerialList.clear();
+            resultSerialList.addAll(Arrays.stream(SerialPort.getCommPorts()).map(UploadConnection::new).collect(Collectors.toList()));
+        }
+        if (supportTypes.contains(UploadConnection.Type.RPI)) {
+            rpiScanner.run();
+        }
+    }
+
+    public ObservableList<UploadConnection> getUploadMethod() {
+        ObservableList<UploadConnection> resultList = FXCollections.observableArrayList();
+        List<UploadConnection.Type> supportTypes = project.get().getSelectedPlatform().getSupportUploadConnectionTypes();
+        if (supportTypes.contains(UploadConnection.Type.SERIALPORT)) {
+            merge(resultList, resultSerialList);
+        }
+        if (supportTypes.contains(UploadConnection.Type.RPI)) {
+            merge(resultList, rpiScanner.getHostList());
+        }
+        return resultList;
+    }
+
+    private void merge(ObservableList<UploadConnection> result, ObservableList<UploadConnection>... items) {
+        for (ObservableList<UploadConnection> obj: items) {
+            result.addAll(obj);
+            obj.addListener((ListChangeListener<? super UploadConnection>) c -> {
+                while(c.next()) {
+                    if (c.wasAdded()) {
+                        result.addAll(c.getAddedSubList());
+                    }
+                    if (c.wasRemoved()) {
+                        result.removeAll(c.getRemoved());
+                    }
+                }
+            });
+        }
+    }
+
+    public boolean startInteractiveMode(UploadConnection uploadConnection) {
+        if (uploadConnection.getType().equals(UploadConnection.Type.SERIALPORT)) {
+            return startInteractiveMode(uploadConnection.getSerialPort());
+        } else {
+            throw new IllegalStateException("Unsupported Interactive Mode");
+        }
+    }
+
+    private boolean startInteractiveMode(SerialPort serialPort) {
         Project clonedProject = Project.newInstance(project.get());
         SourceCodeResult sourceCode = InteractiveSourceCodeGenerator.generate(clonedProject);
         if (createUploadTask(clonedProject, sourceCode, serialPort)) {
@@ -45,7 +106,15 @@ public class UploadManager {
         return false;
     }
 
-    public boolean startUploadProject(SerialPort serialPort) {
+    public boolean startUploadProject(UploadConnection uploadConnection) {
+        if (uploadConnection.getType().equals(UploadConnection.Type.SERIALPORT)) {
+            return startUploadProject(uploadConnection.getSerialPort());
+        } else {
+            throw new IllegalStateException("Unsupport Upload");
+        }
+    }
+
+    private boolean startUploadProject(SerialPort serialPort) {
         Project clonedProject = Project.newInstance(project.get());
         SourceCodeResult sourceCode = SourceCodeGenerator.generate(clonedProject);
         if (createUploadTask(clonedProject, sourceCode, serialPort)) {

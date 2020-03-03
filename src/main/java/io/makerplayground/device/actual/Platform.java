@@ -16,22 +16,27 @@
 
 package io.makerplayground.device.actual;
 
+import io.makerplayground.generator.upload.UploadConnection;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public enum Platform {
-    ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino"),
-    ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino"),
-    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino"),
-    RASPBERRYPI("Raspberry Pi", "raspberrypi");
+    ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
+    ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
+    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
+    RASPBERRYPI("Raspberry Pi", "raspberrypi", List.of(UploadConnection.Type.RPI));
 
-    Platform(String displayName, String libFolderName) {
+    Platform(String displayName, String libFolderName, List<UploadConnection.Type> supportUploadConnectionTypes) {
         this.displayName = displayName;
         this.libFolderName = libFolderName;
+        this.supportUploadConnectionTypes = supportUploadConnectionTypes;
     }
 
     private String displayName;
     private String libFolderName;
+    private List<UploadConnection.Type> supportUploadConnectionTypes;
 
     public boolean isArduino() {
         return this == ARDUINO_AVR8 || this == ARDUINO_ESP32 || this == ARDUINO_ESP8266;

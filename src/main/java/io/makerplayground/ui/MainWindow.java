@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui;
 
-import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.generator.upload.UploadConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
@@ -34,7 +34,7 @@ public class MainWindow extends BorderPane {
     private final HostServices hostServices;
 
     private Project currentProject;
-    private ReadOnlyObjectProperty<SerialPort> serialPort;
+    private ReadOnlyObjectProperty<UploadConnection> uploadConnection;
 
     private Node diagramEditor;
     private DeviceTab deviceTab;
@@ -44,9 +44,9 @@ public class MainWindow extends BorderPane {
     private final BooleanProperty deviceConfigShowing;
     private final BooleanProperty deviceMonitorShowing;
 
-    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<SerialPort> serialPort, HostServices hostServices) {
+    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<UploadConnection> uploadConnection, HostServices hostServices) {
         this.currentProject = project.get();
-        this.serialPort = serialPort;
+        this.uploadConnection = uploadConnection;
         this.hostServices = hostServices;
 
         diagramEditor = initDiagramEditor();
@@ -72,7 +72,7 @@ public class MainWindow extends BorderPane {
                 deviceMonitor.closePort();
             } else {
                 // TODO: handle the case when initialize failed by switch to the old tab
-                deviceMonitor.initialize(serialPort.get());
+                deviceMonitor.initialize(uploadConnection.get());
                 setCenter(deviceMonitor);
             }
         });

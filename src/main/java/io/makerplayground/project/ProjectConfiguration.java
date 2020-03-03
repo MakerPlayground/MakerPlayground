@@ -67,7 +67,7 @@ public final class ProjectConfiguration {
     @JsonIgnore @Getter private Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>> compatibleConnectionMap;
 
     /* data structure: user's input that would be stored in file */
-    @Setter(AccessLevel.PACKAGE) @Getter private Platform platform;
+    private final ReadOnlyObjectWrapper<Platform> platform;
     @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
     @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap;
@@ -82,7 +82,7 @@ public final class ProjectConfiguration {
     @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
     ProjectConfiguration(@NonNull Platform platform) {
-        this.platform = platform;
+        this.platform = new ReadOnlyObjectWrapper(platform);
         this.devicePropertyValueMap = new HashMap<>();
         this.deviceMap = new TreeMap<>();
         this.identicalDeviceMap = new TreeMap<>();
@@ -100,6 +100,14 @@ public final class ProjectConfiguration {
 
     public ProjectConfigurationStatus getStatus() {
         return status.get();
+    }
+
+    void setPlatform(Platform platform) {
+        this.platform.set(platform);
+    }
+
+    public Platform getPlatform() {
+        return platform.get();
     }
 
     public ReadOnlyObjectProperty<ProjectConfigurationStatus> statusProperty() {
@@ -941,5 +949,9 @@ public final class ProjectConfiguration {
             return projectDevice;
         }
         throw new IllegalStateException("The project devices must be exist in deviceMap or identicalDevice map.");
+    }
+
+    public ReadOnlyObjectProperty<Platform> platformProperty() {
+        return platform.getReadOnlyProperty();
     }
 }

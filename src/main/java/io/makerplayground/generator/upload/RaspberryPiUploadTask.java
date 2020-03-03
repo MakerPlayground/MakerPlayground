@@ -24,10 +24,7 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.util.MultipartUtility;
-import io.makerplayground.util.PythonUtility;
-import io.makerplayground.util.ZipArchiver;
-import io.makerplayground.util.ZipResourceExtractor;
+import io.makerplayground.util.*;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 
@@ -50,7 +47,7 @@ public class RaspberryPiUploadTask extends UploadTask {
     public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort, String ip) {
         super(project, sourceCode, serialPort);
         this.ip = ip;
-        this.url = "http://" + ip + ":6212";
+        this.url = "http://" + ip + ":" + MakerPlaygroundRpiScanner.MP_PORT;
     }
 
     @Override
