@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.upload.UploadConnection;
+import io.makerplayground.generator.upload.UploadTarget;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
@@ -34,7 +34,7 @@ public class MainWindow extends BorderPane {
     private final HostServices hostServices;
 
     private Project currentProject;
-    private ReadOnlyObjectProperty<UploadConnection> uploadConnection;
+    private ReadOnlyObjectProperty<UploadTarget> uploadConnection;
 
     private Node diagramEditor;
     private DeviceTab deviceTab;
@@ -44,7 +44,7 @@ public class MainWindow extends BorderPane {
     private final BooleanProperty deviceConfigShowing;
     private final BooleanProperty deviceMonitorShowing;
 
-    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<UploadConnection> uploadConnection, HostServices hostServices) {
+    public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<UploadTarget> uploadConnection, HostServices hostServices) {
         this.currentProject = project.get();
         this.uploadConnection = uploadConnection;
         this.hostServices = hostServices;

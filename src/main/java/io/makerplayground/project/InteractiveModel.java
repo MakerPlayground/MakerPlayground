@@ -9,6 +9,8 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.generator.upload.UploadMode;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
@@ -133,14 +135,19 @@ public class InteractiveModel implements SerialPortMessageListener {
         }
     }
 
-    public boolean start(SerialPort serialPort) {
-        // initialize and open the serial port
-        this.serialPort = serialPort;
-        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        serialPort.addDataListener(this);
-        if (serialPort.openPort()) {
-            interactiveModeStarted.set(true);
-            return true;
+    public boolean start(UploadTarget uploadTarget) {
+        if (UploadMode.SERIAL_PORT.equals(uploadTarget.getMethod())) {
+            // initialize and open the serial port
+            this.serialPort = uploadTarget.getSerialPort();
+            serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+            serialPort.addDataListener(this);
+            if (serialPort.openPort()) {
+                interactiveModeStarted.set(true);
+                return true;
+            }
+            return false;
+        } else if (UploadMode.RPI_ON_NETWORK.equals(uploadTarget.getMethod())) {
+            throw new IllegalStateException("Not supported yet");
         }
         return false;
     }
@@ -152,6 +159,7 @@ public class InteractiveModel implements SerialPortMessageListener {
             }
         }
         interactiveModeStarted.set(false);
+        // TODO: close socket port for RPI
     }
 
     public void sendCommand(UserSetting userSetting) {

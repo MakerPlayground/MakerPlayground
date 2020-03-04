@@ -42,8 +42,11 @@ import java.util.stream.Collectors;
 
 public class ArduinoUploadTask extends UploadTask {
 
-    public ArduinoUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPorts) {
-        super(project, sourceCode, serialPorts);
+    SerialPort serialPort;
+
+    public ArduinoUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort) {
+        super(project, sourceCode);
+        this.serialPort = serialPort;
     }
 
     @Override

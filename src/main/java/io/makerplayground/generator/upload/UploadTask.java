@@ -16,7 +16,7 @@
 
 package io.makerplayground.generator.upload;
 
-import com.fazecast.jSerialComm.SerialPort;
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
@@ -29,15 +29,33 @@ public abstract class UploadTask extends Task<UploadResult> {
     protected final Project project;
     protected final ProjectConfiguration configuration;
     protected final SourceCodeResult sourcecode;
-    protected final SerialPort serialPort;
     protected final ReadOnlyStringWrapper log;
 
-    public UploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort) {
+    public UploadTask(Project project, SourceCodeResult sourceCode) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
         this.sourcecode = sourceCode;
-        this.serialPort = serialPort;
         this.log = new ReadOnlyStringWrapper();
+    }
+
+    public static UploadTask create(Project clonedProject, SourceCodeResult sourceCode, UploadTarget uploadTarget) {
+        // create the upload task
+        Platform platform = clonedProject.getSelectedPlatform();
+        switch (platform) {
+            case ARDUINO_AVR8:
+            case ARDUINO_ESP32:
+            case ARDUINO_ESP8266:
+                if (platform.getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                    return new ArduinoUploadTask(clonedProject, sourceCode, uploadTarget.getSerialPort());
+                }
+                break;
+            case RASPBERRYPI:
+                if (platform.getSupportUploadModes().contains(UploadMode.RPI_ON_NETWORK)) {
+                    return new RaspberryPiUploadTask(clonedProject, sourceCode, uploadTarget.getRpiHostName());
+                }
+                break;
+        }
+        throw new IllegalStateException("No upload method for current platform");
     }
 
     @Override

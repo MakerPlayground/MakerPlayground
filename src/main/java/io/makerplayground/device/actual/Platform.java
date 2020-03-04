@@ -16,27 +16,27 @@
 
 package io.makerplayground.device.actual;
 
-import io.makerplayground.generator.upload.UploadConnection;
+import io.makerplayground.generator.upload.UploadMode;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
 public enum Platform {
-    ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
-    ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
-    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino", List.of(UploadConnection.Type.SERIALPORT)),
-    RASPBERRYPI("Raspberry Pi", "raspberrypi", List.of(UploadConnection.Type.RPI));
+    ARDUINO_AVR8("Arduino (Atmel AVR)", "arduino", List.of(UploadMode.SERIAL_PORT)),
+    ARDUINO_ESP8266("Arduino (Espressif ESP8266)", "arduino", List.of(UploadMode.SERIAL_PORT)),
+    ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino", List.of(UploadMode.SERIAL_PORT)),
+    RASPBERRYPI("Raspberry Pi", "raspberrypi", List.of(UploadMode.RPI_ON_NETWORK));
 
-    Platform(String displayName, String libFolderName, List<UploadConnection.Type> supportUploadConnectionTypes) {
+    Platform(String displayName, String libFolderName, List<UploadMode> supportUploadModes) {
         this.displayName = displayName;
         this.libFolderName = libFolderName;
-        this.supportUploadConnectionTypes = supportUploadConnectionTypes;
+        this.supportUploadModes = supportUploadModes;
     }
 
     private String displayName;
     private String libFolderName;
-    private List<UploadConnection.Type> supportUploadConnectionTypes;
+    private List<UploadMode> supportUploadModes;
 
     public boolean isArduino() {
         return this == ARDUINO_AVR8 || this == ARDUINO_ESP32 || this == ARDUINO_ESP8266;

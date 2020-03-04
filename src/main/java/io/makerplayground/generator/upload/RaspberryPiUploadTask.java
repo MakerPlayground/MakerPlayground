@@ -16,7 +16,6 @@
 
 package io.makerplayground.generator.upload;
 
-import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
@@ -44,10 +43,10 @@ public class RaspberryPiUploadTask extends UploadTask {
     private final String url;
     private final String ip;
 
-    public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort, String ip) {
-        super(project, sourceCode, serialPort);
-        this.ip = ip;
-        this.url = "http://" + ip + ":" + MakerPlaygroundRpiScanner.MP_PORT;
+    public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, String hostName) {
+        super(project, sourceCode);
+        this.ip = hostName;
+        this.url = "http://" + ip + ":" + RpiServiceChecker.PORT;
     }
 
     @Override

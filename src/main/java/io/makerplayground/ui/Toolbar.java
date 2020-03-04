@@ -26,6 +26,7 @@ import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -41,6 +42,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public class Toolbar extends AnchorPane {
@@ -64,7 +66,7 @@ public class Toolbar extends AnchorPane {
     @FXML private RadioButton deviceMonitorButton;
     @FXML private Label statusLabel;
     @FXML private Label portLabel;
-    @FXML private ComboBox<UploadConnection> portComboBox;
+    @FXML private ComboBox<UploadTarget> portComboBox;
     @FXML private Button interactiveButton;
     @FXML private Button uploadButton;
     @FXML private Separator separator;
@@ -164,13 +166,15 @@ public class Toolbar extends AnchorPane {
         return deviceMonitorButton.selectedProperty();
     }
 
-    public ReadOnlyObjectProperty<UploadConnection> selectingSerialPortProperty() {
+    public ReadOnlyObjectProperty<UploadTarget> selectingSerialPortProperty() {
         return portComboBox.getSelectionModel().selectedItemProperty();
     }
 
     public void setStatusMessage(String message) {
         statusLabel.setText(message);
     }
+
+    private ListChangeListener<? super UploadTarget> uploadConnectionListChangeListener;
 
     private void initUI() {
         deviceConfigButton.graphicProperty().bind(Bindings.when(project.get().getProjectConfiguration().statusProperty().isEqualTo(ProjectConfigurationStatus.ERROR))
@@ -186,27 +190,48 @@ public class Toolbar extends AnchorPane {
         portLabel.disableProperty().bind(portComboBox.disableProperty());
 
         project.get().platformProperty().addListener((observable, oldValue, newValue) -> {
-            uploadManager.run();
             portComboBox.getSelectionModel().clearSelection();
+            uploadManager.startScanUploadConnection();
+            portComboBox.getSelectionModel().selectFirst();
         });
 
         portComboBox.setCellFactory(getListViewListCellCallback());
         portComboBox.setButtonCell(getListViewListCellCallback().call(null));
-        portComboBox.setItems(uploadManager.getUploadMethod());
-        uploadManager.run();
-        portComboBox.setOnShowing(event -> {
-            UploadConnection currentSelectedItem = portComboBox.getSelectionModel().getSelectedItem();
-            uploadManager.run();
-            portComboBox.setItems(uploadManager.getUploadMethod());
-            // find the same port in the updated port list (SerialPort's equals method hasn't been override so we do it manually)
-            if (currentSelectedItem != null) {
-                portComboBox.getItems().stream()
-                        .filter(uploadConnection -> uploadConnection.equals(currentSelectedItem))
-                        .findFirst()
-                        .ifPresent(serialPort -> portComboBox.getSelectionModel().select(serialPort));
+        uploadConnectionListChangeListener = c -> {
+            List<UploadMode> supportUploadBIES = project.get().getSelectedPlatform().getSupportUploadModes();
+            if (supportUploadBIES.contains(UploadMode.SERIAL_PORT)) {
+                while(c.next()) {
+                    if (c.wasRemoved() && c.getList().size() > 0) {
+                        portComboBox.getSelectionModel().select(c.getList().get(0));
+                    }
+                    if (c.wasAdded()) {
+                        portComboBox.getSelectionModel().select(c.getAddedSubList().get(0));
+                    }
+                }
+            } else if (supportUploadBIES.contains(UploadMode.RPI_ON_NETWORK)) {
+                if (c.getList().size() >= 1 && portComboBox.getSelectionModel().isEmpty()) {
+                    portComboBox.getSelectionModel().select(c.getList().get(0));
+                }
+                else if (c.getList().size() == 0) {
+                    portComboBox.getSelectionModel().clearSelection();
+                }
+            }
+        };
+        portComboBox.itemsProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null) {
+                portComboBox.getSelectionModel().clearSelection();
+                oldValue.removeListener(uploadConnectionListChangeListener);
+            }
+            if (newValue != null) {
+                newValue.addListener(uploadConnectionListChangeListener);
             }
         });
+        portComboBox.itemsProperty().bind(uploadManager.uploadInfoListProperty());
+        portComboBox.setOnShowing(event -> {
+            portComboBox.getSelectionModel().clearSelection();
+        });
         portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(deviceMonitorShowing));
+        uploadManager.startScanUploadConnection();
 
         // TODO: add case when uploading
         deviceMonitorButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
@@ -270,16 +295,16 @@ public class Toolbar extends AnchorPane {
         });
     }
 
-    private Callback<ListView<UploadConnection>, ListCell<UploadConnection>> getListViewListCellCallback() {
+    private Callback<ListView<UploadTarget>, ListCell<UploadTarget>> getListViewListCellCallback() {
         return param -> new ListCell<>() {
             @Override
-            protected void updateItem(UploadConnection item, boolean empty) {
+            protected void updateItem(UploadTarget item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item != null) {
-                    if (item.getType().equals(UploadConnection.Type.SERIALPORT)) {
+                    if (item.getMethod().equals(UploadMode.SERIAL_PORT)) {
                         setText(item.getSerialPort().getDescriptivePortName());
                     }
-                    else if (item.getType().equals(UploadConnection.Type.RPI)) {
+                    else if (item.getMethod().equals(UploadMode.RPI_ON_NETWORK)) {
                         setText("Raspberry Pi on Network (" + item.getRpiHostName() + ")");
                     }
                     else {

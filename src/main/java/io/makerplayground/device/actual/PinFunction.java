@@ -34,7 +34,7 @@ public enum PinFunction {
     MOSI1, MISO1, SCK1,
     AREF, NO_FUNCTION,
     RS485_Negative, RS485_Positive,
-    SCI1, SCI2, SCI3, SCI4, SCI5, SCI6, SCI7, SCI8, SCI9, SCI10, SCI11, SCI12, SCI13, SCI14, SCI15;
+    CSI1, CSI2, CSI3, CSI4, CSI5, CSI6, CSI7, CSI8, CSI9, CSI10, CSI11, CSI12, CSI13, CSI14, CSI15;
 
     public boolean isSingleUsed() {
         switch (this) {
