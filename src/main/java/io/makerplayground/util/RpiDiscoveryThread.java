@@ -45,10 +45,8 @@ public class RpiDiscoveryThread extends Thread {
                 }
                 SubnetUtils utils = new SubnetUtils(addr.getAddress().getHostAddress()+"/"+addr.getNetworkPrefixLength());
                 String[] allHosts = utils.getInfo().getAllAddresses();
-                int i = 0;
                 for (String host: allHosts) {
                     executor.scheduleAtFixedRate(new RpiServiceChecker(host, hostList), 0, 15000, TimeUnit.MILLISECONDS);
-                    i+=10;
                 }
             }
         } catch (SocketException e) {

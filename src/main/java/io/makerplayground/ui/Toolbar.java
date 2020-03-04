@@ -198,8 +198,8 @@ public class Toolbar extends AnchorPane {
         portComboBox.setCellFactory(getListViewListCellCallback());
         portComboBox.setButtonCell(getListViewListCellCallback().call(null));
         uploadConnectionListChangeListener = c -> {
-            List<UploadMode> supportUploadBIES = project.get().getSelectedPlatform().getSupportUploadModes();
-            if (supportUploadBIES.contains(UploadMode.SERIAL_PORT)) {
+            List<UploadMode> supportUploadModes = project.get().getSelectedPlatform().getSupportUploadModes();
+            if (supportUploadModes.contains(UploadMode.SERIAL_PORT)) {
                 while(c.next()) {
                     if (c.wasRemoved() && c.getList().size() > 0) {
                         portComboBox.getSelectionModel().select(c.getList().get(0));
@@ -208,7 +208,7 @@ public class Toolbar extends AnchorPane {
                         portComboBox.getSelectionModel().select(c.getAddedSubList().get(0));
                     }
                 }
-            } else if (supportUploadBIES.contains(UploadMode.RPI_ON_NETWORK)) {
+            } else if (supportUploadModes.contains(UploadMode.RPI_ON_NETWORK)) {
                 if (c.getList().size() >= 1 && portComboBox.getSelectionModel().isEmpty()) {
                     portComboBox.getSelectionModel().select(c.getList().get(0));
                 }
