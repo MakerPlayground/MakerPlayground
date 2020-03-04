@@ -7,26 +7,26 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class RpiKeepAliveThread extends Thread {
-
+public class RpiKeepAliveChecker {
     final ObservableList<UploadTarget> hostList;
     private ScheduledThreadPoolExecutor executor;
 
-    public RpiKeepAliveThread(ObservableList<UploadTarget> hostList) {
+    public RpiKeepAliveChecker(ObservableList<UploadTarget> hostList) {
         this.hostList = hostList;
     }
 
-    @Override
-    public void run() {
-        executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(10);
+    public void startScan() {
+        executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3);
         for (UploadTarget connection: hostList) {
-            executor.scheduleAtFixedRate(new RpiServiceChecker(connection.getRpiHostName(), hostList), 0, 10, TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(new RpiServiceChecker(connection.getRpiHostName(), hostList), 0, 5, TimeUnit.SECONDS);
         }
     }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
+    public boolean isRunning() {
+        return executor != null && !executor.isTerminated();
+    }
+
+    public void stopScan() {
         executor.shutdownNow();
     }
 }

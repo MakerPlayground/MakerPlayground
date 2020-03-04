@@ -4,9 +4,7 @@ import io.makerplayground.generator.source.InteractiveSourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeGenerator;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.util.RpiDiscoveryThread;
-import io.makerplayground.util.RpiKeepAliveThread;
-import io.makerplayground.util.SerialPortDiscoveryThread;
+import io.makerplayground.util.*;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,38 +36,40 @@ public class UploadManager {
         return uploadInfoList;
     }
 
-    SerialPortDiscoveryThread serialPortDiscoveryThread = null;
-    RpiDiscoveryThread rpiDiscoveryThread;
-    RpiKeepAliveThread rpiKeepAliveThread;
+//    SerialPortDiscoveryThread serialPortDiscoveryThread = null;
+    RpiDiscoverer rpiDiscoverer = new RpiDiscoverer(rpiHostList);
+    RpiKeepAliveChecker rpiKeepAliveChecker = new RpiKeepAliveChecker(rpiHostList);
+
+    SerialPortDiscoverer serialPortDiscoverer = new SerialPortDiscoverer(serialPortList);
+
+//    RpiDiscoveryThread rpiDiscoveryThread;
+//    RpiKeepAliveThread rpiKeepAliveThread;
 
     public void startScanUploadConnection() {
         List<UploadMode> supportMethods = project.get().getSelectedPlatform().getSupportUploadModes();
         if (supportMethods.contains(UploadMode.SERIAL_PORT)) {
             uploadInfoList.set(serialPortList);
-            if (serialPortDiscoveryThread == null || !serialPortDiscoveryThread.isAlive()) {
-                serialPortDiscoveryThread = new SerialPortDiscoveryThread(serialPortList);
-                serialPortDiscoveryThread.start();
+            if (!serialPortDiscoverer.isRunning()) {
+                serialPortDiscoverer.startScan();
             }
-            if (rpiDiscoveryThread != null) {
-                rpiDiscoveryThread.interrupt();
+            if (rpiDiscoverer.isRunning()) {
+                rpiDiscoverer.stopScan();
             }
-            if (rpiKeepAliveThread != null) {
-                rpiKeepAliveThread.interrupt();
-            }
+//            if (rpiKeepAliveChecker.isRunning()) {
+//                rpiKeepAliveChecker.stopScan();
+//            }
         }
         if (supportMethods.contains(UploadMode.RPI_ON_NETWORK)) {
             uploadInfoList.set(rpiHostList);
-            if (serialPortDiscoveryThread != null) {
-                serialPortDiscoveryThread.interrupt();
+            if (serialPortDiscoverer.isRunning()) {
+                serialPortDiscoverer.stopScan();
             }
-            if (rpiDiscoveryThread == null || !rpiDiscoveryThread.isAlive()) {
-                rpiDiscoveryThread = new RpiDiscoveryThread(rpiHostList);
-                rpiDiscoveryThread.start();
+            if (!rpiDiscoverer.isRunning()) {
+                rpiDiscoverer.startScan();
             }
-            if (rpiKeepAliveThread == null || !rpiKeepAliveThread.isAlive()) {
-                rpiKeepAliveThread = new RpiKeepAliveThread(rpiHostList);
-                rpiKeepAliveThread.start();
-            }
+//            if (!rpiKeepAliveChecker.isRunning()) {
+//                rpiKeepAliveChecker.startScan();
+//            }
         }
     }
 

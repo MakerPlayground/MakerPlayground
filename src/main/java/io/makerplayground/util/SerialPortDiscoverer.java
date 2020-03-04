@@ -12,16 +12,15 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class SerialPortDiscoveryThread extends Thread {
+public class SerialPortDiscoverer {
     final ObservableList<UploadTarget> resultSerialList;
     private ScheduledThreadPoolExecutor executor;
 
-    public SerialPortDiscoveryThread(ObservableList<UploadTarget> resultSerialList) {
+    public SerialPortDiscoverer(ObservableList<UploadTarget> resultSerialList) {
         this.resultSerialList = resultSerialList;
     }
 
-    @Override
-    public void run() {
+    public void startScan() {
         executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(() -> Platform.runLater(() -> {
             List<UploadTarget> newList = Arrays.stream(SerialPort.getCommPorts()).map(UploadTarget::new).collect(Collectors.toList());
@@ -30,9 +29,11 @@ public class SerialPortDiscoveryThread extends Thread {
         }), 0, 2, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
+    public boolean isRunning() {
+        return executor != null && !executor.isTerminated();
+    }
+
+    public void stopScan() {
         executor.shutdownNow();
     }
 }

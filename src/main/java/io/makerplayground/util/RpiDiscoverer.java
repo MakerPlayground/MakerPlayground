@@ -12,17 +12,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class RpiDiscoveryThread extends Thread {
+public class RpiDiscoverer {
 
     final ObservableList<UploadTarget> hostList;
     private ScheduledThreadPoolExecutor executor;
 
-    public RpiDiscoveryThread(ObservableList<UploadTarget> hostList) {
+    public RpiDiscoverer(ObservableList<UploadTarget> hostList) {
         this.hostList = hostList;
     }
 
-    @Override
-    public void run() {
+    public void startScan() {
         executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(256);
         try {
             Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
@@ -45,8 +44,11 @@ public class RpiDiscoveryThread extends Thread {
                 }
                 SubnetUtils utils = new SubnetUtils(addr.getAddress().getHostAddress()+"/"+addr.getNetworkPrefixLength());
                 String[] allHosts = utils.getInfo().getAllAddresses();
+                double i = 0;
+                double timestep = 5000.0 / allHosts.length;
                 for (String host: allHosts) {
-                    executor.scheduleAtFixedRate(new RpiServiceChecker(host, hostList), 0, 15000, TimeUnit.MILLISECONDS);
+                    executor.scheduleAtFixedRate(new RpiServiceChecker(host, hostList), (long) i, 10000, TimeUnit.MILLISECONDS);
+                    i += timestep;
                 }
             }
         } catch (SocketException e) {
@@ -54,9 +56,11 @@ public class RpiDiscoveryThread extends Thread {
         }
     }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
+    public boolean isRunning() {
+        return executor != null && !executor.isTerminated();
+    }
+
+    public void stopScan() {
         executor.shutdownNow();
     }
 }
