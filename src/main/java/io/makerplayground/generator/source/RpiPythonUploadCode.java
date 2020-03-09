@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import io.makerplayground.project.Condition;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
+import io.makerplayground.util.AzureIoTHubDevice;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -34,16 +35,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class RaspberryPiCodeGenerator {
+import static io.makerplayground.generator.source.RpiPythonCodeUtility.*;
 
-    private static final String INDENT = "    ";
-    private static final String NEW_LINE = "\n";
+public class RpiPythonUploadCode {
 
     private final Project project;
     private final ProjectConfiguration configuration;
     private final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
+    private final List<List<ProjectDevice>> projectDeviceGroup;
+    private final List<Delay> allDelayUsed;
 
     private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
             PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
@@ -53,16 +55,18 @@ class RaspberryPiCodeGenerator {
             PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
     );
 
-    private RaspberryPiCodeGenerator(Project project) {
+    private RpiPythonUploadCode(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
         Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
+        this.allDelayUsed = Utility.takeDelay(allNodeUsed);
+        this.projectDeviceGroup = project.getAllDeviceUsedGroupBySameActualDevice();
     }
 
-    static SourceCodeResult generateCode(Project project) {
-        RaspberryPiCodeGenerator generator = new RaspberryPiCodeGenerator(project);
+    public static SourceCodeResult generateCode(Project project) {
+        RpiPythonUploadCode generator = new RpiPythonUploadCode(project);
         // Check if the diagram (only the connected nodes) are all valid.
         if (!Utility.validateDiagram(project)) {
             return new SourceCodeResult(SourceCodeError.DIAGRAM_ERROR, "-");
@@ -78,8 +82,7 @@ class RaspberryPiCodeGenerator {
             return new SourceCodeResult(SourceCodeError.MORE_THAN_ONE_CLOUD_PLATFORM, "-");
         }
         generator.appendHeader();
-        generator.appendNextRunningTime();
-        generator.appendTaskVariables();
+        generator.appendBeginRecentSceneFinishTime();
         generator.appendBeginFunctions();
         generator.appendSceneFunctions();
         generator.appendConditionFunctions();
@@ -87,16 +90,12 @@ class RaspberryPiCodeGenerator {
         return new SourceCodeResult(generator.builder.toString());
     }
 
-
-    private void appendNextRunningTime() {
-        project.getBegin().forEach(taskNode -> builder.append(parseNextRunningTime(taskNode)).append(" = 0").append(NEW_LINE));
+    private void appendBeginRecentSceneFinishTime() {
+        project.getBegin().forEach(taskNode -> builder.append(parseBeginRecentSceneFinishTime(taskNode)).append(" = 0").append(NEW_LINE));
     }
 
-    private String parseNextRunningTime(NodeElement element) {
-        if (element instanceof Begin) {
-            return "MP." + ((Begin) element).getName().replace(" ", "_") + "_nextRunningTime";
-        }
-        throw new IllegalStateException("No next running time for " + element);
+    private String parseBeginRecentSceneFinishTime(Begin begin) {
+        return "MP." + begin.getName().replace(" ", "_") + "_recentSceneFinishTime";
     }
 
     private void appendHeader() {
@@ -104,27 +103,13 @@ class RaspberryPiCodeGenerator {
         builder.append("from MakerPlayground import MP").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream().filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
-                .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
+        Stream<String> device_libs = project.getAllDeviceUsed().stream()
+                .filter(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent())
+                .map(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
-    }
-
-    private void appendTaskVariables() {
-        Set<ProjectDevice> devices = Utility.getUsedDevicesWithTask(project);
-        if (!devices.isEmpty()) {
-            for (ProjectDevice projectDevice : devices) {
-                builder.append(parseDeviceExpressionVariableName(configuration, projectDevice)).append(" = [None]");
-                long noExpr = Utility.getMaximumNumberOfExpression(project, projectDevice);
-                if (noExpr > 1) {
-                    builder.append(" * ").append(noExpr);
-                }
-                builder.append(NEW_LINE);
-            }
-            builder.append(NEW_LINE);
-        }
     }
 
     private void appendBeginFunctions() {
@@ -132,17 +117,18 @@ class RaspberryPiCodeGenerator {
             List<NodeElement> adjacentVertices = Utility.findAdjacentNodes(project, begin);
             List<Scene> adjacentScene = Utility.takeScene(adjacentVertices);
             List<Condition> adjacentCondition = Utility.takeCondition(adjacentVertices);
+            List<Delay> adjacentDelay = Utility.takeDelay(adjacentVertices);
 
             // generate code for begin
             builder.append(NEW_LINE);
-            builder.append("def ").append(parseSceneFunctionName(begin)).append("():").append(NEW_LINE);
+            builder.append("def ").append(parseNodeFunctionName(begin)).append("():").append(NEW_LINE);
             if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                 if (adjacentScene.size() != 1) {
                     throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                 }
                 Scene currentScene = adjacentScene.get(0);
-                builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(currentScene)).append(NEW_LINE);
-            } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseNodeFunctionName(currentScene)).append(NEW_LINE);
+            } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
                 builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseConditionFunctionName(begin)).append(NEW_LINE);
             } else {
                 // do nothing if there isn't any scene or condition
@@ -157,6 +143,7 @@ class RaspberryPiCodeGenerator {
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
+        List<Delay> adjacentDelay;
         Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
@@ -171,8 +158,10 @@ class RaspberryPiCodeGenerator {
             adjacentNodes = Utility.findAdjacentNodes(project, node);
             adjacentScene = Utility.takeScene(adjacentNodes);
             adjacentCondition = Utility.takeCondition(adjacentNodes);
+            adjacentDelay = Utility.takeDelay(adjacentNodes);
             nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toSet()));
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toSet()));
+            nodeToTraverse.addAll(adjacentDelay.stream().filter(delay -> !visitedNodes.contains(delay)).collect(Collectors.toSet()));
 
             // Generate code for node
             if (node instanceof Scene) {
@@ -181,42 +170,42 @@ class RaspberryPiCodeGenerator {
 
                 // create function header
                 builder.append(NEW_LINE);
-                builder.append("def ").append(parseSceneFunctionName(currentScene)).append("():").append(NEW_LINE);
+                builder.append("def ").append(parseNodeFunctionName(currentScene)).append("():").append(NEW_LINE);
                 builder.append(INDENT).append("MP.update()").append(NEW_LINE);
                 // do action
                 for (UserSetting setting : currentScene.getSetting()) {
                     ProjectDevice device = setting.getDevice();
-                    String deviceName = parseDeviceVariableName(configuration, device);
+                    String deviceName = parseDeviceVariableName(searchGroup(device));
                     List<String> taskParameter = new ArrayList<>();
 
                     List<Parameter> parameters = setting.getAction().getParameter();
                     if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
-                        int parameterIndex = 0;
-                        for (Parameter p : parameters) {
-                            Expression e = setting.getParameterMap().get(p);
-                            if (setting.isDataBindingUsed(p)) {
-                                parameterIndex++;
-                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
-                                        .append(parameterIndex)
-                                        .append("lambda:").append(parseExpressionForParameter(p, e)).append(", ")
-                                        .append(parseRefreshInterval(e)).append(")").append(NEW_LINE);
-                                taskParameter.add(parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "].value");
-                            } else {
-                                taskParameter.add(parseExpressionForParameter(p, e));
-                            }
-                        }
-                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
-                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(configuration, device))
-                                    .append("', ").append(i).append(")").append(NEW_LINE);
-                        }
-                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(configuration, device)).append("', lambda: ")
-                                .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
-                                .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
+//                        int parameterIndex = 0;
+//                        for (Parameter p : parameters) {
+//                            Expression e = setting.getParameterMap().get(p);
+//                            if (setting.isDataBindingUsed(p)) {
+//                                parameterIndex++;
+//                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
+//                                        .append(parameterIndex)
+//                                        .append("lambda:").append(parseExpressionForParameter(p, e)).append(", ")
+//                                        .append(parseRefreshInterval(e)).append(")").append(NEW_LINE);
+//                                taskParameter.add(parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "].value");
+//                            } else {
+//                                taskParameter.add(parseExpressionForParameter(p, e));
+//                            }
+//                        }
+//                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
+//                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(configuration, device))
+//                                    .append("', ").append(i).append(")").append(NEW_LINE);
+//                        }
+//                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(configuration, device)).append("', lambda: ")
+//                                .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
+//                                .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
                     } else {    // generate code to perform action once
-                        // unsetDevice task if this device used to have background task set
-                        if (Utility.getUsedDevicesWithTask(project).contains(device)) {
-                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(configuration, device)).append("')").append(NEW_LINE);
-                        }
+//                        // unsetDevice task if this device used to have background task set
+//                        if (Utility.getUsedDevicesWithTask(project).contains(device)) {
+//                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(configuration, device)).append("')").append(NEW_LINE);
+//                        }
                         // generate code to perform the action
                         for (Parameter p : parameters) {
                             taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
@@ -226,27 +215,16 @@ class RaspberryPiCodeGenerator {
                     }
                 }
 
-//                // delay
-//                if (currentScene.getDelay() != 0) {
-//                    double delayDuration = 0;  // in ms
-//                    if (currentScene.getDelayUnit() == Scene.DelayUnit.Second) {
-//                        delayDuration = currentScene.getDelay();
-//                    } else if (currentScene.getDelayUnit() == Scene.DelayUnit.MilliSecond) {
-//                        delayDuration = currentScene.getDelay() / 1000.0;
-//                    }
-//                    builder.append(INDENT).append(parseNextRunningTime(root)).append(" = time.time() + ").append(delayDuration).append(NEW_LINE);
-//                }
-
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
-                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(NEW_LINE);
                 } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
                     builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentScene)).append(NEW_LINE);
                 } else {
-                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(NEW_LINE);
                 }
 
                 // end of scene's function
@@ -255,11 +233,20 @@ class RaspberryPiCodeGenerator {
         }
     }
 
+    private List<ProjectDevice> searchGroup(ProjectDevice projectDevice) {
+        Optional<List<ProjectDevice>> projectDeviceOptional = projectDeviceGroup.stream().filter(projectDeviceList -> projectDeviceList.contains(projectDevice)).findFirst();
+        if (projectDeviceOptional.isEmpty()) {
+            throw new IllegalStateException("Device that its value is used in the project must be exists in the device group.");
+        }
+        return projectDeviceOptional.get();
+    }
+
     private void appendConditionFunctions() {
         Set<NodeElement> visitedNodes = new HashSet<>();
         List<NodeElement> adjacentNodes;
         List<Scene> adjacentScene;
         List<Condition> adjacentCondition;
+        List<Delay> adjacentDelay;
         Queue<NodeElement> nodeToTraverse = new ArrayDeque<>(project.getBegin());
         while (!nodeToTraverse.isEmpty()) {
             // Remove node from queue
@@ -274,42 +261,78 @@ class RaspberryPiCodeGenerator {
             adjacentNodes = Utility.findAdjacentNodes(project, node);
             adjacentScene = Utility.takeScene(adjacentNodes);
             adjacentCondition = Utility.takeCondition(adjacentNodes);
+            adjacentDelay = Utility.takeDelay(adjacentNodes);
             nodeToTraverse.addAll(adjacentScene.stream().filter(scene -> !visitedNodes.contains(scene)).collect(Collectors.toList()));
             nodeToTraverse.addAll(adjacentCondition.stream().filter(condition -> !visitedNodes.contains(condition)).collect(Collectors.toList()));
+            nodeToTraverse.addAll(adjacentDelay.stream().filter(delay -> !visitedNodes.contains(delay)).collect(Collectors.toSet()));
 
-            if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+            if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
                 Begin root = node.getRoot();
-
-                Map<ProjectDevice, Set<Value>> valueUsed = new HashMap<>();
-                for (Condition condition : adjacentCondition) {
-                    for (UserSetting setting : condition.getSetting()) {
-                        Map<ProjectDevice, Set<Value>> tmp = setting.getAllValueUsed(EnumSet.allOf(DataType.class));
-                        // merge tmp into valueUsed
-                        for (ProjectDevice projectDevice : tmp.keySet()) {
-                            if (!valueUsed.containsKey(projectDevice)) {
-                                valueUsed.put(projectDevice, new HashSet<>());
-                            }
-                            valueUsed.get(projectDevice).addAll(tmp.get(projectDevice));
-                        }
-                    }
-                }
 
                 builder.append(NEW_LINE);
                 builder.append("def ").append(parseConditionFunctionName(node)).append("():").append(NEW_LINE);
 
                 // call the update function
                 builder.append(INDENT).append("MP.update();").append(NEW_LINE);
+                // generate if for delay
+                if (!adjacentDelay.isEmpty()) {
+                    if (adjacentDelay.size() != 1) {
+                        throw new IllegalStateException("Connecting multiple delay to the same node is not allowed");
+                    }
+                    Delay currentDelay = adjacentDelay.get(0);
+                    double delayInSecond;
+                    if (currentDelay.getDelayUnit() == DelayUnit.SECOND) {
+                        delayInSecond = currentDelay.getDelayValue();
+                    } else if (currentDelay.getDelayUnit() == DelayUnit.MILLISECOND) {
+                        delayInSecond = currentDelay.getDelayValue() / 1000.0;
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                    builder.append(INDENT).append("if time.time() > ").append(parseBeginRecentSceneFinishTime(root)).append(" + ").append(delayInSecond).append(":").append(NEW_LINE);
+                    List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, currentDelay);
+                    List<Scene> nextScene = Utility.takeScene(nextNodes);
+                    List<Condition> nextCondition = Utility.takeCondition(nextNodes);
+                    List<Delay> nextDelay = Utility.takeDelay(nextNodes);
+
+                    if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
+                        if (nextScene.size() != 1) {
+                            throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
+                        }
+                        Scene s = nextScene.get(0);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(";").append(NEW_LINE);
+                    } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentDelay)).append(";").append(NEW_LINE);
+                    } else {
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(";").append(NEW_LINE);
+                    }
+                }
                 // generate if for each condition
                 for (Condition condition : adjacentCondition) {
                     List<String> booleanExpressions = new ArrayList<>();
+                    for (UserSetting setting : condition.getVirtualDeviceSetting()) {
+                        if (setting.getCondition() == null) {
+                            throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
+                        } else if (setting.getDevice() == VirtualProjectDevice.timeElapsedProjectDevice) {
+                            Parameter valueParameter = setting.getCondition().getParameter().get(0);
+                            if (setting.getCondition() == VirtualProjectDevice.lessThan) {
+                                booleanExpressions.add("time.time() < " + parseBeginRecentSceneFinishTime(root) + " + " +
+                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                            } else {
+                                booleanExpressions.add("time.time() > " + parseBeginRecentSceneFinishTime(root) + " + " +
+                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                            }
+                        } else {
+                            throw new IllegalStateException("Found unsupported user setting {" + setting + "}");
+                        }
+                    }
                     for (UserSetting setting : condition.getSetting()) {
-                        if (setting.getAction() == null) {
+                        if (setting.getCondition() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s action must be set ");
-                        } else if (!setting.getAction().getName().equals("Compare")) {
+                        } else if (!setting.getCondition().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getAction().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
-                            booleanExpressions.add(parseDeviceVariableName(configuration, setting.getDevice()) + "." +
-                                    setting.getAction().getFunctionName() + "(" + String.join(",", params) + ")");
+                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
+                            booleanExpressions.add(parseDeviceVariableName(searchGroup(setting.getDevice())) + "." +
+                                    setting.getCondition().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
@@ -327,17 +350,18 @@ class RaspberryPiCodeGenerator {
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, condition);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
                     List<Condition> nextCondition = Utility.takeCondition(nextNodes);
+                    List<Delay> nextDelay = Utility.takeDelay(nextNodes);
 
                     if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                         if (nextScene.size() != 1) {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(s)).append(NEW_LINE);
-                    } else if (!nextCondition.isEmpty()) { // nest condition is not allowed
-                        throw new IllegalStateException("Nested condition is not allowed");
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(NEW_LINE);
+                    } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
                     } else {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseSceneFunctionName(root)).append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(NEW_LINE);
                     }
                 }
                 builder.append(NEW_LINE); // end of while loop
@@ -346,8 +370,11 @@ class RaspberryPiCodeGenerator {
     }
 
     private void appendMainCode() {
+        builder.append(NEW_LINE);
         builder.append("if __name__ == '__main__':").append(NEW_LINE);
         builder.append(INDENT).append("try:").append(NEW_LINE);
+
+        /* Setup */
         builder.append(INDENT).append(INDENT).append("MP.unsetAllPins()").append(NEW_LINE);
 
         // TODO: instantiate cloud platform
@@ -361,109 +388,111 @@ class RaspberryPiCodeGenerator {
 //                        .append(" = new ").append(specificCloudPlatformLibName)
 //                        .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
 //            }
+        builder.append(NEW_LINE);
+        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
+            if (projectDeviceList.isEmpty()) {
+                throw new IllegalStateException();
+            }
+            Optional<ActualDevice> actualDeviceOptional = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDeviceList.get(0));
+            if (actualDeviceOptional.isEmpty()) {
+                throw new IllegalStateException();
+            }
+            ActualDevice actualDevice = actualDeviceOptional.get();
 
-        Map<ProjectDevice, String> deviceNameMap = project.getAllDeviceUsed().stream()
-                .collect(Collectors.toMap(Function.identity(), this::parseConstructorCall));
+            List<String> args = new ArrayList<>();
 
-        deviceNameMap.forEach((key, value) ->
-                builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(configuration, key))
-                        .append(" = ").append(value).append(NEW_LINE)
-        );
-
-        project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseSceneFunctionName(begin)).append(NEW_LINE));
-        builder.append(INDENT).append(INDENT).append("while True:").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
-        project.getBegin().forEach(begin -> {
-            builder.append(INDENT).append(INDENT).append(INDENT).append("if ").append(parseNextRunningTime(begin)).append(" <= time.time():").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append(INDENT).append(INDENT).append(parsePointerName(begin)).append("()").append(NEW_LINE);
-        });
-        builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
-    }
-
-    private static String parsePointerName(NodeElement nodeElement) {
-        if (nodeElement instanceof Begin) {
-            return "MP.current_" + ((Begin) nodeElement).getName().replace(" ", "_");
-        }
-        throw new IllegalStateException("No pointer to function for Scene and Condition");
-    }
-
-    private String parseConstructorCall(ProjectDevice projectDevice) {
-        StringBuilder text = new StringBuilder(configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
-
-        List<String> args = new ArrayList<>();
-        if (configuration.getActualDevice(projectDevice).isEmpty()) {
-            return "";
-        }
-        ActualDevice actualDevice = configuration.getActualDevice(projectDevice).get();
-        DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDevice);
-        if (connection != DeviceConnection.NOT_CONNECTED) {
-            Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
-            for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDevice)) {
-                Connection connectionProvide = connectionMap.get(connectionConsume);
-                for (int i=0; i<connectionConsume.getPins().size(); i++) {
-                    Pin pinConsume = connectionConsume.getPins().get(i);
-                    Pin pinProvide = connectionProvide.getPins().get(i);
-                    if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
-                        continue;
-                    }
-                    List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
-                    for (PinFunction function: possibleFunctionConsume) {
-                        if (pinProvide.getFunction().contains(function)) {
-                            if (PIN_FUNCTION_WITH_CODES.contains(function)) {
-                                if (!pinProvide.getCodingName().isEmpty()) {
-                                    args.add(pinProvide.getCodingName());
-                                } else {
-                                    args.add(pinProvide.getRefTo());
+            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
+            if (connection != DeviceConnection.NOT_CONNECTED) {
+                Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
+                for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDeviceList.get(0))) {
+                    Connection connectionProvide = connectionMap.get(connectionConsume);
+                    for (int i=connectionConsume.getPins().size()-1; i>=0; i--) {
+                        Pin pinConsume = connectionConsume.getPins().get(i);
+                        Pin pinProvide = connectionProvide.getPins().get(i);
+                        if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
+                            continue;
+                        }
+                        List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
+                        for (PinFunction function: possibleFunctionConsume) {
+                            if (pinProvide.getFunction().contains(function)) {
+                                if (ArduinoCodeUtility.PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                    if (!pinProvide.getCodingName().isEmpty()) {
+                                        args.add(pinProvide.getCodingName());
+                                    } else {
+                                        args.add(pinProvide.getRefTo());
+                                    }
                                 }
+                                break;
                             }
-                            break;
                         }
                     }
                 }
             }
-        }
 
-        // property for the generic device
-        for (Property p : configuration.getActualDevice(projectDevice).orElseThrow().getProperty()) {
-            Object value = configuration.getPropertyValue(projectDevice, p);
-            if (value == null) {
-                throw new IllegalStateException("Property hasn't been set");
+            // property for the generic device
+            for (Property p : actualDevice.getProperty()) {
+                ProjectDevice projectDevice = configuration.getRootDevice(projectDeviceList.get(0));
+                Object value = configuration.getPropertyValue(projectDevice, p);
+                if (value == null) {
+                    throw new IllegalStateException("Property hasn't been set");
+                }
+                switch (p.getDataType()) {
+                    case INTEGER:
+                    case DOUBLE:
+                        args.add(String.valueOf(((NumberWithUnit) value).getValue()));
+                        break;
+                    case INTEGER_ENUM:
+                    case BOOLEAN_ENUM:
+                        args.add(String.valueOf(value));
+                        break;
+                    case STRING:
+                    case ENUM:
+                        args.add("\"" + value + "\"");
+                        break;
+                    case AZURE_COGNITIVE_KEY:
+                        AzureCognitiveServices acs = (AzureCognitiveServices) value;
+                        args.add("\"" + acs.getLocation().toLowerCase() + "\"");
+                        args.add("\"" + acs.getKey1() + "\"");
+                        break;
+                    case AZURE_IOTHUB_KEY:
+                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
+                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
+                        break;
+                    default:
+                        throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
+                }
             }
-            switch (p.getDataType()) {
-                case INTEGER:
-                case DOUBLE:
-                    args.add(String.valueOf(((NumberWithUnit) value).getValue()));
-                    break;
-                case INTEGER_ENUM:
-                    args.add(String.valueOf(value));
-                    break;
-                case STRING:
-                case ENUM:
-                    args.add("\"" + value.toString() + "\"");
-                    break;
-                case AZURE_COGNITIVE_KEY:
-                    AzureCognitiveServices service = (AzureCognitiveServices) value;
-                    args.add("\"" + service.getLocation() + "\"");
-                    args.add("\"" + service.getName() + "\"");
-                    args.add("\"" + service.getKey1() + "\"");
-                    break;
-                case DATETIME:
-                default:
-                    throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
-            }
-        }
-            // TODO: add Cloud Platform instance to arg list
-//            CloudPlatform cloudPlatform = projectDevice.getCompatibleDeviceComboItem().getCloudPlatform();
+
+//            // Cloud Platform instance
+//            CloudPlatform cloudPlatform = actualDevice.getCloudConsume();
 //            if (cloudPlatform != null) {
-//                args.add(parseCloudPlatformVariableName(cloudPlatform));
+//                args.add(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform));
 //            }
-        text.append("(").append(String.join(", ", args)).append(")");
-        return text.toString();
+
+            builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(projectDeviceList))
+                    .append(" = ").append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
+                    .append("(").append(String.join(", ", args)).append(")").append(NEW_LINE);
+        }
+        builder.append(NEW_LINE);
+        project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseNodeFunctionName(begin)).append(NEW_LINE));
+        /* End Setup */
+
+        /* Loop */
+        builder.append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("while True:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
+        project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(INDENT).append(parsePointerName(begin)).append("()").append(NEW_LINE));
+        /* End Loop */
+
+        /* Handle Interrupt */
+        builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
+        /* End Handle Interrupt */
     }
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
+
     private String parseTerm(Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
@@ -516,7 +545,9 @@ class RaspberryPiCodeGenerator {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            return parseProjectValue(configuration, value.getDevice(), value.getValue());
+            return parseValueVariableTerm(searchGroup(value.getDevice()), value.getValue());
+        } else if (term instanceof IntegerTerm) {
+            return term.toString();
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
@@ -539,7 +570,7 @@ class RaspberryPiCodeGenerator {
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "MP.constrain(MP.map(" + parseProjectValue(configuration, valueLinkingExpression.getSourceValue().getDevice()
+            returnValue = "MP.constrain(MP.map(" + parseValueVariableTerm(searchGroup(valueLinkingExpression.getSourceValue().getDevice())
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
@@ -547,7 +578,7 @@ class RaspberryPiCodeGenerator {
             ProjectValue projectValue = projectValueExpression.getProjectValue();
             DataType dataType = projectValue.getValue().getType();
             if (dataType == DataType.STRING) {
-                returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
+                returnValue = parseValueVariableTerm(searchGroup(projectValue.getDevice()), projectValue.getValue());
             } else if (dataType == DataType.DOUBLE || dataType == DataType.INTEGER) {
                 // TODO: separate the datatype for double and integer
                 NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
@@ -562,87 +593,35 @@ class RaspberryPiCodeGenerator {
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
-            returnValue = parseProjectValue(configuration, projectValue.getDevice(), projectValue.getValue());
+            returnValue = parseValueVariableTerm(searchGroup(projectValue.getDevice()), projectValue.getValue());
         } else if (expression instanceof ComplexStringExpression) {
-            List<String> subExpression = new ArrayList<>();
-            for (Expression e : ((ComplexStringExpression) expression).getSubExpressions()) {
-                if (e instanceof SimpleStringExpression) {
-                    subExpression.add("'" + ((SimpleStringExpression) e).getString() + "'");
-                } else if (e instanceof CustomNumberExpression) {
-                    subExpression.add("str(" + parseTerms(e.getTerms()) + ")");
-                } else {
-                    throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+            List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
+            if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
+                returnValue = "'" + ((SimpleStringExpression) subExpression.get(0)).getString() + "'";
+            } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
+                returnValue = "str(" + parseTerms(subExpression.get(0).getTerms()) + ")";
+            } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
+                returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
+                        .collect(Collectors.joining("", "'", "'"));
+            } else {
+                List<String> subExpressionString = new ArrayList<>();
+                for (Expression e : subExpression) {
+                    if (e instanceof SimpleStringExpression) {
+                        subExpressionString.add("'" + ((SimpleStringExpression) e).getString() + "'");
+                    } else if (e instanceof CustomNumberExpression) {
+                        subExpressionString.add("str(" + parseTerms(e.getTerms()) + ")");
+                    } else {
+                        throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+                    }
                 }
+                returnValue = "(" + String.join("+", subExpressionString) + ")";
             }
-            returnValue = String.join("+", subExpression);
-        } else {
+        } else if (expression instanceof SimpleIntegerExpression) {
+            returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
+        }
+        else {
             throw new IllegalStateException();
         }
         return returnValue;
-    }
-
-    private double parseRefreshInterval(Expression expression) {
-        NumberWithUnit interval = expression.getUserDefinedInterval();
-        if (interval.getUnit() == Unit.SECOND) {
-            return interval.getValue();
-        } else if (interval.getUnit() == Unit.MILLISECOND) {
-            return interval.getValue() / 1000.0;
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    private static String parseImportStatement(String libName) {
-        return "from " + libName + " import " + libName;
-    }
-
-    private static String parseSceneFunctionName(NodeElement node) {
-        if (node instanceof Begin) {
-            return "scene_" + ((Begin)node).getName().replace(" ", "_");
-        } else if (node instanceof Scene) {
-            return "scene_" + ((Scene)node).getName().replace(" ", "_");
-        }
-        throw new IllegalStateException("Not support scene function name for {" + node + "}");
-    }
-
-    private static String parseConditionFunctionName(NodeElement nodeBeforeConditions) {
-        if (nodeBeforeConditions instanceof Begin) {
-            return "beginScene_conditions";
-        } else if (nodeBeforeConditions instanceof Scene) {
-            return parseSceneFunctionName(nodeBeforeConditions) + "_conditions";
-        } else if (nodeBeforeConditions instanceof Condition) {
-            throw new IllegalStateException("Not support condition function name for condition after condition {" + nodeBeforeConditions + "}");
-        }
-        throw new IllegalStateException("Not support condition function name for {" + nodeBeforeConditions + "}");
-    }
-
-//    private static String parseCloudPlatformVariableName(CloudPlatform cloudPlatform) {
-//        return "_" + cloudPlatform.getLibName().replace(" ", "_");
-//    }
-
-    private static String parseDeviceName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
-        if (configuration.getIdenticalDevice(projectDevice).isPresent()) {
-            return "_" + configuration.getIdenticalDevice(projectDevice).orElseThrow().getName().replace(" ", "_").replace(".", "_");
-        } else if (configuration.getActualDevice(projectDevice).isPresent()) {
-            return "_" + projectDevice.getName().replace(" ", "_").replace(".", "_");
-        } else {
-            throw new IllegalStateException("Actual device of " + projectDevice.getName() + " hasn't been selected!!!");
-        }
-    }
-
-    private static String parseProjectValue(ProjectConfiguration configuration,  ProjectDevice projectDevice, Value value) {
-        return parseDeviceVariableName(configuration, projectDevice) + ".get" + value.getName().replace(" ", "_") + "()";
-    }
-
-//    private String parseDeviceTaskVariableName(ProjectDevice device) {
-//        return parseDeviceName(device) + "_Task";
-//    }
-
-    private static String parseDeviceVariableName(ProjectConfiguration configuration, ProjectDevice projectDevice) {
-        return "MP.devices['" + parseDeviceName(configuration, projectDevice) + "']";
-    }
-
-    private String parseDeviceExpressionVariableName(ProjectConfiguration configuration, ProjectDevice device) {
-        return "MP.expressions['" + parseDeviceName(configuration, device) + "']";
     }
 }

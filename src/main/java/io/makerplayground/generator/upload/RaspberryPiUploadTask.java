@@ -21,6 +21,9 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.generator.source.ArduinoUploadCode;
+import io.makerplayground.generator.source.RpiPythonInteractiveCode;
+import io.makerplayground.generator.source.RpiPythonUploadCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.*;
@@ -38,19 +41,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RaspberryPiUploadTask extends UploadTask {
+public class RaspberryPiUploadTask extends UploadTaskBase {
 
-    private final String url;
-    private final String ip;
-
-    public RaspberryPiUploadTask(Project project, SourceCodeResult sourceCode, String hostName) {
-        super(project, sourceCode);
-        this.ip = hostName;
-        this.url = "http://" + ip + ":" + RpiServiceChecker.PORT;
+    protected RaspberryPiUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
+        super(project, uploadTarget, isInteractiveUpload);
     }
 
     @Override
-    protected UploadResult call() {
+    protected UploadResult doUpload() {
         updateProgress(0, 1);
         updateMessage("Checking project");
 
@@ -69,6 +67,7 @@ public class RaspberryPiUploadTask extends UploadTask {
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
+        SourceCodeResult sourcecode = interactiveUpload ? RpiPythonInteractiveCode.generateCode(project) : RpiPythonUploadCode.generateCode(project);
         if (sourcecode.getError() != null) {
             Platform.runLater(()->updateMessage("Error: " + sourcecode.getError().getDescription()));
             return UploadResult.CANT_GENERATE_CODE;
@@ -77,10 +76,13 @@ public class RaspberryPiUploadTask extends UploadTask {
         updateProgress(0.10, 1);
         updateMessage("Checking required dependencies");
 
+        String ip = uploadTarget.getRpiHostName();
+        String urlStr = "http://" + ip + ":" + RpiServiceChecker.PORT;
+
         // Test ping to device and check if it has makerplayground runtime.
         Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
         try {
-            URL url = new URL(this.url);
+            URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setConnectTimeout(5000);
@@ -101,11 +103,11 @@ public class RaspberryPiUploadTask extends UploadTask {
             streamReader.close();
             con.disconnect();
             if (!"makerplayground".contentEquals(content)) {
-                Platform.runLater(()->updateMessage("Could not connect to the Raspberry Pi on " + this.ip));
+                Platform.runLater(()->updateMessage("Could not connect to the Raspberry Pi on " + ip));
                 return UploadResult.CANT_FIND_BOARD;
             }
         } catch (IOException e) {
-            Platform.runLater(()->updateMessage("Could not connect to the Raspberry Pi on " + this.ip));
+            Platform.runLater(()->updateMessage("Could not connect to the Raspberry Pi on " + ip));
             return UploadResult.CANT_FIND_BOARD;
         }
         updateProgress(0.20, 1);
@@ -178,7 +180,7 @@ public class RaspberryPiUploadTask extends UploadTask {
         updateMessage("Generating source files and libraries");
 
         // get path to the library directory
-        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+        Optional<String> libraryPath = DeviceLibrary.getLibraryPath();
         if (libraryPath.isEmpty()) {
             Platform.runLater(()->updateMessage("Error: Missing library directory"));
             return UploadResult.MISSING_LIBRARY_DIR;
@@ -225,7 +227,7 @@ public class RaspberryPiUploadTask extends UploadTask {
 
         // upload code
         try {
-            MultipartUtility multipart = new MultipartUtility(this.url + "/upload");
+            MultipartUtility multipart = new MultipartUtility(urlStr + "/upload");
             multipart.addFilePart("script", zipFile);
             multipart.finish();
         } catch (IOException e) {

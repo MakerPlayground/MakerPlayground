@@ -5,33 +5,41 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Compatibility;
-import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.generator.upload.UploadTarget;
 import io.makerplayground.generator.upload.UploadMode;
+import io.makerplayground.generator.upload.UploadTarget;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class InteractiveModel implements SerialPortMessageListener {
+public class InteractiveModel {
 
     private final Map<ProjectDevice, UserSetting> userSettings = new HashMap<>();
     private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
-
     private final Project project;
-    private SerialPort serialPort;
+
+    private UploadTarget uploadTarget;
     private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
 
-    public InteractiveModel(Project project) {
+    InteractiveModel(Project project) {
         this.project = project;
     }
 
@@ -47,11 +55,6 @@ public class InteractiveModel implements SerialPortMessageListener {
                 throw new IllegalStateException("Device doesn't have any action");
             }
         }
-    }
-
-    private boolean isActualDeviceIdentical(ProjectDevice projectDevice) {
-        Optional<ActualDevice> currentDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice);
-        return currentDevice.isPresent() && currentDevice.get().equals(deviceMap.get(projectDevice));
     }
 
     public boolean hasCommand(ProjectDevice projectDevice, Action action) {
@@ -81,11 +84,9 @@ public class InteractiveModel implements SerialPortMessageListener {
     }
 
     /**
-     * This method must be called to initialize internal state before calling the start method every time. We must called this
-     * method before start uploading interactive firmware to the board as project may changed while uploading by user but we want
-     * to initialize internal state based on the project status at the time that the interactive firmware code was generated.
+     * This method must be called to initialize internal state.
      */
-    public void initialize() {
+    private void initialize() {
         // check for precondition
         if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
             throw new IllegalStateException("Actual device and port must have been selected before creating InteractiveModel");
@@ -135,45 +136,131 @@ public class InteractiveModel implements SerialPortMessageListener {
         }
     }
 
-    public boolean start(UploadTarget uploadTarget) {
-        if (UploadMode.SERIAL_PORT.equals(uploadTarget.getMethod())) {
-            // initialize and open the serial port
-            this.serialPort = uploadTarget.getSerialPort();
-            serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-            serialPort.addDataListener(this);
-            if (serialPort.openPort()) {
-                interactiveModeStarted.set(true);
+    /*
+     * We must freeze the project instance before calling method since the board as project may changed by user
+     * while uploading interactive firmware but we want to initialize internal state based on the project status
+     * at the time that the interactive firmware code was generated.
+     */
+    public void start(UploadTarget uploadTarget) {
+        this.uploadTarget = uploadTarget;
+        initialize();
+        UploadMode uploadMode = uploadTarget.getUploadMode();
+        switch (uploadMode) {
+            case SERIAL_PORT:
+                startOnSerialPort(uploadTarget.getSerialPort());
+                break;
+            case RPI_ON_NETWORK:
+                startOnRpiSocket(uploadTarget.getRpiHostName());
+                break;
+            default:
+                throw new IllegalStateException("Not supported yet");
+        }
+    }
+
+    private void startOnSerialPort(SerialPort serialPort) {
+        // initialize and open the serial port
+        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        serialPort.addDataListener(new SerialPortMessageListener() {
+            @Override
+            public byte[] getMessageDelimiter() {
+                return new byte[]{'\r'};
+            }
+
+            @Override
+            public boolean delimiterIndicatesEndOfMessage() {
                 return true;
             }
-            return false;
-        } else if (UploadMode.RPI_ON_NETWORK.equals(uploadTarget.getMethod())) {
-            throw new IllegalStateException("Not supported yet");
+
+            @Override
+            public int getListeningEvents() {
+                return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
+            }
+
+            @Override
+            public void serialEvent(SerialPortEvent event) {
+                String message = new String(event.getReceivedData()).strip();
+                processInMessage(message);
+            }
+        });
+        if (serialPort.openPort()) {
+            interactiveModeStarted.set(true);
         }
-        return false;
+    }
+
+    private WebSocketClient webSocketClient;
+    private void startOnRpiSocket(String rpiHostName) {
+        try {
+            Thread.sleep(2000);
+            URI rpiWsUrl = new URI("ws://" + rpiHostName + ":6213");
+            webSocketClient = new WebSocketClient(rpiWsUrl) {
+
+                @Override
+                public void onOpen(ServerHandshake handshakedata) {
+
+                }
+
+                @Override
+                public void onMessage(String message) {
+                    String[] messageArray = message.split("\n");
+                    for (String msg: messageArray) {
+                        processInMessage(msg.strip());
+                    }
+                }
+
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    interactiveModeStarted.set(false);
+                }
+
+                @Override
+                public void onError(Exception ex) {
+
+                }
+            };
+            interactiveModeStarted.set(webSocketClient.connectBlocking(5, TimeUnit.SECONDS));
+        } catch (URISyntaxException | InterruptedException e) {
+            e.printStackTrace();
+            interactiveModeStarted.set(false);
+        }
     }
 
     public void stop() {
-        if (serialPort != null && serialPort.isOpen()) {
-            if (!serialPort.closePort()) {
-                System.err.println("Warning: Serial Port can't be closed");
+        if (this.uploadTarget != null) {
+            if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
+                SerialPort serialPort = uploadTarget.getSerialPort();
+                if (serialPort != null && serialPort.isOpen()) {
+                    if (!serialPort.closePort()) {
+                        System.err.println("Warning: Serial Port can't be closed");
+                    }
+                }
+            } else if (UploadMode.RPI_ON_NETWORK.equals(uploadTarget.getUploadMode())) {
+                webSocketClient.close();
+            } else {
+                throw new IllegalStateException("Not supported yet");
             }
         }
         interactiveModeStarted.set(false);
-        // TODO: close socket port for RPI
     }
 
     public void sendCommand(UserSetting userSetting) {
-        if (isStarted() && serialPort != null && serialPort.isOpen()) {
-            List<String> args = new ArrayList<>();
-            args.add("\"" + userSetting.getDevice().getName() + "\"");
-            args.add("\"" + userSetting.getAction().getName() + "\"");
-            for (Parameter parameter : userSetting.getAction().getParameter()) {
-                args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
-            }
+        List<String> args = new ArrayList<>();
+        args.add("\"" + userSetting.getDevice().getName() + "\"");
+        args.add("\"" + userSetting.getAction().getName() + "\"");
+        for (Parameter parameter : userSetting.getAction().getParameter()) {
+            args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
+        }
+        String commandString = (String.join(" ", args) + "\r");
 
-            byte[] command = (String.join(" ", args) + "\r").getBytes();
-//            System.out.println(new String(command));
-            serialPort.writeBytes(command, command.length);
+        if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
+            SerialPort serialPort = this.uploadTarget.getSerialPort();
+            if (isStarted() && serialPort != null && serialPort.isOpen()) {
+                byte[] command = commandString.getBytes();
+                serialPort.writeBytes(command, command.length);
+            }
+        } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
+            webSocketClient.send(commandString);
+        } else {
+            throw new IllegalStateException("Not supported yet");
         }
     }
 
@@ -292,49 +379,32 @@ public class InteractiveModel implements SerialPortMessageListener {
         }
     }
 
-    @Override
-    public byte[] getMessageDelimiter() {
-        return new byte[]{'\r'};
-    }
-
-    @Override
-    public boolean delimiterIndicatesEndOfMessage() {
-        return true;
-    }
-
-    @Override
-    public int getListeningEvents() {
-        return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
-    }
-
-    @Override
-    public void serialEvent(SerialPortEvent event) {
-        String message = new String(event.getReceivedData()).strip();
-//        System.out.println(message.strip());
+    void processInMessage(String message) {
+        System.out.println(message);
         String[] args = message.split(" ");
 
-        project.getUnmodifiableProjectDevice().stream()
-                .filter(projectDevice -> projectDevice.getName().equals(args[0]))
-                .findAny()
-                .ifPresent(projectDevice ->
-                        Platform.runLater(() -> {
-                            int argsIndex = 1;
-                            if (conditionMap.containsKey(projectDevice)) {
-                                for (Condition condition : conditionMap.get(projectDevice).keySet()) {
-                                    if (condition.getName().equals("Compare")) {
-                                        continue;
-                                    }
-                                    conditionMap.get(projectDevice).get(condition).set(!args[argsIndex].equals("0"));
-                                    argsIndex++;
-                                }
+        deviceMap.keySet().stream()
+            .filter(projectDevice -> projectDevice.getName().equals(args[0]))
+            .findAny()
+            .ifPresent(projectDevice ->
+                Platform.runLater(() -> {
+                    int argsIndex = 1;
+                    if (conditionMap.containsKey(projectDevice)) {
+                        for (Condition condition : conditionMap.get(projectDevice).keySet()) {
+                            if (condition.getName().equals("Compare")) {
+                                continue;
                             }
-                            if (valueMap.containsKey(projectDevice)) {
-                                for (Value value : valueMap.get(projectDevice).keySet()) {
-                                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
-                                    argsIndex++;
-                                }
-                            }
-                        })
-                );
+                            conditionMap.get(projectDevice).get(condition).set(!args[argsIndex].equals("0"));
+                            argsIndex++;
+                        }
+                    }
+                    if (valueMap.containsKey(projectDevice)) {
+                        for (Value value : valueMap.get(projectDevice).keySet()) {
+                            valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
+                            argsIndex++;
+                        }
+                    }
+                })
+            );
     }
 }

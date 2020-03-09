@@ -20,7 +20,7 @@ public class UploadTarget {
         this.serialPort = null;
     }
 
-    public UploadMode getMethod() {
+    public UploadMode getUploadMode() {
         return method;
     }
 
@@ -38,12 +38,12 @@ public class UploadTarget {
             return false;
         }
         UploadTarget obj = (UploadTarget) o;
-        if (this.getMethod().equals(obj.getMethod())) {
-            if (this.getMethod().equals(UploadMode.SERIAL_PORT)) {
+        if (this.getUploadMode().equals(obj.getUploadMode())) {
+            if (this.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
                 assert this.serialPort != null;
                 return this.serialPort.getDescriptivePortName().equals(((UploadTarget) o).serialPort.getDescriptivePortName());
             }
-            else if (this.getMethod().equals(UploadMode.RPI_ON_NETWORK)) {
+            else if (this.getUploadMode().equals(UploadMode.RPI_ON_NETWORK)) {
                 return this.rpiHostName.equals(((UploadTarget) o).rpiHostName);
             }
             else {

@@ -214,7 +214,7 @@ public class DeviceMonitor extends SplitPane implements SerialPortMessageListene
     }
 
     public boolean initialize(UploadTarget uploadTarget) {
-        if (uploadTarget.getMethod().equals(UploadMode.SERIAL_PORT)) {
+        if (uploadTarget.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
             return initialize(uploadTarget.getSerialPort());
         } else {
             throw new IllegalStateException("Rpi Device Monitor not supported");

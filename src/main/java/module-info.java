@@ -13,4 +13,5 @@ open module io.makerplayground.frontend {
     requires commons.net;
     requires java.net.http;
     requires static lombok;
+    requires Java.WebSocket;
 }

@@ -49,6 +49,7 @@ public class Toolbar extends AnchorPane {
 
     private final ObjectProperty<Project> project;
     private final UploadManager uploadManager;
+    private final UploadTargetScanner uploadTargetScanner;
 
     @FXML private MenuItem newMenuItem;
     @FXML private MenuItem openMenuItem;
@@ -77,9 +78,10 @@ public class Toolbar extends AnchorPane {
     private ImageView uploadStopImageView;
     private Timeline hideUploadStatus;
 
-    public Toolbar(ObjectProperty<Project> project, UploadManager uploadManager) {
+    public Toolbar(ObjectProperty<Project> project) {
         this.project = project;
-        this.uploadManager = uploadManager;
+        this.uploadManager = new UploadManager(project);
+        this.uploadTargetScanner = new UploadTargetScanner(project);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ToolBar.fxml"));
         fxmlLoader.setRoot(this);
@@ -191,8 +193,10 @@ public class Toolbar extends AnchorPane {
 
         project.get().platformProperty().addListener((observable, oldValue, newValue) -> {
             portComboBox.getSelectionModel().clearSelection();
-            uploadManager.startScanUploadConnection();
-            portComboBox.getSelectionModel().selectFirst();
+            uploadTargetScanner.scan();
+            if (!portComboBox.getItems().isEmpty()) {
+                portComboBox.getSelectionModel().selectFirst();
+            }
         });
 
         portComboBox.setCellFactory(getListViewListCellCallback());
@@ -226,12 +230,12 @@ public class Toolbar extends AnchorPane {
                 newValue.addListener(uploadConnectionListChangeListener);
             }
         });
-        portComboBox.itemsProperty().bind(uploadManager.uploadInfoListProperty());
+        portComboBox.itemsProperty().bind(uploadTargetScanner.uploadTargetListProperty());
         portComboBox.setOnShowing(event -> {
             portComboBox.getSelectionModel().clearSelection();
         });
         portComboBox.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(deviceMonitorShowing));
-        uploadManager.startScanUploadConnection();
+        uploadTargetScanner.scan();
 
         // TODO: add case when uploading
         deviceMonitorButton.disableProperty().bind(uploading.or(startingInteractiveMode).or(interactiveModeInitialize).or(portNotSelected));
@@ -301,10 +305,10 @@ public class Toolbar extends AnchorPane {
             protected void updateItem(UploadTarget item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item != null) {
-                    if (item.getMethod().equals(UploadMode.SERIAL_PORT)) {
+                    if (item.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
                         setText(item.getSerialPort().getDescriptivePortName());
                     }
-                    else if (item.getMethod().equals(UploadMode.RPI_ON_NETWORK)) {
+                    else if (item.getUploadMode().equals(UploadMode.RPI_ON_NETWORK)) {
                         setText("Raspberry Pi on Network (" + item.getRpiHostName() + ")");
                     }
                     else {

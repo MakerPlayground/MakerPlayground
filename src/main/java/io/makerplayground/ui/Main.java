@@ -18,9 +18,8 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
-import io.makerplayground.generator.source.SourceCodeGenerator;
+import io.makerplayground.generator.source.SourceCode;
 import io.makerplayground.generator.source.SourceCodeResult;
-import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
@@ -66,9 +65,7 @@ public class Main extends Application {
             project = new SimpleObjectProperty<>(new Project());
         }
 
-        UploadManager uploadManager = new UploadManager(project);
-
-        toolbar = new Toolbar(project, uploadManager);
+        toolbar = new Toolbar(project);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
         toolbar.setOnLoadButtonPressed(event -> loadProject(primaryStage.getScene().getWindow()));
         toolbar.setOnSaveButtonPressed(event -> saveProject(primaryStage.getScene().getWindow()));
@@ -266,7 +263,7 @@ public class Main extends Application {
         selectedFile = fileChooser.showSaveDialog(window);
 
         if (selectedFile != null) {
-            SourceCodeResult sourceCode = SourceCodeGenerator.generate(project.get());
+            SourceCodeResult sourceCode = SourceCode.generate(project.get(), false);
             if (project.get().getProjectConfiguration().getPlatform().isArduino()) {
                 ProjectExportTask exportTask = new ArduinoExportTask(project.get(), sourceCode, selectedFile.getAbsolutePath());
                 TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");

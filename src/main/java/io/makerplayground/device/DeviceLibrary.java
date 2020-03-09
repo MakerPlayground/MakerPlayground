@@ -131,7 +131,9 @@ public enum DeviceLibrary {
     }
 
     public static String getDeviceDirectoryPath() {
-        // TODO: handle case that the library path is missing
+        if (getLibraryPath().isEmpty()) {
+            throw new IllegalStateException("Library Path is missing");
+        }
         return getLibraryPath().get() + File.separator + "devices";
     }
 

@@ -23,6 +23,8 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
+import io.makerplayground.generator.source.ArduinoUploadCode;
+import io.makerplayground.generator.source.ArduinoInteractiveCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
@@ -40,17 +42,15 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArduinoUploadTask extends UploadTask {
+public class ArduinoUploadTask extends UploadTaskBase {
 
-    SerialPort serialPort;
-
-    public ArduinoUploadTask(Project project, SourceCodeResult sourceCode, SerialPort serialPort) {
-        super(project, sourceCode);
-        this.serialPort = serialPort;
+    protected ArduinoUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
+        super(project, uploadTarget, isInteractiveUpload);
     }
 
     @Override
-    protected UploadResult call() {
+    protected UploadResult doUpload() {
+        SerialPort serialPort = uploadTarget.getSerialPort();
         updateProgress(0, 1);
         updateMessage("Checking project");
 
@@ -69,6 +69,7 @@ public class ArduinoUploadTask extends UploadTask {
             return UploadResult.DEVICE_OR_PORT_MISSING;
         }
 
+        SourceCodeResult sourcecode = interactiveUpload ? ArduinoInteractiveCode.generateCode(project) : ArduinoUploadCode.generateCode(project);
         if (sourcecode.getError() != null) {
             updateMessage("Error: " + sourcecode.getError().getDescription());
             return UploadResult.CANT_GENERATE_CODE;

@@ -21,7 +21,8 @@ public enum SourceCodeError {
     DIAGRAM_ERROR("Found some errors in the diagram"),
     MISSING_PROPERTY("Missing required device's property"),
     MORE_THAN_ONE_CLOUD_PLATFORM("Only one cloud platform (e.g. Blynk or NETPIE) is allowed"),
-    NOT_SELECT_DEVICE_OR_PORT("Some devices and/or their ports haven't been selected");
+    NOT_SELECT_DEVICE_OR_PORT("Some devices and/or their ports haven't been selected"),
+    INTERACTIVE_MODE_NEED_HW_SERIAL("Hardware serial communication is not available for this configuration");
 
     private final String description;
 

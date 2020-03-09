@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,52 +16,40 @@
 
 package io.makerplayground.generator.source;
 
-import io.makerplayground.device.actual.*;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Compatibility;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.project.*;
-import io.makerplayground.util.AzureCognitiveServices;
-import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectConfiguration;
+import io.makerplayground.project.ProjectDevice;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InteractiveArduinoCodeGenerator {
+import static io.makerplayground.generator.source.ArduinoCodeUtility.*;
 
-    static final String INDENT = "    ";
-    static final String NEW_LINE = "\n";
+public class ArduinoInteractiveCode {
 
     final Project project;
     final ProjectConfiguration configuration;
     final StringBuilder builder = new StringBuilder();
-    private final List<Scene> allSceneUsed;
-    private final List<Condition> allConditionUsed;
     private final List<List<ProjectDevice>> projectDeviceGroup;
 
-    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
-            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
-            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
-            PinFunction.PWM_OUT,
-            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
-            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
-    );
-
-    private InteractiveArduinoCodeGenerator(Project project) {
+    private ArduinoInteractiveCode(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
-        Set<NodeElement> allNodeUsed = Utility.getAllUsedNodes(project);
-        this.allSceneUsed = Utility.takeScene(allNodeUsed);
-        this.allConditionUsed = Utility.takeCondition(allNodeUsed);
         this.projectDeviceGroup = project.getAllDevicesGroupBySameActualDevice();
     }
 
-    static SourceCodeResult generateCode(Project project) {
+    public static SourceCodeResult generateCode(Project project) {
         // Check if all used devices are assigned.
         if (ProjectLogic.validateDeviceAssignment(project) != ProjectMappingResult.OK) {
             return new SourceCodeResult(SourceCodeError.NOT_SELECT_DEVICE_OR_PORT, "-");
@@ -69,26 +57,28 @@ public class InteractiveArduinoCodeGenerator {
         if (!Utility.validateDeviceProperty(project)) {
             return new SourceCodeResult(SourceCodeError.MISSING_PROPERTY, "-");   // TODO: add location
         }
-
-        InteractiveArduinoCodeGenerator generator = new InteractiveArduinoCodeGenerator(project);
-        generator.appendHeader(project.getUnmodifiableProjectDevice(), project.getAllCloudPlatforms());
+        if (project.getProjectConfiguration().isUseHwSerial()) {
+            return new SourceCodeResult(SourceCodeError.INTERACTIVE_MODE_NEED_HW_SERIAL, "-");
+        }
+        ArduinoInteractiveCode generator = new ArduinoInteractiveCode(project);
+        generator.appendHeader();
         generator.appendGlobalVariable();
-        generator.appendInstanceVariables(project.getAllCloudPlatforms());
-        generator.appendSetupFunction();
+        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup));
+        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, false));
         generator.appendProcessCommand();
         generator.appendLoopFunction();
 //        System.out.println(generator.builder.toString());
         return new SourceCodeResult(generator.builder.toString());
     }
 
-    private void appendHeader(Collection<ProjectDevice> devices, Collection<CloudPlatform> cloudPlatforms) {
+    private void appendHeader() {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = devices.stream()
+        Stream<String> device_libs = project.getUnmodifiableProjectDevice().stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
-        Stream<String> cloud_libs = cloudPlatforms.stream()
+        Stream<String> cloud_libs = project.getAllCloudPlatforms().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(ArduinoCodeUtility.parseIncludeStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
@@ -102,140 +92,6 @@ public class InteractiveArduinoCodeGenerator {
         builder.append("char serialBuffer[256];").append(NEW_LINE);
         builder.append("uint8_t serialBufferIndex = 0;").append(NEW_LINE);
         builder.append("char* commandArgs[10];").append(NEW_LINE);
-        builder.append(NEW_LINE);
-    }
-
-    private void appendInstanceVariables(Collection<CloudPlatform> cloudPlatforms) {
-        // create cloud singleton variables
-        for (CloudPlatform cloudPlatform: cloudPlatforms) {
-            String cloudPlatformLibName = cloudPlatform.getLibName();
-            String specificCloudPlatformLibName = project.getSelectedController().getCloudPlatformSourceCodeLibrary().get(cloudPlatform).getClassName();
-
-            List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
-                    .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
-            builder.append(cloudPlatformLibName).append("* ").append(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform))
-                    .append(" = new ").append(specificCloudPlatformLibName)
-                    .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
-        }
-
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            if (projectDeviceList.isEmpty()) {
-                throw new IllegalStateException();
-            }
-            Optional<ActualDevice> actualDeviceOptional = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDeviceList.get(0));
-            if (actualDeviceOptional.isEmpty()) {
-                throw new IllegalStateException();
-            }
-            ActualDevice actualDevice = actualDeviceOptional.get();
-            builder.append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
-                    .append(" ").append(ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList));
-            List<String> args = new ArrayList<>();
-
-            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
-            if (connection != DeviceConnection.NOT_CONNECTED) {
-                Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
-                for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDeviceList.get(0))) {
-                    Connection connectionProvide = connectionMap.get(connectionConsume);
-                    for (int i=connectionConsume.getPins().size()-1; i>=0; i--) {
-                        Pin pinConsume = connectionConsume.getPins().get(i);
-                        Pin pinProvide = connectionProvide.getPins().get(i);
-                        if (pinConsume.getFunction().get(0) == PinFunction.NO_FUNCTION) {
-                            continue;
-                        }
-                        List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
-                        for (PinFunction function: possibleFunctionConsume) {
-                            if (pinProvide.getFunction().contains(function)) {
-                                if (PIN_FUNCTION_WITH_CODES.contains(function)) {
-                                    if (!pinProvide.getCodingName().isEmpty()) {
-                                        args.add(pinProvide.getCodingName());
-                                    } else {
-                                        args.add(pinProvide.getRefTo());
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // property for the generic device
-            for (Property p : actualDevice.getProperty()) {
-                ProjectDevice projectDevice = configuration.getRootDevice(projectDeviceList.get(0));
-                Object value = configuration.getPropertyValue(projectDevice, p);
-                if (value == null) {
-                    throw new IllegalStateException("Property hasn't been set");
-                }
-                switch (p.getDataType()) {
-                    case INTEGER:
-                    case DOUBLE:
-                        args.add(String.valueOf(((NumberWithUnit) value).getValue()));
-                        break;
-                    case INTEGER_ENUM:
-                    case BOOLEAN_ENUM:
-                        args.add(String.valueOf(value));
-                        break;
-                    case STRING:
-                    case ENUM:
-                        args.add("\"" + value + "\"");
-                        break;
-                    case AZURE_COGNITIVE_KEY:
-                        AzureCognitiveServices acs = (AzureCognitiveServices) value;
-                        args.add("\"" + acs.getLocation().toLowerCase() + "\"");
-                        args.add("\"" + acs.getKey1() + "\"");
-                        break;
-                    case AZURE_IOTHUB_KEY:
-                        AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
-                        args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
-                        break;
-                    default:
-                        throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");
-                }
-            }
-
-            // Cloud Platform instance
-            CloudPlatform cloudPlatform = actualDevice.getCloudConsume();
-            if (cloudPlatform != null) {
-                args.add(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform));
-            }
-
-            if (!args.isEmpty()) {
-                builder.append("(").append(String.join(", ", args)).append(");").append(NEW_LINE);
-            } else {
-                builder.append(";").append(NEW_LINE);
-            }
-        }
-        builder.append(NEW_LINE);
-    }
-
-    private void appendSetupFunction() {
-        builder.append("void setup() {").append(NEW_LINE);
-        builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
-
-        if (project.getSelectedPlatform().equals(Platform.ARDUINO_ESP32)) {
-            builder.append(INDENT).append("analogSetWidth(10);").append(NEW_LINE);
-        }
-
-        for (CloudPlatform cloudPlatform : project.getAllCloudPlatforms()) {
-            String cloudPlatformVariableName = ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform);
-            builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
-            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(cloudPlatform.getDisplayName()).append("\", status_code);").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
-            builder.append(INDENT).append("}").append(NEW_LINE);
-            builder.append(NEW_LINE);
-        }
-
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            String variableName = ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList);
-            builder.append(INDENT).append("status_code = ").append(variableName).append(".init();").append(NEW_LINE);
-            builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("MP_ERR(\"").append(projectDeviceList.stream().map(ProjectDevice::getName).collect(Collectors.joining(", "))).append("\", status_code);").append(NEW_LINE);
-            builder.append(INDENT).append(INDENT).append("while(1);").append(NEW_LINE);
-            builder.append(INDENT).append("}").append(NEW_LINE);
-            builder.append(NEW_LINE);
-        }
-        builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
     }
 
