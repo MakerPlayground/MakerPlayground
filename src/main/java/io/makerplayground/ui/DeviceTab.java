@@ -3,10 +3,10 @@ package io.makerplayground.ui;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceView;
-import io.makerplayground.ui.dialog.configdevice.ConfigActualDeviceViewModel;
-import io.makerplayground.ui.dialog.generate.DiagramPane;
-import io.makerplayground.ui.explorer.DeviceExplorerPanel;
+import io.makerplayground.ui.devicetab.ActualDeviceConfigView;
+import io.makerplayground.ui.devicetab.ConfigActualDeviceViewModel;
+import io.makerplayground.ui.devicetab.DeviceDiagramView;
+import io.makerplayground.ui.devicetab.DeviceExplorerView;
 import javafx.application.HostServices;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -24,17 +24,17 @@ public class DeviceTab extends SplitPane {
 
     private final Project currentProject;
 
-    private final DeviceExplorerPanel deviceExplorerPanel;
+    private final DeviceExplorerView deviceExplorerView;
     private final Tab deviceConfigTab;
 
-    private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DiagramPane.DEFAULT_ZOOM_SCALE);
+    private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DeviceDiagramView.DEFAULT_ZOOM_SCALE);
 
     public DeviceTab(Project currentProject, HostServices hostServices) {
         this.currentProject = currentProject;
 
         // device explorer
-        deviceExplorerPanel = new DeviceExplorerPanel(currentProject, hostServices);
-        deviceExplorerPanel.setOnAddButtonPressed(actualDevice -> {
+        deviceExplorerView = new DeviceExplorerView(currentProject, hostServices);
+        deviceExplorerView.setOnAddButtonPressed(actualDevice -> {
             List<ProjectDevice> projectDevices = new ArrayList<>();
             for (GenericDevice genericDevice : actualDevice.getSupportedGenericDevice()) {
                 projectDevices.add(currentProject.addDevice(genericDevice));
@@ -56,7 +56,7 @@ public class DeviceTab extends SplitPane {
         // perform layout
         deviceConfigTab = new Tab("Device Configuration");
         deviceConfigTab.setClosable(false);
-        Tab deviceExplorerTab = new Tab("Device Explorer", deviceExplorerPanel);
+        Tab deviceExplorerTab = new Tab("Device Explorer", deviceExplorerView);
         deviceExplorerTab.setClosable(false);
         TabPane deviceTabPane = new TabPane(deviceConfigTab, deviceExplorerTab);
         deviceTabPane.setMaxWidth(710);
@@ -73,19 +73,19 @@ public class DeviceTab extends SplitPane {
     void refreshConfigDevicePane() {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(this::refreshDiagramAndExplorer);
-        ConfigActualDeviceView configActualDeviceView = new ConfigActualDeviceView(configActualDeviceViewModel);
-        deviceConfigTab.setContent(configActualDeviceView);
+        ActualDeviceConfigView actualDeviceConfigView = new ActualDeviceConfigView(configActualDeviceViewModel);
+        deviceConfigTab.setContent(actualDeviceConfigView);
     }
 
     private void refreshDiagramAndExplorer() {
-        deviceExplorerPanel.setController(currentProject.getSelectedController());
+        deviceExplorerView.setController(currentProject.getSelectedController());
 
-        DiagramPane diagramPane = new DiagramPane(currentProject);
-        diagramPane.setZoomLevel(deviceDiagramZoomLevel.get());
-        getItems().set(1, diagramPane);
+        DeviceDiagramView deviceDiagramView = new DeviceDiagramView(currentProject);
+        deviceDiagramView.setZoomLevel(deviceDiagramZoomLevel.get());
+        getItems().set(1, deviceDiagramView);
 
         deviceDiagramZoomLevel.unbind();
-        deviceDiagramZoomLevel.bind(diagramPane.zoomLevelProperty());
+        deviceDiagramZoomLevel.bind(deviceDiagramView.zoomLevelProperty());
     }
 
 }

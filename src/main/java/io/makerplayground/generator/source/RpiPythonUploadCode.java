@@ -35,6 +35,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.makerplayground.generator.source.ArduinoCodeUtility.INDENT;
+import static io.makerplayground.generator.source.ArduinoCodeUtility.NEW_LINE;
 import static io.makerplayground.generator.source.RpiPythonCodeUtility.*;
 
 public class RpiPythonUploadCode {
@@ -100,7 +102,8 @@ public class RpiPythonUploadCode {
 
     private void appendHeader() {
         builder.append("import time").append(NEW_LINE);
-        builder.append("from MakerPlayground import MP").append(NEW_LINE);
+        builder.append("import asyncio").append(NEW_LINE);
+        builder.append("from MakerPlayground import MP, MPRunner").append(NEW_LINE);
 
         // generate include
         Stream<String> device_libs = project.getAllDeviceUsed().stream()
@@ -371,7 +374,7 @@ public class RpiPythonUploadCode {
 
     private void appendMainCode() {
         builder.append(NEW_LINE);
-        builder.append("if __name__ == '__main__':").append(NEW_LINE);
+        builder.append("async def main():").append(NEW_LINE);
         builder.append(INDENT).append("try:").append(NEW_LINE);
 
         /* Setup */
@@ -481,6 +484,7 @@ public class RpiPythonUploadCode {
         builder.append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("while True:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("MP.update()").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("await asyncio.sleep(0)").append(NEW_LINE);
         project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(INDENT).append(parsePointerName(begin)).append("()").append(NEW_LINE));
         /* End Loop */
 
@@ -488,6 +492,29 @@ public class RpiPythonUploadCode {
         builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
         /* End Handle Interrupt */
+
+        builder.append(NEW_LINE);
+
+        builder.append("def gen_message():").append(NEW_LINE);
+        builder.append(INDENT).append("retval = ''").append(NEW_LINE);
+
+        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
+        for (ProjectDevice projectDevice : valueUsed.keySet()) {
+            if (!valueUsed.get(projectDevice).isEmpty()) {
+                builder.append(INDENT).append("retval += f'[[V]] ")
+                        .append("\"").append(projectDevice.getName()).append("\" ")
+                        .append(valueUsed.get(projectDevice).stream()
+                                .map(value -> "\"" + value.getName() + "\"={" + parseValueVariableTerm(searchGroup(projectDevice), value) + "}")
+                                .collect(Collectors.joining(",")))
+                        .append("\\n'")
+                        .append(NEW_LINE);
+            }
+        }
+        builder.append(INDENT).append("return retval").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
+        builder.append("if __name__ == '__main__':").append(NEW_LINE);
+        builder.append(INDENT).append("MPRunner.start(main, gen_message)").append(NEW_LINE);
     }
 
     // The required digits is at least 6 for GPS's lat, lon values.

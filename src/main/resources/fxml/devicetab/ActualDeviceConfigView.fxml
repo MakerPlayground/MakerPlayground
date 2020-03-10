@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019. The Maker Playground Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<fx:root id="configVBox" alignment="CENTER" minWidth="400.0"
+         stylesheets="@../../css/devicetab/ActualDeviceConfigView.css" type="VBox"
+         xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+            <VBox alignment="CENTER" spacing="20">
+                <GridPane hgap="20.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="90.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES"/>
+                    </columnConstraints>
+                    <children>
+                        <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="2"
+                                  GridPane.rowIndex="1"/>
+                        <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="2"/>
+                        <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1"/>
+                        <ImageView fx:id="platFormImage" fitHeight="30" fitWidth="30">
+                            <Image url="@../../icons/colorIcons-3/Controller.png"/>
+                        </ImageView>
+                    </children>
+                    <rowConstraints>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                    </rowConstraints>
+                </GridPane>
+                <VBox fx:id="warningPane" alignment="CENTER" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../css/dialog/warning-gray.png" />
+                            </image>
+                        </ImageView>
+                        <Label id="warningLabel" fx:id="warningLabel" textAlignment="CENTER" wrapText="true" />
+                    </children>
+                    <padding>
+                        <Insets left="10.0" right="10.0" top="30.0" />
+                    </padding>
+                </VBox>
+                <VBox fx:id="usedDevice" spacing="20" visible="false">
+                    <Separator/>
+                    <HBox alignment="CENTER">
+                        <Label id="usedLabel" text="Used devices"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="autoButton1" text="Auto Select"/>
+                    </HBox>
+                    <GridPane fx:id="usedDeviceSettingPane" hgap="20.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="90.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES"/>
+                        </columnConstraints>
+                    </GridPane>
+                </VBox>
+                <VBox fx:id="unusedDevice" spacing="20" visible="false">
+                    <Separator/>
+                    <HBox>
+                        <Label id="unusedLabel" text="Unused devices"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="autoButton2" text="Auto Select"/>
+                    </HBox>
+                    <GridPane fx:id="unusedDevicePane" hgap="20.0" vgap="10.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="90.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES"/>
+                        </columnConstraints>
+                    </GridPane>
+                </VBox>
+                <VBox fx:id="cloudPlatformParameterSection" spacing="20" visible="false">
+                    <Separator/>
+                    <HBox>
+                        <Label id="additionalLabel" text="Additional Settings"/>
+                    </HBox>
+                    <GridPane fx:id="cloudPlatformParameterPane" hgap="20" vgap="10">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
+                            <ColumnConstraints hgrow="NEVER" minWidth="90.0"/>
+                            <ColumnConstraints hgrow="NEVER"/>
+                            <ColumnConstraints hgrow="NEVER"/>
+                        </columnConstraints>
+                    </GridPane>
+                </VBox>
+            </VBox>
+            <VBox.margin>
+                <Insets/>
+            </VBox.margin>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+        </ScrollPane>
+    </children>
+</fx:root>

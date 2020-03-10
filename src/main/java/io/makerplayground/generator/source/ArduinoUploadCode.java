@@ -98,7 +98,7 @@ public class ArduinoUploadCode {
                 .map(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
         Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
-        Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(ArduinoCodeUtility.parseIncludeStatement(s)).append(NEW_LINE));
+        Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseIncludeStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);
     }
 
@@ -215,10 +215,11 @@ public class ArduinoUploadCode {
 
             for (ProjectDevice projectDevice : valueUsed.keySet()) {
                 if (!valueUsed.get(projectDevice).isEmpty()) {
-                    builder.append(INDENT).append(INDENT).append("PR_VAL(); PR_DEVICE(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append("PR_VAL(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
                     builder.append(INDENT).append(INDENT).append(valueUsed.get(projectDevice).stream()
-                            .map(value -> "Serial.print(\"" + value.getName() + "=\"); Serial.print(" + ArduinoCodeUtility.parseValueVariableTerm(searchGroup(projectDevice), value) + ");")
+                            .map(value -> "Serial.print(\"" + value.getName() + "=\"); Serial.print(" + parseValueVariableTerm(searchGroup(projectDevice), value) + ");")
                             .collect(Collectors.joining(" Serial.print(\",\");" + NEW_LINE + INDENT + INDENT)));
+                    builder.append(NEW_LINE);
                     builder.append("PR_END();").append(NEW_LINE);
                 }
             }
@@ -342,11 +343,11 @@ public class ArduinoUploadCode {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
-                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(s)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(";").append(NEW_LINE);
                 } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) {
-                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentScene)).append(";").append(NEW_LINE);
                 } else {
-                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(root)).append(";").append(NEW_LINE);
+                    builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(";").append(NEW_LINE);
                 }
 
                 // end of scene's function
@@ -477,11 +478,11 @@ public class ArduinoUploadCode {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(s)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(";").append(NEW_LINE);
                     } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
                     } else {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(root)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(";").append(NEW_LINE);
                     }
 
                     builder.append(INDENT).append("}").append(NEW_LINE); // end of if

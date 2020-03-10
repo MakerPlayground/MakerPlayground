@@ -20,7 +20,7 @@ import io.makerplayground.generator.upload.UploadTarget;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
-import io.makerplayground.ui.dialog.DeviceMonitor;
+import io.makerplayground.ui.devicemonitortab.DeviceMonitor;
 import javafx.application.HostServices;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;

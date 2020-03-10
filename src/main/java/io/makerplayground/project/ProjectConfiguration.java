@@ -28,7 +28,7 @@ import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.*;
-import io.makerplayground.ui.dialog.configdevice.CompatibleDevice;
+import io.makerplayground.ui.devicetab.CompatibleDevice;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +36,6 @@ import javafx.collections.transformation.FilteredList;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
