@@ -24,7 +24,6 @@ import io.makerplayground.generator.upload.UploadMode;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -39,12 +38,16 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,8 +56,7 @@ public class DeviceMonitor extends SplitPane {
     private static final Pattern format = Pattern.compile("(\\[\\[I]]|\\[\\[E]]|\\[\\[V]])?\\s\"(.*)\"\\s(.+)", Pattern.DOTALL); // Regex
     private static final Pattern numberRegex = Pattern.compile("^(-?\\d+\\.\\d+)$|^(-?\\d+)$");
 
-    private SerialPort serialPort;
-    private ReadOnlyBooleanWrapper initialized = new ReadOnlyBooleanWrapper(false);
+    private ReadOnlyBooleanWrapper isRunning = new ReadOnlyBooleanWrapper(false);
 
     private final ObservableList<LogItem> logData = FXCollections.observableArrayList();
     private final FilteredList<LogItem> logDataFilter = new FilteredList<>(logData);
@@ -71,6 +73,10 @@ public class DeviceMonitor extends SplitPane {
     @FXML private VBox chartPane;
     @FXML private Button clearTableButton;
     @FXML private Button clearChartButton;
+
+    private UploadTarget currentUploadTarget;
+    private SerialPort serialPort;
+    private WebSocketClient webSocketClient;
 
     public DeviceMonitor() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/DeviceMonitor.fxml"));
@@ -202,23 +208,77 @@ public class DeviceMonitor extends SplitPane {
         chartPane.getChildren().add(lineChart);
     }
 
-    public boolean isInitilized() {
-        return initialized.get();
-    }
-
-    public ReadOnlyBooleanProperty initializedProperty() {
-        return initialized.getReadOnlyProperty();
-    }
-
-    public boolean initialize(UploadTarget uploadTarget) {
+    public boolean startMonitor(UploadTarget uploadTarget) {
+        currentUploadTarget = uploadTarget;
         if (uploadTarget.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
-            return initialize(uploadTarget.getSerialPort());
+            return startMonitor(uploadTarget.getSerialPort());
+        } else if (uploadTarget.getUploadMode().equals(UploadMode.RPI_ON_NETWORK)){
+            return startMonitor(uploadTarget.getRpiHostName());
         } else {
-            throw new IllegalStateException("Rpi Device Monitor not supported");
+            return false;
         }
     }
 
-    private boolean initialize(SerialPort port) {
+    private boolean startMonitor(String rpiHostName) {
+        URI uri = URI.create("ws://" + rpiHostName + ":6213");
+        webSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+
+            }
+
+            @Override
+            public void onMessage(String message) {
+                String[] lines = message.strip().split("\n");
+                for (String line : lines) {
+                    Matcher log = format.matcher(line);
+                    if (log.find() && log.groupCount() == 3) {
+                        LogItem logItem = new LogItem(log.group(1), log.group(2), log.group(3));
+                        Platform.runLater(() -> {
+                            logData.addAll(logItem);
+                            if (!tagListForTable.contains(logItem.getDeviceName())) {
+                                tagListForTable.add(logItem.getDeviceName());
+                                // A hack to make the checkbox tick became visible properly
+                                Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItem.getDeviceName()));
+                            }
+                            if (autoScrollCheckbox.isSelected()) {
+                                deviceMonitorTable.scrollTo(logItem);
+                            }
+
+                            if (!tagListForChart.contains(logItem.getDeviceName())) {
+                                tagListForChart.add(logItem.getDeviceName());
+                                // A hack to make the checkbox tick became visible properly
+                                Platform.runLater(() -> plotTagComboBox.getCheckModel().check(logItem.getDeviceName()));
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+
+            }
+
+            @Override
+            public void onError(Exception ex) {
+
+            }
+        };
+        try {
+            if (webSocketClient.connectBlocking(5, TimeUnit.SECONDS)) {
+                isRunning.set(true);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean startMonitor(SerialPort port) {
         serialPort = port;
         serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         serialPort.addDataListener(new SerialPortMessageListener() {
@@ -267,17 +327,27 @@ public class DeviceMonitor extends SplitPane {
         if (!serialPort.openPort()) {
             return false;
         }
-        initialized.set(true);
+        isRunning.set(true);
         return true;
     }
 
-    public boolean closePort() {
-        if (serialPort != null) {
-            serialPort.removeDataListener();
-            initialized.set(false);
-            return serialPort.closePort();
+    public void stopMonitor() {
+        if (currentUploadTarget == null) {
+            return;
+        }
+        if (currentUploadTarget.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
+            if (serialPort != null) {
+                serialPort.removeDataListener();
+                isRunning.set(false);
+                serialPort.closePort();
+            }
+        } else if (currentUploadTarget.getUploadMode().equals(UploadMode.RPI_ON_NETWORK)) {
+            if (webSocketClient != null) {
+                isRunning.set(false);
+                webSocketClient.close();
+            }
         } else {
-            return true;
+            throw new IllegalStateException("There is no implementation for " + currentUploadTarget);
         }
     }
 

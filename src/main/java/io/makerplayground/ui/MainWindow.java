@@ -69,10 +69,10 @@ public class MainWindow extends BorderPane {
         deviceMonitorShowing = new SimpleBooleanProperty();
         deviceMonitorShowing.addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                deviceMonitor.closePort();
+                deviceMonitor.stopMonitor();
             } else {
                 // TODO: handle the case when initialize failed by switch to the old tab
-                deviceMonitor.initialize(uploadConnection.get());
+                deviceMonitor.startMonitor(uploadConnection.get());
                 setCenter(deviceMonitor);
             }
         });
@@ -82,7 +82,7 @@ public class MainWindow extends BorderPane {
 
             diagramEditor = initDiagramEditor();
             deviceTab = new DeviceTab(project.get(), hostServices);
-            deviceMonitor.closePort();
+            deviceMonitor.stopMonitor();
             deviceMonitor = new DeviceMonitor();
 
             if (diagramEditorShowing.get()) {
