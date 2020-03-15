@@ -23,7 +23,7 @@ import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
-import io.makerplayground.ui.deprecated.devicepane.output.OutputDeviceSelector;
+import io.makerplayground.ui.canvas.node.usersetting.output.OutputDeviceSelector;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
