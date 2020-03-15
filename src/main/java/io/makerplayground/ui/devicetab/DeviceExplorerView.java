@@ -29,6 +29,7 @@ import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Insets;
@@ -44,6 +45,7 @@ import org.controlsfx.control.SegmentedButton;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -61,6 +63,10 @@ public class DeviceExplorerView extends VBox {
     private Project currentProject;
     private ActualDevice currentController;
     private String currentSearchKeyword = "";
+
+    List<String> allBrands;
+    List<GenericDevice> allGenericDevices;
+    Map<String, List<ActualDevice>> actualDevicePerBrand;
 
     public DeviceExplorerView(Project project, HostServices hostServices) {
         this.currentProject = project;
@@ -81,8 +87,8 @@ public class DeviceExplorerView extends VBox {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         ToggleButton typeToggleButton = new ToggleButton("Type");
-        typeToggleButton.setSelected(true);
         ToggleButton brandToggleButton = new ToggleButton("Brand");
+        brandToggleButton.setSelected(true);
         SegmentedButton segmentedButton = new SegmentedButton(typeToggleButton, brandToggleButton);
         segmentedButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
@@ -112,26 +118,33 @@ public class DeviceExplorerView extends VBox {
         getStylesheets().add(getClass().getResource("/css/DeviceExplorer.css").toExternalForm());
         getChildren().add(hbox);
 
-        initViewDeviceType();
+        allGenericDevices = new ArrayList<>(DeviceLibrary.INSTANCE.getGenericDevice());
+        allGenericDevices.sort(Comparator.comparing(GenericDevice::getName));
+
+        actualDevicePerBrand = DeviceLibrary.INSTANCE.getActualAndIntegratedDevice().stream()
+                .filter(actualDevice -> !actualDevice.getDeviceType().equals(DeviceType.CONTROLLER))
+                .collect(Collectors.groupingBy(ActualDevice::getBrand));
+
+        allBrands = new ArrayList<>(actualDevicePerBrand.keySet());
+        allBrands.sort(Comparator.naturalOrder());
+
+        initViewBrand();
     }
 
     private void initViewDeviceType() {
-        List<GenericDevice> genericDevices = new ArrayList<>(DeviceLibrary.INSTANCE.getGenericDevice());
-        genericDevices.sort(Comparator.comparing(GenericDevice::getName));
-
-        initView(genericDevices, GenericDevice::getName, DeviceLibrary.INSTANCE::getActualAndIntegratedDevice
-                , actualDevice -> actualDevice.getDeviceType() != DeviceType.CONTROLLER);
+        initView(allGenericDevices
+                , GenericDevice::getName
+                , DeviceLibrary.INSTANCE::getActualAndIntegratedDevice
+                , actualDevice -> actualDevice.getDeviceType() != DeviceType.CONTROLLER
+        );
     }
 
     private void initViewBrand() {
-        Map<String, List<ActualDevice>> actualDevicePerBrand = DeviceLibrary.INSTANCE.getActualAndIntegratedDevice().stream()
-                .collect(Collectors.groupingBy(ActualDevice::getBrand));
-
-        List<String> brands = new ArrayList<>(actualDevicePerBrand.keySet());
-        brands.sort(Comparator.naturalOrder());
-
-        initView(brands, Function.identity(), actualDevicePerBrand::get
-                , actualDevice -> actualDevice.getDeviceType() != DeviceType.CONTROLLER);
+        initView(allBrands
+                , Function.identity()
+                , actualDevicePerBrand::get
+                , actualDevice -> actualDevice.getDeviceType() != DeviceType.CONTROLLER
+        );
     }
 
     private <T> void initView(List<T> categories, Function<T, String> nameExtractor, Function<T, List<ActualDevice>> actualDevicesGetter, Predicate<ActualDevice> filter) {
@@ -142,34 +155,29 @@ public class DeviceExplorerView extends VBox {
         VBox vBox = new VBox();
         vBox.setFillWidth(true);
 
-        for (T t : categories) {
-            List<ActualDevice> actualDevices = actualDevicesGetter.apply(t);
-
-            FlowPane paneLayout = new FlowPane();
-            paneLayout.setVgap(10);
-            paneLayout.setHgap(10);
-
-            TitledPane titledPane = new TitledPane(nameExtractor.apply(t), paneLayout);
-            vBox.getChildren().add(titledPane);
-            titledPanes.add(titledPane);
-
-            for (ActualDevice actualDevice : actualDevices) {
-                if (filter.test(actualDevice)) {
-                    DeviceInfoPane deviceInfoPane = new DeviceInfoPane(hostServices, actualDevice);
-                    paneLayout.getChildren().add(deviceInfoPane);
-                    deviceInfoPanes.add(deviceInfoPane);
-                    deviceInfoPaneParentMap.put(deviceInfoPane, titledPane);
-                }
-            }
-        }
-
         scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setContent(vBox);
 
         getChildren().add(scrollPane);
 
-        applyFilter();
+        for (T t : categories) {
+            List<ActualDevice> actualDevices = actualDevicesGetter.apply(t);
+            FlowPane paneLayout = new FlowPane();
+            paneLayout.setVgap(10);
+            paneLayout.setHgap(10);
+            TitledPane titledPane = new TitledPane(nameExtractor.apply(t), paneLayout);
+            Platform.runLater(() -> vBox.getChildren().add(titledPane));
+            titledPanes.add(titledPane);
+            actualDevices.stream().filter(filter).forEachOrdered((actualDevice) -> {
+                DeviceInfoPane deviceInfoPane = new DeviceInfoPane(hostServices, actualDevice);
+                applyFilterEach(deviceInfoPane);
+                Platform.runLater(() -> paneLayout.getChildren().add(deviceInfoPane));
+                deviceInfoPanes.add(deviceInfoPane);
+                deviceInfoPaneParentMap.put(deviceInfoPane, titledPane);
+            });
+            hideTitleIfNoneVisible(titledPane);
+        }
     }
 
     public void setController(ActualDevice controller) {
@@ -199,51 +207,43 @@ public class DeviceExplorerView extends VBox {
         return true;
     }
 
+    private void applyFilterEach(DeviceInfoPane deviceInfoPane) {
+        ActualDevice actualDevice = deviceInfoPane.getActualDevice();
+        AtomicBoolean visible = new AtomicBoolean();
+        visible.set(actualDevice.getBrand().toLowerCase().contains(currentSearchKeyword)
+                || actualDevice.getModel().toLowerCase().contains(currentSearchKeyword)
+                || (deviceInfoPaneParentMap.containsKey(deviceInfoPane)
+                        && deviceInfoPaneParentMap.get(deviceInfoPane).getText().toLowerCase().contains(currentSearchKeyword))
+        );
+        if ((deviceInfoPane.getActualDevice() instanceof IntegratedActualDevice
+                && ((IntegratedActualDevice) deviceInfoPane.getActualDevice()).getParent() != currentController)) {
+            visible.set(false);
+        }
+        Platform.runLater(() -> deviceInfoPane.setVisible(visible.get()));
+
+        boolean disable = (currentController == null)
+                || (!isSupportByController(deviceInfoPane.getActualDevice()));
+        Platform.runLater(() -> deviceInfoPane.setDisable(disable));
+    }
+
     private void applyFilter() {
-        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-            deviceInfoPane.setDisable(true);
-            deviceInfoPane.setVisible(false);
-            deviceInfoPane.setManaged(false);
-        }
+        deviceInfoPanes.stream().forEach(this::applyFilterEach);
+        titledPanes.forEach(this::hideTitleIfNoneVisible);
+    }
 
-        // enable device that is supported by the current controller
-        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-            if (currentController != null && isSupportByController(deviceInfoPane.getActualDevice())) {
-                deviceInfoPane.setDisable(false);
-            }
-        }
+//    private void collapseTitleIfAllDisabled(TitledPane pane) {
+//        Platform.runLater(() -> {
+//            boolean someEnabled = !((FlowPane) pane.getContent()).getChildren().stream().allMatch(Node::isDisabled);
+//            pane.setExpanded(someEnabled);
+//        });
+//    }
 
-        // show device based on the search keyword
-        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-            if (deviceInfoPaneParentMap.get(deviceInfoPane).getText().toLowerCase().contains(currentSearchKeyword)
-                    || deviceInfoPane.getActualDevice().getBrand().toLowerCase().contains(currentSearchKeyword)
-                    || deviceInfoPane.getActualDevice().getModel().toLowerCase().contains(currentSearchKeyword)) {
-                deviceInfoPane.setVisible(true);
-                deviceInfoPane.setManaged(true);
-            }
-        }
-
-        // hide integrated device of the other controllers
-        for (DeviceInfoPane deviceInfoPane : deviceInfoPanes) {
-            if (deviceInfoPane.getActualDevice() instanceof IntegratedActualDevice) {
-                if (((IntegratedActualDevice) deviceInfoPane.getActualDevice()).getParent() != currentController) {
-                    deviceInfoPane.setDisable(true);
-                    deviceInfoPane.setVisible(false);
-                    deviceInfoPane.setManaged(false);
-                }
-            }
-        }
-
-        // hide category that doesn't have any devices left after filter
-        for (TitledPane pane : titledPanes) {
-            if (((FlowPane) pane.getContent()).getChildren().stream().noneMatch(Node::isVisible)) {
-                pane.setVisible(false);
-                pane.setManaged(false);
-            } else {
-                pane.setVisible(true);
-                pane.setManaged(true);
-            }
-        }
+    private void hideTitleIfNoneVisible(TitledPane pane) {
+        Platform.runLater(() -> {
+            boolean visible = ((FlowPane) pane.getContent()).getChildren().stream().anyMatch(Node::isVisible);
+            pane.setVisible(visible);
+            pane.setManaged(visible);
+        });
     }
 
     private void ensureVisible(DeviceInfoPane pane) {
@@ -317,7 +317,13 @@ public class DeviceExplorerView extends VBox {
             setMinSize(140, 140);
             setPrefSize(140, 140);
             setMaxSize(140, 140);
-            setStyle("-fx-border-color: #cccccc;  -fx-border-radius: 10 10 10 10; ");
+            this.styleProperty().bind(Bindings.when(disabledProperty())
+                    .then("-fx-border-color: #dddddd;  -fx-border-radius: 10 10 10 10; ")
+                    .otherwise("-fx-border-color: #cccccc;  -fx-border-radius: 10 10 10 10; ")
+            );
+
+            managedProperty().bind(visibleProperty());
+
             getChildren().addAll(imageViewWrapper, nameLabel, buttonLayout);
 
             getStylesheets().add(getClass().getResource("/css/DeviceInfoPane.css").toExternalForm());

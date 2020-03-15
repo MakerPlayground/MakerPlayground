@@ -26,8 +26,7 @@ import io.makerplayground.device.shared.Value;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Data
 public class GenericDevice {
@@ -54,9 +53,12 @@ public class GenericDevice {
         this.name = name;
         this.description = description;
         this.type = type;
-        this.action = action;
-        this.condition = condition;
-        this.value = value;
+        this.action = Objects.nonNull(action) ? Collections.unmodifiableList(action) : Collections.emptyList();
+        this.condition = Objects.nonNull(condition) ? Collections.unmodifiableList(condition) : Collections.emptyList();
+        this.value = Objects.nonNull(value) ? Collections.unmodifiableList(value) : Collections.emptyList();
+        if (this.action.isEmpty() && this.condition.isEmpty() && this.value.isEmpty()) {
+            throw new IllegalStateException("The generic device needs to have one of action, condition, or value.");
+        }
     }
 
     public Optional<Action> getAction(String name) {

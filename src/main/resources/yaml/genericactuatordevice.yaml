@@ -2,458 +2,416 @@
 - name: LED
   description: LED lamp
   action:
-  - name: 'On'
-    funcname: 'on'
-    parameter:
-    - name: Brightness
-      value: 100
-      constraint:
-        min: 0
-        max: 100
-        unit: PERCENT
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: 'On'
+      funcname: 'on'
+      parameter:
+        - name: Brightness
+          value: 100
+          constraint:
+            min: 0
+            max: 100
+            unit: PERCENT
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: 'Off'
+      funcname: 'off'
 - name: RGB LED
   description: This is a color LED
   action:
-  - name: 'On'
-    funcname: 'on'
-    parameter:
-    - name: Red
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Green
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Blue
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Brightness
-      value: 100
-      constraint:
-        min: 0
-        max: 100
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: 'On'
+      funcname: 'on'
+      parameter:
+        - name: Red
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Green
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Blue
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Brightness
+          value: 100
+          constraint:
+            min: 0
+            max: 100
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: 'Off'
+      funcname: 'off'
 - name: RGB LED Strip
   description: Addressable RGB LED Strip e.g. WS2812, APA102
   action:
-  - name: Set Color
-    funcname: setColor
-    parameter:
-    - name: Index
-      value: 1
-      constraint:
-        min: 1
-        max: 10000
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: Red
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Green
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Blue
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: Fill Color
-    funcname: fillColor
-    parameter:
-    - name: Start Index
-      value: 1
-      constraint:
-        min: 1
-        max: 10000
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: End Index
-      value: 1
-      constraint:
-        min: 1
-        max: 10000
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: Red
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Green
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-    - name: Blue
-      value: 255
-      constraint:
-        min: 0
-        max: 255
-        unit: NOT_SPECIFIED
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: Set Brightness
-    funcname: setBrightness
-    parameter:
-    - name: Brightness
-      value: 100
-      constraint:
-        min: 0
-        max: 100
-        unit: PERCENT
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: Clear
-    funcname: clear
-    parameter: []
-  condition: []
-  value: []
+    - name: Set Color
+      funcname: setColor
+      parameter:
+        - name: Index
+          value: 1
+          constraint:
+            min: 1
+            max: 10000
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: Red
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Green
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Blue
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: Fill Color
+      funcname: fillColor
+      parameter:
+        - name: Start Index
+          value: 1
+          constraint:
+            min: 1
+            max: 10000
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: End Index
+          value: 1
+          constraint:
+            min: 1
+            max: 10000
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: Red
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Green
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Blue
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: Set Brightness
+      funcname: setBrightness
+      parameter:
+        - name: Brightness
+          value: 100
+          constraint:
+            min: 0
+            max: 100
+            unit: PERCENT
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: Clear
+      funcname: clear
 - name: Buzzer
   description: A kind of speaker that can control frequency of sound
   action:
-  - name: Beep
-    funcname: beep
-    parameter: []
-  - name: Play Tone
-    funcname: play
-    parameter:
-    - name: Tone Frequency
-      value: 2000
-      constraint:
-        min: 0
-        max: 20000
-        unit: HERTZ
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: Duration
-      value: 2
-      constraint:
-        min: 0
-        max: 1000
-        unit: SECOND
-      datatype: INTEGER
-      controltype: SPINBOX
-  condition: []
-  value: []
+    - name: Beep
+      funcname: beep
+    - name: Play Tone
+      funcname: play
+      parameter:
+        - name: Tone Frequency
+          value: 2000
+          constraint:
+            min: 0
+            max: 20000
+            unit: HERTZ
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: Duration
+          value: 2
+          constraint:
+            min: 0
+            max: 1000
+            unit: SECOND
+          datatype: INTEGER
+          controltype: SPINBOX
 - name: 7 Segment
   description: A screen that can display number and some alphabet
   action:
-  - name: Show Number
-    funcname: showData
-    parameter:
-    - name: Number
-      value: 1000
-      constraint:
-        min: -999
-        max: 9999
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-  - name: Show Two Numbers with Colon
-    funcname: showTwoIntWithColon
-    parameter:
-    - name: Before colon
-      value: 0
-      constraint:
-        min: -9
-        max: 99
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: After colon
-      value: 0
-      constraint:
-        min: -9
-        max: 99
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: Show Number
+      funcname: showData
+      parameter:
+        - name: Number
+          value: 1000
+          constraint:
+            min: -999
+            max: 9999
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: Show Two Numbers with Colon
+      funcname: showTwoIntWithColon
+      parameter:
+        - name: Before colon
+          value: 0
+          constraint:
+            min: -9
+            max: 99
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: After colon
+          value: 0
+          constraint:
+            min: -9
+            max: 99
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: 'Off'
+      funcname: 'off'
 - name: DC Motor
   description: A motor. It can drive a wheel.
   action:
-  - name: 'On'
-    funcname: 'on'
-    parameter:
-    - name: Direction
-      value: Forward
-      constraint:
-      - Forward
-      - Backward
-      datatype: ENUM
-      controltype: DROPDOWN
-    - name: Speed
-      value: 100
-      constraint:
-        min: 0
-        max: 100
-        unit: PERCENT
-      datatype: DOUBLE
-      controltype: SLIDER
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: 'On'
+      funcname: 'on'
+      parameter:
+        - name: Direction
+          value: Forward
+          constraint:
+            - Forward
+            - Backward
+          datatype: ENUM
+          controltype: DROPDOWN
+        - name: Speed
+          value: 100
+          constraint:
+            min: 0
+            max: 100
+            unit: PERCENT
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: 'Off'
+      funcname: 'off'
 - name: Servo
   description: A motor that can control direction
   action:
-  - name: Move To
-    funcname: moveto
-    parameter:
-    - name: Degree
-      value: 90
-      constraint:
-        min: 0
-        max: 180
-        unit: DEGREE
-      datatype: INTEGER
-      controltype: SPINBOX
-  condition: []
-  value: []
+    - name: Move To
+      funcname: moveto
+      parameter:
+        - name: Degree
+          value: 90
+          constraint:
+            min: 0
+            max: 180
+            unit: DEGREE
+          datatype: INTEGER
+          controltype: SPINBOX
 - name: Relay Module
   description: This is a relay module. It can act as a digital switch for high voltage.
   action:
-  - name: 'On'
-    funcname: 'on'
-    parameter: []
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: 'On'
+      funcname: 'on'
+    - name: 'Off'
+      funcname: 'off'
 - name: Load Driver
   description: This is a load driver. It can act as a digital switch for high voltage.
   action:
-  - name: 'On'
-    funcname: 'on'
-    parameter: []
-  - name: 'Off'
-    funcname: 'off'
-    parameter: []
-  condition: []
-  value: []
+    - name: 'On'
+      funcname: 'on'
+    - name: 'Off'
+      funcname: 'off'
 - name: Display
   description: An lcd/oled display which can display character and graphic
   action:
-  - name: Show Text
-    funcname: showTextAtRow
-    parameter:
-    - name: Row
-      value: 1
-      constraint:
-        min: 1
-        max: 20
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-    - name: Text
-      value: ''
-      constraint: []
-      datatype: STRING
-      controltype: TEXTBOX
-    - name: Size
-      value: 1x
-      constraint:
-      - 1x
-      - 2x
-      - 3x
-      datatype: ENUM
-      controltype: DROPDOWN
-    - name: Align
-      value: Left
-      constraint:
-      - Left
-      - Center
-      - Right
-      datatype: ENUM
-      controltype: DROPDOWN
-    - name: Color
-      value: White
-      constraint:
-      - Blue
-      - Cyan
-      - Dark Cyan
-      - Dark Green
-      - Dark Grey
-      - Green
-      - Green Yellow
-      - Light Grey
-      - Magenta
-      - Maroon
-      - Navy
-      - Olive
-      - Orange
-      - Pink
-      - Purple
-      - White
-      - Red
-      - Yellow
-      datatype: ENUM
-      controltype: DROPDOWN
-  - name: Clear Row
-    funcname: clearRow
-    parameter:
-    - name: Row
-      value: 1
-      constraint:
-        min: 1
-        max: 10
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-  - name: Clear Screen
-    funcname: clearScreen
-    parameter: []
-  condition: []
-  value: []
+    - name: Show Text
+      funcname: showTextAtRow
+      parameter:
+        - name: Row
+          value: 1
+          constraint:
+            min: 1
+            max: 20
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+        - name: Text
+          value: ''
+          constraint: []
+          datatype: STRING
+          controltype: TEXTBOX
+        - name: Size
+          value: 1x
+          constraint:
+            - 1x
+            - 2x
+            - 3x
+          datatype: ENUM
+          controltype: DROPDOWN
+        - name: Align
+          value: Left
+          constraint:
+            - Left
+            - Center
+            - Right
+          datatype: ENUM
+          controltype: DROPDOWN
+        - name: Color
+          value: White
+          constraint:
+            - Blue
+            - Cyan
+            - Dark Cyan
+            - Dark Green
+            - Dark Grey
+            - Green
+            - Green Yellow
+            - Light Grey
+            - Magenta
+            - Maroon
+            - Navy
+            - Olive
+            - Orange
+            - Pink
+            - Purple
+            - White
+            - Red
+            - Yellow
+          datatype: ENUM
+          controltype: DROPDOWN
+    - name: Clear Row
+      funcname: clearRow
+      parameter:
+        - name: Row
+          value: 1
+          constraint:
+            min: 1
+            max: 10
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: Clear Screen
+      funcname: clearScreen
 - name: MP3 Player
   description: An MP3 player
   action:
-  - name: Play MP3
-    funcname: playMP3
-    parameter:
-    - name: Index
-      value: 1
-      constraint:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
-      - 10
-      datatype: INTEGER_ENUM
-      controltype: DROPDOWN
-  - name: Play Next MP3
-    funcname: playNextMP3
-    parameter: []
-  - name: Play Previous MP3
-    funcname: playPrevMP3
-    parameter: []
-  - name: Pause
-    funcname: pause
-    parameter: []
-  - name: Start from pause
-    funcname: startFromPause
-    parameter: []
-  - name: Enable Loop
-    funcname: enableLoop
-    parameter: []
-  - name: Enable Loop All
-    funcname: enableLoopAll
-    parameter: []
-  - name: Disable Loop
-    funcname: disableLoop
-    parameter: []
-  - name: Disable Loop All
-    funcname: disableLoopAll
-    parameter: []
-  - name: Set Volume
-    funcname: setVolume
-    parameter:
-    - name: volume
-      value: 15
+    - name: Play MP3
+      funcname: playMP3
+      parameter:
+        - name: Index
+          value: 1
+          constraint:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          datatype: INTEGER_ENUM
+          controltype: DROPDOWN
+    - name: Play Next MP3
+      funcname: playNextMP3
+    - name: Play Previous MP3
+      funcname: playPrevMP3
+    - name: Pause
+      funcname: pause
+    - name: Start from pause
+      funcname: startFromPause
+    - name: Enable Loop
+      funcname: enableLoop
+    - name: Enable Loop All
+      funcname: enableLoopAll
+    - name: Disable Loop
+      funcname: disableLoop
+    - name: Disable Loop All
+      funcname: disableLoopAll
+    - name: Set Volume
+      funcname: setVolume
+      parameter:
+        - name: volume
+          value: 15
+          constraint:
+            min: 0
+            max: 30
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: Volume Up
+      funcname: volumeUp
+    - name: Volume Down
+      funcname: volumeDown
+    - name: Set EQ
+      funcname: setEQ
+      parameter:
+        - name: EQ
+          value: NORMAL
+          constraint:
+            - NORMAL
+            - POP
+            - ROCK
+            - JAZZ
+            - CLASSIC
+            - BASS
+          datatype: ENUM
+          controltype: DROPDOWN
+  value:
+    - name: Volume
+      dataType: INTEGER
       constraint:
         min: 0
         max: 30
         unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
-  - name: Volume Up
-    funcname: volumeUp
-    parameter: []
-  - name: Volume Down
-    funcname: volumeDown
-    parameter: []
-  - name: Set EQ
-    funcname: setEQ
-    parameter:
-    - name: EQ
-      value: NORMAL
+    - name: FileCount
+      dataType: INTEGER
       constraint:
-      - NORMAL
-      - POP
-      - ROCK
-      - JAZZ
-      - CLASSIC
-      - BASS
-      datatype: ENUM
-      controltype: DROPDOWN
-  condition: []
-  value:
-  - name: Volume
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 30
-      unit: NOT_SPECIFIED
-  - name: FileCount
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 65535
-      unit: NOT_SPECIFIED
-  - name: CurrentFileNumber
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 65535
-      unit: NOT_SPECIFIED
+        min: 0
+        max: 65535
+        unit: NOT_SPECIFIED
+    - name: CurrentFileNumber
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 65535
+        unit: NOT_SPECIFIED

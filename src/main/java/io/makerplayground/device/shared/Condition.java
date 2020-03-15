@@ -22,6 +22,7 @@ import lombok.Data;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Data
@@ -40,7 +41,7 @@ public class Condition {
     public Condition(@JsonProperty("name") String name, @JsonProperty("funcname") String functionName, @JsonProperty("parameter") List<Parameter> parameter) {
         this.name = name;
         this.functionName = functionName;
-        this.parameter = Collections.unmodifiableList(parameter);
+        this.parameter = Objects.nonNull(parameter) ? Collections.unmodifiableList(parameter) : Collections.emptyList();
     }
 
     public Optional<Parameter> getParameter(String name) {

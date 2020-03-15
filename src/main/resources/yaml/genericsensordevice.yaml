@@ -2,668 +2,579 @@
 - name: Button
   description: This is buttons. You can press or release the button to do some action.
     \nRelated project:\n\tPiano\n\tSwitch to control devices
-  action: []
   condition:
-  - name: Press
-    funcname: isPress
-    parameter: []
-  - name: Press and release
-    funcname: isPressAndRelease
-    parameter: []
-  - name: Not press
-    funcname: isNotPress
-    parameter: []
-  value: []
+    - name: Press
+      funcname: isPress
+    - name: Press and release
+      funcname: isPressAndRelease
+    - name: Not press
+      funcname: isNotPress
 - name: Accelerometer
   description: Accelerometer is a sensor to measure acceleration.\nYou can use it
     to detect free fall, acceleration on x,y,z axis. \nRelated project:\n\tFalling
     object detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
-  - name: Tap
-    funcname: isTapped
-    parameter: []
-  - name: Free Fall
-    funcname: isFallen
-    parameter: []
+    - name: Compare
+      funcname: ''
+    - name: Tap
+      funcname: isTapped
+    - name: Free Fall
+      funcname: isFallen
   value:
-  - name: Accel_X
-    dataType: DOUBLE
-    constraint:
-      min: -100
-      max: 100
-      unit: METERPERSECSQUARE
-  - name: Accel_Y
-    dataType: DOUBLE
-    constraint:
-      min: -100
-      max: 100
-      unit: METERPERSECSQUARE
-  - name: Accel_Z
-    dataType: DOUBLE
-    constraint:
-      min: -100
-      max: 100
-      unit: METERPERSECSQUARE
-  - name: Accel_Magnitude
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: METERPERSECSQUARE
+    - name: Accel_X
+      dataType: DOUBLE
+      constraint:
+        min: -100
+        max: 100
+        unit: METERPERSECSQUARE
+    - name: Accel_Y
+      dataType: DOUBLE
+      constraint:
+        min: -100
+        max: 100
+        unit: METERPERSECSQUARE
+    - name: Accel_Z
+      dataType: DOUBLE
+      constraint:
+        min: -100
+        max: 100
+        unit: METERPERSECSQUARE
+    - name: Accel_Magnitude
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: METERPERSECSQUARE
 - name: Light
   description: A sensor that detect light. \nRelated project:\n\tAutomatic light
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
-  - name: Intensity
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100000
-      unit: LUX
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
+    - name: Intensity
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100000
+        unit: LUX
 - name: POT
   description: This is potentiometer. You can turn to adjust and make some action.\nRelated
     project:\n\tHelp many projects in selecting action and/or adjusting the sensor
     value
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Temperature
   description: A thermometer. \nRelated project:\n\tSmart fan\n\tHeat detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Temperature
-    dataType: DOUBLE
-    constraint:
-      min: -500
-      max: 500
-      unit: CELSIUS
+    - name: Temperature
+      dataType: DOUBLE
+      constraint:
+        min: -500
+        max: 500
+        unit: CELSIUS
 - name: Gyroscope
   description: A sensor that measure rotation on x,y,z axis. \nRelated project:\n\t
     Flip detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Gyro_X
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: RADIUSPERSEC
-  - name: Gyro_Y
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: RADIUSPERSEC
-  - name: Gyro_Z
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: RADIUSPERSEC
+    - name: Gyro_X
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: RADIUSPERSEC
+    - name: Gyro_Y
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: RADIUSPERSEC
+    - name: Gyro_Z
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: RADIUSPERSEC
 - name: Humidity
   description: A sensor that measure humidity. \nRelated project:\n\tAutomatic water
     plant
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Humidity
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Humidity
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Sound
   description: A sensor that measure level of sound. \nRelated project:\n\tSound detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: SoundLevel
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: SoundLevel
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Magnetometer
   description: A sensor that measure magnetic. \nRelated project:\n\tMagnet detector\n\tCompass
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
-  - name: Direction
-    funcname: checkDirection
-    parameter:
+    - name: Compare
+      funcname: ''
     - name: Direction
-      value: North
-      constraint:
-      - North
-      - South
-      - East
-      - West
-      - NorthEast
-      - NorthWest
-      - SouthEast
-      - SouthWest
-      datatype: ENUM
-      controltype: DROPDOWN
+      funcname: checkDirection
+      parameter:
+        - name: Direction
+          value: North
+          constraint:
+            - North
+            - South
+            - East
+            - West
+            - NorthEast
+            - NorthWest
+            - SouthEast
+            - SouthWest
+          datatype: ENUM
+          controltype: DROPDOWN
   value:
-  - name: Mag_X
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: MICROTESLA
-  - name: Mag_Y
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: MICROTESLA
-  - name: Mag_Z
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: MICROTESLA
+    - name: Mag_X
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: MICROTESLA
+    - name: Mag_Y
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: MICROTESLA
+    - name: Mag_Z
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: MICROTESLA
 - name: Distance
   description: A sensor that measure distance. \nRelated project:\n\tWall detector\n\tObject
     detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Distance
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 450
-      unit: CENTIMETER
+    - name: Distance
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 450
+        unit: CENTIMETER
 - name: Presence
   description: A sensor that measure movement. \nRelated project:\n\tHuman detector
-  action: []
   condition:
-  - name: Detect Human
-    funcname: isDetected
-    parameter: []
-  - name: No Human
-    funcname: isNotDetected
-    parameter: []
-  value: []
+    - name: Detect Human
+      funcname: isDetected
+    - name: No Human
+      funcname: isNotDetected
 - name: GPS
   description: A Geolocation sensor. \nRelated project:\n\tGPS Tracking
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
-  - name: Data is valid
-    funcname: isDataValid
-    parameter: []
-  - name: Data is not valid
-    funcname: isDataInvalid
-    parameter: []
+    - name: Compare
+      funcname: ''
+    - name: Data is valid
+      funcname: isDataValid
+    - name: Data is not valid
+      funcname: isDataInvalid
   value:
-  - name: Latitude
-    dataType: DOUBLE
-    constraint:
-      min: -90
-      max: 90
-      unit: DEGREE
-  - name: Longitude
-    dataType: DOUBLE
-    constraint:
-      min: -180
-      max: 180
-      unit: DEGREE
+    - name: Latitude
+      dataType: DOUBLE
+      constraint:
+        min: -90
+        max: 90
+        unit: DEGREE
+    - name: Longitude
+      dataType: DOUBLE
+      constraint:
+        min: -180
+        max: 180
+        unit: DEGREE
 - name: Color
   description: A sensor that detect color. \nRelated project:\n\tColor detector
-  action: []
   condition:
-  - name: Detect Color
-    funcname: isColor
-    parameter:
-    - name: Color
-      value: Red
-      constraint:
-      - Red
-      - Green
-      - Blue
-      - Cyan
-      - Magenta
-      - Yellow
-      - White
-      datatype: ENUM
-      controltype: DROPDOWN
-  value: []
+    - name: Detect Color
+      funcname: isColor
+      parameter:
+        - name: Color
+          value: Red
+          constraint:
+            - Red
+            - Green
+            - Blue
+            - Cyan
+            - Magenta
+            - Yellow
+            - White
+          datatype: ENUM
+          controltype: DROPDOWN
 - name: Pressuremeter
   description: Pressuremeter is a sensor to measure pressure. \nRelated project:\n\tAtmosphere
     detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Pressure
-    dataType: DOUBLE
-    constraint:
-      min: -3000
-      max: 3000
-      unit: HECTOPASCAL
+    - name: Pressure
+      dataType: DOUBLE
+      constraint:
+        min: -3000
+        max: 3000
+        unit: HECTOPASCAL
 - name: Water
   description: A sensor that detect water level. \nRelated project:\n\tRain detection\n\tWater
     level detector
-  action: []
   condition:
-  - name: Detect Water
-    funcname: isWet
-    parameter: []
-  - name: No Water
-    funcname: isDry
-    parameter: []
-  value: []
+    - name: Detect Water
+      funcname: isWet
+    - name: No Water
+      funcname: isDry
 - name: Alcohol
   description: A sensor that detect alcohol. \nRelated project:\n\tAlcohol meter
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: LPG
   description: A sensor that detect gas LPG. \nRelated project:\n\tGas detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Flame
   description: A sensor that detect flame. \nRelated project:\n\tFlame detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Altimeter
   description: Altimeter is a sensor to measure height. \nRelated project:\n\tHeight
     detector
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Altitude
-    dataType: DOUBLE
-    constraint:
-      min: -3000
-      max: 3000
-      unit: METER
+    - name: Altitude
+      dataType: DOUBLE
+      constraint:
+        min: -3000
+        max: 3000
+        unit: METER
 - name: Soil Moisture
   description: This is Moisture Sensor. It can detect the moisture of soil or decide
     whether there is water around the sensor
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Percent
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: PERCENT
+    - name: Percent
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: PERCENT
 - name: Gesture
   description: A gesture sensor can be used to detect hand movement in front of the
     sensor
-  action: []
   condition:
-  - name: Swipe Up
-    funcname: isSwipeUp
-    parameter: []
-  - name: Swipe Down
-    funcname: isSwipeDown
-    parameter: []
-  - name: Swipe Left
-    funcname: isSwipeLeft
-    parameter: []
-  - name: Swipe Right
-    funcname: isSwipeRight
-    parameter: []
-  - name: Move Forward
-    funcname: isMoveForward
-    parameter: []
-  - name: Move Backward
-    funcname: isMoveBackward
-    parameter: []
-  - name: Spin Clockwise
-    funcname: isSpinClockwise
-    parameter: []
-  - name: Spin Counter Clockwise
-    funcname: isSpinCounterClockwise
-    parameter: []
-  - name: Waving
-    funcname: isWave
-    parameter: []
-  - name: Not Detected
-    funcname: isNotDetected
-    parameter: []
-  value: []
+    - name: Swipe Up
+      funcname: isSwipeUp
+    - name: Swipe Down
+      funcname: isSwipeDown
+    - name: Swipe Left
+      funcname: isSwipeLeft
+    - name: Swipe Right
+      funcname: isSwipeRight
+    - name: Move Forward
+      funcname: isMoveForward
+    - name: Move Backward
+      funcname: isMoveBackward
+    - name: Spin Clockwise
+      funcname: isSpinClockwise
+    - name: Spin Counter Clockwise
+      funcname: isSpinCounterClockwise
+    - name: Waving
+      funcname: isWave
+    - name: Not Detected
+      funcname: isNotDetected
 - name: Current
   description: This is a current sensor. You can measure the amount of current used
     by some electronic devices. \nRelated project:\n\tSmart Meter
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Ampere
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: AMPERE
+    - name: Ampere
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: AMPERE
 - name: RTC
   description: A Real Time Clock (RTC) device with external battery that provides
     the real date and time.
   action:
-  - name: Set DateTime
-    funcname: setDateTime
-    parameter:
-    - name: datetime
-      value: 0
-      constraint: []
-      datatype: DATETIME
-      controltype: DATETIMEPICKER
+    - name: Set DateTime
+      funcname: setDateTime
+      parameter:
+        - name: datetime
+          value: 0
+          constraint: []
+          datatype: DATETIME
+          controltype: DATETIMEPICKER
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
-  - name: Check Day
-    funcname: checkDayOfWeek
-    parameter:
-    - name: Day
-      value: Monday
-      constraint:
-      - Sunday
-      - Monday
-      - Tuesday
-      - Wednesday
-      - Thursday
-      - Friday
-      - Saturday
-      datatype: ENUM
-      controltype: DROPDOWN
+    - name: Compare
+      funcname: ''
+    - name: Check Day
+      funcname: checkDayOfWeek
+      parameter:
+        - name: Day
+          value: Monday
+          constraint:
+            - Sunday
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Friday
+            - Saturday
+          datatype: ENUM
+          controltype: DROPDOWN
   value:
-  - name: Hour
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 23
-      unit: NOT_SPECIFIED
-  - name: Minute
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 59
-      unit: NOT_SPECIFIED
-  - name: Second
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 59
-      unit: NOT_SPECIFIED
-  - name: Date
-    dataType: INTEGER
-    constraint:
-      min: 1
-      max: 31
-      unit: NOT_SPECIFIED
-  - name: Month
-    dataType: INTEGER
-    constraint:
-      min: 1
-      max: 12
-      unit: NOT_SPECIFIED
-  - name: Year
-    dataType: INTEGER
-    constraint:
-      min: 0
-      max: 5000
-      unit: NOT_SPECIFIED
+    - name: Hour
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 23
+        unit: NOT_SPECIFIED
+    - name: Minute
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 59
+        unit: NOT_SPECIFIED
+    - name: Second
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 59
+        unit: NOT_SPECIFIED
+    - name: Date
+      dataType: INTEGER
+      constraint:
+        min: 1
+        max: 31
+        unit: NOT_SPECIFIED
+    - name: Month
+      dataType: INTEGER
+      constraint:
+        min: 1
+        max: 12
+        unit: NOT_SPECIFIED
+    - name: Year
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 5000
+        unit: NOT_SPECIFIED
 - name: Camera
   description: ''
-  action: []
-  condition: []
   value:
-  - name: Image
-    dataType: IMAGE
-    constraint: []
+    - name: Image
+      dataType: IMAGE
+      constraint: []
 - name: Dust
   description: A sensor to measure dust. \nRelated project:\n\tMeasure PM 2.5
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
-  - name: Data is valid
-    funcname: isDataValid
-    parameter: []
-  - name: Data is not valid
-    funcname: isDataInvalid
-    parameter: []
+    - name: Compare
+      funcname: ''
+    - name: Data is valid
+      funcname: isDataValid
+    - name: Data is not valid
+      funcname: isDataInvalid
   value:
-  - name: Atmospheric PM 1.0
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 1000
-      unit: MICROGRAMS_PER_CUBIC_METER
-  - name: Atmospheric PM 2.5
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 1000
-      unit: MICROGRAMS_PER_CUBIC_METER
-  - name: Atmospheric PM 10
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 1000
-      unit: MICROGRAMS_PER_CUBIC_METER
+    - name: Atmospheric PM 1.0
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 1000
+        unit: MICROGRAMS_PER_CUBIC_METER
+    - name: Atmospheric PM 2.5
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 1000
+        unit: MICROGRAMS_PER_CUBIC_METER
+    - name: Atmospheric PM 10
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 1000
+        unit: MICROGRAMS_PER_CUBIC_METER
 - name: Joystick
   description: This is a joystick. You can detect the up, down, left, right and middle
     push from joystick
-  action: []
   condition:
-  - name: Press up
-    funcname: isUpPress
-    parameter: []
-  - name: Press down
-    funcname: isDownPress
-    parameter: []
-  - name: Press left
-    funcname: isLeftPress
-    parameter: []
-  - name: Press right
-    funcname: isRightPress
-    parameter: []
-  - name: Press middle
-    funcname: isMiddlePress
-    parameter: []
-  - name: Not press up
-    funcname: isUpRelease
-    parameter: []
-  - name: Not press down
-    funcname: isDownRelease
-    parameter: []
-  - name: Not press left
-    funcname: isLeftRelease
-    parameter: []
-  - name: Not press right
-    funcname: isRightRelease
-    parameter: []
-  - name: Not press middle
-    funcname: isMiddleRelease
-    parameter: []
-  - name: Not press all
-    funcname: isAllRelease
-    parameter: []
-  value: []
+    - name: Press up
+      funcname: isUpPress
+    - name: Press down
+      funcname: isDownPress
+    - name: Press left
+      funcname: isLeftPress
+    - name: Press right
+      funcname: isRightPress
+    - name: Press middle
+      funcname: isMiddlePress
+    - name: Not press up
+      funcname: isUpRelease
+    - name: Not press down
+      funcname: isDownRelease
+    - name: Not press left
+      funcname: isLeftRelease
+    - name: Not press right
+      funcname: isRightRelease
+    - name: Not press middle
+      funcname: isMiddleRelease
+    - name: Not press all
+      funcname: isAllRelease
 - name: Weight
   description: A sensor or sensors to measure the weight
   action:
-  - name: Set zero weight
-    funcname: setZero
-    parameter: []
-  - name: Set scale
-    funcname: setScale
-    parameter:
-    - name: scale
-      value: 20000
-      constraint:
-        min: -50000
-        max: 50000
-        unit: NOT_SPECIFIED
-      datatype: INTEGER
-      controltype: SPINBOX
+    - name: Set zero weight
+      funcname: setZero
+    - name: Set scale
+      funcname: setScale
+      parameter:
+        - name: scale
+          value: 20000
+          constraint:
+            min: -50000
+            max: 50000
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Weight
-    dataType: DOUBLE
-    constraint:
-      min: -200
-      max: 200
-      unit: KILOGRAM
+    - name: Weight
+      dataType: DOUBLE
+      constraint:
+        min: -200
+        max: 200
+        unit: KILOGRAM
 - name: Energy Meter
   description: A sensor to measure electricity usage.
-  action: []
   condition:
-  - name: Compare
-    funcname: ''
-    parameter: []
+    - name: Compare
+      funcname: ''
   value:
-  - name: Current
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 60
-      unit: AMPERE
-  - name: Voltage
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 300
-      unit: VOLT
-  - name: Power
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 20000
-      unit: WATT
-  - name: Frequency
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 100
-      unit: HERTZ
-  - name: Active Apparent Power
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 20000
-      unit: VOLT_AMPERE
-  - name: Reactive Apparent Power
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 20000
-      unit: VOLT_AMPERE_REACTIVE
-  - name: Total Active Energy
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 300000
-      unit: KILO_WATT_HOUR
-  - name: Total Reactive Energy
-    dataType: DOUBLE
-    constraint:
-      min: 0
-      max: 300000
-      unit: KILO_VOLT_AMPERE_REACTIVE_HOUR
-  - name: Power Factor
-    dataType: DOUBLE
-    constraint:
-      min: -1
-      max: 1
-      unit: POWER_FACTOR
-  - name: Phase Angle
-    dataType: DOUBLE
-    constraint:
-      min: -90
-      max: 90
-      unit: DEGREE
+    - name: Current
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 60
+        unit: AMPERE
+    - name: Voltage
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 300
+        unit: VOLT
+    - name: Power
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 20000
+        unit: WATT
+    - name: Frequency
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 100
+        unit: HERTZ
+    - name: Active Apparent Power
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 20000
+        unit: VOLT_AMPERE
+    - name: Reactive Apparent Power
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 20000
+        unit: VOLT_AMPERE_REACTIVE
+    - name: Total Active Energy
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 300000
+        unit: KILO_WATT_HOUR
+    - name: Total Reactive Energy
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 300000
+        unit: KILO_VOLT_AMPERE_REACTIVE_HOUR
+    - name: Power Factor
+      dataType: DOUBLE
+      constraint:
+        min: -1
+        max: 1
+        unit: POWER_FACTOR
+    - name: Phase Angle
+      dataType: DOUBLE
+      constraint:
+        min: -90
+        max: 90
+        unit: DEGREE

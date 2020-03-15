@@ -155,10 +155,6 @@ public class ActualDeviceConfigView extends VBox{
     }
 
     private void initControllerControl() {
-        if (viewModel.getSelectedController() == null) {
-            warningLabel.setText("Select a controller to get started");
-        }
-
         controllerComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<ActualDeviceComboItem> call(ListView<ActualDeviceComboItem> param) {
@@ -216,19 +212,21 @@ public class ActualDeviceConfigView extends VBox{
                 .filter(actualDeviceComboItem -> actualDeviceComboItem.getActualDevice() == viewModel.getSelectedController())
                 .findFirst()
                 .ifPresentOrElse(selectedController -> controllerComboBox.getSelectionModel().select(selectedController), this::initDeviceControl);
+        if (viewModel.getSelectedController() == null) {
+            warningLabel.setText("Select a controller to get started");
+        }
     }
 
     private void initDeviceControl() {
-        if (viewModel.getAllDevices().isEmpty()) {
-            warningLabel.setText("Switch to Device Explorer tab to add some devices");
-        }
-
         usedDevice.setVisible(false);
         usedDevice.setManaged(false);
         unusedDevice.setVisible(false);
         unusedDevice.setManaged(false);
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
+        if (viewModel.getAllDevices().isEmpty()) {
+            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+        }
         initUsedDeviceControl();
         initUnusedDeviceControl();
         initCloudPlatformPropertyControl();
