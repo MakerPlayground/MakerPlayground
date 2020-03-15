@@ -19,7 +19,7 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
@@ -98,8 +98,8 @@ public class UserSetting {
             expressionEnable.put(v, false);
         }
 
-        if (VirtualProjectDevice.Memory.projectDevice.equals(device)) {
-            for (ProjectValue pv: VirtualProjectDevice.Memory.unmodifiableVariables) {
+        if (Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv: Memory.unmodifiableVariables) {
                 Value v = pv.getValue();
                 expressionEnable.put(v, false);
                 if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
@@ -107,7 +107,7 @@ public class UserSetting {
                 }
             }
 
-            VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+            Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
                 while (c.next()) {
                     if (c.wasAdded()) {
                         c.getAddedSubList().forEach(o -> {
@@ -166,8 +166,8 @@ public class UserSetting {
         }
         this.expressionEnable.putAll(u.expressionEnable);
 
-        if (VirtualProjectDevice.Memory.projectDevice.equals(u.device)) {
-            VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+        if (Memory.projectDevice.equals(u.device)) {
+            Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
                 while (c.next()) {
                     if (c.wasAdded()) {
                         c.getAddedSubList().forEach(o -> {
@@ -244,7 +244,7 @@ public class UserSetting {
         for (Map.Entry<Parameter, Expression> entry : parameterMap.entrySet()) {
             Expression exp = entry.getValue();
             for (Term term: exp.getTerms()) {
-                if (term instanceof ValueTerm && term.isValid() && !VirtualProjectDevice.Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
+                if (term instanceof ValueTerm && term.isValid() && !Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
                     if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
@@ -259,7 +259,7 @@ public class UserSetting {
             if (exp instanceof RecordExpression) {
                 ((RecordExpression) exp).getRecord().getEntryList().stream().flatMap(recordEntry -> recordEntry.getValue().getTerms().stream()).filter(term -> term instanceof ValueTerm).forEach(term -> {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
-                    if (VirtualProjectDevice.Memory.projectDevice.equals(projectValue.getDevice())) {
+                    if (Memory.projectDevice.equals(projectValue.getDevice())) {
                         return;
                     }
                     if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
@@ -277,7 +277,7 @@ public class UserSetting {
         // list value use in every enable expression in a condition
         for (Value v : expression.keySet()) {
             // skip if this expression is disabled
-            if (expressionEnable.get(v) && !VirtualProjectDevice.Memory.projectDevice.equals(this.getDevice())) {
+            if (expressionEnable.get(v) && !Memory.projectDevice.equals(this.getDevice())) {
                 Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
                 for (ProjectValue pv : valueUsed) {
                     if (result.containsKey(pv.getDevice())) {

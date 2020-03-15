@@ -8,10 +8,7 @@ import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.project.DeviceConnection;
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectConfiguration;
-import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.*;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 
@@ -71,6 +68,9 @@ public class RpiPythonInteractiveCode {
         for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
             for (ProjectDevice projectDevice : projectDeviceList) {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
+                    continue;
+                }
+                if (VirtualProjectDevice.Memory.projectDevice.equals(projectDevice)) {
                     continue;
                 }
                 ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();

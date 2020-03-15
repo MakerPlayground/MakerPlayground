@@ -290,7 +290,7 @@ public class ArduinoUploadCode {
                             throw new IllegalStateException();
                         }
                     } else {
-                        String deviceName = ArduinoCodeUtility.parseDeviceVariableName(searchGroup(device));
+                        String deviceName = parseDeviceVariableName(searchGroup(device));
                         List<String> taskParameter = new ArrayList<>();
                         List<Parameter> parameters = setting.getAction().getParameter();
                         // generate code to perform the action
@@ -401,9 +401,11 @@ public class ArduinoUploadCode {
                             if (setting.getCondition() == TimeElapsed.lessThan) {
                                 booleanExpressions.add("millis() < " + parseBeginRecentSceneFinishTime(root) + " + " +
                                         parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
-                            } else {
+                            } else if (setting.getCondition() == TimeElapsed.greaterThan) {
                                 booleanExpressions.add("millis() > " + parseBeginRecentSceneFinishTime(root) + " + " +
                                         parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                            } else {
+                                throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
                             }
                         } else if (Memory.projectDevice.equals(setting.getDevice())) {
                             if (Memory.compare.equals(setting.getCondition())) {
