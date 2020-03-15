@@ -92,10 +92,10 @@ public class UserSetting {
 
         // Initialize expression list
         for (Value v : device.getGenericDevice().getValue()) {
+            expressionEnable.put(v, false);
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
                 expression.put(v, new NumberInRangeExpression(device, v));
             }
-            expressionEnable.put(v, false);
         }
 
         if (Memory.projectDevice.equals(device)) {
