@@ -20,7 +20,6 @@ import io.makerplayground.project.DiagramError;
 import io.makerplayground.ui.canvas.InteractivePane;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreator;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
-import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconView;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.control.AutoResizeTextField;
