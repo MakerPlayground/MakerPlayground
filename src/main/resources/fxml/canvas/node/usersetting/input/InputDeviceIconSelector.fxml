@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <!--
-  ~ Copyright (c) 2019. The Maker Playground Authors.
+  ~ Copyright (c) 2020. The Maker Playground Authors.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
   ~ limitations under the License.
   -->
 
-<fx:root alignment="CENTER" minHeight="45" minWidth="45" stylesheets="@../../../../css/deprecated/devicepane/devicepanel/DeviceIconSelector.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER" minHeight="45" minWidth="45" stylesheets="@../../../../../css/canvas/node/usersetting/DeviceIconSelector.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
     <ImageView fx:id="imv" fitHeight="35" preserveRatio="true" />
     <Label fx:id="name" alignment="CENTER" maxWidth="45" minWidth="45" textOverrun="CENTER_ELLIPSIS" />
 </fx:root>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.ui.deprecated.devicepane.output;
+package io.makerplayground.ui.canvas.node.usersetting.output;
 
 import io.makerplayground.project.VirtualProjectDevice;
 import io.makerplayground.ui.canvas.node.SceneViewModel;
@@ -29,11 +29,10 @@ import java.io.IOException;
 /**
  * Created by tanyagorn on 6/26/2017.
  */
-@Deprecated
 public class OutputDeviceSelector extends PopOver {
     @FXML FlowPane flowPane;
     public OutputDeviceSelector(SceneViewModel viewModel) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/deprecated/devicepane/output/OutputDeviceSelector.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/output/OutputDeviceSelector.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {

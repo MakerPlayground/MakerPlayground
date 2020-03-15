@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.ui.deprecated.devicepane.input;
+package io.makerplayground.ui.canvas.node.usersetting.output;
 
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.Main;
@@ -28,17 +28,15 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 /**
- * Created by USER on 05-Jul-17.
+ * Created by tanyagorn on 6/26/2017.
  */
-@Deprecated
-public class InputDeviceIconSelectorView extends  VBox {
+public class OutputDeviceIconSelectorView extends VBox {
     ProjectDevice projectDevice;
     @FXML private ImageView imv;
     @FXML private Label name;
-    public InputDeviceIconSelectorView(ProjectDevice projectDevice) {
+    public OutputDeviceIconSelectorView(ProjectDevice projectDevice) {
         this.projectDevice = projectDevice;
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/deprecated/devicepane/input/InputDeviceIconSelector.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/output/OutputDeviceIconSelector.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {

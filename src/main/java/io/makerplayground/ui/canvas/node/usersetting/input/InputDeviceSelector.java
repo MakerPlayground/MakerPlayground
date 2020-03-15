@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.ui.deprecated.devicepane.input;
+package io.makerplayground.ui.canvas.node.usersetting.input;
 
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.VirtualProjectDevice;
@@ -27,12 +27,11 @@ import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 
-@Deprecated
 public class InputDeviceSelector extends PopOver {
     @FXML private FlowPane flowPane;
 
     public InputDeviceSelector(ConditionViewModel viewModel) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/deprecated/devicepane/input/InputDeviceSelector.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/canvas/node/usersetting/input/InputDeviceSelector.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
