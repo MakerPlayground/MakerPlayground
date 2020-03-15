@@ -55,11 +55,11 @@ public enum DeviceLibrary {
     DeviceLibrary() {}
 
     public void loadDeviceFromFiles() {
-        this.genericSensorDevice = loadGenericDeviceFromJSON("/json/genericsensordevice.json", GenericDeviceType.SENSOR);
-        this.genericActuatorDevice = loadGenericDeviceFromJSON("/json/genericactuatordevice.json", GenericDeviceType.ACTUATOR);
-        this.genericUtilityDevice = loadGenericDeviceFromJSON("/json/genericutilitydevice.json", GenericDeviceType.UTILITY);
-        this.genericCloudDevice = loadGenericDeviceFromJSON("/json/genericclouddevice.json", GenericDeviceType.CLOUD);
-        this.genericInterfaceDevice = loadGenericDeviceFromJSON("/json/genericinterfacedevice.json", GenericDeviceType.INTERFACE);
+        this.genericSensorDevice = loadGenericDeviceFromFile("/yaml/genericsensordevice.yaml", GenericDeviceType.SENSOR);
+        this.genericActuatorDevice = loadGenericDeviceFromFile("/yaml/genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
+        this.genericUtilityDevice = loadGenericDeviceFromFile("/yaml/genericutilitydevice.yaml", GenericDeviceType.UTILITY);
+        this.genericCloudDevice = loadGenericDeviceFromFile("/yaml/genericclouddevice.yaml", GenericDeviceType.CLOUD);
+        this.genericInterfaceDevice = loadGenericDeviceFromFile("/yaml/genericinterfacedevice.yaml", GenericDeviceType.INTERFACE);
         this.allGenericDevice = new ArrayList<>();
         this.allGenericDevice.addAll(genericSensorDevice);
         this.allGenericDevice.addAll(genericActuatorDevice);
@@ -106,8 +106,8 @@ public enum DeviceLibrary {
         return Collections.emptyMap();
     }
 
-    private List<GenericDevice> loadGenericDeviceFromJSON(String resourceName, GenericDeviceType type){
-        ObjectMapper mapper = new ObjectMapper();
+    private List<GenericDevice> loadGenericDeviceFromFile(String resourceName, GenericDeviceType type){
+        ObjectMapper mapper = new YAMLMapper();
         mapper.setInjectableValues(new InjectableValues.Std().addValue(GenericDeviceType.class, type));
         List<GenericDevice> temp;
         try {
