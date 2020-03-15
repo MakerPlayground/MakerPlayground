@@ -7,10 +7,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.project.DeviceConnection;
-import io.makerplayground.project.Project;
-import io.makerplayground.project.ProjectConfiguration;
-import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.*;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 
@@ -67,6 +64,9 @@ public class RpiPythonInteractiveCode {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent()) {
                     ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
                     for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
+                        if (VirtualProjectDevice.Memory.projectDevice.equals(projectDevice)) {
+                            continue;
+                        }
                         if (genericDevice == projectDevice.getGenericDevice()) {
                             Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
                             if (!compatibility.getDeviceCondition().isEmpty() || !compatibility.getDeviceValue().isEmpty()) {
@@ -223,10 +223,10 @@ public class RpiPythonInteractiveCode {
         builder.append("from MakerPlayground import MP, MPInteractive").append(NEW_LINE);
 
         // generate include
-        Stream<String> device_libs = project.getAllDeviceUsed().stream()
-                .filter(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent())
-                .map(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
-        Stream<String> cloud_libs = project.getCloudPlatformUsed().stream()
+        Stream<String> device_libs = project.getUnmodifiableProjectDevice().stream()
+                .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
+                .map(projectDevice -> configuration.getActualDevice(projectDevice).orElseThrow().getMpLibrary(project.getSelectedPlatform()));
+        Stream<String> cloud_libs = project.getAllCloudPlatforms().stream()
                 .flatMap(cloudPlatform -> Stream.of(cloudPlatform.getLibName(), project.getSelectedController().getCloudPlatformLibraryName(cloudPlatform)));
         Stream.concat(device_libs, cloud_libs).distinct().sorted().forEach(s -> builder.append(parseImportStatement(s)).append(NEW_LINE));
         builder.append(NEW_LINE);

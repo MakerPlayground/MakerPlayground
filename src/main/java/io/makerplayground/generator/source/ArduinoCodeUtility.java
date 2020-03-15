@@ -17,9 +17,11 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.*;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 
@@ -70,7 +72,7 @@ class ArduinoCodeUtility {
             }
         }
         if (withBegin) {
-            project.getBegin().forEach(begin -> builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(ArduinoCodeUtility.parseNodeFunctionName(begin)).append(";").append(NEW_LINE));
+            project.getBegin().forEach(begin -> builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseNodeFunctionName(begin)).append(";").append(NEW_LINE));
         }
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -87,7 +89,7 @@ class ArduinoCodeUtility {
 
             List<String> cloudPlatformParameterValues = cloudPlatform.getParameter().stream()
                     .map(param -> "\"" + project.getCloudPlatformParameter(cloudPlatform, param) + "\"").collect(Collectors.toList());
-            builder.append(cloudPlatformLibName).append("* ").append(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform))
+            builder.append(cloudPlatformLibName).append("* ").append(parseCloudPlatformVariableName(cloudPlatform))
                     .append(" = new ").append(specificCloudPlatformLibName)
                     .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
         }
@@ -102,7 +104,7 @@ class ArduinoCodeUtility {
             }
             ActualDevice actualDevice = actualDeviceOptional.get();
             builder.append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
-                    .append(" ").append(ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList));
+                    .append(" ").append(parseDeviceVariableName(projectDeviceList));
             List<String> args = new ArrayList<>();
 
             DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
@@ -119,7 +121,7 @@ class ArduinoCodeUtility {
                         List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
                         for (PinFunction function: possibleFunctionConsume) {
                             if (pinProvide.getFunction().contains(function)) {
-                                if (ArduinoCodeUtility.PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                if (PIN_FUNCTION_WITH_CODES.contains(function)) {
                                     if (!pinProvide.getCodingName().isEmpty()) {
                                         args.add(pinProvide.getCodingName());
                                     } else {
@@ -170,7 +172,7 @@ class ArduinoCodeUtility {
             // Cloud Platform instance
             CloudPlatform cloudPlatform = actualDevice.getCloudConsume();
             if (cloudPlatform != null) {
-                args.add(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform));
+                args.add(parseCloudPlatformVariableName(cloudPlatform));
             }
 
             if (!args.isEmpty()) {
@@ -179,6 +181,14 @@ class ArduinoCodeUtility {
                 builder.append(";").append(NEW_LINE);
             }
         }
+
+        // TODO: We should declare only the variables used
+        Memory.unmodifiableVariables.forEach(projectValue -> {
+            if (projectValue.getValue().getType() == DataType.DOUBLE) {
+                builder.append("double ").append(projectValue.getValue().getName()).append(" = 0.0;").append(NEW_LINE);
+            }
+        });
+
         builder.append(NEW_LINE);
         return builder.toString();
     }
