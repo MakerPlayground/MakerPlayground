@@ -32,6 +32,8 @@ import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -64,6 +66,9 @@ public class DeviceExplorerView extends VBox {
     private ActualDevice currentController;
     private String currentSearchKeyword = "";
 
+    private final Button collapseButton;
+    private final BooleanProperty buttonState;
+
     List<String> allBrands;
     List<GenericDevice> allGenericDevices;
     Map<String, List<ActualDevice>> actualDevicePerBrand;
@@ -86,33 +91,50 @@ public class DeviceExplorerView extends VBox {
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        collapseButton = new Button();
+        buttonState = new SimpleBooleanProperty(true);
+        collapseButton.textProperty().bind(Bindings.when(buttonState).then("Collapse").otherwise("Expand"));
+        collapseButton.setStyle("-fx-background-color: transparent; -fx-border-color: #cccccc; -fx-border-radius: 3 3 3 3; -fx-cursor: hand;");
+        collapseButton.setOnAction(event -> {
+            if (buttonState.get()) {
+                collapseAllPanes();
+                buttonState.set(false);
+            } else {
+                expandAllPanes();
+                buttonState.set(true);
+            }
+        });
+
         ToggleButton typeToggleButton = new ToggleButton("Type");
         ToggleButton brandToggleButton = new ToggleButton("Brand");
         brandToggleButton.setSelected(true);
         SegmentedButton segmentedButton = new SegmentedButton(typeToggleButton, brandToggleButton);
-        segmentedButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        segmentedButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
             if (newValue == null) {
                 oldValue.setSelected(true);
                 return;
             }
 
-            getChildren().remove(scrollPane);
+            Platform.runLater(() -> getChildren().remove(scrollPane));
 
             if (newValue == typeToggleButton) {
+                buttonState.set(true);
                 initViewDeviceType();
             } else if (newValue == brandToggleButton) {
+                buttonState.set(true);
                 initViewBrand();
             } else {
                 throw new IllegalStateException();
             }
-        });
+        }));
 
         HBox hbox = new HBox();
         hbox.setId("titlePane");
         hbox.setPadding(new Insets(8, 8, 8, 8));
         hbox.setSpacing(5);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.getChildren().addAll(searchTextField, spacer/*, filterLabel*/, segmentedButton);
+
+        hbox.getChildren().addAll(searchTextField, spacer/*, filterLabel*/, collapseButton, new HBox(), segmentedButton);
 
         setStyle("-fx-background-color: background-color");
         getStylesheets().add(getClass().getResource("/css/DeviceExplorer.css").toExternalForm());
@@ -129,6 +151,22 @@ public class DeviceExplorerView extends VBox {
         allBrands.sort(Comparator.naturalOrder());
 
         initViewBrand();
+    }
+
+    private void collapseAllPanes() {
+        for (TitledPane pane: titledPanes) {
+            Platform.runLater(() -> {
+                pane.setExpanded(false);
+            });
+        }
+    }
+
+    private void expandAllPanes() {
+        for (TitledPane pane: titledPanes) {
+            Platform.runLater(() -> {
+                pane.setExpanded(true);
+            });
+        }
     }
 
     private void initViewDeviceType() {
@@ -155,11 +193,12 @@ public class DeviceExplorerView extends VBox {
         VBox vBox = new VBox();
         vBox.setFillWidth(true);
 
-        scrollPane = new ScrollPane();
-        scrollPane.setFitToWidth(true);
-        scrollPane.setContent(vBox);
-
-        getChildren().add(scrollPane);
+        Platform.runLater(() -> {
+            scrollPane = new ScrollPane();
+            scrollPane.setFitToWidth(true);
+            scrollPane.setContent(vBox);
+            getChildren().add(scrollPane);
+        });
 
         for (T t : categories) {
             List<ActualDevice> actualDevices = actualDevicesGetter.apply(t);
@@ -230,13 +269,6 @@ public class DeviceExplorerView extends VBox {
         deviceInfoPanes.stream().forEach(this::applyFilterEach);
         titledPanes.forEach(this::hideTitleIfNoneVisible);
     }
-
-//    private void collapseTitleIfAllDisabled(TitledPane pane) {
-//        Platform.runLater(() -> {
-//            boolean someEnabled = !((FlowPane) pane.getContent()).getChildren().stream().allMatch(Node::isDisabled);
-//            pane.setExpanded(someEnabled);
-//        });
-//    }
 
     private void hideTitleIfNoneVisible(TitledPane pane) {
         Platform.runLater(() -> {
