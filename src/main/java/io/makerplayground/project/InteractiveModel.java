@@ -209,7 +209,7 @@ public class InteractiveModel {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    interactiveModeStarted.set(false);
+                    Platform.runLater(() -> interactiveModeStarted.set(false));
                 }
 
                 @Override
@@ -380,11 +380,11 @@ public class InteractiveModel {
     }
 
     void processInMessage(String message) {
-        System.out.println(message);
-        String[] args = message.split(" ");
+//        System.out.println(message);
+        List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
 
         deviceMap.keySet().stream()
-            .filter(projectDevice -> projectDevice.getName().equals(args[0]))
+            .filter(projectDevice -> projectDevice.getName().equals(args.get(0)))
             .findAny()
             .ifPresent(projectDevice ->
                 Platform.runLater(() -> {
@@ -394,13 +394,13 @@ public class InteractiveModel {
                             if (condition.getName().equals("Compare")) {
                                 continue;
                             }
-                            conditionMap.get(projectDevice).get(condition).set(!args[argsIndex].equals("0"));
+                            conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
                             argsIndex++;
                         }
                     }
                     if (valueMap.containsKey(projectDevice)) {
                         for (Value value : valueMap.get(projectDevice).keySet()) {
-                            valueMap.get(projectDevice).get(value).set(Double.parseDouble(args[argsIndex]));
+                            valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
                             argsIndex++;
                         }
                     }

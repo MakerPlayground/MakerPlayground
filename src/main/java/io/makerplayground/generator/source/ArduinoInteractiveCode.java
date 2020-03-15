@@ -212,7 +212,7 @@ public class ArduinoInteractiveCode {
                                 Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
                                 if (!compatibility.getDeviceCondition().isEmpty() || !compatibility.getDeviceValue().isEmpty()) {
                                     String variableName = ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList);
-                                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
+                                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
                                     // condition
                                     compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
                                         if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous

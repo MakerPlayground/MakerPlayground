@@ -35,8 +35,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.makerplayground.generator.source.ArduinoCodeUtility.INDENT;
-import static io.makerplayground.generator.source.ArduinoCodeUtility.NEW_LINE;
 import static io.makerplayground.generator.source.RpiPythonCodeUtility.*;
 
 public class RpiPythonUploadCode {
@@ -48,14 +46,6 @@ public class RpiPythonUploadCode {
     private final List<Condition> allConditionUsed;
     private final List<List<ProjectDevice>> projectDeviceGroup;
     private final List<Delay> allDelayUsed;
-
-    private static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
-            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
-            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
-            PinFunction.PWM_OUT,
-            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
-            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
-    );
 
     private RpiPythonUploadCode(Project project) {
         this.project = project;
@@ -88,6 +78,7 @@ public class RpiPythonUploadCode {
         generator.appendBeginFunctions();
         generator.appendSceneFunctions();
         generator.appendConditionFunctions();
+        generator.appendGenMessageFunction();
         generator.appendMainCode();
         return new SourceCodeResult(generator.builder.toString());
     }
@@ -362,7 +353,7 @@ public class RpiPythonUploadCode {
                         Scene s = nextScene.get(0);
                         builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(NEW_LINE);
                     } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(ArduinoCodeUtility.parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
                     } else {
                         builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(NEW_LINE);
                     }
@@ -370,6 +361,28 @@ public class RpiPythonUploadCode {
                 builder.append(NEW_LINE); // end of while loop
             }
         }
+    }
+
+    private void appendGenMessageFunction() {
+        builder.append(NEW_LINE);
+        builder.append("def gen_message():").append(NEW_LINE);
+        builder.append(INDENT).append("retval = ''").append(NEW_LINE);
+
+        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
+        for (ProjectDevice projectDevice : valueUsed.keySet()) {
+            if (!valueUsed.get(projectDevice).isEmpty()) {
+                builder.append(INDENT).append("retval += f'[[V]] ")
+                        .append("\"").append(projectDevice.getName()).append("\" ")
+                        .append(valueUsed.get(projectDevice).stream()
+                                .map(value -> "\"" + value.getName() + "\"={" + parseValueVariableTerm(searchGroup(projectDevice), value) + "}")
+                                .collect(Collectors.joining(",")))
+                        .append("\\n'")
+                        .append(NEW_LINE);
+            }
+        }
+        builder.append(INDENT).append("return retval").append(NEW_LINE);
+        builder.append(NEW_LINE);
+
     }
 
     private void appendMainCode() {
@@ -418,7 +431,7 @@ public class RpiPythonUploadCode {
                         List<PinFunction> possibleFunctionConsume = pinConsume.getFunction().get(0).getPossibleConsume();
                         for (PinFunction function: possibleFunctionConsume) {
                             if (pinProvide.getFunction().contains(function)) {
-                                if (ArduinoCodeUtility.PIN_FUNCTION_WITH_CODES.contains(function)) {
+                                if (PIN_FUNCTION_WITH_CODES.contains(function)) {
                                     if (!pinProvide.getCodingName().isEmpty()) {
                                         args.add(pinProvide.getCodingName());
                                     } else {
@@ -469,7 +482,7 @@ public class RpiPythonUploadCode {
 //            // Cloud Platform instance
 //            CloudPlatform cloudPlatform = actualDevice.getCloudConsume();
 //            if (cloudPlatform != null) {
-//                args.add(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform));
+//                args.add(parseCloudPlatformVariableName(cloudPlatform));
 //            }
 
             builder.append(INDENT).append(INDENT).append(parseDeviceVariableName(projectDeviceList))
@@ -492,26 +505,6 @@ public class RpiPythonUploadCode {
         builder.append(INDENT).append("except KeyboardInterrupt:").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("MP.cleanup()").append(NEW_LINE);
         /* End Handle Interrupt */
-
-        builder.append(NEW_LINE);
-
-        builder.append("def gen_message():").append(NEW_LINE);
-        builder.append(INDENT).append("retval = ''").append(NEW_LINE);
-
-        Map<ProjectDevice, Set<Value>> valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
-        for (ProjectDevice projectDevice : valueUsed.keySet()) {
-            if (!valueUsed.get(projectDevice).isEmpty()) {
-                builder.append(INDENT).append("retval += f'[[V]] ")
-                        .append("\"").append(projectDevice.getName()).append("\" ")
-                        .append(valueUsed.get(projectDevice).stream()
-                                .map(value -> "\"" + value.getName() + "\"={" + parseValueVariableTerm(searchGroup(projectDevice), value) + "}")
-                                .collect(Collectors.joining(",")))
-                        .append("\\n'")
-                        .append(NEW_LINE);
-            }
-        }
-        builder.append(INDENT).append("return retval").append(NEW_LINE);
-        builder.append(NEW_LINE);
 
         builder.append("if __name__ == '__main__':").append(NEW_LINE);
         builder.append(INDENT).append("MPRunner.start(main, gen_message)").append(NEW_LINE);

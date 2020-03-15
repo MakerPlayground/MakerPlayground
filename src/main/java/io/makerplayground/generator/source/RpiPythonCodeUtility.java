@@ -1,15 +1,25 @@
 package io.makerplayground.generator.source;
 
+import io.makerplayground.device.actual.PinFunction;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RpiPythonCodeUtility {
 
     static final String INDENT = "    ";
     static final String NEW_LINE = "\n";
+
+    static final Set<PinFunction> PIN_FUNCTION_WITH_CODES = Set.of(
+            PinFunction.DIGITAL_IN, PinFunction.DIGITAL_OUT,
+            PinFunction.ANALOG_IN, PinFunction.ANALOG_OUT,
+            PinFunction.PWM_OUT,
+            PinFunction.INTERRUPT_LOW, PinFunction.INTERRUPT_HIGH, PinFunction.INTERRUPT_CHANGE, PinFunction.INTERRUPT_RISING, PinFunction.INTERRUPT_FALLING,
+            PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
+    );
 
     static String parseImportStatement(String libName) {
         return "from " + libName + " import " + libName;
