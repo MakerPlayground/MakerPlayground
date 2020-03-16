@@ -6,6 +6,7 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
@@ -204,6 +205,12 @@ public class SceneDevicePropertyPane extends VBox {
                 ComboBox<Integer> comboBox = new ComboBox<>(list);
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new SimpleIntegerExpression(newValue)));
                 comboBox.getSelectionModel().select((((SimpleIntegerExpression) userSetting.getParameterMap().get(p)).getInteger()));
+                control = comboBox;
+            } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.STRING_INT_ENUM) {
+                ObservableList<String> list = FXCollections.observableArrayList(((StringIntegerCategoricalConstraint) p.getConstraint()).getMap().keySet());
+                ComboBox<String> comboBox = new ComboBox<>(list);
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new StringIntegerExpression((StringIntegerCategoricalConstraint)p.getConstraint(), newValue)));
+                comboBox.getSelectionModel().select((((StringIntegerExpression) userSetting.getParameterMap().get(p)).getString()));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(

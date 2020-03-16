@@ -68,7 +68,12 @@ public class ProjectLogic {
                     newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) expression).getString());
                 }
                 break;
-
+            case STRING_INT_ENUM:
+                if (expression instanceof StringIntegerExpression) {
+                    StringIntegerExpression ex = (StringIntegerExpression) expression;
+                    newConstraint = Constraint.createStringIntegerCategoricalConstraint(ex.getString(), ex.getInteger());
+                }
+                break;
             case DATETIME:
             case RECORD:
             case IMAGE:

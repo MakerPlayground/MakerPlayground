@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 
@@ -84,6 +85,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             if (hasCondition) {
                 parameter = condition.getParameter(parameterNode.get("name").asText()).orElseThrow();
             }
+            assert parameter != null;
             Expression expression;
             String expressionType = parameterNode.get("type").asText();
             JsonNode valueNode = parameterNode.get("value");
@@ -115,6 +117,9 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 expression = new ComplexStringExpression(terms);
             } else if (SimpleIntegerExpression.class.getSimpleName().equals(expressionType)) {
                 expression = new SimpleIntegerExpression(((IntegerTerm)(terms.get(0))).getValue());
+            } else if (StringIntegerExpression.class.getSimpleName().equals(expressionType)) {
+                String key = ((StringTerm) terms.get(0)).getValue();
+                expression = new StringIntegerExpression((StringIntegerCategoricalConstraint) parameter.getConstraint(), key);
             } else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }

@@ -15,6 +15,7 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -23,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class InteractiveModel {
 
@@ -123,8 +125,13 @@ public class InteractiveModel {
         actionMap.clear();
         conditionMap.clear();
         valueMap.clear();
-        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-            configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).ifPresent(actualDevice -> {
+
+        for (List<ProjectDevice> projectDeviceList: project.getAllDevicesGroupBySameActualDevice()) {
+            for (ProjectDevice projectDevice : projectDeviceList) {
+                if (configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
+                    continue;
+                }
+                ActualDevice actualDevice = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
                 Compatibility compatibility = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice());
                 Set<Action> actions = compatibility.getDeviceAction().keySet();
                 if (!actions.isEmpty()) {
@@ -144,7 +151,7 @@ public class InteractiveModel {
                         valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
                     }
                 }
-            });
+            }
         }
     }
 
@@ -338,6 +345,8 @@ public class InteractiveModel {
             return sb.toString();
         } else if (expression instanceof SimpleIntegerExpression) {
             return String.valueOf(((SimpleIntegerExpression) expression).getInteger());
+        } else if (expression instanceof StringIntegerExpression) {
+            return String.valueOf(((StringIntegerExpression) expression).getInteger());
         }
         // SimpleRTCExpression, ImageExpression
         throw new UnsupportedOperationException();
@@ -421,7 +430,7 @@ public class InteractiveModel {
         System.out.println(message);
         List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
 
-        deviceMap.keySet().stream()
+        Stream.concat(valueMap.keySet().stream(), conditionMap.keySet().stream())
             .filter(projectDevice -> !args.isEmpty() && projectDevice.getName().equals(args.get(0)))
             .findAny()
             .ifPresent(projectDevice ->

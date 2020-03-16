@@ -251,6 +251,7 @@ public class DeviceExplorerView extends VBox {
         AtomicBoolean visible = new AtomicBoolean();
         visible.set(actualDevice.getBrand().toLowerCase().contains(currentSearchKeyword)
                 || actualDevice.getModel().toLowerCase().contains(currentSearchKeyword)
+                || actualDevice.getCompatibilityMap().keySet().stream().anyMatch(genericDevice -> genericDevice.getName().toLowerCase().contains(currentSearchKeyword))
                 || (deviceInfoPaneParentMap.containsKey(deviceInfoPane)
                         && deviceInfoPaneParentMap.get(deviceInfoPane).getText().toLowerCase().contains(currentSearchKeyword))
         );

@@ -97,17 +97,15 @@ public class ArduinoInteractiveCode {
         builder.append("char* commandArgs[10];").append(NEW_LINE);
         builder.append(NEW_LINE);
 
-        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-            if (project.getProjectConfiguration().getActualDevice(projectDevice).isEmpty()) {
-                continue;
-            }
-            ActualDevice actualDevice = project.getProjectConfiguration().getActualDevice(projectDevice).get();
-            Map<GenericDevice, Compatibility> compatibilityMap = actualDevice.getCompatibilityMap();
-            Set<GenericDevice> possibleGeneric = compatibilityMap.keySet();
-            boolean hasConditionWithParams = possibleGeneric.stream().map(compatibilityMap::get).flatMap(compatibility -> compatibility.getDeviceCondition().values().stream()).mapToLong(Map::size).sum() > 0;
-            if (hasConditionWithParams) {
-                for (GenericDevice gd: possibleGeneric) {
-                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(gd);
+        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
+            for (ProjectDevice projectDevice : projectDeviceList) {
+                if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
+                    continue;
+                }
+                ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
+                Compatibility compatibility = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice());
+                boolean hasConditionWithParams = compatibility.getDeviceCondition().values().stream().mapToLong(Map::size).sum() > 0;
+                if (hasConditionWithParams) {
                     compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
                         if (parameterConstraintMap.isEmpty()) {
                             return;
@@ -115,7 +113,7 @@ public class ArduinoInteractiveCode {
                         for (int i=0; i<condition.getParameter().size(); i++) {
                             String param = "";
                             Parameter parameter = condition.getParameter().get(i);
-                            String paramName = projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + i;
+                            String paramName = "_" + projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + i;
                             switch (parameter.getDataType()) {
                                 case DOUBLE:
                                     builder.append("double ").append(paramName).append(" = 0.0;").append(NEW_LINE);
@@ -156,27 +154,25 @@ public class ArduinoInteractiveCode {
         builder.append(NEW_LINE);
 
         AtomicBoolean firstCondition = new AtomicBoolean(true);
-        for (ProjectDevice projectDevice : project.getUnmodifiableProjectDevice()) {
-            if (project.getProjectConfiguration().getActualDevice(projectDevice).isEmpty()) {
-                continue;
-            }
-            ActualDevice actualDevice = project.getProjectConfiguration().getActualDevice(projectDevice).get();
-            Map<GenericDevice, Compatibility> compatibilityMap = actualDevice.getCompatibilityMap();
-            Set<GenericDevice> possibleGeneric = compatibilityMap.keySet();
-            boolean hasAction = possibleGeneric.stream().mapToLong(gd -> compatibilityMap.get(gd).getDeviceAction().keySet().size()).sum() > 0;
-            boolean hasConditionWithParams = possibleGeneric.stream().map(compatibilityMap::get).flatMap(compatibility -> compatibility.getDeviceCondition().values().stream()).mapToLong(Map::size).sum() > 0;
-            if (!hasAction && !hasConditionWithParams) {
-                continue;
-            }
-            String variableName = ArduinoCodeUtility.parseDeviceVariableName(searchGroup(projectDevice));
-            // Start if for checking device name
-            builder.append(INDENT).append(firstCondition.getAndSet(false) ? "if " : "else if ").append("(strcmp_P(commandArgs[0], (PGM_P) F(\"")
-                    .append(projectDevice.getName()).append("\")) == 0) {").append(NEW_LINE);
+        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
+            for (ProjectDevice projectDevice : projectDeviceList) {
+                if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
+                    continue;
+                }
+                ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
+                Compatibility compatibility = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice());
+                boolean hasAction = !compatibility.getDeviceAction().isEmpty();
+                boolean hasConditionWithParams = compatibility.getDeviceCondition().values().stream().mapToLong(Map::size).sum() > 0;
+                if (!hasAction && !hasConditionWithParams) {
+                    continue;
+                }
+                String variableName = ArduinoCodeUtility.parseDeviceVariableName(searchGroup(projectDevice));
+                // Start if for checking device name
+                builder.append(INDENT).append(firstCondition.getAndSet(false) ? "if " : "else if ").append("(strcmp_P(commandArgs[0], (PGM_P) F(\"")
+                        .append(projectDevice.getName()).append("\")) == 0) {").append(NEW_LINE);
 
-            AtomicInteger j = new AtomicInteger();
-            if (hasAction) {
-                for (GenericDevice gd: possibleGeneric) {
-                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(gd);
+                AtomicInteger j = new AtomicInteger();
+                if (hasAction) {
                     compatibility.getDeviceAction().forEach((action, parameterConstraintMap) -> {
                         builder.append(j.getAndIncrement() == 0 ? INDENT + INDENT + "if " : "else if ").append("(strcmp_P(commandArgs[1], (PGM_P) F(\"")
                                 .append(action.getName()).append("\")) == 0 && argsCount == ").append(action.getParameter().size() + 2)
@@ -204,19 +200,22 @@ public class ArduinoInteractiveCode {
                             builder.append(INDENT).append(INDENT).append(INDENT).append(variableName).append(".").append(action.getFunctionName()).append("(rec);").append(NEW_LINE);
                         } else {
                             List<String> taskParameter = new ArrayList<>();
-                            for (int i=0; i<action.getParameter().size(); i++) {
+                            for (int i = 0; i < action.getParameter().size(); i++) {
                                 Parameter parameter = action.getParameter().get(i);
                                 switch (parameter.getDataType()) {
                                     case DOUBLE:
-                                        taskParameter.add("atof(commandArgs[" + (i+2) + "])");
+                                        taskParameter.add("atof(commandArgs[" + (i + 2) + "])");
                                         break;
                                     case INTEGER:
                                     case INTEGER_ENUM:
-                                        taskParameter.add("atoi(commandArgs[" + (i+2) + "])");
+                                    case STRING_INT_ENUM:
+                                        taskParameter.add("atoi(commandArgs[" + (i + 2) + "])");
+                                        break;
+                                    case STRING:
+                                        taskParameter.add("commandArgs[" + (i + 2) + "]");
                                         break;
                                     default:
-                                        taskParameter.add("commandArgs[" + (i+2) + "]");
-                                        break;
+                                        throw new IllegalStateException();
                                 }
 
                             }
@@ -227,10 +226,7 @@ public class ArduinoInteractiveCode {
                         builder.append(INDENT).append(INDENT).append("} ");
                     });
                 }
-            }
-            if (hasConditionWithParams) {
-                for (GenericDevice gd: possibleGeneric) {
-                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(gd);
+                if (hasConditionWithParams) {
                     compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
                         if (parameterConstraintMap.isEmpty()) {
                             return;
@@ -238,40 +234,42 @@ public class ArduinoInteractiveCode {
                         builder.append(j.getAndIncrement() == 0 ? INDENT + INDENT + "if " : "else if ").append("(strcmp_P(commandArgs[1], (PGM_P) F(\"")
                                 .append(condition.getName()).append("\")) == 0 && argsCount == ").append(condition.getParameter().size() + 2)
                                 .append(") {").append(NEW_LINE);
-                        for (int i=0; i<condition.getParameter().size(); i++) {
+                        for (int i = 0; i < condition.getParameter().size(); i++) {
                             String param = "";
                             Parameter parameter = condition.getParameter().get(i);
                             switch (parameter.getDataType()) {
                                 case DOUBLE:
-                                    param = "atof(commandArgs[" + (i+2) + "])";
+                                    param = "atof(commandArgs[" + (i + 2) + "])";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
-                                            .append(projectDevice.getName()).append("_")
+                                            .append("_").append(projectDevice.getName()).append("_")
                                             .append(condition.getFunctionName()).append("_").append("param").append(i)
                                             .append(" = ").append(param).append(";").append(NEW_LINE);
                                     break;
                                 case INTEGER:
                                 case INTEGER_ENUM:
-                                    param = "atoi(commandArgs[" + (i+2) + "])";
+                                    param = "atoi(commandArgs[" + (i + 2) + "])";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
-                                            .append(projectDevice.getName()).append("_")
+                                            .append("_").append(projectDevice.getName()).append("_")
                                             .append(condition.getFunctionName()).append("_").append("param").append(i)
                                             .append(" = ").append(param).append(";").append(NEW_LINE);
                                     break;
-                                default:
-                                    param = "commandArgs[" + (i+2) + "]";
+                                case STRING:
+                                    param = "commandArgs[" + (i + 2) + "]";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
-                                            .append(projectDevice.getName()).append("_")
+                                            .append("_").append(projectDevice.getName()).append("_")
                                             .append("strcpy(").append(condition.getFunctionName()).append("_").append("param").append(i)
                                             .append(", ").append(param).append(");").append(NEW_LINE);
                                     break;
+                                default:
+                                    throw new IllegalStateException("");
                             }
                         }
                         builder.append(INDENT).append(INDENT).append("} ");
                     });
                 }
+                // End if for checking device name
+                builder.append(NEW_LINE).append(INDENT).append("}").append(NEW_LINE);
             }
-            // End if for checking device name
-            builder.append(NEW_LINE).append(INDENT).append("}").append(NEW_LINE);
         }
         builder.append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -294,41 +292,39 @@ public class ArduinoInteractiveCode {
         }
         builder.append(NEW_LINE);
 
-        if (!project.getUnmodifiableProjectDevice().isEmpty()) {
+        if (!projectDeviceGroup.isEmpty()) {
             builder.append(INDENT).append("if (currentTime - lastSendTime >= SEND_INTERVAL) {").append(NEW_LINE);
             for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
                 for (ProjectDevice projectDevice: projectDeviceList) {
-                    if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isPresent()) {
-                        ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
-                        for (GenericDevice genericDevice: actualDevice.getCompatibilityMap().keySet()) {
-                            if (genericDevice == projectDevice.getGenericDevice()) {
-                                Compatibility compatibility = actualDevice.getCompatibilityMap().get(genericDevice);
-                                if (!compatibility.getDeviceCondition().isEmpty() || !compatibility.getDeviceValue().isEmpty()) {
-                                    String variableName = ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList);
-                                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
-                                    // condition
-                                    compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
-                                        if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
-                                            return;
-                                        }
-                                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-
-                                        String params = IntStream.range(0, condition.getParameter().size()).boxed()
-                                                .map(integer -> projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + integer)
-                                                .collect(Collectors.joining(", "));
-                                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("(").append(params).append("));").append(NEW_LINE);
-                                    });
-                                    // value
-                                    compatibility.getDeviceValue().forEach((value, constraint) -> {
-                                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-                                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
-                                    });
-                                    builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
-                                    builder.append(NEW_LINE);
-                                }
-                            }
-                        }
+                    if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
+                        continue;
                     }
+                    ActualDevice actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).get();
+                    Compatibility compatibility = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice());
+                    if (compatibility.getDeviceCondition().isEmpty() && compatibility.getDeviceValue().isEmpty()) {
+                        continue;
+                    }
+                    String variableName = parseDeviceVariableName(projectDeviceList);
+                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
+                    // condition
+                    compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
+                        if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
+                            return;
+                        }
+                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
+
+                        String params = IntStream.range(0, condition.getParameter().size()).boxed()
+                                .map(integer -> "_" + projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + integer)
+                                .collect(Collectors.joining(", "));
+                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("(").append(params).append("));").append(NEW_LINE);
+                    });
+                    // value
+                    compatibility.getDeviceValue().forEach((value, constraint) -> {
+                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
+                    });
+                    builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
+                    builder.append(NEW_LINE);
                 }
             }
             builder.append(INDENT).append(INDENT).append("lastSendTime = millis();").append(NEW_LINE);

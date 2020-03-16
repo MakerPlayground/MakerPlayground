@@ -18,6 +18,7 @@ package io.makerplayground.device.shared.constraint;
 
 import io.makerplayground.device.shared.Unit;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +35,7 @@ public class StringIntegerCategoricalConstraint implements Constraint {
     }
 
     public StringIntegerCategoricalConstraint(String key, int value) {
-        this.map = new HashMap<>();
-        this.map.put(key, value);
+        this.map = Collections.singletonMap(key, value);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class StringIntegerCategoricalConstraint implements Constraint {
         }
         Map<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
         for (String s: thatMap.keySet()) {
-            if (!this.map.containsKey(s) || thatMap.get(s) != map.get(s)) {
+            if (!this.map.containsKey(s) || !thatMap.get(s).equals(map.get(s))) {
                 return false;
             }
         }
@@ -85,8 +85,12 @@ public class StringIntegerCategoricalConstraint implements Constraint {
             return this;
         }
         Map<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
-        Map<String, Integer> newMap = new HashMap<>(map);
-        thatMap.forEach((s, integer) -> newMap.remove(s));
+        Map<String, Integer> newMap = new HashMap<>();
+        map.forEach((s, integer) -> {
+            if (map.containsKey(s) && thatMap.containsKey(s) && integer.equals(thatMap.get(s))) {
+                newMap.put(s, integer);
+            }
+        });
         return new StringIntegerCategoricalConstraint(newMap);
     }
 }

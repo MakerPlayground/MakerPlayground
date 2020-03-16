@@ -52,6 +52,7 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
         switch (dataType) {
             case STRING:
             case ENUM:
+            case STRING_INT_ENUM:
                 defaultValue = node.get("value").asText();
                 break;
             case DOUBLE:
@@ -75,7 +76,7 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
                 defaultValue = new Record();
                 break;
             default:
-                throw new IllegalStateException("Error: found unknown datatype!!!");
+                throw new IllegalStateException("Error: found unknown datatype: " + dataType.name());
         }
 
         return new Parameter(name, dataType, defaultValue, constraint, controlType);

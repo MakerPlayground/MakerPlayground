@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD
+        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD, STRING_INT;
     }
 
     public enum RefreshInterval {
@@ -93,6 +94,8 @@ public abstract class Expression {
                 return new ImageExpression();
             case RECORD:
                 return new RecordExpression(new Record());
+            case STRING_INT_ENUM:
+                return new StringIntegerExpression((StringIntegerCategoricalConstraint) param.getConstraint(), (String) param.getDefaultValue());
             default:
                 throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }

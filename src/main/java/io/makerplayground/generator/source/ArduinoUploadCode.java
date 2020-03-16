@@ -555,6 +555,8 @@ public class ArduinoUploadCode {
             }
         } else if (expression instanceof SimpleIntegerExpression) {
             returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
+        } else if (expression instanceof StringIntegerExpression) {
+            returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
         } else {
             throw new IllegalStateException();
         }
