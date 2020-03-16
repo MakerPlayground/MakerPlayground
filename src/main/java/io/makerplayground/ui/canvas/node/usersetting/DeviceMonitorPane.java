@@ -1,13 +1,28 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.generic.ControlType;
+import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
+import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
+import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,6 +31,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+
+import java.util.*;
 
 public class DeviceMonitorPane extends VBox {
 
@@ -59,6 +76,45 @@ public class DeviceMonitorPane extends VBox {
 
             propertyPane.getChildren().addAll(nameLabel, valueLabel);
             currentRow++;
+
+            List<Parameter> params = condition.getParameter();
+            for (int i=0; i<params.size(); i++) {
+                Parameter p = params.get(i);
+
+                Label name = new Label(p.getName());
+                name.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
+                GridPane.setRowIndex(name, currentRow);
+                GridPane.setColumnIndex(name, 0);
+                GridPane.setValignment(name, VPos.TOP);
+
+                Node control = null;
+                if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.ENUM) {
+                    ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                    ComboBox<String> comboBox = new ComboBox<>(list);
+                    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                        interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleStringExpression(newValue));
+                    });
+                    comboBox.getSelectionModel().select(list.get(0));
+                    control = comboBox;
+                } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {
+                    ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
+                    ComboBox<Integer> comboBox = new ComboBox<>(list);
+                    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                        interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleIntegerExpression(newValue));
+                    });
+                    comboBox.getSelectionModel().select(list.get(0));
+                    control = comboBox;
+                } else {
+                    throw new IllegalStateException("Found unknown control type " + p);
+                }
+                GridPane.setRowIndex(control, currentRow);
+                GridPane.setColumnIndex(control, 1);
+                GridPane.setHalignment(control, HPos.LEFT);
+                GridPane.setFillWidth(control, false);
+
+                propertyPane.getChildren().addAll(name, control);
+                currentRow++;
+            }
         }
         for (Value value : projectDevice.getGenericDevice().getValue()) {
             Label nameLabel = new Label(value.getName());

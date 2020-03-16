@@ -26,7 +26,9 @@ import io.makerplayground.device.shared.Unit;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A helper class used by jackson's {@link ObjectMapper} to deserialize a {@link Constraint}
@@ -69,6 +71,12 @@ public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
                 throw new IllegalArgumentException("max should be double or the reversed words only.");
             }
             return Constraint.createNumericConstraint(min, max, Unit.valueOf(node.get("unit").asText()));
+        } else if (node.isArray() && dataType == DataType.STRING_INT_ENUM) {
+            Map<String, Integer> values = new HashMap<>();
+            for (JsonNode jn: node) {
+                values.put(jn.get("key").asText(), jn.get("value").asInt());
+            }
+            return Constraint.createStringIntegerCategoricalConstraint(values);
         } else {
             if (dataType == DataType.INTEGER_ENUM) {
                 List<Integer> valueList = new ArrayList<>();

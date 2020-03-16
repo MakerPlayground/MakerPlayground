@@ -106,7 +106,7 @@ public class SceneDevicePropertyPane extends VBox {
             return false;
         }, initializedProperty, actionProperty, allValueUsedProperty, expressionMap, parameterMap);
         sendActionButton.disableProperty().bind(disableBinding);
-        sendActionButton.setOnAction(event -> project.getInteractiveModel().sendCommand(userSetting));
+        sendActionButton.setOnAction(event -> project.getInteractiveModel().sendActionCommand(userSetting));
 
         HBox titleHBox = new HBox();
         titleHBox.getChildren().addAll(imageView, customName, sendActionButton);

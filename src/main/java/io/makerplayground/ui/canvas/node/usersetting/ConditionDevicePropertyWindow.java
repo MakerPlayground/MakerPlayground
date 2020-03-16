@@ -18,6 +18,7 @@ package io.makerplayground.ui.canvas.node.usersetting;
 
 
 import javafx.geometry.Insets;
+import javafx.scene.control.ScrollPane;
 import org.controlsfx.control.PopOver;
 
 public class ConditionDevicePropertyWindow extends PopOver {
@@ -27,7 +28,13 @@ public class ConditionDevicePropertyWindow extends PopOver {
         devicePropertyPane.setPadding(new Insets(20, 20, 20, 20));
 
         setDetachable(false);
-        setContentNode(devicePropertyPane);
+
+        ScrollPane scrollPane = new ScrollPane(devicePropertyPane);
+        scrollPane.setPrefHeight(USE_COMPUTED_SIZE);
+        scrollPane.setMaxHeight(350.0);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        setContentNode(scrollPane);
     }
 
 }

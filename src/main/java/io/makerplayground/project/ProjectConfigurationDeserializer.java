@@ -135,6 +135,13 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
                             value = null;
                         }
                         break;
+                    case STRING_INT_ENUM:
+                        if (!propertyValueNode.get("value").asText().isEmpty()) {
+                            value = propertyValueNode.get("value").asText();
+                        } else {
+                            value = null;
+                        }
+                        break;
                     default:
                         throw new IllegalStateException("Found invalid datatype while deserialize property");
                 }

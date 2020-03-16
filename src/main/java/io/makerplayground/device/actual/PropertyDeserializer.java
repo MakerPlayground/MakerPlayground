@@ -28,6 +28,7 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.ConstraintDeserializer;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectConfigurationDeserializer;
 
@@ -55,6 +56,7 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
         switch (dataType) {
             case STRING:
             case ENUM:
+            case STRING_INT_ENUM:
                 defaultValue = node.get("value").asText();
                 break;
             case DOUBLE:

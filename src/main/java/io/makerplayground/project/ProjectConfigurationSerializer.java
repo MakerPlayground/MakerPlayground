@@ -165,6 +165,13 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
                             jsonGenerator.writeEndObject();
                         }
                         break;
+                    case STRING_INT_ENUM:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            jsonGenerator.writeStringField("value", (String) value);
+                        }
+                        break;
                     default:
                         throw new IllegalStateException("Found invalid datatype while deserialize property");
                 }

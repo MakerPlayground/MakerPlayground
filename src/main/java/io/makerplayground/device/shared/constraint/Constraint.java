@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.shared.Unit;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * An interface for a constraint of some values ex. parameters of an action or possible values of an input device
@@ -125,6 +126,24 @@ public interface Constraint {
      */
     static Constraint createCategoricalConstraint(List<String> value) {
         return new CategoricalConstraint(value);
+    }
+
+    /**
+     * Create a constrint to match a list of strings given
+     * @param value list of string to be matched
+     * @return an instance of {@link StringIntegerCategoricalConstraint}
+     */
+    static Constraint createStringIntegerCategoricalConstraint(Map<String, Integer> map) {
+        return new StringIntegerCategoricalConstraint(map);
+    }
+
+    /**
+     * Create a constrint that match only the specify string
+     * @param s the string to be matched
+     * @return an instance of {@link StringIntegerCategoricalConstraint}
+     */
+    static Constraint createStringIntegerCategoricalConstraint(String key, int value) {
+        return new StringIntegerCategoricalConstraint(key, value);
     }
 
     /**

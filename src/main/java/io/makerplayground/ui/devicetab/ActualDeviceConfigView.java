@@ -23,6 +23,7 @@ import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
@@ -547,6 +548,19 @@ public class ActualDeviceConfigView extends VBox{
                             GridPane.setRowIndex(control, i);
                             GridPane.setColumnIndex(control, 1);
                             propertyGridPane.getChildren().add(control);
+                        } else if (p.getDataType() == DataType.STRING_INT_ENUM && p.getControlType() == ControlType.DROPDOWN) {
+                            Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
+                            ObservableList<String> list = FXCollections.observableArrayList(FXCollections.observableArrayList(map.keySet()));
+                            ComboBox<String> comboBox = new ComboBox<>(list);
+                            if (currentValue == null) {
+                                comboBox.getSelectionModel().select(null);
+                            } else {
+                                comboBox.getSelectionModel().select(String.valueOf(currentValue));
+                            }
+                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(comboBox, i);
+                            GridPane.setColumnIndex(comboBox, 1);
+                            propertyGridPane.getChildren().add(comboBox);
                         } else {    // TODO: add support for new property type
                             throw new IllegalStateException("Found unknown property type");
                         }

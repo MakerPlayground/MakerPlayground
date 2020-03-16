@@ -7,6 +7,7 @@ import io.makerplayground.ui.canvas.node.usersetting.DeviceMonitorPane;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDevicePropertyPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 
@@ -19,7 +20,7 @@ public class InteractiveDevicePropertyWindow extends PopOver {
         VBox vBox = new VBox();
         for (ProjectDevice projectDevice : devices) {
             if (projectDevice.getGenericDevice().hasAction()) {
-                SceneDevicePropertyPane devicePropertyPane = new SceneDevicePropertyPane(model.getOrCreateUserSetting(projectDevice), project);
+                SceneDevicePropertyPane devicePropertyPane = new SceneDevicePropertyPane(model.getOrCreateActionUserSetting(projectDevice), project);
                 vBox.getChildren().add(devicePropertyPane);
             }
             if (projectDevice.getGenericDevice().hasCondition() || projectDevice.getGenericDevice().hasValue()) {
@@ -33,6 +34,14 @@ public class InteractiveDevicePropertyWindow extends PopOver {
 
         setTitle(devices.stream().map(ProjectDevice::getName).collect(Collectors.joining(",")));
         setDetachable(true);
-        setContentNode(vBox);
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
+        scrollPane.setPrefHeight(USE_COMPUTED_SIZE);
+        scrollPane.setMaxHeight(350.0);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        setContentNode(scrollPane);
     }
 }

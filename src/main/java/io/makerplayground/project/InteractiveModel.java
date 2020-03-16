@@ -14,10 +14,7 @@ import io.makerplayground.generator.upload.UploadTarget;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -29,7 +26,8 @@ import java.util.stream.Collectors;
 
 public class InteractiveModel {
 
-    private final Map<ProjectDevice, UserSetting> userSettings = new HashMap<>();
+    private final Map<ProjectDevice, UserSetting> actionUserSettings = new HashMap<>();
+    private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
@@ -43,13 +41,27 @@ public class InteractiveModel {
         this.project = project;
     }
 
-    public UserSetting getOrCreateUserSetting(ProjectDevice projectDevice) {
-        if (userSettings.containsKey(projectDevice)) {
-            return userSettings.get(projectDevice);
+    public UserSetting getOrCreateActionUserSetting(ProjectDevice projectDevice) {
+        if (actionUserSettings.containsKey(projectDevice)) {
+            return actionUserSettings.get(projectDevice);
         } else {
             if (projectDevice.getGenericDevice().hasAction()) {
                 UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0));
-                userSettings.put(projectDevice, userSetting);
+                actionUserSettings.put(projectDevice, userSetting);
+                return userSetting;
+            } else {
+                throw new IllegalStateException("Device doesn't have any action");
+            }
+        }
+    }
+
+    public UserSetting getOrCreateConditionUserSetting(ProjectDevice projectDevice) {
+        if (conditionUserSettings.containsKey(projectDevice)) {
+            return conditionUserSettings.get(projectDevice);
+        } else {
+            if (projectDevice.getGenericDevice().hasCondition()) {
+                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
+                conditionUserSettings.put(projectDevice, userSetting);
                 return userSetting;
             } else {
                 throw new IllegalStateException("Device doesn't have any action");
@@ -98,10 +110,10 @@ public class InteractiveModel {
 
         // remove usersetting only if the project device has been removed or the actual device selected has changed so
         // that we can retain user setting from previous session
-        for (ProjectDevice projectDevice : new ArrayList<>(userSettings.keySet())) {
+        for (ProjectDevice projectDevice : new ArrayList<>(actionUserSettings.keySet())) {
             if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
                     || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
-                userSettings.remove(projectDevice);
+                actionUserSettings.remove(projectDevice);
             }
         }
 
@@ -179,7 +191,11 @@ public class InteractiveModel {
             @Override
             public void serialEvent(SerialPortEvent event) {
                 String message = new String(event.getReceivedData()).strip();
-                processInMessage(message);
+                try {
+                    processInMessage(message);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         if (serialPort.openPort()) {
@@ -242,7 +258,24 @@ public class InteractiveModel {
         interactiveModeStarted.set(false);
     }
 
-    public void sendCommand(UserSetting userSetting) {
+    public void setAndSendConditionParameterCommand(ProjectDevice projectDevice, Condition condition, Parameter parameter, Expression expression) {
+        UserSetting setting = getOrCreateConditionUserSetting(projectDevice);
+        if (!setting.getCondition().equals(condition)) {
+            setting.setCondition(condition);
+        }
+        setting.getParameterMap().put(parameter, expression);
+
+        List<String> args = new ArrayList<>();
+        args.add("\"" + projectDevice.getName() + "\"");
+        args.add("\"" + condition.getName() + "\"");
+        for (Parameter param : setting.getParameterMap().keySet()) {
+            args.add("\"" + evaluateExpression(setting.getParameterMap().get(param)) + "\"");
+        }
+        String commandString = (String.join(" ", args) + "\r");
+        sendCommand(commandString);
+    }
+
+    public void sendActionCommand(UserSetting userSetting) {
         List<String> args = new ArrayList<>();
         args.add("\"" + userSetting.getDevice().getName() + "\"");
         args.add("\"" + userSetting.getAction().getName() + "\"");
@@ -250,7 +283,10 @@ public class InteractiveModel {
             args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
         }
         String commandString = (String.join(" ", args) + "\r");
+        sendCommand(commandString);
+    }
 
+    private void sendCommand(String commandString) {
         if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
             SerialPort serialPort = this.uploadTarget.getSerialPort();
             if (isStarted() && serialPort != null && serialPort.isOpen()) {
@@ -300,6 +336,8 @@ public class InteractiveModel {
                 return str + "]";
             }).collect(Collectors.joining()));
             return sb.toString();
+        } else if (expression instanceof SimpleIntegerExpression) {
+            return String.valueOf(((SimpleIntegerExpression) expression).getInteger());
         }
         // SimpleRTCExpression, ImageExpression
         throw new UnsupportedOperationException();
@@ -380,11 +418,11 @@ public class InteractiveModel {
     }
 
     void processInMessage(String message) {
-//        System.out.println(message);
+        System.out.println(message);
         List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
 
         deviceMap.keySet().stream()
-            .filter(projectDevice -> projectDevice.getName().equals(args.get(0)))
+            .filter(projectDevice -> !args.isEmpty() && projectDevice.getName().equals(args.get(0)))
             .findAny()
             .ifPresent(projectDevice ->
                 Platform.runLater(() -> {

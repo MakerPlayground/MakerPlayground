@@ -19,6 +19,7 @@ package io.makerplayground.generator.source;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
@@ -161,6 +162,10 @@ class ArduinoCodeUtility {
                     case AZURE_IOTHUB_KEY:
                         AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
                         args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
+                        break;
+                    case STRING_INT_ENUM:
+                        Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
+                        args.add(String.valueOf(map.get(value)));
                         break;
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");

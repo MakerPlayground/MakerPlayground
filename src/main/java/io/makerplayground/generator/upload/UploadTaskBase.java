@@ -56,11 +56,16 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
 
     @Override
     protected UploadResult call() {
-        Platform.runLater(() -> uploadStatus.set(
-                interactiveUpload
+        Platform.runLater(() -> uploadStatus.set(interactiveUpload
                         ? UploadStatus.STARTING_INTERACTIVE
                         : UploadStatus.UPLOADING));
-        return doUpload();
+        try {
+            return doUpload();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Platform.runLater(() -> uploadStatus.set(UploadStatus.UPLOAD_FAILED));
+            return UploadResult.UNKNOWN_ERROR;
+        }
     }
 
     abstract protected UploadResult doUpload();

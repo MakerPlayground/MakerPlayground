@@ -278,6 +278,7 @@ public class RpiPythonInteractiveCode {
                                             taskParameter.add("float(args[" + (i+2) + "])");
                                             break;
                                         case INTEGER:
+                                        case INTEGER_ENUM:
                                             taskParameter.add("int(args[" + (i+2) + "])");
                                             break;
                                         default:
