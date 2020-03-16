@@ -415,3 +415,50 @@
         min: 0
         max: 65535
         unit: NOT_SPECIFIED
+- name: Servo Controller
+  description: A motor that can control direction
+  action:
+    - name: Move Servo
+      funcname: moveServo
+      parameter:
+        - name: Channel
+          value: 1
+          constraint:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          datatype: INTEGER_ENUM
+          controltype: DROPDOWN
+        - name: To Angle
+          value: 90
+          constraint:
+            min: 0
+            max: 200
+            unit: DEGREE
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: Free Servo
+      funcname: freeServo
+      parameter:
+        - name: Channel
+          value: 1
+          constraint:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          datatype: INTEGER_ENUM
+          controltype: DROPDOWN
