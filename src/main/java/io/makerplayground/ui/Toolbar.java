@@ -26,7 +26,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -252,6 +255,8 @@ public class Toolbar extends AnchorPane {
         ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
         BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
 
+        interactiveButton.visibleProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
+        interactiveButton.managedProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
         interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk).or(deviceMonitorShowing)));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));
