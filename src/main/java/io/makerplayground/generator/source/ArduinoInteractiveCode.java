@@ -19,10 +19,8 @@ package io.makerplayground.generator.source;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Compatibility;
-import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
@@ -30,7 +28,10 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -231,7 +232,7 @@ public class ArduinoInteractiveCode {
                         if (parameterConstraintMap.isEmpty()) {
                             return;
                         }
-                        builder.append(j.getAndIncrement() == 0 ? INDENT + INDENT + "if " : "else if ").append("(strcmp_P(commandArgs[1], (PGM_P) F(\"")
+                        builder.append(INDENT + INDENT + (j.getAndIncrement() == 0 ? "if " : "else if ")).append("(strcmp_P(commandArgs[1], (PGM_P) F(\"")
                                 .append(condition.getName()).append("\")) == 0 && argsCount == ").append(condition.getParameter().size() + 2)
                                 .append(") {").append(NEW_LINE);
                         for (int i = 0; i < condition.getParameter().size(); i++) {

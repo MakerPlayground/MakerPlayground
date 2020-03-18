@@ -27,6 +27,7 @@ import io.makerplayground.generator.source.ArduinoUploadCode;
 import io.makerplayground.generator.source.ArduinoInteractiveCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.PythonUtility;
 import io.makerplayground.util.ZipResourceExtractor;
@@ -97,9 +98,10 @@ public class ArduinoUploadTask extends UploadTaskBase {
         }
 
         updateProgress(0.20, 1);
-        updateMessage("Preparing to generate project");
 
-        List<ActualDevice> allActualDevices = project.getUnmodifiableProjectDevice().stream()
+        updateMessage("Preparing to generate project");
+        Collection<ProjectDevice> projectDeviceList = interactiveUpload ? project.getUnmodifiableProjectDevice() : project.getAllDeviceUsed();
+        List<ActualDevice> allActualDevices = projectDeviceList.stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(configuration::getActualDevice)
                 .map(Optional::get)

@@ -16,7 +16,6 @@
 
 package io.makerplayground.generator.upload;
 
-import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import javafx.application.Platform;

@@ -19,6 +19,7 @@ package io.makerplayground.generator.source;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
@@ -35,6 +36,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.makerplayground.generator.source.ArduinoCodeUtility.INDENT;
+import static io.makerplayground.generator.source.ArduinoCodeUtility.NEW_LINE;
 import static io.makerplayground.generator.source.RpiPythonCodeUtility.*;
 
 public class RpiPythonUploadCode {
@@ -209,13 +212,16 @@ public class RpiPythonUploadCode {
                     }
                 }
 
+                // used for time elapsed condition and delay
+                builder.append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = time.time()").append(NEW_LINE);
+
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
                         throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                     }
                     Scene s = adjacentScene.get(0);
                     builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(NEW_LINE);
-                } else if (!adjacentCondition.isEmpty()) { // there is a condition so we generate code for that condition
+                } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
                     builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(currentScene)).append(NEW_LINE);
                 } else {
                     builder.append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(NEW_LINE);
@@ -470,6 +476,10 @@ public class RpiPythonUploadCode {
                         args.add("\"" + acs.getLocation().toLowerCase() + "\"");
                         args.add("\"" + acs.getKey1() + "\"");
                         break;
+                    case STRING_INT_ENUM:
+                        Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
+                        args.add(String.valueOf(map.get(value)));
+                        break;
                     case AZURE_IOTHUB_KEY:
                         AzureIoTHubDevice azureIoTHubDevice = (AzureIoTHubDevice) value;
                         args.add("\"" + azureIoTHubDevice.getConnectionString() + "\"");
@@ -638,8 +648,9 @@ public class RpiPythonUploadCode {
             }
         } else if (expression instanceof SimpleIntegerExpression) {
             returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
-        }
-        else {
+        } else if (expression instanceof StringIntegerExpression) {
+            returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
+        } else {
             throw new IllegalStateException();
         }
         return returnValue;

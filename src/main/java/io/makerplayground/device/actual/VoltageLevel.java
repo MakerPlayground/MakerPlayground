@@ -23,6 +23,14 @@ public enum VoltageLevel {
         if (this == provideVoltageLevel) {
             return true;
         }
-        return (this == LEVEL_3v3_5) && (provideVoltageLevel == LEVEL_5 || provideVoltageLevel == LEVEL_3v3);
+        if ((this == LEVEL_3v3_5) && (provideVoltageLevel == LEVEL_5 || provideVoltageLevel == LEVEL_3v3)) {
+            return true;
+        }
+
+        // provider can be 3.3 or 5 voltage level supports such as GND.
+        if ((this == LEVEL_3v3 || this == LEVEL_5) && (provideVoltageLevel == LEVEL_3v3_5)) {
+            return true;
+        }
+        return false;
     }
 }

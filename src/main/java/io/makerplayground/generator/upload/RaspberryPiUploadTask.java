@@ -21,11 +21,11 @@ import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
-import io.makerplayground.generator.source.ArduinoUploadCode;
 import io.makerplayground.generator.source.RpiPythonInteractiveCode;
 import io.makerplayground.generator.source.RpiPythonUploadCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.*;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
@@ -113,7 +113,8 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
         updateProgress(0.20, 1);
 
         updateMessage("Preparing to generate project");
-        List<ActualDevice> actualDevicesUsed = project.getAllDeviceUsed().stream()
+        Collection<ProjectDevice> projectDeviceList = interactiveUpload ? project.getUnmodifiableProjectDevice() : project.getAllDeviceUsed();
+        List<ActualDevice> actualDevicesUsed = projectDeviceList.stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(configuration::getActualDevice)
                 .map(Optional::get)
