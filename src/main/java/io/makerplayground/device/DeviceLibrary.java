@@ -126,8 +126,11 @@ public enum DeviceLibrary {
     );
 
     public static Optional<String> getLibraryPath() {
-        // TODO: handle case that the library path is missing
-        return libraryPaths.stream().filter(s -> new File(s).exists()).findFirst();
+        // TODO: handle case that the library path is missing or it is not actually our directory
+        return libraryPaths.stream()
+                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
+                        && Files.exists(Path.of(s, "pin_templates")))
+                .findFirst();
     }
 
     public static String getDeviceDirectoryPath() {

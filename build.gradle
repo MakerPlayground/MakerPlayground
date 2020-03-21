@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.fazecast:jSerialComm:2.5.1'
+    compile 'com.fazecast:jSerialComm:2.6.1'
     compile 'org.controlsfx:controlsfx:11.0.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
     compile 'commons-io:commons-io:2.6'
@@ -23,7 +23,8 @@ dependencies {
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.fxml']
+    version = '14'
+    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
 }
 
 run {
@@ -85,6 +86,7 @@ task createBundle {
             }
         } else if (os.contains("mac")) {
             // copy the app bundle to the package directory
+
             copy {
                 from "${buildDir}/jpackage/Maker Playground.app"
                 into "package/macosx/Maker Playground.app"
