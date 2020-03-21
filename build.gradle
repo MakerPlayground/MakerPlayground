@@ -1,7 +1,7 @@
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.5'
-    id 'org.beryx.jlink' version '2.3.1'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.beryx.jlink' version '2.17.3'
 }
 
 repositories {
@@ -40,11 +40,15 @@ run {
 }
 
 jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
         name = project.name
-        jvmArgs = ['--add-modules javafx.controls',
-                '--add-modules javafx.fxml',
-                "--add-reads org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+        jvmArgs = ["--add-modules",
+                "javafx.controls",
+                "--add-modules",
+                "javafx.fxml",
+                "--add-reads",
+                "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
                 "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
                 "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
                 "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
@@ -55,79 +59,78 @@ jlink {
     mergedModule {
         requires 'java.sql'
     }
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
 }
 
 mainClassName = "$moduleName/io.makerplayground.ui.Main"
 version = getVersionName()
 
-task createBundle(type: Exec) {
-    description 'Build the installable bundle'
-    dependsOn 'jlink'
-    commandLine = [
-            'jpackager',
-            'create-image',
-            '--name', project.name,
-            '--version', version,
-            '--output', "${buildDir}/native-image",
-            '--runtime-image', "${buildDir}/image",
-            '--module', "${moduleName}",
-            '--jvm-args', '--add-modules javafx.controls',
-            '--jvm-args', '--add-modules javafx.fxml',
-            '--jvm-args', "--add-reads org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
-            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
-            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
-            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
-            '--jvm-args', "--add-exports javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
-            '--jvm-args', "-m ${mainClassName}",
-            '--verbose'
-    ]
-    doLast {
-        def os = System.getProperty("os.name").toLowerCase()
-        if (os.contains("win")) {
-            copy {
-                from 'version.txt'
-                into "${buildDir}/native-image/${project.name}/app"
-            }
-            exec {
-                commandLine 'cmd', '/c', "cd .\\package\\windows && create-installer.bat ${version}"
-            }
-        } else if (os.contains("mac")) {
-            copy {
-                from 'version.txt'
-                into "${buildDir}/native-image/${project.name}.app/Contents/Java"
-            }
-            copy {
-                from 'library'
-                into "${buildDir}/native-image/${project.name}.app/Contents/Java/library"
-            }
-            copy {
-                from 'package/macosx/mp.icns'
-                into "${buildDir}/native-image/${project.name}.app/Contents/Resources"
-            }
-            // replace version number in Info.plist file
-            def plistFile = file("${buildDir}/native-image/${project.name}.app/Contents/Info.plist")
-            plistFile.write(plistFile.text.replaceAll('MP_BUILD_VERSION', version.toString()))
-            // rename app bundle
-            def macBundleName = 'Maker Playground'
-            delete "${buildDir}/native-image/${macBundleName}.app"
-            ant.move(file: "${buildDir}/native-image/${project.name}.app" , tofile: "${buildDir}/native-image/${macBundleName}.app")
-            // copy the app bundle to the package directory
-            copy {
-                from "${buildDir}/native-image/${macBundleName}.app"
-                into "package/macosx/${macBundleName}.app"
-            }
-            // create pkg installer
-            exec {
-                commandLine '/bin/sh', '-c', "cd package/macosx && ./createappbundle.sh ${version}"
-            }
-        } else {
-            throw new GradleException("Found unsupported operating system: ${os}")
-        }
-    }
-}
+//task createBundle(type: Exec) {
+//    description 'Build the installable bundle'
+//    dependsOn 'jlink'
+//    commandLine = [
+//            'jpackager',
+//            'create-image',
+//            '--name', project.name,
+//            '--version', version,
+//            '--output', "${buildDir}/native-image",
+//            '--runtime-image', "${buildDir}/image",
+//            '--module', "${moduleName}",
+//            '--jvm-args', '--add-modules javafx.controls',
+//            '--jvm-args', '--add-modules javafx.fxml',
+//            '--jvm-args', "--add-reads org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+//            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+//            '--jvm-args', "--add-exports javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+//            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+//            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+//            '--jvm-args', "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+//            '--jvm-args', "--add-exports javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
+//            '--jvm-args', "-m ${mainClassName}",
+//            '--verbose'
+//    ]
+//    doLast {
+//        def os = System.getProperty("os.name").toLowerCase()
+//        if (os.contains("win")) {
+//            copy {
+//                from 'version.txt'
+//                into "${buildDir}/native-image/${project.name}/app"
+//            }
+//            exec {
+//                commandLine 'cmd', '/c', "cd .\\package\\windows && create-installer.bat ${version}"
+//            }
+//        } else if (os.contains("mac")) {
+//            copy {
+//                from 'version.txt'
+//                into "${buildDir}/native-image/${project.name}.app/Contents/Java"
+//            }
+//            copy {
+//                from 'library'
+//                into "${buildDir}/native-image/${project.name}.app/Contents/Java/library"
+//            }
+//            copy {
+//                from 'package/macosx/mp.icns'
+//                into "${buildDir}/native-image/${project.name}.app/Contents/Resources"
+//            }
+//            // replace version number in Info.plist file
+//            def plistFile = file("${buildDir}/native-image/${project.name}.app/Contents/Info.plist")
+//            plistFile.write(plistFile.text.replaceAll('MP_BUILD_VERSION', version.toString()))
+//            // rename app bundle
+//            def macBundleName = 'Maker Playground'
+//            delete "${buildDir}/native-image/${macBundleName}.app"
+//            ant.move(file: "${buildDir}/native-image/${project.name}.app" , tofile: "${buildDir}/native-image/${macBundleName}.app")
+//            // copy the app bundle to the package directory
+//            copy {
+//                from "${buildDir}/native-image/${macBundleName}.app"
+//                into "package/macosx/${macBundleName}.app"
+//            }
+//            // create pkg installer
+//            exec {
+//                commandLine '/bin/sh', '-c', "cd package/macosx && ./createappbundle.sh ${version}"
+//            }
+//        } else {
+//            throw new GradleException("Found unsupported operating system: ${os}")
+//        }
+//    }
+//}
 
 task versionName {
     getVersionName()

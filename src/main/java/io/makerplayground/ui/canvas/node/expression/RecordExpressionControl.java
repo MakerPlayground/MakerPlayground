@@ -18,6 +18,7 @@ package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;

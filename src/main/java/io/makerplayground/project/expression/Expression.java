@@ -19,6 +19,7 @@ package io.makerplayground.project.expression;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.Record;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 
