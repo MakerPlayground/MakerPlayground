@@ -97,10 +97,10 @@ public class ArduinoExportTask extends ProjectExportTask {
             throw new IllegalStateException("");
         }
 
-        Optional<String> pythonPath = PythonUtility.getPythonPath();
+        Optional<List<String>> pioCommand = PythonUtility.getPlatformIOCommand();
         Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
 
-        UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
+        UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
                 , List.of("init", "--board", project.getSelectedController().getPioBoardId())
                 , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
         if (result != UploadResult.OK) {
@@ -174,12 +174,12 @@ public class ArduinoExportTask extends ProjectExportTask {
         return ExportResult.OK;
     }
 
-    protected UploadResult runPlatformIOCommand(String pythonPath, String projectPath, Optional<String> pioHomeDirPath, List<String> args
+    protected UploadResult runPlatformIOCommand(List<String> pioCommand, String projectPath, Optional<String> pioHomeDirPath, List<String> args
             , String errorMessage, UploadResult error) {
         Process p = null;
         try {
             // create argument list
-            List<String> arguments = new ArrayList<>(List.of(pythonPath, "-m", "platformio"));
+            List<String> arguments = new ArrayList<>(pioCommand);
             arguments.addAll(args);
             // create process to invoke platformio
             ProcessBuilder builder = new ProcessBuilder(arguments);

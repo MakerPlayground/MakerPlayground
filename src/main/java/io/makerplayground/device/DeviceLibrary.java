@@ -122,7 +122,7 @@ public enum DeviceLibrary {
 
     private static final List<String> libraryPaths = List.of(
             "library",               // default path for Windows installer and when running from the IDE
-            "../Resources/library"   // default path for macOS installer
+            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer
     );
 
     public static Optional<String> getLibraryPath() {

@@ -19,23 +19,17 @@ package io.makerplayground.version;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.control.Alert;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SoftwareVersion implements Comparable<SoftwareVersion> {
     private static SoftwareVersion currentVersion;
@@ -43,29 +37,21 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
 
     public static SoftwareVersion getCurrentVersion() {
         if (currentVersion == null) {
-            try {
-                Path path = Paths.get("version.txt");
-                // TODO: it may be better to return an optional and alert user outside of this method but this error is rarely happen so it is ok
-                if (!Files.exists(path)) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Can't read version information from " + path.toAbsolutePath().toString());
-                    alert.showAndWait();
-                } else {
-                    List<String> versionFile = Files.readAllLines(Paths.get("version.txt"));
-                    if (versionFile.size() == 2) {
-                        String[] version = versionFile.get(0).split("=");
-                        String[] releaseDate = versionFile.get(1).split("=");
-                        if (version.length == 2 && version[0].equals("version")
-                                && releaseDate.length == 2 && releaseDate[0].equals("release-date")) {
-                            currentVersion = new SoftwareVersion("Maker Playground " + version[1], version[1], "http://makerplayground.io"
-                                    , new Date(LocalDate.parse(releaseDate[1], DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()));
-                        }
-                    }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(SoftwareVersion.class.getResourceAsStream("/version.txt")))) {
+                List<String> versionFile = reader.lines().collect(Collectors.toList());
+                String[] version = versionFile.get(0).split("=");
+                String[] releaseDate = versionFile.get(1).split("=");
+                if (version.length == 2 && version[0].equals("version")
+                        && releaseDate.length == 2 && releaseDate[0].equals("release-date")) {
+                    currentVersion = new SoftwareVersion("Maker Playground " + version[1], version[1], "http://makerplayground.io"
+                            , new Date(LocalDate.parse(releaseDate[1], DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
+                System.err.println("Error: can't read version information from version.txt");
                 e.printStackTrace();
             }
         }
+
         return currentVersion;
     }
 
