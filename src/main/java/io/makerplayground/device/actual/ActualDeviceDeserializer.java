@@ -218,8 +218,9 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .orElseGet(Stream::empty)
                 .map(Connection::getName)
                 .collect(Collectors.toList());
-        if (allConnectionName.stream().anyMatch(s -> Collections.frequency(allConnectionName, s) > 1)) {
-            throw new IllegalStateException("There is a duplicate connection's name.");
+        String allDuplicateNames = allConnectionName.stream().filter(s -> Collections.frequency(allConnectionName, s) > 1).collect(Collectors.joining(", "));
+        if (!allDuplicateNames.isEmpty()) {
+            throw new IllegalStateException("Duplicate connection name [" + id + "] [" + allDuplicateNames + "]");
         }
 
         /* deallocate the created empty list and set to the shared static empty list instead */

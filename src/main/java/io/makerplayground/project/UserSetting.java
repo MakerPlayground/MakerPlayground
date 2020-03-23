@@ -19,6 +19,8 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;
@@ -75,7 +77,13 @@ public class UserSetting {
         // TODO: Expression is not required to be added in Scene
         for (Value v : device.getGenericDevice().getValue()) {
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                expression.put(v, new NumberInRangeExpression(device, v));
+                NumericConstraint constraint = (NumericConstraint) v.getConstraint();
+                boolean customExpressionOnly = (constraint.getMin() == -Double.MAX_VALUE || constraint.getMin() == Integer.MIN_VALUE || constraint.getMax() == Double.MAX_VALUE || constraint.getMax() == Integer.MAX_VALUE);
+                if (customExpressionOnly) {
+                    expression.put(v, new ConditionalExpression(device, v));
+                } else {
+                    expression.put(v, new NumberInRangeExpression(device, v));
+                }
             }
             expressionEnable.put(v, false);
         }

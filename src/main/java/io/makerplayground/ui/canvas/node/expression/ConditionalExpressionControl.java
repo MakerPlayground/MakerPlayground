@@ -65,7 +65,7 @@ public class ConditionalExpressionControl extends HBox {
                 getChildren().addAll(expressionControl);
                 setSpacing(5);
             } else {
-                throw new IllegalStateException("Found unsupported expression!!!");
+                throw new IllegalStateException("Found unsupported expression!!! " + getExpression().getType());
             }
         } else {
             RadioMenuItem basicRadioMenuItem = new RadioMenuItem("Basic");

@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui;
 
+import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
