@@ -4,6 +4,7 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
+import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;

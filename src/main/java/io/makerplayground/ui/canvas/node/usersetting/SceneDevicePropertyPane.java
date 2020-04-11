@@ -3,6 +3,7 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.project.*;

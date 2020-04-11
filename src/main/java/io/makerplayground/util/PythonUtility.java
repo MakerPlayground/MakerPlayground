@@ -31,17 +31,20 @@ public class PythonUtility {
     static public final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
 
     /**
-     * Get path to python with usable platformio installation
-     * @return path to valid python installation or Optional.empty()
+     * Get command for executing platformio
+     * @return command for executing platformio on the current platform or Optional.empty()
      */
-    public static Optional<String> getPythonPath() {
-        List<String> path = List.of(MP_INSTALLDIR + File.separator + "python-2.7.13" + File.separator + "python"      // integrated python for windows version
-                , "python"                  // python in user's system path
-                , "/usr/bin/python");       // internal python of macOS and Linux which is used by platformio installation script
+    public static Optional<List<String>> getPlatformIOCommand() {
+        List<List<String>> command = List.of(
+                List.of(MP_INSTALLDIR + File.separator + "python-2.7.13" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
+                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
+                List.of("python", "-m", "platformio"),          // default python in user's system path
+                List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
+        );
 
-        for (String s : path) {
+        for (List<String> c : command) {
             try {
-                Process p = new ProcessBuilder(s, "-m", "platformio").redirectErrorStream(true).start();
+                Process p = new ProcessBuilder(c).redirectErrorStream(true).start();
                 // read from an input stream to prevent the child process from stalling
                 try (BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                     String readLine;
@@ -50,7 +53,7 @@ public class PythonUtility {
                     }
                 }
                 if (p.waitFor(5, TimeUnit.SECONDS) && (p.exitValue() == 0)) {
-                    return Optional.of(s);
+                    return Optional.of(c);
                 }
             } catch (IOException | InterruptedException e) {
                 // do nothing as we expected the code to throw exception

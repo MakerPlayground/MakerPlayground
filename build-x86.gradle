@@ -1,6 +1,5 @@
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'org.beryx.jlink' version '2.17.3'
 }
 
@@ -9,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.fazecast:jSerialComm:2.6.1'
+    compile 'com.fazecast:jSerialComm:2.5.1'
     compile 'org.controlsfx:controlsfx:11.0.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
     compile 'commons-io:commons-io:2.6'
@@ -22,9 +21,12 @@ dependencies {
     compile 'commons-net:commons-net:3.6'
 }
 
-javafx {
-    version = '14'
-    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+    }
 }
 
 run {
@@ -44,18 +46,14 @@ jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
         name = project.name
-        jvmArgs = ["--add-modules",
-                "javafx.controls",
-                "--add-modules",
-                "javafx.fxml",
-                "--add-reads",
-                "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
-                "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
-                "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
-                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
+        jvmArgs = ["--add-reads",
+                   "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+                   "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+                   "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+                   "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
     }
     mergedModule {
         requires 'java.sql'
@@ -72,7 +70,8 @@ jlink {
     }
 }
 
-mainClassName = "$moduleName/io.makerplayground.ui.Main"
+ext.moduleName = 'io.makerplayground.frontend'
+mainClassName = "io.makerplayground.ui.Main"
 version = getVersionName()
 
 task createBundle {
@@ -86,7 +85,6 @@ task createBundle {
             }
         } else if (os.contains("mac")) {
             // copy the app bundle to the package directory
-
             copy {
                 from "${buildDir}/jpackage/Maker Playground.app"
                 into "package/macosx/Maker Playground.app"

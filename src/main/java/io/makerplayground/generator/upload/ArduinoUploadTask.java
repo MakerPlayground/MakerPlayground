@@ -81,12 +81,12 @@ public class ArduinoUploadTask extends UploadTaskBase {
         Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
 
         // check platformio installation
-        Optional<String> pythonPath = PythonUtility.getPythonPath();
-        if (pythonPath.isEmpty()) {
-            updateMessage("Error: Can't find python with valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
+        Optional<List<String>> pioCommand = PythonUtility.getPlatformIOCommand();
+        if (pioCommand.isEmpty()) {
+            updateMessage("Error: Can't find valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
         }
-        Platform.runLater(() -> log.set("Using python at " + pythonPath.get() + "\n"));
+        Platform.runLater(() -> log.set("Execute platform by " + pioCommand.get() + "\n"));
 
         // check platformio home directory
         Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
@@ -158,7 +158,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
                 params.add("--board");
                 params.add(s);
             });
-            UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath
+            UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
                     , params
                     , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
             if (result != UploadResult.OK) {
@@ -224,7 +224,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
 
         updateProgress(0.6, 1);
         updateMessage("Building project");
-        UploadResult result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId()),
+        UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId()),
                 "Error: Can't build the generated sourcecode. Please contact the development team.", UploadResult.CODE_ERROR);
         if (result != UploadResult.OK) {
             return result;
@@ -232,7 +232,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
 
         updateProgress(0.8, 1);
         updateMessage("Uploading to board");
-        result = runPlatformIOCommand(pythonPath.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId(), "-t", "upload"),
+        result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId(), "-t", "upload"),
                 "Error: Can't find board. Please check connection.", UploadResult.CANT_FIND_BOARD);
         if (result != UploadResult.OK) {
             return result;
@@ -244,12 +244,12 @@ public class ArduinoUploadTask extends UploadTaskBase {
         return UploadResult.OK;
     }
 
-    private UploadResult runPlatformIOCommand(String pythonPath, String projectPath, Optional<String> pioHomeDirPath, List<String> args
+    private UploadResult runPlatformIOCommand(List<String> pioCommand, String projectPath, Optional<String> pioHomeDirPath, List<String> args
             , String errorMessage, UploadResult error) {
         Process p = null;
         try {
             // create argument list
-            List<String> arguments = new ArrayList<>(List.of(pythonPath, "-m", "platformio"));
+            List<String> arguments = new ArrayList<>(pioCommand);
             arguments.addAll(args);
             // create process to invoke platformio
             ProcessBuilder builder = new ProcessBuilder(arguments);
