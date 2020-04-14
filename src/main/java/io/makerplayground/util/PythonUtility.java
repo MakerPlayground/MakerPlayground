@@ -36,7 +36,7 @@ public class PythonUtility {
      */
     public static Optional<List<String>> getPlatformIOCommand() {
         List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "python-2.7.13" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
+                List.of(MP_INSTALLDIR + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
                 List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
                 List.of("python", "-m", "platformio"),          // default python in user's system path
                 List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
