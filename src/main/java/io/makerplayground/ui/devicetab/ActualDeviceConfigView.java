@@ -78,8 +78,8 @@ public class ActualDeviceConfigView extends VBox{
     @FXML private CheckBox optionalPropertyCheckbox1;
     @FXML private CheckBox optionalPropertyCheckbox2;
 
-    private BooleanProperty showOptionalProperty;
-    private BooleanProperty optionalPropertyCheckBoxVisibleProperty;
+    private final BooleanProperty showOptionalProperty;
+    private final BooleanProperty optionalPropertyCheckBoxVisibleProperty;
 
     public ActualDeviceConfigView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
