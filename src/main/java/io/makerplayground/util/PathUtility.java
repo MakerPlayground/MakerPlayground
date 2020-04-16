@@ -20,11 +20,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class PythonUtility {
+public class PathUtility {
     // workspace directory for storing generated project folder
     static public final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
     // program installation directory
@@ -36,7 +38,7 @@ public class PythonUtility {
      */
     public static Optional<List<String>> getPlatformIOCommand() {
         List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
+                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
                 List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
                 List.of("python", "-m", "platformio"),          // default python in user's system path
                 List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
@@ -68,7 +70,7 @@ public class PythonUtility {
      * @return path to the integrated platformio home directory or Optional.empty()
      */
     public static Optional<String> getIntegratedPIOHomeDirectory() {
-        List<String> path = List.of(MP_INSTALLDIR + File.separator + "platformio"   // default path for Windows installer and when running from the IDE
+        List<String> path = List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "platformio"   // default path for Windows installer
                 , "/Library/Application Support/MakerPlayground/platformio");       // default path for macOS installer
         return path.stream().filter(s -> new File(s).exists()).findFirst();
     }
