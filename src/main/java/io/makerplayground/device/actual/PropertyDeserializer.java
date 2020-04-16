@@ -44,6 +44,11 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
 
         String name = node.get("name").asText();
         DataType dataType = mapper.treeToValue(node.get("datatype"), DataType.class);
+        boolean optional = false;
+        if (node.has("optional")) {
+            optional = node.get("optional").asBoolean();
+        }
+
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Constraint.class, new ConstraintDeserializer(dataType));
@@ -81,6 +86,6 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
                 throw(new IllegalStateException("Format error!!!"));
         }
 
-        return new Property(name, dataType, defaultValue, constraint, controlType);
+        return new Property(name, dataType, optional, defaultValue, constraint, controlType);
     }
 }

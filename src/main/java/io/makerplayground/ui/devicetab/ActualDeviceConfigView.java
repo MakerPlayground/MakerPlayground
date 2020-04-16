@@ -37,6 +37,9 @@ import io.makerplayground.util.AzureIoTHubDevice;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -72,9 +75,16 @@ public class ActualDeviceConfigView extends VBox{
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<ActualDeviceComboItem> controllerComboBox;
     @FXML private Label controllerName;
+    @FXML private CheckBox optionalPropertyCheckbox1;
+    @FXML private CheckBox optionalPropertyCheckbox2;
+
+    private BooleanProperty showOptionalProperty;
+    private BooleanProperty optionalPropertyCheckBoxVisibleProperty;
 
     public ActualDeviceConfigView(ConfigActualDeviceViewModel viewModel) {
         this.viewModel = viewModel;
+        this.showOptionalProperty = new SimpleBooleanProperty(false);
+        this.optionalPropertyCheckBoxVisibleProperty = new SimpleBooleanProperty(false);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/devicetab/ActualDeviceConfigView.fxml"));
         fxmlLoader.setRoot(this);
@@ -111,6 +121,18 @@ public class ActualDeviceConfigView extends VBox{
 
         autoButton1.setOnAction(event -> onAutoAction());
         autoButton2.setOnAction(event -> onAutoAction());
+
+        optionalPropertyCheckbox1.selectedProperty().bindBidirectional(showOptionalProperty);
+        optionalPropertyCheckbox2.selectedProperty().bindBidirectional(showOptionalProperty);
+
+        autoButton2.visibleProperty().bind(usedDevice.visibleProperty().not());
+        autoButton2.managedProperty().bind(usedDevice.visibleProperty().not());
+
+        optionalPropertyCheckbox1.visibleProperty().bind(optionalPropertyCheckBoxVisibleProperty);
+        optionalPropertyCheckbox1.managedProperty().bind(optionalPropertyCheckBoxVisibleProperty);
+
+        optionalPropertyCheckbox2.visibleProperty().bind(optionalPropertyCheckBoxVisibleProperty.and(usedDevice.visibleProperty().not()));
+        optionalPropertyCheckbox2.managedProperty().bind(optionalPropertyCheckBoxVisibleProperty.and(usedDevice.visibleProperty().not()));
     }
 
     private void onAutoAction() {
@@ -223,6 +245,7 @@ public class ActualDeviceConfigView extends VBox{
         usedDevice.setManaged(false);
         unusedDevice.setVisible(false);
         unusedDevice.setManaged(false);
+        optionalPropertyCheckBoxVisibleProperty.set(false);
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
         if (viewModel.getAllDevices().isEmpty()) {
@@ -481,9 +504,17 @@ public class ActualDeviceConfigView extends VBox{
                     for (int i=0; i<propertyList.size(); i++) {
                         Property p = propertyList.get(i);
 
+                        if (p.isOptional()) {
+                            optionalPropertyCheckBoxVisibleProperty.set(true);
+                        }
+
+                        BooleanBinding showProperty = new SimpleBooleanProperty(p.isOptional()).not().or(showOptionalProperty);
+
                         Label propertyLabel = new Label(p.getName());
                         GridPane.setRowIndex(propertyLabel, i);
                         GridPane.setColumnIndex(propertyLabel, 0);
+                        propertyLabel.visibleProperty().bind(showProperty);
+                        propertyLabel.managedProperty().bind(showProperty);
                         propertyGridPane.getChildren().add(propertyLabel);
 
                         Object currentValue = viewModel.getPropertyValue(projectDevice, p);
@@ -492,6 +523,8 @@ public class ActualDeviceConfigView extends VBox{
                             textField.textProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(textField, i);
                             GridPane.setColumnIndex(textField, 1);
+                            textField.visibleProperty().bind(showProperty);
+                            textField.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(textField);
                         } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
@@ -500,6 +533,8 @@ public class ActualDeviceConfigView extends VBox{
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
+                            comboBox.visibleProperty().bind(showProperty);
+                            comboBox.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
@@ -513,6 +548,8 @@ public class ActualDeviceConfigView extends VBox{
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
+                            comboBox.visibleProperty().bind(showProperty);
+                            comboBox.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.BOOLEAN_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
@@ -525,6 +562,8 @@ public class ActualDeviceConfigView extends VBox{
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, Boolean.parseBoolean(newValue)));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
+                            comboBox.visibleProperty().bind(showProperty);
+                            comboBox.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(comboBox);
                         } else if ((p.getDataType() == DataType.INTEGER || p.getDataType() == DataType.DOUBLE)
                                 && p.getControlType() == ControlType.SPINBOX) {
@@ -533,6 +572,8 @@ public class ActualDeviceConfigView extends VBox{
                             spinner.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(spinner, i);
                             GridPane.setColumnIndex(spinner, 1);
+                            spinner.visibleProperty().bind(showProperty);
+                            spinner.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(spinner);
                         } else if (p.getDataType() == DataType.AZURE_COGNITIVE_KEY && p.getControlType() == ControlType.AZURE_WIZARD) {
                             AzurePropertyControl<AzureCognitiveServices> control = new AzurePropertyControl<>(AzureSettingDialog.Service.COGNITIVE_SERVICE
@@ -540,6 +581,8 @@ public class ActualDeviceConfigView extends VBox{
                             control.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(control, i);
                             GridPane.setColumnIndex(control, 1);
+                            control.visibleProperty().bind(showProperty);
+                            control.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(control);
                         } else if (p.getDataType() == DataType.AZURE_IOTHUB_KEY && p.getControlType() == ControlType.AZURE_WIZARD) {
                             AzurePropertyControl<AzureIoTHubDevice> control = new AzurePropertyControl<>(AzureSettingDialog.Service.IOT_HUB
@@ -547,6 +590,8 @@ public class ActualDeviceConfigView extends VBox{
                             control.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(control, i);
                             GridPane.setColumnIndex(control, 1);
+                            control.visibleProperty().bind(showProperty);
+                            control.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(control);
                         } else if (p.getDataType() == DataType.STRING_INT_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
@@ -560,6 +605,8 @@ public class ActualDeviceConfigView extends VBox{
                             comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
                             GridPane.setRowIndex(comboBox, i);
                             GridPane.setColumnIndex(comboBox, 1);
+                            comboBox.visibleProperty().bind(showProperty);
+                            comboBox.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(comboBox);
                         } else {    // TODO: add support for new property type
                             throw new IllegalStateException("Found unknown property type");

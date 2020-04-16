@@ -195,6 +195,11 @@
     -fx-text-fill: text-fill-color;
 }
 
+.check-box {
+    -fx-background-color: background-color;
+    -fx-text-fill: text-fill-color;
+}
+
 .spinner{
     -fx-border-color : #cccccc;
     -fx-border-radius : 3;

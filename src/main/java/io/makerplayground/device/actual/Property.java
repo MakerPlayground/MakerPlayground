@@ -30,6 +30,7 @@ import lombok.ToString;
 public class Property {
     private final String name;
     private final DataType dataType;
+    private final boolean optional;
     @ToString.Exclude private final Object defaultValue;
     @ToString.Exclude private final Constraint constraint;
     @ToString.Exclude private final ControlType controlType;
