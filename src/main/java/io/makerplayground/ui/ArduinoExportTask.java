@@ -9,7 +9,7 @@ import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.generator.upload.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
-import io.makerplayground.util.PythonUtility;
+import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.util.ZipResourceExtractor;
 import org.apache.commons.io.FileUtils;
@@ -87,7 +87,7 @@ public class ArduinoExportTask extends ProjectExportTask {
         updateProgress(0.4, 1);
         updateMessage("Generating project code");
 
-        String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "upload";
+        String projectPath = PathUtility.MP_WORKSPACE + File.separator + "upload";
         try {
             FileUtils.deleteDirectory(new File(projectPath));
             FileUtils.forceMkdir(new File(projectPath));
@@ -97,8 +97,8 @@ public class ArduinoExportTask extends ProjectExportTask {
             throw new IllegalStateException("");
         }
 
-        Optional<List<String>> pioCommand = PythonUtility.getPlatformIOCommand();
-        Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
+        Optional<List<String>> pioCommand = PathUtility.getPlatformIOCommand();
+        Optional<String> pioHomeDirPath = PathUtility.getIntegratedPIOHomeDirectory();
 
         UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
                 , List.of("init", "--board", project.getSelectedController().getPioBoardId())

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.util.PathUtility;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -121,12 +122,13 @@ public enum DeviceLibrary {
     }
 
     private static final List<String> libraryPaths = List.of(
-            "library",               // default path for Windows installer and when running from the IDE
-            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer
+            "library",   // default path when running from the IDE which should override installer path to aid in development
+            PathUtility.MP_WORKSPACE + File.separator + "library",  // updated library for each user in user's machine
+            PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
+            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
     );
 
     public static Optional<String> getLibraryPath() {
-        // TODO: handle case that the library path is missing or it is not actually our directory
         return libraryPaths.stream()
                 .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
                         && Files.exists(Path.of(s, "pin_templates")))

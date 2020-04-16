@@ -29,7 +29,7 @@ import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.OSInfo;
-import io.makerplayground.util.PythonUtility;
+import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
@@ -79,10 +79,10 @@ public class ArduinoUploadTask extends UploadTaskBase {
         updateProgress(0.10, 1);
         updateMessage("Checking required dependencies");
 
-        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Workspace is at " + PathUtility.MP_WORKSPACE + "\n"));
 
         // check platformio installation
-        Optional<List<String>> pioCommand = PythonUtility.getPlatformIOCommand();
+        Optional<List<String>> pioCommand = PathUtility.getPlatformIOCommand();
         if (pioCommand.isEmpty()) {
             updateMessage("Error: Can't find valid platformio installation see: http://docs.platformio.org/en/latest/installation.html");
             return UploadResult.CANT_FIND_PIO;
@@ -90,7 +90,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
         Platform.runLater(() -> log.set("Execute platform by " + pioCommand.get() + "\n"));
 
         // check platformio home directory
-        Optional<String> pioHomeDirPath = PythonUtility.getIntegratedPIOHomeDirectory();
+        Optional<String> pioHomeDirPath = PathUtility.getIntegratedPIOHomeDirectory();
         if (pioHomeDirPath.isPresent()) {
             Platform.runLater(() -> log.set("Using integrated platformio dependencies at " + pioHomeDirPath.get() + "\n"));
         } else {
@@ -149,7 +149,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
         }
 
         updateMessage("Generating project");
-        String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "upload";
+        String projectPath = PathUtility.MP_WORKSPACE + File.separator + "upload";
         String iniFilePath = projectPath + File.separator + "platformio.ini";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
