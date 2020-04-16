@@ -116,5 +116,28 @@ def getVersionName() {
     def file = new File('src/main/resources/version.txt')
     file.write "version=${versionName}\nrelease-date=${new Date().format('yyyy-MM-dd')}"
 
+    // generate version.json for the library submodule
+    // (we check for its existence first to avoid error when it hasn't been initialized)
+    if (new File('library').isDirectory()) {
+        // get library's version number from git hash
+        stdout = new ByteArrayOutputStream()
+        def os = System.getProperty("os.name").toLowerCase()
+        if (os.contains("win")) {
+            exec {
+                commandLine 'cmd', '/c', "cd library && git rev-parse --short HEAD"
+                standardOutput = stdout
+            }
+        } else {
+            exec {
+                commandLine '/bin/sh', '-c', "cd library && git rev-parse --short HEAD"
+                standardOutput = stdout
+            }
+        }
+        def libraryVersion = stdout.toString().trim()
+        // write version.json file
+        def libVersionFile = new File('library/version.json')
+        libVersionFile.write "{\"version\": \"${libraryVersion}\", \"min_mp_version\": \"${versionName}\", \"release-date\": \"${new Date().format('yyyy-MM-dd')}\"}"
+    }
+
     return versionName
 }
