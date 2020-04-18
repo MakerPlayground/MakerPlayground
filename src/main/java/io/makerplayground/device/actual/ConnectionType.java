@@ -30,6 +30,7 @@ public enum ConnectionType {
     M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4, true),
     MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, true),
     INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3, true),
+    INEX_SERVO(List.of(Color.BLACK, Color.WHITE, Color.RED), 3, true),
     UNO_SHIELD(Collections.emptyList(), 0, true),
     CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5, false);
 
