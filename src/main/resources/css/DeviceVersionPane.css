@@ -1,0 +1,15 @@
+.hbox {
+    -fx-background-color: background-color;
+}
+
+.label {
+    -fx-text-fill: text-fill-color;
+}
+
+.button {
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: background-color;
+    -fx-border-color: text-fill-border-color;
+    -fx-border-radius: 5px;
+    -fx-text-fill: text-fill-color;
+}

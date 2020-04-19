@@ -3,18 +3,18 @@ package io.makerplayground.ui;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.devicetab.ActualDeviceConfigView;
-import io.makerplayground.ui.devicetab.ConfigActualDeviceViewModel;
-import io.makerplayground.ui.devicetab.DeviceDiagramView;
-import io.makerplayground.ui.devicetab.DeviceExplorerView;
+import io.makerplayground.ui.devicetab.*;
 import javafx.application.HostServices;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +25,9 @@ public class DeviceTab extends SplitPane {
     private final Project currentProject;
 
     private final DeviceExplorerView deviceExplorerView;
+    private final DeviceVersionPane versionPane;
     private final Tab deviceConfigTab;
+    private final Tab circuitDiagramTab;
 
     private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DeviceDiagramView.DEFAULT_ZOOM_SCALE);
 
@@ -52,18 +54,23 @@ public class DeviceTab extends SplitPane {
             refreshConfigDevicePane();
             refreshDiagramAndExplorer();
         });
+        VBox.setVgrow(deviceExplorerView, Priority.ALWAYS);
+
+        versionPane = new DeviceVersionPane();
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(deviceExplorerView, versionPane);
 
         // perform layout
         deviceConfigTab = new Tab("Device Configuration");
         deviceConfigTab.setClosable(false);
-        Tab deviceExplorerTab = new Tab("Device Explorer", deviceExplorerView);
-        deviceExplorerTab.setClosable(false);
-        TabPane deviceTabPane = new TabPane(deviceConfigTab, deviceExplorerTab);
-        deviceTabPane.setMaxWidth(710);
+        circuitDiagramTab = new Tab("Circuit Diagram");
+        circuitDiagramTab.setClosable(false);
+        TabPane deviceTabPane = new TabPane(deviceConfigTab, circuitDiagramTab);
 
         setDividerPositions(0.5);
         setOrientation(Orientation.HORIZONTAL);
-        getItems().addAll(deviceTabPane, new Pane());
+        getItems().addAll(vbox, deviceTabPane);
         getStylesheets().add(getClass().getResource("/css/DeviceTab.css").toExternalForm());
 
         refreshConfigDevicePane();
@@ -82,10 +89,13 @@ public class DeviceTab extends SplitPane {
 
         DeviceDiagramView deviceDiagramView = new DeviceDiagramView(currentProject);
         deviceDiagramView.setZoomLevel(deviceDiagramZoomLevel.get());
-        getItems().set(1, deviceDiagramView);
+        circuitDiagramTab.setContent(deviceDiagramView);
 
         deviceDiagramZoomLevel.unbind();
         deviceDiagramZoomLevel.bind(deviceDiagramView.zoomLevelProperty());
     }
 
+    public void setOnLibraryUpdateButtonPressed(EventHandler<ActionEvent> eventHandler) {
+        versionPane.setOnLibraryUpdateButtonPressed(eventHandler);
+    }
 }

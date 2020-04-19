@@ -16,12 +16,16 @@
 
 package io.makerplayground.util;
 
+import javafx.concurrent.Task;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class ZipResourceExtractor {
@@ -49,14 +53,62 @@ public class ZipResourceExtractor {
                     }
                 } else {
                     // copy content to a file
+                    FileUtils.forceMkdirParent(entryFile);
                     try (OutputStream os = new FileOutputStream(entryFile)) {
                         IOUtils.copy(zis, os);
                     }
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
             return ExtractResult.FAIL;
         }
         return ExtractResult.SUCCESS;
+    }
+
+    public static Task<Void> launchExtractTask(Path zipFilePath, String destinationPath) {
+        Task<Void> extractTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                updateMessage("Extracting...");
+
+                // create output directory if it doesn't exist
+                File dir = new File(destinationPath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
+                    int currentEntry = 0;
+                    int entryCount = zipFile.size();
+                    Enumeration<? extends ZipEntry> zipEntryEnumeration = zipFile.entries();
+                    while (zipEntryEnumeration.hasMoreElements()) {
+                        ZipEntry entry = zipEntryEnumeration.nextElement();
+                        File entryFile = new File(destinationPath, entry.getName());
+                        if (entry.isDirectory()) {
+                            // create directories if it isn't existed
+                            if (!entryFile.exists()) {
+                                entryFile.mkdirs();
+                            }
+                        } else {
+                            FileUtils.forceMkdirParent(entryFile);
+                            // copy content to a file
+                            try (OutputStream os = new FileOutputStream(entryFile)) {
+                                IOUtils.copy(zipFile.getInputStream(entry), os);
+                            }
+                        }
+                        currentEntry++;
+                        updateProgress(currentEntry, entryCount);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                updateMessage("Done");
+                return null;
+            }
+        };
+        new Thread(extractTask).start();
+        return extractTask;
     }
 }

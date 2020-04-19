@@ -13,6 +13,8 @@ dependencies {
     compile 'org.controlsfx:controlsfx:11.0.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
     compile 'commons-io:commons-io:2.6'
+    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.14'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.9'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'

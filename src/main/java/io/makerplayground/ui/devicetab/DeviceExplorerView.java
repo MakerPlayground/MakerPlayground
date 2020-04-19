@@ -28,11 +28,14 @@ import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.version.DeviceLibraryVersion;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -40,11 +43,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.controlsfx.control.SegmentedButton;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,9 +69,6 @@ public class DeviceExplorerView extends VBox {
     private Project currentProject;
     private ActualDevice currentController;
     private String currentSearchKeyword = "";
-
-    private final Button collapseButton;
-    private final BooleanProperty buttonState;
 
     List<String> allBrands;
     List<GenericDevice> allGenericDevices;
@@ -89,10 +92,10 @@ public class DeviceExplorerView extends VBox {
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        collapseButton = new Button();
-        buttonState = new SimpleBooleanProperty(true);
+        Button collapseButton = new Button();
+        BooleanProperty buttonState = new SimpleBooleanProperty(true);
         collapseButton.textProperty().bind(Bindings.when(buttonState).then("Collapse All").otherwise("Expand All"));
-        collapseButton.setStyle("-fx-background-color: transparent; -fx-border-color: #cccccc; -fx-border-radius: 3 3 3 3; -fx-cursor: hand;");
+        collapseButton.setId("collapsedButton");
         collapseButton.setOnAction(event -> {
             if (buttonState.get()) {
                 collapseAllPanes();
@@ -113,8 +116,6 @@ public class DeviceExplorerView extends VBox {
                 return;
             }
 
-            getChildren().remove(scrollPane);
-
             if (newValue == typeToggleButton) {
                 buttonState.set(true);
                 initViewDeviceType();
@@ -127,16 +128,18 @@ public class DeviceExplorerView extends VBox {
         });
 
         HBox hbox = new HBox();
-        hbox.setId("titlePane");
         hbox.setPadding(new Insets(8, 8, 8, 8));
         hbox.setSpacing(5);
         hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.getStyleClass().add("hbox");
+        hbox.getChildren().addAll(searchTextField, spacer, collapseButton, new HBox(), segmentedButton);
 
-        hbox.getChildren().addAll(searchTextField, spacer/*, filterLabel*/, collapseButton, new HBox(), segmentedButton);
+        scrollPane = new ScrollPane();
+        scrollPane.setFitToWidth(true);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
-        setStyle("-fx-background-color: background-color");
         getStylesheets().add(getClass().getResource("/css/DeviceExplorer.css").toExternalForm());
-        getChildren().add(hbox);
+        getChildren().addAll(hbox, scrollPane);
 
         allGenericDevices = new ArrayList<>(DeviceLibrary.INSTANCE.getGenericDevice());
         allGenericDevices.sort(Comparator.comparing(GenericDevice::getName));
@@ -187,11 +190,6 @@ public class DeviceExplorerView extends VBox {
         VBox vBox = new VBox();
         vBox.setFillWidth(true);
 
-        scrollPane = new ScrollPane();
-        scrollPane.setFitToWidth(true);
-        scrollPane.setContent(vBox);
-        getChildren().add(scrollPane);
-
         for (T t : categories) {
             List<ActualDevice> actualDevices = actualDevicesGetter.apply(t);
             FlowPane paneLayout = new FlowPane();
@@ -209,6 +207,8 @@ public class DeviceExplorerView extends VBox {
             });
             hideTitleIfNoneVisible(titledPane);
         }
+
+        scrollPane.setContent(vBox);
     }
 
     public void setController(ActualDevice controller) {
