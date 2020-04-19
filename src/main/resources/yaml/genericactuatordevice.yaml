@@ -356,6 +356,50 @@
           controltype: SPINBOX
     - name: Clear Screen
       funcname: clearScreen
+- name: Dot Matrix
+  description: A dot matrix LED display
+  action:
+#    - name: Draw Bitmap
+#      funcname: drawBitmap
+#      parameter:
+#        - name: data
+#          value: ""
+#          constraint: []
+#          datatype: DOTMATRIX_DATA
+#          controltype: DOTMATRIX
+    - name: Show Text
+      funcname: showText
+      parameter:
+        - name: text
+          value: ""
+          constraint: []
+          datatype: STRING
+          controltype: TEXTBOX
+        - name: text size
+          value: 1x
+          constraint:
+            - key: 1x
+              value: 1
+            - key: 2x
+              value: 2
+          datatype: STRING_INT_ENUM
+          controltype: DROPDOWN
+        - name: rotation
+          value: NONE
+          constraint:
+            - key: NONE
+              value: 0
+            - key: 90 DEGREES
+              value: 90
+            - key: 180 DEGREES
+              value: 180
+            - key: 270 DEGREES
+              value: 270
+          datatype: STRING_INT_ENUM
+          controltype: DROPDOWN
+    - name: Clear
+      funcname: clear
+      parameter: []
 - name: MP3 Player
   description: An MP3 player
   action:
