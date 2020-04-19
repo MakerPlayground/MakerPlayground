@@ -24,24 +24,23 @@ import java.util.List;
 
 @Getter
 public enum ConnectionType {
-    INTEGRATED(List.of(), 0, false),
-    WIRE(List.of(Color.BLUE), 4, false),
-    GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, false),
-    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4, true),
-    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4, true),
-    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3, true),
-    INEX_SERVO(List.of(Color.BLACK, Color.WHITE, Color.RED), 3, true),
-    UNO_SHIELD(Collections.emptyList(), 0, true),
-    CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5, false);
+    INTEGRATED(List.of(), 0),
+    WIRE(List.of(Color.BLUE), 4),
+    GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4),
+    MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4),
+    M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4),
+    KIDBRIGHT(List.of(Color.BLACK, Color.YELLOW, Color.WHITE, Color.RED, Color.RED), 4),
+    INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3),
+    INEX_SERVO(List.of(Color.BLACK, Color.RED, Color.WHITE), 3),
+    UNO_SHIELD(Collections.emptyList(), 0),
+    CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5);
 
     private final List<Color> pinColors;
     private final double lineWidth;
-    private final boolean splittable;
 
-    ConnectionType(List<Color> colors, double lineWeight, boolean splittable) {
+    ConnectionType(List<Color> colors, double lineWeight) {
         this.pinColors = colors;
         this.lineWidth = lineWeight;
-        this.splittable = splittable;
     }
 
     public boolean canConsume(ConnectionType type) {

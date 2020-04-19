@@ -84,13 +84,16 @@ public enum PinFunction {
             case GND:
                 return List.of(GND);
             case SCL:
-                return List.of(SCL);
+                return List.of(SCL, SCL1);
             case SDA:
-                return List.of(SDA);
+                return List.of(SDA, SDA1);
+
+            // SCL1 and SDA1 are not usually consumer pins.
             case SCL1:
                 return List.of(SCL1);
             case SDA1:
                 return List.of(SDA1);
+
             case DIGITAL_IN:
                 return List.of(DIGITAL_OUT);
             case DIGITAL_OUT:
