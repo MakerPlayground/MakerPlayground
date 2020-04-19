@@ -123,10 +123,14 @@ public enum DeviceLibrary {
 
     private static final List<String> libraryPaths = List.of(
             "library",   // default path when running from the IDE which should override installer path to aid in development
-            PathUtility.MP_WORKSPACE + File.separator + "library",  // updated library for each user in user's machine
+            getUserLibraryPath(),  // updated library for each user in user's machine
             PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
             "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
     );
+
+    public static String getUserLibraryPath() {
+        return PathUtility.MP_WORKSPACE + File.separator + "library";
+    }
 
     public static Optional<String> getLibraryPath() {
         return libraryPaths.stream()

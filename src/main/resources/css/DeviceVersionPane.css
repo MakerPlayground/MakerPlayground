@@ -1,0 +1,21 @@
+.hbox {
+    -fx-background-color: background-color;
+}
+
+.label {
+    -fx-text-fill: text-fill-color;
+}
+
+.button {
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: background-color;
+    -fx-border-color: text-fill-border-color;
+    -fx-border-radius: 5px;
+    -fx-text-fill: text-fill-color;
+}
+
+.progress-bar > .track {
+    -fx-background-color: transparent, -fx-text-box-border, background-color;
+    -fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
+    -fx-background-radius: 4, 3, 2; /* 10, 9, 8 */
+}

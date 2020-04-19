@@ -1,4 +1,4 @@
-#titlePane {
+.hbox {
     -fx-background-color: background-color;
 }
 
@@ -137,4 +137,16 @@
 .segmented-button .toggle-button.right-pill {
     -fx-border-radius: 0 3 3 0;
     -fx-background-radius: 0 3 3 0;
+}
+
+.label {
+    -fx-text-fill: text-fill-color;
+}
+
+#collapsedButton {
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: background-color;
+    -fx-border-color: text-fill-border-color;
+    -fx-border-radius: 5px;
+    -fx-text-fill: text-fill-color;
 }

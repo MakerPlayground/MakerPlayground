@@ -64,9 +64,6 @@ public class DeviceExplorerView extends VBox {
     private ActualDevice currentController;
     private String currentSearchKeyword = "";
 
-    private final Button collapseButton;
-    private final BooleanProperty buttonState;
-
     private final List<String> allBrands;
     private final List<GenericDevice> allGenericDevices;
     private final Map<String, List<ActualDevice>> actualDevicePerBrand;
@@ -89,10 +86,10 @@ public class DeviceExplorerView extends VBox {
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        collapseButton = new Button();
-        buttonState = new SimpleBooleanProperty(true);
+        Button collapseButton = new Button();
+        BooleanProperty buttonState = new SimpleBooleanProperty(true);
         collapseButton.textProperty().bind(Bindings.when(buttonState).then("Collapse All").otherwise("Expand All"));
-        collapseButton.setStyle("-fx-background-color: transparent; -fx-border-color: #cccccc; -fx-border-radius: 3 3 3 3; -fx-cursor: hand;");
+        collapseButton.setId("collapsedButton");
         collapseButton.setOnAction(event -> {
             if (buttonState.get()) {
                 collapseAllPanes();
@@ -113,8 +110,6 @@ public class DeviceExplorerView extends VBox {
                 return;
             }
 
-            getChildren().remove(scrollPane);
-
             if (newValue == typeToggleButton) {
                 buttonState.set(true);
                 initViewDeviceType();
@@ -127,16 +122,18 @@ public class DeviceExplorerView extends VBox {
         });
 
         HBox hbox = new HBox();
-        hbox.setId("titlePane");
         hbox.setPadding(new Insets(8, 8, 8, 8));
         hbox.setSpacing(5);
         hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.getStyleClass().add("hbox");
+        hbox.getChildren().addAll(searchTextField, spacer, collapseButton, new HBox(), segmentedButton);
 
-        hbox.getChildren().addAll(searchTextField, spacer/*, filterLabel*/, collapseButton, new HBox(), segmentedButton);
+        scrollPane = new ScrollPane();
+        scrollPane.setFitToWidth(true);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
-        setStyle("-fx-background-color: background-color");
         getStylesheets().add(getClass().getResource("/css/DeviceExplorer.css").toExternalForm());
-        getChildren().add(hbox);
+        getChildren().addAll(hbox, scrollPane);
 
         allGenericDevices = new ArrayList<>(DeviceLibrary.INSTANCE.getGenericDevice());
         allGenericDevices.sort(Comparator.comparing(GenericDevice::getName));
@@ -187,11 +184,6 @@ public class DeviceExplorerView extends VBox {
         VBox vBox = new VBox();
         vBox.setFillWidth(true);
 
-        scrollPane = new ScrollPane();
-        scrollPane.setFitToWidth(true);
-        scrollPane.setContent(vBox);
-        getChildren().add(scrollPane);
-
         for (T t : categories) {
             List<ActualDevice> actualDevices = actualDevicesGetter.apply(t);
             FlowPane paneLayout = new FlowPane();
@@ -211,6 +203,8 @@ public class DeviceExplorerView extends VBox {
             }
             hideTitleIfNoneVisible(titledPane);
         }
+
+        scrollPane.setContent(vBox);
     }
 
     public void setController(ActualDevice controller) {

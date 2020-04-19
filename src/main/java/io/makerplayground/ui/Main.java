@@ -23,12 +23,16 @@ import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
+import io.makerplayground.util.PathUtility;
+import io.makerplayground.util.ZipResourceExtractor;
+import io.makerplayground.version.DeviceLibraryVersion;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -38,12 +42,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 
 public class Main extends Application {
 
@@ -78,6 +86,7 @@ public class Main extends Application {
         mainWindow.diagramEditorShowingProperty().bind(toolbar.diagramEditorSelectProperty());
         mainWindow.deviceConfigShowingProperty().bind(toolbar.deviceConfigSelectProperty());
         mainWindow.deviceMonitorShowingProperty().bind(toolbar.deviceMonitorSelectProperty());
+        mainWindow.setOnLibraryUpdateButtonPressed(event -> updateDeviceLibrary(primaryStage.getScene().getWindow()));
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(toolbar);
@@ -282,6 +291,61 @@ public class Main extends Application {
             }, 3000);
         } else {
             toolbar.setStatusMessage("");
+        }
+    }
+
+    public void updateDeviceLibrary(Window window) {
+        if (!DeviceLibraryVersion.isUpdateFileAvailable()) {
+            return;
+        }
+
+        // save the current project as we need to reload the project after update the library
+        if (project.get().hasUnsavedModification()) {
+            UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
+            if (retVal == UnsavedDialog.Response.CANCEL) {
+                return;
+            } else if (retVal == UnsavedDialog.Response.SAVE) {
+                saveProject(window);
+            }
+        }
+
+        // delete old library
+        File oldLibraryDirectory = new File(DeviceLibrary.getUserLibraryPath());
+        if (oldLibraryDirectory.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(oldLibraryDirectory);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // install new library to platform default library dir
+        Optional<File> updateFilePath = DeviceLibraryVersion.getUpdateFilePath().map(File::new);
+        if (updateFilePath.isPresent()) {
+            Task<Void> extractTask  = ZipResourceExtractor.launchExtractTask(updateFilePath.get(), PathUtility.MP_WORKSPACE);
+            extractTask.addEventHandler(WORKER_STATE_SUCCEEDED, (event) -> {
+                // reload the library and project
+                DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+                DeviceLibraryVersion.reloadCurrentVersion();
+                // reload current project from file
+                if (!project.get().getFilePath().isEmpty()) {
+                    Optional<Project> p = Project.loadProject(new File(project.get().getFilePath()));
+                    if (p.isPresent()) {
+                        project.set(p.get());
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
+                        alert.showAndWait();
+                    }
+                } else {
+                    project.set(new Project());
+                }
+                // delete the update file
+                if (!updateFilePath.get().delete()) {
+                    System.err.println("Warning: update file can't be deleted");
+                }
+            });
+            TaskDialogView<Task<Void>> dialogView = new TaskDialogView<>(window, extractTask, "Install Library");
+            dialogView.show();
         }
     }
 

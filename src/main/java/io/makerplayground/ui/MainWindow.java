@@ -26,6 +26,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 
@@ -43,6 +45,8 @@ public class MainWindow extends BorderPane {
     private final BooleanProperty diagramEditorShowing;
     private final BooleanProperty deviceConfigShowing;
     private final BooleanProperty deviceMonitorShowing;
+
+    private EventHandler<ActionEvent> eventHandler;
 
     public MainWindow(ObjectProperty<Project> project, ReadOnlyObjectProperty<UploadTarget> uploadConnection, HostServices hostServices) {
         this.currentProject = project.get();
@@ -82,6 +86,7 @@ public class MainWindow extends BorderPane {
 
             diagramEditor = initDiagramEditor();
             deviceTab = new DeviceTab(project.get(), hostServices);
+            deviceTab.setOnLibraryUpdateButtonPressed(eventHandler);
             deviceMonitor.stopMonitor();
             deviceMonitor = new DeviceMonitor();
 
@@ -122,5 +127,10 @@ public class MainWindow extends BorderPane {
     private Node initDiagramEditor() {
         CanvasViewModel canvasViewModel = new CanvasViewModel(currentProject);
         return new CanvasView(canvasViewModel);
+    }
+
+    public void setOnLibraryUpdateButtonPressed(EventHandler<ActionEvent> eventHandler) {
+        this.eventHandler = eventHandler;
+        deviceTab.setOnLibraryUpdateButtonPressed(eventHandler);
     }
 }
