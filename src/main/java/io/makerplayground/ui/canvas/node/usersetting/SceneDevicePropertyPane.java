@@ -9,6 +9,7 @@ import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.DotMatrixExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -263,6 +264,10 @@ public class SceneDevicePropertyPane extends VBox {
                 // a fake parameter to make value linking works as expect
                 RecordExpressionControl expressionControl = new RecordExpressionControl(project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
                         , (RecordExpression) userSetting.getParameterMap().get(p));
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.DOT_MATRIX && p.getDataType() == DataType.DOT_MATRIX_DATA) {
+                DotMatrixExpressionControl expressionControl = new DotMatrixExpressionControl((DotMatrixExpression) userSetting.getParameterMap().get(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
             } else {

@@ -359,14 +359,14 @@
 - name: Dot Matrix
   description: A dot matrix LED display
   action:
-#    - name: Draw Bitmap
-#      funcname: drawBitmap
-#      parameter:
-#        - name: data
-#          value: ""
-#          constraint: []
-#          datatype: DOTMATRIX_DATA
-#          controltype: DOTMATRIX
+    - name: Show Bitmap
+      funcname: showBitmap
+      parameter:
+        - name: data
+          value: ""
+          constraint: []
+          datatype: DOT_MATRIX_DATA
+          controltype: DOT_MATRIX
     - name: Show Text
       funcname: showText
       parameter:

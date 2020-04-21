@@ -74,8 +74,11 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
             case RECORD:
                 defaultValue = new Record();
                 break;
+            case DOT_MATRIX_DATA:
+                defaultValue = new DotMatrix();
+                break;
             default:
-                throw new IllegalStateException("Error: found unknown datatype: " + dataType.name());
+                throw new IllegalStateException("Error: unknown default value for datatype: " + dataType.name());
         }
 
         return new Parameter(name, dataType, defaultValue, constraint, controlType);

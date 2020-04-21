@@ -557,6 +557,8 @@ public class ArduinoUploadCode {
             returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
         } else if (expression instanceof StringIntegerExpression) {
             returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
+        } else if (expression instanceof DotMatrixExpression) {
+            returnValue = ((DotMatrixExpression) expression).getDotMatrix().getBase16String();
         } else {
             throw new IllegalStateException();
         }

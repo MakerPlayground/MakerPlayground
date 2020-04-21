@@ -347,6 +347,8 @@ public class InteractiveModel {
             return String.valueOf(((SimpleIntegerExpression) expression).getInteger());
         } else if (expression instanceof StringIntegerExpression) {
             return String.valueOf(((StringIntegerExpression) expression).getInteger());
+        } else if (expression instanceof DotMatrixExpression) {
+            return ((DotMatrixExpression) expression).getDotMatrix().getBase16String();
         }
         // SimpleRTCExpression, ImageExpression
         throw new UnsupportedOperationException();
