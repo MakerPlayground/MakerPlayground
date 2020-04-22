@@ -217,9 +217,11 @@
         - name: Direction
           value: Forward
           constraint:
-            - Forward
-            - Backward
-          datatype: ENUM
+            - key: Forward
+              value: 1
+            - key: Backward
+              value: 0
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
         - name: Speed
           value: 100
