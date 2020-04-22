@@ -150,15 +150,23 @@
         - name: Direction
           value: North
           constraint:
-            - North
-            - South
-            - East
-            - West
-            - NorthEast
-            - NorthWest
-            - SouthEast
-            - SouthWest
-          datatype: ENUM
+            - key: North
+              value: 0
+            - key: South
+              value: 1
+            - key: East
+              value: 2
+            - key: West
+              value: 3
+            - key: NorthEast
+              value: 4
+            - key: NorthWest
+              value: 5
+            - key: SouthEast
+              value: 6
+            - key: SouthWest
+              value: 7
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
   value:
     - name: Mag_X
@@ -230,14 +238,25 @@
         - name: Color
           value: Red
           constraint:
-            - Red
-            - Green
-            - Blue
-            - Cyan
-            - Magenta
-            - Yellow
-            - White
-          datatype: ENUM
+            - key: Red
+              value: 0
+            - key: Green
+              value: 1
+            - key: Blue
+              value: 2
+            - key: Cyan
+              value: 3
+            - key: Magenta
+              value: 4
+            - key: Orange
+              value: 5
+            - key: Violet
+              value: 6
+            - key: White
+              value: 7
+            - key: Yellow
+              value: 8
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
 - name: Pressuremeter
   description: Pressuremeter is a sensor to measure pressure. \nRelated project:\n\tAtmosphere

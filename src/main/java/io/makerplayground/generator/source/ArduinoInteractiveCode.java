@@ -22,6 +22,7 @@ import io.makerplayground.device.actual.Compatibility;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
@@ -112,7 +113,6 @@ public class ArduinoInteractiveCode {
                             return;
                         }
                         for (int i=0; i<condition.getParameter().size(); i++) {
-                            String param = "";
                             Parameter parameter = condition.getParameter().get(i);
                             String paramName = "_" + projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + i;
                             switch (parameter.getDataType()) {
@@ -126,8 +126,12 @@ public class ArduinoInteractiveCode {
                                     int firstElement = ((IntegerCategoricalConstraint) parameter.getConstraint()).getCategories().stream().findFirst().orElse(0);
                                     builder.append("int ").append(paramName).append(" = ").append(firstElement).append(";").append(NEW_LINE);
                                     break;
+                                case STRING_INT_ENUM:
+                                    int firstElem = ((StringIntegerCategoricalConstraint) parameter.getConstraint()).getMap().values().stream().findFirst().orElse(0);
+                                    builder.append("int ").append(paramName).append(" = ").append(firstElem).append(";").append(NEW_LINE);
+                                    break;
                                 default:
-                                    builder.append("char ").append(param).append("[30] = \"\";").append(NEW_LINE);
+                                    builder.append("char ").append(paramName).append("[30] = \"\";").append(NEW_LINE);
                                     break;
                             }
                         }
@@ -248,6 +252,7 @@ public class ArduinoInteractiveCode {
                                     break;
                                 case INTEGER:
                                 case INTEGER_ENUM:
+                                case STRING_INT_ENUM:
                                     param = "atoi(commandArgs[" + (i + 2) + "])";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
                                             .append("_").append(projectDevice.getName()).append("_")
