@@ -20,22 +20,23 @@ import io.makerplayground.device.shared.Unit;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StringIntegerCategoricalConstraint implements Constraint {
 
-    private final Map<String, Integer> map;
+    private final LinkedHashMap<String, Integer> map;
 
-    public Map<String, Integer> getMap() {
+    public LinkedHashMap<String, Integer> getMap() {
         return map;
     }
 
-    public StringIntegerCategoricalConstraint(Map<String, Integer> map) {
+    public StringIntegerCategoricalConstraint(LinkedHashMap<String, Integer> map) {
         this.map = map;
     }
 
     public StringIntegerCategoricalConstraint(String key, int value) {
-        this.map = Collections.singletonMap(key, value);
+        this.map = new LinkedHashMap<>(Collections.singletonMap(key, value));
     }
 
     @Override
@@ -72,8 +73,8 @@ public class StringIntegerCategoricalConstraint implements Constraint {
         if (!(constraint instanceof StringIntegerCategoricalConstraint)) {
             return this;
         }
-        Map<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
-        Map<String, Integer> newMap = new HashMap<>();
+        LinkedHashMap<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
+        LinkedHashMap<String, Integer> newMap = new LinkedHashMap<>();
         newMap.putAll(thatMap);
         newMap.putAll(map);
         return new StringIntegerCategoricalConstraint(newMap);
@@ -84,8 +85,8 @@ public class StringIntegerCategoricalConstraint implements Constraint {
         if (!(constraint instanceof StringIntegerCategoricalConstraint)) {
             return this;
         }
-        Map<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
-        Map<String, Integer> newMap = new HashMap<>();
+        LinkedHashMap<String, Integer> thatMap = ((StringIntegerCategoricalConstraint) constraint).getMap();
+        LinkedHashMap<String, Integer> newMap = new LinkedHashMap<>();
         map.forEach((s, integer) -> {
             if (map.containsKey(s) && thatMap.containsKey(s) && integer.equals(thatMap.get(s))) {
                 newMap.put(s, integer);

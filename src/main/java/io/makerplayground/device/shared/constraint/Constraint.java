@@ -19,6 +19,7 @@ package io.makerplayground.device.shared.constraint;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.makerplayground.device.shared.Unit;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,7 +134,7 @@ public interface Constraint {
      * @param value list of string to be matched
      * @return an instance of {@link StringIntegerCategoricalConstraint}
      */
-    static Constraint createStringIntegerCategoricalConstraint(Map<String, Integer> map) {
+    static Constraint createStringIntegerCategoricalConstraint(LinkedHashMap<String, Integer> map) {
         return new StringIntegerCategoricalConstraint(map);
     }
 

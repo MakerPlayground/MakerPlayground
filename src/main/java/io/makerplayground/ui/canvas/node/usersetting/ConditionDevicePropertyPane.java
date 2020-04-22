@@ -3,11 +3,11 @@ package io.makerplayground.ui.canvas.node.usersetting;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.device.shared.Condition;
-import io.makerplayground.device.shared.Record;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
-import io.makerplayground.project.*;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
+import io.makerplayground.project.Project;
+import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
@@ -183,6 +183,13 @@ public class ConditionDevicePropertyPane extends VBox {
                 ComboBox<Integer> comboBox = new ComboBox<>(list);
                 comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new SimpleIntegerExpression(newValue)));
                 comboBox.getSelectionModel().select((((SimpleIntegerExpression) userSetting.getParameterMap().get(p)).getInteger()));
+                control = comboBox;
+            } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.STRING_INT_ENUM) {
+                StringIntegerCategoricalConstraint constraint = (StringIntegerCategoricalConstraint) p.getConstraint();
+                ObservableList<String> list = FXCollections.observableArrayList(constraint.getMap().keySet());
+                ComboBox<String> comboBox = new ComboBox<>(list);
+                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new StringIntegerExpression(constraint, newValue)));
+                comboBox.getSelectionModel().select((((StringIntegerExpression) userSetting.getParameterMap().get(p)).getString()));
                 control = comboBox;
             } else if (p.getControlType() == ControlType.SPINBOX) {
                 MultiFunctionNumericControl expressionControl = new MultiFunctionNumericControl(

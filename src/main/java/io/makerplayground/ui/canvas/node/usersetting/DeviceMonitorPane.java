@@ -5,6 +5,7 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.ProjectValue;
@@ -93,6 +94,15 @@ public class DeviceMonitorPane extends VBox {
                     ComboBox<Integer> comboBox = new ComboBox<>(list);
                     comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
                         interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleIntegerExpression(newValue));
+                    });
+                    comboBox.getSelectionModel().select(list.get(0));
+                    control = comboBox;
+                } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.STRING_INT_ENUM) {
+                    Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
+                    ObservableList<String> list = FXCollections.observableArrayList(map.keySet());
+                    ComboBox<String> comboBox = new ComboBox<>(list);
+                    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                        interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleIntegerExpression(map.get(newValue)));
                     });
                     comboBox.getSelectionModel().select(list.get(0));
                     control = comboBox;
