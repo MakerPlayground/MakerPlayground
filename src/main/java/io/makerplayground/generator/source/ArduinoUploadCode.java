@@ -646,7 +646,7 @@ public class ArduinoUploadCode {
         } else if (term instanceof RTCTerm) {
             RTCTerm term1 = (RTCTerm) term;
             LocalDateTime rtc = term1.getValue().getLocalDateTime();
-            return "MP_DATETIME(" + rtc.getSecond() + "," + rtc.getMinute() + "," + rtc.getHour() +  "," + rtc.getDayOfMonth() + "," + rtc.getMonth().getValue() + "," + rtc.getYear() + ")";
+            return "\"" + rtc.getYear()+","+rtc.getMonth().getValue()+","+rtc.getDayOfMonth()+","+rtc.getHour()+","+rtc.getMinute()+","+rtc.getSecond() + "\"";
         } else if (term instanceof StringTerm) {
             StringTerm term1 = (StringTerm) term;
             return "\"" + term1.getValue() + "\"";

@@ -21,6 +21,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -349,8 +350,11 @@ public class InteractiveModel {
             return String.valueOf(((StringIntegerExpression) expression).getInteger());
         } else if (expression instanceof DotMatrixExpression) {
             return ((DotMatrixExpression) expression).getDotMatrix().getBase16String();
+        } else if (expression instanceof SimpleRTCExpression) {
+            LocalDateTime rtc = ((SimpleRTCExpression) expression).getRealTimeClock().getLocalDateTime();
+            return rtc.getYear()+","+rtc.getMonth().getValue()+","+rtc.getDayOfMonth()+","+rtc.getHour()+","+rtc.getMinute()+","+rtc.getSecond();
         }
-        // SimpleRTCExpression, ImageExpression
+        // ImageExpression
         throw new UnsupportedOperationException();
     }
 
