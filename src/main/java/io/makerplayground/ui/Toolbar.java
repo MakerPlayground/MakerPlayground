@@ -312,7 +312,7 @@ public class Toolbar extends AnchorPane {
                 super.updateItem(item, empty);
                 if (item != null) {
                     if (item.getUploadMode().equals(UploadMode.SERIAL_PORT)) {
-                        setText(item.getSerialPort().getDescriptivePortName());
+                        setText(item.getSerialPort().getDescriptivePortName() + " (" + item.getSerialPort().getSystemPortName() + ")");
                     }
                     else if (item.getUploadMode().equals(UploadMode.RPI_ON_NETWORK)) {
                         setText("Raspberry Pi on Network (" + item.getRpiHostName() + ")");
