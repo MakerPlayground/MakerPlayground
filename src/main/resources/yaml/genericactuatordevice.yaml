@@ -414,13 +414,19 @@
         - name: EQ
           value: NORMAL
           constraint:
-            - NORMAL
-            - POP
-            - ROCK
-            - JAZZ
-            - CLASSIC
-            - BASS
-          datatype: ENUM
+            - key: NORMAL
+              value: 0
+            - key: POP
+              value: 1
+            - key: ROCK
+              value: 2
+            - key: JAZZ
+              value: 3
+            - key: CLASSIC
+              value: 4
+            - key: BASS
+              value: 5
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
   value:
     - name: Volume
