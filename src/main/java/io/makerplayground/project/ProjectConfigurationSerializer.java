@@ -124,7 +124,6 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
                 jsonGenerator.writeStringField("property", property.getName());
                 switch (property.getDataType()) {
                     case STRING:
-                    case ENUM:
                         jsonGenerator.writeStringField("value", (String) value);
                         break;
                     case INTEGER:

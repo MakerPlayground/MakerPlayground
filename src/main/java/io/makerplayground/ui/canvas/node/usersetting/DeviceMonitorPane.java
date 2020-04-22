@@ -88,15 +88,7 @@ public class DeviceMonitorPane extends VBox {
                 GridPane.setValignment(name, VPos.TOP);
 
                 Node control = null;
-                if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.ENUM) {
-                    ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                    ComboBox<String> comboBox = new ComboBox<>(list);
-                    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-                        interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleStringExpression(newValue));
-                    });
-                    comboBox.getSelectionModel().select(list.get(0));
-                    control = comboBox;
-                } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {
+                if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {
                     ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
                     ComboBox<Integer> comboBox = new ComboBox<>(list);
                     comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {

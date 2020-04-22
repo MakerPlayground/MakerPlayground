@@ -468,7 +468,6 @@ public class RpiPythonUploadCode {
                         args.add(String.valueOf(value));
                         break;
                     case STRING:
-                    case ENUM:
                         args.add("\"" + value + "\"");
                         break;
                     case AZURE_COGNITIVE_KEY:

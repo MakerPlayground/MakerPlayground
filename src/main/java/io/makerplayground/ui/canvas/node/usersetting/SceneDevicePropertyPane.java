@@ -194,12 +194,6 @@ public class SceneDevicePropertyPane extends VBox {
                         , project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
                 stringChipField.expressionProperty().addListener((observableValue, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = stringChipField;
-            } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.ENUM) {
-                ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                ComboBox<String> comboBox = new ComboBox<>(list);
-                comboBox.valueProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, new SimpleStringExpression(newValue)));
-                comboBox.getSelectionModel().select(((SimpleStringExpression) userSetting.getParameterMap().get(p)).getString());
-                control = comboBox;
             } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {
                 ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());
                 ComboBox<Integer> comboBox = new ComboBox<>(list);

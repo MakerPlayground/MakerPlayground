@@ -526,16 +526,6 @@ public class ActualDeviceConfigView extends VBox{
                             textField.visibleProperty().bind(showProperty);
                             textField.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(textField);
-                        } else if (p.getDataType() == DataType.ENUM && p.getControlType() == ControlType.DROPDOWN) {
-                            ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
-                            ComboBox<String> comboBox = new ComboBox<>(list);
-                            comboBox.getSelectionModel().select((String) currentValue);
-                            comboBox.valueProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
-                            GridPane.setRowIndex(comboBox, i);
-                            GridPane.setColumnIndex(comboBox, 1);
-                            comboBox.visibleProperty().bind(showProperty);
-                            comboBox.managedProperty().bind(showProperty);
-                            propertyGridPane.getChildren().add(comboBox);
                         } else if (p.getDataType() == DataType.INTEGER_ENUM && p.getControlType() == ControlType.DROPDOWN) {
                             // TODO: we should create a variant of CategoricalConstraint that support list of other type instead of String
                             ObservableList<Integer> list = FXCollections.observableArrayList(((IntegerCategoricalConstraint) p.getConstraint()).getCategories());

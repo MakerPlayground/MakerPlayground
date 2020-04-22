@@ -84,7 +84,7 @@ public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
                     valueList.add(jn.asInt());
                 }
                 return Constraint.createIntegerCategoricalConstraint(valueList);
-            } else if (dataType == DataType.ENUM || dataType == DataType.BOOLEAN_ENUM){
+            } else if (dataType == DataType.BOOLEAN_ENUM){
                 List<String> valueList = new ArrayList<>();
                 for (JsonNode jn : node) {
                     valueList.add(jn.asText());

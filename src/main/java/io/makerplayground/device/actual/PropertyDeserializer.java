@@ -60,7 +60,6 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
         Object defaultValue = null;
         switch (dataType) {
             case STRING:
-            case ENUM:
             case STRING_INT_ENUM:
                 defaultValue = node.get("value").asText();
                 break;

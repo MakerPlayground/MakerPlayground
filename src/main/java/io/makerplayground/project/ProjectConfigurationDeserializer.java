@@ -102,7 +102,6 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
                 Object value;
                 switch (p.get().getDataType()) {
                     case STRING:
-                    case ENUM:
                         value = propertyValueNode.get("value").asText();
                         break;
                     case INTEGER:
