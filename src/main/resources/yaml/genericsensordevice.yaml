@@ -399,14 +399,21 @@
         - name: Day
           value: Monday
           constraint:
-            - Sunday
-            - Monday
-            - Tuesday
-            - Wednesday
-            - Thursday
-            - Friday
-            - Saturday
-          datatype: ENUM
+            - key: Sunday
+              value: 1
+            - key: Monday
+              value: 2
+            - key: Tuesday
+              value: 3
+            - key: Wednesday
+              value: 4
+            - key: Thursday
+              value: 5
+            - key: Friday
+              value: 6
+            - key: Saturday
+              value: 7
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
   value:
     - name: Hour
