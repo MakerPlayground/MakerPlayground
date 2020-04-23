@@ -217,6 +217,8 @@ public class ArduinoInteractiveCode {
                                         taskParameter.add("atoi(commandArgs[" + (i + 2) + "])");
                                         break;
                                     case STRING:
+                                    case DATETIME:
+                                    case DOT_MATRIX_DATA:
                                         taskParameter.add("commandArgs[" + (i + 2) + "]");
                                         break;
                                     default:

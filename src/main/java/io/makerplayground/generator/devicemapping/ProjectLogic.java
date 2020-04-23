@@ -75,6 +75,7 @@ public class ProjectLogic {
                 break;
             case DATETIME:
             case RECORD:
+            case DOT_MATRIX_DATA:
             case IMAGE:
                 newConstraint = Constraint.NONE;
                 break;

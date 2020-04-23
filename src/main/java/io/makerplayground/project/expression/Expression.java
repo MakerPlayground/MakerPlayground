@@ -23,6 +23,7 @@ import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
+import javafx.beans.binding.StringExpression;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD, STRING_INT;
+        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, RECORD, STRING_INT, DOT_MATRIX;
     }
 
     public enum RefreshInterval {
@@ -94,6 +95,8 @@ public abstract class Expression {
                 return new RecordExpression(new Record());
             case STRING_INT_ENUM:
                 return new StringIntegerExpression((StringIntegerCategoricalConstraint) param.getConstraint(), (String) param.getDefaultValue());
+            case DOT_MATRIX_DATA:
+                return new DotMatrixExpression(new DotMatrix());
             default:
                 throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }

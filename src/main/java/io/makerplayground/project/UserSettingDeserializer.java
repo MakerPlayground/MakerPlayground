@@ -120,7 +120,11 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             } else if (StringIntegerExpression.class.getSimpleName().equals(expressionType)) {
                 String key = ((StringTerm) terms.get(0)).getValue();
                 expression = new StringIntegerExpression((StringIntegerCategoricalConstraint) parameter.getConstraint(), key);
-            } else {
+            } else if (DotMatrixExpression.class.getSimpleName().equals(expressionType)) {
+                DotMatrix dotMatrix = ((DotMatrixTerm) terms.get(0)).getValue();
+                expression = new DotMatrixExpression(dotMatrix);
+            }
+            else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }
 
@@ -236,7 +240,14 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
         } else if (Term.Type.NUMBER_ONLY.name().equals(term_type)) {
             int integer = term_node.get("value").asInt();
             term = new IntegerTerm(integer);
-        } else {
+        } else if (Term.Type.DOT_MATRIX.name().equals(term_type)) {
+            int row = term_node.get("value").get("row").asInt();
+            int column = term_node.get("value").get("column").asInt();
+            String data = term_node.get("value").get("data").asText();
+            DotMatrix dotMatrix = new DotMatrix(row, column, data);
+            term = new DotMatrixTerm(dotMatrix);
+        }
+        else {
             throw new IllegalStateException("deserialize unsupported term");
         }
         return term;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.generic;
+package io.makerplayground.project.term;
 
-/**
- * An enum represent type of UI control that should be used
- */
-public enum ControlType {
-    TEXTBOX, SPINBOX, DROPDOWN, SLIDER, CUSTOMPRINT, TIME, CUSTOMSEGMENT, CHECKBOX, EXPRESSION, DATETIMEPICKER, TEXTBOX_WITH_TEXT_SELECTOR, IMAGE_SELECTOR, AZURE_WIZARD, RECORD, DOT_MATRIX
-    // TODO: add more control type
+import io.makerplayground.device.shared.DotMatrix;
+
+public class DotMatrixTerm extends Term {
+    public DotMatrixTerm(DotMatrix dotMatrix) {
+        super(Type.DOT_MATRIX, dotMatrix);
+    }
+
+    @Override
+    public DotMatrix getValue() {
+        return (DotMatrix) value;
+    }
+
+    @Override
+    public boolean isValid() {
+        return value != null;
+    }
 }

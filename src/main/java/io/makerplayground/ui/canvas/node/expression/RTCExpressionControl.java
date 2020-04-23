@@ -18,6 +18,7 @@ package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.shared.RealTimeClock;
 import io.makerplayground.project.expression.SimpleRTCExpression;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
@@ -45,23 +46,16 @@ public class RTCExpressionControl extends HBox {
             try {
                 return df.parse(string).intValue();
             } catch (ParseException e) {
-                e.printStackTrace();
                 return 0;
             }
         }
     };
 
-    private ReadOnlyObjectWrapper<SimpleRTCExpression> expression;
+    private final ReadOnlyObjectWrapper<SimpleRTCExpression> expression;
 
-    public RTCExpressionControl(SimpleRTCExpression expression) {
-        this.expression = new ReadOnlyObjectWrapper<>(expression);
-        initControl();
-    }
+    public RTCExpressionControl(SimpleRTCExpression initialValue) {
+        expression = new ReadOnlyObjectWrapper<>(initialValue);
 
-    private void initControl() {
-        setSpacing(5.0);
-        setAlignment(Pos.CENTER_LEFT);
-        getChildren().clear();
         LocalDateTime datetime = LocalDateTime.now();
         if (expression.get().getTerms().size() > 0) {
             if (expression.get().getRealTimeClock().getMode() == RealTimeClock.Mode.SPECIFIC) {
@@ -71,31 +65,60 @@ public class RTCExpressionControl extends HBox {
                 System.err.println("No implementation for NOW mode right now.");
             }
         }
-        Label dateLabel = new Label("Date");
         DatePicker datePicker = new DatePicker(datetime.toLocalDate());
-        Label timeLabel = new Label("Time");
-        // Note that we need to set the converter before value.
-        Spinner<Integer> spinnerHH = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23));
-        spinnerHH.getValueFactory().setConverter(twoDigitStringConverter);
-        spinnerHH.getValueFactory().setValue(datetime.getHour());
-        Spinner<Integer> spinnerMM = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59));
-        spinnerMM.getValueFactory().setConverter(twoDigitStringConverter);
-        spinnerMM.getValueFactory().setValue(datetime.getMinute());
-        Spinner<Integer> spinnerSS = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59));
-        spinnerSS.getValueFactory().setConverter(twoDigitStringConverter);
-        spinnerSS.getValueFactory().setValue(datetime.getSecond());
+
+        SpinnerValueFactory<Integer> hourValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23);
+        hourValueFactory.setConverter(twoDigitStringConverter);
+        hourValueFactory.setValue(datetime.getHour());
+        Spinner<Integer> hourSpinner = new Spinner<>(hourValueFactory);
+        hourSpinner.setId("timeSpinner");
+        hourSpinner.getEditor().textProperty().addListener(((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty() && !newValue.matches("[0-9]+")) {
+                hourSpinner.getEditor().setText("0");
+            }
+        }));
+        hourSpinner.setEditable(true);
+
+        SpinnerValueFactory<Integer> minuteValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59);
+        minuteValueFactory.setConverter(twoDigitStringConverter);
+        minuteValueFactory.setValue(datetime.getMinute());
+        Spinner<Integer> minuteSpinner = new Spinner<>(minuteValueFactory);
+        minuteSpinner.setId("timeSpinner");
+        minuteSpinner.getEditor().textProperty().addListener(((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty() && !newValue.matches("[0-9]+")) {
+                minuteSpinner.getEditor().setText("0");
+            }
+        }));
+        minuteSpinner.setEditable(true);
+
+        SpinnerValueFactory<Integer> secondValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59);
+        secondValueFactory.setConverter(twoDigitStringConverter);
+        secondValueFactory.setValue(datetime.getSecond());
+        Spinner<Integer> secondSpinner = new Spinner<>(secondValueFactory);
+        secondSpinner.setId("timeSpinner");
+        secondSpinner.getEditor().textProperty().addListener(((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty() && !newValue.matches("[0-9]+")) {
+                secondSpinner.getEditor().setText("0");
+            }
+        }));
+        secondSpinner.setEditable(true);
+
         ChangeListener<Object> changeListener = (observable, oldValue, newValue) -> {
-            LocalDateTime localDateTime = LocalDateTime.of(datePicker.getValue(), LocalTime.of(spinnerHH.getValue(), spinnerMM.getValue(), spinnerSS.getValue()));
+            LocalDateTime localDateTime = LocalDateTime.of(datePicker.getValue(), LocalTime.of(hourValueFactory.getValue(), minuteValueFactory.getValue(), secondValueFactory.getValue()));
             expression.set(new SimpleRTCExpression(new RealTimeClock(RealTimeClock.Mode.SPECIFIC, localDateTime)));
         };
         datePicker.valueProperty().addListener(changeListener);
-        spinnerHH.valueProperty().addListener(changeListener);
-        spinnerMM.valueProperty().addListener(changeListener);
-        spinnerSS.valueProperty().addListener(changeListener);
-        getChildren().addAll(dateLabel, datePicker, timeLabel, spinnerHH, spinnerMM, spinnerSS);
+        hourValueFactory.valueProperty().addListener(changeListener);
+        minuteValueFactory.valueProperty().addListener(changeListener);
+        secondValueFactory.valueProperty().addListener(changeListener);
+
+        setSpacing(5.0);
+        setAlignment(Pos.CENTER_LEFT);
+        getChildren().addAll(datePicker, hourSpinner, new Label(":"), minuteSpinner, new Label(":"), secondSpinner);
+        getStylesheets().add(this.getClass().getResource("/css/canvas/node/expressioncontrol/RTCExpressionControl.css").toExternalForm());
     }
 
-    public ReadOnlyObjectWrapper<SimpleRTCExpression> expressionProperty() {
-        return expression;
+    public ReadOnlyObjectProperty<SimpleRTCExpression> expressionProperty() {
+        return expression.getReadOnlyProperty();
     }
 }
