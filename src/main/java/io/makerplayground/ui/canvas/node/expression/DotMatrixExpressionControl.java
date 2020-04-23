@@ -25,6 +25,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -51,7 +53,7 @@ public class DotMatrixExpressionControl extends VBox {
             for (int j=0; j<dotMatrix.getColumn(); j++) {
                 Rectangle rectangle = new Rectangle(12, 12);
                 rectangle.setStyle("-fx-stroke: #cccccc; -fx-stroke-width: 1;");
-                rectangle.fillProperty().bind(Bindings.when(dotMatrix.getData()[i][j]).then(Color.rgb(195, 255, 31)).otherwise(Color.WHITE));
+                rectangle.fillProperty().bind(Bindings.when(dotMatrix.getData()[i][j]).then(Color.rgb(255, 0, 0)).otherwise(Color.WHITE));
                 int finalI = i;
                 int finalJ = j;
                 rectangle.setOnMousePressed(event -> {
@@ -78,41 +80,55 @@ public class DotMatrixExpressionControl extends VBox {
         this.getChildren().add(gridPaneDot);
 
         GridPane gridPaneControl = new GridPane();
-        gridPaneControl.setHgap(3);
-        gridPaneControl.setVgap(3);
+        gridPaneControl.setHgap(5);
+        gridPaneControl.setVgap(0);
+
         gridPaneControl.add(new Label("Column"), 0, 0);
-        Button addColumnButton = new Button("+");
-        addColumnButton.setOnAction(event -> {
+
+        ImageView addColumnButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/add-expression.png")));
+        addColumnButton.setFitHeight(25);
+        addColumnButton.setFitWidth(25);
+        addColumnButton.setPreserveRatio(true);
+        addColumnButton.setOnMouseClicked(event -> {
             dotMatrix.resize(dotMatrix.getRow(), dotMatrix.getColumn() + 8);
             initControl();
         });
-        gridPaneControl.add(addColumnButton, 1, 0);
+        gridPaneControl.add(addColumnButton, 2, 0);
 
         if (dotMatrix.getColumn() > 8) {
-            Button removeColumnButton = new Button("-");
-            removeColumnButton.setOnAction(event -> {
+            ImageView removeColumnButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/remove-expression.png")));
+            removeColumnButton.setFitHeight(25);
+            removeColumnButton.setFitWidth(25);
+            removeColumnButton.setPreserveRatio(true);
+            removeColumnButton.setOnMouseClicked(event -> {
                 dotMatrix.resize(dotMatrix.getRow(), dotMatrix.getColumn() - 8);
                 initControl();
             });
-            gridPaneControl.add(removeColumnButton, 2, 0);
+            gridPaneControl.add(removeColumnButton, 3, 0);
         }
 
         gridPaneControl.add(new Label("Row"), 0, 1);
 
-        Button addRowButton = new Button("+");
-        addRowButton.setOnAction(event -> {
+        ImageView addRowButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/add-expression.png")));
+        addRowButton.setFitHeight(25);
+        addRowButton.setFitWidth(25);
+        addRowButton.setPreserveRatio(true);
+        addRowButton.setOnMouseClicked(event -> {
             dotMatrix.resize(dotMatrix.getRow() + 8, dotMatrix.getColumn());
             initControl();
         });
-        gridPaneControl.add(addRowButton, 1, 1);
+        gridPaneControl.add(addRowButton, 2, 1);
 
         if (dotMatrix.getRow() > 8) {
-            Button removeRowButton = new Button("-");
-            removeRowButton.setOnAction(event -> {
+            ImageView removeRowButton = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/remove-expression.png")));
+            removeRowButton.setFitHeight(25);
+            removeRowButton.setFitWidth(25);
+            removeRowButton.setPreserveRatio(true);
+            removeRowButton.setOnMouseClicked(event -> {
                 dotMatrix.resize(dotMatrix.getRow() - 8, dotMatrix.getColumn());
                 initControl();
             });
-            gridPaneControl.add(removeRowButton, 2, 1);
+            gridPaneControl.add(removeRowButton, 3, 1);
         }
 
         this.getChildren().add(gridPaneControl);

@@ -362,7 +362,7 @@
     - name: Show Bitmap
       funcname: showBitmap
       parameter:
-        - name: data
+        - name: Data
           value: ""
           constraint: []
           datatype: DOT_MATRIX_DATA
@@ -370,12 +370,12 @@
     - name: Show Text
       funcname: showText
       parameter:
-        - name: text
+        - name: Text
           value: ""
           constraint: []
           datatype: STRING
           controltype: TEXTBOX
-        - name: text size
+        - name: Size
           value: 1x
           constraint:
             - key: 1x
@@ -384,16 +384,16 @@
               value: 2
           datatype: STRING_INT_ENUM
           controltype: DROPDOWN
-        - name: rotation
-          value: NONE
+        - name: Rotation
+          value: "0\u00B0"
           constraint:
-            - key: NONE
+            - key: "0\u00B0"
               value: 0
-            - key: 90 DEGREES
+            - key: "90\u00B0 CCW"
               value: 90
-            - key: 180 DEGREES
+            - key: "180\u00B0 CCW"
               value: 180
-            - key: 270 DEGREES
+            - key: "270\u00B0 CCW"
               value: 270
           datatype: STRING_INT_ENUM
           controltype: DROPDOWN
