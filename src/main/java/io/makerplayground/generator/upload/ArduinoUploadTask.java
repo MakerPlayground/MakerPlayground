@@ -79,6 +79,7 @@ public class ArduinoUploadTask extends UploadTaskBase {
         updateProgress(0.10, 1);
         updateMessage("Checking required dependencies");
 
+        Platform.runLater(() -> log.set("Relative path is at " + new File("").getAbsolutePath() + "\n"));
         Platform.runLater(() -> log.set("Workspace is at " + PathUtility.MP_WORKSPACE + "\n"));
 
         // check platformio installation
