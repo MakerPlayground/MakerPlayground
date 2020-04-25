@@ -50,7 +50,7 @@ public class ConditionDeserializer extends JsonDeserializer<Condition> {
                 .filter(setting -> project.getUnmodifiableProjectDevice().contains(setting.getDevice()))
                 .collect(Collectors.toUnmodifiableList());
         List<UserSetting> virtualDeviceSettings = settings.stream()
-                .filter(setting -> VirtualProjectDevice.All.virtualDevices.contains(setting.getDevice()))
+                .filter(setting -> VirtualProjectDevice.devices.contains(setting.getDevice()))
                 .collect(Collectors.toUnmodifiableList());
 
         JsonNode positionNode = node.get("position");

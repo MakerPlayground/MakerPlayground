@@ -46,7 +46,6 @@ public class Scene extends NodeElement {
         this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
         this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
         this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
-        invalidate();
     }
 
     Scene(double top, double left, double width, double height
@@ -59,7 +58,6 @@ public class Scene extends NodeElement {
         this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof ProjectDevice && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
         this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
         this.allSettings.addAll(allSettings);
-        invalidate();
     }
 
     Scene(Scene s, String name, Project project) {
@@ -71,7 +69,6 @@ public class Scene extends NodeElement {
         for (UserSetting u : s.allSettings) {
             this.allSettings.add(new UserSetting(u));
         }
-        invalidate();
     }
 
     public void addDevice(ProjectDevice device) {
@@ -85,11 +82,10 @@ public class Scene extends NodeElement {
 
 
     public void addVirtualDevice(ProjectDevice device) {
-        if (!VirtualProjectDevice.All.virtualDevices.contains(device)) {
+        if (!VirtualProjectDevice.devices.contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
         allSettings.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
-        invalidate();
     }
 
     public void removeDevice(ProjectDevice device) {

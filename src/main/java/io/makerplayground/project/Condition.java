@@ -90,7 +90,7 @@ public class Condition extends NodeElement {
     }
 
     public void addVirtualDevice(ProjectDevice device) {
-        if (!VirtualProjectDevice.All.virtualDevices.contains(device)) {
+        if (!VirtualProjectDevice.devices.contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
         virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));

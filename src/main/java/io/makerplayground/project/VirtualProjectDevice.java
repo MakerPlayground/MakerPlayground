@@ -9,7 +9,6 @@ import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +27,8 @@ public class VirtualProjectDevice extends ProjectDevice {
         public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Time Elapsed", timeGenericDevice, false);
     }
 
+    // Memory
     public static class Memory {
-        // Memory
         static final ObservableList<ProjectValue> variables = FXCollections.observableArrayList();
         public static final ObservableList<ProjectValue> unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
         public static final Condition compare = new Condition("Compare", "", Collections.emptyList());
@@ -40,14 +39,13 @@ public class VirtualProjectDevice extends ProjectDevice {
         public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Memory", memoryGenericDevice, true);
     }
 
-    private final boolean allowRepeat;
+    // other virtual device such as the statistic calculator etc. should be defined here
 
-    public static class All {
-        // other virtual device such as the statistic calculator etc. should be defined here
-        public static final List<ProjectDevice> virtualDevices = List.of(TimeElapsed.projectDevice, Memory.projectDevice);
-        public static final List<ProjectDevice> virtualDevicesHaveCondition = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getCondition().isEmpty()).collect(Collectors.toUnmodifiableList());
-        public static final List<ProjectDevice> virtualDevicesHaveAction = virtualDevices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getAction().isEmpty()).collect(Collectors.toUnmodifiableList());
-    }
+    public static final List<ProjectDevice> devices = List.of(TimeElapsed.projectDevice, Memory.projectDevice);
+    public static final List<ProjectDevice> devicesWithAction = devices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getAction().isEmpty()).collect(Collectors.toUnmodifiableList());
+    public static final List<ProjectDevice> devicesWithCondition = devices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getCondition().isEmpty()).collect(Collectors.toUnmodifiableList());
+
+    private final boolean allowRepeat;
 
     public VirtualProjectDevice(String name, GenericDevice genericDevice, boolean allowRepeat) {
         super(name, genericDevice);

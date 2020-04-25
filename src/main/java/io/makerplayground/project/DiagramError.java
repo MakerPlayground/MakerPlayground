@@ -33,7 +33,7 @@ public enum DiagramError {
     CONDITION_INVALID_PARAM("some parameters are invalid"),
     CONDITION_INVALID_EXPRESSION("some expression are invalid"),
     CONDITION_NO_ENABLE_EXPRESSION("at least one expression should be enabled for each devices"),
-    CONDITION_VARIABLE_EMPTY("The condition required to have variables selected"),
+    CONDITION_VARIABLE_EMPTY("at least one variable should be selected"),
     DIAGRAM_MULTIPLE_DELAY("there shouldn't be connection from the same node to multiple delay block"),
     DELAY_INVALID_NAME("name shouldn't be empty and should contain only alphanumeric characters, underscore and (but not start with) space"),
     DELAY_DUPLICATE_NAME("duplicate delay name"),

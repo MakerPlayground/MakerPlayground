@@ -737,7 +737,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else if (!VirtualProjectDevice.All.virtualDevices.contains(projectDevice1)) {
+                        else if (!VirtualProjectDevice.devices.contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
@@ -767,7 +767,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else if (!VirtualProjectDevice.All.virtualDevices.contains(projectDevice1)) {
+                        else if (!VirtualProjectDevice.devices.contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });

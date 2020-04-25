@@ -54,7 +54,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 break;
             }
         }
-        for (ProjectDevice pd : VirtualProjectDevice.All.virtualDevices) {
+        for (ProjectDevice pd : VirtualProjectDevice.devices) {
             if (pd.getName().equals(deviceName)) {
                 projectDevice = pd;
                 break;

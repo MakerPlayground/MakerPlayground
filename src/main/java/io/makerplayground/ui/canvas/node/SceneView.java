@@ -117,19 +117,6 @@ public class SceneView extends InteractiveNode {
                         .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
                         .createDynamicViewCreator();
 
-        DynamicViewCreator<VBox, SceneDeviceIconViewModel, SceneDeviceIconView> dynamicViewCreator2 =
-                new DynamicViewCreatorBuilder<VBox, SceneDeviceIconViewModel, SceneDeviceIconView>()
-                        .setParent(deviceConfigIconPane)
-                        .setModelLoader(sceneViewModel.getVirtualDeviceViewModelCreator())
-                        .setViewFactory(sceneDeviceIconViewModel -> {
-                            SceneDeviceIconView sceneDeviceIconView = new SceneDeviceIconView(sceneDeviceIconViewModel);
-                            sceneDeviceIconView.setOnRemoved(event -> sceneViewModel.removeUserSetting(sceneDeviceIconViewModel.getUserSetting()));
-                            return sceneDeviceIconView;
-                        })
-                        .setNodeAdder((parent, node) -> parent.getChildren().add(parent.getChildren().size() - 1, node))
-                        .setNodeRemover((parent, node) -> parent.getChildren().remove(node))
-                        .createDynamicViewCreator();
-
         // bind scene's name to the model
         nameTextField.setText(sceneViewModel.getName());
         nameTextField.textProperty().addListener((observable, oldValue, newValue) -> sceneViewModel.setName(newValue));

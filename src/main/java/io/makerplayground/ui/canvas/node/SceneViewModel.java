@@ -33,7 +33,6 @@ public class SceneViewModel {
     private final Project project;
 
     private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> dynamicViewModelCreator;
-    private final DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> virtualDeviceViewModelCreator;
 
     private final BooleanProperty hasDeviceToAdd;
     private final BooleanProperty hasLineIn;
@@ -43,11 +42,10 @@ public class SceneViewModel {
         this.scene = scene;
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
-        this.virtualDeviceViewModelCreator = new DynamicViewModelCreator<>(scene.getVirtualDeviceSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getAllSettings(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).add(VirtualProjectDevice.All.virtualDevicesHaveAction.size()).greaterThan(0));
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).add(VirtualProjectDevice.devicesWithAction.size()).greaterThan(0));
 
         hasLineIn = new SimpleBooleanProperty();
         hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == scene)).greaterThan(0));
@@ -66,10 +64,6 @@ public class SceneViewModel {
 
     public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getDynamicViewModelCreator() {
         return dynamicViewModelCreator;
-    }
-
-    public DynamicViewModelCreator<UserSetting, SceneDeviceIconViewModel> getVirtualDeviceViewModelCreator() {
-        return virtualDeviceViewModelCreator;
     }
 
     public double getX() {
