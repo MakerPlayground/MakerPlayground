@@ -25,14 +25,14 @@ public class VariableExpression extends Expression {
     }
 
     public Optional<ProjectValue> getProjectValue() {
-        if (NO_VARIABLE_SELECTED.equals(this)) {
+        if (this == NO_VARIABLE_SELECTED) {
             return Optional.empty();
         }
         return Optional.of(((ValueTerm) terms.get(0)).getValue());
     }
 
     public String getVariableName() {
-        if (NO_VARIABLE_SELECTED.equals(this)) {
+        if (this == NO_VARIABLE_SELECTED) {
             return "";
         }
         return ((ValueTerm) terms.get(0)).getValue().getValue().getName();

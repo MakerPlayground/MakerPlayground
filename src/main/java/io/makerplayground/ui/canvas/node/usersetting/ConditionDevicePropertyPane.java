@@ -263,7 +263,7 @@ public class ConditionDevicePropertyPane extends VBox {
             propertyPane.getChildren().addAll(name, control);
         }
 
-        if (userSetting.getDevice() == Memory.projectDevice && userSetting.getCondition().equals(Memory.compare)) {
+        if (userSetting.getDevice().equals(Memory.projectDevice) && userSetting.getCondition() == Memory.compare) {
             List<ProjectValue> values = Memory.unmodifiableVariables;
             for (int i=0; i<values.size(); i++) {
                 ProjectValue value = values.get(i);

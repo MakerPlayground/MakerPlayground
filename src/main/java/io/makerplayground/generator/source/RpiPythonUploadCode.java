@@ -175,7 +175,7 @@ public class RpiPythonUploadCode {
                 for (UserSetting setting : currentScene.getAllSettings()) {
                     ProjectDevice device = setting.getDevice();
                     if (Memory.projectDevice.equals(device)) {
-                        if (Memory.setValue.equals(setting.getAction())) {
+                        if (Memory.setValue == setting.getAction()) {
                             Map<Parameter, Expression> map = setting.getParameterMap();
                             Parameter nameParam = setting.getAction().getParameter().get(0);
                             String deviceName = parseExpressionForParameter(nameParam, map.get(nameParam));
@@ -310,7 +310,7 @@ public class RpiPythonUploadCode {
                                 throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
                             }
                         } else if (Memory.projectDevice.equals(setting.getDevice())) {
-                            if (Memory.compare.equals(setting.getCondition())) {
+                            if (Memory.compare == setting.getCondition()) {
                                 for (Value value : setting.getExpression().keySet()) {
                                     if (setting.getExpressionEnable().get(value)) {
                                         Expression expression = setting.getExpression().get(value);
