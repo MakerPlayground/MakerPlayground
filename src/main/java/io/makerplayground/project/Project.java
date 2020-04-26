@@ -737,7 +737,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else if (!VirtualProjectDevice.devices.contains(projectDevice1)) {
+                        else if (!VirtualProjectDevice.getDevices().contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
@@ -767,7 +767,7 @@ public class Project {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
-                        else if (!VirtualProjectDevice.devices.contains(projectDevice1)) {
+                        else if (!VirtualProjectDevice.getDevices().contains(projectDevice1)) {
                             valueCompatibility.put(projectDevice1, new HashSet<>(values));
                         }
                     });
@@ -785,10 +785,10 @@ public class Project {
         projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility, this.devices);
     }
 
-    private static final String cVariableRegex = "[a-zA-Z_][a-zA-Z0-9_]*";
+    private static final String VARIABLE_NAME_REGEX = "[a-zA-Z_][a-zA-Z0-9_]*";
 
     public VariableAddResult addVariable(String varName) {
-        if (!varName.matches(cVariableRegex)) {
+        if (!varName.matches(VARIABLE_NAME_REGEX)) {
             return new VariableAddResult(null, VariableError.VARIABLE_NAME_INVALID);
         }
         if (VirtualProjectDevice.Memory.variables.stream().anyMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
@@ -799,11 +799,15 @@ public class Project {
         return new VariableAddResult(projectValue, VariableError.OK);
     }
 
+    public Optional<ProjectValue> getVariableByName(String name) {
+        return VirtualProjectDevice.Memory.variables.stream().filter((pv) -> pv.getValue().getName().equals(name)).findFirst();
+    }
+
     public VariableError renameVariable(String varNameOld, String varNameNew) {
         if (VirtualProjectDevice.Memory.variables.stream().noneMatch(value -> value.getValue().getName().equals(varNameOld))) {
             return VariableError.VARIABLE_NOT_EXIST;
         }
-        if (!varNameNew.matches(cVariableRegex)) {
+        if (!varNameNew.matches(VARIABLE_NAME_REGEX)) {
             return VariableError.VARIABLE_NAME_INVALID;
         }
         if (VirtualProjectDevice.Memory.variables.stream().anyMatch(value -> value.getValue().getName().equals(varNameNew))) {
@@ -828,9 +832,9 @@ public class Project {
     @RequiredArgsConstructor
     public enum VariableError {
         OK(""),
-        DUPLICATE_NAME("Duplicate variable name"),
-        VARIABLE_NOT_EXIST("Variable does not existed."),
-        VARIABLE_NAME_INVALID("Invalid variable name");
+        DUPLICATE_NAME("Name is already being used"),
+        VARIABLE_NOT_EXIST("Name does not existed"),
+        VARIABLE_NAME_INVALID("Name should contain only a-z, A-Z and but not start with 0-9");
 
         @Getter private final String errorMessage;
     }

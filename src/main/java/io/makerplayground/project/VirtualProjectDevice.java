@@ -32,7 +32,7 @@ public class VirtualProjectDevice extends ProjectDevice {
         static final ObservableList<ProjectValue> variables = FXCollections.observableArrayList();
         public static final ObservableList<ProjectValue> unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
         public static final Condition compare = new Condition("Compare", "", Collections.emptyList());
-        public static final Parameter nameParameter = new Parameter("name", DataType.VARIABLE_NAME, "x", Constraint.NONE, ControlType.VARIABLE);
+        public static final Parameter nameParameter = new Parameter("Name", DataType.VARIABLE_NAME, "x", Constraint.NONE, ControlType.VARIABLE);
         public static final Parameter valueParameter = new Parameter("Value", DataType.DOUBLE, new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED), ControlType.SPINBOX);
         public static final Action setValue = new Action("Set Value", "setValue", List.of(nameParameter, valueParameter));
         public static final GenericDevice memoryGenericDevice = new GenericDevice("Memory", "", GenericDeviceType.UTILITY, List.of(setValue), List.of(compare), new ArrayList<>());
@@ -41,9 +41,17 @@ public class VirtualProjectDevice extends ProjectDevice {
 
     // other virtual device such as the statistic calculator etc. should be defined here
 
-    public static final List<ProjectDevice> devices = List.of(TimeElapsed.projectDevice, Memory.projectDevice);
-    public static final List<ProjectDevice> devicesWithAction = devices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getAction().isEmpty()).collect(Collectors.toUnmodifiableList());
-    public static final List<ProjectDevice> devicesWithCondition = devices.stream().filter(projectDevice -> !projectDevice.getGenericDevice().getCondition().isEmpty()).collect(Collectors.toUnmodifiableList());
+    public static List<ProjectDevice> getDevices() {
+        return List.of(TimeElapsed.projectDevice, Memory.projectDevice);
+    }
+
+    public static List<ProjectDevice> getDevicesWithAction() {
+        return getDevices().stream().filter(projectDevice -> projectDevice.getGenericDevice().hasAction()).collect(Collectors.toUnmodifiableList());
+    }
+
+    public static List<ProjectDevice> getDevicesWithCondition() {
+        return getDevices().stream().filter(projectDevice -> projectDevice.getGenericDevice().hasCondition()).collect(Collectors.toUnmodifiableList());
+    }
 
     private final boolean allowRepeat;
 

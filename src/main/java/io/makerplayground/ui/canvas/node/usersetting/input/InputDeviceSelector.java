@@ -40,7 +40,7 @@ public class InputDeviceSelector extends PopOver {
             e.printStackTrace();
         }
 
-        VirtualProjectDevice.devicesWithCondition.stream().filter(device -> {
+        VirtualProjectDevice.getDevicesWithCondition().stream().filter(device -> {
             for (UserSetting userSetting : viewModel.getVirtualDeviceSetting()) {
                 if (userSetting.getDevice() == device || device.getGenericDevice().getCondition().isEmpty()) {
                     return false;

@@ -74,13 +74,9 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
         project.removeBegin(defaultBegin);
 
         if (node.has("variables")) {
+            VirtualProjectDevice.Memory.variables.clear();
             List<String> variableNames = mapper.readValue(node.get("variables").traverse(), new TypeReference<List<String>>() {});
-            VirtualProjectDevice.Memory.variables.removeIf(pv -> !variableNames.contains(pv.getValue().getName()));
-            variableNames.forEach(varName -> {
-                if (VirtualProjectDevice.Memory.variables.stream().noneMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
-                    VirtualProjectDevice.Memory.variables.add(new ProjectValue(VirtualProjectDevice.Memory.projectDevice, new Value(varName, DataType.DOUBLE, Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED))));
-                }
-            });
+            variableNames.forEach(project::addVariable);
         }
 
         List<Scene> scenes = mapper.readValue(node.get("scenes").traverse(), new TypeReference<List<Scene>>() {});
