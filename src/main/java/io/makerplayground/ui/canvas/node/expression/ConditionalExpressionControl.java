@@ -25,6 +25,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -40,11 +41,11 @@ public class ConditionalExpressionControl extends HBox {
     private final ProjectDevice projectDevice;
     private final Value value;
     private final Unit unit;
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<Expression> expression = new ReadOnlyObjectWrapper<>();
     private final boolean customExpressionOnly;
 
-    public ConditionalExpressionControl(ProjectDevice projectDevice, Value v, List<ProjectValue> projectValues, Expression expression) {
+    public ConditionalExpressionControl(ProjectDevice projectDevice, Value v, ObservableList<ProjectValue> projectValues, Expression expression) {
         this.projectDevice = projectDevice;
         this.value = v;
         this.unit = ((NumericConstraint) v.getConstraint()).getUnit();

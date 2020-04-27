@@ -53,8 +53,8 @@ public class VariableSelectorControl extends VBox {
     private void initView() {
         nameTextField = new TextField(expression.get().getVariableName());
 
-        valueListView = new ListView<>(VirtualProjectDevice.Memory.unmodifiableVariables);
-        valueListView.visibleProperty().bind(editing.and(Bindings.isNotEmpty(VirtualProjectDevice.Memory.unmodifiableVariables)));
+        valueListView = new ListView<>(project.getUnmodifiableVariable());
+        valueListView.visibleProperty().bind(editing.and(Bindings.isNotEmpty(project.getUnmodifiableVariable())));
         valueListView.managedProperty().bind(valueListView.visibleProperty());
         valueListView.setCellFactory(TextFieldListCell.forListView(new StringConverter<>() {
             @Override

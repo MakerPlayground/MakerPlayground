@@ -146,7 +146,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
         for (JsonNode valueNode : node.get("expression")) {
             Value value;
             if (VirtualProjectDevice.Memory.projectDevice.equals(projectDevice)) {
-                value = VirtualProjectDevice.Memory.unmodifiableVariables.stream().filter(projectValue -> projectValue.getValue().getName().equals(valueNode.get("name").asText())).findFirst().orElseThrow().getValue();
+                value = project.getUnmodifiableVariable().stream().filter(projectValue -> projectValue.getValue().getName().equals(valueNode.get("name").asText())).findFirst().orElseThrow().getValue();
             } else {
                 value = projectDevice.getGenericDevice().getValue(valueNode.get("name").asText()).orElseThrow();
             }
@@ -169,10 +169,10 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             expressionEnableMap.put(value, enable);
         }
         if (hasAction) {
-            return new UserSetting(projectDevice, action, valueMap, expressionMap, expressionEnableMap);
+            return new UserSetting(project, projectDevice, action, valueMap, expressionMap, expressionEnableMap);
         }
         if (hasCondition) {
-            return new UserSetting(projectDevice, condition, valueMap, expressionMap, expressionEnableMap);
+            return new UserSetting(project, projectDevice, condition, valueMap, expressionMap, expressionEnableMap);
         }
         throw new IllegalStateException("UserSetting Deserializer Error");
     }
@@ -218,7 +218,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 String projectDeviceName = term_node.get("value").get("name").asText();
                 String valueName = term_node.get("value").get("value").asText();
                 if (VirtualProjectDevice.Memory.projectDevice.getName().equals(projectDeviceName)) {
-                    ProjectValue value = VirtualProjectDevice.Memory.unmodifiableVariables.stream()
+                    ProjectValue value = project.getUnmodifiableVariable().stream()
                             .filter(projectValue -> projectValue.getValue().getName().equals(valueName))
                             .findFirst()
                             .orElseThrow(() -> new IllegalStateException("Variable not exist [" + valueName + "]"));

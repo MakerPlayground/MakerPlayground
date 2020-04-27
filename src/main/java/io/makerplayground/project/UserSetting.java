@@ -45,6 +45,7 @@ import java.util.*;
 @JsonSerialize(using = UserSettingSerializer.class)
 @ToString
 public class UserSetting {
+    private final Project project;
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
@@ -55,7 +56,8 @@ public class UserSetting {
     @Getter private final ObservableMap<Value, Expression> expression;
     @Getter private final ObservableMap<Value, Boolean> expressionEnable;
 
-    private UserSetting(ProjectDevice device) {
+    private UserSetting(Project project, ProjectDevice device) {
+        this.project = project;
         this.device = device;
         this.action = new ReadOnlyObjectWrapper<>();
         this.condition = new ReadOnlyObjectWrapper<>();
@@ -82,13 +84,13 @@ public class UserSetting {
         expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
     }
 
-    public UserSetting(ProjectDevice device, Action supportingAction) {
-        this(device);
+    public UserSetting(Project project, ProjectDevice device, Action supportingAction) {
+        this(project, device);
         this.action.set(supportingAction);
     }
 
-    public UserSetting(ProjectDevice device, Condition supportingCondition) {
-        this(device);
+    public UserSetting(Project project, ProjectDevice device, Condition supportingCondition) {
+        this(project, device);
         this.condition.set(supportingCondition);
 
         // Initialize expression list
@@ -106,7 +108,7 @@ public class UserSetting {
         }
 
         if (Memory.projectDevice.equals(device)) {
-            for (ProjectValue pv: Memory.unmodifiableVariables) {
+            for (ProjectValue pv: project.getUnmodifiableVariable()) {
                 Value v = pv.getValue();
                 expressionEnable.put(v, false);
                 if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
@@ -114,7 +116,7 @@ public class UserSetting {
                 }
             }
 
-            Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+            project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
                 while (c.next()) {
                     if (c.wasAdded()) {
                         c.getAddedSubList().forEach(o -> {
@@ -140,8 +142,8 @@ public class UserSetting {
         }
     }
 
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(device, action);
+    UserSetting(Project project, ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, action);
 
         // replace all default map values with these maps
         this.parameterMap.putAll(parameterMap);
@@ -149,8 +151,8 @@ public class UserSetting {
         this.expressionEnable.putAll(enable);
     }
 
-    UserSetting(ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(device, condition);
+    UserSetting(Project project, ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, condition);
 
         // replace all default map values with these maps
         this.parameterMap.putAll(parameterMap);
@@ -159,7 +161,7 @@ public class UserSetting {
     }
 
     UserSetting(UserSetting u) {
-        this(u.device);
+        this(u.project, u.device);
 
         this.action.set(u.action.get());
         this.condition.set(u.condition.get());
@@ -174,7 +176,7 @@ public class UserSetting {
         this.expressionEnable.putAll(u.expressionEnable);
 
         if (Memory.projectDevice.equals(u.device)) {
-            Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
+            project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
                 while (c.next()) {
                     if (c.wasAdded()) {
                         c.getAddedSubList().forEach(o -> {

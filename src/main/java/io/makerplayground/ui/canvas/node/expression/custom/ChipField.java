@@ -19,21 +19,17 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.VirtualProjectDevice;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -94,34 +90,10 @@ public abstract class ChipField<T extends Expression> extends VBox {
     private static final int MINIMUM_WIDTH = 75;
     protected static final Color TEXT_COLOR = Color.web("#333333");
 
-    public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
+    public ChipField(T expression, ObservableList<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
         this.parseStringChip = parseStringChip;
-
-        // In the usersetting's stage, the ProjectValueChip that was created could have ability to know the change of the Memory's ProjectValue.
-        // Such that the newly added variable from the action "set value" could show in the created ProjectValueChip.
-        // Thus, in the implementation, the list bindings always update the value to an observableList object built by concatenate the memory's values and all project values
-        this.projectValues = new ListBinding<>() {
-            {
-                super.bind(VirtualProjectDevice.Memory.unmodifiableVariables);
-                VirtualProjectDevice.Memory.unmodifiableVariables.forEach(projectValue -> super.bind(projectValue.getValue().nameProperty()));
-
-                // when user adds new variable to memory, add new name change listener by binding to this ListBinding
-                VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
-                    while (c.next()) {
-                        c.getAddedSubList().forEach(o -> super.bind(o.getValue().nameProperty()));
-                        c.getRemoved().forEach(o -> super.unbind(o.getValue().nameProperty()));
-                    }
-                });
-            }
-            @Override
-            protected ObservableList<ProjectValue> computeValue() {
-                ObservableList<ProjectValue> concatList = FXCollections.observableArrayList();
-                concatList.addAll(VirtualProjectDevice.Memory.unmodifiableVariables);
-                concatList.addAll(projectValues);
-                return concatList;
-            }
-        };
+        this.projectValues = projectValues;
         initView();
         initEvent();
     }
@@ -493,15 +465,8 @@ public abstract class ChipField<T extends Expression> extends VBox {
         Text t = new Text();
         StringBinding textBinding = new StringBinding() {
             {
-                super.bind(expressionProperty);
-                super.bind(VirtualProjectDevice.Memory.unmodifiableVariables);
-                VirtualProjectDevice.Memory.unmodifiableVariables.forEach(projectValue -> super.bind(projectValue.getValue().nameProperty()));
-                VirtualProjectDevice.Memory.unmodifiableVariables.addListener((ListChangeListener<? super ProjectValue>) c -> {
-                    while (c.next()) {
-                        c.getAddedSubList().forEach(o -> super.bind(o.getValue().nameProperty()));
-                        c.getRemoved().forEach(o -> super.unbind(o.getValue().nameProperty()));
-                    }
-                });
+                bind(expressionProperty);   // TODO: we should not need to bind to expression as updateDisplayMode is called when expression changed
+                bind(projectValues);
             }
             @Override
             protected String computeValue() {

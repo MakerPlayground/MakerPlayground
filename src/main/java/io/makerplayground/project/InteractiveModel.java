@@ -16,7 +16,6 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.scene.control.Alert;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -50,7 +49,7 @@ public class InteractiveModel {
             return actionUserSettings.get(projectDevice);
         } else {
             if (projectDevice.getGenericDevice().hasAction()) {
-                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0));
+                UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getAction().get(0));
                 actionUserSettings.put(projectDevice, userSetting);
                 return userSetting;
             } else {
@@ -64,7 +63,7 @@ public class InteractiveModel {
             return conditionUserSettings.get(projectDevice);
         } else {
             if (projectDevice.getGenericDevice().hasCondition()) {
-                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
+                UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
                 conditionUserSettings.put(projectDevice, userSetting);
                 return userSetting;
             } else {
@@ -161,7 +160,7 @@ public class InteractiveModel {
         conditionMap.put(Memory.projectDevice, new LinkedHashMap<>());
         conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
         valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
-        Memory.unmodifiableVariables.forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
+        project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
     }
 
     /*

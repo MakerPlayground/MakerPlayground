@@ -26,6 +26,7 @@ import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUni
 import io.makerplayground.ui.canvas.node.expression.valuelinking.ValueLinkingControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.RadioMenuItem;
@@ -39,11 +40,11 @@ import java.util.List;
 public abstract class NumberWithUnitExpressionControl extends HBox {
 
     private final Parameter parameter;
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
 
     private ReadOnlyObjectWrapper<Expression> expression = new ReadOnlyObjectWrapper<>();
 
-    public NumberWithUnitExpressionControl(Parameter p, List<ProjectValue> projectValues, Expression expression) {
+    public NumberWithUnitExpressionControl(Parameter p, ObservableList<ProjectValue> projectValues, Expression expression) {
         this.parameter = p;
         this.projectValues = projectValues;
         this.expression.set(expression);

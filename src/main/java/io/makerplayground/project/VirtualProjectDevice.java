@@ -29,8 +29,6 @@ public class VirtualProjectDevice extends ProjectDevice {
 
     // Memory
     public static class Memory {
-        static final ObservableList<ProjectValue> variables = FXCollections.observableArrayList();
-        public static final ObservableList<ProjectValue> unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
         public static final Condition compare = new Condition("Compare", "", Collections.emptyList());
         public static final Parameter nameParameter = new Parameter("Name", DataType.VARIABLE_NAME, "x", Constraint.NONE, ControlType.VARIABLE);
         public static final Parameter valueParameter = new Parameter("Value", DataType.DOUBLE, new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED), ControlType.SPINBOX);

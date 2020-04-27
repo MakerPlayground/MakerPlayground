@@ -496,7 +496,7 @@ public class RpiPythonUploadCode {
                     .append("(").append(String.join(", ", args)).append(")").append(NEW_LINE);
         }
         // TODO: We should declare only the variables used
-        Memory.unmodifiableVariables.forEach(projectValue -> {
+        project.getUnmodifiableVariable().forEach(projectValue -> {
             if (projectValue.getValue().getType() == DataType.DOUBLE) {
                 builder.append(INDENT).append(INDENT).append("MP.memory[\"").append(projectValue.getValue().getName()).append("\"] = 0.0").append(NEW_LINE);
             }

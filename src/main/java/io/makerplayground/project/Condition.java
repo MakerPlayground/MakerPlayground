@@ -84,7 +84,7 @@ public class Condition extends NodeElement {
         if (device.getGenericDevice().getCondition().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have condition.");
         } else {
-            setting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+            setting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         }
         project.invalidateDiagram();
     }
@@ -93,7 +93,7 @@ public class Condition extends NodeElement {
         if (!VirtualProjectDevice.getDevices().contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
-        virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+        virtualSetting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         project.invalidateDiagram();
     }
 

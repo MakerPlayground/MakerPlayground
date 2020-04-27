@@ -75,7 +75,7 @@ public class Scene extends NodeElement {
         if (device.getGenericDevice().getAction().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have action.");
         } else {
-            allSettings.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
+            allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
         }
         project.invalidateDiagram();
     }
@@ -85,7 +85,7 @@ public class Scene extends NodeElement {
         if (!VirtualProjectDevice.getDevices().contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
-        allSettings.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
+        allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
     }
 
     public void removeDevice(ProjectDevice device) {

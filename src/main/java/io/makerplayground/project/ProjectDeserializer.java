@@ -23,10 +23,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.Unit;
-import io.makerplayground.device.shared.Value;
-import io.makerplayground.device.shared.constraint.Constraint;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,7 +70,6 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
         project.removeBegin(defaultBegin);
 
         if (node.has("variables")) {
-            VirtualProjectDevice.Memory.variables.clear();
             List<String> variableNames = mapper.readValue(node.get("variables").traverse(), new TypeReference<List<String>>() {});
             variableNames.forEach(project::addVariable);
         }

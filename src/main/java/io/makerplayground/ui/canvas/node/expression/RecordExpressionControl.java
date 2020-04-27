@@ -26,6 +26,7 @@ import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.ui.canvas.node.expression.valuelinking.SpinnerNumberWithUnitNoBindingExpressionControl;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -37,12 +38,12 @@ import java.util.stream.Collectors;
 
 public class RecordExpressionControl extends VBox {
     private static final Parameter parameter = new Parameter("Field", DataType.DOUBLE, NumberWithUnit.ZERO, NumericConstraint.NONE, ControlType.SPINBOX);
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final ReadOnlyObjectWrapper<RecordExpression> expression;
 
     private List<RecordExpressionControlEntry> entryList;
 
-    public RecordExpressionControl(List<ProjectValue> projectValues, RecordExpression expression) {
+    public RecordExpressionControl(ObservableList<ProjectValue> projectValues, RecordExpression expression) {
         this.projectValues = projectValues;
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         initControl();

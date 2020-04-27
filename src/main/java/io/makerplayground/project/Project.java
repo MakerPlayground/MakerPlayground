@@ -29,8 +29,10 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.version.ProjectVersionControl;
+import javafx.beans.binding.ListBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Data;
@@ -77,10 +79,14 @@ public class Project {
     @Getter private final ObservableList<Delay> unmodifiableDelay;
     @Getter private final ObservableList<Line> unmodifiableLine;
 
+    private final ObservableList<ProjectValue> variables;
+    private final ObservableList<ProjectValue> unmodifiableVariables;
+
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
     private static final Pattern conditionNameRegex = Pattern.compile("Condition\\d+");
     private static final Pattern delayNameRegex = Pattern.compile("Delay\\d+");
+    private static final Pattern variableNameRegex = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
 
     @Getter @Setter private ProjectConfiguration projectConfiguration;
     @Getter private InteractiveModel interactiveModel;
@@ -112,6 +118,9 @@ public class Project {
 
         this.diagramError = new ReadOnlyBooleanWrapper();
         this.lineErrorMap = Collections.emptyMap();
+
+        this.variables = FXCollections.observableArrayList();
+        this.unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
 
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
@@ -387,16 +396,41 @@ public class Project {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public List<ProjectValue> getAvailableValue(Set<DataType> dataType) {
-        List<ProjectValue> value = new ArrayList<>();
-        for (ProjectDevice projectDevice : devices) {
-            for (Value v : projectDevice.getGenericDevice().getValue()) {
-                if (dataType.contains(v.getType())) {
-                    value.add(new ProjectValue(projectDevice, v));
+    public ObservableList<ProjectValue> getAvailableValue(Set<DataType> dataType) {
+        return new ListBinding<>() {
+            {
+                bind(devices);
+                // append with variable if user request value with type double
+                if (dataType.contains(DataType.DOUBLE)) {
+                    bind(getUnmodifiableVariable());
+                    // we also invalidate this binding when name of variable is changed
+                    getUnmodifiableVariable().forEach(projectValue -> super.bind(projectValue.getValue().nameProperty()));
+                    getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
+                        while (c.next()) {
+                            c.getAddedSubList().forEach(o -> super.bind(o.getValue().nameProperty()));
+                            c.getRemoved().forEach(o -> super.unbind(o.getValue().nameProperty()));
+                        }
+                    });
                 }
             }
-        }
-        return value;
+            @Override
+            protected ObservableList<ProjectValue> computeValue() {
+                ObservableList<ProjectValue> concatList = FXCollections.observableArrayList();
+                // append with variable if user request value with type double
+                if (dataType.contains(DataType.DOUBLE)) {
+                    concatList.addAll(getUnmodifiableVariable());
+                }
+                // append with value of every device in the project
+                for (ProjectDevice projectDevice : devices) {
+                    for (Value v : projectDevice.getGenericDevice().getValue()) {
+                        if (dataType.contains(v.getType())) {
+                            concatList.add(new ProjectValue(projectDevice, v));
+                        }
+                    }
+                }
+                return concatList;
+            }
+        };
     }
 
     public ActualDevice getSelectedController() {
@@ -785,48 +819,46 @@ public class Project {
         projectConfiguration.updateCompatibility(actionCompatibility, conditionCompatibility, valueCompatibility, this.devices);
     }
 
-    private static final String VARIABLE_NAME_REGEX = "[a-zA-Z_][a-zA-Z0-9_]*";
-
     public VariableAddResult addVariable(String varName) {
-        if (!varName.matches(VARIABLE_NAME_REGEX)) {
+        if (!variableNameRegex.matcher(varName).matches()) {
             return new VariableAddResult(null, VariableError.VARIABLE_NAME_INVALID);
         }
-        if (VirtualProjectDevice.Memory.variables.stream().anyMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
+        if (variables.stream().anyMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
             return new VariableAddResult(null, VariableError.DUPLICATE_NAME);
         }
         ProjectValue projectValue = new ProjectValue(VirtualProjectDevice.Memory.projectDevice, new Value(varName, DataType.DOUBLE, Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED)));
-        VirtualProjectDevice.Memory.variables.add(projectValue);
+        variables.add(projectValue);
         return new VariableAddResult(projectValue, VariableError.OK);
     }
 
     public Optional<ProjectValue> getVariableByName(String name) {
-        return VirtualProjectDevice.Memory.variables.stream().filter((pv) -> pv.getValue().getName().equals(name)).findFirst();
+        return variables.stream().filter((pv) -> pv.getValue().getName().equals(name)).findFirst();
+    }
+
+    public ObservableList<ProjectValue> getUnmodifiableVariable() {
+        return unmodifiableVariables;
     }
 
     public VariableError renameVariable(String varNameOld, String varNameNew) {
-        if (VirtualProjectDevice.Memory.variables.stream().noneMatch(value -> value.getValue().getName().equals(varNameOld))) {
+        if (variables.stream().noneMatch(value -> value.getValue().getName().equals(varNameOld))) {
             return VariableError.VARIABLE_NOT_EXIST;
         }
-        if (!varNameNew.matches(VARIABLE_NAME_REGEX)) {
+        if (!variableNameRegex.matcher(varNameNew).matches()) {
             return VariableError.VARIABLE_NAME_INVALID;
         }
-        if (VirtualProjectDevice.Memory.variables.stream().anyMatch(value -> value.getValue().getName().equals(varNameNew))) {
+        if (variables.stream().anyMatch(value -> value.getValue().getName().equals(varNameNew))) {
             return VariableError.DUPLICATE_NAME;
         }
-        VirtualProjectDevice.Memory.variables.stream().filter(projectValue -> projectValue.getValue().getName().equals(varNameOld)).findFirst().ifPresent(projectValue -> projectValue.getValue().setName(varNameNew));
+        variables.stream().filter(projectValue -> projectValue.getValue().getName().equals(varNameOld)).findFirst().ifPresent(projectValue -> projectValue.getValue().setName(varNameNew));
         return VariableError.OK;
     }
 
     public VariableError removeVariable(String varName) {
-        if (VirtualProjectDevice.Memory.variables.stream().noneMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
+        if (variables.stream().noneMatch(projectValue -> projectValue.getValue().getName().equals(varName))) {
             return VariableError.VARIABLE_NOT_EXIST;
         }
-        VirtualProjectDevice.Memory.variables.removeIf(projectValue -> projectValue.getValue().getName().equals(varName));
+        variables.removeIf(projectValue -> projectValue.getValue().getName().equals(varName));
         return VariableError.OK;
-    }
-
-    public void removeAllVariables() {
-        VirtualProjectDevice.Memory.variables.clear();
     }
 
     @RequiredArgsConstructor

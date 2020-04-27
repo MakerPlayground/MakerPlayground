@@ -24,12 +24,13 @@ import io.makerplayground.project.expression.Expression;
 import io.makerplayground.ui.canvas.node.expression.NumberWithUnitNoBindingExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.NumberWithUnitControl;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
 public class SpinnerNumberWithUnitNoBindingExpressionControl extends NumberWithUnitNoBindingExpressionControl {
 
-    public SpinnerNumberWithUnitNoBindingExpressionControl(Parameter p, List<ProjectValue> projectValues, Expression expression) {
+    public SpinnerNumberWithUnitNoBindingExpressionControl(Parameter p, ObservableList<ProjectValue> projectValues, Expression expression) {
         super(p, projectValues, expression);
     }
 

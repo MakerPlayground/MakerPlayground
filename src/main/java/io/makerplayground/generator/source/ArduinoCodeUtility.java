@@ -22,7 +22,6 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
-import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
 
@@ -187,7 +186,7 @@ class ArduinoCodeUtility {
         }
 
         // TODO: We should declare only the variables used
-        Memory.unmodifiableVariables.forEach(projectValue -> {
+        project.getUnmodifiableVariable().forEach(projectValue -> {
             if (projectValue.getValue().getType() == DataType.DOUBLE) {
                 builder.append("double ").append(projectValue.getValue().getName()).append(" = 0.0;").append(NEW_LINE);
             }

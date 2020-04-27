@@ -22,6 +22,7 @@ import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.SimpleStringExpression;
 import io.makerplayground.project.term.Term;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -32,7 +33,7 @@ public class StringChipField extends ChipField<ComplexStringExpression> {
 
     private static final Color NUMERIC_EXPRESSION_COLOR = Color.DARKGRAY;
 
-    public StringChipField(ComplexStringExpression expression, List<ProjectValue> projectValues) {
+    public StringChipField(ComplexStringExpression expression, ObservableList<ProjectValue> projectValues) {
         super(expression, projectValues, true);
     }
 
