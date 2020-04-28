@@ -1,0 +1,71 @@
+.list-view {
+    -fx-background-color: #cccccc, -fx-control-inner-background;
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0, 1;
+    -fx-padding: 3;
+    -fx-pref-width: 120;
+    -fx-max-height: 70;
+}
+
+.list-view:focused {
+    -fx-background-color: #cccccc, -fx-control-inner-background;
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0, 1;
+    -fx-padding: 3;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * List, Tree, Table COMMON                                                    *
+ *                                                                             *
+ ******************************************************************************/
+
+/* remove double borders from scrollbars */
+.list-view > .virtual-flow > .scroll-bar:vertical {
+    -fx-background-insets: 0, 0 0 0 1;
+    -fx-padding: -1 -1 -1 0;
+}
+.list-view > .virtual-flow > .scroll-bar:horizontal {
+    -fx-background-insets: 0, 1 0 0 0;
+    -fx-padding: 0 -1 -1 -1;
+}
+.list-view > .virtual-flow > .corner {
+    -fx-background-color: derive(-fx-base,-1%);
+}
+/* standard cell */
+.list-cell {
+    -fx-background: -fx-control-inner-background;
+    -fx-background-color: -fx-background;
+    -fx-text-fill: -fx-text-background-color;
+    -fx-pref-width: 100;
+}
+/* Selected rows */
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
+    -fx-background: accent-color;
+    -fx-table-cell-border-color: accent-color;
+    -fx-border-color: accent-color;
+}
+/* Selected when control is not focused */
+.list-cell:filled:selected {
+    -fx-background: -fx-selection-bar-non-focused;
+    -fx-table-cell-border-color: derive(-fx-selection-bar-non-focused, 20%);
+}
+/* focused cell (keyboard navigation) */
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:focused {
+    -fx-background-color: accent-color;
+    -fx-background-insets: 0, 1, 2;
+    -fx-border-color: accent-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * ListView and ListCell                                                       *
+ *                                                                             *
+ ******************************************************************************/
+
+.list-cell {
+    -fx-padding: 0.25em 0.583em 0.25em 0.583em; /* 3 7 3 7 */
+}
+.list-cell:odd {
+    -fx-background: -fx-control-inner-background-alt;
+}

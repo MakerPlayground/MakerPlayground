@@ -22,6 +22,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -35,7 +36,7 @@ public class MultiFunctionNumericControl extends HBox {
 
     private static final DecimalFormat df = new DecimalFormat("0.###E0");
 
-    public MultiFunctionNumericControl(Parameter p, List<ProjectValue> projectValues, CustomNumberExpression expression) {
+    public MultiFunctionNumericControl(Parameter p, ObservableList<ProjectValue> projectValues, CustomNumberExpression expression) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
 
         NumericChipField chipField = new NumericChipField(expression, projectValues);

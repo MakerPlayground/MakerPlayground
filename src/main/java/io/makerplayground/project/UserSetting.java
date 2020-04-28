@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
@@ -30,8 +31,10 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.*;
 
@@ -40,7 +43,9 @@ import java.util.*;
  *
  */
 @JsonSerialize(using = UserSettingSerializer.class)
+@ToString
 public class UserSetting {
+    private final Project project;
     @Getter private final ProjectDevice device;
     private final ReadOnlyObjectWrapper<Action> action;
     private final ReadOnlyObjectWrapper<Condition> condition;
@@ -51,7 +56,8 @@ public class UserSetting {
     @Getter private final ObservableMap<Value, Expression> expression;
     @Getter private final ObservableMap<Value, Boolean> expressionEnable;
 
-    private UserSetting(ProjectDevice device) {
+    private UserSetting(Project project, ProjectDevice device) {
+        this.project = project;
         this.device = device;
         this.action = new ReadOnlyObjectWrapper<>();
         this.condition = new ReadOnlyObjectWrapper<>();
@@ -73,9 +79,23 @@ public class UserSetting {
             }
         });
 
+        parameterMap.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+        expression.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+        expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+    }
+
+    public UserSetting(Project project, ProjectDevice device, Action supportingAction) {
+        this(project, device);
+        this.action.set(supportingAction);
+    }
+
+    public UserSetting(Project project, ProjectDevice device, Condition supportingCondition) {
+        this(project, device);
+        this.condition.set(supportingCondition);
+
         // Initialize expression list
-        // TODO: Expression is not required to be added in Scene
         for (Value v : device.getGenericDevice().getValue()) {
+            expressionEnable.put(v, false);
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
                 NumericConstraint constraint = (NumericConstraint) v.getConstraint();
                 boolean customExpressionOnly = (constraint.getMin() == -Double.MAX_VALUE || constraint.getMin() == Integer.MIN_VALUE || constraint.getMax() == Double.MAX_VALUE || constraint.getMax() == Integer.MAX_VALUE);
@@ -85,26 +105,45 @@ public class UserSetting {
                     expression.put(v, new NumberInRangeExpression(device, v));
                 }
             }
-            expressionEnable.put(v, false);
         }
 
-        parameterMap.addListener((InvalidationListener) observable -> calculateAllValueUsed());
-        expression.addListener((InvalidationListener) observable -> calculateAllValueUsed());
-        expressionEnable.addListener((InvalidationListener) observable -> calculateAllValueUsed());
+        if (Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv: project.getUnmodifiableVariable()) {
+                Value v = pv.getValue();
+                expressionEnable.put(v, false);
+                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                    expression.put(v, new ConditionalExpression(device, v));
+                }
+            }
+
+            project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(o -> {
+                            Value v = o.getValue();
+                            if (expression.containsKey(v)) {
+                                return;
+                            }
+                            expressionEnable.put(v, false);
+                            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                                expression.put(v, new ConditionalExpression(device, v));
+                            }
+                        });
+                    }
+                    if (c.wasRemoved()) {
+                        c.getRemoved().forEach(o -> {
+                            Value v = o.getValue();
+                            expression.remove(v);
+                            expressionEnable.remove(v);
+                        });
+                    }
+                }
+            });
+        }
     }
 
-    public UserSetting(ProjectDevice device, Action supportingAction) {
-        this(device);
-        this.action.set(supportingAction);
-    }
-
-    public UserSetting(ProjectDevice device, Condition supportingCondition) {
-        this(device);
-        this.condition.set(supportingCondition);
-    }
-
-    UserSetting(ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(device, action);
+    UserSetting(Project project, ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, action);
 
         // replace all default map values with these maps
         this.parameterMap.putAll(parameterMap);
@@ -112,8 +151,8 @@ public class UserSetting {
         this.expressionEnable.putAll(enable);
     }
 
-    UserSetting(ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(device, condition);
+    UserSetting(Project project, ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, condition);
 
         // replace all default map values with these maps
         this.parameterMap.putAll(parameterMap);
@@ -122,7 +161,7 @@ public class UserSetting {
     }
 
     UserSetting(UserSetting u) {
-        this(u.device);
+        this(u.project, u.device);
 
         this.action.set(u.action.get());
         this.condition.set(u.condition.get());
@@ -135,6 +174,32 @@ public class UserSetting {
             this.expression.put(entry.getKey(), entry.getValue().deepCopy());
         }
         this.expressionEnable.putAll(u.expressionEnable);
+
+        if (Memory.projectDevice.equals(u.device)) {
+            project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(o -> {
+                            Value v = o.getValue();
+                            if (this.expression.containsKey(v)) {
+                                return;
+                            }
+                            expressionEnable.put(v, false);
+                            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                                this.expression.put(v, new ConditionalExpression(u.device, v));
+                            }
+                        });
+                    }
+                    if (c.wasRemoved()) {
+                        c.getRemoved().forEach(o -> {
+                            Value v = o.getValue();
+                            this.expression.remove(v);
+                            this.expressionEnable.remove(v);
+                        });
+                    }
+                }
+            });
+        }
     }
 
     private void initValueMap() {
@@ -188,7 +253,7 @@ public class UserSetting {
         for (Map.Entry<Parameter, Expression> entry : parameterMap.entrySet()) {
             Expression exp = entry.getValue();
             for (Term term: exp.getTerms()) {
-                if (term instanceof ValueTerm) {
+                if (term instanceof ValueTerm && term.isValid() && !Memory.projectDevice.equals(((ValueTerm) term).getValue().getDevice())) {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
                     if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
@@ -203,7 +268,10 @@ public class UserSetting {
             if (exp instanceof RecordExpression) {
                 ((RecordExpression) exp).getRecord().getEntryList().stream().flatMap(recordEntry -> recordEntry.getValue().getTerms().stream()).filter(term -> term instanceof ValueTerm).forEach(term -> {
                     ProjectValue projectValue = ((ValueTerm) term).getValue();
-                    if (projectValue != null) {
+                    if (Memory.projectDevice.equals(projectValue.getDevice())) {
+                        return;
+                    }
+                    if (projectValue != null && dataType.contains(projectValue.getValue().getType())) {
                         ProjectDevice projectDevice = projectValue.getDevice();
                         if (result.containsKey(projectDevice)) {
                             result.get(projectDevice).add(projectValue.getValue());
@@ -218,7 +286,7 @@ public class UserSetting {
         // list value use in every enable expression in a condition
         for (Value v : expression.keySet()) {
             // skip if this expression is disabled
-            if (expressionEnable.get(v)) {
+            if (expressionEnable.get(v) && !Memory.projectDevice.equals(this.getDevice())) {
                 Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
                 for (ProjectValue pv : valueUsed) {
                     if (result.containsKey(pv.getDevice())) {

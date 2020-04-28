@@ -20,6 +20,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;
@@ -32,7 +33,7 @@ public class CustomNoBindingExpressionControl extends GridPane {
     private final ReadOnlyObjectWrapper<CustomNumberExpression> expression;
     private final List<ProjectValue> projectValues;
 
-    public CustomNoBindingExpressionControl(CustomNumberExpression expression, List<ProjectValue> projectValues) {
+    public CustomNoBindingExpressionControl(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.projectValues = projectValues;
 

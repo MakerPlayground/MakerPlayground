@@ -24,6 +24,8 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.Condition;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
+import io.makerplayground.project.VirtualProjectDevice.TimeElapsed;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import io.makerplayground.util.AzureCognitiveServices;
@@ -170,39 +172,23 @@ public class RpiPythonUploadCode {
                 builder.append("def ").append(parseNodeFunctionName(currentScene)).append("():").append(NEW_LINE);
                 builder.append(INDENT).append("MP.update()").append(NEW_LINE);
                 // do action
-                for (UserSetting setting : currentScene.getSetting()) {
+                for (UserSetting setting : currentScene.getAllSettings()) {
                     ProjectDevice device = setting.getDevice();
-                    String deviceName = parseDeviceVariableName(searchGroup(device));
-                    List<String> taskParameter = new ArrayList<>();
-
-                    List<Parameter> parameters = setting.getAction().getParameter();
-                    if (setting.isDataBindingUsed()) {  // generate task based code for performing action continuously in background
-//                        int parameterIndex = 0;
-//                        for (Parameter p : parameters) {
-//                            Expression e = setting.getParameterMap().get(p);
-//                            if (setting.isDataBindingUsed(p)) {
-//                                parameterIndex++;
-//                                builder.append(INDENT).append("MP.setExpression('").append(parseDeviceName(configuration, device)).append("', ")
-//                                        .append(parameterIndex)
-//                                        .append("lambda:").append(parseExpressionForParameter(p, e)).append(", ")
-//                                        .append(parseRefreshInterval(e)).append(")").append(NEW_LINE);
-//                                taskParameter.add(parseDeviceExpressionVariableName(configuration, device) + "[" + parameterIndex + "].value");
-//                            } else {
-//                                taskParameter.add(parseExpressionForParameter(p, e));
-//                            }
-//                        }
-//                        for (int i = parameterIndex; i < Utility.getMaximumNumberOfExpression(project, setting.getDevice()); i++) {
-//                            builder.append(INDENT).append("MP.clearExpression('").append(parseDeviceName(configuration, device))
-//                                    .append("', ").append(i).append(")").append(NEW_LINE);
-//                        }
-//                        builder.append(INDENT).append("MP.setTask('").append(parseDeviceName(configuration, device)).append("', lambda: ")
-//                                .append(deviceName).append(".").append(setting.getAction().getFunctionName()).append("(")
-//                                .append(String.join(", ", taskParameter)).append("))").append(NEW_LINE);
-                    } else {    // generate code to perform action once
-//                        // unsetDevice task if this device used to have background task set
-//                        if (Utility.getUsedDevicesWithTask(project).contains(device)) {
-//                            builder.append(INDENT).append("MP.unsetTask('").append(parseDeviceName(configuration, device)).append("')").append(NEW_LINE);
-//                        }
+                    if (Memory.projectDevice.equals(device)) {
+                        if (Memory.setValue == setting.getAction()) {
+                            Map<Parameter, Expression> map = setting.getParameterMap();
+                            Parameter nameParam = setting.getAction().getParameter().get(0);
+                            String deviceName = parseExpressionForParameter(nameParam, map.get(nameParam));
+                            Parameter valueParam = setting.getAction().getParameter().get(1);
+                            String expr = parseExpressionForParameter(valueParam, map.get(valueParam));
+                            builder.append(INDENT).append("MP.memory[\"").append(deviceName).append("\"]").append(" = ").append(expr).append(NEW_LINE);
+                        } else {
+                            throw new IllegalStateException();
+                        }
+                    } else {
+                        String deviceName = parseDeviceVariableName(searchGroup(device));
+                        List<String> taskParameter = new ArrayList<>();
+                        List<Parameter> parameters = setting.getAction().getParameter();
                         // generate code to perform the action
                         for (Parameter p : parameters) {
                             taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
@@ -312,14 +298,25 @@ public class RpiPythonUploadCode {
                     for (UserSetting setting : condition.getVirtualDeviceSetting()) {
                         if (setting.getCondition() == null) {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
-                        } else if (setting.getDevice() == VirtualProjectDevice.timeElapsedProjectDevice) {
+                        } else if (TimeElapsed.projectDevice.equals(setting.getDevice())) {
                             Parameter valueParameter = setting.getCondition().getParameter().get(0);
-                            if (setting.getCondition() == VirtualProjectDevice.lessThan) {
+                            if (setting.getCondition() == TimeElapsed.lessThan) {
                                 booleanExpressions.add("time.time() < " + parseBeginRecentSceneFinishTime(root) + " + " +
                                         parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
-                            } else {
+                            } else if (setting.getCondition() == TimeElapsed.greaterThan) {
                                 booleanExpressions.add("time.time() > " + parseBeginRecentSceneFinishTime(root) + " + " +
                                         parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                            } else {
+                                throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
+                            }
+                        } else if (Memory.projectDevice.equals(setting.getDevice())) {
+                            if (Memory.compare == setting.getCondition()) {
+                                for (Value value : setting.getExpression().keySet()) {
+                                    if (setting.getExpressionEnable().get(value)) {
+                                        Expression expression = setting.getExpression().get(value);
+                                        booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
+                                    }
+                                }
                             }
                         } else {
                             throw new IllegalStateException("Found unsupported user setting {" + setting + "}");
@@ -498,6 +495,12 @@ public class RpiPythonUploadCode {
                     .append(" = ").append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
                     .append("(").append(String.join(", ", args)).append(")").append(NEW_LINE);
         }
+        // TODO: We should declare only the variables used
+        project.getUnmodifiableVariable().forEach(projectValue -> {
+            if (projectValue.getValue().getType() == DataType.DOUBLE) {
+                builder.append(INDENT).append(INDENT).append("MP.memory[\"").append(projectValue.getValue().getName()).append("\"] = 0.0").append(NEW_LINE);
+            }
+        });
         builder.append(NEW_LINE);
         project.getBegin().forEach(begin -> builder.append(INDENT).append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseNodeFunctionName(begin)).append(NEW_LINE));
         /* End Setup */
@@ -574,6 +577,9 @@ public class RpiPythonUploadCode {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
+            if (Memory.projectDevice.equals(value.getDevice())) {
+                return "MP.memory[\"" + value.getValue().getName() + "\"]";
+            }
             return parseValueVariableTerm(searchGroup(value.getDevice()), value.getValue());
         } else if (term instanceof IntegerTerm) {
             return term.toString();
@@ -646,9 +652,11 @@ public class RpiPythonUploadCode {
                 returnValue = "(" + String.join("+", subExpressionString) + ")";
             }
         } else if (expression instanceof SimpleIntegerExpression) {
-            returnValue = ((SimpleIntegerExpression) expression).getInteger().toString();
+            returnValue = String.valueOf(((SimpleIntegerExpression) expression).getInteger());
         } else if (expression instanceof StringIntegerExpression) {
             returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
+        } else if (expression instanceof VariableExpression) {
+            returnValue = ((VariableExpression) expression).getVariableName();
         } else {
             throw new IllegalStateException();
         }

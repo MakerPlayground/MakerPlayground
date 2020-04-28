@@ -23,7 +23,7 @@ import java.util.Objects;
 public abstract class Term {
 
     public enum Type {
-        NUMBER_ONLY, NUMBER, STRING, VALUE, OPERATOR, DATETIME, DOT_MATRIX, RECORD
+        NUMBER_ONLY, NUMBER, STRING, VALUE, OPERATOR, DATETIME, VARIABLE, DOT_MATRIX, RECORD
     }
     private final Type type;
     protected final Object value;

@@ -19,12 +19,13 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.Term;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
 public class NumericChipField extends ChipField<CustomNumberExpression> {
 
-    public NumericChipField(CustomNumberExpression expression, List<ProjectValue> projectValues) {
+    public NumericChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
         super(expression, projectValues, false);
     }
 

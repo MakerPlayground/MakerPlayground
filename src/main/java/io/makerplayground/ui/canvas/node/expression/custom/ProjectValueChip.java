@@ -19,7 +19,8 @@ package io.makerplayground.ui.canvas.node.expression.custom;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
-import javafx.collections.FXCollections;
+import javafx.beans.InvalidationListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -29,7 +30,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ProjectValueChip extends Chip<ProjectValue> {
 
@@ -39,7 +39,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
     private static final String TEXT_CSS = "-fx-font-size: 10; -fx-fill: white; -fx-font-weight: bold; -fx-text-alignment: center;";
     private static final String COMBOBOX_LISTVIEW_TEXT_CSS = "-fx-font-size: 10; -fx-text-alignment: center;";
 
-    public ProjectValueChip(ProjectValue initialValue, List<ProjectValue> projectValues) {
+    public ProjectValueChip(ProjectValue initialValue, ObservableList<ProjectValue> projectValues) {
         super(initialValue, Term.Type.VALUE, projectValues);
     }
 
@@ -55,7 +55,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             e.printStackTrace();
         }
 
-        comboBox.getItems().addAll(FXCollections.observableArrayList(getChoices()));
+        comboBox.itemsProperty().set(getChoices());
         if (getValue() != null) {
             comboBox.setValue(getValue());
         }
@@ -90,10 +90,18 @@ public class ProjectValueChip extends Chip<ProjectValue> {
                 }
             }
         });
+
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setValue(newValue));
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
+
+        getChoices().addListener((InvalidationListener) c -> {
+            ProjectValue selectedValue = comboBox.getSelectionModel().getSelectedItem();
+            if (!comboBox.getItems().contains(selectedValue)) {
+                comboBox.getSelectionModel().clearSelection();
+            }
+        });
     }
 
     @Override

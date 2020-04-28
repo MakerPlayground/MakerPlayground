@@ -25,10 +25,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,8 +76,8 @@ public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private StackPane closeParenthesisChip;
 
     private final ReadOnlyObjectWrapper<T> expressionProperty;
-    private final List<ProjectValue> projectValues;
     private final boolean parseStringChip;
+    private final ObservableList<ProjectValue> projectValues;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
@@ -88,10 +90,10 @@ public abstract class ChipField<T extends Expression> extends VBox {
     private static final int MINIMUM_WIDTH = 75;
     protected static final Color TEXT_COLOR = Color.web("#333333");
 
-    public ChipField(T expression, List<ProjectValue> projectValues, boolean parseStringChip) {
+    public ChipField(T expression, ObservableList<ProjectValue> projectValues, boolean parseStringChip) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
-        this.projectValues = projectValues;
         this.parseStringChip = parseStringChip;
+        this.projectValues = projectValues;
         initView();
         initEvent();
     }
@@ -460,7 +462,18 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
     protected void updateDisplayMode() {
         displayModeTextFlow.getChildren().clear();
-        Text t = new Text(getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" ")));
+        Text t = new Text();
+        StringBinding textBinding = new StringBinding() {
+            {
+                bind(expressionProperty);   // TODO: we should not need to bind to expression as updateDisplayMode is called when expression changed
+                bind(projectValues);
+            }
+            @Override
+            protected String computeValue() {
+                return getExpression().getTerms().stream().map(Term::toString).collect(Collectors.joining(" "));
+            }
+        };
+        t.textProperty().bind(textBinding);
         t.setFill(TEXT_COLOR);
         displayModeTextFlow.getChildren().add(t);
     }

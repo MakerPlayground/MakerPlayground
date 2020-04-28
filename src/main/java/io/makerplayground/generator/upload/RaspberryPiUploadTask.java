@@ -114,23 +114,23 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
 
         updateMessage("Preparing to generate project");
         Collection<ProjectDevice> projectDeviceList = interactiveUpload ? project.getUnmodifiableProjectDevice() : project.getAllDeviceUsed();
-        List<ActualDevice> actualDevicesUsed = projectDeviceList.stream()
+        List<ActualDevice> allActualDevices = projectDeviceList.stream()
                 .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
                 .map(configuration::getActualDevice)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         Platform.runLater(() -> log.set("List of actual device used \n"));
         for (String actualDeviceId :
-                actualDevicesUsed.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
+                allActualDevices.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
             Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
         }
 
-        Set<String> mpLibraries = actualDevicesUsed.stream()
+        Set<String> mpLibraries = allActualDevices.stream()
                 .map(actualDevice -> actualDevice.getMpLibrary(project.getSelectedPlatform()))
                 .collect(Collectors.toSet());
         mpLibraries.add("MakerPlayground");
 
-        Set<String> externalLibraries = actualDevicesUsed.stream()
+        Set<String> externalLibraries = allActualDevices.stream()
                 .map(actualDevice -> actualDevice.getExternalLibrary(project.getSelectedPlatform()))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
 

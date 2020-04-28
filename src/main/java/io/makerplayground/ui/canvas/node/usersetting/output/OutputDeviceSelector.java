@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.usersetting.output;
 
+import io.makerplayground.project.VirtualProjectDevice;
 import io.makerplayground.ui.canvas.node.SceneViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,6 +40,14 @@ public class OutputDeviceSelector extends PopOver {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        VirtualProjectDevice.getDevicesWithAction().forEach(device -> {
+            OutputDeviceIconSelectorView inputIconView = new OutputDeviceIconSelectorView(device);
+            flowPane.getChildren().add(inputIconView);
+            inputIconView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                viewModel.getScene().addVirtualDevice(device);
+            });
+        });
 
         viewModel.getProjectOutputDevice().forEach(device -> {
             OutputDeviceIconSelectorView outputIconView = new OutputDeviceIconSelectorView(device);

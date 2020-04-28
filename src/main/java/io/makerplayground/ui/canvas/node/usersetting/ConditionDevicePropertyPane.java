@@ -9,6 +9,7 @@ import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConst
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.UserSetting;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
@@ -261,7 +262,13 @@ public class ConditionDevicePropertyPane extends VBox {
             propertyPane.getChildren().addAll(name, control);
         }
 
-        if (userSetting.getCondition().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
+        if (userSetting.getDevice().equals(Memory.projectDevice) && userSetting.getCondition() == Memory.compare) {
+            List<ProjectValue> values = project.getUnmodifiableVariable();
+            for (int i=0; i<values.size(); i++) {
+                ProjectValue value = values.get(i);
+                createExpressionControl(i, value.getValue());
+            }
+        } else if (userSetting.getCondition().getName().equals("Compare")) {    // TODO: compare with condition name may be dangerous
             List<Value> values = userSetting.getDevice().getGenericDevice().getValue();
             for (int i=0; i<values.size(); i++) {
                 Value value = values.get(i);

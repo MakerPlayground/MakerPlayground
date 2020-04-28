@@ -4,15 +4,11 @@ import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.DotMatrixExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.*;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import javafx.beans.binding.Bindings;
@@ -268,6 +264,11 @@ public class SceneDevicePropertyPane extends VBox {
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.DOT_MATRIX && p.getDataType() == DataType.DOT_MATRIX_DATA) {
                 DotMatrixExpressionControl expressionControl = new DotMatrixExpressionControl((DotMatrixExpression) userSetting.getParameterMap().get(p));
+            } else if (p.getControlType() == ControlType.VARIABLE) {
+                VariableSelectorControl expressionControl = new VariableSelectorControl(
+                        project,
+                        (VariableExpression) (userSetting.getParameterMap().get(p))
+                );
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
             } else {

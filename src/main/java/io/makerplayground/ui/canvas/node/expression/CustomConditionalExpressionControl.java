@@ -25,6 +25,7 @@ import io.makerplayground.ui.canvas.node.expression.custom.NumericChipField;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -41,12 +42,12 @@ import java.util.List;
 public class CustomConditionalExpressionControl extends VBox {
 
     private final ReadOnlyObjectWrapper<ConditionalExpression> expression = new ReadOnlyObjectWrapper<>();
-    private final List<ProjectValue> projectValues;
+    private final ObservableList<ProjectValue> projectValues;
     private final List<EntryView> entryViewList;
     private final ImageView addImageView;
     private final Unit unit;
 
-    public CustomConditionalExpressionControl(ConditionalExpression expression, List<ProjectValue> projectValues, Unit unit) {
+    public CustomConditionalExpressionControl(ConditionalExpression expression, ObservableList<ProjectValue> projectValues, Unit unit) {
         this.expression.set(expression);
         this.projectValues = projectValues;
         this.entryViewList = new ArrayList<>();
@@ -112,7 +113,7 @@ public class CustomConditionalExpressionControl extends VBox {
         private ImageView removeImageView;
         private Label operatorLabel;
 
-        public EntryView(ConditionalExpression.Entry entry, List<ProjectValue> projectValues, Unit unit) {
+        public EntryView(ConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues, Unit unit) {
             ComboBox<Operator> operatorComboBox = new ComboBox<>(FXCollections.observableArrayList(Operator.getComparisonOperator()));
             if (entry.getOperator() != null) {
                 operatorComboBox.setValue(entry.getOperator());

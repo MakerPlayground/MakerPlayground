@@ -124,10 +124,6 @@ public class SceneDeviceIconViewModel {
         return userSetting.getDevice().getGenericDevice().getValue();
     }
 
-    public List<ProjectValue> getProjectValue(Set<DataType> dataType) {
-        return project.getAvailableValue(dataType);
-    }
-
     public NodeElement getNodeElement() {
         return nodeElement;
     }

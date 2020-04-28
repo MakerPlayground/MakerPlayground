@@ -23,7 +23,6 @@ import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -85,16 +84,16 @@ public class Condition extends NodeElement {
         if (device.getGenericDevice().getCondition().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have condition.");
         } else {
-            setting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+            setting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         }
         project.invalidateDiagram();
     }
 
     public void addVirtualDevice(ProjectDevice device) {
-        if (!VirtualProjectDevice.virtualDevices.contains(device)) {
+        if (!VirtualProjectDevice.getDevices().contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
-        virtualSetting.add(new UserSetting(device, device.getGenericDevice().getCondition().get(0)));
+        virtualSetting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         project.invalidateDiagram();
     }
 
@@ -157,7 +156,7 @@ public class Condition extends NodeElement {
         for (UserSetting userSetting : setting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
             if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {
@@ -172,8 +171,13 @@ public class Condition extends NodeElement {
 
         for (UserSetting userSetting : virtualSetting) {
             // at least one expression must be enable and every expression mush be valid when the action is "Compare"
-            if (userSetting.getCondition().getName().equals("Compare")) {
-                if (!userSetting.getExpressionEnable().values().contains(true)) {
+            if (VirtualProjectDevice.Memory.projectDevice.equals(userSetting.getDevice())) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
+                    return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
+                }
+            }
+            else if (userSetting.getCondition().getName().equals("Compare")) {
+                if (!userSetting.getExpressionEnable().containsValue(true)) {
                     return DiagramError.CONDITION_NO_ENABLE_EXPRESSION;
                 }
                 if (userSetting.getExpression().values().stream().anyMatch(expression -> !expression.isValid())) {

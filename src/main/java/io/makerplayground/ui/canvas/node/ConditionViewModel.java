@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. The Maker Playground Authors.
+ * Copyright (c) 2020. The Maker Playground Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ public class ConditionViewModel {
         this.virtualDeviceViewModelCreator = new DynamicViewModelCreator<>(condition.getVirtualDeviceSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, condition, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualProjectDevice.virtualDevices.size())
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithCondition()).add(VirtualProjectDevice.getDevicesWithCondition().size())
                 .greaterThan(Bindings.size(condition.getSetting()).add(Bindings.size(condition.getVirtualDeviceSetting()))));
-
 
         hasLineIn = new SimpleBooleanProperty();
         hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == condition)).greaterThan(0));
@@ -113,10 +112,6 @@ public class ConditionViewModel {
 
     public List<ProjectDevice> getProjectInputDevice() {
         return project.getDeviceWithCondition();
-    }
-
-    public List<ProjectDevice> getVirtualDevices() {
-        return VirtualProjectDevice.virtualDevices;
     }
 
     public Condition getCondition() { return condition; }

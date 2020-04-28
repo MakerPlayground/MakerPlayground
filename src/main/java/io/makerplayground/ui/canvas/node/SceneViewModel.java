@@ -20,10 +20,8 @@ import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.node.usersetting.SceneDeviceIconViewModel;
 import io.makerplayground.ui.canvas.helper.DynamicViewModelCreator;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 
 import java.util.List;
 
@@ -44,10 +42,10 @@ public class SceneViewModel {
         this.scene = scene;
         this.project = project;
 
-        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getSetting(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
+        this.dynamicViewModelCreator = new DynamicViewModelCreator<>(scene.getAllSettings(), userSetting -> new SceneDeviceIconViewModel(userSetting, scene, project));
 
         hasDeviceToAdd = new SimpleBooleanProperty();
-        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).greaterThan(0));
+        hasDeviceToAdd.bind(Bindings.size(project.getDeviceWithAction()).add(VirtualProjectDevice.getDevicesWithAction().size()).greaterThan(0));
 
         hasLineIn = new SimpleBooleanProperty();
         hasLineIn.bind(Bindings.size(project.getUnmodifiableLine().filtered(line -> line.getDestination() == scene)).greaterThan(0));
@@ -124,8 +122,12 @@ public class SceneViewModel {
         return scene;
     }
 
-    public ObservableList<UserSetting> getStateDevice() {
+    public ObservableList<UserSetting> getSceneDevice() {
         return scene.getSetting();
+    }
+
+    public ObservableList<UserSetting> getVirtualDeviceSetting() {
+        return scene.getVirtualDeviceSetting();
     }
 
     public void removeUserSetting(UserSetting userSetting) {

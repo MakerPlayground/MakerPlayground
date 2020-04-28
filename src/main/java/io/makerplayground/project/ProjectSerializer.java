@@ -29,6 +29,8 @@ import java.io.IOException;
  */
 public class ProjectSerializer extends JsonSerializer<Project> {
 
+    // TODO: project variables
+
     @Override
     public void serialize(Project project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -66,6 +68,12 @@ public class ProjectSerializer extends JsonSerializer<Project> {
         jsonGenerator.writeArrayFieldStart("devices");
         for(ProjectDevice device : project.getUnmodifiableProjectDevice()) {
             mapper.writeValue(jsonGenerator, device);
+        }
+        jsonGenerator.writeEndArray();
+
+        jsonGenerator.writeArrayFieldStart("variables");
+        for (ProjectValue value: project.getUnmodifiableVariable()) {
+            jsonGenerator.writeString(value.getValue().getName());
         }
         jsonGenerator.writeEndArray();
 

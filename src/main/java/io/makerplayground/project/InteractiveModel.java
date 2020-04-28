@@ -11,11 +11,11 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.upload.UploadMode;
 import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.scene.control.Alert;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -49,7 +49,7 @@ public class InteractiveModel {
             return actionUserSettings.get(projectDevice);
         } else {
             if (projectDevice.getGenericDevice().hasAction()) {
-                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getAction().get(0));
+                UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getAction().get(0));
                 actionUserSettings.put(projectDevice, userSetting);
                 return userSetting;
             } else {
@@ -63,7 +63,7 @@ public class InteractiveModel {
             return conditionUserSettings.get(projectDevice);
         } else {
             if (projectDevice.getGenericDevice().hasCondition()) {
-                UserSetting userSetting = new UserSetting(projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
+                UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
                 conditionUserSettings.put(projectDevice, userSetting);
                 return userSetting;
             } else {
@@ -154,6 +154,13 @@ public class InteractiveModel {
                 }
             }
         }
+
+        /* Initialize the map for the virtual devices i.e. memory */
+        actionMap.put(Memory.projectDevice, List.of(Memory.setValue));
+        conditionMap.put(Memory.projectDevice, new LinkedHashMap<>());
+        conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
+        valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
+        project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
     }
 
     /*
@@ -284,6 +291,17 @@ public class InteractiveModel {
     }
 
     public void sendActionCommand(UserSetting userSetting) {
+        // memory values are computed and stored in the program side
+        if (userSetting.getDevice().equals(Memory.projectDevice) && userSetting.getAction().equals(Memory.setValue)) {
+            VariableExpression expression = (VariableExpression) userSetting.getParameterMap().get(Memory.nameParameter);
+            expression.getProjectValue().ifPresent(projectValue ->
+                    valueMap.get(Memory.projectDevice).get(projectValue.getValue()).set(
+                            evaluateCustomNumberExpression((CustomNumberExpression) (userSetting.getParameterMap().get(Memory.valueParameter)))
+                    )
+            );
+            return;
+        }
+
         List<String> args = new ArrayList<>();
         args.add("\"" + userSetting.getDevice().getName() + "\"");
         args.add("\"" + userSetting.getAction().getName() + "\"");
@@ -301,10 +319,6 @@ public class InteractiveModel {
                 byte[] command = commandString.getBytes();
                 serialPort.writeBytes(command, command.length);
             }
-        } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
-            webSocketClient.send(commandString);
-        } else {
-            throw new IllegalStateException("Not supported yet");
         }
     }
 

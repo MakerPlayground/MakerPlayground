@@ -22,6 +22,7 @@ import io.makerplayground.project.expression.Expression;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,30 +33,41 @@ import java.util.Objects;
 @JsonSerialize(using = SceneSerializer.class)
 public class Scene extends NodeElement {
 
+    private final ObservableList<UserSetting> allSettings;
     private final ObservableList<UserSetting> setting;
+    private final ObservableList<UserSetting> virtualSetting;
 
     Scene(Project project) {
         super(20, 20, 205, 124, project);
 
         this.name = "";
+
         // fire update event when actionProperty is invalidated / changed
-        this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
     }
 
     Scene(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, Project project) {
+            , String name, List<UserSetting> allSettings, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
         this.name = name;
-        this.setting = FXCollections.observableArrayList(setting);
+        // fire update event when actionProperty is invalidated / changed
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof ProjectDevice && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
+        this.allSettings.addAll(allSettings);
     }
 
     Scene(Scene s, String name, Project project) {
         super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight(), project);
         this.name = name;
-        this.setting = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        for (UserSetting u : s.setting) {
-            this.setting.add(new UserSetting(u));
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof ProjectDevice && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
+        for (UserSetting u : s.allSettings) {
+            this.allSettings.add(new UserSetting(u));
         }
     }
 
@@ -63,18 +75,26 @@ public class Scene extends NodeElement {
         if (device.getGenericDevice().getAction().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have action.");
         } else {
-            setting.add(new UserSetting(device, device.getGenericDevice().getAction().get(0)));
+            allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
         }
         project.invalidateDiagram();
     }
 
+
+    public void addVirtualDevice(ProjectDevice device) {
+        if (!VirtualProjectDevice.getDevices().contains(device)) {
+            throw new IllegalStateException("Device to be added is not a virtual device");
+        }
+        allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
+    }
+
     public void removeDevice(ProjectDevice device) {
-        for (int i = setting.size() - 1; i >= 0; i--) {
-            if (setting.get(i).getDevice() == device) {
-                setting.remove(i);
+        for (int i = allSettings.size() - 1; i >= 0; i--) {
+            if (allSettings.get(i).getDevice() == device) {
+                allSettings.remove(i);
             }
         }
-        for (UserSetting userSetting : setting) {
+        for (UserSetting userSetting : allSettings) {
             for (Parameter parameter : userSetting.getParameterMap().keySet()) {
                 Expression expression = userSetting.getParameterMap().get(parameter);
                 if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
@@ -92,12 +112,31 @@ public class Scene extends NodeElement {
         project.invalidateDiagram();
     }
 
+    /**
+     * Get a list of all {@link UserSetting}.
+     * @return The unmodifiable obsevable list that contains {@link UserSetting} of both {@link ProjectDevice} and {@link VirtualProjectDevice}.
+     */
+    public ObservableList<UserSetting> getAllSettings() { return FXCollections.unmodifiableObservableList(allSettings); }
+
+    /**
+     * Get a list of {@link UserSetting} that associates with actual {@link ProjectDevice}.
+     * @return The unmodifiable obsevable list that contains {@link UserSetting} of {@link ProjectDevice} but not {@link VirtualProjectDevice}.
+     */
     public ObservableList<UserSetting> getSetting() {
         return setting;
     }
 
+    /**
+     * Get a list of {@link UserSetting} that associates with {@link VirtualProjectDevice}.
+     * @return The unmodifiable obsevable list that contains {@link UserSetting} of {@link VirtualProjectDevice}.
+     */
+    public ObservableList<UserSetting> getVirtualDeviceSetting() {
+        return virtualSetting;
+    }
+
     public void removeUserSetting(UserSetting userSetting) {
-        this.setting.remove(userSetting);
+        this.allSettings.remove(userSetting);
+        project.invalidateDiagram();
     }
 
     @Override
@@ -116,6 +155,11 @@ public class Scene extends NodeElement {
 
         // parameter should not be null and should be valid
         if (setting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
+                .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
+            return DiagramError.SCENE_INVALID_PARAM;
+        }
+
+        if (virtualSetting.stream().flatMap(userSetting -> userSetting.getParameterMap().values().stream())
                 .anyMatch(o -> Objects.isNull(o) || !o.isValid())) {
             return DiagramError.SCENE_INVALID_PARAM;
         }

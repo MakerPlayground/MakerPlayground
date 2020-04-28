@@ -171,12 +171,12 @@ public class SceneView extends InteractiveNode {
         // the ScrollBar normally consume mouse drag event but we want to allow dragging by drag on the scroll bar area
         // when it is invisible so we attach and remove event filter based on the number of device (JavaFX doesn't provide
         // native method to check the visibility of the scroll bar)
-        if (sceneViewModel.getStateDevice().size() >= 3) {
+        if (sceneViewModel.getSceneDevice().size() >= 3) {
             removeEventFilter(scrollPane);
         } else {
             makeMovableWithEventFilter(scrollPane);
         }
-        Bindings.size(sceneViewModel.getStateDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
+        Bindings.size(sceneViewModel.getSceneDevice()).greaterThanOrEqualTo(3).addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 removeEventFilter(scrollPane);
             } else {
