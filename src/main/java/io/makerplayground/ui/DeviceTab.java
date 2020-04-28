@@ -25,7 +25,7 @@ public class DeviceTab extends SplitPane {
     private final Project currentProject;
 
     private final DeviceExplorerView deviceExplorerView;
-    private final Tab deviceConfigTab;
+    private final Tab circuitDiagramTab;
 
     private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DeviceDiagramView.DEFAULT_ZOOM_SCALE);
 
@@ -54,16 +54,16 @@ public class DeviceTab extends SplitPane {
         });
 
         // perform layout
-        deviceConfigTab = new Tab("Device Configuration");
-        deviceConfigTab.setClosable(false);
         Tab deviceExplorerTab = new Tab("Device Explorer", deviceExplorerView);
         deviceExplorerTab.setClosable(false);
-        TabPane deviceTabPane = new TabPane(deviceConfigTab, deviceExplorerTab);
-        deviceTabPane.setMaxWidth(710);
+        circuitDiagramTab = new Tab("Circuit Diagram");
+        circuitDiagramTab.setClosable(false);
+        TabPane deviceTabPane = new TabPane(deviceExplorerTab, circuitDiagramTab);
+        deviceTabPane.setMinWidth(480);
 
         setDividerPositions(0.5);
         setOrientation(Orientation.HORIZONTAL);
-        getItems().addAll(deviceTabPane, new Pane());
+        getItems().addAll(new Pane(), deviceTabPane);
         getStylesheets().add(getClass().getResource("/css/DeviceTab.css").toExternalForm());
 
         refreshConfigDevicePane();
@@ -74,7 +74,7 @@ public class DeviceTab extends SplitPane {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(this::refreshDiagramAndExplorer);
         ActualDeviceConfigView actualDeviceConfigView = new ActualDeviceConfigView(configActualDeviceViewModel);
-        deviceConfigTab.setContent(actualDeviceConfigView);
+        getItems().set(0, actualDeviceConfigView);
     }
 
     private void refreshDiagramAndExplorer() {
@@ -82,7 +82,7 @@ public class DeviceTab extends SplitPane {
 
         DeviceDiagramView deviceDiagramView = new DeviceDiagramView(currentProject);
         deviceDiagramView.setZoomLevel(deviceDiagramZoomLevel.get());
-        getItems().set(1, deviceDiagramView);
+        circuitDiagramTab.setContent(deviceDiagramView);
 
         deviceDiagramZoomLevel.unbind();
         deviceDiagramZoomLevel.bind(deviceDiagramView.zoomLevelProperty());

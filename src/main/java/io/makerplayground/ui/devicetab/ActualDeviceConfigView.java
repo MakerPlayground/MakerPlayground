@@ -105,7 +105,7 @@ public class ActualDeviceConfigView extends VBox{
         if (viewModel.getSelectedController() == null) {
             warningLabel.setText("Select a controller to get started");
         } else if (viewModel.getAllDevices().isEmpty()) {
-            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+            warningLabel.setText("Select some devices from the Device Explorer to get started");
         }
     }
 
@@ -249,7 +249,7 @@ public class ActualDeviceConfigView extends VBox{
         cloudPlatformParameterSection.setVisible(false);
         cloudPlatformParameterSection.setManaged(false);
         if (viewModel.getAllDevices().isEmpty()) {
-            warningLabel.setText("Switch to Device Explorer tab to add some devices");
+            warningLabel.setText("Select some devices from the Device Explorer to get started");
         }
         initUsedDeviceControl();
         initUnusedDeviceControl();
