@@ -6,11 +6,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.*;
 
+import java.util.List;
+
 public abstract class CategoricalAnimatedValue<T extends Expression> implements AnimatedValue {
     @Getter private final ObservableList<AnimatedKeyValue<T>> keyValues;
 
     public CategoricalAnimatedValue() {
         keyValues = FXCollections.observableArrayList();
+    }
+
+    public CategoricalAnimatedValue(List<AnimatedKeyValue<T>> keyValues) {
+        this.keyValues = FXCollections.observableList(keyValues);
     }
 
     @AllArgsConstructor

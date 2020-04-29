@@ -86,58 +86,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 parameter = condition.getParameter(parameterNode.get("name").asText()).orElseThrow();
             }
             assert parameter != null;
-            Expression expression;
-            String expressionType = parameterNode.get("type").asText();
             JsonNode valueNode = parameterNode.get("value");
-            List<Term> terms = new ArrayList<>();
-            for (JsonNode term_node : valueNode.get("terms")) {
-                terms.add(deserializeTerm(mapper, parameter, term_node, project.getUnmodifiableProjectDevice()));
-            }
-            if (ProjectValueExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
-            } else if (CustomNumberExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new CustomNumberExpression(terms);
-            } else if (NumberWithUnitExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
-            } else if (SimpleStringExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
-            } else if (ValueLinkingExpression.class.getSimpleName().equals(expressionType)) {
-                boolean inverse = false;
-                if (valueNode.has("inverse")) {
-                    inverse = valueNode.get("inverse").asBoolean();
-                }
-                expression = new ValueLinkingExpression(parameter, terms, inverse);
-            } else if (SimpleRTCExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new SimpleRTCExpression(((RTCTerm) (terms.get(0))).getValue());
-            } else if (ImageExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
-            } else if (RecordExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
-            } else if (ComplexStringExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new ComplexStringExpression(terms);
-            } else if (SimpleIntegerExpression.class.getSimpleName().equals(expressionType)) {
-                expression = new SimpleIntegerExpression(((IntegerTerm)(terms.get(0))).getValue());
-            } else if (StringIntegerExpression.class.getSimpleName().equals(expressionType)) {
-                String key = ((StringTerm) terms.get(0)).getValue();
-                expression = new StringIntegerExpression((StringIntegerCategoricalConstraint) parameter.getConstraint(), key);
-            } else if (DotMatrixExpression.class.getSimpleName().equals(expressionType)) {
-                DotMatrix dotMatrix = ((DotMatrixTerm) terms.get(0)).getValue();
-                expression = new DotMatrixExpression(dotMatrix);
-            } else if (VariableExpression.class.getSimpleName().equals(expressionType)) {
-                if (terms.isEmpty()) {
-                    expression = VariableExpression.NO_VARIABLE_SELECTED;
-                } else {
-                    expression = new VariableExpression(((ValueTerm)(terms.get(0))).getValue());
-                }
-            } else {
-                throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
-            }
-
-            Expression.RefreshInterval refreshInterval = Expression.RefreshInterval.valueOf(valueNode.get("refreshInterval").asText());
-            NumberWithUnit interval = mapper.readValue(valueNode.get("userDefinedInterval").traverse()
-                    , new TypeReference<NumberWithUnit>(){});
-            expression.setRefreshInterval(refreshInterval);
-            expression.setUserDefinedInterval(interval);
+            Expression expression = deserializeExpression(valueNode, parameter);
             valueMap.put(parameter, expression);
         }
 
@@ -177,6 +127,61 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
         throw new IllegalStateException("UserSetting Deserializer Error");
     }
 
+    private Expression deserializeExpression(JsonNode valueNode, Parameter parameter) throws IOException {
+        Expression expression;
+        Expression.Type expressionType = Expression.Type.valueOf(valueNode.get("type").asText());
+        List<Term> terms = new ArrayList<>();
+        for (JsonNode term_node : valueNode.get("terms")) {
+            terms.add(deserializeTerm(mapper, parameter, term_node, project.getUnmodifiableProjectDevice()));
+        }
+        if (expressionType == Expression.Type.PROJECT_VALUE) {
+            expression = new ProjectValueExpression(((ValueTerm) terms.get(0)).getValue());
+        } else if (expressionType == Expression.Type.CUSTOM_NUMBER) {
+            expression = new CustomNumberExpression(terms);
+        } else if (expressionType == Expression.Type.NUMBER_WITH_UNIT) {
+            expression = new NumberWithUnitExpression(((NumberWithUnitTerm) terms.get(0)).getValue());
+        } else if (expressionType == Expression.Type.SIMPLE_STRING) {
+            expression = new SimpleStringExpression(((StringTerm) terms.get(0)).getValue());
+        } else if (expressionType == Expression.Type.VALUE_LINKING) {
+            boolean inverse = false;
+            if (valueNode.has("inverse")) {
+                inverse = valueNode.get("inverse").asBoolean();
+            }
+            expression = new ValueLinkingExpression(parameter, terms, inverse);
+        } else if (expressionType == Expression.Type.DATETIME) {
+            expression = new SimpleRTCExpression(((RTCTerm) (terms.get(0))).getValue());
+        } else if (expressionType == Expression.Type.IMAGE) {
+            expression = new ImageExpression(((ValueTerm) terms.get(0)).getValue());
+        } else if (expressionType == Expression.Type.RECORD) {
+            expression = new RecordExpression(((RecordTerm) terms.get(0)).getValue());
+        } else if (expressionType == Expression.Type.COMPLEX_STRING) {
+            expression = new ComplexStringExpression(terms);
+        } else if (expressionType == Expression.Type.SIMPLE_INTEGER) {
+            expression = new SimpleIntegerExpression(((IntegerTerm)(terms.get(0))).getValue());
+        } else if (expressionType == Expression.Type.STRING_INT) {
+            String key = ((StringTerm) terms.get(0)).getValue();
+            expression = new StringIntegerExpression((StringIntegerCategoricalConstraint) parameter.getConstraint(), key);
+        } else if (expressionType == Expression.Type.DOT_MATRIX) {
+            DotMatrix dotMatrix = ((DotMatrixTerm) terms.get(0)).getValue();
+            expression = new DotMatrixExpression(dotMatrix);
+        } else if (expressionType == Expression.Type.VARIABLE) {
+            if (terms.isEmpty()) {
+                expression = VariableExpression.NO_VARIABLE_SELECTED;
+            } else {
+                expression = new VariableExpression(((ValueTerm)(terms.get(0))).getValue());
+            }
+        } else {
+            throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
+        }
+
+        Expression.RefreshInterval refreshInterval = Expression.RefreshInterval.valueOf(valueNode.get("refreshInterval").asText());
+        NumberWithUnit interval = mapper.readValue(valueNode.get("userDefinedInterval").traverse()
+                , new TypeReference<NumberWithUnit>(){});
+        expression.setRefreshInterval(refreshInterval);
+        expression.setUserDefinedInterval(interval);
+        return expression;
+    }
+
     private Expression deserializeNumberInRangeExpression(JsonNode node, ProjectDevice device, Value value) {
         if (node.get(0).get("type").asText().equals(Term.Type.VALUE.name())
                 && node.get(1).get("type").asText().equals(Term.Type.OPERATOR.name())
@@ -202,7 +207,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
 
     private Term deserializeTerm(ObjectMapper mapper, Parameter parameter, JsonNode term_node, Collection<ProjectDevice> allProjectDevices) throws IOException {
         String term_type = term_node.get("type").asText();
-        Term term;
+        Term term = null;
         if (Term.Type.NUMBER.name().equals(term_type)) {
             double num = term_node.get("value").get("value").asDouble();
             Unit unit = Unit.valueOf(term_node.get("value").get("unit").asText());
@@ -263,13 +268,54 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             String data = term_node.get("value").get("data").asText();
             DotMatrix dotMatrix = new DotMatrix(row, column, data);
             term = new DotMatrixTerm(dotMatrix);
-        }
-        else {
+        } else if (Term.Type.STRING_ANIMATED.name().equals(term_type)) {
+            List<CategoricalAnimatedValue.AnimatedKeyValue<ComplexStringExpression>> valueList = new ArrayList<>();
+            for (JsonNode node : term_node.get("value").get("keyValues")) {
+                ComplexStringExpression valueExpression = (ComplexStringExpression) deserializeExpression(node.get("value"), parameter);
+                CustomNumberExpression delayExpression = (CustomNumberExpression) deserializeExpression(node.get("delay"), parameter);
+                DelayUnit delayUnit = DelayUnit.valueOf(node.get("delayUnit").asText());
+                valueList.add(new CategoricalAnimatedValue.AnimatedKeyValue<>(valueExpression, delayExpression, delayUnit));
+            }
+            term = new StringAnimationTerm(new StringCategoricalAnimatedValue(valueList));
+        } else if (Term.Type.NUMBER_ANIMATED.name().equals(term_type)) {
+            if (term_node.get("value").has("keyValues")) {
+                List<CategoricalAnimatedValue.AnimatedKeyValue<CustomNumberExpression>> valueList = new ArrayList<>();
+                for (JsonNode node : term_node.get("value").get("keyValues")) {
+                    CustomNumberExpression valueExpression = (CustomNumberExpression) deserializeExpression(node.get("value"), parameter);
+                    CustomNumberExpression delayExpression = (CustomNumberExpression) deserializeExpression(node.get("delay"), parameter);
+                    DelayUnit delayUnit = DelayUnit.valueOf(node.get("delayUnit").asText());
+                    valueList.add(new CategoricalAnimatedValue.AnimatedKeyValue<>(valueExpression, delayExpression, delayUnit));
+                }
+                term = new NumberAnimationTerm(new NumericCategoricalAnimatedValue(valueList));
+            } else if (term_node.get("value").has("startValue")) {
+                JsonNode valueNode = term_node.get("value");
+                CustomNumberExpression startValueExpression = (CustomNumberExpression) deserializeExpression(valueNode.get("startValue"), parameter);
+                CustomNumberExpression endValueExpression = (CustomNumberExpression) deserializeExpression(valueNode.get("endValue"), parameter);
+                CustomNumberExpression durationExpression = (CustomNumberExpression) deserializeExpression(valueNode.get("duration"), parameter);
+                DelayUnit delayUnit = DelayUnit.valueOf(valueNode.get("delayUnit").asText());
+                ContinuousAnimatedValue.Easing easing = null;
+                String easingName = valueNode.get("easing").get("name").asText();
+                if (ContinuousAnimatedValue.LinearEasing.getInstance().getName().equals(easingName)) {
+                    easing = ContinuousAnimatedValue.LinearEasing.getInstance();
+                } else if (ContinuousAnimatedValue.EaseInExpo.getInstance().getName().equals(easingName)) {
+                    easing = ContinuousAnimatedValue.EaseInExpo.getInstance();
+                } else if (ContinuousAnimatedValue.CustomEasing.getInstance().getName().equals(easingName)) {
+                    easing = new ContinuousAnimatedValue.CustomEasing(valueNode.get("easing").get("c1x").asDouble(), valueNode.get("easing").get("c1y").asDouble(),
+                            valueNode.get("easing").get("c2x").asDouble(), valueNode.get("easing").get("c2y").asDouble());
+                } else {
+                    throw new IllegalStateException("unsupport easing type");
+                }
+                term = new NumberAnimationTerm(new ContinuousAnimatedValue(startValueExpression, endValueExpression, durationExpression, delayUnit, easing));
+            } else {
+                throw new IllegalStateException("unsupport animation type");
+            }
+        } else {
             throw new IllegalStateException("deserialize unsupported term");
         }
         return term;
     }
 
+    // TODO: this method is deprecated and should be removed after we fix record control
     private Expression deserializeExpression(ObjectMapper mapper, Parameter parameter, JsonNode parameterNode
             , Collection<ProjectDevice> allProjectDevices) throws IOException {
         Expression expression;

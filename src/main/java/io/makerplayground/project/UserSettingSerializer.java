@@ -47,7 +47,7 @@ public class UserSettingSerializer extends JsonSerializer<UserSetting> {
         for (Map.Entry<Parameter, Expression> v : userSetting.getParameterMap().entrySet()) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("name", v.getKey().getName());
-            jsonGenerator.writeStringField("type", v.getValue().getClass().getSimpleName());
+            jsonGenerator.writeStringField("type", v.getValue().getClass().getSimpleName());    // TODO: can be removed
             jsonGenerator.writeObjectField("value", v.getValue());
             jsonGenerator.writeEndObject();
         }

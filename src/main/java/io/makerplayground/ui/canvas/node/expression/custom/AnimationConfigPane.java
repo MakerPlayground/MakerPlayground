@@ -5,6 +5,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.ComplexStringExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,9 +15,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
 
 public class AnimationConfigPane extends GridPane {
     private final ReadOnlyObjectWrapper<AnimatedValue> animatedValue;
@@ -27,6 +28,7 @@ public class AnimationConfigPane extends GridPane {
 
     private Label modeLabel;
     private ComboBox<String> modeCombobox;
+    private CurveEditor curveEditor;
 
     public AnimationConfigPane(AnimatedValue initialValue, boolean allowString, ObservableList<ProjectValue> projectValues) {
         animatedValue = new ReadOnlyObjectWrapper<>(initialValue);
@@ -131,20 +133,39 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(durationHBox, 1, 3);
 
         Label easingLabel = new Label("Easing");
+        easingLabel.setMinHeight(25);
         GridPane.setConstraints(easingLabel, 0, 4);
+        GridPane.setValignment(easingLabel, VPos.TOP);
 
-        ComboBox<String> easingCombobox = new ComboBox<>(FXCollections.observableArrayList("Linear", "Bezier"));
+        ComboBox<String> easingCombobox = new ComboBox<>(FXCollections.observableArrayList("Linear", "EaseInExpo", "Custom"));
         easingCombobox.getSelectionModel().select(continuousAnimatedValue.getEasing().getName());
-        easingCombobox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.equals("Linear")) {
-                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.LinearEasing.getInstance());
-            } else if (newValue.equals("Bezier")) {
-                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.BezierEasing.getInstance(0.8, 0, 1, 0.2));
-            }
-        }));
-        GridPane.setConstraints(easingCombobox, 1, 4);
 
-        getChildren().addAll(startLabel, startChipField, endLabel, endChipField, durationLabel, durationHBox, easingLabel, easingCombobox);
+        curveEditor = new CurveEditor((ContinuousAnimatedValue.BezierEasing) continuousAnimatedValue.getEasing());
+        curveEditor.easingProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setEasing(newValue)));
+
+        VBox easingVBox = new VBox();
+        easingVBox.setSpacing(5);
+        easingVBox.getChildren().addAll(easingCombobox, curveEditor);
+        GridPane.setConstraints(easingVBox, 1, 4);
+
+        easingCombobox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            easingVBox.getChildren().remove(curveEditor);
+            if (newValue.equals("Linear")) {
+                curveEditor = new CurveEditor(ContinuousAnimatedValue.LinearEasing.getInstance());
+                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.LinearEasing.getInstance());
+            } else if (newValue.equals("EaseInExpo")) {
+                curveEditor = new CurveEditor(ContinuousAnimatedValue.EaseInExpo.getInstance());
+                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.EaseInExpo.getInstance());
+            } else if (newValue.equals("Custom")) {
+                curveEditor = new CurveEditor(ContinuousAnimatedValue.CustomEasing.getInstance());
+                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.CustomEasing.getInstance());
+            } else {
+                throw new IllegalStateException("Unsupport easing curve");
+            }
+            easingVBox.getChildren().add(curveEditor);
+        }));
+
+        getChildren().addAll(startLabel, startChipField, endLabel, endChipField, durationLabel, durationHBox, easingLabel, easingVBox);
     }
 
     private void initNumericCategoricalAnimatedUI() {
@@ -173,6 +194,91 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(keyValuePane, 1, 0);
 
         getChildren().addAll(valueLabel, keyValuePane);
+    }
+
+    private static class CurveEditor extends Pane {
+        private static final int DIMENSION = 200;
+        private static final int CONTROL_RADIUS = 5;
+
+        private final ReadOnlyObjectWrapper<ContinuousAnimatedValue.Easing> easing;
+
+        private double mouseAnchorX = 0;
+        private double mouseAnchorY = 0;
+
+        public CurveEditor(ContinuousAnimatedValue.BezierEasing easing) {
+            this.easing = new ReadOnlyObjectWrapper<>(easing);
+
+            Rectangle canvas = new Rectangle();
+            canvas.setFill(Color.WHITE);
+            canvas.setStroke(Color.web("#cccccc"));
+            canvas.setWidth(DIMENSION);
+            canvas.setHeight(DIMENSION);
+
+            Circle control1 = new Circle(easing.getC1x() * DIMENSION, DIMENSION - easing.getC1y() * DIMENSION, CONTROL_RADIUS);
+            control1.setVisible(easing instanceof ContinuousAnimatedValue.CustomEasing);
+
+            Circle control2 = new Circle(easing.getC2x() * DIMENSION, DIMENSION - easing.getC2y() * DIMENSION, CONTROL_RADIUS);
+            control2.setVisible(easing instanceof ContinuousAnimatedValue.CustomEasing);
+
+            control1.setOnMousePressed(event -> {
+                if (!event.isPrimaryButtonDown())
+                    return;
+                mouseAnchorX = event.getSceneX();
+                mouseAnchorY = event.getSceneY();
+            });
+            control1.setOnMouseDragged(event -> {
+                if (!event.isPrimaryButtonDown())
+                    return;
+                control1.setTranslateX(event.getSceneX() - mouseAnchorX);
+                control1.setTranslateY(event.getSceneY() - mouseAnchorY);
+            });
+            control1.setOnMouseReleased(event -> {
+                control1.setCenterX(control1.getCenterX() + control1.getTranslateX());
+                control1.setCenterY(control1.getCenterY() + control1.getTranslateY());
+                control1.setTranslateX(0);
+                control1.setTranslateY(0);
+                this.easing.set(new ContinuousAnimatedValue.CustomEasing(control1.getCenterX() / DIMENSION, (DIMENSION - control1.getCenterY()) / DIMENSION
+                        , control2.getCenterX() / DIMENSION, (DIMENSION - control2.getCenterY()) / DIMENSION));
+            });
+            control2.setOnMousePressed(event -> {
+                if (!event.isPrimaryButtonDown())
+                    return;
+                mouseAnchorX = event.getSceneX();
+                mouseAnchorY = event.getSceneY();
+            });
+            control2.setOnMouseDragged(event -> {
+                if (!event.isPrimaryButtonDown())
+                    return;
+                control2.setTranslateX(event.getSceneX() - mouseAnchorX);
+                control2.setTranslateY(event.getSceneY() - mouseAnchorY);
+            });
+            control2.setOnMouseReleased(event -> {
+                control2.setCenterX(control2.getCenterX() + control2.getTranslateX());
+                control2.setCenterY(control2.getCenterY() + control2.getTranslateY());
+                control2.setTranslateX(0);
+                control2.setTranslateY(0);
+                this.easing.set(new ContinuousAnimatedValue.CustomEasing(control1.getCenterX() / DIMENSION, (DIMENSION - control1.getCenterY()) / DIMENSION
+                        , control2.getCenterX() / DIMENSION, (DIMENSION - control2.getCenterY()) / DIMENSION));
+            });
+
+            CubicCurveTo cubicCurveTo = new CubicCurveTo();
+            cubicCurveTo.controlX1Property().bind(control1.centerXProperty());
+            cubicCurveTo.controlY1Property().bind(control1.centerYProperty());
+            cubicCurveTo.controlX2Property().bind(control2.centerXProperty());
+            cubicCurveTo.controlY2Property().bind(control2.centerYProperty());
+            cubicCurveTo.setX(DIMENSION);
+            cubicCurveTo.setY(0);
+
+            Path path = new Path();
+            path.setStrokeWidth(3);
+            path.getElements().addAll(new MoveTo(0, DIMENSION), cubicCurveTo);
+
+            getChildren().addAll(canvas, path, control1, control2);
+        }
+
+        public ReadOnlyObjectProperty<ContinuousAnimatedValue.Easing> easingProperty() {
+            return easing.getReadOnlyProperty();
+        }
     }
 
     private static class CategoricalKeyValuePane<T extends Expression> extends VBox {
