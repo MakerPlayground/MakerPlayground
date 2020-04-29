@@ -1,17 +1,18 @@
 package io.makerplayground.device.shared;
 
 import io.makerplayground.project.expression.CustomNumberExpression;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
-
+@Data
+@AllArgsConstructor
 public class ContinuousAnimatedValue implements AnimatedValue {
-    @Getter @Setter private CustomNumberExpression startValue;
-    @Getter @Setter private CustomNumberExpression endValue;
-    @Getter @Setter private CustomNumberExpression duration;
-    @Getter @Setter private DelayUnit delayUnit;
-    @Getter @Setter private Easing easing;
+    private CustomNumberExpression startValue;
+    private CustomNumberExpression endValue;
+    private CustomNumberExpression duration;
+    private DelayUnit delayUnit;
+    private Easing easing;
 
     public ContinuousAnimatedValue() {
         startValue = CustomNumberExpression.INVALID;
@@ -22,41 +23,71 @@ public class ContinuousAnimatedValue implements AnimatedValue {
     }
 
     public static abstract class Easing {
-        @Getter private final String name;
-
-        Easing(String name) {
-            this.name = name;
-        }
+        public abstract String getName();
     }
 
-    public static class LinearEasing extends Easing {
-        private static final LinearEasing instance = new LinearEasing();
-
-        private LinearEasing() {
-            super("Linear");
-        }
-
-        public static LinearEasing getInstance() {
-            return instance;
-        }
-    }
-
-    public static class BezierEasing extends Easing {
+    public static abstract class BezierEasing extends Easing {
         @Getter private final double c1x;
         @Getter private final double c1y;
         @Getter private final double c2x;
         @Getter private final double c2y;
 
-        private BezierEasing(double c1x, double c1y, double c2x, double c2y) {
-            super("Bezier");
+        public BezierEasing(double c1x, double c1y, double c2x, double c2y) {
             this.c1x = c1x;
             this.c1y = c1y;
             this.c2x = c2x;
             this.c2y = c2y;
         }
+    }
 
-        public static BezierEasing getInstance(double c1x, double c1y, double c2x, double c2y) {
-            return new BezierEasing(c1x, c1y, c2x, c2y);
+    public static class LinearEasing extends BezierEasing {
+        private static final LinearEasing instance = new LinearEasing();
+
+        private LinearEasing() {
+            super(0, 0, 1, 1);
+        }
+
+        public static LinearEasing getInstance() {
+            return instance;
+        }
+
+        @Override
+        public String getName() {
+            return "Linear";
+        }
+    }
+
+    public static class EaseInExpo extends BezierEasing {
+        private static final EaseInExpo instance = new EaseInExpo();
+
+        private EaseInExpo() {
+            super(0.7, 0, 0.84, 0);
+        }
+
+        public static EaseInExpo getInstance() {
+            return instance;
+        }
+
+        @Override
+        public String getName() {
+            return "EaseInExpo";
+        }
+    }
+
+    public static class CustomEasing extends BezierEasing {
+        private static final CustomEasing instance = new CustomEasing(0, 0, 1, 1);
+
+        public CustomEasing(double c1x, double c1y, double c2x, double c2y) {
+            super(c1x, c1y, c2x, c2y);
+        }
+
+        public static CustomEasing getInstance() {
+            return instance;
+        }
+
+        @Override
+        public String getName() {
+            return "Custom";
         }
     }
 }
