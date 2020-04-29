@@ -25,8 +25,11 @@ import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;
+import io.makerplayground.project.term.NumberAnimationTerm;
+import io.makerplayground.project.term.StringAnimationTerm;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
+import io.makerplayground.ui.canvas.node.expression.custom.NumberAnimationChip;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -37,6 +40,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -324,4 +328,52 @@ public class UserSetting {
                         || (parameter.getDataType() == DataType.INTEGER))
                 .count();
     }
+
+    public int getNumberOfContinuousAnimationUsed() {
+        return getParameterMap().values().stream()
+                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof ContinuousAnimatedValue)).count())
+                .sum();
+    }
+
+    public int getNumberOfNumericCategoricalAnimationUsed() {
+        return getParameterMap().values().stream()
+                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue)).count())
+                .sum();
+    }
+
+    public int getNumberOfStringCategoricalAnimationUsed() {
+        return getParameterMap().values().stream()
+                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof StringAnimationTerm)).count())
+                .sum();
+    }
+
+    public List<Integer> getStringLookupTableSize() {
+        return getParameterMap().values().stream()
+                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof StringAnimationTerm)).count())
+                .boxed().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+    }
+
+    public List<Integer> getNumberLookupTableSize() {
+        return getParameterMap().values().stream()
+                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue)).count())
+                .boxed().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+    }
+
+//        List<Integer> tableSize = new ArrayList<>();
+//        for (int i=0; i<animationCount; i++)
+//            tableSize.add(0);
+//
+//        for (Expression expression : getParameterMap().values()) {
+//            List<Integer> size = expression.getTerms().stream()
+//                    .filter((t) -> (t instanceof StringAnimationTerm))
+//                    .mapToInt((t) -> ((StringCategoricalAnimatedValue) t.getValue()).getKeyValues().size())
+//                    .boxed().sorted(Comparator.reverseOrder()).limit(animationCount)
+//                    .collect(Collectors.toList());
+//            for (int i=0; i<animationCount; i++) {
+//                if (tableSize.get(i) < size.get(i)) {
+//                    tableSize.set(i, size.get(i));
+//                }
+//            }
+//        }
+//        return tableSize;
 }
