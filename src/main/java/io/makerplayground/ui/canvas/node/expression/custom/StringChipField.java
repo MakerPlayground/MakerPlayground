@@ -34,7 +34,11 @@ public class StringChipField extends ChipField<ComplexStringExpression> {
     private static final Color NUMERIC_EXPRESSION_COLOR = Color.DARKGRAY;
 
     public StringChipField(ComplexStringExpression expression, ObservableList<ProjectValue> projectValues) {
-        super(expression, projectValues, true);
+        super(expression, projectValues, true, true);
+    }
+
+    public StringChipField(ComplexStringExpression expression, ObservableList<ProjectValue> projectValues, boolean allowAnimation) {
+        super(expression, projectValues, true, allowAnimation);
     }
 
     @Override
