@@ -16,11 +16,15 @@
 
 package io.makerplayground.ui.canvas.node.expression.custom;
 
+import io.makerplayground.device.shared.ContinuousAnimatedValue;
 import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.StringCategoricalAnimatedValue;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.term.*;
+import io.makerplayground.ui.canvas.node.usersetting.ConditionDeviceIconView;
+import io.makerplayground.ui.canvas.node.usersetting.ConditionDevicePropertyWindow;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -51,6 +55,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
+import org.controlsfx.control.PopOver;
 
 import java.io.IOException;
 import java.util.*;
@@ -64,8 +69,11 @@ public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private Rectangle cursor;
 
     @FXML private GridPane chipSelectorPane;
+
     @FXML private StackPane stringChip;
+    @FXML private StackPane stringAnimationChip;
     @FXML private StackPane numberChip;
+    @FXML private StackPane numberAnimationChip;
     @FXML private StackPane valueChip;
     @FXML private StackPane plusChip;
     @FXML private StackPane multiplyChip;
@@ -76,9 +84,12 @@ public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private StackPane openParenthesisChip;
     @FXML private StackPane closeParenthesisChip;
 
+    private AnimationConfigPopup animationConfigPopup;
+
     private final ReadOnlyObjectWrapper<T> expressionProperty;
-    private final boolean parseStringChip;
     private final ObservableList<ProjectValue> projectValues;
+    private final boolean parseStringChip;
+    private final boolean allowAnimation;
 
     private final BooleanProperty chipFieldFocus = new SimpleBooleanProperty();
 
@@ -91,10 +102,11 @@ public abstract class ChipField<T extends Expression> extends VBox {
     private static final int MINIMUM_WIDTH = 75;
     protected static final Color TEXT_COLOR = Color.web("#333333");
 
-    public ChipField(T expression, ObservableList<ProjectValue> projectValues, boolean parseStringChip) {
+    public ChipField(T expression, ObservableList<ProjectValue> projectValues, boolean parseStringChip, boolean allowAnimation) {
         this.expressionProperty = new ReadOnlyObjectWrapper<>(expression);
-        this.parseStringChip = parseStringChip;
         this.projectValues = projectValues;
+        this.parseStringChip = parseStringChip;
+        this.allowAnimation = allowAnimation;
         initView();
         initEvent();
     }
@@ -119,6 +131,16 @@ public abstract class ChipField<T extends Expression> extends VBox {
         if (!parseStringChip) {
             stringChip.setVisible(false);
             stringChip.setManaged(false);
+            stringAnimationChip.setVisible(false);
+            stringAnimationChip.setManaged(false);
+        }
+
+        // hide the animation chip
+        if (!allowAnimation) {
+            stringAnimationChip.setVisible(false);
+            stringAnimationChip.setManaged(false);
+            numberAnimationChip.setVisible(false);
+            numberAnimationChip.setManaged(false);
         }
 
         // automatically expand the chipfield based on its content
@@ -200,7 +222,9 @@ public abstract class ChipField<T extends Expression> extends VBox {
 
         // add chip when the icons in the chipSelectorPane is pressed
         stringChip.setOnMousePressed(event -> addChip(new StringTerm("")));
+        stringAnimationChip.setOnMousePressed(event -> addChip(new StringAnimationTerm(new StringCategoricalAnimatedValue())));
         numberChip.setOnMousePressed(event -> addChip(new NumberWithUnitTerm(NumberWithUnit.ZERO)));
+        numberAnimationChip.setOnMousePressed(event -> addChip(new NumberAnimationTerm(new ContinuousAnimatedValue())));
         valueChip.setOnMousePressed(event -> addChip(new ValueTerm(null)));
         plusChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.PLUS)));
         multiplyChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.MULTIPLY)));
@@ -322,9 +346,33 @@ public abstract class ChipField<T extends Expression> extends VBox {
         if (t instanceof StringTerm) {
             chip = new StringChip(((StringTerm) t).getValue());
             ((StringChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
+        } else if (t instanceof StringAnimationTerm) {
+            chip = new StringAnimationChip(((StringAnimationTerm) t).getValue());
+            chip.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+                if (animationConfigPopup != null && animationConfigPopup.isShowing()) {
+                    animationConfigPopup.hide();
+                    animationConfigPopup = null;
+                }
+                animationConfigPopup = new AnimationConfigPopup(((StringAnimationChip) chip).getValue(), true, projectValues);
+                animationConfigPopup.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                animationConfigPopup.show(chip);
+            });
+            ((StringAnimationChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof NumberWithUnitTerm) {
             chip = new NumberWithUnitChip(((NumberWithUnitTerm) t).getValue());
             ((NumberWithUnitChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
+        } else if (t instanceof NumberAnimationTerm) {
+            chip = new NumberAnimationChip(((NumberAnimationTerm) t).getValue());
+            chip.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+                if (animationConfigPopup != null && animationConfigPopup.isShowing()) {
+                    animationConfigPopup.hide();
+                    animationConfigPopup = null;
+                }
+                animationConfigPopup = new AnimationConfigPopup(((NumberAnimationChip) chip).getValue(), false, projectValues);
+                animationConfigPopup.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                animationConfigPopup.show(chip);
+            });
+            ((NumberAnimationChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {
             chip = new OperatorChip(((OperatorTerm) t).getValue());
             ((OperatorChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
@@ -445,9 +493,11 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 HBox.setMargin(currentNode, Insets.EMPTY);
             } else if (previousNode instanceof StringChip || currentNode instanceof StringChip) {
                 HBox.setMargin(currentNode, Insets.EMPTY);
-            } else if ((previousNode instanceof NumberWithUnitChip || previousNode instanceof ProjectValueChip
+            } else if (previousNode instanceof StringAnimationChip || currentNode instanceof StringAnimationChip) {
+                HBox.setMargin(currentNode, Insets.EMPTY);
+            } else if ((previousNode instanceof NumberWithUnitChip || previousNode instanceof NumberAnimationChip || previousNode instanceof ProjectValueChip
                     || isOperatorChip(previousNode, OperatorType.RIGHT_UNARY))
-                    && (currentNode instanceof NumberWithUnitChip || currentNode instanceof ProjectValueChip
+                    && (currentNode instanceof NumberWithUnitChip || currentNode instanceof NumberAnimationChip || currentNode instanceof ProjectValueChip
                     || isOperatorChip(currentNode, OperatorType.LEFT_UNARY))) {
                 HBox.setMargin(currentNode, Insets.EMPTY);
             } else if (isOperatorChip(previousNode, OperatorType.BINARY)

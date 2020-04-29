@@ -26,7 +26,11 @@ import java.util.List;
 public class NumericChipField extends ChipField<CustomNumberExpression> {
 
     public NumericChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues) {
-        super(expression, projectValues, false);
+        super(expression, projectValues, false, true);
+    }
+
+    public NumericChipField(CustomNumberExpression expression, ObservableList<ProjectValue> projectValues, boolean allowAnimation) {
+        super(expression, projectValues, false, allowAnimation);
     }
 
     @Override
