@@ -2,17 +2,16 @@ package io.makerplayground.device.shared;
 
 import io.makerplayground.project.expression.CustomNumberExpression;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
+import lombok.With;
 
-@Data
 @AllArgsConstructor
 public class ContinuousAnimatedValue implements AnimatedValue {
-    private CustomNumberExpression startValue;
-    private CustomNumberExpression endValue;
-    private CustomNumberExpression duration;
-    private DelayUnit delayUnit;
-    private Easing easing;
+    @Getter @With private CustomNumberExpression startValue;
+    @Getter @With private CustomNumberExpression endValue;
+    @Getter @With private CustomNumberExpression duration;
+    @Getter @With private DelayUnit delayUnit;
+    @Getter @With private Easing easing;
 
     public ContinuousAnimatedValue() {
         startValue = CustomNumberExpression.INVALID;

@@ -341,33 +341,44 @@ public class UserSetting {
                 .count();
     }
 
+    public boolean isAnimationUsed() {
+        return getParameterMap().values().stream().anyMatch((e) -> e.getTerms().stream()
+                .anyMatch((t) -> (t instanceof NumberAnimationTerm) || (t instanceof StringAnimationTerm)));
+    }
+
     public int getNumberOfContinuousAnimationUsed() {
         return getParameterMap().values().stream()
                 .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof ContinuousAnimatedValue)).count())
                 .sum();
     }
 
-    public int getNumberOfNumericCategoricalAnimationUsed() {
-        return getParameterMap().values().stream()
-                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue)).count())
-                .sum();
-    }
-
-    public int getNumberOfStringCategoricalAnimationUsed() {
-        return getParameterMap().values().stream()
-                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof StringAnimationTerm)).count())
-                .sum();
-    }
+//    public int getNumberOfNumericCategoricalAnimationUsed() {
+//        return getParameterMap().values().stream()
+//                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue)).count())
+//                .sum();
+//    }
+//
+//    public int getNumberOfStringCategoricalAnimationUsed() {
+//        return getParameterMap().values().stream()
+//                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof StringAnimationTerm)).count())
+//                .sum();
+//    }
 
     public List<Integer> getStringLookupTableSize() {
         return getParameterMap().values().stream()
-                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof StringAnimationTerm)).count())
+                .flatMapToInt((e) -> e.getTerms().stream()
+                        .filter((t) -> (t instanceof StringAnimationTerm))
+                        .mapToInt((t) -> ((StringCategoricalAnimatedValue) t.getValue()).getKeyValues().size()))
+                .filter((i) -> i != 0)
                 .boxed().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
     }
 
     public List<Integer> getNumberLookupTableSize() {
         return getParameterMap().values().stream()
-                .mapToInt((e) -> (int) e.getTerms().stream().filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue)).count())
+                .flatMapToInt((e) -> e.getTerms().stream()
+                        .filter((t) -> (t instanceof NumberAnimationTerm) && (t.getValue() instanceof CategoricalAnimatedValue))
+                        .mapToInt((t) -> ((NumericCategoricalAnimatedValue) t.getValue()).getKeyValues().size()))
+                .filter((i) -> i != 0)
                 .boxed().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
     }
 
