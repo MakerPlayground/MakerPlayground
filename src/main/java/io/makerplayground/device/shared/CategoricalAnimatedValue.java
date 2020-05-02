@@ -19,10 +19,15 @@ public abstract class CategoricalAnimatedValue<T extends Expression> implements 
         this.keyValues = FXCollections.observableList(keyValues);
     }
 
+    public CategoricalAnimatedValue(CategoricalAnimatedValue<T> animatedValue) {
+        this();
+        keyValues.addAll(animatedValue.keyValues);
+    }
+
     @AllArgsConstructor
     public static class AnimatedKeyValue<T extends Expression> {
-        @Getter @Setter private T value;
-        @Getter @Setter private CustomNumberExpression delay;
-        @Getter @Setter private DelayUnit delayUnit;
+        @Getter @With private T value;
+        @Getter @With private CustomNumberExpression delay;
+        @Getter @With private DelayUnit delayUnit;
     }
 }

@@ -147,34 +147,26 @@ public class ComplexStringExpression extends Expression {
         return t instanceof ValueTerm || t instanceof NumberWithUnitTerm;
     }
 
+    // TODO: should we add json ignore
     public List<Expression> getSubExpressions() {
         List<Expression> result = new ArrayList<>();
-
-        int i=0, startIndex=0, endIndex=0;
+        int i=0, startIndex=0;
         while (i < terms.size()) {
-            // advance to the first non string term if any
-            while ((i < terms.size()) && (terms.get(i) instanceof StringTerm)) {
+            if (terms.get(i) instanceof StringTerm) {
                 result.add(new SimpleStringExpression((StringTerm) terms.get(i)));
                 i++;
-            }
-            if (i == terms.size()) {
-                break;
-            }
-            startIndex = i;
-
-            // advance to the next string term after the group of non string term
-            while ((i < terms.size()) && !(terms.get(i) instanceof StringTerm)) {
+            } else if (terms.get(i) instanceof StringAnimationTerm) {
+                result.add(new AnimatedStringExpression((StringAnimationTerm) terms.get(i)));
                 i++;
-            }
-            endIndex = i;
-
-            result.add(new CustomNumberExpression(terms.subList(startIndex, endIndex)));
-            if (i < terms.size()) {
-                result.add(new SimpleStringExpression((StringTerm) terms.get(endIndex)));
-                i++;
+            } else {
+                startIndex = i;
+                // advance to the next string term after the group of non string term
+                while ((i < terms.size()) && !(terms.get(i) instanceof StringTerm) && !(terms.get(i) instanceof StringAnimationTerm)) {
+                    i++;
+                }
+                result.add(new CustomNumberExpression(terms.subList(startIndex, i)));
             }
         }
-
         return result;
     }
 

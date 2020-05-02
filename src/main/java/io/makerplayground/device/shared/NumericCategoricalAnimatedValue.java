@@ -11,4 +11,8 @@ public class NumericCategoricalAnimatedValue extends CategoricalAnimatedValue<Cu
     public NumericCategoricalAnimatedValue(List<AnimatedKeyValue<CustomNumberExpression>> keyValue) {
         super(keyValue);
     }
+
+    public NumericCategoricalAnimatedValue(NumericCategoricalAnimatedValue animatedValue) {
+        super(animatedValue);
+    }
 }

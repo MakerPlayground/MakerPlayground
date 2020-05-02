@@ -11,4 +11,8 @@ public class StringCategoricalAnimatedValue extends CategoricalAnimatedValue<Com
     public StringCategoricalAnimatedValue(List<AnimatedKeyValue<ComplexStringExpression>> keyValue) {
         super(keyValue);
     }
+
+    public StringCategoricalAnimatedValue(StringCategoricalAnimatedValue animatedValue) {
+        super(animatedValue);
+    }
 }

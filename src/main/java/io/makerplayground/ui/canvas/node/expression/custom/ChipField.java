@@ -353,7 +353,9 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 }
                 animationConfigPopup = new AnimationConfigPopup(((StringAnimationChip) chip).getValue(), true, projectValues);
                 animationConfigPopup.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                animationConfigPopup.animatedValueProperty().addListener(((observable, oldValue, newValue) -> ((StringAnimationChip) chip).setValue(newValue)));
                 animationConfigPopup.show(chip);
+                animationConfigPopup.setOnHidden((e) -> updateExpression());
             });
             ((StringAnimationChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof NumberWithUnitTerm) {
@@ -368,7 +370,9 @@ public abstract class ChipField<T extends Expression> extends VBox {
                 }
                 animationConfigPopup = new AnimationConfigPopup(((NumberAnimationChip) chip).getValue(), false, projectValues);
                 animationConfigPopup.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                animationConfigPopup.animatedValueProperty().addListener(((observable, oldValue, newValue) -> ((NumberAnimationChip) chip).setValue(newValue)));
                 animationConfigPopup.show(chip);
+                animationConfigPopup.setOnHidden((e) -> updateExpression());
             });
             ((NumberAnimationChip) chip).valueProperty().addListener((observable, oldValue, newValue) -> updateExpression());
         } else if (t instanceof OperatorTerm) {

@@ -5,8 +5,11 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.ComplexStringExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.expression.Expression;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -23,36 +26,36 @@ public class AnimationConfigPane extends GridPane {
     private final ReadOnlyObjectWrapper<AnimatedValue> animatedValue;
     private final ObservableList<ProjectValue> projectValues;
     // create instance of both animation type so that we can retain user setting when switch mode
-    private ContinuousAnimatedValue continuousAnimatedValue;
-    private CategoricalAnimatedValue categoricalAnimatedValue;
+    private ObjectProperty<ContinuousAnimatedValue> continuousAnimatedValue;
+    private ObjectProperty<CategoricalAnimatedValue> categoricalAnimatedValue;
 
     private Label modeLabel;
     private ComboBox<String> modeCombobox;
     private CurveEditor curveEditor;
 
     public AnimationConfigPane(AnimatedValue initialValue, boolean allowString, ObservableList<ProjectValue> projectValues) {
-        animatedValue = new ReadOnlyObjectWrapper<>(initialValue);
+        animatedValue = new ReadOnlyObjectWrapper<>();
         this.projectValues = projectValues;
 
         setHgap(10);
         setVgap(5);
 
         // initialize internal animation instance
-        if (animatedValue.get() instanceof ContinuousAnimatedValue) {
+        if (initialValue instanceof ContinuousAnimatedValue) {
             if (allowString) {
                 throw new IllegalStateException("continuous animation is not supported for type string");
             }
-            continuousAnimatedValue = (ContinuousAnimatedValue) animatedValue.get();
-            categoricalAnimatedValue = new NumericCategoricalAnimatedValue();
-        } else if (animatedValue.get() instanceof NumericCategoricalAnimatedValue) {
-            continuousAnimatedValue = new ContinuousAnimatedValue();
-            categoricalAnimatedValue = (NumericCategoricalAnimatedValue) animatedValue.get();
-        } else if (animatedValue.get() instanceof StringCategoricalAnimatedValue) {
+            continuousAnimatedValue = new SimpleObjectProperty<>((ContinuousAnimatedValue) initialValue);
+            categoricalAnimatedValue = new SimpleObjectProperty<>(new NumericCategoricalAnimatedValue());
+        } else if (initialValue instanceof NumericCategoricalAnimatedValue) {
+            continuousAnimatedValue = new SimpleObjectProperty<>(new ContinuousAnimatedValue());
+            categoricalAnimatedValue = new SimpleObjectProperty<>((NumericCategoricalAnimatedValue) initialValue);
+        } else if (initialValue instanceof StringCategoricalAnimatedValue) {
             if (!allowString) {
                 throw new IllegalStateException("string categorical animation is only supported on type string");
             }
             continuousAnimatedValue = null;
-            categoricalAnimatedValue = (StringCategoricalAnimatedValue) animatedValue.get();
+            categoricalAnimatedValue = new SimpleObjectProperty<>((StringCategoricalAnimatedValue) initialValue);
         }
 
         // add mode selection UI when the pane is used for configure number animation
@@ -63,9 +66,9 @@ public class AnimationConfigPane extends GridPane {
             modeCombobox = new ComboBox<>(FXCollections.observableArrayList("Continuous", "Categorical"));
             modeCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue.equals("Continuous")) {
-                    animatedValue.set(continuousAnimatedValue);
+                    animatedValue.bind(continuousAnimatedValue);
                 } else {
-                    animatedValue.set(categoricalAnimatedValue);
+                    animatedValue.bind(categoricalAnimatedValue);
                 }
                 initUI();
             });
@@ -74,12 +77,13 @@ public class AnimationConfigPane extends GridPane {
             getChildren().addAll(modeLabel, modeCombobox);
 
             // preselect the combobox with the initial value to force redraw for the first time
-            if (animatedValue.get() instanceof ContinuousAnimatedValue) {
+            if (initialValue instanceof ContinuousAnimatedValue) {
                 modeCombobox.getSelectionModel().select("Continuous");
-            } else if (animatedValue.get() instanceof CategoricalAnimatedValue) {
+            } else if (initialValue instanceof CategoricalAnimatedValue) {
                 modeCombobox.getSelectionModel().select("Categorical");
             }
         } else {
+            animatedValue.bind(categoricalAnimatedValue);
             initUI();
         }
     }
@@ -102,8 +106,8 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(startLabel, 0, 1);
         GridPane.setValignment(startLabel, VPos.TOP);
 
-        NumericChipField startChipField = new NumericChipField(continuousAnimatedValue.getStartValue(), projectValues, false);
-        startChipField.expressionProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setStartValue(newValue)));
+        NumericChipField startChipField = new NumericChipField(continuousAnimatedValue.get().getStartValue(), projectValues, false);
+        startChipField.expressionProperty().addListener((observable, oldValue, newValue) -> continuousAnimatedValue.setValue(continuousAnimatedValue.get().withStartValue(newValue)));
         GridPane.setConstraints(startChipField, 1, 1);
 
         Label endLabel = new Label("End");
@@ -111,8 +115,8 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(endLabel, 0, 2);
         GridPane.setValignment(endLabel, VPos.TOP);
 
-        NumericChipField endChipField = new NumericChipField(continuousAnimatedValue.getEndValue(), projectValues, false);
-        endChipField.expressionProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setEndValue(newValue)));
+        NumericChipField endChipField = new NumericChipField(continuousAnimatedValue.get().getEndValue(), projectValues, false);
+        endChipField.expressionProperty().addListener((observable, oldValue, newValue) -> continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEndValue(newValue)));
         GridPane.setConstraints(endChipField, 1, 2);
 
         Label durationLabel = new Label("Duration");
@@ -120,12 +124,13 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(durationLabel, 0, 3);
         GridPane.setValignment(durationLabel, VPos.TOP);
 
-        NumericChipField durationChipField = new NumericChipField(continuousAnimatedValue.getDuration(), projectValues, false);
-        durationChipField.expressionProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setDuration(newValue)));
+        NumericChipField durationChipField = new NumericChipField(continuousAnimatedValue.get().getDuration(), projectValues, false);
+        durationChipField.expressionProperty().addListener((observable, oldValue, newValue) -> continuousAnimatedValue.setValue(continuousAnimatedValue.get().withDuration(newValue)));
 
         ComboBox<DelayUnit> durationUnitCombobox = new ComboBox<>(FXCollections.observableArrayList(DelayUnit.values()));
-        durationUnitCombobox.getSelectionModel().select(continuousAnimatedValue.getDelayUnit());
-        durationUnitCombobox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setDelayUnit(newValue)));
+        durationUnitCombobox.getSelectionModel().select(continuousAnimatedValue.get().getDelayUnit());
+        durationUnitCombobox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                continuousAnimatedValue.setValue(continuousAnimatedValue.get().withDelayUnit(newValue)));
 
         HBox durationHBox = new HBox();
         durationHBox.setSpacing(5);
@@ -138,10 +143,10 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setValignment(easingLabel, VPos.TOP);
 
         ComboBox<String> easingCombobox = new ComboBox<>(FXCollections.observableArrayList("Linear", "EaseInExpo", "Custom"));
-        easingCombobox.getSelectionModel().select(continuousAnimatedValue.getEasing().getName());
+        easingCombobox.getSelectionModel().select(continuousAnimatedValue.get().getEasing().getName());
 
-        curveEditor = new CurveEditor((ContinuousAnimatedValue.BezierEasing) continuousAnimatedValue.getEasing());
-        curveEditor.easingProperty().addListener(((observable, oldValue, newValue) -> continuousAnimatedValue.setEasing(newValue)));
+        curveEditor = new CurveEditor((ContinuousAnimatedValue.BezierEasing) continuousAnimatedValue.get().getEasing());
+        curveEditor.easingProperty().addListener((observable, oldValue, newValue) -> continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEasing(newValue)));
 
         VBox easingVBox = new VBox();
         easingVBox.setSpacing(5);
@@ -152,16 +157,20 @@ public class AnimationConfigPane extends GridPane {
             easingVBox.getChildren().remove(curveEditor);
             if (newValue.equals("Linear")) {
                 curveEditor = new CurveEditor(ContinuousAnimatedValue.LinearEasing.getInstance());
-                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.LinearEasing.getInstance());
+                continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEasing(ContinuousAnimatedValue.LinearEasing.getInstance()));
             } else if (newValue.equals("EaseInExpo")) {
                 curveEditor = new CurveEditor(ContinuousAnimatedValue.EaseInExpo.getInstance());
-                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.EaseInExpo.getInstance());
+                continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEasing(ContinuousAnimatedValue.EaseInExpo.getInstance()));
             } else if (newValue.equals("Custom")) {
                 curveEditor = new CurveEditor(ContinuousAnimatedValue.CustomEasing.getInstance());
-                continuousAnimatedValue.setEasing(ContinuousAnimatedValue.CustomEasing.getInstance());
+                continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEasing(ContinuousAnimatedValue.CustomEasing.getInstance()));
             } else {
                 throw new IllegalStateException("Unsupport easing curve");
             }
+            // editable easing can be edited be the CurveEditor
+            curveEditor.easingProperty().addListener(((observable1, oldValue1, newValue1) -> {
+                continuousAnimatedValue.setValue(continuousAnimatedValue.get().withEasing(curveEditor.easingProperty().get()));
+            }));
             easingVBox.getChildren().add(curveEditor);
         }));
 
@@ -176,7 +185,9 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(valueLabel, 0, 1);
         GridPane.setValignment(valueLabel, VPos.TOP);
 
-        CategoricalKeyValuePane<CustomNumberExpression> keyValuePane = new CategoricalKeyValuePane<>(categoricalAnimatedValue.getKeyValues(), false, projectValues);
+        CategoricalKeyValuePane<CustomNumberExpression> keyValuePane = new CategoricalKeyValuePane<>(categoricalAnimatedValue.get().getKeyValues(), false, projectValues);
+        categoricalAnimatedValue.get().getKeyValues().addListener((InvalidationListener) c ->
+                categoricalAnimatedValue.set(new NumericCategoricalAnimatedValue((NumericCategoricalAnimatedValue) categoricalAnimatedValue.getValue())));
         GridPane.setConstraints(keyValuePane, 1, 1);
 
         getChildren().addAll(valueLabel, keyValuePane);
@@ -190,10 +201,16 @@ public class AnimationConfigPane extends GridPane {
         GridPane.setConstraints(valueLabel, 0, 0);
         GridPane.setValignment(valueLabel, VPos.TOP);
 
-        CategoricalKeyValuePane<ComplexStringExpression> keyValuePane = new CategoricalKeyValuePane<>(categoricalAnimatedValue.getKeyValues(), true, projectValues);
+        CategoricalKeyValuePane<ComplexStringExpression> keyValuePane = new CategoricalKeyValuePane<>(categoricalAnimatedValue.get().getKeyValues(), true, projectValues);
+        categoricalAnimatedValue.get().getKeyValues().addListener((InvalidationListener) c ->
+                categoricalAnimatedValue.set(new StringCategoricalAnimatedValue((StringCategoricalAnimatedValue) categoricalAnimatedValue.getValue())));
         GridPane.setConstraints(keyValuePane, 1, 0);
 
         getChildren().addAll(valueLabel, keyValuePane);
+    }
+
+    public ReadOnlyObjectProperty<AnimatedValue> animatedValueProperty() {
+        return animatedValue.getReadOnlyProperty();
     }
 
     private static class CurveEditor extends Pane {
@@ -281,7 +298,7 @@ public class AnimationConfigPane extends GridPane {
         }
     }
 
-    private static class CategoricalKeyValuePane<T extends Expression> extends VBox {
+    private class CategoricalKeyValuePane<T extends Expression> extends VBox {
         private final ObservableList<CategoricalAnimatedValue.AnimatedKeyValue<T>> values;
         private final boolean allowString;
         private final ObservableList<ProjectValue> projectValues;
@@ -304,17 +321,26 @@ public class AnimationConfigPane extends GridPane {
                 } else {
                     chipField = new NumericChipField((CustomNumberExpression) keyValue.getValue(), projectValues, false);
                 }
-                chipField.expressionProperty().addListener(((observable, oldValue, newValue) -> keyValue.setValue((T) newValue)));
+                chipField.expressionProperty().addListener(((observable, oldValue, newValue) -> {
+                    keyValue.withValue((T) newValue);
+                    animatedValue.setValue(categoricalAnimatedValue);
+                }));
 
                 Label delayLabel = new Label("Delay");
                 delayLabel.setMinHeight(25);
 
                 NumericChipField delayChipField = new NumericChipField(keyValue.getDelay(), projectValues, false);
-                delayChipField.expressionProperty().addListener(((observable, oldValue, newValue) -> keyValue.setDelay(newValue)));
+                delayChipField.expressionProperty().addListener(((observable, oldValue, newValue) -> {
+                    keyValue.setDelay(newValue);
+                    animatedValue.setValue(categoricalAnimatedValue);
+                }));
 
                 ComboBox<DelayUnit> delayUnitComboBox = new ComboBox<>(FXCollections.observableArrayList(DelayUnit.values()));
                 delayUnitComboBox.getSelectionModel().select(keyValue.getDelayUnit());
-                delayUnitComboBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> keyValue.setDelayUnit(newValue)));
+                delayUnitComboBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+                    keyValue.setDelayUnit(newValue);
+                    animatedValue.setValue(categoricalAnimatedValue);
+                }));
 
                 ImageView addImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/canvas/node/expressioncontrol/add-expression.png")));
                 addImageView.setFitHeight(25);
@@ -322,10 +348,11 @@ public class AnimationConfigPane extends GridPane {
                 addImageView.setPreserveRatio(true);
                 addImageView.setOnMousePressed(event -> {
                     if (allowString) {
-                        values.add(values.indexOf(keyValue), new CategoricalAnimatedValue.AnimatedKeyValue<T>((T) ComplexStringExpression.INVALID, CustomNumberExpression.INVALID, DelayUnit.SECOND));
+                        values.add(values.indexOf(keyValue) + 1, new CategoricalAnimatedValue.AnimatedKeyValue<T>((T) ComplexStringExpression.INVALID, CustomNumberExpression.INVALID, DelayUnit.SECOND));
                     } else {
-                        values.add(values.indexOf(keyValue), new CategoricalAnimatedValue.AnimatedKeyValue<T>((T) CustomNumberExpression.INVALID, CustomNumberExpression.INVALID, DelayUnit.SECOND));
+                        values.add(values.indexOf(keyValue) + 1, new CategoricalAnimatedValue.AnimatedKeyValue<T>((T) CustomNumberExpression.INVALID, CustomNumberExpression.INVALID, DelayUnit.SECOND));
                     }
+                    animatedValue.setValue(categoricalAnimatedValue);
                     redraw();
                 });
 
@@ -335,6 +362,7 @@ public class AnimationConfigPane extends GridPane {
                 removeImageView.setPreserveRatio(true);
                 removeImageView.setOnMousePressed(event -> {
                     values.remove(keyValue);
+                    animatedValue.setValue(categoricalAnimatedValue);
                     redraw();
                 });
 
@@ -356,6 +384,7 @@ public class AnimationConfigPane extends GridPane {
                     } else {
                         values.add(new CategoricalAnimatedValue.AnimatedKeyValue<T>((T) CustomNumberExpression.INVALID, CustomNumberExpression.INVALID, DelayUnit.SECOND));
                     }
+                    animatedValue.setValue(categoricalAnimatedValue);
                     redraw();
                 });
                 getChildren().addAll(addImageView);
