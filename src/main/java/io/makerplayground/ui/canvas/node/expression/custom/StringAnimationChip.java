@@ -58,11 +58,7 @@ public class StringAnimationChip extends Chip<AnimatedValue> {
     }
 
     private void redraw() {
-        if (getValue() instanceof ContinuousAnimatedValue) {
-            String startValue = ((ContinuousAnimatedValue) getValue()).getStartValue().getTerms().stream().map(Term::toString).collect(Collectors.joining(" "));
-            String endValue = ((ContinuousAnimatedValue) getValue()).getEndValue().getTerms().stream().map(Term::toString).collect(Collectors.joining(" "));
-            input.setText(startValue + " - " + endValue);
-        } else if (getValue() instanceof StringCategoricalAnimatedValue) {
+        if (getValue() instanceof StringCategoricalAnimatedValue) {
             input.setText(((StringCategoricalAnimatedValue) getValue()).getKeyValues().stream()
                     .map((kv) -> kv.getValue().getTerms().stream().map(Term::toString).collect(Collectors.joining(" ")))
                     .collect(Collectors.joining(", ")));

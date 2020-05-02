@@ -91,8 +91,8 @@
     -fx-font-weight: normal;
     -fx-border-color : #cccccc;
     -fx-border-width: 1px;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
     -fx-pref-width: 200;
 }
 

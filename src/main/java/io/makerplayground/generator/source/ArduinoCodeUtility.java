@@ -19,6 +19,7 @@ package io.makerplayground.generator.source;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.NumberWithUnit;
+import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.*;
@@ -242,5 +243,38 @@ class ArduinoCodeUtility {
             return parseNodeFunctionName(nodeBeforeConditions) + "_options";
         }
         throw new IllegalStateException("Not support condition function displayName for {" + nodeBeforeConditions + "}");
+    }
+
+    static String parseTaskName(ProjectDevice projectDevice) {
+        return "_" + projectDevice.getName().replace(' ', '_') + "_Task";
+    }
+
+    static <T extends Comparable<T>> void listElementWiseMaxMerge(List<T> l1, List<T> l2) {
+        int i;
+        for (i=0; i<l1.size(); i++) {
+            if (l2.get(i).compareTo(l1.get(i)) > 0) {
+                l1.set(i, l2.get(i));
+            }
+        }
+        for (; i<l2.size(); i++) {
+            l1.add(l2.get(i));
+        }
+    }
+
+    static String parseNumericValueAnimatorName(ProjectDevice projectDevice, int index) {
+        return "_" + projectDevice.getName().replace(' ', '_') + "_NumericAnimator_" + String.valueOf(index);
+    }
+
+    static String parseNumericValueLookupName(ProjectDevice projectDevice, int index) {
+        return "_" + projectDevice.getName().replace(' ', '_') + "_NumericLookup_" + String.valueOf(index);
+    }
+
+    static String parseStringValueLookupName(ProjectDevice projectDevice, int index) {
+        return "_" + projectDevice.getName().replace(' ', '_') + "_StringLookup_" + String.valueOf(index);
+    }
+
+    static String parseGlobalStringTableName(Scene scene, UserSetting userSetting, Parameter parameter) {
+        return "_" + scene.getNameSanitized() + "_" + userSetting.getDevice().getName().replace(' ', '_')
+                + "_" + scene.getAllSettings().indexOf(userSetting) + "_" + parameter.getName().replace(' ', '_') + "_String";
     }
 }

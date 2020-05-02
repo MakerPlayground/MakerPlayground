@@ -18,14 +18,12 @@ package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.Platform;
-import io.makerplayground.device.shared.DataType;
-import io.makerplayground.device.shared.DelayUnit;
-import io.makerplayground.device.shared.Parameter;
-import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
+import io.makerplayground.project.Condition;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.VirtualProjectDevice.TimeElapsed;
 import io.makerplayground.project.expression.*;
@@ -50,6 +48,12 @@ public class ArduinoUploadCode {
     private final List<List<ProjectDevice>> projectDeviceGroups;
     private final List<Delay> allDelayUsed;
     private final Map<ProjectDevice, Set<Value>> valueUsed;
+
+    private Set<ProjectDevice> projectDevicesWithTask;
+    private List<NumberAnimationTerm> continuousTermList = new ArrayList<>();
+    private List<NumberAnimationTerm> numericCategoricalTermList = new ArrayList<>();
+    private List<StringAnimationTerm> stringCategoricalTermList = new ArrayList<>();
+    private Map<StringAnimationTerm, String> globalStringTableNameMap = new HashMap<>();
 
     private ArduinoUploadCode(Project project) {
         this.project = project;
@@ -84,6 +88,7 @@ public class ArduinoUploadCode {
         generator.appendBeginRecentSceneFinishTime();
         generator.appendPointerVariables();
         generator.appendFunctionDeclaration();
+        generator.appendAnimationVariables();
         generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroups, false));
         generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroups, true, false));
         generator.appendLoopFunction();
@@ -155,6 +160,117 @@ public class ArduinoUploadCode {
         builder.append(NEW_LINE);
     }
 
+    private void appendAnimationVariables() {
+        // find maximum number of animation use in every scene of each device
+        Map<ProjectDevice, Integer> continuousAnimationMap = new HashMap<>();
+        Map<ProjectDevice, List<Integer>> numericTableSizeAnimationMap = new HashMap<>();
+        Map<ProjectDevice, List<Integer>> stringTableSizeAnimationMap = new HashMap<>();
+
+        for (ProjectDevice projectDevice : project.getAllDeviceUsed()) {
+            continuousAnimationMap.put(projectDevice, 0);
+            numericTableSizeAnimationMap.put(projectDevice, new ArrayList<>());
+            stringTableSizeAnimationMap.put(projectDevice, new ArrayList<>());
+        }
+
+        for (Scene scene : allSceneUsed) {
+            for (UserSetting setting : scene.getAllSettings()) {
+                int continuousAnimationCount = setting.getNumberOfContinuousAnimationUsed();
+                if (continuousAnimationMap.get(setting.getDevice()) < continuousAnimationCount)
+                    continuousAnimationMap.put(setting.getDevice(), continuousAnimationCount);
+
+                List<Integer> numberTableSize = setting.getNumberLookupTableSize();
+                System.out.println(numberTableSize);
+                listElementWiseMaxMerge(numericTableSizeAnimationMap.get(setting.getDevice()), numberTableSize);
+
+                List<Integer> stringTableSize = setting.getStringLookupTableSize();
+                System.out.println(stringTableSize);
+                listElementWiseMaxMerge(stringTableSizeAnimationMap.get(setting.getDevice()), stringTableSize);
+            }
+        }
+
+        // remove device that doesn't use animation from the map
+        continuousAnimationMap.values().removeIf((v) -> v == 0);
+        numericTableSizeAnimationMap.values().removeIf(List::isEmpty);
+        stringTableSizeAnimationMap.values().removeIf(List::isEmpty);
+
+        // append task variable
+        projectDevicesWithTask = new HashSet<>();
+        projectDevicesWithTask.addAll(continuousAnimationMap.keySet());
+        projectDevicesWithTask.addAll(numericTableSizeAnimationMap.keySet());
+        projectDevicesWithTask.addAll(stringTableSizeAnimationMap.keySet());
+        for (ProjectDevice projectDevice : projectDevicesWithTask) {
+            builder.append("Task " + parseTaskName(projectDevice) + " = [](double){};").append(NEW_LINE);
+        }
+
+        // append continuous number animator
+        for (ProjectDevice projectDevice : continuousAnimationMap.keySet()) {
+            for (int i=0; i<continuousAnimationMap.get(projectDevice); i++) {
+                builder.append("ValueAnimator<double> " + parseNumericValueAnimatorName(projectDevice, i) + ";").append(NEW_LINE);
+            }
+        }
+
+        // append categorical numerical animation variable
+        for (ProjectDevice projectDevice : numericTableSizeAnimationMap.keySet()) {
+            List<Integer> tableSize = numericTableSizeAnimationMap.get(projectDevice);
+            for (int i=0; i<tableSize.size(); i++) {
+                builder.append("NumericValueLookup<" + tableSize.get(i) + "> " + parseNumericValueLookupName(projectDevice, i) + ";").append(NEW_LINE);
+            }
+        }
+
+        // append categorical string animation variable
+        for (ProjectDevice projectDevice : stringTableSizeAnimationMap.keySet()) {
+            List<Integer> tableSize = stringTableSizeAnimationMap.get(projectDevice);
+            for (int i=0; i<tableSize.size(); i++) {
+                builder.append("StringValueLookup<" + tableSize.get(i) + "> " + parseStringValueLookupName(projectDevice, i) + ";").append(NEW_LINE);
+            }
+        }
+
+        // generate global constant string
+        if (!stringTableSizeAnimationMap.isEmpty()) {
+            builder.append("char buffer[64];").append(NEW_LINE);  // TODO: calculate from the longest animate string
+        }
+        for (Scene s : allSceneUsed) {
+            for (UserSetting setting : s.getAllSettings()) {
+                for (Parameter parameter : setting.getParameterMap().keySet()) {
+                    Expression expression = setting.getParameterMap().get(parameter);
+                    for (Term term : expression.getTerms()) {
+                        if (term instanceof StringAnimationTerm) {
+                            StringAnimationTerm stringAnimationTerm = (StringAnimationTerm) term;
+                            String name = parseGlobalStringTableName(s, setting, parameter);
+                            globalStringTableNameMap.put(stringAnimationTerm, name);
+                            // generate list of CustomNumberExpression in the order that they are used inside of the lookup table
+                            // in order to generate placeholder (%0, %1, ...) in the global string
+                            List<CustomNumberExpression> argsIndex = new ArrayList<>();
+                            StringCategoricalAnimatedValue animatedValue = (StringCategoricalAnimatedValue) stringAnimationTerm.getValue();
+                            for (CategoricalAnimatedValue.AnimatedKeyValue<ComplexStringExpression> keyValue : animatedValue.getKeyValues()) {
+                                for (Expression exp : keyValue.getValue().getSubExpressions()) {
+                                    if ((expression instanceof CustomNumberExpression) && !argsIndex.contains(expression)) {
+                                        argsIndex.add((CustomNumberExpression) exp);
+                                    }
+                                }
+                            }
+                            if (animatedValue.getKeyValues().size() == 0) {
+                                throw new IllegalStateException("Categorical lookup table should contain at least one element");
+                            }
+                            for (int i=0; i<animatedValue.getKeyValues().size(); i++) {
+                                CategoricalAnimatedValue.AnimatedKeyValue<ComplexStringExpression> keyValue = animatedValue.getKeyValues().get(i);
+                                builder.append("const char ").append(name).append(i).append("[] PROGMEM = ")
+                                        .append(parseComplexStringExpressionWithPlaceholder(keyValue.getValue(), argsIndex))
+                                        .append(";").append(NEW_LINE);
+                            }
+                            builder.append("const char* const ").append(name).append("[] PROGMEM = {");
+                            builder.append(name).append(0);
+                            for (int i=1; i<animatedValue.getKeyValues().size(); i++) {
+                                builder.append(",").append(name).append(i);
+                            }
+                            builder.append("};").append(NEW_LINE);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void appendBeginRecentSceneFinishTime() {
         project.getBegin().forEach(taskNode -> builder.append("unsigned long ").append(parseBeginRecentBlockFinishTime(taskNode)).append(" = 0;").append(NEW_LINE));
     }
@@ -182,6 +298,12 @@ public class ArduinoUploadCode {
         // allow all devices to perform their own tasks
         for (List<ProjectDevice> group: projectDeviceGroups) {
             builder.append(INDENT).append(parseDeviceVariableName(group)).append(".update(currentTime);").append(NEW_LINE);
+        }
+        builder.append(NEW_LINE);
+
+        // run every task
+        for (ProjectDevice projectDevice : projectDevicesWithTask) {
+            builder.append(INDENT).append(parseTaskName(projectDevice)).append("(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
@@ -285,21 +407,103 @@ public class ArduinoUploadCode {
                         if (Memory.setValue == setting.getAction()) {
                             Map<Parameter, Expression> map = setting.getParameterMap();
                             Parameter nameParam = setting.getAction().getParameter().get(0);
-                            String deviceName = parseExpressionForParameter(root, nameParam, map.get(nameParam));
+                            String deviceName = parseExpressionForParameter(root, setting.getDevice(), nameParam, map.get(nameParam));
                             Parameter valueParam = setting.getAction().getParameter().get(1);
-                            String expr = parseExpressionForParameter(root, valueParam, map.get(valueParam));
+                            String expr = parseExpressionForParameter(root, setting.getDevice(), valueParam, map.get(valueParam));
                             builder.append(INDENT).append(deviceName).append(" = ").append(expr).append(";").append(NEW_LINE);
                         } else {
                             throw new IllegalStateException();
                         }
+                    } else if (setting.isAnimationUsed()) {
+                        continuousTermList.clear();
+                        numericCategoricalTermList.clear();
+                        stringCategoricalTermList.clear();
+                        // create a list of animation term used in this usersetting
+                        for (Expression expression : setting.getParameterMap().values()) {
+                            for (Term t : expression.getTerms()) {
+                                if ((t instanceof NumberAnimationTerm) && (t.getValue() instanceof ContinuousAnimatedValue)) {
+                                    continuousTermList.add((NumberAnimationTerm) t);
+                                } else if ((t instanceof NumberAnimationTerm) && (t.getValue() instanceof NumericCategoricalAnimatedValue)) {
+                                    numericCategoricalTermList.add((NumberAnimationTerm) t);
+                                } else if (t instanceof StringAnimationTerm) {
+                                    stringCategoricalTermList.add((StringAnimationTerm) t);
+                                }
+                            }
+                        }
+                        // sort categorical term list by their lookup table size so we can assign the correct instance to each term
+                        numericCategoricalTermList.sort(Comparator.<NumberAnimationTerm>comparingInt((t) -> ((NumericCategoricalAnimatedValue) t.getValue()).getKeyValues().size()).reversed());
+                        stringCategoricalTermList.sort(Comparator.<StringAnimationTerm>comparingInt((t) -> ((StringCategoricalAnimatedValue) t.getValue()).getKeyValues().size()).reversed());
+                        // generate setup code for animated value in every parameter
+                        for (int i=0; i<continuousTermList.size(); i++) {
+                            NumberAnimationTerm animationTerm = continuousTermList.get(i);
+                            ContinuousAnimatedValue animatedValue = (ContinuousAnimatedValue) animationTerm.getValue();
+                            builder.append(INDENT).append(parseNumericValueAnimatorName(setting.getDevice(), i)).append(".easing = ")
+                                    .append(animatedValue.getEasing().getName()).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseNumericValueAnimatorName(setting.getDevice(), i)).append(".startValue = ")
+                                    .append(parseExpression(root, setting.getDevice(), animatedValue.getStartValue())).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseNumericValueAnimatorName(setting.getDevice(), i)).append(".endValue = ")
+                                    .append(parseExpression(root, setting.getDevice(), animatedValue.getEndValue())).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseNumericValueAnimatorName(setting.getDevice(), i)).append(".duration = ")
+                                    .append(parseDelay(root, setting.getDevice(), animatedValue.getDuration(), animatedValue.getDelayUnit())).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseNumericValueAnimatorName(setting.getDevice(), i)).append(".startTime = millis();").append(NEW_LINE);
+                        }
+                        for (int i=0; i<numericCategoricalTermList.size(); i++) {
+                            NumberAnimationTerm animationTerm = numericCategoricalTermList.get(i);
+                            NumericCategoricalAnimatedValue animatedValue = (NumericCategoricalAnimatedValue) animationTerm.getValue();
+                            for (int j=0; j<animatedValue.getKeyValues().size(); j++) {
+                                CategoricalAnimatedValue.AnimatedKeyValue<CustomNumberExpression> keyValue = animatedValue.getKeyValues().get(j);
+                                builder.append(INDENT).append(parseNumericValueLookupName(setting.getDevice(), i)).append(".value[").append(j).append("] = ")
+                                        .append(parseExpression(root, setting.getDevice(), keyValue.getValue())).append(";").append(NEW_LINE);
+                                builder.append(INDENT).append(parseNumericValueLookupName(setting.getDevice(), i)).append(".time[").append(j).append("] = ")
+                                        .append(parseDelay(root, setting.getDevice(), keyValue.getDelay(), keyValue.getDelayUnit())).append(";").append(NEW_LINE);
+                            }
+                            builder.append(INDENT).append(parseNumericValueLookupName(setting.getDevice(), i)).append(".count = ")
+                                    .append(animatedValue.getKeyValues().size()).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseNumericValueLookupName(setting.getDevice(), i)).append(".startTime = millis();").append(NEW_LINE);
+                        }
+                        for (int i=0; i<stringCategoricalTermList.size(); i++) {
+                            StringAnimationTerm animationTerm = stringCategoricalTermList.get(i);
+                            StringCategoricalAnimatedValue animatedValue = (StringCategoricalAnimatedValue) animationTerm.getValue();
+                            Set<CustomNumberExpression> argumentGenerated = new HashSet<>();
+                            builder.append(INDENT).append(parseStringValueLookupName(setting.getDevice(), i)).append(".value = ")
+                                    .append(globalStringTableNameMap.get(animationTerm)).append(";").append(NEW_LINE);
+                            for (int j=0; j<animatedValue.getKeyValues().size(); j++) {
+                                CategoricalAnimatedValue.AnimatedKeyValue<ComplexStringExpression> keyValue = animatedValue.getKeyValues().get(j);
+                                builder.append(INDENT).append(parseStringValueLookupName(setting.getDevice(), i)).append(".time[").append(j).append("] = ")
+                                        .append(parseDelay(root, setting.getDevice(), keyValue.getDelay(), keyValue.getDelayUnit())).append(";").append(NEW_LINE);
+                                // generate argument using order it is appeared in the lookup table
+                                for (Expression expression : keyValue.getValue().getSubExpressions()) {
+                                    if ((expression instanceof CustomNumberExpression) && !argumentGenerated.contains(expression)) {
+                                        builder.append(INDENT).append(parseStringValueLookupName(setting.getDevice(), i)).append(".arg[").append(argumentGenerated.size()).append("] = ")
+                                                .append(parseExpression(root, setting.getDevice(), expression)).append(";").append(NEW_LINE);
+                                        argumentGenerated.add((CustomNumberExpression) expression);
+                                    }
+                                }
+                            }
+                            builder.append(INDENT).append(parseStringValueLookupName(setting.getDevice(), i)).append(".count = ")
+                                    .append(animatedValue.getKeyValues().size()).append(";").append(NEW_LINE);
+                            builder.append(INDENT).append(parseStringValueLookupName(setting.getDevice(), i)).append(".startTime = millis();").append(NEW_LINE);
+                        }
+                        // generate task
+                        String deviceName = parseDeviceVariableName(searchGroup(device));
+                        List<String> taskParameter = new ArrayList<>();
+                        List<Parameter> parameters = setting.getAction().getParameter();
+                        for (Parameter p : parameters) {
+                            taskParameter.add(parseExpressionForParameter(root, setting.getDevice(), p, setting.getParameterMap().get(p)));
+                        }
+                        System.out.println(taskParameter);
+                        builder.append(INDENT).append(parseTaskName(setting.getDevice())).append(" = [](double t){ ")
+                                .append(deviceName).append(".").append(setting.getAction().getFunctionName())
+                                .append("(").append(String.join(", ", taskParameter)).append("); };").append(NEW_LINE);
                     } else {
                         String deviceName = parseDeviceVariableName(searchGroup(device));
                         List<String> taskParameter = new ArrayList<>();
                         List<Parameter> parameters = setting.getAction().getParameter();
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpressionForParameter(root, p, setting.getParameterMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(root, setting.getDevice(), p, setting.getParameterMap().get(p)));
                         }
+                        builder.append(INDENT).append(parseTaskName(setting.getDevice())).append(" = [](double t){};").append(NEW_LINE);
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
                     }
@@ -323,6 +527,16 @@ public class ArduinoUploadCode {
                 // end of scene's function
                 builder.append("}").append(NEW_LINE);
             }
+        }
+    }
+
+    private String parseDelay(Begin root, ProjectDevice projectDevice, CustomNumberExpression expression, DelayUnit delayUnit) {
+        if (delayUnit == DelayUnit.SECOND) {
+            return "(" + parseExpression(root, projectDevice, expression) + ") * 1000.0";
+        } else if (delayUnit == DelayUnit.MILLISECOND) {
+            return parseExpression(root, projectDevice, expression);
+        } else {
+            throw new IllegalStateException("Unsupported delay unit");
         }
     }
 
@@ -406,10 +620,10 @@ public class ArduinoUploadCode {
                             Parameter valueParameter = setting.getCondition().getParameter().get(0);
                             if (setting.getCondition() == TimeElapsed.lessThan) {
                                 booleanExpressions.add("millis() < " + parseBeginRecentBlockFinishTime(root) + " + " +
-                                        parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)));
+                                        parseExpressionForParameter(root, setting.getDevice(), valueParameter, setting.getParameterMap().get(valueParameter)));
                             } else if (setting.getCondition() == TimeElapsed.greaterThan) {
                                 booleanExpressions.add("millis() > " + parseBeginRecentBlockFinishTime(root) + " + " +
-                                        parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)));
+                                        parseExpressionForParameter(root, setting.getDevice(), valueParameter, setting.getParameterMap().get(valueParameter)));
                             } else {
                                 throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
                             }
@@ -418,7 +632,7 @@ public class ArduinoUploadCode {
                                 for (Value value : setting.getExpression().keySet()) {
                                     if (setting.getExpressionEnable().get(value)) {
                                         Expression expression = setting.getExpression().get(value);
-                                        booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
+                                        booleanExpressions.add("(" + parseTerms(root, setting.getDevice(), expression.getTerms()) + ")");
                                     }
                                 }
                             }
@@ -431,14 +645,14 @@ public class ArduinoUploadCode {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
                         } else if (!setting.getCondition().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(root, parameter, setting.getParameterMap().get(parameter))));
+                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(root, setting.getDevice(), parameter, setting.getParameterMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(searchGroup(setting.getDevice())) + "." +
                                     setting.getCondition().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
+                                    booleanExpressions.add("(" + parseTerms(root, setting.getDevice(), expression.getTerms()) + ")");
                                 }
                             }
                         }
@@ -484,12 +698,48 @@ public class ArduinoUploadCode {
         return projectDeviceOptional.get();
     }
 
-    private String parseExpressionForParameter(Begin root, Parameter parameter, Expression expression) {
+    private String parseExpression(Begin root, ProjectDevice projectDevice, Expression expression) {
+        if (expression instanceof CustomNumberExpression) {
+            return parseCustomNumberExpressionTerms(root, projectDevice, expression.getTerms());
+        } else if (expression instanceof ComplexStringExpression) {
+            String returnValue;
+            List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
+            if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
+                returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
+            } else if (subExpression.size() == 1 && subExpression.get(0) instanceof AnimatedStringExpression) {
+                returnValue = parseTerms(root, projectDevice, subExpression.get(0).getTerms());
+            } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
+                returnValue = "String(" + parseCustomNumberExpressionTerms(root, projectDevice, subExpression.get(0).getTerms()) + ").c_str()";
+            } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
+                returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
+                        .collect(Collectors.joining("", "\"", "\""));
+            } else {
+                List<String> subExpressionString = new ArrayList<>();
+                for (Expression e : subExpression) {
+                    if (e instanceof SimpleStringExpression) {
+                        subExpressionString.add("String(\"" + ((SimpleStringExpression) e).getString() + "\")");
+                    } else if (e instanceof AnimatedStringExpression) {
+                        subExpressionString.add("String(" + parseTerms(root, projectDevice, e.getTerms()) + ")");
+                    } else if (e instanceof CustomNumberExpression) {
+                        subExpressionString.add("String(" + parseCustomNumberExpressionTerms(root, projectDevice, e.getTerms()) + ")");
+                    } else {
+                        throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+                    }
+                }
+                returnValue = "(" + String.join("+", subExpressionString) + ").c_str()";
+            }
+            return returnValue;
+        } else {
+            throw new IllegalStateException(expression.getClass().getSimpleName());
+        }
+    }
+
+    private String parseExpressionForParameter(Begin root, ProjectDevice projectDevice, Parameter parameter, Expression expression) {
         String returnValue;
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            String exprStr = parseCustomNumberExpressionTerms(root, expression.getTerms());
+            String exprStr = parseCustomNumberExpressionTerms(root, projectDevice, expression.getTerms());
             returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -504,26 +754,28 @@ public class ArduinoUploadCode {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            String exprStr = parseTerms(root, expression.getTerms());
+            String exprStr = parseTerms(root, projectDevice, expression.getTerms());
             returnValue = "constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
-            String exprStr = parseTerms(root, expression.getTerms());
+            String exprStr = parseTerms(root, projectDevice, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(searchGroup(projectValue.getDevice())) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
-            String exprStr = parseTerms(root, expression.getTerms());
+            String exprStr = parseTerms(root, projectDevice, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ComplexStringExpression) {
             List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
             if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
                 returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
+            } else if (subExpression.size() == 1 && subExpression.get(0) instanceof AnimatedStringExpression) {
+                returnValue = parseTerms(root, projectDevice, subExpression.get(0).getTerms());
             } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
-                returnValue = "String(" + parseCustomNumberExpressionTerms(root, subExpression.get(0).getTerms()) + ").c_str()";
+                returnValue = "String(" + parseCustomNumberExpressionTerms(root, projectDevice, subExpression.get(0).getTerms()) + ").c_str()";
             } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
                 returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
                         .collect(Collectors.joining("", "\"", "\""));
@@ -531,15 +783,18 @@ public class ArduinoUploadCode {
                 List<String> subExpressionString = new ArrayList<>();
                 for (Expression e : subExpression) {
                     if (e instanceof SimpleStringExpression) {
-                        subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
+                        subExpressionString.add("String(\"" + ((SimpleStringExpression) e).getString() + "\")");
+                    } else if (e instanceof AnimatedStringExpression) {
+                        subExpressionString.add("String(" + parseTerms(root, projectDevice, e.getTerms()) + ")");
                     } else if (e instanceof CustomNumberExpression) {
-                        subExpressionString.add("String(" + parseCustomNumberExpressionTerms(root, e.getTerms()) + ")");
+                        subExpressionString.add("String(" + parseCustomNumberExpressionTerms(root, projectDevice, e.getTerms()) + ")");
                     } else {
                         throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
                     }
                 }
                 returnValue = "(" + String.join("+", subExpressionString) + ").c_str()";
             }
+            return returnValue;
         } else if (expression instanceof SimpleIntegerExpression) {
             returnValue = String.valueOf(((SimpleIntegerExpression) expression).getInteger());
         } else if (expression instanceof StringIntegerExpression) {
@@ -554,6 +809,40 @@ public class ArduinoUploadCode {
         return returnValue;
     }
 
+    private String parseComplexStringExpressionWithPlaceholder(ComplexStringExpression expression, List<CustomNumberExpression> numberExpressions) {
+        String returnValue;
+        List<Expression> subExpression = expression.getSubExpressions();
+        if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
+            returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
+        } else if (subExpression.size() == 1 && subExpression.get(0) instanceof AnimatedStringExpression) {
+            throw new IllegalStateException("Animated string is not supported in categorical animation lookup table");
+        } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
+            if (!numberExpressions.contains(subExpression.get(0)))
+                throw new IllegalStateException("");
+            returnValue = "\"%" + numberExpressions.indexOf(subExpression.get(0)) + "\"";
+        } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
+            returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
+                    .collect(Collectors.joining("", "\"", "\""));
+        } else {
+            returnValue = "\"";
+            for (Expression e : subExpression) {
+                if (e instanceof SimpleStringExpression) {
+                    returnValue += ((SimpleStringExpression) e).getString().replace("%", "%%");
+                } else if (e instanceof AnimatedStringExpression) {
+                    throw new IllegalStateException("Animated string is not supported in categorical animation lookup table");
+                } else if (e instanceof CustomNumberExpression) {
+                    if (!numberExpressions.contains(e))
+                        throw new IllegalStateException("");
+                    returnValue += "%" + numberExpressions.indexOf(e);
+                } else {
+                    throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
+                }
+            }
+            returnValue += "\"";
+        }
+        return returnValue;
+    }
+
     private String parseBeginRecentBlockFinishTime(Begin begin) {
         return begin.getName().replace(" ", "_") + "_recentBlockFinishTime";
     }
@@ -561,7 +850,7 @@ public class ArduinoUploadCode {
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
 
-    private String parseTerm(Begin root, Term term) {
+    private String parseTerm(Begin root, ProjectDevice projectDevice, Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
@@ -630,27 +919,47 @@ public class ArduinoUploadCode {
         } else if (term instanceof RecordTerm) {
             RecordTerm term1 = (RecordTerm) term;
             return "Record(" + term1.getValue().getEntryList().stream()
-                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(root, entry.getValue().getTerms()) + ")")
+                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(root, projectDevice, entry.getValue().getTerms()) + ")")
                     .collect(Collectors.joining(",")) + ")";
         } else if (term instanceof IntegerTerm) {
             return term.toString();
+        } else if (term instanceof NumberAnimationTerm) {
+            if (term.getValue() instanceof ContinuousAnimatedValue) {
+                if (!continuousTermList.contains(term))
+                    throw new IllegalStateException();
+                return parseNumericValueAnimatorName(projectDevice, continuousTermList.indexOf(term)) + ".getValue(t)";
+            } else if (term.getValue() instanceof NumericCategoricalAnimatedValue) {
+                if (!numericCategoricalTermList.contains(term))
+                    throw new IllegalStateException();
+                return parseNumericValueLookupName(projectDevice, numericCategoricalTermList.indexOf(term)) + ".getValue(t)";
+            } else {
+                throw new UnsupportedOperationException("Can't parse NumberAnimationTerm with " + term.getValue());
+            }
+        } else if (term instanceof StringAnimationTerm) {
+            if (term.getValue() instanceof StringCategoricalAnimatedValue) {
+                if (!stringCategoricalTermList.contains(term))
+                    throw new IllegalStateException();
+                return parseStringValueLookupName(projectDevice, stringCategoricalTermList.indexOf(term)) + ".getValue(buffer, t)";
+            } else {
+                throw new UnsupportedOperationException("Can't parse NumberAnimationTerm with " + term.getValue());
+            }
         } else {
             throw new IllegalStateException("Not implemented parseTerm for Term [" + term + "]");
         }
     }
 
-    private String parseTerms(Begin root, List<Term> expression) {
-        return expression.stream().map((t) -> parseTerm(root, t)).collect(Collectors.joining(" "));
+    private String parseTerms(Begin root, ProjectDevice projectDevice, List<Term> expression) {
+        return expression.stream().map((t) -> parseTerm(root, projectDevice, t)).collect(Collectors.joining(" "));
     }
 
-    private String parseCustomNumberExpressionTerms(Begin root, List<Term> expression) {
+    private String parseCustomNumberExpressionTerms(Begin root, ProjectDevice projectDevice, List<Term> expression) {
         NumberExpressionTreeNode tree = NumberExpressionParser.parseExpression(expression);
         StringBuilder sb = new StringBuilder();
-        parseCustomNumberExpressionTermsImpl(root, tree, sb);
+        parseCustomNumberExpressionTermsImpl(root, projectDevice, tree, sb);
         return sb.toString();
     }
 
-    private void parseCustomNumberExpressionTermsImpl(Begin root, NumberExpressionTreeNode current, StringBuilder sb) {
+    private void parseCustomNumberExpressionTermsImpl(Begin root, ProjectDevice projectDevice, NumberExpressionTreeNode current, StringBuilder sb) {
         if (current.hasChildren()) {
             Operator op = ((OperatorTerm) current.getRoot()).getValue();
             if (op == Operator.DIVIDE_INT) {
@@ -660,15 +969,15 @@ public class ArduinoUploadCode {
             if (op == Operator.MOD) {
                 sb.append("(int)");
             }
-            parseCustomNumberExpressionTermsImpl(root, current.getLeftChild(), sb);
-            sb.append(parseTerm(root, current.getRoot()));
+            parseCustomNumberExpressionTermsImpl(root, projectDevice, current.getLeftChild(), sb);
+            sb.append(parseTerm(root, projectDevice, current.getRoot()));
             if (op == Operator.MOD) {
                 sb.append("(int)");
             }
-            parseCustomNumberExpressionTermsImpl(root, current.getRightChild(), sb);
+            parseCustomNumberExpressionTermsImpl(root, projectDevice, current.getRightChild(), sb);
             sb.append(")");
         } else {
-            sb.append(parseTerm(root, current.getRoot()));
+            sb.append(parseTerm(root, projectDevice, current.getRoot()));
         }
     }
 }
