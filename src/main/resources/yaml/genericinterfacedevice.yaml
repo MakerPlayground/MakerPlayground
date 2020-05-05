@@ -67,11 +67,13 @@
           datatype: INTEGER_ENUM
           controltype: DROPDOWN
         - name: Logic
-          value: 1
+          value: HIGH
           constraint:
-            - 1
-            - 0
-          datatype: INTEGER_ENUM
+            - key: HIGH
+              value: 1
+            - key: LOW
+              value: 0
+          datatype: STRING_INT_ENUM
           controltype: DROPDOWN
   condition:
     - name: Compare

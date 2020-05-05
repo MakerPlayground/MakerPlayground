@@ -305,8 +305,8 @@ public class RpiPythonInteractiveCode {
         builder.append(NEW_LINE);;
 
         builder.append("def process_command(cmd):").append(NEW_LINE);
-//        builder.append(INDENT).append("MPInteractive.log(cmd)").append(NEW_LINE);
-        builder.append(INDENT).append("args = [x for x in cmd.replace('\" \"', '\"').split('\"') if x != '']").append(NEW_LINE);
+        builder.append(INDENT).append("MPInteractive.log(cmd)").append(NEW_LINE);
+        builder.append(INDENT).append("args = [x for x in cmd.strip().replace('\" \"', '\"').split('\"') if x != '']").append(NEW_LINE);
 
         AtomicBoolean firstCondition = new AtomicBoolean(true);
         for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
@@ -374,7 +374,7 @@ public class RpiPythonInteractiveCode {
                             Parameter parameter = condition.getParameter().get(i);
                             switch (parameter.getDataType()) {
                                 case DOUBLE:
-                                    param = "float(commandArgs[" + (i + 2) + "])";
+                                    param = "float(args[" + (i + 2) + "])";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
                                             .append("MP.c_args[\"_").append(projectDevice.getName()).append("_")
                                             .append(condition.getFunctionName()).append("_").append("param").append(i)
@@ -382,14 +382,14 @@ public class RpiPythonInteractiveCode {
                                     break;
                                 case INTEGER:
                                 case INTEGER_ENUM:
-                                    param = "int(commandArgs[" + (i + 2) + "])";
+                                    param = "int(args[" + (i + 2) + "])";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
                                             .append("MP.c_args[\"_").append(projectDevice.getName()).append("_")
                                             .append(condition.getFunctionName()).append("_").append("param").append(i)
                                             .append("\"] = ").append(param).append(NEW_LINE);
                                     break;
                                 case STRING:
-                                    param = "commandArgs[" + (i + 2) + "]";
+                                    param = "args[" + (i + 2) + "]";
                                     builder.append(INDENT).append(INDENT).append(INDENT)
                                             .append("MP.c_args[\"_").append(projectDevice.getName()).append("_")
                                             .append(condition.getFunctionName()).append("_").append("param").append(i)

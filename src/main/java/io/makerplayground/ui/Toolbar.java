@@ -18,6 +18,7 @@ package io.makerplayground.ui;
 
 import io.makerplayground.device.actual.Platform;
 import io.makerplayground.generator.upload.*;
+import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
 import io.makerplayground.ui.dialog.UploadDialogView;
@@ -255,8 +256,8 @@ public class Toolbar extends AnchorPane {
         ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();
         BooleanBinding projectNotOk = project.get().getProjectConfiguration().statusProperty().isNotEqualTo(ProjectConfigurationStatus.OK);
 
-        interactiveButton.visibleProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
-        interactiveButton.managedProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
+//        interactiveButton.visibleProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
+//        interactiveButton.managedProperty().bind(project.get().platformProperty().isNotEqualTo(Platform.RASPBERRYPI));
         interactiveButton.disableProperty().bind(interactiveModeInitialize.not().and(portNotSelected.or(uploading).or(useHwSerialProperty).or(projectNotOk).or(deviceMonitorShowing)));
 
         uploadButton.graphicProperty().bind(Bindings.when(uploading).then(uploadStopImageView).otherwise(uploadStartImageView));

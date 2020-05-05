@@ -1308,15 +1308,17 @@ class DiagramV1 {
     }
 
     private void showInteractiveDevicePropertyWindow(Node button, ProjectDevice device) {
-        List<ProjectDevice> deviceList;
+        Map<ProjectDevice, ActualDevice> deviceList;
         if (device == ProjectDevice.CONTROLLER) {
             deviceList = project.getUnmodifiableProjectDevice().stream()
                     .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
-                    .collect(Collectors.toUnmodifiableList());
+                    .collect(Collectors.toMap(Function.identity(), interactiveModel::findActualDevice));
         } else {
-            deviceList = new ArrayList<>();
-            deviceList.add(device);
-            deviceList.addAll(config.getDeviceWithSameIdenticalDevice(device));
+            deviceList = new HashMap<>();
+            deviceList.put(device, interactiveModel.findActualDevice(device));
+            for (ProjectDevice pd : config.getDeviceWithSameIdenticalDevice(device)) {
+                deviceList.put(pd, interactiveModel.findActualDevice(pd));
+            }
         }
         if (!deviceList.isEmpty()) {
             InteractiveDevicePropertyWindow interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);

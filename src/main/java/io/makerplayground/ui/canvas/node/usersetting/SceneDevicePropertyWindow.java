@@ -24,7 +24,7 @@ import org.controlsfx.control.PopOver;
 public class SceneDevicePropertyWindow extends PopOver {
 
     public SceneDevicePropertyWindow(SceneDeviceIconViewModel viewModel) {
-        SceneDevicePropertyPane devicePropertyPane = new SceneDevicePropertyPane(viewModel.getUserSetting(), viewModel.getProject());
+        SceneDevicePropertyPane devicePropertyPane = new SceneDevicePropertyPane(viewModel.getUserSetting(), viewModel.getProject(), null);
         devicePropertyPane.setPadding(new Insets(20, 20, 20, 20));
 
         setDetachable(false);
