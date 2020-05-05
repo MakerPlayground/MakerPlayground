@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class InteractiveModel {
-
     private final Map<ProjectDevice, UserSetting> actionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
