@@ -13,6 +13,19 @@
     -fx-faint-focus-color: transparent;
 }
 
+#interactiveBarHBox {
+    -fx-background-color: bar-theme-color;
+}
+
+#interactiveBarHBox:hover {
+    -fx-background-color: bar-theme-hover-color;
+}
+
+#interactiveBarHBox .label {
+    -fx-text-fill: bar-text-fill;
+    -fx-font-weight: bold;
+}
+
 .scroll-pane{
     -fx-padding:0;
     -fx-background-color: background-color;

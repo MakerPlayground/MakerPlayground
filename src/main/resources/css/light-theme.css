@@ -58,4 +58,9 @@
     scene-theme-hover-color: #00b35d;
     add-scene-text-color: #ffffff;
     scene-header-background-color: #ffffff;
+
+    /*---Bar---*/
+    bar-theme-color: #ffab00;
+    bar-theme-hover-color: #e69a00;
+    bar-text-fill: #ffffff;
 }

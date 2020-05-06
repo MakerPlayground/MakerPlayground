@@ -93,7 +93,7 @@ public class ArduinoInteractiveCode {
         builder.append("uint8_t statusCode = 0;").append(NEW_LINE);
         builder.append("unsigned long lastSendTime = 0;").append(NEW_LINE);
 //        builder.append("unsigned long currentTime = 0;").append(NEW_LINE);
-        builder.append("const int SEND_INTERVAL = 100;").append(NEW_LINE);
+//        builder.append("const int SEND_INTERVAL = 100;").append(NEW_LINE);
         builder.append("char serialBuffer[256];").append(NEW_LINE);
         builder.append("uint8_t serialBufferIndex = 0;").append(NEW_LINE);
         builder.append("char* commandArgs[10];").append(NEW_LINE);
@@ -159,10 +159,12 @@ public class ArduinoInteractiveCode {
         builder.append(NEW_LINE);
 
         builder.append(INDENT).append("if (strcmp_P(commandArgs[0], (PGM_P) F(\"$\")) == 0) {").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Freeze\")) == 0)) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Freeze\")) == 0) && argsCount == 3) {").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.setFreezeSensor(true);").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("} else if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Unfreeze\")) == 0)) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("} else if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Unfreeze\")) == 0) && argsCount == 3) {").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.setFreezeSensor(false);").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("} else if ((strcmp_P(commandArgs[1], (PGM_P) F(\"SensorRate\")) == 0) && argsCount == 3) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.setSensorRate(atoi(commandArgs[2]));").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
 
@@ -307,7 +309,7 @@ public class ArduinoInteractiveCode {
         builder.append(NEW_LINE);
 
         if (!projectDeviceGroup.isEmpty()) {
-            builder.append(INDENT).append("if (currentTime - lastSendTime >= SEND_INTERVAL) {").append(NEW_LINE);
+            builder.append(INDENT).append("if (currentTime - lastSendTime >= MPInteractive.getSensorRate() && !MPInteractive.isFreezeSensor()) {").append(NEW_LINE);
             for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
                 for (ProjectDevice projectDevice: projectDeviceList) {
                     if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {

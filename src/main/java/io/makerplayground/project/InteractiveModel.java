@@ -41,7 +41,8 @@ public class InteractiveModel {
 
     private UploadTarget uploadTarget;
     private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
-    private final BooleanProperty freezeInteractiveValue = new SimpleBooleanProperty(false);
+    private final BooleanProperty sensorReading = new SimpleBooleanProperty(true);
+    private final IntegerProperty sensorReadingRate = new SimpleIntegerProperty(100);
 
     InteractiveModel(Project project) {
         this.project = project;
@@ -119,13 +120,22 @@ public class InteractiveModel {
         return interactiveModeStarted.getReadOnlyProperty();
     }
 
-    public boolean isFreezeInteractiveValue() {
-        return freezeInteractiveValue.get();
+    public boolean getSensorReading() {
+        return sensorReading.get();
     }
 
-    public BooleanProperty freezeInteractiveValueProperty() {
-        return freezeInteractiveValue;
+    public BooleanProperty sensorReadingProperty() {
+        return sensorReading;
     }
+
+    public int getSensorReadingRate() {
+        return sensorReadingRate.get();
+    }
+
+    public IntegerProperty sensorReadingRateProperty() {
+        return sensorReadingRate;
+    }
+
 
     /**
      * This method must be called to initialize internal state.
@@ -223,7 +233,8 @@ public class InteractiveModel {
     public void start(UploadTarget uploadTarget) {
         this.uploadTarget = uploadTarget;
         initialize();
-        freezeInteractiveValue.addListener(this::onFreezeValueChanged);
+        sensorReading.addListener(this::onSensorReadingChanged);
+        sensorReadingRate.addListener(this::onSensorReadingRateChanged);
         UploadMode uploadMode = uploadTarget.getUploadMode();
         switch (uploadMode) {
             case SERIAL_PORT:
@@ -236,7 +247,8 @@ public class InteractiveModel {
                 throw new IllegalStateException("Not supported yet");
         }
         if (interactiveModeStarted.get()) {
-            sendFreezeValueCommand(freezeInteractiveValue.get());
+            sendFreezeSensorCommand(sensorReading.get());
+            sendReadingRateCommand(sensorReadingRate.get());
         }
     }
 
@@ -326,7 +338,8 @@ public class InteractiveModel {
                 throw new IllegalStateException("Not supported yet");
             }
         }
-        freezeInteractiveValue.removeListener(this::onFreezeValueChanged);
+        sensorReading.removeListener(this::onSensorReadingChanged);
+        sensorReadingRate.removeListener(this::onSensorReadingRateChanged);
         interactiveModeStarted.set(false);
     }
 
@@ -347,16 +360,24 @@ public class InteractiveModel {
         sendCommand(commandString);
     }
 
-    private void onFreezeValueChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        sendFreezeValueCommand(newValue);
+    private void onSensorReadingChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        sendFreezeSensorCommand(newValue);
     }
 
-    private void sendFreezeValueCommand(boolean isFreeze) {
-        if (isFreeze) {
-            sendCommand("\"$\" \"Sensor\" \"Freeze\"\r");
-        } else {
+    private void sendFreezeSensorCommand(boolean sensorReading) {
+        if (sensorReading) {
             sendCommand("\"$\" \"Sensor\" \"Unfreeze\"\r");
+        } else {
+            sendCommand("\"$\" \"Sensor\" \"Freeze\"\r");
         }
+    }
+
+    private void onSensorReadingRateChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        sendReadingRateCommand(newValue.intValue());
+    }
+
+    private void sendReadingRateCommand(int rate) {
+        sendCommand("\"$\" \"SensorRate\" \"" + rate + "\"\r");
     }
 
     public void sendActionCommand(UserSetting userSetting) {
@@ -522,8 +543,10 @@ public class InteractiveModel {
 
     void processInMessage(String message) {
         System.out.println(message);
+        if (!sensorReading.get()) {
+            return;
+        }
         List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
-
         Stream.concat(valueMap.keySet().stream(), conditionMap.keySet().stream())
             .filter(projectDevice -> !args.isEmpty() && projectDevice.getName().equals(args.get(0)))
             .findAny()
@@ -538,9 +561,6 @@ public class InteractiveModel {
                             conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
                             argsIndex++;
                         }
-                    }
-                    if (freezeInteractiveValue.get()) {
-                        return;
                     }
                     if (valueMap.containsKey(projectDevice)) {
                         for (Value value : valueMap.get(projectDevice).keySet()) {

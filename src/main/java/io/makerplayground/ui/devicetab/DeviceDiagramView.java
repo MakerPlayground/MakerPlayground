@@ -23,23 +23,33 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
+import org.controlsfx.control.ToggleSwitch;
 
 import java.io.IOException;
 
-public class DeviceDiagramView extends HBox {
+public class DeviceDiagramView extends VBox {
     private final Project project;
 
     @FXML private ScrollPane diagramScrollPane;
     @FXML private Button zoomInButton;
     @FXML private Button zoomOutButton;
     @FXML private Button zoomFitButton;
-    @FXML private CheckBox freezeValueCheckBox;
+    @FXML private HBox interactiveBarHBox;
+    @FXML private ToggleSwitch readSensorToggle;
+    @FXML private HBox readingEveryHBox;
+    @FXML private TextField readingRateTextField;
 
     public static final double DEFAULT_ZOOM_SCALE = 0.7;
     private final DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
+
+    IntegerStringConverter integerStringConverter = new IntegerStringConverter();
 
     public DeviceDiagramView(Project project) {
         this.project = project;
@@ -53,13 +63,35 @@ public class DeviceDiagramView extends HBox {
             e.printStackTrace();
         }
 
-        freezeValueCheckBox.visibleProperty().bind(project.getInteractiveModel().startedProperty());
-        freezeValueCheckBox.managedProperty().bind(project.getInteractiveModel().startedProperty());
-        freezeValueCheckBox.selectedProperty().bindBidirectional(project.getInteractiveModel().freezeInteractiveValueProperty());
+        interactiveBarHBox.visibleProperty().bind(project.getInteractiveModel().startedProperty());
+        interactiveBarHBox.managedProperty().bind(project.getInteractiveModel().startedProperty());
+        readingEveryHBox.disableProperty().bind(readSensorToggle.selectedProperty().not());
+        readSensorToggle.selectedProperty().bindBidirectional(project.getInteractiveModel().sensorReadingProperty());
+        readingRateTextField.setOnAction(event -> setReadingRateIfValid());
+        readingRateTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                setReadingRateIfValid();
+            }
+        });
+        project.getInteractiveModel().sensorReadingRateProperty().addListener((observable, oldValue, newValue) -> updateReadingRateTextField());
+        updateReadingRateTextField();
 
         // TODO: DiagramV1 can generated a connection diagram even some devices or ports haven't been selected so the project's status property can't be used
         if (project.getProjectConfiguration().getController() != null) {
             initView();
+        }
+    }
+
+    private void updateReadingRateTextField() {
+        readingRateTextField.setText(String.valueOf(project.getInteractiveModel().getSensorReadingRate()));
+    }
+
+    private void setReadingRateIfValid() {
+        int number = integerStringConverter.fromString(readingRateTextField.getText());
+        if (number > 0) {
+            project.getInteractiveModel().sensorReadingRateProperty().set(number);
+        } else {
+            updateReadingRateTextField();
         }
     }
 
