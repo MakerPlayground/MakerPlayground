@@ -308,7 +308,14 @@ public class RpiPythonInteractiveCode {
         builder.append(INDENT).append("MPInteractive.log(cmd)").append(NEW_LINE);
         builder.append(INDENT).append("args = [x for x in cmd.strip().replace('\" \"', '\"').split('\"') if x != '']").append(NEW_LINE);
 
-        AtomicBoolean firstCondition = new AtomicBoolean(true);
+        builder.append(NEW_LINE);
+        builder.append(INDENT).append("if args[0] == '$':").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("if args[1] == 'Sensor' and args[2] == 'Freeze' and len(args) == 3:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.is_freeze_sensor = True").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("elif args[1] == 'Sensor' and args[2] == 'Unfreeze' and len(args) == 3:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.is_freeze_sensor = False").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("elif args[1] == 'SensorRate' and len(args) == 3:").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.sensor_rate = int(args[2]) / 1000").append(NEW_LINE);
         for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
             for (ProjectDevice projectDevice : projectDeviceList) {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
@@ -323,7 +330,7 @@ public class RpiPythonInteractiveCode {
                 }
                 String variableName = parseDeviceVariableName(searchGroup(projectDevice));
                 // Start if for checking device name
-                builder.append(INDENT).append(firstCondition.getAndSet(false) ? "if " : "elif ").append("args[0] == \"")
+                builder.append(INDENT).append("elif ").append("args[0] == \"")
                         .append(projectDevice.getName()).append("\":").append(NEW_LINE);
 
                 AtomicInteger j = new AtomicInteger();
