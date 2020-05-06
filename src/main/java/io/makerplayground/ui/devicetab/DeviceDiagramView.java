@@ -36,6 +36,7 @@ public class DeviceDiagramView extends HBox {
     @FXML private Button zoomInButton;
     @FXML private Button zoomOutButton;
     @FXML private Button zoomFitButton;
+    @FXML private CheckBox freezeValueCheckBox;
 
     public static final double DEFAULT_ZOOM_SCALE = 0.7;
     private final DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
@@ -51,6 +52,10 @@ public class DeviceDiagramView extends HBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        freezeValueCheckBox.visibleProperty().bind(project.getInteractiveModel().startedProperty());
+        freezeValueCheckBox.managedProperty().bind(project.getInteractiveModel().startedProperty());
+        freezeValueCheckBox.selectedProperty().bindBidirectional(project.getInteractiveModel().freezeInteractiveValueProperty());
 
         // TODO: DiagramV1 can generated a connection diagram even some devices or ports haven't been selected so the project's status property can't be used
         if (project.getProjectConfiguration().getController() != null) {

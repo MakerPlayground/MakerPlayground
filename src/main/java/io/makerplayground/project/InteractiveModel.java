@@ -16,6 +16,7 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -40,6 +41,7 @@ public class InteractiveModel {
 
     private UploadTarget uploadTarget;
     private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
+    private final BooleanProperty freezeInteractiveValue = new SimpleBooleanProperty(false);
 
     InteractiveModel(Project project) {
         this.project = project;
@@ -115,6 +117,14 @@ public class InteractiveModel {
 
     public ReadOnlyBooleanProperty startedProperty() {
         return interactiveModeStarted.getReadOnlyProperty();
+    }
+
+    public boolean isFreezeInteractiveValue() {
+        return freezeInteractiveValue.get();
+    }
+
+    public BooleanProperty freezeInteractiveValueProperty() {
+        return freezeInteractiveValue;
     }
 
     /**
@@ -213,6 +223,7 @@ public class InteractiveModel {
     public void start(UploadTarget uploadTarget) {
         this.uploadTarget = uploadTarget;
         initialize();
+        freezeInteractiveValue.addListener(this::onFreezeValueChanged);
         UploadMode uploadMode = uploadTarget.getUploadMode();
         switch (uploadMode) {
             case SERIAL_PORT:
@@ -223,6 +234,9 @@ public class InteractiveModel {
                 break;
             default:
                 throw new IllegalStateException("Not supported yet");
+        }
+        if (interactiveModeStarted.get()) {
+            sendFreezeValueCommand(freezeInteractiveValue.get());
         }
     }
 
@@ -312,6 +326,7 @@ public class InteractiveModel {
                 throw new IllegalStateException("Not supported yet");
             }
         }
+        freezeInteractiveValue.removeListener(this::onFreezeValueChanged);
         interactiveModeStarted.set(false);
     }
 
@@ -330,6 +345,18 @@ public class InteractiveModel {
         }
         String commandString = (String.join(" ", args) + "\r");
         sendCommand(commandString);
+    }
+
+    private void onFreezeValueChanged(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        sendFreezeValueCommand(newValue);
+    }
+
+    private void sendFreezeValueCommand(boolean isFreeze) {
+        if (isFreeze) {
+            sendCommand("\"$\" \"Sensor\" \"Freeze\"\r");
+        } else {
+            sendCommand("\"$\" \"Sensor\" \"Unfreeze\"\r");
+        }
     }
 
     public void sendActionCommand(UserSetting userSetting) {
@@ -355,6 +382,7 @@ public class InteractiveModel {
     }
 
     private void sendCommand(String commandString) {
+        System.out.println(commandString);
         if (UploadMode.SERIAL_PORT.equals(this.uploadTarget.getUploadMode())) {
             SerialPort serialPort = this.uploadTarget.getSerialPort();
             if (isStarted() && serialPort != null && serialPort.isOpen()) {
@@ -510,6 +538,9 @@ public class InteractiveModel {
                             conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
                             argsIndex++;
                         }
+                    }
+                    if (freezeInteractiveValue.get()) {
+                        return;
                     }
                     if (valueMap.containsKey(projectDevice)) {
                         for (Value value : valueMap.get(projectDevice).keySet()) {

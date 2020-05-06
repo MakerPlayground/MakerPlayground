@@ -24,24 +24,22 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.scene.control.CheckBox?>
 <fx:root stylesheets="@../../css/devicetab/DeviceDiagramView.css" type="HBox" id="TabHBox"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <AnchorPane HBox.hgrow="ALWAYS">
-            <children>
-                <ScrollPane id="diagramScrollPane" fx:id="diagramScrollPane" pannable="true" AnchorPane.bottomAnchor="0"
-                            AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
-                <VBox id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
-                    <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25"/>
-                    <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25"/>
-                    <Pane prefHeight="9"/>
-                    <Button id="zoomFitButton" fx:id="zoomFitButton" prefHeight="25"
-                            prefWidth="25"/>
-                </VBox>
-            </children>
-        </AnchorPane>
-    </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
+    <AnchorPane HBox.hgrow="ALWAYS">
+        <ScrollPane id="diagramScrollPane" fx:id="diagramScrollPane" pannable="true" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+        <VBox id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+            <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25"/>
+            <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25"/>
+            <Pane prefHeight="9"/>
+            <Button id="zoomFitButton" fx:id="zoomFitButton" prefHeight="25"
+                    prefWidth="25"/>
+        </VBox>
+        <CheckBox id="freezeValueCheckBox" fx:id="freezeValueCheckBox" AnchorPane.leftAnchor="20.0" AnchorPane.bottomAnchor="20.0" text="Freeze Interactive Values"/>
+    </AnchorPane>
 </fx:root>

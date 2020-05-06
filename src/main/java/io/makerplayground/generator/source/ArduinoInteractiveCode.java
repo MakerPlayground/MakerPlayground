@@ -158,7 +158,14 @@ public class ArduinoInteractiveCode {
         builder.append(INDENT).append("}").append(NEW_LINE);
         builder.append(NEW_LINE);
 
-        AtomicBoolean firstCondition = new AtomicBoolean(true);
+        builder.append(INDENT).append("if (strcmp_P(commandArgs[0], (PGM_P) F(\"$\")) == 0) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Freeze\")) == 0)) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.setFreezeSensor(true);").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("} else if ((strcmp_P(commandArgs[1], (PGM_P) F(\"Sensor\")) == 0) && (strcmp_P(commandArgs[2], (PGM_P) F(\"Unfreeze\")) == 0)) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append(INDENT).append("MPInteractive.setFreezeSensor(false);").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
+        builder.append(INDENT).append("}").append(NEW_LINE);
+
         for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
             for (ProjectDevice projectDevice : projectDeviceList) {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
@@ -173,8 +180,7 @@ public class ArduinoInteractiveCode {
                 }
                 String variableName = ArduinoCodeUtility.parseDeviceVariableName(searchGroup(projectDevice));
                 // Start if for checking device name
-                builder.append(INDENT).append(firstCondition.getAndSet(false) ? "if " : "else if ").append("(strcmp_P(commandArgs[0], (PGM_P) F(\"")
-                        .append(projectDevice.getName()).append("\")) == 0) {").append(NEW_LINE);
+                builder.append(INDENT).append("else if (strcmp_P(commandArgs[0], (PGM_P) F(\"").append(projectDevice.getName()).append("\")) == 0) {").append(NEW_LINE);
 
                 AtomicInteger j = new AtomicInteger();
                 if (hasAction) {
