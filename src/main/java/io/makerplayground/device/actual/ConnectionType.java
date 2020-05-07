@@ -33,7 +33,7 @@ public enum ConnectionType {
     INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3),
     INEX_SERVO(List.of(Color.BLACK, Color.RED, Color.WHITE), 3),
     UNO_SHIELD(Collections.emptyList(), 0),
-    CSI(List.of(Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE, Color.LIGHTGRAY, Color.WHITE), 0.5);
+    CSI(List.of(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE), 3.2);
 
     private final List<Color> pinColors;
     private final double lineWidth;

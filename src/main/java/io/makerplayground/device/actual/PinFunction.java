@@ -146,6 +146,36 @@ public enum PinFunction {
                 return List.of(RS485_Negative);
             case RS485_Positive:
                 return List.of(RS485_Positive);
+            case CSI1:
+                return List.of(CSI1);
+            case CSI2:
+                return List.of(CSI2);
+            case CSI3:
+                return List.of(CSI3);
+            case CSI4:
+                return List.of(CSI4);
+            case CSI5:
+                return List.of(CSI5);
+            case CSI6:
+                return List.of(CSI6);
+            case CSI7:
+                return List.of(CSI7);
+            case CSI8:
+                return List.of(CSI8);
+            case CSI9:
+                return List.of(CSI9);
+            case CSI10:
+                return List.of(CSI10);
+            case CSI11:
+                return List.of(CSI11);
+            case CSI12:
+                return List.of(CSI12);
+            case CSI13:
+                return List.of(CSI13);
+            case CSI14:
+                return List.of(CSI14);
+            case CSI15:
+                return List.of(CSI15);
             case NO_FUNCTION:
                 return List.of(PinFunction.values());
         }
