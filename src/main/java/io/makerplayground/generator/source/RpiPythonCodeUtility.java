@@ -17,6 +17,7 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.PinFunction;
+import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 
@@ -46,6 +47,14 @@ public class RpiPythonCodeUtility {
             return "MP.current_" + nodeElement.getName().replace(" ", "_");
         }
         throw new IllegalStateException("No pointer to function for Scene and Condition");
+    }
+
+    static String parseValueVariableTermForInteractive(List<ProjectDevice> projectDeviceList, Value value) {
+        if (value.getType() == DataType.IMAGE) {
+            return "MPImage.get_preview_base64(" + parseValueVariableTerm(projectDeviceList, value) + ")";
+        } else {
+            return parseValueVariableTerm(projectDeviceList, value);
+        }
     }
 
     static String parseValueVariableTerm(List<ProjectDevice> projectDeviceList, Value value) {

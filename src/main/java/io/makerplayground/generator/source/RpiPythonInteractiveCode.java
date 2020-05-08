@@ -63,6 +63,7 @@ public class RpiPythonInteractiveCode {
         builder.append(NEW_LINE);
 
         builder.append("def gen_message():").append(NEW_LINE);
+//        builder.append(INDENT).append("start_time = time.time()").append(NEW_LINE);
         builder.append(INDENT).append("retval = ''").append(NEW_LINE);
 
         for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
@@ -91,10 +92,11 @@ public class RpiPythonInteractiveCode {
                     builder.append(" { int(").append(variableName).append(".").append(condition.getFunctionName()).append("(").append(params).append(")) }");
                 });
                 // value
-                compatibility.getDeviceValue().forEach((value, constraint) -> builder.append(" { ").append(parseValueVariableTerm(projectDeviceList, value)).append(" }"));
+                compatibility.getDeviceValue().forEach((value, constraint) -> builder.append(" { ").append(parseValueVariableTermForInteractive(projectDeviceList, value)).append(" }"));
                 builder.append("\\n'").append(NEW_LINE);
             }
         }
+//        builder.append(INDENT).append("MPInteractive.log(time.time() - start_time)").append(NEW_LINE);
         builder.append(INDENT).append("return retval").append(NEW_LINE);
     }
 
@@ -281,7 +283,7 @@ public class RpiPythonInteractiveCode {
     private void appendHeader() {
         builder.append("import time").append(NEW_LINE);
         builder.append("import asyncio").append(NEW_LINE);
-        builder.append("from MakerPlayground import MP, MPInteractive").append(NEW_LINE);
+        builder.append("from MakerPlayground import *").append(NEW_LINE);
 
         // generate include
         Stream<String> device_libs = project.getUnmodifiableProjectDevice().stream()

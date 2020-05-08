@@ -9,6 +9,7 @@ import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConst
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.expression.SimpleIntegerExpression;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -26,10 +27,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.*;
 
 public class DeviceMonitorPane extends VBox {
 
@@ -127,25 +127,57 @@ public class DeviceMonitorPane extends VBox {
             GridPane.setRowIndex(nameLabel, currentRow);
             GridPane.setColumnIndex(nameLabel, 0);
 
-            Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
-            Label valueLabel = new Label();
-            interactiveModel.getValueProperty(projectDevice, value)
-                    .ifPresentOrElse(valueProperty -> {
-                        if (unit == Unit.NOT_SPECIFIED) {
-                            valueLabel.textProperty().bind(valueProperty.asString());
-                        } else {
-                            valueLabel.textProperty().bind(valueProperty.asString().concat(" " + unit));
-                        }
-                    } , () -> {
-                        valueLabel.setText("unavailable");
-                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
-                        tooltip.setShowDelay(Duration.millis(250));
-                        valueLabel.setTooltip(tooltip);
+            if (value.getType() == DataType.DOUBLE || value.getType() == DataType.INTEGER) {
+                Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
+                Label valueLabel = new Label();
+                interactiveModel.getValueProperty(projectDevice, value)
+                        .ifPresentOrElse(valueProperty -> {
+                            if (unit == Unit.NOT_SPECIFIED) {
+                                valueLabel.textProperty().bind(valueProperty);
+                            } else {
+                                valueLabel.textProperty().bind(valueProperty.concat(" " + unit));
+                            }
+                        } , () -> {
+                            valueLabel.setText("unavailable");
+                            Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                            tooltip.setShowDelay(Duration.millis(250));
+                            valueLabel.setTooltip(tooltip);
+                        });
+                GridPane.setRowIndex(valueLabel, currentRow);
+                GridPane.setColumnIndex(valueLabel, 1);
+                propertyPane.getChildren().addAll(nameLabel, valueLabel);
+            }
+            else if (value.getType() == DataType.IMAGE){
+                Optional<ReadOnlyStringProperty> valueOptional = interactiveModel.getValueProperty(projectDevice, value);
+                if (valueOptional.isPresent()) {
+                    ImageView previewImageView = new ImageView();
+                    previewImageView.setPreserveRatio(true);
+                    previewImageView.setFitHeight(120);
+                    valueOptional.get().addListener((observable, oldValue, newValue) -> {
+                        InputStream inputStream = Base64.getDecoder().wrap(new ByteArrayInputStream(newValue.getBytes()));
+                        previewImageView.setImage(new Image(inputStream));
                     });
-            GridPane.setRowIndex(valueLabel, currentRow);
-            GridPane.setColumnIndex(valueLabel, 1);
+                    InputStream inputStream = Base64.getDecoder().wrap(new ByteArrayInputStream(valueOptional.get().get().getBytes()));
+                    previewImageView.setImage(new Image(inputStream));
 
-            propertyPane.getChildren().addAll(nameLabel, valueLabel);
+                    GridPane.setRowIndex(previewImageView, currentRow);
+                    GridPane.setColumnIndex(previewImageView, 1);
+                    propertyPane.getChildren().addAll(nameLabel, previewImageView);
+                } else {
+                    Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                    tooltip.setShowDelay(Duration.millis(250));
+
+                    Label unavailableLabel = new Label("unavailable");
+                    unavailableLabel.setTooltip(tooltip);
+                    unavailableLabel.setVisible(false);
+                    unavailableLabel.setManaged(false);
+
+                    GridPane.setRowIndex(unavailableLabel, currentRow);
+                    GridPane.setColumnIndex(unavailableLabel, 1);
+                    propertyPane.getChildren().addAll(nameLabel, unavailableLabel);
+                }
+            }
+
             currentRow++;
         }
         propertyPane.setHgap(10);
