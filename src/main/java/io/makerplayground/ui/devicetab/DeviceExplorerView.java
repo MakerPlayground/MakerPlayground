@@ -67,9 +67,9 @@ public class DeviceExplorerView extends VBox {
     private final Button collapseButton;
     private final BooleanProperty buttonState;
 
-    List<String> allBrands;
-    List<GenericDevice> allGenericDevices;
-    Map<String, List<ActualDevice>> actualDevicePerBrand;
+    private final List<String> allBrands;
+    private final List<GenericDevice> allGenericDevices;
+    private final Map<String, List<ActualDevice>> actualDevicePerBrand;
 
     public DeviceExplorerView(Project project, HostServices hostServices) {
         this.currentProject = project;
@@ -200,13 +200,15 @@ public class DeviceExplorerView extends VBox {
             TitledPane titledPane = new TitledPane(nameExtractor.apply(t), paneLayout);
             vBox.getChildren().add(titledPane);
             titledPanes.add(titledPane);
-            actualDevices.stream().filter(filter).forEachOrdered((actualDevice) -> {
-                DeviceInfoPane deviceInfoPane = new DeviceInfoPane(hostServices, actualDevice);
-                paneLayout.getChildren().add(deviceInfoPane);
-                deviceInfoPanes.add(deviceInfoPane);
-                deviceInfoPaneParentMap.put(deviceInfoPane, titledPane);
-                applyFilterEach(deviceInfoPane);
-            });
+            for (ActualDevice actualDevice : actualDevices) {
+                if (filter.test(actualDevice)) {
+                    DeviceInfoPane deviceInfoPane = new DeviceInfoPane(hostServices, actualDevice);
+                    paneLayout.getChildren().add(deviceInfoPane);
+                    deviceInfoPanes.add(deviceInfoPane);
+                    deviceInfoPaneParentMap.put(deviceInfoPane, titledPane);
+                    applyFilterEach(deviceInfoPane);
+                }
+            }
             hideTitleIfNoneVisible(titledPane);
         }
     }
@@ -253,7 +255,7 @@ public class DeviceExplorerView extends VBox {
     }
 
     private void applyFilter() {
-        deviceInfoPanes.stream().forEach(this::applyFilterEach);
+        deviceInfoPanes.forEach(this::applyFilterEach);
         titledPanes.forEach(this::hideTitleIfNoneVisible);
     }
 

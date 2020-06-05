@@ -26,6 +26,7 @@ public class DeviceTab extends SplitPane {
 
     private final DeviceExplorerView deviceExplorerView;
     private final Tab circuitDiagramTab;
+    private final TabPane deviceTabPane;
 
     private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DeviceDiagramView.DEFAULT_ZOOM_SCALE);
 
@@ -58,7 +59,7 @@ public class DeviceTab extends SplitPane {
         deviceExplorerTab.setClosable(false);
         circuitDiagramTab = new Tab("Circuit Diagram");
         circuitDiagramTab.setClosable(false);
-        TabPane deviceTabPane = new TabPane(deviceExplorerTab, circuitDiagramTab);
+        deviceTabPane = new TabPane(deviceExplorerTab, circuitDiagramTab);
         deviceTabPane.setMinWidth(480);
 
         setDividerPositions(0.5);
@@ -74,7 +75,7 @@ public class DeviceTab extends SplitPane {
         ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
         configActualDeviceViewModel.setConfigChangedCallback(this::refreshDiagramAndExplorer);
         ActualDeviceConfigView actualDeviceConfigView = new ActualDeviceConfigView(configActualDeviceViewModel);
-        getItems().set(0, actualDeviceConfigView);
+        getItems().setAll(actualDeviceConfigView, deviceTabPane);
     }
 
     private void refreshDiagramAndExplorer() {
