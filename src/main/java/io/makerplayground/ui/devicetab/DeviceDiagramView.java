@@ -24,11 +24,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.converter.IntegerStringConverter;
 import org.controlsfx.control.ToggleSwitch;
 
@@ -42,6 +47,8 @@ public class DeviceDiagramView extends VBox {
     @FXML private Button zoomOutButton;
     @FXML private Button zoomFitButton;
     @FXML private HBox interactiveBarHBox;
+    @FXML private Circle interactiveStatusIndicator;
+    @FXML private Label interactiveStatusLabel;
     @FXML private ToggleSwitch readSensorToggle;
     @FXML private HBox readingEveryHBox;
     @FXML private TextField readingRateTextField;
@@ -49,7 +56,8 @@ public class DeviceDiagramView extends VBox {
     public static final double DEFAULT_ZOOM_SCALE = 0.7;
     private final DoubleProperty scale = new SimpleDoubleProperty(DEFAULT_ZOOM_SCALE);
 
-    IntegerStringConverter integerStringConverter = new IntegerStringConverter();
+    private static final Color INTERACTIVE_RUNNING_COLOR = Color.web("#00cc6a");
+    private static final Color INTERACTIVE_WARNING_COLOR = Color.web("#ffab00");
 
     public DeviceDiagramView(Project project) {
         this.project = project;
@@ -65,8 +73,12 @@ public class DeviceDiagramView extends VBox {
 
         interactiveBarHBox.visibleProperty().bind(project.getInteractiveModel().startedProperty());
         interactiveBarHBox.managedProperty().bind(project.getInteractiveModel().startedProperty());
+        interactiveStatusIndicator.setFill(INTERACTIVE_RUNNING_COLOR);
+        interactiveStatusIndicator.setEffect(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_RUNNING_COLOR, 5, 0.5, 0, 0));
+        interactiveStatusLabel.setText("Interactive mode is running");
         readingEveryHBox.disableProperty().bind(readSensorToggle.selectedProperty().not());
         readSensorToggle.selectedProperty().bindBidirectional(project.getInteractiveModel().sensorReadingProperty());
+        readSensorToggle.setGraphicTextGap(0);
         readingRateTextField.setOnAction(event -> setReadingRateIfValid());
         readingRateTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
@@ -87,9 +99,8 @@ public class DeviceDiagramView extends VBox {
     }
 
     private void setReadingRateIfValid() {
-        int number = integerStringConverter.fromString(readingRateTextField.getText());
-        if (number > 0) {
-            project.getInteractiveModel().sensorReadingRateProperty().set(number);
+        if (readingRateTextField.getText().matches("\\d+")) {
+            project.getInteractiveModel().sensorReadingRateProperty().set(Integer.parseInt(readingRateTextField.getText()));
         } else {
             updateReadingRateTextField();
         }
