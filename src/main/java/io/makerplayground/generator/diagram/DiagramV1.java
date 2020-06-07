@@ -528,8 +528,8 @@ class DiagramV1 {
     private final Project project;
     private final ProjectConfiguration config;
     private final InteractiveModel interactiveModel;
-    private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
-    private final SortedMap<ProjectDevice, DeviceConnection> deviceConnectionMap;
+    private final Map<ProjectDevice, ActualDevice> deviceMap;
+    private final Map<ProjectDevice, DeviceConnection> deviceConnectionMap;
 
     private boolean controllerUseBreadboard;
     private Size breadboardRegionSize;

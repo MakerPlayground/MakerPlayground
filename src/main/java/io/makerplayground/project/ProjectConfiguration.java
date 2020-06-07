@@ -48,6 +48,7 @@ public final class ProjectConfiguration {
 
     @JsonIgnore private ReadOnlyObjectWrapper<ProjectConfigurationStatus> status = new ReadOnlyObjectWrapper<>(ProjectConfigurationStatus.OK);
     @JsonIgnore private BooleanProperty useHwSerial = new SimpleBooleanProperty();
+    @JsonIgnore private List<Runnable> configurationChangedCallback = new ArrayList<>();
 
     /* input variables: the compatibilities data from the project instance. These variables must be set before calculation */
     @JsonIgnore private Map<ProjectDevice, Map<Action, Map<Parameter, Constraint>>> actionCompatibility;
@@ -68,31 +69,31 @@ public final class ProjectConfiguration {
     /* data structure: user's input that would be stored in file */
     private final ReadOnlyObjectWrapper<Platform> platform;
     @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, Map<Property, Object>> devicePropertyValueMap;
-    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
-    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap;
-    @Getter(AccessLevel.PACKAGE) private final SortedMap<ProjectDevice, DeviceConnection> deviceConnections;
-    @Getter(AccessLevel.PACKAGE) private final SortedMap<CloudPlatform, Map<String, String>> cloudParameterMap;
+    @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, ActualDevice> deviceMap;
+    @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, ProjectDevice> identicalDeviceMap;
+    @Getter(AccessLevel.PACKAGE) private final Map<ProjectDevice, DeviceConnection> deviceConnections;
+    @Getter(AccessLevel.PACKAGE) private final Map<CloudPlatform, Map<String, String>> cloudParameterMap;
 
     /* unmodifiable variables: the unmodifiable view of data structure to protect the data change from outside class */
     @Getter private final Map<ProjectDevice, Map<Property, Object>> unmodifiableDevicePropertyValueMap;
-    @Getter private final SortedMap<ProjectDevice, ActualDevice> unmodifiableDeviceMap;
-    @Getter private final SortedMap<ProjectDevice, ProjectDevice> unmodifiableIdenticalDeviceMap;
-    @Getter private final SortedMap<ProjectDevice, DeviceConnection> unmodifiableDeviceConnections;
-    @Getter private final SortedMap<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
+    @Getter private final Map<ProjectDevice, ActualDevice> unmodifiableDeviceMap;
+    @Getter private final Map<ProjectDevice, ProjectDevice> unmodifiableIdenticalDeviceMap;
+    @Getter private final Map<ProjectDevice, DeviceConnection> unmodifiableDeviceConnections;
+    @Getter private final Map<CloudPlatform, Map<String, String>> unmodifiableCloudParameterMap;
 
     ProjectConfiguration(@NonNull Platform platform) {
-        this.platform = new ReadOnlyObjectWrapper(platform);
+        this.platform = new ReadOnlyObjectWrapper<>(platform);
         this.devicePropertyValueMap = new HashMap<>();
-        this.deviceMap = new TreeMap<>();
-        this.identicalDeviceMap = new TreeMap<>();
-        this.deviceConnections = new TreeMap<>();
-        this.cloudParameterMap = new TreeMap<>();
+        this.deviceMap = new HashMap<>();
+        this.identicalDeviceMap = new HashMap<>();
+        this.deviceConnections = new HashMap<>();
+        this.cloudParameterMap = new HashMap<>();
 
         this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
-        this.unmodifiableDeviceMap = Collections.unmodifiableSortedMap(deviceMap);
-        this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableSortedMap(identicalDeviceMap);
-        this.unmodifiableDeviceConnections = Collections.unmodifiableSortedMap(deviceConnections);
-        this.unmodifiableCloudParameterMap = Collections.unmodifiableSortedMap(cloudParameterMap);
+        this.unmodifiableDeviceMap = Collections.unmodifiableMap(deviceMap);
+        this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableMap(identicalDeviceMap);
+        this.unmodifiableDeviceConnections = Collections.unmodifiableMap(deviceConnections);
+        this.unmodifiableCloudParameterMap = Collections.unmodifiableMap(cloudParameterMap);
 
         this.updateStatusProperty();
     }
@@ -130,7 +131,17 @@ public final class ProjectConfiguration {
         useHwSerial.set(false);
     }
 
+    public void addConfigurationChangedCallback(Runnable runnable) {
+        configurationChangedCallback.add(runnable);
+    }
+
+    public boolean removeConfigurationChangedCallback(Runnable runnable) {
+        return configurationChangedCallback.remove(runnable);
+    }
+
     private void updateStatusProperty() {
+        configurationChangedCallback.forEach(Runnable::run);
+
         if (getController() == null) {
             status.set(ProjectConfigurationStatus.ERROR);
             return;
