@@ -33,7 +33,6 @@ public class InteractiveModel {
     private final Map<ProjectDevice, UserSetting> actionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
-    private final Map<ProjectDevice, ProjectDevice> identicalDeviceMap = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
@@ -52,15 +51,6 @@ public class InteractiveModel {
         if (actionUserSettings.containsKey(projectDevice)) {
             return actionUserSettings.get(projectDevice);
         } else {
-            ActualDevice actualDevice = findActualDevice(projectDevice);
-            if (actualDevice != null) {
-                Set<Action> deviceActions = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceAction().keySet();
-                if (!deviceActions.isEmpty()) {
-                    UserSetting userSetting = new UserSetting(project, projectDevice, deviceActions.iterator().next());
-                    actionUserSettings.put(projectDevice, userSetting);
-                    return userSetting;
-                }
-            }
             if (projectDevice.getGenericDevice().hasAction()) {
                 UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getAction().get(0));
                 actionUserSettings.put(projectDevice, userSetting);
@@ -75,15 +65,6 @@ public class InteractiveModel {
         if (conditionUserSettings.containsKey(projectDevice)) {
             return conditionUserSettings.get(projectDevice);
         } else {
-            ActualDevice actualDevice = findActualDevice(projectDevice);
-            if (actualDevice != null) {
-                Set<Condition> deviceConditions = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceCondition().keySet();
-                if (!deviceConditions.isEmpty()) {
-                    UserSetting userSetting = new UserSetting(project, projectDevice, deviceConditions.iterator().next());
-                    conditionUserSettings.put(projectDevice, userSetting);
-                    return userSetting;
-                }
-            }
             if (projectDevice.getGenericDevice().hasCondition()) {
                 UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
                 conditionUserSettings.put(projectDevice, userSetting);
@@ -168,9 +149,6 @@ public class InteractiveModel {
         deviceMap.clear();
         deviceMap.putAll(configuration.getDeviceMap());
 
-        identicalDeviceMap.clear();
-        identicalDeviceMap.putAll(configuration.getUnmodifiableIdenticalDeviceMap());
-
         actionMap.clear();
         conditionMap.clear();
         valueMap.clear();
@@ -209,20 +187,6 @@ public class InteractiveModel {
         conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
         valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
         project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
-    }
-
-    public ActualDevice findActualDevice(ProjectDevice projectDevice) {
-        if (deviceMap.containsKey(projectDevice)) {
-            return deviceMap.get(projectDevice);
-        }
-        while (!deviceMap.containsKey(projectDevice)) {
-            if (identicalDeviceMap.containsKey(projectDevice)) {
-                projectDevice = identicalDeviceMap.get(projectDevice);
-            } else {
-                return null;
-            }
-        }
-        return deviceMap.get(projectDevice);
     }
 
     /*
@@ -409,10 +373,6 @@ public class InteractiveModel {
             if (isStarted() && serialPort != null && serialPort.isOpen()) {
                 byte[] command = commandString.getBytes();
                 serialPort.writeBytes(command, command.length);
-            }
-        } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
-            if (isStarted() && webSocketClient.isOpen()) {
-                webSocketClient.send(commandString);
             }
         }
     }

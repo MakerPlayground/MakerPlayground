@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
@@ -30,7 +29,10 @@ import javafx.scene.layout.*;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SceneDevicePropertyPane extends VBox {
 
@@ -42,12 +44,10 @@ public class SceneDevicePropertyPane extends VBox {
 
     private final Project project;
     private final UserSetting userSetting;
-    private final ActualDevice actualDevice;
 
-    public SceneDevicePropertyPane(UserSetting userSetting, Project project, ActualDevice actualDevice) {
+    public SceneDevicePropertyPane(UserSetting userSetting, Project project) {
         this.project = project;
         this.userSetting = userSetting;
-        this.actualDevice = actualDevice;
         initView();
     }
 
@@ -116,11 +116,7 @@ public class SceneDevicePropertyPane extends VBox {
         GridPane.setRowIndex(actionLabel, 0);
         GridPane.setColumnIndex(actionLabel, 0);
 
-        List<Action> actions = new ArrayList<>(genericDevice.getAction());
-        if (actualDevice != null) {
-            actions.retainAll(actualDevice.getCompatibilityMap().get(genericDevice).getDeviceAction().keySet());
-        }
-        actionComboBox = new ComboBox<>(FXCollections.observableArrayList(actions));
+        actionComboBox = new ComboBox<>(FXCollections.observableArrayList(genericDevice.getAction() /*isAction ? genericDevice.getAction() : genericDevice.getCondition()*/));
         actionComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Action> call(ListView<Action> param) {
