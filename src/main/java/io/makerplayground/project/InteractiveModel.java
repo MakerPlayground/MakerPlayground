@@ -38,6 +38,8 @@ public class InteractiveModel {
     private final Project project;
 
     /* Cached device configuration at the time interactive mode is initialized */
+    private final Map<ProjectDevice, String> deviceNameMap = new HashMap<>();   // keep the original device name for communicating with the firmware
+    private final Map<String, ProjectDevice> nameDeviceMap = new HashMap<>();
     private ProjectConfiguration cachedConfiguration;
 
     private UploadTarget uploadTarget;
@@ -159,6 +161,16 @@ public class InteractiveModel {
         }
 
         // cache current project configuration
+        deviceNameMap.clear();
+        nameDeviceMap.clear();
+        for (ProjectDevice pd : configuration.getUnmodifiableDeviceMap().keySet()) {
+            deviceNameMap.put(pd, pd.getName());
+            nameDeviceMap.put(pd.getName(), pd);
+        }
+        for (ProjectDevice pd : configuration.getUnmodifiableIdenticalDeviceMap().keySet()) {
+            deviceNameMap.put(pd, pd.getName());
+            nameDeviceMap.put(pd.getName(), pd);
+        }
         cachedConfiguration = new ProjectConfiguration(configuration);
 
         configuration.addConfigurationChangedCallback(reinitializeCheckRunnable);
@@ -331,7 +343,7 @@ public class InteractiveModel {
         setting.getParameterMap().put(parameter, expression);
 
         List<String> args = new ArrayList<>();
-        args.add("\"" + projectDevice.getName() + "\"");
+        args.add("\"" + deviceNameMap.get(projectDevice) + "\"");
         args.add("\"" + condition.getName() + "\"");
         for (Parameter param : setting.getParameterMap().keySet()) {
             args.add("\"" + evaluateExpression(setting.getParameterMap().get(param)) + "\"");
@@ -373,7 +385,7 @@ public class InteractiveModel {
         }
 
         List<String> args = new ArrayList<>();
-        args.add("\"" + userSetting.getDevice().getName() + "\"");
+        args.add("\"" + deviceNameMap.get(userSetting.getDevice()) + "\"");
         args.add("\"" + userSetting.getAction().getName() + "\"");
         for (Parameter parameter : userSetting.getAction().getParameter()) {
             args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
@@ -518,33 +530,33 @@ public class InteractiveModel {
     }
 
     void processInMessage(String message) {
-        System.out.println(message);
+//        System.out.println(message);
         if (!sensorReading.get()) {
             return;
         }
         List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
-        Stream.concat(valueMap.keySet().stream(), conditionMap.keySet().stream())
-            .filter(projectDevice -> !args.isEmpty() && projectDevice.getName().equals(args.get(0)))
-            .findAny()
-            .ifPresent(projectDevice ->
-                Platform.runLater(() -> {
-                    int argsIndex = 1;
-                    if (conditionMap.containsKey(projectDevice)) {
-                        for (Condition condition : conditionMap.get(projectDevice).keySet()) {
-                            if (condition.getName().equals("Compare")) {
-                                continue;
-                            }
-                            conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
-                            argsIndex++;
-                        }
+        ProjectDevice projectDevice = nameDeviceMap.get(args.get(0));
+        if (projectDevice == null) {
+            System.err.println("Unknown message : " + args);
+            return;
+        }
+        Platform.runLater(() -> {
+            int argsIndex = 1;
+            if (conditionMap.containsKey(projectDevice)) {
+                for (Condition condition : conditionMap.get(projectDevice).keySet()) {
+                    if (condition.getName().equals("Compare")) {
+                        continue;
                     }
-                    if (valueMap.containsKey(projectDevice)) {
-                        for (Value value : valueMap.get(projectDevice).keySet()) {
-                            valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
-                            argsIndex++;
-                        }
-                    }
-                })
-            );
+                    conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
+                    argsIndex++;
+                }
+            }
+            if (valueMap.containsKey(projectDevice)) {
+                for (Value value : valueMap.get(projectDevice).keySet()) {
+                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
+                    argsIndex++;
+                }
+            }
+        });
     }
 }
