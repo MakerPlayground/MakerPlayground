@@ -88,7 +88,7 @@ public class SceneDevicePropertyPane extends VBox {
                 return true;
             }
             InteractiveModel interactiveModel = project.getInteractiveModel();
-            if (!interactiveModel.hasCommand(userSetting.getDevice(), actionProperty.get())) {
+            if (!interactiveModel.canSendCommand(userSetting.getDevice(), actionProperty.get())) {
                 return true;
             }
             if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> entry.getValue().stream().anyMatch(value ->

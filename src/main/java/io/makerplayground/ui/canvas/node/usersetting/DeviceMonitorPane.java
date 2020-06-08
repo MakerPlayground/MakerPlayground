@@ -15,6 +15,11 @@ import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -65,13 +70,19 @@ public class DeviceMonitorPane extends VBox {
             GridPane.setColumnIndex(nameLabel, 0);
 
             Label valueLabel = new Label();
-            interactiveModel.getConditionProperty(projectDevice, condition)
-                    .ifPresentOrElse(valueProperty -> valueLabel.textProperty().bind(valueProperty.asString()), () -> {
-                        valueLabel.setText("unavailable");
-                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime status");
-                        tooltip.setShowDelay(Duration.millis(250));
-                        valueLabel.setTooltip(tooltip);
-                    });
+
+            Optional<ReadOnlyBooleanProperty> conditionProperty = interactiveModel.getConditionProperty(projectDevice, condition);
+            if (conditionProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> interactiveModel.isDeviceValid(projectDevice), conditionProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(conditionProperty.get().asString())
+                        .otherwise("unavailable"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("unavailable");
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 
@@ -125,19 +136,18 @@ public class DeviceMonitorPane extends VBox {
 
             Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
             Label valueLabel = new Label();
-            interactiveModel.getValueProperty(projectDevice, value)
-                    .ifPresentOrElse(valueProperty -> {
-                        if (unit == Unit.NOT_SPECIFIED) {
-                            valueLabel.textProperty().bind(valueProperty.asString());
-                        } else {
-                            valueLabel.textProperty().bind(valueProperty.asString().concat(" " + unit));
-                        }
-                    } , () -> {
-                        valueLabel.setText("unavailable");
-                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
-                        tooltip.setShowDelay(Duration.millis(250));
-                        valueLabel.setTooltip(tooltip);
-                    });
+            Optional<ReadOnlyDoubleProperty> valueProperty = interactiveModel.getValueProperty(projectDevice, value);
+            if (valueProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> interactiveModel.isDeviceValid(projectDevice), valueProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(valueProperty.get().asString().concat(" " + unit))
+                        .otherwise("unavailable"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("unavailable");
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 

@@ -5,6 +5,7 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Compatibility;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
@@ -48,10 +49,49 @@ public class InteractiveModel {
     private final Runnable reinitializeCheckRunnable;
     private final BooleanProperty sensorReading = new SimpleBooleanProperty(true);
     private final IntegerProperty sensorReadingRate = new SimpleIntegerProperty(100);
+    private final Map<ProjectDevice, Boolean> deviceValid = new HashMap<>();
 
     InteractiveModel(Project project) {
         this.project = project;
-        this.reinitializeCheckRunnable = () -> interactiveNeedReinitialize.set(!project.getProjectConfiguration().equals(cachedConfiguration));
+        this.reinitializeCheckRunnable = () -> {
+            interactiveNeedReinitialize.set(!project.getProjectConfiguration().equals(cachedConfiguration));
+            deviceValid.clear();
+            for (ProjectDevice pd : project.getProjectConfiguration().getUnmodifiableDeviceMap().keySet()) {
+                deviceValid.put(pd, isProjectDeviceStillTheSame(pd));
+            }
+            for (ProjectDevice pd : project.getProjectConfiguration().getUnmodifiableIdenticalDeviceMap().keySet()) {
+                deviceValid.put(pd, isProjectDeviceStillTheSame(pd));
+            }
+        };
+    }
+
+    public boolean isDeviceValid(ProjectDevice projectDevice) {
+        if (projectDevice instanceof VirtualProjectDevice) {
+            return true;
+        } else {
+            return deviceValid.get(projectDevice);
+        }
+    }
+
+    private boolean isProjectDeviceStillTheSame(ProjectDevice projectDevice) {
+        Optional<ActualDevice> actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice);
+        if (actualDevice.isEmpty()) {
+            return false;
+        }
+        if (actualDevice.get().getDeviceType() == DeviceType.CONTROLLER) {
+            return project.getProjectConfiguration().getController() == cachedConfiguration.getController();
+        }
+        // Command can be sent iff the following conditions are satisfy
+        // 1. Current actual device selected is the same one as selected when start the interactive mode
+        // 2. Current connection is the same as when start the interactive mode
+        // 3. Current device property is the same as when start the interactive mode
+        // 4. If the device is a cloud device, the cloud property should be the same as when start the interactive mode
+        return (actualDevice.get() == cachedConfiguration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElse(null))
+                && Objects.equals(project.getProjectConfiguration().getDeviceConnection(projectDevice), cachedConfiguration.getDeviceConnection(projectDevice))
+                && Objects.equals(project.getProjectConfiguration().getUnmodifiableDevicePropertyValueMap().get(projectDevice)
+                    , cachedConfiguration.getUnmodifiableDevicePropertyValueMap().get(projectDevice))
+                && ((actualDevice.get().getCloudConsume() == null) || Objects.equals(project.getProjectConfiguration().getUnmodifiableCloudParameterMap().get(actualDevice.get().getCloudConsume())
+                    , cachedConfiguration.getUnmodifiableCloudParameterMap().get(actualDevice.get().getCloudConsume())));
     }
 
     public UserSetting getOrCreateActionUserSetting(ProjectDevice projectDevice) {
@@ -82,8 +122,9 @@ public class InteractiveModel {
         }
     }
 
-    public boolean hasCommand(ProjectDevice projectDevice, Action action) {
-        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
+    public boolean canSendCommand(ProjectDevice projectDevice, Action action) {
+        // the firmware uploaded to the board support this device and this action and the device configuration hasn't been changed
+        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action) && isDeviceValid(projectDevice);
     }
 
     public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
