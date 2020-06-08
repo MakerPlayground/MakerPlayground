@@ -17,6 +17,7 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.Connection;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.PinFunction;
@@ -33,14 +34,21 @@ public class DeviceConnection {
     private final SortedMap<Connection, Connection> consumerProviderConnections;
     private final SortedMap<Connection, List<PinFunction>> providerFunction;
 
-    public DeviceConnection(SortedMap<Connection, Connection> consumerProviderConnection, SortedMap<Connection, List<PinFunction>> providerFunction)
-    {
+    public DeviceConnection(SortedMap<Connection, Connection> consumerProviderConnection, SortedMap<Connection, List<PinFunction>> providerFunction) {
         this.consumerProviderConnections = Objects.nonNull(consumerProviderConnection)
                 ? consumerProviderConnection
                 : Collections.emptySortedMap();
         this.providerFunction = Objects.nonNull(providerFunction)
                 ? providerFunction
                 : Collections.emptySortedMap();
+    }
+
+    public DeviceConnection(DeviceConnection oldConnection) {
+        this.consumerProviderConnections = new TreeMap<>(oldConnection.consumerProviderConnections);
+        this.providerFunction = new TreeMap<>();
+        for (var entry : oldConnection.providerFunction.entrySet()) {
+            this.providerFunction.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
     }
 
     void setConnection(Connection consumerConnection, Connection providerConnection) {

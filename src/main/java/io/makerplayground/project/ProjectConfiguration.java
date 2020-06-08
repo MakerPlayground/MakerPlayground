@@ -98,6 +98,35 @@ public final class ProjectConfiguration {
         this.updateStatusProperty();
     }
 
+    public ProjectConfiguration(ProjectConfiguration oldConfiguration) {
+        platform = new ReadOnlyObjectWrapper<>(oldConfiguration.platform.get());
+        devicePropertyValueMap = new HashMap<>();
+        for (var entry : oldConfiguration.devicePropertyValueMap.entrySet()) {
+            // TODO: this implementation assume that property is an immutable object
+            devicePropertyValueMap.put(entry.getKey(), new HashMap<>(entry.getValue()));
+        }
+        deviceMap = new HashMap<>(oldConfiguration.deviceMap);
+        identicalDeviceMap = new HashMap<>(oldConfiguration.identicalDeviceMap);
+        deviceConnections = new HashMap<>();
+        for (var entry : oldConfiguration.deviceConnections.entrySet()) {
+            deviceConnections.put(entry.getKey(), new DeviceConnection(entry.getValue()));
+        }
+        cloudParameterMap = new HashMap<>();
+        for (var entry : oldConfiguration.cloudParameterMap.entrySet()) {
+            cloudParameterMap.put(entry.getKey(), new HashMap<>(entry.getValue()));
+        }
+
+        this.unmodifiableDevicePropertyValueMap = Collections.unmodifiableMap(devicePropertyValueMap);
+        this.unmodifiableDeviceMap = Collections.unmodifiableMap(deviceMap);
+        this.unmodifiableIdenticalDeviceMap = Collections.unmodifiableMap(identicalDeviceMap);
+        this.unmodifiableDeviceConnections = Collections.unmodifiableMap(deviceConnections);
+        this.unmodifiableCloudParameterMap = Collections.unmodifiableMap(cloudParameterMap);
+
+        this.updateStatusProperty();
+
+        // TODO: should we copy or recalculate other fields
+    }
+
     public ProjectConfigurationStatus getStatus() {
         return status.get();
     }
@@ -963,5 +992,23 @@ public final class ProjectConfiguration {
 
     public ReadOnlyObjectProperty<Platform> platformProperty() {
         return platform.getReadOnlyProperty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectConfiguration that = (ProjectConfiguration) o;
+        return Objects.equals(platform.get(), that.platform.get()) &&
+                Objects.equals(devicePropertyValueMap, that.devicePropertyValueMap) &&
+                Objects.equals(deviceMap, that.deviceMap) &&
+                Objects.equals(identicalDeviceMap, that.identicalDeviceMap) &&
+                Objects.equals(deviceConnections, that.deviceConnections) &&
+                Objects.equals(cloudParameterMap, that.cloudParameterMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(platform.get(), devicePropertyValueMap, deviceMap, identicalDeviceMap, deviceConnections, cloudParameterMap);
     }
 }

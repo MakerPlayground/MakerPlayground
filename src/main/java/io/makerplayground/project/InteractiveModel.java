@@ -32,19 +32,24 @@ public class InteractiveModel {
 
     private final Map<ProjectDevice, UserSetting> actionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
-    private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
     private final Project project;
 
+    /* Cached device configuration at the time interactive mode is initialized */
+    private ProjectConfiguration cachedConfiguration;
+
     private UploadTarget uploadTarget;
     private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
+    private final ReadOnlyBooleanWrapper interactiveNeedReinitialize = new ReadOnlyBooleanWrapper();
+    private final Runnable reinitializeCheckRunnable;
     private final BooleanProperty sensorReading = new SimpleBooleanProperty(true);
     private final IntegerProperty sensorReadingRate = new SimpleIntegerProperty(100);
 
     InteractiveModel(Project project) {
         this.project = project;
+        this.reinitializeCheckRunnable = () -> interactiveNeedReinitialize.set(!project.getProjectConfiguration().equals(cachedConfiguration));
     }
 
     public UserSetting getOrCreateActionUserSetting(ProjectDevice projectDevice) {
@@ -101,6 +106,14 @@ public class InteractiveModel {
         return interactiveModeStarted.getReadOnlyProperty();
     }
 
+    public boolean needReinitialize() {
+        return interactiveNeedReinitialize.get();
+    }
+
+    public ReadOnlyBooleanProperty needReinitializeProperty() {
+        return interactiveNeedReinitialize.getReadOnlyProperty();
+    }
+
     public boolean getSensorReading() {
         return sensorReading.get();
     }
@@ -116,7 +129,6 @@ public class InteractiveModel {
     public IntegerProperty sensorReadingRateProperty() {
         return sensorReadingRate;
     }
-
 
     /**
      * This method must be called to initialize internal state.
@@ -135,19 +147,22 @@ public class InteractiveModel {
         // that we can retain user setting from previous session
         for (ProjectDevice projectDevice : new ArrayList<>(actionUserSettings.keySet())) {
             if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
-                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
+                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != cachedConfiguration.getUnmodifiableDeviceMap().get(projectDevice)) {
                 actionUserSettings.remove(projectDevice);
             }
         }
         for (ProjectDevice projectDevice : new ArrayList<>(conditionUserSettings.keySet())) {
             if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
-                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
+                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != cachedConfiguration.getUnmodifiableDeviceMap().get(projectDevice)) {
                 conditionUserSettings.remove(projectDevice);
             }
         }
 
-        deviceMap.clear();
-        deviceMap.putAll(configuration.getDeviceMap());
+        // cache current project configuration
+        cachedConfiguration = new ProjectConfiguration(configuration);
+
+        configuration.addConfigurationChangedCallback(reinitializeCheckRunnable);
+        reinitializeCheckRunnable.run();
 
         actionMap.clear();
         conditionMap.clear();
@@ -304,6 +319,7 @@ public class InteractiveModel {
         }
         sensorReading.removeListener(this::onSensorReadingChanged);
         sensorReadingRate.removeListener(this::onSensorReadingRateChanged);
+        project.getProjectConfiguration().removeConfigurationChangedCallback(reinitializeCheckRunnable);
         interactiveModeStarted.set(false);
     }
 

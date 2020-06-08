@@ -18,6 +18,7 @@ package io.makerplayground.ui.devicetab;
 
 import io.makerplayground.generator.diagram.WiringDiagram;
 import io.makerplayground.project.Project;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
@@ -73,9 +74,13 @@ public class DeviceDiagramView extends VBox {
 
         interactiveBarHBox.visibleProperty().bind(project.getInteractiveModel().startedProperty());
         interactiveBarHBox.managedProperty().bind(project.getInteractiveModel().startedProperty());
-        interactiveStatusIndicator.setFill(INTERACTIVE_RUNNING_COLOR);
-        interactiveStatusIndicator.setEffect(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_RUNNING_COLOR, 5, 0.5, 0, 0));
-        interactiveStatusLabel.setText("Interactive mode is running");
+        interactiveStatusIndicator.fillProperty().bind(Bindings.when(project.getInteractiveModel().needReinitializeProperty())
+                .then(INTERACTIVE_WARNING_COLOR).otherwise(INTERACTIVE_RUNNING_COLOR));
+        interactiveStatusIndicator.effectProperty().bind(Bindings.when(project.getInteractiveModel().needReinitializeProperty())
+                .then(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_WARNING_COLOR, 5, 0.5, 0, 0))
+                .otherwise(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_RUNNING_COLOR, 5, 0.5, 0, 0)));
+        interactiveStatusLabel.textProperty().bind(Bindings.when(project.getInteractiveModel().needReinitializeProperty())
+                .then("Some devices need initialize").otherwise("Interactive mode is running"));
         readingEveryHBox.disableProperty().bind(readSensorToggle.selectedProperty().not());
         readSensorToggle.selectedProperty().bindBidirectional(project.getInteractiveModel().sensorReadingProperty());
         readSensorToggle.setGraphicTextGap(0);
