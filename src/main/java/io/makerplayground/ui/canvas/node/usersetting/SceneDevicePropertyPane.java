@@ -80,7 +80,7 @@ public class SceneDevicePropertyPane extends VBox {
 
         ReadOnlyBooleanProperty initializedProperty = project.getInteractiveModel().startedProperty();
         ReadOnlyObjectProperty<Action> actionProperty = userSetting.actionProperty();
-        ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty =  userSetting.allValueUsedProperty();
+        ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty =  userSetting.allValueUsedByAllDeviceProperty();
         ObservableMap<Value, Expression> expressionMap = userSetting.getExpression();
         ObservableMap<Parameter, Expression> parameterMap = userSetting.getParameterMap();
         BooleanBinding disableBinding = Bindings.createBooleanBinding(()-> {
@@ -91,8 +91,8 @@ public class SceneDevicePropertyPane extends VBox {
             if (!interactiveModel.canSendCommand(userSetting.getDevice(), actionProperty.get())) {
                 return true;
             }
-            if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> entry.getValue().stream().anyMatch(value ->
-                    interactiveModel.getValueProperty(entry.getKey(), value).isEmpty()))) {
+            if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> !interactiveModel.isDeviceValid(entry.getKey()) ||
+                    entry.getValue().stream().anyMatch(value -> interactiveModel.getValueProperty(entry.getKey(), value).isEmpty()))) {
                 return true;
             }
             if (!expressionMap.values().stream().allMatch(Expression::isValid)) {

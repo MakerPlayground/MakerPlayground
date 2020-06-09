@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InteractiveModel {
 
@@ -56,10 +55,7 @@ public class InteractiveModel {
         this.reinitializeCheckRunnable = () -> {
             interactiveNeedReinitialize.set(!project.getProjectConfiguration().equals(cachedConfiguration));
             deviceValid.clear();
-            for (ProjectDevice pd : project.getProjectConfiguration().getUnmodifiableDeviceMap().keySet()) {
-                deviceValid.put(pd, isProjectDeviceStillTheSame(pd));
-            }
-            for (ProjectDevice pd : project.getProjectConfiguration().getUnmodifiableIdenticalDeviceMap().keySet()) {
+            for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
                 deviceValid.put(pd, isProjectDeviceStillTheSame(pd));
             }
         };
