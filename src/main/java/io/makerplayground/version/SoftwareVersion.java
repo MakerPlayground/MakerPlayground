@@ -19,36 +19,39 @@ package io.makerplayground.version;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.makerplayground.util.OSInfo;
+import javafx.scene.control.Alert;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SoftwareVersion implements Comparable<SoftwareVersion> {
     private static SoftwareVersion currentVersion;
-    private static final String URL = "http://mprepo.azurewebsites.net/current_version"; // or "http://mprepo.azurewebsites.net/devtest/current_version"
+    private static final String URL = "https://makerplayground.z23.web.core.windows.net/version";
 
     public static SoftwareVersion getCurrentVersion() {
         if (currentVersion == null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(SoftwareVersion.class.getResourceAsStream("/version.txt")))) {
-                List<String> versionFile = reader.lines().collect(Collectors.toList());
-                String[] version = versionFile.get(0).split("=");
-                String[] releaseDate = versionFile.get(1).split("=");
-                if (version.length == 2 && version[0].equals("version")
-                        && releaseDate.length == 2 && releaseDate[0].equals("release-date")) {
-                    currentVersion = new SoftwareVersion("Maker Playground " + version[1], version[1], "http://makerplayground.io"
-                            , new Date(LocalDate.parse(releaseDate[1], DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(SoftwareVersion.class.getResourceAsStream("/version.json")))) {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    currentVersion = mapper.readValue(reader, SoftwareVersion.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
-                System.err.println("Error: can't read version information from version.txt");
                 e.printStackTrace();
+                // it may be better to return an optional and alert user outside of this method but this error should
+                // only happen during development so it is ok
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Can't read version information from version.json");
+                alert.showAndWait();
             }
         }
 
@@ -59,7 +62,7 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
         SoftwareVersion latestVersion = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            latestVersion = mapper.readValue(new URL(URL), SoftwareVersion.class);
+            latestVersion = mapper.readValue(new URL(URL + "/software_" + getCurrentVersion().getChannel() + ".json"), SoftwareVersion.class);
         } catch (UnknownHostException|ConnectException e) {
             // exception can normally be thrown when there is no internet connectivity
         } catch (IOException e) {
@@ -68,17 +71,22 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
         return Optional.ofNullable(latestVersion);
     }
 
+    private enum Platform {windows, macos}
+    private enum Channel {stable, nightly, internal}
+
     private String buildName;
     private String version;
-    private String downloadURL;
+    private Channel channel;
+    private Map<Platform, DownloadInfo> downloadInfo;
     private Date releaseDate;
 
     @JsonCreator
-    private SoftwareVersion(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version
-            , @JsonProperty("download_url") String downloadURL, @JsonProperty("release_date") java.util.Date releaseDate) {
+    private SoftwareVersion(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version, @JsonProperty("channel") Channel channel
+            , @JsonProperty("download_url") Map<Platform, DownloadInfo> downloadInfo, @JsonProperty("release_date") java.util.Date releaseDate) {
         this.buildName = buildName;
         this.version = version;
-        this.downloadURL = downloadURL;
+        this.channel = channel;
+        this.downloadInfo = downloadInfo;
         this.releaseDate = releaseDate;
     }
 
@@ -90,8 +98,18 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
         return version;
     }
 
+    public Channel getChannel() {
+        return channel;
+    }
+
     public String getDownloadURL() {
-        return downloadURL;
+        if (OSInfo.getOs() == OSInfo.OS.WINDOWS) {
+            return downloadInfo.get(Platform.windows).getUrl();
+        } else if (OSInfo.getOs() == OSInfo.OS.MAC) {
+            return downloadInfo.get(Platform.macos).getUrl();
+        } else {
+            return "https://www.makerplayground.io";
+        }
     }
 
     public Date getReleaseDate() {
@@ -101,5 +119,24 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
     @Override
     public int compareTo(SoftwareVersion o) {
         return new ComparableVersion(version).compareTo(new ComparableVersion(o.version));
+    }
+
+    public static class DownloadInfo {
+        private final String url;
+        private final String checksum;
+
+        @JsonCreator
+        public DownloadInfo(@JsonProperty("url") String url, @JsonProperty("checksum") String checksum) {
+            this.url = url;
+            this.checksum = checksum;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getChecksum() {
+            return checksum;
+        }
     }
 }

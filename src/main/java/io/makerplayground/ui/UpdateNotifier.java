@@ -60,7 +60,7 @@ public class UpdateNotifier extends Thread {
 
                     VBox vBox = new VBox();
                     vBox.setSpacing(20);
-                    vBox.setAlignment(Pos.TOP_CENTER);
+                    vBox.setAlignment(Pos.TOP_RIGHT);
                     vBox.getChildren().addAll(text, button);
 
                     HBox mainPane = new HBox();
