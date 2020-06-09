@@ -35,13 +35,6 @@ public class InteractiveDevicePropertyWindow extends PopOver {
         setTitle(devices.stream().map(ProjectDevice::getName).collect(Collectors.joining(",")));
         setDetachable(true);
 
-        ScrollPane scrollPane = new ScrollPane(vBox);
-        scrollPane.setPrefHeight(USE_COMPUTED_SIZE);
-        scrollPane.setMaxHeight(350.0);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        setContentNode(scrollPane);
+        setContentNode(vBox);
     }
 }
