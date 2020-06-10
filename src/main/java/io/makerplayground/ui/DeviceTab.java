@@ -3,18 +3,19 @@ package io.makerplayground.ui;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.devicetab.ActualDeviceConfigView;
-import io.makerplayground.ui.devicetab.ConfigActualDeviceViewModel;
-import io.makerplayground.ui.devicetab.DeviceDiagramView;
-import io.makerplayground.ui.devicetab.DeviceExplorerView;
+import io.makerplayground.ui.devicetab.*;
 import javafx.application.HostServices;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ public class DeviceTab extends SplitPane {
     private final Project currentProject;
 
     private final DeviceExplorerView deviceExplorerView;
+    private final DeviceVersionPane versionPane;
     private final Tab circuitDiagramTab;
     private final TabPane deviceTabPane;
 
@@ -53,9 +55,15 @@ public class DeviceTab extends SplitPane {
             refreshConfigDevicePane();
             refreshDiagramAndExplorer();
         });
+        VBox.setVgrow(deviceExplorerView, Priority.ALWAYS);
+
+        versionPane = new DeviceVersionPane();
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(deviceExplorerView, versionPane);
 
         // perform layout
-        Tab deviceExplorerTab = new Tab("Device Explorer", deviceExplorerView);
+        Tab deviceExplorerTab = new Tab("Device Explorer", vbox);
         deviceExplorerTab.setClosable(false);
         circuitDiagramTab = new Tab("Circuit Diagram");
         circuitDiagramTab.setClosable(false);
@@ -89,4 +97,7 @@ public class DeviceTab extends SplitPane {
         deviceDiagramZoomLevel.bind(deviceDiagramView.zoomLevelProperty());
     }
 
+    public void setOnLibraryUpdateButtonPressed(EventHandler<ActionEvent> eventHandler) {
+        versionPane.setOnLibraryUpdateButtonPressed(eventHandler);
+    }
 }

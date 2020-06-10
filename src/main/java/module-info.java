@@ -9,6 +9,7 @@ open module io.makerplayground.frontend {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
     requires org.apache.commons.io;
+    requires org.apache.commons.codec;
     requires jackson.annotations;
     requires commons.net;
     requires java.net.http;

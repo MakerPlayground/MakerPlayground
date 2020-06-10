@@ -80,7 +80,7 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
         String urlStr = "http://" + ip + ":" + RpiServiceChecker.PORT;
 
         // Test ping to device and check if it has makerplayground runtime.
-        Platform.runLater(() -> log.set("Install directory is at " + PythonUtility.MP_INSTALLDIR + "\n"));
+        Platform.runLater(() -> log.set("Workspace is at " + PathUtility.MP_WORKSPACE + "\n"));
         try {
             URL url = new URL(urlStr);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -156,7 +156,7 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
 
         updateMessage("Generating project");
 
-        String projectPath = PythonUtility.MP_WORKSPACE + File.separator + "script";
+        String projectPath = PathUtility.MP_WORKSPACE + File.separator + "script";
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.deleteDirectory(new File(projectPath));
@@ -166,7 +166,7 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
             return UploadResult.CANT_CREATE_PROJECT;
         }
 
-        String projectZipPath = PythonUtility.MP_WORKSPACE + File.separator + "script.zip";
+        String projectZipPath = PathUtility.MP_WORKSPACE + File.separator + "script.zip";
         File zipFile = new File(projectZipPath);
         try {
             if (zipFile.exists()) {
