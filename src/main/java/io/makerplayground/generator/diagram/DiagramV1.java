@@ -287,31 +287,31 @@ class DiagramV1 {
         }
 
         public Coordinate getGndRightHoleCoordinate() {
-            return this.lowerPowerBottomRightHoleCoordinate;
+            return this.lowerPowerTopRightHoleCoordinate;
         }
 
         public Coordinate getGndLeftHoleCoordinate() {
-            return this.lowerPowerBottomLeftHoleCoordinate;
+            return this.lowerPowerTopLeftHoleCoordinate;
         }
 
         public Coordinate getVccRightHoleCoordinate(int index) {
             if (index == 0) {
-                return this.lowerPowerTopRightHoleCoordinate;
+                return this.lowerPowerBottomRightHoleCoordinate;
             } else if (index == 1) {
-                return this.upperPowerBottomRightHoleCoordinate;
-            } else if (index == 2) {
                 return this.upperPowerTopRightHoleCoordinate;
+            } else if (index == 2) {
+                return this.upperPowerBottomRightHoleCoordinate;
             }
             throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
         }
 
         public Coordinate getVccLeftHoleCoordinate(int index) {
             if (index == 0) {
-                return this.lowerPowerTopLeftHoleCoordinate;
+                return this.lowerPowerBottomLeftHoleCoordinate;
             } else if (index == 1) {
-                return this.upperPowerBottomLeftHoleCoordinate;
-            } else if (index == 2) {
                 return this.upperPowerTopLeftHoleCoordinate;
+            } else if (index == 2) {
+                return this.upperPowerBottomLeftHoleCoordinate;
             }
             throw new UnsupportedOperationException("Breadboard could handle only 3 voltage levels");
         }
