@@ -129,14 +129,20 @@
     -fx-text-fill: #313644;
 }
 
-.segmented-button .toggle-button.left-pill {
+.segmented-button .toggle-button.left-pill,
+.segmented-button .toggle-button.left-pill:focused,
+.segmented-button .toggle-button.left-pill:selected:focused {
     -fx-border-radius: 3 0 0 3;
     -fx-background-radius: 3 0 0 3;
+    -fx-background-insets: 0 0 0 0;
 }
 
-.segmented-button .toggle-button.right-pill {
+.segmented-button .toggle-button.right-pill,
+.segmented-button .toggle-button.right-pill:focused,
+.segmented-button .toggle-button.right-pill:selected:focused {
     -fx-border-radius: 0 3 3 0;
     -fx-background-radius: 0 3 3 0;
+    -fx-background-insets: 0 0 0 0;
 }
 
 .label {
