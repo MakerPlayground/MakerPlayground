@@ -86,9 +86,19 @@ public class DeviceExplorerView extends VBox {
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        ImageView collapsedImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/collapsed-icon.png")));
+        collapsedImageView.setFitWidth(20.0);
+        collapsedImageView.setFitHeight(20.0);
+        collapsedImageView.setPreserveRatio(true);
+
+        ImageView expandedImageView = new ImageView(new Image(getClass().getResourceAsStream("/css/expanded-icon.png")));
+        expandedImageView.setFitWidth(20.0);
+        expandedImageView.setFitHeight(20.0);
+        expandedImageView.setPreserveRatio(true);
+
         Button collapseButton = new Button();
         BooleanProperty buttonState = new SimpleBooleanProperty(true);
-        collapseButton.textProperty().bind(Bindings.when(buttonState).then("Collapse All").otherwise("Expand All"));
+        collapseButton.graphicProperty().bind(Bindings.when(buttonState).then(collapsedImageView).otherwise(expandedImageView));
         collapseButton.setId("collapsedButton");
         collapseButton.setOnAction(event -> {
             if (buttonState.get()) {

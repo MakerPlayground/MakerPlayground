@@ -150,7 +150,7 @@
 }
 
 #collapsedButton {
-    -fx-padding: 4 10 4 10;
+    -fx-padding: 3;
     -fx-background-color: background-color;
     -fx-border-color: text-fill-border-color;
     -fx-border-radius: 5px;
