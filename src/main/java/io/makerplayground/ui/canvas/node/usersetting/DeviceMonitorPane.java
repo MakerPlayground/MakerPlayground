@@ -1,14 +1,25 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.expression.SimpleIntegerExpression;
+import io.makerplayground.project.ProjectValue;
+import io.makerplayground.project.expression.*;
+import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
+import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -17,6 +28,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,14 +38,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class DeviceMonitorPane extends VBox {
 
-    public DeviceMonitorPane(InteractiveModel interactiveModel, ProjectDevice projectDevice, ActualDevice actualDevice) {
+    public DeviceMonitorPane(InteractiveModel interactiveModel, ProjectDevice projectDevice) {
         // Create title layout
         Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + projectDevice.getGenericDevice().getName() + ".png"));
         ImageView imageView = new ImageView(img);
@@ -51,11 +60,7 @@ public class DeviceMonitorPane extends VBox {
         // content
         GridPane propertyPane = new GridPane();
         int currentRow = 0;
-        List<Condition> conditions = new ArrayList<>(projectDevice.getGenericDevice().getCondition());
-        if (Objects.nonNull(actualDevice)) {
-            conditions.retainAll(actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceCondition().keySet());
-        }
-        for (Condition condition : conditions) {
+        for (Condition condition : projectDevice.getGenericDevice().getCondition()) {
             if (condition.getName().equals("Compare")) {
                 continue;
             }
@@ -65,13 +70,19 @@ public class DeviceMonitorPane extends VBox {
             GridPane.setColumnIndex(nameLabel, 0);
 
             Label valueLabel = new Label();
-            interactiveModel.getConditionProperty(projectDevice, condition)
-                    .ifPresentOrElse(valueProperty -> valueLabel.textProperty().bind(valueProperty.asString()), () -> {
-                        valueLabel.setText("unavailable");
-                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime status");
-                        tooltip.setShowDelay(Duration.millis(250));
-                        valueLabel.setTooltip(tooltip);
-                    });
+
+            Optional<ReadOnlyBooleanProperty> conditionProperty = interactiveModel.getConditionProperty(projectDevice, condition);
+            if (conditionProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> interactiveModel.isDeviceValid(projectDevice), conditionProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(conditionProperty.get().asString())
+                        .otherwise("unavailable"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("unavailable");
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 
@@ -118,30 +129,25 @@ public class DeviceMonitorPane extends VBox {
                 currentRow++;
             }
         }
-        List<Value> values = new ArrayList<>(projectDevice.getGenericDevice().getValue());
-        if (Objects.nonNull(actualDevice)) {
-            values.retainAll(actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceValue().keySet());
-        }
-        for (Value value : values) {
+        for (Value value : projectDevice.getGenericDevice().getValue()) {
             Label nameLabel = new Label(value.getName());
             GridPane.setRowIndex(nameLabel, currentRow);
             GridPane.setColumnIndex(nameLabel, 0);
 
             Unit unit = ((NumericConstraint) value.getConstraint()).getUnit();
             Label valueLabel = new Label();
-            interactiveModel.getValueProperty(projectDevice, value)
-                    .ifPresentOrElse(valueProperty -> {
-                        if (unit == Unit.NOT_SPECIFIED) {
-                            valueLabel.textProperty().bind(valueProperty.asString());
-                        } else {
-                            valueLabel.textProperty().bind(valueProperty.asString().concat(" " + unit));
-                        }
-                    } , () -> {
-                        valueLabel.setText("unavailable");
-                        Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
-                        tooltip.setShowDelay(Duration.millis(250));
-                        valueLabel.setTooltip(tooltip);
-                    });
+            Optional<ReadOnlyDoubleProperty> valueProperty = interactiveModel.getValueProperty(projectDevice, value);
+            if (valueProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> interactiveModel.isDeviceValid(projectDevice), valueProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(valueProperty.get().asString().concat(" " + unit))
+                        .otherwise("unavailable"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("unavailable");
+            }
             GridPane.setRowIndex(valueLabel, currentRow);
             GridPane.setColumnIndex(valueLabel, 1);
 

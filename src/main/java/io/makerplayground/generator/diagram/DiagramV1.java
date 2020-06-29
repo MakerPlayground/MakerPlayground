@@ -528,8 +528,8 @@ class DiagramV1 {
     private final Project project;
     private final ProjectConfiguration config;
     private final InteractiveModel interactiveModel;
-    private final SortedMap<ProjectDevice, ActualDevice> deviceMap;
-    private final SortedMap<ProjectDevice, DeviceConnection> deviceConnectionMap;
+    private final Map<ProjectDevice, ActualDevice> deviceMap;
+    private final Map<ProjectDevice, DeviceConnection> deviceConnectionMap;
 
     private boolean controllerUseBreadboard;
     private Size breadboardRegionSize;
@@ -1308,17 +1308,15 @@ class DiagramV1 {
     }
 
     private void showInteractiveDevicePropertyWindow(Node button, ProjectDevice device) {
-        Map<ProjectDevice, ActualDevice> deviceList;
+        List<ProjectDevice> deviceList;
         if (device == ProjectDevice.CONTROLLER) {
             deviceList = project.getUnmodifiableProjectDevice().stream()
                     .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
-                    .collect(Collectors.toMap(Function.identity(), interactiveModel::findActualDevice));
+                    .collect(Collectors.toUnmodifiableList());
         } else {
-            deviceList = new HashMap<>();
-            deviceList.put(device, interactiveModel.findActualDevice(device));
-            for (ProjectDevice pd : config.getDeviceWithSameIdenticalDevice(device)) {
-                deviceList.put(pd, interactiveModel.findActualDevice(pd));
-            }
+            deviceList = new ArrayList<>();
+            deviceList.add(device);
+            deviceList.addAll(config.getDeviceWithSameIdenticalDevice(device));
         }
         if (!deviceList.isEmpty()) {
             InteractiveDevicePropertyWindow interactiveDevicePropertyWindow = new InteractiveDevicePropertyWindow(deviceList, interactiveModel, project);

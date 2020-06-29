@@ -5,6 +5,7 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.Compatibility;
+import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
@@ -26,41 +27,73 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InteractiveModel {
 
     private final Map<ProjectDevice, UserSetting> actionUserSettings = new HashMap<>();
     private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
-    private final Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
-    private final Map<ProjectDevice, ProjectDevice> identicalDeviceMap = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
     private final Project project;
 
+    /* Cached device configuration at the time interactive mode is initialized */
+    private final Map<ProjectDevice, String> deviceNameMap = new HashMap<>();   // keep the original device name for communicating with the firmware
+    private final Map<String, ProjectDevice> nameDeviceMap = new HashMap<>();
+    private ProjectConfiguration cachedConfiguration;
+
     private UploadTarget uploadTarget;
     private final ReadOnlyBooleanWrapper interactiveModeStarted = new ReadOnlyBooleanWrapper();
+    private final ReadOnlyBooleanWrapper interactiveNeedReinitialize = new ReadOnlyBooleanWrapper();
+    private final Runnable reinitializeCheckRunnable;
     private final BooleanProperty sensorReading = new SimpleBooleanProperty(true);
     private final IntegerProperty sensorReadingRate = new SimpleIntegerProperty(100);
+    private final Map<ProjectDevice, Boolean> deviceValid = new HashMap<>();
 
     InteractiveModel(Project project) {
         this.project = project;
+        this.reinitializeCheckRunnable = () -> {
+            interactiveNeedReinitialize.set(!project.getProjectConfiguration().equals(cachedConfiguration));
+            deviceValid.clear();
+            for (ProjectDevice pd : project.getUnmodifiableProjectDevice()) {
+                deviceValid.put(pd, isProjectDeviceStillTheSame(pd));
+            }
+        };
+    }
+
+    public boolean isDeviceValid(ProjectDevice projectDevice) {
+        if (projectDevice instanceof VirtualProjectDevice) {
+            return true;
+        } else {
+            return deviceValid.get(projectDevice);
+        }
+    }
+
+    private boolean isProjectDeviceStillTheSame(ProjectDevice projectDevice) {
+        Optional<ActualDevice> actualDevice = project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice);
+        if (actualDevice.isEmpty()) {
+            return false;
+        }
+        if (actualDevice.get().getDeviceType() == DeviceType.CONTROLLER) {
+            return project.getProjectConfiguration().getController() == cachedConfiguration.getController();
+        }
+        // Command can be sent iff the following conditions are satisfy
+        // 1. Current actual device selected is the same one as selected when start the interactive mode
+        // 2. Current connection is the same as when start the interactive mode
+        // 3. Current device property is the same as when start the interactive mode
+        // 4. If the device is a cloud device, the cloud property should be the same as when start the interactive mode
+        return (actualDevice.get() == cachedConfiguration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElse(null))
+                && Objects.equals(project.getProjectConfiguration().getDeviceConnection(projectDevice), cachedConfiguration.getDeviceConnection(projectDevice))
+                && Objects.equals(project.getProjectConfiguration().getUnmodifiableDevicePropertyValueMap().get(projectDevice)
+                    , cachedConfiguration.getUnmodifiableDevicePropertyValueMap().get(projectDevice))
+                && ((actualDevice.get().getCloudConsume() == null) || Objects.equals(project.getProjectConfiguration().getUnmodifiableCloudParameterMap().get(actualDevice.get().getCloudConsume())
+                    , cachedConfiguration.getUnmodifiableCloudParameterMap().get(actualDevice.get().getCloudConsume())));
     }
 
     public UserSetting getOrCreateActionUserSetting(ProjectDevice projectDevice) {
         if (actionUserSettings.containsKey(projectDevice)) {
             return actionUserSettings.get(projectDevice);
         } else {
-            ActualDevice actualDevice = findActualDevice(projectDevice);
-            if (actualDevice != null) {
-                Set<Action> deviceActions = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceAction().keySet();
-                if (!deviceActions.isEmpty()) {
-                    UserSetting userSetting = new UserSetting(project, projectDevice, deviceActions.iterator().next());
-                    actionUserSettings.put(projectDevice, userSetting);
-                    return userSetting;
-                }
-            }
             if (projectDevice.getGenericDevice().hasAction()) {
                 UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getAction().get(0));
                 actionUserSettings.put(projectDevice, userSetting);
@@ -75,15 +108,6 @@ public class InteractiveModel {
         if (conditionUserSettings.containsKey(projectDevice)) {
             return conditionUserSettings.get(projectDevice);
         } else {
-            ActualDevice actualDevice = findActualDevice(projectDevice);
-            if (actualDevice != null) {
-                Set<Condition> deviceConditions = actualDevice.getCompatibilityMap().get(projectDevice.getGenericDevice()).getDeviceCondition().keySet();
-                if (!deviceConditions.isEmpty()) {
-                    UserSetting userSetting = new UserSetting(project, projectDevice, deviceConditions.iterator().next());
-                    conditionUserSettings.put(projectDevice, userSetting);
-                    return userSetting;
-                }
-            }
             if (projectDevice.getGenericDevice().hasCondition()) {
                 UserSetting userSetting = new UserSetting(project, projectDevice, projectDevice.getGenericDevice().getCondition().get(0));
                 conditionUserSettings.put(projectDevice, userSetting);
@@ -94,8 +118,9 @@ public class InteractiveModel {
         }
     }
 
-    public boolean hasCommand(ProjectDevice projectDevice, Action action) {
-        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action);
+    public boolean canSendCommand(ProjectDevice projectDevice, Action action) {
+        // the firmware uploaded to the board support this device and this action and the device configuration hasn't been changed
+        return actionMap.containsKey(projectDevice) && actionMap.get(projectDevice).contains(action) && isDeviceValid(projectDevice);
     }
 
     public Optional<ReadOnlyBooleanProperty> getConditionProperty(ProjectDevice projectDevice, Condition condition) {
@@ -120,6 +145,14 @@ public class InteractiveModel {
         return interactiveModeStarted.getReadOnlyProperty();
     }
 
+    public boolean needReinitialize() {
+        return interactiveNeedReinitialize.get();
+    }
+
+    public ReadOnlyBooleanProperty needReinitializeProperty() {
+        return interactiveNeedReinitialize.getReadOnlyProperty();
+    }
+
     public boolean getSensorReading() {
         return sensorReading.get();
     }
@@ -135,7 +168,6 @@ public class InteractiveModel {
     public IntegerProperty sensorReadingRateProperty() {
         return sensorReadingRate;
     }
-
 
     /**
      * This method must be called to initialize internal state.
@@ -154,22 +186,32 @@ public class InteractiveModel {
         // that we can retain user setting from previous session
         for (ProjectDevice projectDevice : new ArrayList<>(actionUserSettings.keySet())) {
             if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
-                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
+                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != cachedConfiguration.getUnmodifiableDeviceMap().get(projectDevice)) {
                 actionUserSettings.remove(projectDevice);
             }
         }
         for (ProjectDevice projectDevice : new ArrayList<>(conditionUserSettings.keySet())) {
             if (!configuration.getUnmodifiableDeviceMap().containsKey(projectDevice)
-                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != deviceMap.get(projectDevice)) {
+                    || configuration.getUnmodifiableDeviceMap().get(projectDevice) != cachedConfiguration.getUnmodifiableDeviceMap().get(projectDevice)) {
                 conditionUserSettings.remove(projectDevice);
             }
         }
 
-        deviceMap.clear();
-        deviceMap.putAll(configuration.getDeviceMap());
+        // cache current project configuration
+        deviceNameMap.clear();
+        nameDeviceMap.clear();
+        for (ProjectDevice pd : configuration.getUnmodifiableDeviceMap().keySet()) {
+            deviceNameMap.put(pd, pd.getName());
+            nameDeviceMap.put(pd.getName(), pd);
+        }
+        for (ProjectDevice pd : configuration.getUnmodifiableIdenticalDeviceMap().keySet()) {
+            deviceNameMap.put(pd, pd.getName());
+            nameDeviceMap.put(pd.getName(), pd);
+        }
+        cachedConfiguration = new ProjectConfiguration(configuration);
 
-        identicalDeviceMap.clear();
-        identicalDeviceMap.putAll(configuration.getUnmodifiableIdenticalDeviceMap());
+        configuration.addConfigurationChangedCallback(reinitializeCheckRunnable);
+        reinitializeCheckRunnable.run();
 
         actionMap.clear();
         conditionMap.clear();
@@ -209,20 +251,6 @@ public class InteractiveModel {
         conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
         valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
         project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
-    }
-
-    public ActualDevice findActualDevice(ProjectDevice projectDevice) {
-        if (deviceMap.containsKey(projectDevice)) {
-            return deviceMap.get(projectDevice);
-        }
-        while (!deviceMap.containsKey(projectDevice)) {
-            if (identicalDeviceMap.containsKey(projectDevice)) {
-                projectDevice = identicalDeviceMap.get(projectDevice);
-            } else {
-                return null;
-            }
-        }
-        return deviceMap.get(projectDevice);
     }
 
     /*
@@ -340,6 +368,7 @@ public class InteractiveModel {
         }
         sensorReading.removeListener(this::onSensorReadingChanged);
         sensorReadingRate.removeListener(this::onSensorReadingRateChanged);
+        project.getProjectConfiguration().removeConfigurationChangedCallback(reinitializeCheckRunnable);
         interactiveModeStarted.set(false);
     }
 
@@ -351,7 +380,7 @@ public class InteractiveModel {
         setting.getParameterMap().put(parameter, expression);
 
         List<String> args = new ArrayList<>();
-        args.add("\"" + projectDevice.getName() + "\"");
+        args.add("\"" + deviceNameMap.get(projectDevice) + "\"");
         args.add("\"" + condition.getName() + "\"");
         for (Parameter param : setting.getParameterMap().keySet()) {
             args.add("\"" + evaluateExpression(setting.getParameterMap().get(param)) + "\"");
@@ -393,7 +422,7 @@ public class InteractiveModel {
         }
 
         List<String> args = new ArrayList<>();
-        args.add("\"" + userSetting.getDevice().getName() + "\"");
+        args.add("\"" + deviceNameMap.get(userSetting.getDevice()) + "\"");
         args.add("\"" + userSetting.getAction().getName() + "\"");
         for (Parameter parameter : userSetting.getAction().getParameter()) {
             args.add("\"" + evaluateExpression(userSetting.getParameterMap().get(parameter)) + "\"");
@@ -409,10 +438,6 @@ public class InteractiveModel {
             if (isStarted() && serialPort != null && serialPort.isOpen()) {
                 byte[] command = commandString.getBytes();
                 serialPort.writeBytes(command, command.length);
-            }
-        } else if (UploadMode.RPI_ON_NETWORK.equals(this.uploadTarget.getUploadMode())) {
-            if (isStarted() && webSocketClient.isOpen()) {
-                webSocketClient.send(commandString);
             }
         }
     }
@@ -542,33 +567,33 @@ public class InteractiveModel {
     }
 
     void processInMessage(String message) {
-        System.out.println(message);
+//        System.out.println(message);
         if (!sensorReading.get()) {
             return;
         }
         List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
-        Stream.concat(valueMap.keySet().stream(), conditionMap.keySet().stream())
-            .filter(projectDevice -> !args.isEmpty() && projectDevice.getName().equals(args.get(0)))
-            .findAny()
-            .ifPresent(projectDevice ->
-                Platform.runLater(() -> {
-                    int argsIndex = 1;
-                    if (conditionMap.containsKey(projectDevice)) {
-                        for (Condition condition : conditionMap.get(projectDevice).keySet()) {
-                            if (condition.getName().equals("Compare")) {
-                                continue;
-                            }
-                            conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
-                            argsIndex++;
-                        }
+        ProjectDevice projectDevice = nameDeviceMap.get(args.get(0));
+        if (projectDevice == null) {
+            System.err.println("Unknown message : " + args);
+            return;
+        }
+        Platform.runLater(() -> {
+            int argsIndex = 1;
+            if (conditionMap.containsKey(projectDevice)) {
+                for (Condition condition : conditionMap.get(projectDevice).keySet()) {
+                    if (condition.getName().equals("Compare")) {
+                        continue;
                     }
-                    if (valueMap.containsKey(projectDevice)) {
-                        for (Value value : valueMap.get(projectDevice).keySet()) {
-                            valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
-                            argsIndex++;
-                        }
-                    }
-                })
-            );
+                    conditionMap.get(projectDevice).get(condition).set(!args.get(argsIndex).equals("0"));
+                    argsIndex++;
+                }
+            }
+            if (valueMap.containsKey(projectDevice)) {
+                for (Value value : valueMap.get(projectDevice).keySet()) {
+                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
+                    argsIndex++;
+                }
+            }
+        });
     }
 }

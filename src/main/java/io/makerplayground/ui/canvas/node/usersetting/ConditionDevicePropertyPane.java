@@ -6,6 +6,7 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
+import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.UserSetting;
@@ -17,7 +18,11 @@ import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -36,6 +41,7 @@ import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class ConditionDevicePropertyPane extends VBox {
@@ -133,24 +139,18 @@ public class ConditionDevicePropertyPane extends VBox {
                 && !userSetting.getCondition().getName().equals("Compare")) { // TODO: compare with condition name is dangerous
             Label valueLabel = new Label();
             valueLabel.setStyle("-fx-text-fill: grey;");
-            project.getInteractiveModel().getConditionProperty(userSetting.getDevice(), userSetting.getCondition())
-                    .ifPresentOrElse(valueProperty ->
-                                    valueLabel.textProperty().bind(new StringBinding() {
-                                        {
-                                            super.bind(valueProperty);
-                                        }
-
-                                        @Override
-                                        protected String computeValue() {
-                                            return "(" + valueProperty.get() + ")";
-                                        }
-                                    })
-                            , () -> {
-                                valueLabel.setText("(status unavailable)");
-                                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime status");
-                                tooltip.setShowDelay(Duration.millis(250));
-                                valueLabel.setTooltip(tooltip);
-                            });
+            Optional<ReadOnlyBooleanProperty> conditionProperty = project.getInteractiveModel().getConditionProperty(userSetting.getDevice(), userSetting.getCondition());
+            if (conditionProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> project.getInteractiveModel().isDeviceValid(userSetting.getDevice()), conditionProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(Bindings.concat("(").concat(conditionProperty.get().asString()).concat(")"))
+                        .otherwise("(status unavailable)"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("(status unavailable)");
+            }
             GridPane.setRowIndex(valueLabel, 0);
             GridPane.setColumnIndex(valueLabel, 2);
             propertyPane.getChildren().add(valueLabel);
@@ -301,24 +301,18 @@ public class ConditionDevicePropertyPane extends VBox {
             Label valueLabel = new Label();
             valueLabel.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
             valueLabel.setStyle("-fx-text-fill: grey;");
-            project.getInteractiveModel().getValueProperty(userSetting.getDevice(), value)
-                    .ifPresentOrElse(valueProperty ->
-                                    valueLabel.textProperty().bind(new StringBinding() {
-                                        {
-                                            super.bind(valueProperty);
-                                        }
-
-                                        @Override
-                                        protected String computeValue() {
-                                            return "(value = " + valueProperty.get() + ")";
-                                        }
-                                    })
-                            , () -> {
-                                valueLabel.setText("(value unavailable)");
-                                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
-                                tooltip.setShowDelay(Duration.millis(250));
-                                valueLabel.setTooltip(tooltip);
-                            });
+            Optional<ReadOnlyDoubleProperty> valueProperty = project.getInteractiveModel().getValueProperty(userSetting.getDevice(), value);
+            if (valueProperty.isPresent()) {
+                BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> project.getInteractiveModel().isDeviceValid(userSetting.getDevice()), valueProperty.get());
+                valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
+                        .then(Bindings.concat("(value = ").concat(valueProperty.get().asString()).concat(")"))
+                        .otherwise("(value unavailable)"));
+                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                tooltip.setShowDelay(Duration.millis(250));
+                valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
+            } else {
+                valueLabel.setText("(value unavailable)");
+            }
             GridPane.setRowIndex(valueLabel, i + 1);
             GridPane.setColumnIndex(valueLabel, 2);
             GridPane.setValignment(valueLabel, VPos.TOP);

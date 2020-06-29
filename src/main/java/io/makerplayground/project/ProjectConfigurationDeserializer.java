@@ -59,10 +59,10 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
         JsonNode node = mapper.readTree(jsonParser);
         Platform platform = Platform.valueOf(node.get("platform").asText());
 
-        SortedMap<ProjectDevice, String> tempIntegratedDeviceMap = new TreeMap<>();
+        Map<ProjectDevice, String> tempIntegratedDeviceMap = new HashMap<>();
 
         /* deviceMap */
-        SortedMap<ProjectDevice, ActualDevice> deviceMap = new TreeMap<>();
+        Map<ProjectDevice, ActualDevice> deviceMap = new HashMap<>();
         for (JsonNode deviceMapNode: node.get("deviceMap")) {
             String projectDeviceName = deviceMapNode.get("projectDevice").asText();
             String actualDeviceId = deviceMapNode.get("actualDevice").asText();
@@ -150,7 +150,7 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
         }
 
         /* identicalDeviceMap */
-        SortedMap<ProjectDevice, ProjectDevice> identicalDeviceMap = new TreeMap<>();
+        Map<ProjectDevice, ProjectDevice> identicalDeviceMap = new HashMap<>();
         for (JsonNode identicalDeviceMapNode: node.get("identicalDeviceMap")) {
             String projectDeviceName = identicalDeviceMapNode.get("projectDevice").asText();
             String identicalDeviceName = identicalDeviceMapNode.get("identicalDevice").asText();
@@ -160,7 +160,7 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
         }
 
         /* devicePinPortConnections */
-        SortedMap<ProjectDevice, DeviceConnection> deviceConnectionMap = new TreeMap<>();
+        Map<ProjectDevice, DeviceConnection> deviceConnectionMap = new HashMap<>();
         for (JsonNode deviceConnectionNode: node.get("deviceConnection")) {
             String projectDeviceName = deviceConnectionNode.get("projectDevice").asText();
             ProjectDevice projectDevice = searchProjectDevice(projectDeviceName);

@@ -490,13 +490,13 @@ public class Project {
                 Scene temp = (Scene) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
+                    deviceUsed.addAll(s.getAllValueUsedByActualProjectDevice().keySet());
                 });
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
                 temp.getSetting().forEach(s->{
                     deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsed(EnumSet.allOf(DataType.class)).keySet());
+                    deviceUsed.addAll(s.getAllValueUsedByActualProjectDevice().keySet());
                 });
             }
             visited.add(current);
@@ -526,13 +526,13 @@ public class Project {
                 // No Value in Begin Scene
             } else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getAllValueUsedByActualProjectDevice(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsed(dataType).forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getAllValueUsedByActualProjectDevice(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
@@ -767,7 +767,7 @@ public class Project {
                             actionCompatibility.get(projectDevice).get(action).put(parameter, newConstraint);
                         }
                     });
-                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
+                    s.getAllValueUsedByActualProjectDevice().forEach((projectDevice1, values) -> {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
@@ -797,7 +797,7 @@ public class Project {
                             conditionCompatibility.get(projectDevice).get(condition).put(parameter, newConstraint);
                         }
                     });
-                    s.getAllValueUsed().forEach((projectDevice1, values) -> {
+                    s.getAllValueUsedByActualProjectDevice().forEach((projectDevice1, values) -> {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }

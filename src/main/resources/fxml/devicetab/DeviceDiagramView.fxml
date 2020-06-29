@@ -20,18 +20,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.ToggleSwitch?>
+<?import javafx.scene.shape.Circle?>
 <fx:root stylesheets="@../../css/devicetab/DeviceDiagramView.css" type="VBox" id="TabHBox"
          xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <HBox fx:id="interactiveBarHBox" id="interactiveBarHBox" alignment="CENTER" spacing="10">
         <padding>
-            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            <Insets left="20.0" right="20.0" top="5.0"/>
         </padding>
-        <Label text="Interactive mode is running."/>
+        <Circle fx:id="interactiveStatusIndicator" radius="5"/>
+        <Label fx:id="interactiveStatusLabel"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <ToggleSwitch fx:id="readSensorToggle" id="readSensorToggle" text="Read Sensor"/>
+        <!-- ToggleSwitch label to switch spacing can't be set directly so we set prefwidth to a very small value
+        to force the control to use it's mimwidth and add a padding manually using css  -->
+        <ToggleSwitch fx:id="readSensorToggle" id="readSensorToggle" text="Read Sensor" prefWidth="10"/>
         <HBox fx:id="readingEveryHBox" id="readingEveryHBox" alignment="CENTER" spacing="10">
             <Label text="every"/>
-            <TextField fx:id="readingRateTextField" id="readingRateTextField" text="200" maxWidth="40" alignment="BASELINE_RIGHT"/>
+            <TextField fx:id="readingRateTextField" id="readingRateTextField" maxWidth="45" alignment="BASELINE_RIGHT"/>
             <Label text="ms"/>
         </HBox>
     </HBox>

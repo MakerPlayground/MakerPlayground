@@ -139,7 +139,17 @@ public class ConfigActualDeviceViewModel {
     }
 
     Project.SetNameResult setProjectDeviceName(ProjectDevice projectDevice, String name) {
-        return project.setProjectDeviceName(projectDevice, name);
+        Project.SetNameResult retVal = project.setProjectDeviceName(projectDevice, name);
+        if (retVal == Project.SetNameResult.OK) {
+            retrieveDeviceMapping();
+            if (deviceConfigChangedCallback != null) {
+                deviceConfigChangedCallback.run();
+            }
+            if (configChangedCallback != null) {
+                configChangedCallback.run();
+            }
+        }
+        return retVal;
     }
 
     void removeDevice(ProjectDevice projectDevice) {

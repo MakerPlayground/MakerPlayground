@@ -21,43 +21,26 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.generic.GenericDevice;
 import javafx.beans.property.SimpleStringProperty;
-import lombok.*;
 
 import java.util.Comparator;
 
 @JsonSerialize (using = ProjectDeviceSerializer.class)
 @JsonDeserialize (using = ProjectDeviceDeserializer.class)
-@Data @AllArgsConstructor
-public class ProjectDevice implements Comparable<ProjectDevice>{
+public class ProjectDevice {
 
     public static final Comparator<ProjectDevice> NAME_COMPARATOR = Comparator.comparing(ProjectDevice::getName);
 
     @JsonIgnore
     public static final ProjectDevice CONTROLLER = new ProjectDevice("Controller", null);
 
-    @JsonIgnore @Getter(AccessLevel.NONE)
+    @JsonIgnore
     private final SimpleStringProperty nameProperty = new SimpleStringProperty();
 
-    @Setter(AccessLevel.NONE) private final GenericDevice genericDevice;
+    private final GenericDevice genericDevice;
 
     public ProjectDevice(String name, GenericDevice genericDevice) {
         this.nameProperty.set(name);
         this.genericDevice = genericDevice;
-    }
-
-    @Override
-    public int compareTo(ProjectDevice o) {
-        return NAME_COMPARATOR.compare(this, o);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof ProjectDevice) && getName().equals(((ProjectDevice) obj).getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return getName().hashCode();
     }
 
     public SimpleStringProperty NameProperty() {
@@ -70,5 +53,13 @@ public class ProjectDevice implements Comparable<ProjectDevice>{
 
     void setName(String name) {
         nameProperty.set(name);
+    }
+
+    public GenericDevice getGenericDevice() {
+        return this.genericDevice;
+    }
+
+    public String toString() {
+        return "ProjectDevice(nameProperty=" + this.getName() + ", genericDevice=" + this.getGenericDevice() + ")";
     }
 }

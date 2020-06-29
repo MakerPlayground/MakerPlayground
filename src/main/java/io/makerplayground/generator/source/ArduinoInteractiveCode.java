@@ -78,6 +78,7 @@ public class ArduinoInteractiveCode {
 
     private void appendHeader() {
         builder.append("#include \"MakerPlayground.h\"").append(NEW_LINE);
+        builder.append("#include \"MP_INTERACTIVE.h\"").append(NEW_LINE);
 
         // generate include
         Stream<String> device_libs = project.getUnmodifiableProjectDevice().stream()

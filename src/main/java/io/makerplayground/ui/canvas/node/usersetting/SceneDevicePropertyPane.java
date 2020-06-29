@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
@@ -30,7 +29,10 @@ import javafx.scene.layout.*;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SceneDevicePropertyPane extends VBox {
 
@@ -42,12 +44,10 @@ public class SceneDevicePropertyPane extends VBox {
 
     private final Project project;
     private final UserSetting userSetting;
-    private final ActualDevice actualDevice;
 
-    public SceneDevicePropertyPane(UserSetting userSetting, Project project, ActualDevice actualDevice) {
+    public SceneDevicePropertyPane(UserSetting userSetting, Project project) {
         this.project = project;
         this.userSetting = userSetting;
-        this.actualDevice = actualDevice;
         initView();
     }
 
@@ -80,7 +80,7 @@ public class SceneDevicePropertyPane extends VBox {
 
         ReadOnlyBooleanProperty initializedProperty = project.getInteractiveModel().startedProperty();
         ReadOnlyObjectProperty<Action> actionProperty = userSetting.actionProperty();
-        ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty =  userSetting.allValueUsedProperty();
+        ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedProperty =  userSetting.allValueUsedByAllDeviceProperty();
         ObservableMap<Value, Expression> expressionMap = userSetting.getExpression();
         ObservableMap<Parameter, Expression> parameterMap = userSetting.getParameterMap();
         BooleanBinding disableBinding = Bindings.createBooleanBinding(()-> {
@@ -88,11 +88,11 @@ public class SceneDevicePropertyPane extends VBox {
                 return true;
             }
             InteractiveModel interactiveModel = project.getInteractiveModel();
-            if (!interactiveModel.hasCommand(userSetting.getDevice(), actionProperty.get())) {
+            if (!interactiveModel.canSendCommand(userSetting.getDevice(), actionProperty.get())) {
                 return true;
             }
-            if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> entry.getValue().stream().anyMatch(value ->
-                    interactiveModel.getValueProperty(entry.getKey(), value).isEmpty()))) {
+            if (allValueUsedProperty.get().entrySet().stream().anyMatch(entry -> !interactiveModel.isDeviceValid(entry.getKey()) ||
+                    entry.getValue().stream().anyMatch(value -> interactiveModel.getValueProperty(entry.getKey(), value).isEmpty()))) {
                 return true;
             }
             if (!expressionMap.values().stream().allMatch(Expression::isValid)) {
@@ -116,11 +116,7 @@ public class SceneDevicePropertyPane extends VBox {
         GridPane.setRowIndex(actionLabel, 0);
         GridPane.setColumnIndex(actionLabel, 0);
 
-        List<Action> actions = new ArrayList<>(genericDevice.getAction());
-        if (actualDevice != null) {
-            actions.retainAll(actualDevice.getCompatibilityMap().get(genericDevice).getDeviceAction().keySet());
-        }
-        actionComboBox = new ComboBox<>(FXCollections.observableArrayList(actions));
+        actionComboBox = new ComboBox<>(FXCollections.observableArrayList(genericDevice.getAction() /*isAction ? genericDevice.getAction() : genericDevice.getCondition()*/));
         actionComboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Action> call(ListView<Action> param) {
