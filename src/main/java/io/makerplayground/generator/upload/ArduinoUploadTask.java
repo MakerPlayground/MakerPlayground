@@ -101,15 +101,12 @@ public class ArduinoUploadTask extends UploadTaskBase {
 
         updateMessage("Preparing to generate project");
         Collection<ProjectDevice> projectDeviceList = interactiveUpload ? project.getUnmodifiableProjectDevice() : project.getAllDeviceUsed();
-        List<ActualDevice> allActualDevices = projectDeviceList.stream()
-                .filter(projectDevice -> configuration.getActualDevice(projectDevice).isPresent())
-                .map(configuration::getActualDevice)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        Set<ActualDevice> allActualDevices = projectDeviceList.stream()
+                .flatMap(projectDevice -> configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).stream())
+                .collect(Collectors.toSet());
         Platform.runLater(() -> log.set("List of actual device used \n"));
-        for (String actualDeviceId :
-                allActualDevices.stream().map(ActualDevice::getId).collect(Collectors.toList())) {
-            Platform.runLater(() -> log.set(" - " + actualDeviceId + "\n"));
+        for (ActualDevice actualDevice : allActualDevices) {
+            Platform.runLater(() -> log.set(" - " + actualDevice.getId() + "\n"));
         }
 
         Set<String> mpLibraries = allActualDevices.stream()
