@@ -31,6 +31,8 @@ public class DeviceTab extends SplitPane {
     private final TabPane deviceTabPane;
 
     private final DoubleProperty deviceDiagramZoomLevel = new SimpleDoubleProperty(DeviceDiagramView.DEFAULT_ZOOM_SCALE);
+    private final DoubleProperty deviceDiagramHScrollPosition = new SimpleDoubleProperty(0);
+    private final DoubleProperty deviceDiagramVScrollPosition = new SimpleDoubleProperty(0);
 
     public DeviceTab(Project currentProject, HostServices hostServices) {
         this.currentProject = currentProject;
@@ -91,10 +93,16 @@ public class DeviceTab extends SplitPane {
 
         DeviceDiagramView deviceDiagramView = new DeviceDiagramView(currentProject);
         deviceDiagramView.setZoomLevel(deviceDiagramZoomLevel.get());
+        deviceDiagramView.setHScrollPosition(deviceDiagramHScrollPosition.get());
+        deviceDiagramView.setVScrollPosition(deviceDiagramVScrollPosition.get());
         circuitDiagramTab.setContent(deviceDiagramView);
 
         deviceDiagramZoomLevel.unbind();
         deviceDiagramZoomLevel.bind(deviceDiagramView.zoomLevelProperty());
+        deviceDiagramHScrollPosition.unbind();
+        deviceDiagramHScrollPosition.bind(deviceDiagramView.hScrollPositionProperty());
+        deviceDiagramVScrollPosition.unbind();
+        deviceDiagramVScrollPosition.bind(deviceDiagramView.vScrollPositionProperty());
     }
 
     public void setOnLibraryUpdateButtonPressed(EventHandler<ActionEvent> eventHandler) {

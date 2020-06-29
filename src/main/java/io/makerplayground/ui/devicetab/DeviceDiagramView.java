@@ -140,4 +140,28 @@ public class DeviceDiagramView extends VBox {
     public DoubleProperty zoomLevelProperty() {
         return scale;
     }
+
+    public double getHScrollPosition() {
+        return diagramScrollPane.getHvalue();
+    }
+
+    public DoubleProperty hScrollPositionProperty() {
+        return diagramScrollPane.hvalueProperty();
+    }
+
+    public void setHScrollPosition(double hScrollPosition) {
+        diagramScrollPane.setHvalue(hScrollPosition);
+    }
+
+    public double getVScrollPosition() {
+        return diagramScrollPane.getVvalue();
+    }
+
+    public DoubleProperty vScrollPositionProperty() {
+        return diagramScrollPane.vvalueProperty();
+    }
+
+    public void setVScrollPosition(double vScrollPosition) {
+        diagramScrollPane.setVvalue(vScrollPosition);
+    }
 }
