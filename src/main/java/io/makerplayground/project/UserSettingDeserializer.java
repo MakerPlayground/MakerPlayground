@@ -38,7 +38,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
     private final Project project;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    UserSettingDeserializer(Project project) {
+    public UserSettingDeserializer(Project project) {
         this.project = project;
     }
 

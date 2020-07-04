@@ -31,7 +31,7 @@ public class SceneDeserializer extends JsonDeserializer<Scene> {
     private ObjectMapper mapper = new ObjectMapper();
     private Project project;
 
-    SceneDeserializer(Project project) {
+    public SceneDeserializer(Project project) {
         this.project = project;
 
         SimpleModule module = new SimpleModule();

@@ -16,12 +16,14 @@
 
 package io.makerplayground.project;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
  *
  */
+@JsonSerialize(using = LineSerializer.class)
 public class Line {
     private final Project project;
     private final NodeElement source;
