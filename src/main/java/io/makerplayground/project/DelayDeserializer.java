@@ -29,7 +29,7 @@ public class DelayDeserializer extends JsonDeserializer<Delay> {
     private final Project project;
     private ObjectMapper mapper = new ObjectMapper();
 
-    DelayDeserializer(Project project) {
+    public DelayDeserializer(Project project) {
         this.project = project;
     }
 

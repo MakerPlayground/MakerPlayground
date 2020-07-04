@@ -32,7 +32,7 @@ public class ConditionDeserializer extends JsonDeserializer<Condition> {
     ObjectMapper mapper = new ObjectMapper();
     Project project;
 
-    ConditionDeserializer(Project project) {
+    public ConditionDeserializer(Project project) {
         this.project = project;
 
         SimpleModule module = new SimpleModule();

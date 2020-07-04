@@ -182,7 +182,7 @@ public class Project {
                 .orElse(0) + 1;
     }
 
-    void addDevice(ProjectDevice projectDevice) {
+    public void addDevice(ProjectDevice projectDevice) {
         devices.add(projectDevice);
         this.calculateCompatibility();
     }

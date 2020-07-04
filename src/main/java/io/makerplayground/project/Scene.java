@@ -48,7 +48,7 @@ public class Scene extends NodeElement {
         this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
     }
 
-    Scene(double top, double left, double width, double height
+   public Scene(double top, double left, double width, double height
             , String name, List<UserSetting> allSettings, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as scene can't be resized anyway
         super(top, left, 205, 124, project);
