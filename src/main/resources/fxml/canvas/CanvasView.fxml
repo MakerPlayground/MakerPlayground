@@ -65,5 +65,6 @@
       <Pane prefHeight="9" />
       <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25"
               onAction="#zoomDefaultHandler"/>
+      <Button id="autoDiagramButton" fx:id="autoDiagramButton" prefHeight="25" prefWidth="25" onAction="#autoDiagramHandler"/>
    </VBox>
 </fx:root>

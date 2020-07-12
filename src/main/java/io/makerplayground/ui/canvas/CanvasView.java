@@ -116,7 +116,9 @@ public class CanvasView extends AnchorPane {
                 zoomOutHandler();
             } else if (event.isShortcutDown() && event.getText().equals("0")) {
                 zoomDefaultHandler();
-            }
+            } else if(event.isShortcutDown() && event.getText().equals("a")) {
+                 autoDiagramHandler();
+             }
         });
         setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.SHIFT) {  // disable multiple selection when the shift key is released
@@ -335,6 +337,68 @@ public class CanvasView extends AnchorPane {
     private void zoomDefaultHandler() {
         mainPane.setScale(1);
     }
+
+    double setDiagram(NodeElement element, double upperbound,double setting,double joint)
+    {
+        double midlane = 0;
+
+        if(element instanceof Condition || element instanceof  Scene || element instanceof Delay) {
+            element.setTop(upperbound-joint);
+        }
+
+        List<Line> lineList = new ArrayList<Line>();
+        for(Line line : canvasViewModel.getProject().getUnmodifiableLine())
+        {
+            if(line.getSource().equals(element)) {
+                lineList.add(line);
+            }
+        }
+
+        double totalRange = 0;
+        int rangeUserSetting = 0;
+        if(lineList.size() != 0) {
+            for(Line line : lineList)
+            {
+                line.getDestination().setLeft(line.getSource().getLeft()+220);
+                if(line.getDestination() instanceof Condition)
+                    rangeUserSetting = ((Condition) line.getDestination()).getSetting().size()+((Condition)line.getDestination()).getVirtualDeviceSetting().size();
+                else if(line.getDestination() instanceof Scene)
+                    rangeUserSetting = ((Scene) line.getDestination()).getAllSettings().size();
+
+                if(rangeUserSetting == 1 || rangeUserSetting == 2){
+                    rangeUserSetting = 60;
+                    midlane = 16;
+                } else if(rangeUserSetting >= 3){
+                    rangeUserSetting = 80;
+                    midlane = 34;
+                }
+
+                if(rangeUserSetting < setting)
+                {
+                    rangeUserSetting = (int) setting;
+                }
+                totalRange = totalRange + setDiagram(line.getDestination(),upperbound+totalRange,rangeUserSetting,midlane);
+                rangeUserSetting = 0;
+            }
+        }else{
+            totalRange = 80 ;
+            return totalRange + setting ;
+        }
+        return totalRange;
+    }
+
+     @FXML
+     private void autoDiagramHandler()
+     {
+         double midDiagram = 0;
+         double maxTop = 100;
+         for (Begin begin : canvasViewModel.getProject().getBegin()) {
+             maxTop = setDiagram(begin,maxTop,0,0);
+             midDiagram = maxTop/2;
+             begin.setTop(midDiagram);
+         }
+     }
+
 
     private void addConnectionEvent(InteractiveNode node) {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
