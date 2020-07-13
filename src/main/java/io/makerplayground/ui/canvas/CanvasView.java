@@ -338,64 +338,90 @@ public class CanvasView extends AnchorPane {
         mainPane.setScale(1);
     }
 
-    double setDiagram(NodeElement element, double upperbound,double setting,double joint)
+    void setTopElement(NodeElement element, double upperbound,double joint)
     {
-        double midlane = 0;
-
-        if(element instanceof Condition || element instanceof  Scene || element instanceof Delay) {
+        if (element instanceof Condition || element instanceof Scene || element instanceof Delay) {
             element.setTop(upperbound-joint);
         }
+    }
+
+
+    double setDiagram(NodeElement element, double upperbound,double maxRangeSetting,double joint)
+    {
+        double rangeJoint = 0;
+        double totalRange = 0;
 
         List<Line> lineList = new ArrayList<Line>();
-        for(Line line : canvasViewModel.getProject().getUnmodifiableLine())
-        {
-            if(line.getSource().equals(element)) {
+        for (Line line : canvasViewModel.getProject().getUnmodifiableLine()) {
+            if (line.getSource().equals(element)) {
                 lineList.add(line);
             }
         }
 
-        double totalRange = 0;
-        int rangeUserSetting = 0;
-        if(lineList.size() != 0) {
-            for(Line line : lineList)
-            {
+        if (lineList.size() != 0) {
+            int rangeUserSetting = 0;
+            for (Line line : lineList) {
                 line.getDestination().setLeft(line.getSource().getLeft()+220);
-                if(line.getDestination() instanceof Condition)
+                if (line.getDestination() instanceof Condition) {
+                    int effectDevice = canvasViewModel.project.getDeviceWithCondition().size();  // get size of list that ProjectDevice has effect with ConditionViewModel
                     rangeUserSetting = ((Condition) line.getDestination()).getSetting().size()+((Condition)line.getDestination()).getVirtualDeviceSetting().size();
-                else if(line.getDestination() instanceof Scene)
-                    rangeUserSetting = ((Scene) line.getDestination()).getAllSettings().size();
-
-                if(rangeUserSetting == 1 || rangeUserSetting == 2){
-                    rangeUserSetting = 60;
-                    midlane = 16;
-                } else if(rangeUserSetting >= 3){
-                    rangeUserSetting = 80;
-                    midlane = 34;
+                    if (rangeUserSetting != 0) {
+                        // 15 = Size of the middle of the button , 5 = Size of the space between buttons
+                        // 30 = Size of button (ConditionView.fxml)
+                        if (rangeUserSetting >= 2  && effectDevice > 0) {
+                            // 15 (button 1) + 5 + 15 (button 2) = 35
+                            rangeJoint = 35;
+                        } else {
+                            // 15 + ( 5 / 2 ) = 17.5
+                            rangeJoint = 17.5;
+                        }
+                        rangeUserSetting = 65; // 30+5+30 --> button+space+button For 2 or more UserSettings
+                    } else {
+                        rangeUserSetting = 30; // 30 --> 1 button For 1 UserSettings
+                    }
+                } else if (line.getDestination() instanceof Scene) {
+                    rangeUserSetting = ((Scene) line.getDestination()).getSetting().size()+((Scene)line.getDestination()).getVirtualDeviceSetting().size();
+                    if(rangeUserSetting != 0){
+                        // 15 = Size of the middle of the button , 5 = Size of the space between buttons
+                        // 30 = Size of button (ConditionView.fxml)
+                        if (rangeUserSetting >= 2) {
+                            // 15 (button 1) + 5 + 15 (button 2) = 35
+                            rangeJoint = 35;
+                        } else {
+                            // 15 + ( 5 / 2 ) = 17.5
+                            rangeJoint = 17.5;
+                        }
+                        rangeUserSetting = 65; // 30+5+30 --> button+space+button  For 2 or more UserSettings
+                    } else {
+                        rangeUserSetting = 30; // 30 --> 1 button For 1 UserSettings
+                    }
                 }
 
-                if(rangeUserSetting < setting)
-                {
-                    rangeUserSetting = (int) setting;
+                if(rangeUserSetting < maxRangeSetting) {
+                    rangeUserSetting = (int) maxRangeSetting;
                 }
-                totalRange = totalRange + setDiagram(line.getDestination(),upperbound+totalRange,rangeUserSetting,midlane);
+
+                totalRange = totalRange + setDiagram(line.getDestination(),upperbound+totalRange,rangeUserSetting,rangeJoint);
                 rangeUserSetting = 0;
             }
-        }else{
+        } else {
             totalRange = 80 ;
-            return totalRange + setting ;
+            setTopElement(element,upperbound,joint);
+            return totalRange + maxRangeSetting ;
         }
+        setTopElement(element,upperbound,joint);
         return totalRange;
     }
 
      @FXML
-     private void autoDiagramHandler()
-     {
-         double midDiagram = 0;
-         double maxTop = 100;
+     private void autoDiagramHandler() {
+         double upperbound = 100;
+         double ragne = 0;
          for (Begin begin : canvasViewModel.getProject().getBegin()) {
-             maxTop = setDiagram(begin,maxTop,0,0);
-             midDiagram = maxTop/2;
-             begin.setTop(midDiagram);
+             ragne = setDiagram(begin,upperbound,0,0);
+             begin.setTop((ragne/2)+upperbound);
+             begin.setLeft(20);
+             upperbound = upperbound + ragne + 40;
          }
      }
 
