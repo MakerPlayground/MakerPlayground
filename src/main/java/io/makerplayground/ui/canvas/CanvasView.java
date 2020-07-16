@@ -418,13 +418,12 @@ public class CanvasView extends AnchorPane {
          double upperbound = 100;
          double ragne = 0;
          for (Begin begin : canvasViewModel.getProject().getBegin()) {
-             ragne = setDiagram(begin,upperbound,0,0);
-             begin.setTop((ragne/2)+upperbound);
+             begin.setTop(upperbound+5);
              begin.setLeft(20);
+             ragne = setDiagram(begin,upperbound,0,0);
              upperbound = upperbound + ragne + 40;
          }
      }
-
 
     private void addConnectionEvent(InteractiveNode node) {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
