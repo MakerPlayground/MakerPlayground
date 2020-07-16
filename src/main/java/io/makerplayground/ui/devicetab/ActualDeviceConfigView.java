@@ -197,12 +197,13 @@ public class ActualDeviceConfigView extends VBox{
                                 deviceImageView.setPreserveRatio(true);
 
                                 HBox hbox = new HBox();
+                                hbox.setPrefHeight(75);
                                 hbox.setPrefWidth(75);
                                 hbox.setAlignment(Pos.CENTER);
                                 hbox.getChildren().add(deviceImageView);
 
                                 setGraphic(hbox);
-                                setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
+                                setText(item.getActualDevice().getDisplayName());
                                 if (item.getMappingResult() != DeviceMappingResult.OK) {
                                    setOpacity(0.5);
                                 }
@@ -221,7 +222,7 @@ public class ActualDeviceConfigView extends VBox{
                 if (empty) {
                     setText("");
                 } else {
-                    setText(item.getActualDevice().getBrand() + " " + item.getActualDevice().getModel());
+                    setText(item.getActualDevice().getDisplayName());
                     if (item.getMappingResult() != DeviceMappingResult.OK) {
                         setOpacity(0.5);
                     }
@@ -229,6 +230,7 @@ public class ActualDeviceConfigView extends VBox{
             }
         });
         List<ActualDeviceComboItem> controllerList = viewModel.getControllerComboItemList(viewModel.getSelectedPlatform());
+        controllerList.sort(Comparator.comparing(c -> c.getActualDevice().getDisplayName()));
         controllerComboBox.getItems().clear();
         controllerComboBox.getItems().addAll(controllerList);
         controllerComboBox.getItems().stream()
@@ -268,24 +270,22 @@ public class ActualDeviceConfigView extends VBox{
                             setText(null);
                             setTooltip(null);
                         } else {
-                            ActualDevice thumbnailActualDevice = null;
                             // set text
+                            setText(item.getDisplayString());
+                            // set device's display image
+                            ActualDevice thumbnailActualDevice = null;
                             if (item.getCompatibleDevice().getActualDevice().isPresent()) {
                                 ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
                                 if (actualDevice instanceof IntegratedActualDevice) {
                                     thumbnailActualDevice = ((IntegratedActualDevice) actualDevice).getParent();
-                                    setText(actualDevice.getId());
                                 } else {
                                     thumbnailActualDevice = actualDevice;
-                                    setText(actualDevice.getBrand() + " " + actualDevice.getModel());
                                 }
                             } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
                                 ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
                                 thumbnailActualDevice = viewModel.getActualDevice(projectDevice)
                                         .orElseThrow(() -> new IllegalStateException("Actual device of the parent device must have been set"));
-                                setText("Use the same device as " + projectDevice.getName());
                             }
-                            // set device's display image
                             try {
                                 ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
                                         DeviceLibrary.getDeviceThumbnailPath(thumbnailActualDevice))));
@@ -295,6 +295,7 @@ public class ActualDeviceConfigView extends VBox{
                                 deviceImageView.setPreserveRatio(true);
 
                                 HBox hbox = new HBox();
+                                hbox.setPrefHeight(75);
                                 hbox.setPrefWidth(75);
                                 hbox.setAlignment(Pos.CENTER);
                                 hbox.getChildren().add(deviceImageView);
@@ -327,17 +328,7 @@ public class ActualDeviceConfigView extends VBox{
                     setText(null);
                     setTooltip(null);
                 } else {
-                    if (item.getCompatibleDevice().getActualDevice().isPresent()) {
-                        ActualDevice actualDevice = item.getCompatibleDevice().getActualDevice().get();
-                        if (actualDevice instanceof IntegratedActualDevice) {
-                            setText(actualDevice.getId());
-                        } else {
-                            setText(actualDevice.getBrand() + " " + actualDevice.getModel());
-                        }
-                    } else if (item.getCompatibleDevice().getProjectDevice().isPresent()) {
-                        ProjectDevice projectDevice = item.getCompatibleDevice().getProjectDevice().get();
-                        setText("Use the same device as " + projectDevice.getName());
-                    }
+                    setText(item.getDisplayString());
                     if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
                         setOpacity(0.5);
                     }
@@ -417,7 +408,9 @@ public class ActualDeviceConfigView extends VBox{
             GridPane.setConstraints(nameTextField, 1, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
 
             // combobox of selectable devices
-            ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(viewModel.getCompatibleDeviceComboItem(projectDevice)));
+            List<CompatibleDeviceComboItem> compatibleDevices = viewModel.getCompatibleDeviceComboItem(projectDevice);
+            compatibleDevices.sort(null);
+            ComboBox<CompatibleDeviceComboItem> deviceComboBox = new ComboBox<>(FXCollections.observableList(compatibleDevices));
             deviceComboBox.setId("deviceComboBox");
             deviceComboBox.setCellFactory(newDeviceCellFactory());
             deviceComboBox.setButtonCell(newDeviceComboItemListCell());

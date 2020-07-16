@@ -16,7 +16,10 @@
 
 package io.makerplayground.ui.devicetab;
 
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.IntegratedActualDevice;
 import io.makerplayground.generator.devicemapping.DeviceMappingResult;
+import io.makerplayground.project.ProjectDevice;
 import lombok.Value;
 
 @Value
@@ -24,13 +27,34 @@ public class CompatibleDeviceComboItem implements Comparable<CompatibleDeviceCom
     private final CompatibleDevice compatibleDevice;
     private final DeviceMappingResult deviceMappingResult;
 
+    public String getDisplayString() {
+        if (compatibleDevice.getActualDevice().isPresent()) {
+            ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
+            if (actualDevice instanceof IntegratedActualDevice) {
+                return actualDevice.getId();
+            } else {
+                return actualDevice.getDisplayName();
+            }
+        } else if (compatibleDevice.getProjectDevice().isPresent()) {
+            ProjectDevice projectDevice = compatibleDevice.getProjectDevice().get();
+            return "Use the same device as " + projectDevice.getName();
+        } else {
+            throw new IllegalStateException("");
+        }
+    }
+
     @Override
     public int compareTo(CompatibleDeviceComboItem that) {
-        if (this.deviceMappingResult == DeviceMappingResult.OK && that.deviceMappingResult != DeviceMappingResult.OK) {
-            return -1;
-        } else if (this.deviceMappingResult != DeviceMappingResult.OK && that.deviceMappingResult == DeviceMappingResult.OK) {
+        // devices in the combobox are sorted using the following rule
+        // 1. incompatible devices are listed after the last compatible devices and are sorted in alphabetical order
+        // 2. identical devices (Using the same device as ...) are listed before the first compatible device and are sorted in alphabetical order
+        // 3. compatible devices are sorted in alphabetical order
+        if (this.deviceMappingResult != DeviceMappingResult.OK && that.deviceMappingResult == DeviceMappingResult.OK) {
             return 1;
+        } else if (this.compatibleDevice.getActualDevice().isEmpty() && that.compatibleDevice.getActualDevice().isPresent()) {
+            return -1;
+        } else {
+            return this.getDisplayString().compareTo(that.getDisplayString());
         }
-        return this.compatibleDevice.compareTo(that.compatibleDevice);
     }
 }

@@ -56,6 +56,10 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final List<IntegratedActualDevice> integratedDevices;
     protected final BreadboardPlacement breadboardPlacement;
 
+    public String getDisplayName() {
+        return brand + " " + model;
+    }
+
     public Optional<Property> getProperty(String name) {
         return property.stream().filter(property1 -> property1.getName().equals(name)).findFirst();
     }
