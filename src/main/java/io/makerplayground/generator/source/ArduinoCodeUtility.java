@@ -41,7 +41,7 @@ class ArduinoCodeUtility {
             PinFunction.HW_SERIAL_RX, PinFunction.HW_SERIAL_TX, PinFunction.SW_SERIAL_RX, PinFunction.SW_SERIAL_TX
     );
 
-    static String getSetupFunctionCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean withBegin) {
+    static String getSetupFunctionCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean withBegin, boolean isInteractive) {
         StringBuilder builder = new StringBuilder();
         builder.append("void setup() {").append(NEW_LINE);
         builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
@@ -51,7 +51,8 @@ class ArduinoCodeUtility {
         }
 
         if (!project.getProjectConfiguration().useHwSerialProperty().get()) {
-            for (CloudPlatform cloudPlatform : project.getCloudPlatformUsed()) {
+            Set<CloudPlatform> cloudPlatforms = isInteractive ? project.getAllCloudPlatforms() : project.getCloudPlatformUsed();
+            for (CloudPlatform cloudPlatform : cloudPlatforms) {
                 String cloudPlatformVariableName = parseCloudPlatformVariableName(cloudPlatform);
                 builder.append(INDENT).append("status_code = ").append(cloudPlatformVariableName).append("->init();").append(NEW_LINE);
                 builder.append(INDENT).append("if (status_code != 0) {").append(NEW_LINE);

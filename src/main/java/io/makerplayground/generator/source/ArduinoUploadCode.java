@@ -82,7 +82,7 @@ public class ArduinoUploadCode {
         generator.appendPointerVariables();
         generator.appendFunctionDeclaration();
         generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup));
-        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, true));
+        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, true, false));
         generator.appendLoopFunction();
         generator.appendUpdateFunction();
         generator.appendBeginFunctions();
