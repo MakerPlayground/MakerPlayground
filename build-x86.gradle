@@ -2,7 +2,7 @@ import groovy.json.JsonOutput
 
 plugins {
     id 'application'
-    id 'org.beryx.jlink' version '2.17.3'
+    id 'org.beryx.jlink' version '2.21.0'
 }
 
 repositories {
