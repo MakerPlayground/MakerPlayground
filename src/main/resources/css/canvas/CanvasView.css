@@ -192,3 +192,12 @@
     -fx-background-repeat: no-repeat;
     -fx-padding: 10px 10px 10px 10px;
  }
+
+ #screenCaptureButton{
+      -fx-background-image: url('screenShot.png');
+      -fx-background-size : 25px;
+      -fx-background-color: transparent;
+      -fx-cursor: hand;
+      -fx-background-repeat: no-repeat;
+      -fx-padding: 10px 10px 10px 10px;
+ }

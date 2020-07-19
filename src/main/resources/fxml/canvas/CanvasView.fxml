@@ -65,5 +65,7 @@
       <Pane prefHeight="9" />
       <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25"
               onAction="#zoomDefaultHandler"/>
+      <Button id="screenCaptureButton" fx:id="screenCaptureButton" prefHeight="25" prefWidth="25"
+              onAction="#screenCapture"/>
    </VBox>
 </fx:root>
