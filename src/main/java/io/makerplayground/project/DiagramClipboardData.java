@@ -13,76 +13,68 @@ import java.util.*;
 
 public class DiagramClipboardData {
 
-    @Getter private List<Scene> scenes = new ArrayList<Scene>();
-    @Getter private List<Condition> conditions = new ArrayList<Condition>();
-    @Getter private List<Delay> delays = new ArrayList<Delay>();
-    @Getter private List<Line> lines = new ArrayList<Line>();
-    @Getter private Set<ProjectDevice> devices = new HashSet<ProjectDevice>();
+    @Getter private final List<Scene> scenes = new ArrayList<>();
+    @Getter private final List<Condition> conditions = new ArrayList<>();
+    @Getter private final List<Delay> delays = new ArrayList<>();
+    @Getter private final List<Line> lines = new ArrayList<>();
+    @Getter private final Set<ProjectDevice> devices = new HashSet<>();
 
-    public DiagramClipboardData(List<InteractiveNode> interactiveNodes)
-    {
-        List<Scene> sceneList = new ArrayList<Scene>();
-        List<Condition> conditionList = new ArrayList<Condition>();
-        List<Delay> delayList = new ArrayList<Delay>();
-        List<Line> lineList = new ArrayList<Line>();
-        Set<ProjectDevice> deviceList = new HashSet<ProjectDevice>();
+    public DiagramClipboardData(List<Scene> scenes, List<Condition> conditions, List<Delay> delays, List<Line> lines) {
+        this.scenes.addAll(scenes);
+        this.conditions.addAll(conditions);
+        this.delays.addAll(delays);
+        this.lines.addAll(lines);
+    }
+
+
+    public DiagramClipboardData(List<InteractiveNode> interactiveNodes) {
         for (InteractiveNode node : interactiveNodes) {
-            if(node instanceof LineView)
-            {
+            if (node instanceof LineView) {
                 Line line = ((LineView) node).getLineViewModel().getLine();
-                lineList.add(line);
+                lines.add(line);
             }
-            if(node instanceof SceneView)
-            {
+            if (node instanceof SceneView) {
                 Scene scene = ((SceneView) node).getSceneViewModel().getScene();
                 ObservableList<UserSetting> userSettings = scene.getAllSettings();
-                sceneList.add(scene);
-                for(UserSetting userSetting : userSettings)
-                {
+                scenes.add(scene);
+                for (UserSetting userSetting : userSettings) {
                     ProjectDevice projectDevice = userSetting.getDevice();
-                    if(!VirtualProjectDevice.getDevices().contains(projectDevice))
-                    {
-                        deviceList.add(projectDevice);
+                    if (!VirtualProjectDevice.getDevices().contains(projectDevice)) {
+                        devices.add(projectDevice);
                     }
-                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsed();
+                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
-                    deviceList.addAll(keys);
+                    devices.addAll(keys);
                 }
             }
-            else if(node instanceof ConditionView)
-            {
+            else if (node instanceof ConditionView) {
                 Condition condition = ((ConditionView) node).getConditionViewModel().getCondition();
-                conditionList.add(condition);
-
+                conditions.add(condition);
                 ObservableList<UserSetting> userSettings = condition.getSetting();
-                for(UserSetting userSetting : userSettings)
-                {
-
+                for (UserSetting userSetting : userSettings) {
                     ProjectDevice projectDevice = userSetting.getDevice();
-                    if(!VirtualProjectDevice.getDevices().contains(projectDevice))
-                    {
-                        deviceList.add(projectDevice);
+                    if (!VirtualProjectDevice.getDevices().contains(projectDevice)) {
+                        devices.add(projectDevice);
                     }
-
-                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsed();
+                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
-                    deviceList.add(userSetting.getDevice());
-                    deviceList.addAll(keys);
+                    devices.add(userSetting.getDevice());
+                    devices.addAll(keys);
                 }
-
             }
-            else if(node instanceof DelayView)
-            {
+            else if (node instanceof DelayView) {
                 Delay delay = ((DelayView) node).getDelayViewModel().getDelay();
-                delayList.add(delay);
+                delays.add(delay);
             }
         }
+    }
 
-        this.scenes = sceneList;
-        this.conditions = conditionList;
-        this.delays = delayList;
-        this.lines = lineList;
-        this.devices = deviceList;
+    public List<NodeElement> getAllNode() {
+        List<NodeElement> elements = new ArrayList<>();
+        elements.addAll(scenes);
+        elements.addAll(conditions);
+        elements.addAll(delays);
+        return elements;
     }
 
 }
