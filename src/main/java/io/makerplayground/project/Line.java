@@ -23,7 +23,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 /**
  *
  */
-@JsonSerialize(using = LineSerializer.class)
 public class Line {
     private final Project project;
     private final NodeElement source;

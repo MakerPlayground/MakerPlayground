@@ -40,6 +40,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -59,8 +60,7 @@ import java.util.stream.Collectors;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-
-
+import javafx.stage.WindowEvent;
 
 
 /**
@@ -110,9 +110,14 @@ public class CanvasView extends AnchorPane {
         }
 
         BooleanBinding selectionGroupEmpty = Bindings.size(mainPane.getSelectionGroup().getSelected()).isEqualTo(0);
+
+        contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent e) {
+                pasteMenuItem.setDisable(clipboardSystem.getContent(appMakerPlayGround) == null);
+            }
+        });
         cutMenuItem.disableProperty().bind(selectionGroupEmpty);
         copyMenuItem.disableProperty().bind(selectionGroupEmpty);
-        pasteMenuItem.disableProperty();
         deleteMenuItem.disableProperty().bind(selectionGroupEmpty);
 
         // macos uses both backspace and delete as to delete something and there isn't any platform independent way to handle this in javafx
@@ -253,9 +258,8 @@ public class CanvasView extends AnchorPane {
     }
 
     @FXML
-    private void copyHandler(){
-        if(canvasViewModel.getProject().getProjectConfiguration().getController() != null)
-        {
+    private void copyHandler() {
+        if (canvasViewModel.getProject().getProjectConfiguration().getController() != null) {
             ClipboardContent content = new ClipboardContent();
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -270,141 +274,30 @@ public class CanvasView extends AnchorPane {
 
             clipboardSystem.setContent(content);
         }
-
-//        clipboard.clear();
-//        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
     }
-
-    JsonNode modifiedDeviceNameJson(JsonNode jsonNode,  ArrayList<ProjectDevice> newDevices)
-    {
-        for(ProjectDevice device : newDevices)
-        {
-            for(JsonNode sceneNode : jsonNode.get("scenes") )
-            {
-                for(JsonNode settingNode : sceneNode.get("setting"))
-                {
-                    String name = settingNode.get("device").asText();
-                    if(name.equalsIgnoreCase(device.getName()))
-                    {
-                        ((ObjectNode)settingNode).put("device", device.getName()+"_"+canvasViewModel.getProject().getProjectName().replace(" ","_"));
-                    }
-                    else if(name.equalsIgnoreCase("Memory"))
-                    {
-                        for (JsonNode valueMap : settingNode.get("valueMap"))
-                        {
-                            if(valueMap.get("type").asText().equalsIgnoreCase("CustomNumberExpression"))
-                            {
-                                for(JsonNode terms : valueMap.get("value").get("terms"))
-                                {
-                                    if(terms.get("value").get("name").asText().equalsIgnoreCase(device.getName())){
-                                        ((ObjectNode)terms.get("value")).put("name", device.getName()+"_"+canvasViewModel.getProject().getProjectName().replace(" ","_"));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for(JsonNode sceneNode : jsonNode.get("conditions") )
-            {
-                for(JsonNode settingNode : sceneNode.get("setting"))
-                {
-                    String name = settingNode.get("device").asText();
-                    if(name.equalsIgnoreCase(device.getName()))
-                    {
-                        ((ObjectNode)settingNode).put("device", device.getName()+"_"+canvasViewModel.getProject().getProjectName().replace(" ","_"));
-                    }
-                }
-            }
-        }
-        return jsonNode;
-    }
-
-    ArrayList<ProjectDevice> addNewDevice(List<ProjectDevice> deviceList)
-    {
-        ArrayList<ProjectDevice> devices = new  ArrayList<ProjectDevice>();
-        ObservableList<ProjectDevice> projectDeviceSet = canvasViewModel.getProject().getUnmodifiableProjectDevice();
-        Map<ProjectDevice,ProjectDevice> projectDeviceMap = new HashMap<ProjectDevice,ProjectDevice>();
-        if(projectDeviceSet.isEmpty())
-        {
-            for(ProjectDevice projectDevice : deviceList)
-            {
-                ProjectDevice newProjectDevice = new ProjectDevice(projectDevice.getName(),projectDevice.getGenericDevice());
-                canvasViewModel.getProject().addDevice(newProjectDevice);
-            }
-        }
-        else
-        {
-            for(ProjectDevice projectDevice : deviceList)
-            {
-                if(!projectDeviceSet.contains(projectDevice)) {
-                    ProjectDevice newProjectDevice = new ProjectDevice(projectDevice.getName(),projectDevice.getGenericDevice());
-                    canvasViewModel.getProject().addDevice(newProjectDevice);
-                }
-                else {
-                    for(ProjectDevice pr : projectDeviceSet) {
-                        if(projectDevice.getName().equalsIgnoreCase(pr.getName())) {
-                            if(!projectDevice.getGenericDevice().getName().equalsIgnoreCase(pr.getGenericDevice().getName())) {
-                                devices.add(projectDevice);
-                                String name = projectDevice.getName()+"_"+canvasViewModel.getProject().getProjectName().replace(" ","_");
-                                ProjectDevice newProjectDevice = new ProjectDevice(name,projectDevice.getGenericDevice());
-                                projectDeviceMap.put(projectDevice,newProjectDevice);
-                                canvasViewModel.getProject().addDevice(newProjectDevice);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return devices;
-    }
-
 
     @FXML
     private void pasteHandler() {
         String modelString = (String) clipboardSystem.getContent(appMakerPlayGround);
-        if(modelString != null && canvasViewModel.getProject().getProjectConfiguration().getController() != null)
-        {
-            System.out.println(modelString);
+        if (modelString != null && canvasViewModel.getProject().getProjectConfiguration().getController() != null) {
             ObjectMapper objectMapper = new ObjectMapper();
 
             SimpleModule module = new SimpleModule();
-            module.addDeserializer(ProjectConfiguration.class, new ProjectConfigurationDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(UserSetting.class, new UserSettingDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(Scene.class, new SceneDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(Condition.class, new ConditionDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(Delay.class, new DelayDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(Line.class, new LineDeserializer(canvasViewModel.getProject()));
-            module.addDeserializer(ProjectDevice.class, new ProjectDeviceDeserializer());
+            module.addDeserializer(DiagramClipboardData.class, new DiagramClipboardDataDeserializer(canvasViewModel.getProject()));
             objectMapper.registerModule(module);
 
-            List<NodeElement> elements = new ArrayList<NodeElement>();
-            List<Line> lines = new ArrayList<Line>();
+            List<NodeElement> elements = new ArrayList<>();
+            List<Line> lines = new ArrayList<>();
             try {
                 JsonNode root = objectMapper.readTree(modelString);
-                List<ProjectDevice> deviceList = objectMapper.readValue(root.get("devices").traverse(),new TypeReference<List<ProjectDevice>>() {});
-
-                ArrayList<ProjectDevice> reNameDevices = addNewDevice(deviceList);
-                root = modifiedDeviceNameJson(root,reNameDevices);
-
-                List<Scene> sceneList = objectMapper.readValue(root.get("scenes").traverse(),new TypeReference<List<Scene>>() {});
-                List<Condition> conditionList = objectMapper.readValue(root.get("conditions").traverse(),new TypeReference<List<Condition>>() {});
-                List<Delay> delayList = objectMapper.readValue(root.get("delays").traverse(),new TypeReference<List<Delay>>() {});
-                List<Line> lineList = objectMapper.readValue(root.get("lines").traverse(),new TypeReference<List<Line>>() {});
-                if(sceneList.size() != 0)
-                    elements.addAll(sceneList);
-                if(conditionList.size() != 0)
-                    elements.addAll(conditionList);
-                if(delayList.size() != 0)
-                    elements.addAll(delayList);
-                if(lineList.size() != 0)
-                    lines.addAll(lineList);
+                DiagramClipboardData diagramClipboardData = objectMapper.readValue(root.traverse(),new TypeReference<DiagramClipboardData>() {});
+                elements.addAll(diagramClipboardData.getAllNode());
+                lines.addAll(diagramClipboardData.getLines());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            if(!elements.isEmpty())
-            {
+            if(!elements.isEmpty()) {
                 // find group min x,y (x,y of the left-top most elements in the group selection)
                 double minX = elements.stream().mapToDouble(NodeElement::getLeft).min().getAsDouble();
                 double minY = elements.stream().mapToDouble(NodeElement::getTop).min().getAsDouble();
@@ -420,17 +313,17 @@ public class CanvasView extends AnchorPane {
                         Scene newScene = canvasViewModel.project.newScene((Scene) element);
                         newScene.setLeft(newX);
                         newScene.setTop(newY);
-                        elementsMap.put(element,newScene);
+                        elementsMap.put(element, newScene);
                     } else if (element instanceof Condition) {
                         Condition newCondition = canvasViewModel.project.newCondition((Condition) element);
                         newCondition.setLeft(newX);
                         newCondition.setTop(newY);
-                        elementsMap.put(element,newCondition);
+                        elementsMap.put(element, newCondition);
                     } else if (element instanceof Delay) {
                         Delay newDelay = canvasViewModel.project.newDelay((Delay) element);
                         newDelay.setLeft(newX);
                         newDelay.setTop(newY);
-                        elementsMap.put(element,newDelay);
+                        elementsMap.put(element, newDelay);
                     }
                 }
 
