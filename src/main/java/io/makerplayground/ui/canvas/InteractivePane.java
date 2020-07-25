@@ -323,4 +323,8 @@ public class InteractivePane extends ScrollPane {
         double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
         return getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
     }
+
+    public Pane getPane() {
+        return content;
+    }
 }

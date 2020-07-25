@@ -26,6 +26,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -116,9 +118,7 @@ public class CanvasView extends AnchorPane {
                 zoomOutHandler();
             } else if (event.isShortcutDown() && event.getText().equals("0")) {
                 zoomDefaultHandler();
-            } else if(event.isShortcutDown() && event.getText().equals("a")) {
-                 autoDiagramHandler();
-             }
+            }
         });
         setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.SHIFT) {  // disable multiple selection when the shift key is released
@@ -338,90 +338,89 @@ public class CanvasView extends AnchorPane {
         mainPane.setScale(1);
     }
 
-    void setTopElement(NodeElement element, double upperbound,double joint)
-    {
-        if (element instanceof Condition || element instanceof Scene || element instanceof Delay) {
-            element.setTop(upperbound-joint);
+    Bounds getNodeBound(NodeElement nodeElement) {
+        List<Node> nodes = mainPane.getPane().getChildren();
+        Bounds bound = null;
+        for (Node node : nodes) {
+            if (node instanceof SceneView) {
+                if (((SceneView) node).getSceneViewModel().getScene().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            } else if (node instanceof ConditionView) {
+                if (((ConditionView) node).getConditionViewModel().getCondition().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            } else if (node instanceof DelayView) {
+                if (((DelayView) node).getDelayViewModel().getDelay().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            }
         }
+        return bound;
     }
 
+    void setTopElement(NodeElement element, double upperbound,double joint,List<Line> lines,double totalHeight) {
+        int sizeText;
+        int imageSize;
+        if (element instanceof Begin) {
+            sizeText = 8;
+            if (lines.size() == 1) {
+                element.setTop(lines.get(0).getDestination().getTop()+sizeText);
+            } else if (lines.size() != 0){
+                element.setTop(((totalHeight)/2)+upperbound-75);
+            } else {
+                element.setTop(upperbound);
+            }
+        } else if (element instanceof Delay) {
+            imageSize = 6;
+            element.setTop(upperbound-joint-imageSize);
+        } else {
+            element.setTop(upperbound-joint);
+        }
 
-    double setDiagram(NodeElement element, double upperbound,double maxRangeSetting,double joint)
-    {
-        double rangeJoint = 0;
-        double totalRange = 0;
+    }
 
-        List<Line> lineList = new ArrayList<Line>();
+    double setDiagram (NodeElement element, double upperbound,double maxHeighUserSetting,double joint) {
+        double heightJoint = 0;
+        double totalHeight = 0;
+        List<Line> lineList = new ArrayList<>();
         for (Line line : canvasViewModel.getProject().getUnmodifiableLine()) {
             if (line.getSource().equals(element)) {
                 lineList.add(line);
             }
         }
-
         if (lineList.size() != 0) {
-            int rangeUserSetting = 0;
+            int heightUserSetting;
             for (Line line : lineList) {
                 line.getDestination().setLeft(line.getSource().getLeft()+220);
-                if (line.getDestination() instanceof Condition) {
-                    int effectDevice = canvasViewModel.project.getDeviceWithCondition().size();  // get size of list that ProjectDevice has effect with ConditionViewModel
-                    rangeUserSetting = ((Condition) line.getDestination()).getSetting().size()+((Condition)line.getDestination()).getVirtualDeviceSetting().size();
-                    if (rangeUserSetting != 0) {
-                        // 15 = Size of the middle of the button , 5 = Size of the space between buttons
-                        // 30 = Size of button (ConditionView.fxml)
-                        if (rangeUserSetting >= 2  && effectDevice > 0) {
-                            // 15 (button 1) + 5 + 15 (button 2) = 35
-                            rangeJoint = 35;
-                        } else {
-                            // 15 + ( 5 / 2 ) = 17.5
-                            rangeJoint = 17.5;
-                        }
-                        rangeUserSetting = 65; // 30+5+30 --> button+space+button For 2 or more UserSettings
-                    } else {
-                        rangeUserSetting = 30; // 30 --> 1 button For 1 UserSettings
-                    }
-                } else if (line.getDestination() instanceof Scene) {
-                    rangeUserSetting = ((Scene) line.getDestination()).getSetting().size()+((Scene)line.getDestination()).getVirtualDeviceSetting().size();
-                    if(rangeUserSetting != 0){
-                        // 15 = Size of the middle of the button , 5 = Size of the space between buttons
-                        // 30 = Size of button (ConditionView.fxml)
-                        if (rangeUserSetting >= 2) {
-                            // 15 (button 1) + 5 + 15 (button 2) = 35
-                            rangeJoint = 35;
-                        } else {
-                            // 15 + ( 5 / 2 ) = 17.5
-                            rangeJoint = 17.5;
-                        }
-                        rangeUserSetting = 65; // 30+5+30 --> button+space+button  For 2 or more UserSettings
-                    } else {
-                        rangeUserSetting = 30; // 30 --> 1 button For 1 UserSettings
-                    }
+                Bounds bounds = getNodeBound(line.getDestination());
+                heightJoint = (bounds.getHeight())/2;
+                heightUserSetting = (int) bounds.getHeight();
+                if (heightUserSetting < maxHeighUserSetting) {
+                    heightUserSetting = (int) maxHeighUserSetting;
                 }
-
-                if(rangeUserSetting < maxRangeSetting) {
-                    rangeUserSetting = (int) maxRangeSetting;
-                }
-
-                totalRange = totalRange + setDiagram(line.getDestination(),upperbound+totalRange,rangeUserSetting,rangeJoint);
-                rangeUserSetting = 0;
+                totalHeight = totalHeight + setDiagram(line.getDestination(),upperbound+totalHeight,heightUserSetting,heightJoint);
             }
         } else {
-            totalRange = 80 ;
-            setTopElement(element,upperbound,joint);
-            return totalRange + maxRangeSetting ;
+            totalHeight = 30 ;
+            setTopElement(element,upperbound,joint,lineList,totalHeight);
+            return totalHeight + maxHeighUserSetting;
         }
-        setTopElement(element,upperbound,joint);
-        return totalRange;
+        setTopElement(element,upperbound,joint,lineList,totalHeight);
+        return totalHeight;
     }
 
      @FXML
      private void autoDiagramHandler() {
-         double upperbound = 100;
-         double ragne = 0;
+         double upperbound = 150;
+         double subHeightDiagram;
          for (Begin begin : canvasViewModel.getProject().getBegin()) {
-             begin.setTop(upperbound+5);
              begin.setLeft(20);
-             ragne = setDiagram(begin,upperbound,0,0);
-             upperbound = upperbound + ragne + 40;
+             subHeightDiagram = setDiagram(begin,upperbound,0,0);
+             upperbound = upperbound + subHeightDiagram + 40;
          }
      }
 
