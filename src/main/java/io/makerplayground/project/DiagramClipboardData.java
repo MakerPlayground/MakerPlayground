@@ -1,6 +1,8 @@
 package io.makerplayground.project;
 
+import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
+import io.makerplayground.project.expression.Expression;
 import io.makerplayground.ui.canvas.LineView;
 import io.makerplayground.ui.canvas.node.ConditionView;
 import io.makerplayground.ui.canvas.node.DelayView;
@@ -17,6 +19,7 @@ public class DiagramClipboardData {
     @Getter private final List<Condition> conditions = new ArrayList<>();
     @Getter private final List<Delay> delays = new ArrayList<>();
     @Getter private final List<Line> lines = new ArrayList<>();
+    @Getter private final List<String> variable = new ArrayList<>();
     @Getter private final Set<ProjectDevice> devices = new HashSet<>();
 
     public DiagramClipboardData(List<Scene> scenes, List<Condition> conditions, List<Delay> delays, List<Line> lines) {
@@ -41,8 +44,16 @@ public class DiagramClipboardData {
                     ProjectDevice projectDevice = userSetting.getDevice();
                     if (!VirtualProjectDevice.getDevices().contains(projectDevice)) {
                         devices.add(projectDevice);
+                    } else {
+                        for(Map.Entry<Parameter, Expression> entry : userSetting.getParameterMap().entrySet()){
+                            for (ProjectValue p : entry.getValue().getValueUsed()) {
+                                if(!variable.contains(p.getValue().getName())) {
+                                    variable.add(p.getValue().getName());
+                                }
+                            }
+                        }
                     }
-                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
+                    Map<ProjectDevice, Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
                     devices.addAll(keys);
                 }
@@ -60,6 +71,15 @@ public class DiagramClipboardData {
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
                     devices.add(userSetting.getDevice());
                     devices.addAll(keys);
+                }
+                for(UserSetting userSetting : condition.getVirtualDeviceSetting()) {
+                    for(Map.Entry<Value, Expression> entry : userSetting.getExpression().entrySet()){
+                        for (ProjectValue p : entry.getValue().getValueUsed()) {
+                            if(!variable.contains(p.getValue().getName())) {
+                                variable.add(p.getValue().getName());
+                            }
+                        }
+                    }
                 }
             }
             else if (node instanceof DelayView) {
