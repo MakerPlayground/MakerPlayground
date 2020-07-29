@@ -291,7 +291,9 @@ public class CanvasView extends AnchorPane {
             try {
                 JsonNode root = objectMapper.readTree(modelString);
                 DiagramClipboardData diagramClipboardData = objectMapper.readValue(root.traverse(),new TypeReference<DiagramClipboardData>() {});
-                elements.addAll(diagramClipboardData.getAllNode());
+                elements.addAll(diagramClipboardData.getScenes());
+                elements.addAll(diagramClipboardData.getConditions());
+                elements.addAll(diagramClipboardData.getDelays());
                 lines.addAll(diagramClipboardData.getLines());
             } catch (IOException e) {
                 e.printStackTrace();
