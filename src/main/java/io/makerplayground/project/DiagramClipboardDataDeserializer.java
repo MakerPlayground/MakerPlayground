@@ -139,12 +139,14 @@ public class DiagramClipboardDataDeserializer extends JsonDeserializer<DiagramCl
                     for(ProjectDevice pr : projectDeviceSet) {
                         if(projectDevice.getName().equalsIgnoreCase(pr.getName())) {
                             if(!projectDevice.getGenericDevice().getName().equalsIgnoreCase(pr.getGenericDevice().getName())) {
-                                String name = projectDevice.getName()+project.getProjectName();
+                                String name = projectDevice.getName()+"_"+project.getProjectName().replace(" ","_");
                                 int occurrences = Collections.frequency(projectDeviceName, name);
                                 while (projectDeviceName.contains(name+"_("+(occurrences)+")")) {
                                     occurrences ++;
                                 }
-                                name = name+"_("+(occurrences)+")";
+                                if(occurrences != 0) {
+                                    name = name + "_(" + (occurrences) + ")";
+                                }
                                 projectDevice.setName(name);
                                 projectDeviceMap.put(pr,projectDevice);
                                 ProjectDevice newProjectDevice = new ProjectDevice(name,projectDevice.getGenericDevice());
