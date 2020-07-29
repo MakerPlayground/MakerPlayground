@@ -88,13 +88,4 @@ public class DiagramClipboardData {
             }
         }
     }
-
-    public List<NodeElement> getAllNode() {
-        List<NodeElement> elements = new ArrayList<>();
-        elements.addAll(scenes);
-        elements.addAll(conditions);
-        elements.addAll(delays);
-        return elements;
-    }
-
 }
