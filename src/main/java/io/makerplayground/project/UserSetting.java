@@ -291,7 +291,7 @@ public class UserSetting {
         if (includeVirtualDevice || !(getDevice() instanceof VirtualProjectDevice)) { // TODO: why we need to exclude for virtual device
             for (Value v : expression.keySet()) {
                 // skip if this expression is disabled
-                if (expressionEnable.get(v)) {
+                if (expressionEnable.get(v) != null && expressionEnable.get(v)) {
                     Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
                     for (ProjectValue pv : valueUsed) {
                         if (result.containsKey(pv.getDevice())) {

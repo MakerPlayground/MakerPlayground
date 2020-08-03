@@ -32,6 +32,7 @@ public class NodeElementSerializer extends StdSerializer<NodeElement> {
 
     @Override
     public void serialize(NodeElement nodeElement, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+
         jsonGenerator.writeStartObject();
 
         jsonGenerator.writeObjectField("top",nodeElement.getTop());

@@ -16,31 +16,52 @@
 
 package io.makerplayground.ui.canvas;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.device.shared.DelayUnit;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.*;
 import io.makerplayground.ui.canvas.helper.DynamicViewCreatorBuilder;
 import io.makerplayground.ui.canvas.node.*;
 import io.makerplayground.util.OSInfo;
+import io.makerplayground.version.ProjectVersionControl;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.nio.file.OpenOption;
+import java.util.*;
 import java.util.stream.Collectors;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.stage.WindowEvent;
+
 
 /**
  *
@@ -66,8 +87,9 @@ public class CanvasView extends AnchorPane {
     @FXML private MenuItem pasteMenuItem;
     @FXML private MenuItem deleteMenuItem;
 
-    private final ObservableList<InteractiveNode> clipboard = FXCollections.observableArrayList();
-
+//    private final ObservableList<InteractiveNode> clipboard = FXCollections.observableArrayList();
+    private final Clipboard clipboardSystem = Clipboard.getSystemClipboard();
+    private final DataFormat appMakerPlayGround = new DataFormat("application/makerplayground");
     private final CanvasViewModel canvasViewModel;
 
     public CanvasView(CanvasViewModel canvasViewModel) {
@@ -88,9 +110,14 @@ public class CanvasView extends AnchorPane {
         }
 
         BooleanBinding selectionGroupEmpty = Bindings.size(mainPane.getSelectionGroup().getSelected()).isEqualTo(0);
+
+        contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent e) {
+                pasteMenuItem.setDisable(clipboardSystem.getContent(appMakerPlayGround) == null);
+            }
+        });
         cutMenuItem.disableProperty().bind(selectionGroupEmpty);
         copyMenuItem.disableProperty().bind(selectionGroupEmpty);
-        pasteMenuItem.disableProperty().bind(Bindings.size(clipboard).isEqualTo(0));
         deleteMenuItem.disableProperty().bind(selectionGroupEmpty);
 
         // macos uses both backspace and delete as to delete something and there isn't any platform independent way to handle this in javafx
@@ -224,73 +251,105 @@ public class CanvasView extends AnchorPane {
 
     @FXML
     private void cutHandler() {
-        clipboard.clear();
-        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+//        clipboard.clear();
+//        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+        copyHandler();
         deleteHandler();
     }
 
     @FXML
     private void copyHandler() {
-        clipboard.clear();
-        clipboard.addAll(mainPane.getSelectionGroup().getSelected());
+        if (canvasViewModel.getProject().getProjectConfiguration().getController() != null) {
+            ClipboardContent content = new ClipboardContent();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            DiagramClipboardData diagramClipboardData = new DiagramClipboardData(mainPane.getSelectionGroup().getSelected());
+
+            try {
+                String json = objectMapper.writeValueAsString(diagramClipboardData);
+                content.put(appMakerPlayGround,json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            clipboardSystem.setContent(content);
+        }
     }
 
     @FXML
     private void pasteHandler() {
-        if (clipboard.isEmpty()) {
-            return;
-        }
-        // extract model from view
-        List<NodeElement> elements = clipboard.stream()
-                .filter(interactiveNode -> (interactiveNode instanceof SceneView) || (interactiveNode instanceof ConditionView) || (interactiveNode instanceof DelayView))
-                .map(interactiveNode -> {
-                    if (interactiveNode instanceof SceneView) {
-                        return ((SceneView) interactiveNode).getSceneViewModel().getScene();
-                    } else if (interactiveNode instanceof ConditionView) {
-                        return ((ConditionView) interactiveNode).getConditionViewModel().getCondition();
-                    } else {
-                        return ((DelayView) interactiveNode).getDelayViewModel().getDelay();
-                    }
-                }).collect(Collectors.toList());
+        String modelString = (String) clipboardSystem.getContent(appMakerPlayGround);
+        if (modelString != null && canvasViewModel.getProject().getProjectConfiguration().getController() != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
 
-        // find group min x,y (x,y of the left-top most elements in the group selection)
-        double minX = elements.stream().mapToDouble(NodeElement::getLeft).min().getAsDouble();
-        double minY = elements.stream().mapToDouble(NodeElement::getTop).min().getAsDouble();
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(DiagramClipboardData.class, new DiagramClipboardDataDeserializer(canvasViewModel.getProject()));
+            objectMapper.registerModule(module);
 
-        Map<NodeElement, NodeElement> elementsMap = new HashMap<>();
-
-        // add elements in clipboard to the canvas
-        for (NodeElement element : elements) {
-            // new x,y is the current mouse position plus the offset (old x,y - group minimum x,y)
-            double newX = element.getLeft() - minX + mainPane.getMouseX();
-            double newY = element.getTop() - minY + mainPane.getMouseY();
-            if (element instanceof Scene) {
-                Scene newScene = canvasViewModel.project.newScene((Scene) element);
-                newScene.setLeft(newX);
-                newScene.setTop(newY);
-                elementsMap.put(element,newScene);
-            } else if (element instanceof Condition) {
-                Condition newCondition = canvasViewModel.project.newCondition((Condition) element);
-                newCondition.setLeft(newX);
-                newCondition.setTop(newY);
-                elementsMap.put(element,newCondition);
-            } else if (element instanceof Delay) {
-                Delay newDelay = canvasViewModel.project.newDelay((Delay) element);
-                newDelay.setLeft(newX);
-                newDelay.setTop(newY);
-                elementsMap.put(element,newDelay);
+            List<NodeElement> elements = new ArrayList<>();
+            List<Line> lines = new ArrayList<>();
+            try {
+                JsonNode root = objectMapper.readTree(modelString);
+                DiagramClipboardData diagramClipboardData = objectMapper.readValue(root.traverse(),new TypeReference<DiagramClipboardData>() {});
+                elements.addAll(diagramClipboardData.getScenes());
+                elements.addAll(diagramClipboardData.getConditions());
+                elements.addAll(diagramClipboardData.getDelays());
+                lines.addAll(diagramClipboardData.getLines());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
 
-        for (InteractiveNode node : clipboard) {
-            if (node instanceof LineView) {
-                Line line = ((LineView) node).getLineViewModel().getLine();
-                if (elements.contains(line.getSource()) && elements.contains(line.getDestination())){
-                    canvasViewModel.project.addLine(elementsMap.get(line.getSource()), elementsMap.get(line.getDestination()));
-                } else if (elements.contains(line.getSource())){
-                    canvasViewModel.project.addLine(elementsMap.get(line.getSource()), line.getDestination());
-                } else if (elements.contains(line.getDestination())){
-                    canvasViewModel.project.addLine(line.getSource(), elementsMap.get(line.getDestination()));
+            if(!elements.isEmpty()) {
+                // find group min x,y (x,y of the left-top most elements in the group selection)
+                double minX = elements.stream().mapToDouble(NodeElement::getLeft).min().getAsDouble();
+                double minY = elements.stream().mapToDouble(NodeElement::getTop).min().getAsDouble();
+
+                Map<NodeElement, NodeElement> elementsMap = new HashMap<>();
+
+                // add elements in clipboard to the canvas
+                for (NodeElement element : elements) {
+                    // new x,y is the current mouse position plus the offset (old x,y - group minimum x,y)
+                    double newX = element.getLeft() - minX + mainPane.getMouseX();
+                    double newY = element.getTop() - minY + mainPane.getMouseY();
+                    if (element instanceof Scene) {
+                        Scene newScene = canvasViewModel.project.newScene((Scene) element);
+                        newScene.setLeft(newX);
+                        newScene.setTop(newY);
+                        elementsMap.put(element, newScene);
+                    } else if (element instanceof Condition) {
+                        Condition newCondition = canvasViewModel.project.newCondition((Condition) element);
+                        newCondition.setLeft(newX);
+                        newCondition.setTop(newY);
+                        elementsMap.put(element, newCondition);
+                    } else if (element instanceof Delay) {
+                        Delay newDelay = canvasViewModel.project.newDelay((Delay) element);
+                        newDelay.setLeft(newX);
+                        newDelay.setTop(newY);
+                        elementsMap.put(element, newDelay);
+                    }
+                }
+
+                NodeElement source = null;
+                NodeElement destination = null;
+                for(Line line : lines)
+                {
+                    for(NodeElement nodeElement : elements)
+                    {
+                        if(nodeElement.getName().equalsIgnoreCase(line.getSource().getName()))
+                        {
+                            source = nodeElement;
+                        }
+                        else if(nodeElement.getName().equalsIgnoreCase(line.getDestination().getName()))
+                        {
+                            destination = nodeElement;
+                        }
+                    }
+                    if(source != null && destination != null)
+                    {
+                        canvasViewModel.project.addLine(elementsMap.get(source), elementsMap.get(destination));
+                        source = null;
+                        destination = null;
+                    }
                 }
             }
         }
