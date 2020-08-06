@@ -263,7 +263,7 @@ public class CanvasView extends AnchorPane {
             ClipboardContent content = new ClipboardContent();
             ObjectMapper objectMapper = new ObjectMapper();
 
-            DiagramClipboardData diagramClipboardData = new DiagramClipboardData(mainPane.getSelectionGroup().getSelected());
+            DiagramClipboardData diagramClipboardData = new DiagramClipboardData(mainPane.getSelectionGroup().getSelected(),canvasViewModel.project.getProjectName());
 
             try {
                 String json = objectMapper.writeValueAsString(diagramClipboardData);
@@ -329,10 +329,10 @@ public class CanvasView extends AnchorPane {
                     }
                 }
 
-                NodeElement source = null;
-                NodeElement destination = null;
                 for(Line line : lines)
                 {
+                    NodeElement source = null;
+                    NodeElement destination = null;
                     for(NodeElement nodeElement : elements)
                     {
                         if(nodeElement.getName().equalsIgnoreCase(line.getSource().getName()))
@@ -343,12 +343,11 @@ public class CanvasView extends AnchorPane {
                         {
                             destination = nodeElement;
                         }
-                    }
-                    if(source != null && destination != null)
-                    {
-                        canvasViewModel.project.addLine(elementsMap.get(source), elementsMap.get(destination));
-                        source = null;
-                        destination = null;
+                        if(source != null && destination != null)
+                        {
+                            canvasViewModel.project.addLine(elementsMap.get(source), elementsMap.get(destination));
+                            break;
+                        }
                     }
                 }
             }

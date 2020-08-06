@@ -15,6 +15,7 @@ import java.util.*;
 
 public class DiagramClipboardData {
 
+    @Getter private final String project;
     @Getter private final List<Scene> scenes = new ArrayList<>();
     @Getter private final List<Condition> conditions = new ArrayList<>();
     @Getter private final List<Delay> delays = new ArrayList<>();
@@ -22,15 +23,17 @@ public class DiagramClipboardData {
     @Getter private final List<String> variable = new ArrayList<>();
     @Getter private final Set<ProjectDevice> devices = new HashSet<>();
 
-    public DiagramClipboardData(List<Scene> scenes, List<Condition> conditions, List<Delay> delays, List<Line> lines) {
+    public DiagramClipboardData(List<Scene> scenes, List<Condition> conditions, List<Delay> delays, List<Line> lines, String projectName) {
         this.scenes.addAll(scenes);
         this.conditions.addAll(conditions);
         this.delays.addAll(delays);
         this.lines.addAll(lines);
+        this.project = projectName;
     }
 
 
-    public DiagramClipboardData(List<InteractiveNode> interactiveNodes) {
+    public DiagramClipboardData(List<InteractiveNode> interactiveNodes, String projectName) {
+        this.project = projectName;
         for (InteractiveNode node : interactiveNodes) {
             if (node instanceof LineView) {
                 Line line = ((LineView) node).getLineViewModel().getLine();
