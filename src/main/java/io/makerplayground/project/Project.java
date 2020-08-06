@@ -919,4 +919,12 @@ public class Project {
 
         @Getter private final String errorMessage;
     }
+
+    public List<String> getProjectDeviceName(){
+        List<String> name = new ArrayList<>();
+        for(ProjectDevice projectDevice : getUnmodifiableProjectDevice()){
+            name.add(projectDevice.getName());
+        }
+        return name;
+    }
 }
