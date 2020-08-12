@@ -491,7 +491,7 @@ public class ArduinoUploadCode {
             double fromHigh = valueLinkingExpression.getSourceHighValue().getValue();
             double toLow = valueLinkingExpression.getDestinationLowValue().getValue();
             double toHigh = valueLinkingExpression.getDestinationHighValue().getValue();
-            returnValue = "constrain(map(" + parseValueVariableTerm(searchGroup(valueLinkingExpression.getSourceValue().getDevice())
+            returnValue = "constrain(mapDouble(" + parseValueVariableTerm(searchGroup(valueLinkingExpression.getSourceValue().getDevice())
                     , valueLinkingExpression.getSourceValue().getValue()) + ", " + fromLow + ", " + fromHigh
                     + ", " + toLow + ", " + toHigh + "), " + toLow + ", " + toHigh + ")";
         } else if (expression instanceof ProjectValueExpression) {
