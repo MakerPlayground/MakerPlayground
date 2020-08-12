@@ -264,6 +264,7 @@ public class SceneDevicePropertyPane extends VBox {
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.DOT_MATRIX && p.getDataType() == DataType.DOT_MATRIX_DATA) {
                 DotMatrixExpressionControl expressionControl = new DotMatrixExpressionControl((DotMatrixExpression) userSetting.getParameterMap().get(p));
+                control = expressionControl;
             } else if (p.getControlType() == ControlType.VARIABLE) {
                 VariableSelectorControl expressionControl = new VariableSelectorControl(
                         project,
