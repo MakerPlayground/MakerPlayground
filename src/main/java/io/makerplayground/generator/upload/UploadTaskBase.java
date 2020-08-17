@@ -135,6 +135,7 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
                 case ARDUINO_AVR8:
                 case ARDUINO_ESP32:
                 case ARDUINO_ESP8266:
+                case ARDUINO_ATSAMD51:
                     if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
                         return new ArduinoUploadTask(project, uploadTarget, isInteractive);
                     }

@@ -1,8 +1,12 @@
 package io.makerplayground.generator.upload;
 
 import io.makerplayground.project.Project;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.concurrent.WorkerStateEvent;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class UploadManager {
 
@@ -45,9 +49,18 @@ public class UploadManager {
         uploadLog.bind(uploadTask.fullLogProperty());
         if (uploadTask.isInteractiveUpload()) {
             uploadTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event1 -> {
-                if (uploadTask.getValue() == UploadResult.OK) {
-                    project.get().getInteractiveModel().start(uploadTask.getUploadTarget());
-                }
+                // On platform with internal USB host such as ATSAMD21 and ATSAMD51, the serial port may disappear for
+                // a little moment after upload new code so we wait for 2 second before trying to connect to the device
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> {
+                            if (uploadTask.getValue() == UploadResult.OK) {
+                                project.get().getInteractiveModel().start(uploadTask.getUploadTarget());
+                            }
+                        });
+                    }
+                }, 2000);
             });
         }
     }
