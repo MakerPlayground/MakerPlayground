@@ -152,19 +152,19 @@
           constraint:
             - key: North
               value: 0
-            - key: South
+            - key: NorthEast
               value: 1
             - key: East
               value: 2
-            - key: West
-              value: 3
-            - key: NorthEast
-              value: 4
-            - key: NorthWest
-              value: 5
             - key: SouthEast
-              value: 6
+              value: 3
+            - key: South
+              value: 4
             - key: SouthWest
+              value: 5
+            - key: West
+              value: 6
+            - key: NorthWest
               value: 7
           datatype: STRING_INT_ENUM
           controltype: DROPDOWN
@@ -187,6 +187,12 @@
         min: -200
         max: 200
         unit: MICROTESLA
+    - name: Heading
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 360
+        unit: DEGREE
 - name: Distance
   description: A sensor that measure distance. \nRelated project:\n\tWall detector\n\tObject
     detector
