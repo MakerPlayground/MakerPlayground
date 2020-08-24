@@ -68,7 +68,7 @@ public class ArduinoInteractiveCode {
         ArduinoInteractiveCode generator = new ArduinoInteractiveCode(project);
         generator.appendHeader();
         generator.appendGlobalVariable();
-        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup));
+        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup, true));
         generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, false, true));
         generator.appendProcessCommand();
         generator.appendLoopFunction();

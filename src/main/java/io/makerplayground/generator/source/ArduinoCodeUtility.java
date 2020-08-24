@@ -80,11 +80,12 @@ class ArduinoCodeUtility {
         return builder.toString();
     }
 
-    static String getInstanceVariablesCode(Project project, List<List<ProjectDevice>> projectDeviceGroup) {
+    static String getInstanceVariablesCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean isInteractive) {
         StringBuilder builder = new StringBuilder();
         ProjectConfiguration configuration = project.getProjectConfiguration();
         // create cloud singleton variables
-        for (CloudPlatform cloudPlatform: project.getAllCloudPlatforms()) {
+        Set<CloudPlatform> cloudPlatforms = isInteractive ? project.getAllCloudPlatforms() : project.getCloudPlatformUsed();
+        for (CloudPlatform cloudPlatform: cloudPlatforms) {
             String cloudPlatformLibName = cloudPlatform.getLibName();
             String specificCloudPlatformLibName = project.getSelectedController().getCloudPlatformSourceCodeLibrary().get(cloudPlatform).getClassName();
 
