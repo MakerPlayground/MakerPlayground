@@ -28,13 +28,7 @@ public class ConditionDevicePropertyWindow extends PopOver {
         devicePropertyPane.setPadding(new Insets(20, 20, 20, 20));
 
         setDetachable(false);
-
-        ScrollPane scrollPane = new ScrollPane(devicePropertyPane);
-        scrollPane.setPrefHeight(USE_COMPUTED_SIZE);
-        scrollPane.setMaxHeight(350.0);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        setContentNode(scrollPane);
+        setContentNode(devicePropertyPane);
     }
 
 }
