@@ -217,7 +217,7 @@ public class InteractiveModel {
         conditionMap.clear();
         valueMap.clear();
 
-        for (List<ProjectDevice> projectDeviceList: project.getAllDevicesGroupBySameActualDevice()) {
+        for (List<ProjectDevice> projectDeviceList: project.getProjectDevicesGroupByActualDevice()) {
             for (ProjectDevice projectDevice : projectDeviceList) {
                 if (configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
                     continue;

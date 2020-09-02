@@ -59,7 +59,7 @@ public class RpiPythonUploadCode {
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
         this.allDelayUsed = Utility.takeDelay(allNodeUsed);
-        this.projectDeviceGroup = project.getAllDeviceUsedGroupBySameActualDevice();
+        this.projectDeviceGroup = project.getProjectDevicesUsedGroupByActualDevice();
     }
 
     public static SourceCodeResult generateCode(Project project) {
@@ -420,7 +420,7 @@ public class RpiPythonUploadCode {
 
             List<String> args = new ArrayList<>();
 
-            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
+            DeviceConnection connection = project.getProjectConfiguration().getDeviceOrIdenticalDeviceConnection(projectDeviceList.get(0));
             if (connection != DeviceConnection.NOT_CONNECTED) {
                 Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
                 for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDeviceList.get(0))) {

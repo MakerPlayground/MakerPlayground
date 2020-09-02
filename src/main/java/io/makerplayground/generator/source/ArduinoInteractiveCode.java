@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -46,12 +45,12 @@ public class ArduinoInteractiveCode {
     final Project project;
     final ProjectConfiguration configuration;
     final StringBuilder builder = new StringBuilder();
-    private final List<List<ProjectDevice>> projectDeviceGroup;
+    private final List<List<ProjectDevice>> projectDeviceGroups;
 
     private ArduinoInteractiveCode(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
-        this.projectDeviceGroup = project.getAllDevicesGroupBySameActualDevice();
+        this.projectDeviceGroups = project.getProjectDevicesGroupByActualDevice();
     }
 
     public static SourceCodeResult generateCode(Project project) {
@@ -68,8 +67,8 @@ public class ArduinoInteractiveCode {
         ArduinoInteractiveCode generator = new ArduinoInteractiveCode(project);
         generator.appendHeader();
         generator.appendGlobalVariable();
-        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup, true));
-        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, false, true));
+        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroups, true));
+        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroups, false, true));
         generator.appendProcessCommand();
         generator.appendLoopFunction();
 //        System.out.println(generator.builder.toString());
@@ -100,7 +99,7 @@ public class ArduinoInteractiveCode {
         builder.append("char* commandArgs[10];").append(NEW_LINE);
         builder.append(NEW_LINE);
 
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
+        for (List<ProjectDevice> projectDeviceList: projectDeviceGroups) {
             for (ProjectDevice projectDevice : projectDeviceList) {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
                     continue;
@@ -169,8 +168,8 @@ public class ArduinoInteractiveCode {
         builder.append(INDENT).append(INDENT).append("}").append(NEW_LINE);
         builder.append(INDENT).append("}").append(NEW_LINE);
 
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            for (ProjectDevice projectDevice : projectDeviceList) {
+        for (List<ProjectDevice> group: projectDeviceGroups) {
+            for (ProjectDevice projectDevice : group) {
                 if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
                     continue;
                 }
@@ -303,16 +302,16 @@ public class ArduinoInteractiveCode {
             builder.append(INDENT).append(ArduinoCodeUtility.parseCloudPlatformVariableName(cloudPlatform)).append("->update(currentTime);").append(NEW_LINE);
         }
 
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            String variableName = ArduinoCodeUtility.parseDeviceVariableName(projectDeviceList);
+        for (List<ProjectDevice> group: projectDeviceGroups) {
+            String variableName = ArduinoCodeUtility.parseDeviceVariableName(group);
             builder.append(INDENT).append(variableName).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
-        if (!projectDeviceGroup.isEmpty()) {
+        if (!projectDeviceGroups.isEmpty()) {
             builder.append(INDENT).append("if (currentTime - lastSendTime >= MPInteractive.getSensorRate() && !MPInteractive.isFreezeSensor()) {").append(NEW_LINE);
-            for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-                for (ProjectDevice projectDevice: projectDeviceList) {
+            for (List<ProjectDevice> group: projectDeviceGroups) {
+                for (ProjectDevice projectDevice: group) {
                     if (project.getProjectConfiguration().getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).isEmpty()) {
                         continue;
                     }
@@ -321,7 +320,7 @@ public class ArduinoInteractiveCode {
                     if (compatibility.getDeviceCondition().isEmpty() && compatibility.getDeviceValue().isEmpty()) {
                         continue;
                     }
-                    String variableName = parseDeviceVariableName(projectDeviceList);
+                    String variableName = parseDeviceVariableName(group);
                     builder.append(INDENT).append(INDENT).append("Serial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
                     // condition
                     compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
@@ -363,7 +362,7 @@ public class ArduinoInteractiveCode {
     }
 
     private List<ProjectDevice> searchGroup(ProjectDevice projectDevice) {
-        Optional<List<ProjectDevice>> projectDeviceOptional = projectDeviceGroup.stream().filter(projectDeviceList -> projectDeviceList.contains(projectDevice)).findFirst();
+        Optional<List<ProjectDevice>> projectDeviceOptional = projectDeviceGroups.stream().filter(projectDeviceList -> projectDeviceList.contains(projectDevice)).findFirst();
         if (projectDeviceOptional.isEmpty()) {
             throw new IllegalStateException("Device that its value is used in the project must be exists in the device group.");
         }

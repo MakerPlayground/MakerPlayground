@@ -443,7 +443,7 @@ public class Project {
 
     public ObservableList<Begin> getBegin() { return begins; }
 
-    public List<List<ProjectDevice>> getAllDeviceUsedGroupBySameActualDevice() {
+    public List<List<ProjectDevice>> getProjectDevicesUsedGroupByActualDevice() {
         Set<ProjectDevice> deviceUsed = getAllDeviceUsed();
         return projectConfiguration.getDeviceMap().keySet().stream()
                 .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
@@ -458,7 +458,7 @@ public class Project {
                 .collect(Collectors.toList());
     }
 
-    public List<List<ProjectDevice>> getAllDevicesGroupBySameActualDevice() {
+    public List<List<ProjectDevice>> getProjectDevicesGroupByActualDevice() {
         return projectConfiguration.getDeviceMap().keySet().stream()
                 .filter(projectDevice -> projectDevice != ProjectDevice.CONTROLLER)
                 .map(projectDevice -> {

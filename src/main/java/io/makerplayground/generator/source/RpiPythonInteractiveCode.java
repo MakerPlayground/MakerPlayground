@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -37,7 +36,7 @@ public class RpiPythonInteractiveCode {
     private RpiPythonInteractiveCode(Project project) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
-        this.projectDeviceGroup = project.getAllDevicesGroupBySameActualDevice();
+        this.projectDeviceGroup = project.getProjectDevicesGroupByActualDevice();
     }
 
     public static SourceCodeResult generateCode(Project project) {
@@ -133,7 +132,7 @@ public class RpiPythonInteractiveCode {
 
             List<String> args = new ArrayList<>();
 
-            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
+            DeviceConnection connection = project.getProjectConfiguration().getDeviceOrIdenticalDeviceConnection(projectDeviceList.get(0));
             if (connection != DeviceConnection.NOT_CONNECTED) {
                 Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
                 for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDeviceList.get(0))) {

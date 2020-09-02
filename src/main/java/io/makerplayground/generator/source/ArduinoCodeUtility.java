@@ -80,7 +80,7 @@ class ArduinoCodeUtility {
         return builder.toString();
     }
 
-    static String getInstanceVariablesCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean isInteractive) {
+    static String getInstanceVariablesCode(Project project, List<List<ProjectDevice>> projectDeviceGroups, boolean isInteractive) {
         StringBuilder builder = new StringBuilder();
         ProjectConfiguration configuration = project.getProjectConfiguration();
         // create cloud singleton variables
@@ -96,23 +96,23 @@ class ArduinoCodeUtility {
                     .append("(").append(String.join(", ", cloudPlatformParameterValues)).append(");").append(NEW_LINE);
         }
 
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            if (projectDeviceList.isEmpty()) {
+        for (List<ProjectDevice> group: projectDeviceGroups) {
+            if (group.isEmpty()) {
                 throw new IllegalStateException();
             }
-            Optional<ActualDevice> actualDeviceOptional = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDeviceList.get(0));
+            Optional<ActualDevice> actualDeviceOptional = configuration.getActualDeviceOrActualDeviceOfIdenticalDevice(group.get(0));
             if (actualDeviceOptional.isEmpty()) {
                 throw new IllegalStateException();
             }
             ActualDevice actualDevice = actualDeviceOptional.get();
             builder.append(actualDevice.getMpLibrary(project.getSelectedPlatform()))
-                    .append(" ").append(parseDeviceVariableName(projectDeviceList));
+                    .append(" ").append(parseDeviceVariableName(group));
             List<String> args = new ArrayList<>();
 
-            DeviceConnection connection = project.getProjectConfiguration().getDeviceConnection(projectDeviceList.get(0));
+            DeviceConnection connection = project.getProjectConfiguration().getDeviceOrIdenticalDeviceConnection(group.get(0));
             if (connection != DeviceConnection.NOT_CONNECTED) {
                 Map<Connection, Connection> connectionMap = connection.getConsumerProviderConnections();
-                for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(projectDeviceList.get(0))) {
+                for (Connection connectionConsume: actualDevice.getConnectionConsumeByOwnerDevice(group.get(0))) {
                     Connection connectionProvide = connectionMap.get(connectionConsume);
                     for (int i=connectionConsume.getPins().size()-1; i>=0; i--) {
                         Pin pinConsume = connectionConsume.getPins().get(i);
@@ -139,7 +139,7 @@ class ArduinoCodeUtility {
 
             // property for the generic device
             for (Property p : actualDevice.getProperty()) {
-                ProjectDevice projectDevice = configuration.getRootDevice(projectDeviceList.get(0));
+                ProjectDevice projectDevice = configuration.getRootDevice(group.get(0));
                 Object value = configuration.getPropertyValue(projectDevice, p);
                 if (value == null) {
                     throw new IllegalStateException("Property hasn't been set");

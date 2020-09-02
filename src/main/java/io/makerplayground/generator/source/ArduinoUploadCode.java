@@ -44,7 +44,7 @@ public class ArduinoUploadCode {
     final StringBuilder builder = new StringBuilder();
     private final List<Scene> allSceneUsed;
     private final List<Condition> allConditionUsed;
-    private final List<List<ProjectDevice>> projectDeviceGroup;
+    private final List<List<ProjectDevice>> projectDeviceGroups;
     private final List<Delay> allDelayUsed;
     private final Map<ProjectDevice, Set<Value>> valueUsed;
 
@@ -55,7 +55,7 @@ public class ArduinoUploadCode {
         this.allSceneUsed = Utility.takeScene(allNodeUsed);
         this.allConditionUsed = Utility.takeCondition(allNodeUsed);
         this.allDelayUsed = Utility.takeDelay(allNodeUsed);
-        this.projectDeviceGroup = project.getAllDeviceUsedGroupBySameActualDevice();
+        this.projectDeviceGroups = project.getProjectDevicesUsedGroupByActualDevice();
 
         // retrieve all project values
         this.valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
@@ -81,8 +81,8 @@ public class ArduinoUploadCode {
         generator.appendBeginRecentSceneFinishTime();
         generator.appendPointerVariables();
         generator.appendFunctionDeclaration();
-        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroup, false));
-        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroup, true, false));
+        generator.builder.append(getInstanceVariablesCode(project, generator.projectDeviceGroups, false));
+        generator.builder.append(getSetupFunctionCode(project, generator.projectDeviceGroups, true, false));
         generator.appendLoopFunction();
         generator.appendUpdateFunction();
         generator.appendBeginFunctions();
@@ -177,8 +177,8 @@ public class ArduinoUploadCode {
         }
 
         // allow all devices to perform their own tasks
-        for (List<ProjectDevice> projectDeviceList: projectDeviceGroup) {
-            builder.append(INDENT).append(parseDeviceVariableName(projectDeviceList)).append(".update(currentTime);").append(NEW_LINE);
+        for (List<ProjectDevice> group: projectDeviceGroups) {
+            builder.append(INDENT).append(parseDeviceVariableName(group)).append(".update(currentTime);").append(NEW_LINE);
         }
         builder.append(NEW_LINE);
 
@@ -471,7 +471,7 @@ public class ArduinoUploadCode {
     }
 
     private List<ProjectDevice> searchGroup(ProjectDevice projectDevice) {
-        Optional<List<ProjectDevice>> projectDeviceOptional = projectDeviceGroup.stream().filter(projectDeviceList -> projectDeviceList.contains(projectDevice)).findFirst();
+        Optional<List<ProjectDevice>> projectDeviceOptional = projectDeviceGroups.stream().filter(projectDeviceList -> projectDeviceList.contains(projectDevice)).findFirst();
         if (projectDeviceOptional.isEmpty()) {
             throw new IllegalStateException("Device that its value is used in the project must be exists in the device group.");
         }

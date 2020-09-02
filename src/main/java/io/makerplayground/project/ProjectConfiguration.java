@@ -844,6 +844,10 @@ public final class ProjectConfiguration {
         return deviceConnections.getOrDefault(projectDevice, DeviceConnection.NOT_CONNECTED);
     }
 
+    public DeviceConnection getDeviceOrIdenticalDeviceConnection(ProjectDevice projectDevice) {
+        return deviceConnections.getOrDefault(getRootDevice(projectDevice), DeviceConnection.NOT_CONNECTED);
+    }
+
     public void setCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName, String value) {
         if (!cloudParameterMap.containsKey(cloudPlatform)) {
             cloudParameterMap.put(cloudPlatform, new HashMap<>());
@@ -992,6 +996,15 @@ public final class ProjectConfiguration {
 
     public ReadOnlyObjectProperty<Platform> platformProperty() {
         return platform.getReadOnlyProperty();
+    }
+
+    public Optional<ProjectDevice> findFirstProjectDeviceWithDeviceConnection(List<ProjectDevice> projectDeviceList) {
+        for (ProjectDevice pd: projectDeviceList) {
+            if (this.getDeviceConnection(pd) != DeviceConnection.NOT_CONNECTED) {
+                return Optional.of(pd);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
