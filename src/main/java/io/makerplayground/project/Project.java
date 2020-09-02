@@ -488,15 +488,19 @@ public class Project {
                 // No device in Begin Scene
             } else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
-                temp.getSetting().forEach(s->{
-                    deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsedByActualProjectDevice().keySet());
+                temp.getAllSettings().forEach(s->{
+                    if (!(s.getDevice() instanceof VirtualProjectDevice)) {
+                        deviceUsed.add(s.getDevice());
+                    }
+                    deviceUsed.addAll(s.getNonVirtualProjectDevicesValueUsed().keySet());
                 });
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
-                temp.getSetting().forEach(s->{
-                    deviceUsed.add(s.getDevice());
-                    deviceUsed.addAll(s.getAllValueUsedByActualProjectDevice().keySet());
+                temp.getAllSettings().forEach(s->{
+                    if (!(s.getDevice() instanceof VirtualProjectDevice)) {
+                        deviceUsed.add(s.getDevice());
+                    }
+                    deviceUsed.addAll(s.getNonVirtualProjectDevicesValueUsed().keySet());
                 });
             }
             visited.add(current);
@@ -526,13 +530,13 @@ public class Project {
                 // No Value in Begin Scene
             } else if (current instanceof Scene) {
                 Scene temp = (Scene) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsedByActualProjectDevice(dataType).forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getNonVirtualProjectDevicesValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
             } else if (current instanceof Condition) {
                 Condition temp = (Condition) current;
-                temp.getSetting().forEach(s-> s.getAllValueUsedByActualProjectDevice(dataType).forEach((key, value) -> {
+                temp.getSetting().forEach(s-> s.getNonVirtualProjectDevicesValueUsed(dataType).forEach((key, value) -> {
                     allValueUsed.putIfAbsent(key, new HashSet<>());
                     allValueUsed.get(key).addAll(value);
                 }));
@@ -767,7 +771,7 @@ public class Project {
                             actionCompatibility.get(projectDevice).get(action).put(parameter, newConstraint);
                         }
                     });
-                    s.getAllValueUsedByActualProjectDevice().forEach((projectDevice1, values) -> {
+                    s.getNonVirtualProjectDevicesValueUsed().forEach((projectDevice1, values) -> {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }
@@ -797,7 +801,7 @@ public class Project {
                             conditionCompatibility.get(projectDevice).get(condition).put(parameter, newConstraint);
                         }
                     });
-                    s.getAllValueUsedByActualProjectDevice().forEach((projectDevice1, values) -> {
+                    s.getNonVirtualProjectDevicesValueUsed().forEach((projectDevice1, values) -> {
                         if (valueCompatibility.containsKey(projectDevice1)) {
                             valueCompatibility.get(projectDevice1).addAll(values);
                         }

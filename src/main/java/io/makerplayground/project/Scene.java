@@ -55,7 +55,7 @@ public class Scene extends NodeElement {
         this.name = name;
         // fire update event when actionProperty is invalidated / changed
         this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof ProjectDevice && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
         this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(this.allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
         this.allSettings.addAll(allSettings);
     }
@@ -64,7 +64,7 @@ public class Scene extends NodeElement {
         super(s.getTop(), s.getLeft(), s.getWidth(), s.getHeight(), project);
         this.name = name;
         this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.actionProperty()});
-        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof ProjectDevice && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
         this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
         for (UserSetting u : s.allSettings) {
             this.allSettings.add(new UserSetting(u));
@@ -74,9 +74,8 @@ public class Scene extends NodeElement {
     public void addDevice(ProjectDevice device) {
         if (device.getGenericDevice().getAction().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have action.");
-        } else {
-            allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
         }
+        allSettings.add(new UserSetting(project, device, device.getGenericDevice().getAction().get(0)));
         project.invalidateDiagram();
     }
 

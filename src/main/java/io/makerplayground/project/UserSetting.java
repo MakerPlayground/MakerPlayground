@@ -51,8 +51,8 @@ public class UserSetting {
     private final ReadOnlyObjectWrapper<Condition> condition;
 
     // TODO: previous implementation of allValueUsed ignore value from Memory device which is confusing and incorrect when the caller expect all values so we create a new property and retain old one for compatibility before refactoring in the future
-    private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allValueUsedByActualProjectDevice = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
-    private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allValueUsedByAllDevices = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
+    private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allNonVirtualProjectDeviceValueUsed = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
+    private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allValueUsed = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
 
     @Getter private final ObservableMap<Parameter, Expression> parameterMap;
     @Getter private final ObservableMap<Value, Expression> expression;
@@ -88,8 +88,8 @@ public class UserSetting {
     }
 
     private void updateAllValueUsed() {
-        allValueUsedByActualProjectDevice.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), false));
-        allValueUsedByAllDevices.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), true));
+        allNonVirtualProjectDeviceValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), false));
+        allValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), true));
     }
 
     public UserSetting(Project project, ProjectDevice device, Action supportingAction) {
@@ -287,18 +287,18 @@ public class UserSetting {
             }
         }
 
-        // list value use in every enable expression in a condition
-        if (includeVirtualDevice || !(getDevice() instanceof VirtualProjectDevice)) { // TODO: why we need to exclude for virtual device
-            for (Value v : expression.keySet()) {
-                // skip if this expression is disabled
-                if (expressionEnable.get(v)) {
-                    Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
-                    for (ProjectValue pv : valueUsed) {
-                        if (result.containsKey(pv.getDevice())) {
-                            result.get(pv.getDevice()).add(pv.getValue());
-                        } else {
-                            result.put(pv.getDevice(), new HashSet<>(Set.of(pv.getValue())));
-                        }
+        for (Value v : expression.keySet()) {
+            // skip if this expression is disabled
+            if (expressionEnable.get(v)) {
+                Set<ProjectValue> valueUsed = expression.get(v).getValueUsed();
+                for (ProjectValue pv : valueUsed) {
+                    if (pv.getDevice() instanceof VirtualProjectDevice && !includeVirtualDevice) {
+                        continue;
+                    }
+                    if (result.containsKey(pv.getDevice())) {
+                        result.get(pv.getDevice()).add(pv.getValue());
+                    } else {
+                        result.put(pv.getDevice(), new HashSet<>(Set.of(pv.getValue())));
                     }
                 }
             }
@@ -307,28 +307,24 @@ public class UserSetting {
         return result;
     }
 
-    public Map<ProjectDevice, Set<Value>> getAllValueUsedByActualProjectDevice() {
-        return allValueUsedByActualProjectDevice.get();
+    public Map<ProjectDevice, Set<Value>> getNonVirtualProjectDevicesValueUsed() {
+        return allNonVirtualProjectDeviceValueUsed.get();
     }
 
-    public Map<ProjectDevice, Set<Value>> getAllValueUsedByActualProjectDevice(Set<DataType> dataType) {
+    public Map<ProjectDevice, Set<Value>> getNonVirtualProjectDevicesValueUsed(Set<DataType> dataType) {
         return calculateAllValueUsed(dataType, false);
     }
 
-    public ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedByActualProjectDeviceProperty() {
-        return allValueUsedByActualProjectDevice.getReadOnlyProperty();
+    public Map<ProjectDevice, Set<Value>> getAllValueUsed() {
+        return allValueUsed.get();
     }
 
-    public Map<ProjectDevice, Set<Value>> getAllValueUsedByAllDevice() {
-        return allValueUsedByAllDevices.get();
-    }
-
-    public Map<ProjectDevice, Set<Value>> getAllValueUsedByAllDevice(Set<DataType> dataType) {
+    public Map<ProjectDevice, Set<Value>> getAllValueUsed(Set<DataType> dataType) {
         return calculateAllValueUsed(dataType, true);
     }
 
     public ReadOnlyObjectProperty<Map<ProjectDevice, Set<Value>>> allValueUsedByAllDeviceProperty() {
-        return allValueUsedByAllDevices.getReadOnlyProperty();
+        return allValueUsed.getReadOnlyProperty();
     }
 
     public boolean isDataBindingUsed() {

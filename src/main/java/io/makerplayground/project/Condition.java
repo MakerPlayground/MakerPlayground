@@ -21,57 +21,51 @@ import io.makerplayground.device.shared.Parameter;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.project.expression.Expression;
 import io.makerplayground.project.expression.NumberInRangeExpression;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+
 import java.util.List;
 import java.util.Objects;
 
 @JsonSerialize(using = ConditionSerializer.class)
 public class Condition extends NodeElement {
+    private final ObservableList<UserSetting> allSettings;
     private final ObservableList<UserSetting> setting;
-    private final ObservableList<UserSetting> unmodifiableSetting;
     private final ObservableList<UserSetting> virtualSetting;
-    private final ObservableList<UserSetting> unmodifiableVirtualSetting;
 
     Condition(String name, Project project) {
         super(20,20,118,75, project);
 
         this.name = name;
-        this.setting = FXCollections.observableArrayList();
-        this.virtualSetting = FXCollections.observableArrayList();
-
-        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(setting);
-        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(virtualSetting);
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.conditionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
     }
 
     public Condition(double top, double left, double width, double height
-            , String name, List<UserSetting> setting, List<UserSetting> virtualSetting, Project project) {
+            , String name, List<UserSetting> setting, Project project) {
         // TODO: ignore width and height field to prevent line from drawing incorrectly when read file from old version as condition can't be resized anyway
         super(top, left, 118, 75, project);
 
         this.name = name;
-        this.setting = FXCollections.observableArrayList(setting);
-        this.virtualSetting = FXCollections.observableArrayList(virtualSetting);
-
-        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
-        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.conditionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
+        this.allSettings.addAll(setting);
     }
 
     public Condition(Condition c, String name, Project project) {
         super(c.getTop(), c.getLeft(), c.getWidth(), c.getHeight(), project);
 
         this.name = name;
-        this.setting = FXCollections.observableArrayList();
-        for (UserSetting u : c.setting) {
-            this.setting.add(new UserSetting(u));
+        this.allSettings = FXCollections.observableArrayList(item -> new Observable[]{item.conditionProperty()});
+        this.setting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() != null && !(userSetting.getDevice() instanceof VirtualProjectDevice)));
+        this.virtualSetting = FXCollections.unmodifiableObservableList(new FilteredList<>(allSettings, userSetting -> userSetting.getDevice() instanceof VirtualProjectDevice));
+        for (UserSetting u : c.allSettings) {
+            this.allSettings.add(new UserSetting(u));
         }
-        this.virtualSetting = FXCollections.observableArrayList();
-        for (UserSetting u : c.virtualSetting) {
-            this.virtualSetting.add(new UserSetting(u));
-        }
-
-        this.unmodifiableSetting = FXCollections.unmodifiableObservableList(this.setting);
-        this.unmodifiableVirtualSetting = FXCollections.unmodifiableObservableList(this.virtualSetting);
     }
 
     @Override
@@ -83,9 +77,8 @@ public class Condition extends NodeElement {
     public void addDevice(ProjectDevice device) {
         if (device.getGenericDevice().getCondition().isEmpty()) {
             throw new IllegalStateException(device.getGenericDevice().getName() + " needs to have condition.");
-        } else {
-            setting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         }
+        allSettings.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         project.invalidateDiagram();
     }
 
@@ -93,17 +86,17 @@ public class Condition extends NodeElement {
         if (!VirtualProjectDevice.getDevices().contains(device)) {
             throw new IllegalStateException("Device to be added is not a virtual device");
         }
-        virtualSetting.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
+        allSettings.add(new UserSetting(project, device, device.getGenericDevice().getCondition().get(0)));
         project.invalidateDiagram();
     }
 
     public void removeDevice(ProjectDevice device) {
-        for (int i = setting.size() - 1; i >= 0; i--) {
-            if (setting.get(i).getDevice() == device) {
-                setting.remove(i);
+        for (int i = allSettings.size() - 1; i >= 0; i--) {
+            if (allSettings.get(i).getDevice() == device) {
+                allSettings.remove(i);
             }
         }
-        for (UserSetting userSetting : setting) {
+        for (UserSetting userSetting : allSettings) {
             for (Parameter parameter : userSetting.getParameterMap().keySet()) {
                 Expression expression = userSetting.getParameterMap().get(parameter);
                 if (expression.getTerms().stream().anyMatch(term -> term.getValue() instanceof ProjectValue
@@ -122,22 +115,25 @@ public class Condition extends NodeElement {
     }
 
     public void removeUserSetting(UserSetting userSetting) {
-        setting.remove(userSetting);
-        virtualSetting.remove(userSetting);
+        allSettings.remove(userSetting);
         project.invalidateDiagram();
     }
 
+    public ObservableList<UserSetting> getAllSettings() {
+        return FXCollections.unmodifiableObservableList(allSettings);
+    }
+
     public ObservableList<UserSetting> getSetting() {
-        return unmodifiableSetting;
+        return FXCollections.unmodifiableObservableList(setting);
     }
 
     public ObservableList<UserSetting> getVirtualDeviceSetting() {
-        return unmodifiableVirtualSetting;
+        return FXCollections.unmodifiableObservableList(virtualSetting);
     }
 
     @Override
     protected DiagramError checkError() {
-        if (setting.isEmpty() && virtualSetting.isEmpty()) {
+        if (allSettings.isEmpty()) {
             return DiagramError.CONDITION_EMPTY;
         }
 

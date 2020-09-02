@@ -46,12 +46,6 @@ public class ConditionDeserializer extends JsonDeserializer<Condition> {
         String name = node.get("name").asText();
 
         List<UserSetting> settings = mapper.readValue(node.get("setting").traverse(), new TypeReference<List<UserSetting>>() {});
-        List<UserSetting> deviceSettings = settings.stream()
-                .filter(setting -> project.getUnmodifiableProjectDevice().contains(setting.getDevice()))
-                .collect(Collectors.toUnmodifiableList());
-        List<UserSetting> virtualDeviceSettings = settings.stream()
-                .filter(setting -> VirtualProjectDevice.getDevices().contains(setting.getDevice()))
-                .collect(Collectors.toUnmodifiableList());
 
         JsonNode positionNode = node.get("position");
         double top = positionNode.get("top").asDouble();
@@ -59,6 +53,6 @@ public class ConditionDeserializer extends JsonDeserializer<Condition> {
         double width = positionNode.get("width").asDouble();
         double height = positionNode.get("height").asDouble();
 
-        return new Condition(top, left, width, height, name, deviceSettings, virtualDeviceSettings, project);
+        return new Condition(top, left, width, height, name, settings, project);
     }
 }

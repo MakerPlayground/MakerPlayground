@@ -19,11 +19,9 @@ package io.makerplayground.project.expression;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
-import javafx.beans.binding.StringExpression;
 
 import java.util.ArrayList;
 import java.util.Collections;
