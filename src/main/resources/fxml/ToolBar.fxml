@@ -117,8 +117,8 @@
                 <Label fx:id="portLabel" text="Upload Method" />
                 <ComboBox id="portComboBox" fx:id="portComboBox" />
 <!--                <Button id="deviceMonitorMenuButton" fx:id="deviceMonitorMenuButton" prefHeight="30.0" prefWidth="30.0" />-->
-                <Button id="interactiveButton" fx:id="interactiveButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
-                <Button id="uploadButton" fx:id="uploadButton" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
+                <Button id="interactiveButton" fx:id="interactiveButton" text="Preview" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
+                <Button id="uploadButton" fx:id="uploadButton" text="Upload" maxHeight="30" mnemonicParsing="false" prefHeight="30"/>
                 <Separator fx:id="separator" orientation="VERTICAL" prefHeight="200.0">
                     <padding>
                         <Insets bottom="7.0" top="7.0"/>

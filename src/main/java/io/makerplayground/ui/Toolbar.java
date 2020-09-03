@@ -250,7 +250,7 @@ public class Toolbar extends AnchorPane {
         Tooltip interactiveButtonTooltip = new Tooltip();
         interactiveButtonTooltip.setShowDelay(Duration.millis(250));
         interactiveButtonTooltip.textProperty().bind(Bindings.when(startingInteractiveMode.or(interactiveModeInitialize))
-                .then("Stop interactive mode").otherwise("Start interactive mode"));
+                .then("Stop preview mode").otherwise("Start preview mode"));
         interactiveButton.setTooltip(interactiveButtonTooltip);
 
         ReadOnlyBooleanProperty useHwSerialProperty = project.get().getProjectConfiguration().useHwSerialProperty();

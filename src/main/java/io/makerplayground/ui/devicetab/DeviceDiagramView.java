@@ -80,7 +80,7 @@ public class DeviceDiagramView extends VBox {
                 .then(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_WARNING_COLOR, 5, 0.5, 0, 0))
                 .otherwise(new DropShadow(BlurType.GAUSSIAN, INTERACTIVE_RUNNING_COLOR, 5, 0.5, 0, 0)));
         interactiveStatusLabel.textProperty().bind(Bindings.when(project.getInteractiveModel().needReinitializeProperty())
-                .then("Some devices need initialize").otherwise("Interactive mode is running"));
+                .then("Some devices need initialize").otherwise("Preview mode is running"));
         readingEveryHBox.disableProperty().bind(readSensorToggle.selectedProperty().not());
         readSensorToggle.selectedProperty().bindBidirectional(project.getInteractiveModel().sensorReadingProperty());
         readSensorToggle.setGraphicTextGap(0);

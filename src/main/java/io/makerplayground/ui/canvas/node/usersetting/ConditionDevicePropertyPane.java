@@ -145,7 +145,7 @@ public class ConditionDevicePropertyPane extends VBox {
                 valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
                         .then(Bindings.concat("(").concat(conditionProperty.get().asString()).concat(")"))
                         .otherwise("(status unavailable)"));
-                Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
+                Tooltip tooltip = new Tooltip("Restart the preview mode to see realtime value");
                 tooltip.setShowDelay(Duration.millis(250));
                 valueLabel.tooltipProperty().bind(Bindings.when(deviceValidBinding).then((Tooltip) null).otherwise(tooltip));
             } else {
