@@ -17,6 +17,8 @@
 package io.makerplayground.ui.canvas.node.expression;
 
 import io.makerplayground.device.shared.Unit;
+import io.makerplayground.device.shared.Value;
+import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.ConditionalExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
@@ -36,6 +38,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +75,7 @@ public class CustomConditionalExpressionControl extends VBox {
     }
 
     private void createExpressionRowControl(ConditionalExpression.Entry entry) {
-        EntryView entryView = new EntryView(entry, projectValues, unit);
+        EntryView entryView = new EntryView(entry, projectValues, expression.getValue().getValue(), unit);
         entryView.setOnRemoveButtonPressed(event -> {
             expression.get().getEntries().remove(entry);
             getChildren().remove(entryView);
@@ -109,11 +112,11 @@ public class CustomConditionalExpressionControl extends VBox {
     }
 
     private static class EntryView extends HBox {
-
+        private static final DecimalFormat df = new DecimalFormat("#,###.###");
         private ImageView removeImageView;
         private Label operatorLabel;
 
-        public EntryView(ConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues, Unit unit) {
+        public EntryView(ConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues, Value value, Unit unit) {
             ComboBox<Operator> operatorComboBox = new ComboBox<>(FXCollections.observableArrayList(Operator.getComparisonOperator()));
             if (entry.getOperator() != null) {
                 operatorComboBox.setValue(entry.getOperator());
@@ -123,9 +126,23 @@ public class CustomConditionalExpressionControl extends VBox {
             NumericChipField chipField = new NumericChipField(entry.getExpression(), projectValues);
             chipField.expressionProperty().addListener((observable, oldValue, newValue) -> entry.setExpression(newValue));
 
-            Label unitLabel = new Label(unit.toString());
-            unitLabel.setMinHeight(25);
-            unitLabel.managedProperty().bind(unitLabel.visibleProperty());
+            NumericConstraint constraint = (NumericConstraint) value.getConstraint();
+            String minValue;
+            if (constraint.getMin() == -Double.MAX_VALUE || constraint.getMin() == Integer.MIN_VALUE) {
+                minValue = "-\u221E";
+            } else {
+                minValue = df.format(constraint.getMin());
+            }
+            String maxValue;
+            if (constraint.getMax() == Double.MAX_VALUE || constraint.getMax() == Integer.MAX_VALUE) {
+                maxValue = "\u221E";
+            } else {
+                maxValue = df.format(constraint.getMax());
+            }
+            String rangeString = "(" + minValue + " - " + maxValue + ")";
+            Label infoLabel = new Label(unit == Unit.NOT_SPECIFIED ? rangeString : unit.toString() + " " + rangeString);
+            infoLabel.setMinHeight(25);
+            infoLabel.managedProperty().bind(infoLabel.visibleProperty());
 
             operatorLabel = new Label("and");
             operatorLabel.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
@@ -139,7 +156,7 @@ public class CustomConditionalExpressionControl extends VBox {
 
             setAlignment(Pos.TOP_LEFT);
             setSpacing(5);
-            getChildren().addAll(operatorComboBox, chipField, unitLabel, removeImageView, operatorLabel);
+            getChildren().addAll(operatorComboBox, chipField, infoLabel, removeImageView, operatorLabel);
         }
 
         void setOnRemoveButtonPressed(EventHandler<MouseEvent> e) {

@@ -65,7 +65,7 @@ public class MultiFunctionNumericControl extends HBox {
         } else {
             maxValue = String.valueOf(p.getMaximumValue());
         }
-        Label rangeLabel = new Label("(" + minValue + ", " + maxValue + ")");
+        Label rangeLabel = new Label("(" + minValue + " - " + maxValue + ")");
         rangeLabel.setMinHeight(27);
         getChildren().add(rangeLabel);
 
