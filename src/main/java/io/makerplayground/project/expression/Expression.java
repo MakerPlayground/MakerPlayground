@@ -19,6 +19,7 @@ package io.makerplayground.project.expression;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.Record; // this line is mandatory to prevent ambiguous reference with the JDK14 Record class
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
