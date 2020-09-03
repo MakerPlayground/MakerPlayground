@@ -105,13 +105,7 @@ public class UserSetting {
         for (Value v : device.getGenericDevice().getValue()) {
             expressionEnable.put(v, false);
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                NumericConstraint constraint = (NumericConstraint) v.getConstraint();
-                boolean customExpressionOnly = (constraint.getMin() == -Double.MAX_VALUE || constraint.getMin() == Integer.MIN_VALUE || constraint.getMax() == Double.MAX_VALUE || constraint.getMax() == Integer.MAX_VALUE);
-                if (customExpressionOnly) {
-                    expression.put(v, new ConditionalExpression(device, v));
-                } else {
-                    expression.put(v, new NumberInRangeExpression(device, v));
-                }
+                expression.put(v, new ConditionalExpression(device, v));
             }
         }
 

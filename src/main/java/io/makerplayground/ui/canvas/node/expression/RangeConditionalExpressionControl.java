@@ -33,7 +33,7 @@ import javafx.util.StringConverter;
 
 import java.text.DecimalFormat;
 
-public class SimpleConditionalExpressionControl extends HBox {
+public class RangeConditionalExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<NumberInRangeExpression> expression;
     private final Value value;
 
@@ -57,7 +57,7 @@ public class SimpleConditionalExpressionControl extends HBox {
         }
     };
 
-    public SimpleConditionalExpressionControl(NumberInRangeExpression expression, Value value) {
+    public RangeConditionalExpressionControl(NumberInRangeExpression expression, Value value) {
         this.expression = new ReadOnlyObjectWrapper<>(expression);
         this.value = value;
         initView();
