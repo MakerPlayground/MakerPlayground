@@ -23,6 +23,8 @@ import io.makerplayground.ui.canvas.node.expression.numberwithunit.RangeSliderWi
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,6 +40,7 @@ public class SimpleConditionalExpressionControl extends HBox {
     private final RangeSliderWithOperator rangeSlider = new RangeSliderWithOperator();
     private final TextField lowTextField = new TextField();
     private final TextField highTextField = new TextField();
+    private final Label unitLabel = new Label();
 
     private final DecimalFormat df = new DecimalFormat("0.####");
 
@@ -131,8 +134,13 @@ public class SimpleConditionalExpressionControl extends HBox {
             }
         });
 
+        unitLabel.setMinWidth(15);
+        unitLabel.setMinHeight(25);
+        unitLabel.setText(expression.getValue().getUnit().toString());
+
         setSpacing(5);
-        getChildren().addAll(lowTextField, rangeSlider, highTextField);
+        setAlignment(Pos.TOP_LEFT);
+        getChildren().addAll(lowTextField, rangeSlider, highTextField, unitLabel);
     }
 
     private void updateExpression() {

@@ -38,7 +38,7 @@ public enum Unit {
 
         switch (this) {
             case TIME: return "Time";
-            case METERPERSECSQUARE: return "m/s^2";
+            case METERPERSECSQUARE: return "m/s\u00B2";
             case HECTOPASCAL: return "hPa";
             case METER: return "m";
             case CELSIUS: return DEGREE + "C";
@@ -53,7 +53,7 @@ public enum Unit {
             case KILOGRAM: return "kg";
             case DEGREE: return DEGREE;
             case AMPERE: return "Amp";
-            case MICROGRAMS_PER_CUBIC_METER: return "mg/m^3";
+            case MICROGRAMS_PER_CUBIC_METER: return "mg/m\u00B3";
             case VOLT: return "V";
             case WATT: return "W";
             case VOLT_AMPERE: return "VA";
