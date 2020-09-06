@@ -20,6 +20,8 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
 import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +37,7 @@ public class ProjectValueChip extends Chip<ProjectValue> {
 
     @FXML private ComboBox<ProjectValue> comboBox;
     @FXML private Rectangle background;
+    private InvalidationListener choiceInvalidateListener;
 
     private static final String TEXT_CSS = "-fx-font-size: 10; -fx-fill: white; -fx-font-weight: bold; -fx-text-alignment: center;";
     private static final String COMBOBOX_LISTVIEW_TEXT_CSS = "-fx-font-size: 10; -fx-text-alignment: center;";
@@ -55,7 +58,9 @@ public class ProjectValueChip extends Chip<ProjectValue> {
             e.printStackTrace();
         }
 
-        comboBox.itemsProperty().set(getChoices());
+        comboBox.setItems(FXCollections.observableArrayList(getChoices()));
+        choiceInvalidateListener = observable -> comboBox.setItems(FXCollections.observableArrayList(getChoices()));
+        getChoices().addListener(new WeakInvalidationListener(choiceInvalidateListener));
         if (getValue() != null) {
             comboBox.setValue(getValue());
         }
@@ -95,13 +100,6 @@ public class ProjectValueChip extends Chip<ProjectValue> {
 
         // update width of the background based on the combobox width
         layoutBoundsProperty().addListener((observable, oldValue, newValue) -> background.setWidth(newValue.getWidth()));
-
-        getChoices().addListener((InvalidationListener) c -> {
-            ProjectValue selectedValue = comboBox.getSelectionModel().getSelectedItem();
-            if (!comboBox.getItems().contains(selectedValue)) {
-                comboBox.getSelectionModel().clearSelection();
-            }
-        });
     }
 
     @Override
