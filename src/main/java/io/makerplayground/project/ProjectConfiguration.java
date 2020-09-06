@@ -998,15 +998,6 @@ public final class ProjectConfiguration {
         return platform.getReadOnlyProperty();
     }
 
-    public Optional<ProjectDevice> findFirstProjectDeviceWithDeviceConnection(List<ProjectDevice> projectDeviceList) {
-        for (ProjectDevice pd: projectDeviceList) {
-            if (this.getDeviceConnection(pd) != DeviceConnection.NOT_CONNECTED) {
-                return Optional.of(pd);
-            }
-        }
-        return Optional.empty();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
