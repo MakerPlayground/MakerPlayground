@@ -81,6 +81,7 @@ public class Project {
 
     private final ObservableList<ProjectValue> variables;
     private final ObservableList<ProjectValue> unmodifiableVariables;
+    private final Map<Set<DataType>, ObservableList<ProjectValue>> availableValue;  // cache the list binding to avoid unnecessary computation
 
     private static final Pattern sceneNameRegex = Pattern.compile("Scene\\d+");
     private static final Pattern beginNameRegex = Pattern.compile("Begin\\d+");
@@ -121,6 +122,8 @@ public class Project {
 
         this.variables = FXCollections.observableArrayList();
         this.unmodifiableVariables = FXCollections.unmodifiableObservableList(variables);
+
+        this.availableValue = new HashMap<>();
 
         this.projectConfiguration = new ProjectConfiguration(Platform.ARDUINO_AVR8);
         this.interactiveModel = new InteractiveModel(this);
@@ -397,6 +400,10 @@ public class Project {
     }
 
     public ObservableList<ProjectValue> getAvailableValue(Set<DataType> dataType) {
+        return availableValue.computeIfAbsent(dataType, this::createAvailableValueListBinding);
+    }
+
+    public ObservableList<ProjectValue> createAvailableValueListBinding(Set<DataType> dataType) {
         return new ListBinding<>() {
             {
                 bind(devices);
