@@ -480,10 +480,10 @@ public class ArduinoUploadCode {
 
     private String parseExpressionForParameter(Parameter parameter, Expression expression) {
         String returnValue;
-        String exprStr = parseTerms(expression.getTerms());
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
+            String exprStr = parseTerms(expression.getTerms());
             returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -498,16 +498,19 @@ public class ArduinoUploadCode {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
+            String exprStr = parseTerms(expression.getTerms());
             returnValue = "constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
+            String exprStr = parseTerms(expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(searchGroup(projectValue.getDevice())) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
+            String exprStr = parseTerms(expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ComplexStringExpression) {
             List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
@@ -536,7 +539,7 @@ public class ArduinoUploadCode {
         } else if (expression instanceof StringIntegerExpression) {
             returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
         } else if (expression instanceof DotMatrixExpression) {
-            returnValue = ((DotMatrixExpression) expression).getDotMatrix().getBase16String();
+            returnValue = "\"" + ((DotMatrixExpression) expression).getDotMatrix().getBase16String() + "\"";
         } else if (expression instanceof VariableExpression) {
             returnValue = ((VariableExpression) expression).getVariableName();
         } else {
