@@ -28,6 +28,7 @@ public enum Platform {
     ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino", List.of(UploadMode.SERIAL_PORT)),
     ARDUINO_ATSAMD21("Arduino (Atmel SAMD21)", "arduino", List.of(UploadMode.SERIAL_PORT)),
     ARDUINO_ATSAMD51("Arduino (Atmel SAMD51)", "arduino", List.of(UploadMode.SERIAL_PORT)),
+    MICROPYTHON("MicroPython", "micropython", List.of(UploadMode.SERIAL_PORT)),
     RASPBERRYPI("Raspberry Pi", "raspberrypi", List.of(UploadMode.RPI_ON_NETWORK));
 
     Platform(String displayName, String libFolderName, List<UploadMode> supportUploadModes) {
