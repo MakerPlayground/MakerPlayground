@@ -35,18 +35,7 @@ public class PathUtility {
     // program installation directory
     static public final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
 
-    /**
-     * Get command for executing platformio
-     * @return command for executing platformio on the current platform or Optional.empty()
-     */
-    public static Optional<List<String>> getPlatformIOCommand() {
-        List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
-                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
-                List.of("python", "-m", "platformio"),          // default python in user's system path
-                List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
-        );
-
+    private static Optional<List<String>> tryCommand(List<List<String>> command) {
         for (List<String> c : command) {
             try {
                 Process p = new ProcessBuilder(c).redirectErrorStream(true).start();
@@ -66,6 +55,34 @@ public class PathUtility {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Get command for executing platformio
+     * @return command for executing platformio on the current platform or Optional.empty()
+     */
+    public static Optional<List<String>> getPlatformIOCommand() {
+        List<List<String>> command = List.of(
+                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
+                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
+                List.of("python", "-m", "platformio"),          // default python in user's system path
+                List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
+        );
+        return tryCommand(command);
+    }
+
+    /**
+     * Get command for executing Adafruit MicroPython Tool (ampy)
+     * @return command for executing ampy on the current platform or Optional.empty()
+     */
+    public static Optional<List<String>> getAmpyCommand() {
+        List<List<String>> command = List.of(
+                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "ampy.cli"),     // integrated python of our windows installer
+                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/ampy"),   // virtualenv created by official platformio installation script
+                List.of("python", "-m", "ampy.cli"),          // default python in user's system path
+                List.of("/usr/bin/python", "-m", "ampy.cli")  // internal python of macOS and Linux
+        );
+        return tryCommand(command);
     }
 
     /**
