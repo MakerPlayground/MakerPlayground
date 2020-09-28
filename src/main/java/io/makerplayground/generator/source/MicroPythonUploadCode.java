@@ -102,7 +102,7 @@ public class MicroPythonUploadCode {
     private void appendHeader() {
         builder.append("import sys").append(NEW_LINE);
         builder.append("import utime").append(NEW_LINE);
-        builder.append("import MakerPlayground.MakerPlayground as mp").append(NEW_LINE);
+        builder.append("import MakerPlayground as mp").append(NEW_LINE);
 
         // generate include
         Stream<String> device_libs = project.getAllDeviceUsed().stream()
@@ -166,10 +166,10 @@ public class MicroPythonUploadCode {
                 if (!valueUsed.get(projectDevice).isEmpty()) {
                     builder.append(INDENT).append(INDENT).append("mp.PR_VAL(\"").append(projectDevice.getName()).append("\")").append(NEW_LINE);
                     builder.append(INDENT).append(INDENT).append(valueUsed.get(projectDevice).stream()
-                            .map(value -> "print(\"" + value.getName() + "=" + parseValueVariableTerm(searchGroup(projectDevice), value) + "\", end='')")
+                            .map(value -> "print(\"" + value.getName() + "=\" + str(" + parseValueVariableTerm(searchGroup(projectDevice), value) + "), end='')")
                             .collect(Collectors.joining(NEW_LINE + INDENT + INDENT + "print(\",\", end='')" + NEW_LINE + INDENT + INDENT)));
                     builder.append(NEW_LINE);
-                    builder.append("mp.PR_END()").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append("mp.PR_END()").append(NEW_LINE);
                 }
             }
 
@@ -420,11 +420,11 @@ public class MicroPythonUploadCode {
                             throw new IllegalStateException("Connection to multiple scene from the same source is not allowed");
                         }
                         Scene s = nextScene.get(0);
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(s)).append(NEW_LINE);
                     } else if (!nextCondition.isEmpty() || !nextDelay.isEmpty()) {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(condition)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseConditionFunctionName(condition)).append(NEW_LINE);
                     } else {
-                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(";").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append(parsePointerName(root)).append(" = ").append(parseNodeFunctionName(root)).append(NEW_LINE);
                     }
                 }
             }
