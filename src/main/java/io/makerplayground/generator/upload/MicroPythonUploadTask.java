@@ -31,6 +31,7 @@ import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipResourceExtractor;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -161,12 +162,23 @@ public class MicroPythonUploadTask extends UploadTaskBase {
         }
         Platform.runLater(() -> log.set("Using libraries stored at " + libraryPath.get() + "\n"));
 
+        // copy board specific files
+        File codeDir = Paths.get(libraryPath.get(), "devices", project.getProjectConfiguration().getController().getId(), "code").toFile();
+        Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        Platform.runLater(() -> log.set("Board specific files found : " + boardSpecificFiles + "\n"));
+        try {
+            FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
+        } catch (IOException e) {
+            updateMessage("Error: Cannot write code to project directory");
+            return UploadResult.CANT_WRITE_CODE;
+        }
+
         // copy mp library
         for (String libName: mpLibraries) {
             File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
-            File destination = Paths.get(projectPath, libName).toFile();
+            File destination = new File(projectPath);
             try {
-                FileUtils.copyDirectory(source, destination);
+                FileUtils.copyToDirectory(FileUtils.listFiles(source, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE), destination);
             } catch (IOException e) {
                 Platform.runLater(() -> log.set("Error: Missing some libraries (" + libName + ")\n"));
                 updateMessage("Error: Missing some libraries");
@@ -192,9 +204,24 @@ public class MicroPythonUploadTask extends UploadTaskBase {
         SerialPort serialPort = uploadTarget.getSerialPort();
         String serialPortName = OSInfo.getOs() == OSInfo.OS.WINDOWS ? serialPort.getSystemPortName() : "/dev/" + serialPort.getSystemPortName();
 
-        // list all files and directory
-        List<String> fileList = new ArrayList<>();
-        UploadResult result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls")
+        List<String> fileList;
+        UploadResult result;
+
+        // get flash directory prefix (None for ESP32, /flash for K210 etc.)
+        String prefix = "";
+        fileList = new ArrayList<>();
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls")
+                , false, "Error: Can't list file/directory on the board", UploadResult.CANT_FIND_BOARD, fileList);
+        if (result != UploadResult.OK) {
+            return result;
+        }
+        if (fileList.contains("/flash")) {
+            prefix = "/flash";
+        }
+
+        // list and delete all files and directory
+        fileList = new ArrayList<>();
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls", prefix)
                 , false, "Error: Can't list file/directory on the board", UploadResult.CANT_FIND_BOARD, fileList);
         if (result != UploadResult.OK) {
             return result;
@@ -205,7 +232,7 @@ public class MicroPythonUploadTask extends UploadTaskBase {
         }
 
         fileList = new ArrayList<>();
-        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls")
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls", prefix)
                 , false, "Error: Can't list file/directory on the board", UploadResult.CANT_FIND_BOARD, fileList);
         if (result != UploadResult.OK) {
             return result;
@@ -220,7 +247,9 @@ public class MicroPythonUploadTask extends UploadTaskBase {
         try {
             Path uploadingDir = Path.of(projectPath);
             for (Path path : Files.list(uploadingDir).collect(Collectors.toList())) {
-                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "put", uploadingDir.relativize(path).toString())
+                String sourcePath = uploadingDir.relativize(path).toString();
+                String destPath = prefix.isEmpty() ? sourcePath : prefix + "/" + sourcePath;
+                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "put", sourcePath, destPath)
                         , false, "Error: Can't upload file/directory to the board", UploadResult.CANT_FIND_BOARD, null);
                 if (result != UploadResult.OK) {
                     return result;

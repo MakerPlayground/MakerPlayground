@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 class MicroPythonCodeUtility extends ArduinoCodeUtility {
     static String parseIncludeStatement(String libName) {
-        return "from " + libName + "." + libName + " import *";
+        return "from " + libName + " import *";
     }
 
     static String getSetupFunctionCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean withBegin, boolean isInteractive) {
