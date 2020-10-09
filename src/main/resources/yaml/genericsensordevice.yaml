@@ -622,3 +622,40 @@
         min: 0
         max: 100
         unit: PERCENT
+
+- name: UV Sensor
+  description: UV Sensor is used for detecting the intensity of incident ultraviolet(UV) radiation.
+  condition:
+    - name: Compare
+      funcname: ''
+    - name: Check Risk Level
+      funcname: checkRiskLevel
+      parameter:
+        - name: Risk Level
+          value: Low
+          constraint:
+            - key: Low
+              value: 1
+            - key: Moderate
+              value: 2
+            - key: High
+              value: 3
+            - key: Very High
+              value: 4
+            - key: Extreme
+              value: 5
+          datatype: STRING_INT_ENUM
+          controltype: DROPDOWN
+  value:
+    - name: UV Light Level
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 500
+        unit: MILLIWATT_PER_CENTIMETER_SQUARE
+    - name: UV Index
+      dataType: DOUBLE
+      constraint:
+        min: 0
+        max: 14
+        unit: NOT_SPECIFIED
