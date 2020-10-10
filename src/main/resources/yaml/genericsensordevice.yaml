@@ -647,15 +647,9 @@
           datatype: STRING_INT_ENUM
           controltype: DROPDOWN
   value:
-    - name: UV Light Level
-      dataType: DOUBLE
-      constraint:
-        min: 0
-        max: 500
-        unit: MILLIWATT_PER_CENTIMETER_SQUARE
     - name: UV Index
       dataType: DOUBLE
       constraint:
         min: 0
-        max: 14
+        max: 11
         unit: NOT_SPECIFIED
