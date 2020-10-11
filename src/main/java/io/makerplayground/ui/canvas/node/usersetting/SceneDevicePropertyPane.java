@@ -262,7 +262,7 @@ public class SceneDevicePropertyPane extends VBox {
                         , (RecordExpression) userSetting.getParameterMap().get(p));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
-            } else if (p.getControlType() == ControlType.DOT_MATRIX && p.getDataType() == DataType.DOT_MATRIX_DATA) {
+            } else if (p.getControlType() == ControlType.DOT_MATRIX && (p.getDataType() == DataType.DOT_MATRIX_DATA || p.getDataType() == DataType.RGB_DOT_MATRIX_DATA)) {
                 DotMatrixExpressionControl expressionControl = new DotMatrixExpressionControl((DotMatrixExpression) userSetting.getParameterMap().get(p));
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.VARIABLE) {

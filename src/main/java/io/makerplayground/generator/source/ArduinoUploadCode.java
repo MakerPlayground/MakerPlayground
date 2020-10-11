@@ -539,7 +539,7 @@ public class ArduinoUploadCode {
         } else if (expression instanceof StringIntegerExpression) {
             returnValue = String.valueOf(((StringIntegerExpression) expression).getInteger());
         } else if (expression instanceof DotMatrixExpression) {
-            returnValue = "\"" + ((DotMatrixExpression) expression).getDotMatrix().getBase16String() + "\"";
+            returnValue = "\"" + ((DotMatrixExpression) expression).getDotMatrix().getDataAsString() + "\"";
         } else if (expression instanceof VariableExpression) {
             returnValue = ((VariableExpression) expression).getVariableName();
         } else {

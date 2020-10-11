@@ -75,7 +75,10 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
                 defaultValue = new Record();
                 break;
             case DOT_MATRIX_DATA:
-                defaultValue = new DotMatrix();
+                defaultValue = new SingleColorDotMatrix();
+                break;
+            case RGB_DOT_MATRIX_DATA:
+                defaultValue = new RGBDotMatrix();
                 break;
             default:
                 throw new IllegalStateException("Error: unknown default value for datatype: " + dataType.name());

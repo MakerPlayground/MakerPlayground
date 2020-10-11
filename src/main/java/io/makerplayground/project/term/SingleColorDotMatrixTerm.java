@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package io.makerplayground.device.shared;
+package io.makerplayground.project.term;
 
-public interface DotMatrix {
-    void resize(int row, int column);
-    int getRow();
-    int getColumn();
-    Object[][] getData();
-    String getDataAsString();
+import io.makerplayground.device.shared.SingleColorDotMatrix;
+
+public class SingleColorDotMatrixTerm extends Term {
+    public SingleColorDotMatrixTerm(SingleColorDotMatrix dotMatrix) {
+        super(Type.DOT_MATRIX, dotMatrix);
+    }
+
+    @Override
+    public SingleColorDotMatrix getValue() {
+        return (SingleColorDotMatrix) value;
+    }
+
+    @Override
+    public boolean isValid() {
+        return value != null;
+    }
 }

@@ -16,16 +16,16 @@
 
 package io.makerplayground.project.term;
 
-import io.makerplayground.device.shared.DotMatrix;
+import io.makerplayground.device.shared.RGBDotMatrix;
 
-public class DotMatrixTerm extends Term {
-    public DotMatrixTerm(DotMatrix dotMatrix) {
-        super(Type.DOT_MATRIX, dotMatrix);
+public class RGBDotMatrixTerm extends Term {
+    public RGBDotMatrixTerm(RGBDotMatrix dotMatrix) {
+        super(Type.RGB_DOT_MATRIX, dotMatrix);
     }
 
     @Override
-    public DotMatrix getValue() {
-        return (DotMatrix) value;
+    public RGBDotMatrix getValue() {
+        return (RGBDotMatrix) value;
     }
 
     @Override

@@ -483,7 +483,7 @@ public class InteractiveModel {
         } else if (expression instanceof StringIntegerExpression) {
             return String.valueOf(((StringIntegerExpression) expression).getInteger());
         } else if (expression instanceof DotMatrixExpression) {
-            return ((DotMatrixExpression) expression).getDotMatrix().getBase16String();
+            return ((DotMatrixExpression) expression).getDotMatrix().getDataAsString();
         } else if (expression instanceof SimpleRTCExpression) {
             LocalDateTime rtc = ((SimpleRTCExpression) expression).getRealTimeClock().getLocalDateTime();
             return rtc.getYear()+","+rtc.getMonth().getValue()+","+rtc.getDayOfMonth()+","+rtc.getHour()+","+rtc.getMinute()+","+rtc.getSecond();

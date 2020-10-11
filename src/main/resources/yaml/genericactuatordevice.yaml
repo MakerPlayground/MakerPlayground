@@ -582,3 +582,71 @@
             - 4
           datatype: INTEGER_ENUM
           controltype: DROPDOWN
+- name: RGB Dot Matrix
+  description: A RGB dot matrix LED display
+  action:
+    - name: Show Bitmap
+      funcname: showBitmap
+      parameter:
+        - name: Data
+          value: ""
+          constraint: []
+          datatype: RGB_DOT_MATRIX_DATA
+          controltype: DOT_MATRIX
+    - name: Show Text
+      funcname: showText
+      parameter:
+        - name: Text
+          value: ""
+          constraint: []
+          datatype: STRING
+          controltype: TEXTBOX
+        - name: Size
+          value: 1x
+          constraint:
+            - key: 1x
+              value: 1
+            - key: 2x
+              value: 2
+          datatype: STRING_INT_ENUM
+          controltype: DROPDOWN
+        - name: Rotation
+          value: "0\u00B0"
+          constraint:
+            - key: "0\u00B0"
+              value: 0
+            - key: "90\u00B0 CCW"
+              value: 90
+            - key: "180\u00B0 CCW"
+              value: 180
+            - key: "270\u00B0 CCW"
+              value: 270
+          datatype: STRING_INT_ENUM
+          controltype: DROPDOWN
+        - name: Color (Red)
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Color (Green)
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+        - name: Color (Blue)
+          value: 255
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: DOUBLE
+          controltype: SLIDER
+    - name: Clear
+      funcname: clear
+      parameter: []

@@ -16,10 +16,19 @@
 
 package io.makerplayground.device.shared;
 
-public interface DotMatrix {
-    void resize(int row, int column);
-    int getRow();
-    int getColumn();
-    Object[][] getData();
-    String getDataAsString();
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import java.io.IOException;
+
+public class RGBDotMatrixSerializer extends JsonSerializer<RGBDotMatrix> {
+    @Override
+    public void serialize(RGBDotMatrix value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        gen.writeStartObject();
+        gen.writeNumberField("row", value.getRow());
+        gen.writeNumberField("column", value.getColumn());
+        gen.writeStringField("data", value.getDataAsString());
+        gen.writeEndObject();
+    }
 }

@@ -18,13 +18,22 @@ package io.makerplayground.project.expression;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.makerplayground.device.shared.DotMatrix;
-import io.makerplayground.project.term.DotMatrixTerm;
+import io.makerplayground.device.shared.RGBDotMatrix;
+import io.makerplayground.device.shared.SingleColorDotMatrix;
+import io.makerplayground.project.term.RGBDotMatrixTerm;
+import io.makerplayground.project.term.SingleColorDotMatrixTerm;
 
 public class DotMatrixExpression extends Expression {
 
     public DotMatrixExpression(DotMatrix dotMatrix) {
         super(Type.DOT_MATRIX);
-        terms.add(new DotMatrixTerm(dotMatrix));
+        if (dotMatrix instanceof SingleColorDotMatrix) {
+            terms.add(new SingleColorDotMatrixTerm((SingleColorDotMatrix) dotMatrix));
+        } else if (dotMatrix instanceof RGBDotMatrix) {
+            terms.add(new RGBDotMatrixTerm((RGBDotMatrix) dotMatrix));
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     @JsonIgnore
@@ -32,12 +41,16 @@ public class DotMatrixExpression extends Expression {
         return (DotMatrix) getTerms().get(0).getValue();
     }
 
-    public DotMatrixExpression(DotMatrixExpression dotMatrixExpression) {
-        super(dotMatrixExpression);
-    }
-
     @Override
     public DotMatrixExpression deepCopy() {
-        return new DotMatrixExpression(this);
+        DotMatrix dotMatrix = getDotMatrix();
+        if (dotMatrix instanceof SingleColorDotMatrix) {
+            return new DotMatrixExpression(new SingleColorDotMatrix(dotMatrix.getRow(), dotMatrix.getColumn(), dotMatrix.getDataAsString()));
+        } else if (getDotMatrix() instanceof RGBDotMatrix) {
+            return new DotMatrixExpression(new RGBDotMatrix(dotMatrix.getRow(), dotMatrix.getColumn(), dotMatrix.getDataAsString()));
+        } else {
+            throw new IllegalStateException();
+        }
+
     }
 }

@@ -121,7 +121,7 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 String key = ((StringTerm) terms.get(0)).getValue();
                 expression = new StringIntegerExpression((StringIntegerCategoricalConstraint) parameter.getConstraint(), key);
             } else if (DotMatrixExpression.class.getSimpleName().equals(expressionType)) {
-                DotMatrix dotMatrix = ((DotMatrixTerm) terms.get(0)).getValue();
+                DotMatrix dotMatrix = (DotMatrix) terms.get(0).getValue();
                 expression = new DotMatrixExpression(dotMatrix);
             } else if (VariableExpression.class.getSimpleName().equals(expressionType)) {
                 if (terms.isEmpty()) {
@@ -261,10 +261,17 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             int row = term_node.get("value").get("row").asInt();
             int column = term_node.get("value").get("column").asInt();
             String data = term_node.get("value").get("data").asText();
-            DotMatrix dotMatrix = new DotMatrix(row, column, data);
-            term = new DotMatrixTerm(dotMatrix);
+            SingleColorDotMatrix dotMatrix = new SingleColorDotMatrix(row, column, data);
+            term = new SingleColorDotMatrixTerm(dotMatrix);
+        } else if (Term.Type.RGB_DOT_MATRIX.name().equals(term_type)) {
+            int row = term_node.get("value").get("row").asInt();
+            int column = term_node.get("value").get("column").asInt();
+            String data = term_node.get("value").get("data").asText();
+            RGBDotMatrix dotMatrix = new RGBDotMatrix(row, column, data);
+            term = new RGBDotMatrixTerm(dotMatrix);
         }
         else {
+            System.out.println(term_type);
             throw new IllegalStateException("deserialize unsupported term");
         }
         return term;

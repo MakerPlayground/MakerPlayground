@@ -95,7 +95,9 @@ public abstract class Expression {
             case STRING_INT_ENUM:
                 return new StringIntegerExpression((StringIntegerCategoricalConstraint) param.getConstraint(), (String) param.getDefaultValue());
             case DOT_MATRIX_DATA:
-                return new DotMatrixExpression(new DotMatrix());
+                return new DotMatrixExpression(new SingleColorDotMatrix());
+            case RGB_DOT_MATRIX_DATA:
+                return new DotMatrixExpression(new RGBDotMatrix());
             case VARIABLE_NAME:
                 return VariableExpression.NO_VARIABLE_SELECTED;
             default:

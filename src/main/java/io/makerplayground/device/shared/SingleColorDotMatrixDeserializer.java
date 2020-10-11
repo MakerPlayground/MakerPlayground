@@ -24,16 +24,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class DotMatrixDeserializer extends JsonDeserializer<DotMatrix> {
+public class SingleColorDotMatrixDeserializer extends JsonDeserializer<DotMatrix> {
     @Override
-    public DotMatrix deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
-
+    public SingleColorDotMatrix deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         int row = node.get("row").asInt();
         int column = node.get("column").asInt();
         String data = node.get("data").asText();
-
-        return new DotMatrix(row, column, data);
+        return new SingleColorDotMatrix(row, column, data);
     }
 }

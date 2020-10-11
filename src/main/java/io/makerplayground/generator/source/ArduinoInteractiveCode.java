@@ -227,6 +227,7 @@ public class ArduinoInteractiveCode {
                                     case STRING:
                                     case DATETIME:
                                     case DOT_MATRIX_DATA:
+                                    case RGB_DOT_MATRIX_DATA:
                                         taskParameter.add("commandArgs[" + (i + 2) + "]");
                                         break;
                                     default:

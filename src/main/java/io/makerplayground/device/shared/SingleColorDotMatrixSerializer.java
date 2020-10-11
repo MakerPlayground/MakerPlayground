@@ -22,14 +22,13 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-public class DotMatrixSerializer extends JsonSerializer<DotMatrix> {
-
+public class SingleColorDotMatrixSerializer extends JsonSerializer<SingleColorDotMatrix> {
     @Override
-    public void serialize(DotMatrix value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(SingleColorDotMatrix value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
         gen.writeNumberField("row", value.getRow());
         gen.writeNumberField("column", value.getColumn());
-        gen.writeStringField("data", value.getBase16String());
+        gen.writeStringField("data", value.getDataAsString());
         gen.writeEndObject();
     }
 }
