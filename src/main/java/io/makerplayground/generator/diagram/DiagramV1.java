@@ -1311,7 +1311,7 @@ class DiagramV1 {
         List<ProjectDevice> deviceList;
         if (device == ProjectDevice.CONTROLLER) {
             deviceList = project.getUnmodifiableProjectDevice().stream()
-                    .filter(projectDevice -> config.getActualDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
+                    .filter(projectDevice -> config.getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElse(null) instanceof IntegratedActualDevice)
                     .collect(Collectors.toUnmodifiableList());
         } else {
             deviceList = new ArrayList<>();
