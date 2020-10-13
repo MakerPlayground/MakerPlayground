@@ -26,6 +26,7 @@ public class SourceCode {
                 case ARDUINO_AVR8:
                 case ARDUINO_ESP8266:
                 case ARDUINO_ESP32:
+                case ARDUINO_ATSAMD21:
                 case ARDUINO_ATSAMD51:
                     return ArduinoUploadCode.generateCode(project);
                 case RASPBERRYPI:
@@ -36,6 +37,7 @@ public class SourceCode {
                 case ARDUINO_AVR8:
                 case ARDUINO_ESP8266:
                 case ARDUINO_ESP32:
+                case ARDUINO_ATSAMD21:
                 case ARDUINO_ATSAMD51:
                     return ArduinoInteractiveCode.generateCode(project);
                 case RASPBERRYPI:
