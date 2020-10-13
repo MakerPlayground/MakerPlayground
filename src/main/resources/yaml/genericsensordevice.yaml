@@ -653,3 +653,15 @@
         min: 0
         max: 11
         unit: NOT_SPECIFIED
+
+- name: Speech Recognizer
+  description: Recognize human speech
+  condition:
+    - name: Recognize
+      funcname: recognize
+      parameter:
+        - name: Word
+          value: ''
+          constraint: []
+          datatype: STRING
+          controltype: TEXTBOX
