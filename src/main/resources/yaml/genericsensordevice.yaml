@@ -653,7 +653,6 @@
         min: 0
         max: 11
         unit: NOT_SPECIFIED
-
 - name: Speech Recognizer
   description: Recognize human speech
   condition:
@@ -665,3 +664,43 @@
           constraint: []
           datatype: STRING
           controltype: TEXTBOX
+- name: Fingerprint
+  description: Fingerprint sensor allows adding, verification and management of fingerprints
+  action:
+    - name: Add Fingerprint
+      funcname: addFingerprint
+    - name: Validate Fingerprint
+      funcname: validateFingerprint
+    - name: Delete Fingerprint
+      funcname: deleteFingerprint
+      parameter:
+        - name: Index
+          value: 0
+          constraint:
+            min: 0
+            max: 255
+            unit: NOT_SPECIFIED
+          datatype: INTEGER
+          controltype: SPINBOX
+    - name: Delete All Fingerprints
+      funcname: deleteAllFingerprints
+  condition:
+    - name: Add Success
+      funcname: isAddSuccess
+    - name: Add Fail
+      funcname: isAddFail
+    - name: Validate Success
+      funcname: isValidateSuccess
+    - name: Validate Fail
+      funcname: isValidateFail
+    - name: Delete Success
+      funcname: isDeleteSuccess
+    - name: Delete Fail
+      funcname: isDeleteFail
+  value:
+    - name: Finger Count
+      dataType: INTEGER
+      constraint:
+        min: 0
+        max: 254
+        unit: NOT_SPECIFIED

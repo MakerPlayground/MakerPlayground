@@ -582,6 +582,18 @@
             - 4
           datatype: INTEGER_ENUM
           controltype: DROPDOWN
+    - name: 'Brake'
+      funcname: 'motorBrake'
+      parameter:
+        - name: Channel
+          value: 1
+          constraint:
+            - 1
+            - 2
+            - 3
+            - 4
+          datatype: INTEGER_ENUM
+          controltype: DROPDOWN
 - name: RGB Dot Matrix
   description: A RGB dot matrix LED display
   action:

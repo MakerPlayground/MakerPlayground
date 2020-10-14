@@ -29,6 +29,7 @@ public enum ConnectionType {
     GROVE(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4),
     MAKER_PLAYGROUND(List.of(Color.BLACK, Color.RED, Color.WHITE, Color.YELLOW), 4),
     M5STACK(List.of(Color.BLACK, Color.RED, Color.YELLOW, Color.WHITE), 4),
+    M5HAT(List.of(Color.BLACK, Color.RED, Color.BLUE, Color.BLUE, Color.BLUE, Color.BLUE, Color.RED, Color.RED, Color.RED), 4),
     KB_CHAIN(List.of(Color.BLACK, Color.YELLOW, Color.WHITE, Color.RED, Color.RED), 4),
     INEX3(List.of(Color.BLACK, Color.WHITE, Color.RED), 3),
     JR_SERVO(List.of(Color.BLACK, Color.RED, Color.WHITE), 3),
