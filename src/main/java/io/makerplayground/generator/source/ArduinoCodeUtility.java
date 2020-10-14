@@ -44,7 +44,7 @@ class ArduinoCodeUtility {
     static String getSetupFunctionCode(Project project, List<List<ProjectDevice>> projectDeviceGroup, boolean withBegin, boolean isInteractive) {
         StringBuilder builder = new StringBuilder();
         builder.append("void setup() {").append(NEW_LINE);
-        builder.append(INDENT).append("Serial.begin(115200);").append(NEW_LINE);
+        builder.append(INDENT).append("MPSerial.begin(115200);").append(NEW_LINE);
 
         if (project.getSelectedPlatform().equals(Platform.ARDUINO_ESP32)) {
             builder.append(INDENT).append("analogSetWidth(10);").append(NEW_LINE);

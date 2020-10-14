@@ -321,25 +321,25 @@ public class ArduinoInteractiveCode {
                         continue;
                     }
                     String variableName = parseDeviceVariableName(group);
-                    builder.append(INDENT).append(INDENT).append("Serial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append("MPSerial.print(F(\"\\\"").append(projectDevice.getName()).append("\\\"\"));").append(NEW_LINE);
                     // condition
                     compatibility.getDeviceCondition().forEach((condition, parameterConstraintMap) -> {
                         if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
                             return;
                         }
-                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.print(F(\" \"));").append(NEW_LINE);
 
                         String params = IntStream.range(0, condition.getParameter().size()).boxed()
                                 .map(integer -> "_" + projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + integer)
                                 .collect(Collectors.joining(", "));
-                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("(").append(params).append("));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.print(").append(variableName).append(".").append(condition.getFunctionName()).append("(").append(params).append("));").append(NEW_LINE);
                     });
                     // value
                     compatibility.getDeviceValue().forEach((value, constraint) -> {
-                        builder.append(INDENT).append(INDENT).append("Serial.print(F(\" \"));").append(NEW_LINE);
-                        builder.append(INDENT).append(INDENT).append("Serial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.print(F(\" \"));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
                     });
-                    builder.append(INDENT).append(INDENT).append("Serial.println();").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append("MPSerial.println();").append(NEW_LINE);
                     builder.append(NEW_LINE);
                 }
             }
@@ -347,8 +347,8 @@ public class ArduinoInteractiveCode {
             builder.append(INDENT).append("}").append(NEW_LINE);
         }
 
-        builder.append(INDENT).append("while (Serial.available() > 0) {").append(NEW_LINE);
-        builder.append(INDENT).append(INDENT).append("serialBuffer[serialBufferIndex] = Serial.read();").append(NEW_LINE);
+        builder.append(INDENT).append("while (MPSerial.available() > 0) {").append(NEW_LINE);
+        builder.append(INDENT).append(INDENT).append("serialBuffer[serialBufferIndex] = MPSerial.read();").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append("if (serialBuffer[serialBufferIndex] == '\\r' || serialBuffer[serialBufferIndex] == '\\n') {").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("serialBuffer[serialBufferIndex] = '\\0';").append(NEW_LINE);
         builder.append(INDENT).append(INDENT).append(INDENT).append("processCommand();").append(NEW_LINE);

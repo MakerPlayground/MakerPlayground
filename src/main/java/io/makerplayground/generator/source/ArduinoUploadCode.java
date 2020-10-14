@@ -200,8 +200,8 @@ public class ArduinoUploadCode {
                 if (!valueUsed.get(projectDevice).isEmpty()) {
                     builder.append(INDENT).append(INDENT).append("PR_VAL(F(\"").append(projectDevice.getName()).append("\"));").append(NEW_LINE);
                     builder.append(INDENT).append(INDENT).append(valueUsed.get(projectDevice).stream()
-                            .map(value -> "Serial.print(\"" + value.getName() + "=\"); Serial.print(" + parseValueVariableTerm(searchGroup(projectDevice), value) + ");")
-                            .collect(Collectors.joining(" Serial.print(\",\");" + NEW_LINE + INDENT + INDENT)));
+                            .map(value -> "MPSerial.print(\"" + value.getName() + "=\"); MPSerial.print(" + parseValueVariableTerm(searchGroup(projectDevice), value) + ");")
+                            .collect(Collectors.joining(" MPSerial.print(\",\");" + NEW_LINE + INDENT + INDENT)));
                     builder.append(NEW_LINE);
                     builder.append("PR_END();").append(NEW_LINE);
                 }
