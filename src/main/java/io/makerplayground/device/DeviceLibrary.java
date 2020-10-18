@@ -55,7 +55,8 @@ public enum DeviceLibrary {
 
     DeviceLibrary() {}
 
-    public void loadDeviceFromFiles() {
+    public Map<Path, String> loadDeviceFromFiles() {
+        Map<Path, String> errors = new HashMap<>();
         this.genericSensorDevice = loadGenericDeviceFromFile("/yaml/genericsensordevice.yaml", GenericDeviceType.SENSOR);
         this.genericActuatorDevice = loadGenericDeviceFromFile("/yaml/genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
         this.genericUtilityDevice = loadGenericDeviceFromFile("/yaml/genericutilitydevice.yaml", GenericDeviceType.UTILITY);
@@ -68,10 +69,11 @@ public enum DeviceLibrary {
         this.allGenericDevice.addAll(genericCloudDevice);
         this.allGenericDevice.addAll(genericInterfaceDevice);
         Map<String, Map<String, PinTemplate>> pinTemplate = loadPinTemplateList();
-        this.actualDevice = loadActualDeviceList(pinTemplate);
+        this.actualDevice = loadActualDeviceList(pinTemplate, errors);
         this.actualAndIntegratedDevice = Stream.concat(actualDevice.stream(), actualDevice.stream()
                 .flatMap(actualDevice1 -> actualDevice1.getIntegratedDevices().stream()))
                 .collect(Collectors.toList());
+        return errors;
     }
 
     private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
@@ -172,7 +174,7 @@ public enum DeviceLibrary {
         }
     }
 
-    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate){
+    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate, Map<Path, String> errors){
         List<ActualDevice> temp = new ArrayList<>();
         YAMLMapper mapper = new YAMLMapper();
         SimpleModule simpleModule = new SimpleModule();
@@ -187,11 +189,8 @@ public enum DeviceLibrary {
                         try {
                             ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), ActualDevice.class);
                             temp.add(actualDevice);
-                        } catch (JsonParseException e) {
-                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
-                        } catch (NullPointerException e) {
-                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
-                            throw new IllegalStateException(e);
+                        } catch (Exception e) {
+                            errors.put(deviceDefinitionPath, e.getMessage());
                         }
                     }
                 }

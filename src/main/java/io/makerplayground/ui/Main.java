@@ -21,6 +21,7 @@ import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.generator.source.SourceCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.DeviceLibraryErrorDialogView;
 import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.util.PathUtility;
@@ -46,10 +47,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.file.Path;
+import java.util.*;
 
 import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 
@@ -63,7 +62,13 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // TODO: show progress indicator while loading if need
 
-        DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+        Map<Path, String> errors = DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+        if (!errors.isEmpty()) {
+            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                DeviceLibraryErrorDialogView dialogView = new DeviceLibraryErrorDialogView(primaryStage, errors);
+                dialogView.showAndWait();
+            });
+        }
 
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();
