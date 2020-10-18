@@ -26,6 +26,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.util.PathUtility;
+import io.makerplayground.version.DeviceLibraryVersion;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -56,7 +57,8 @@ public enum DeviceLibrary {
 
     DeviceLibrary() {}
 
-    public Map<Path, String> loadDeviceFromFiles() {
+    public Map<Path, String> loadDeviceLibrary() {
+        reloadLibraryPath();
         Map<Path, String> errors = new HashMap<>();
         this.genericSensorDevice = loadGenericDeviceFromFile("genericsensordevice.yaml", GenericDeviceType.SENSOR);
         this.genericActuatorDevice = loadGenericDeviceFromFile("genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
@@ -136,15 +138,22 @@ public enum DeviceLibrary {
             "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
     );
 
-    public static String getUserLibraryPath() {
-        return PathUtility.MP_WORKSPACE + File.separator + "library";
+    private static String currentLibraryPath;
+
+    private static void reloadLibraryPath() {
+        currentLibraryPath = libraryPaths.stream()
+                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
+                        && Files.exists(Path.of(s, "pin_templates")) && DeviceLibraryVersion.getVersionOfLibraryAtPath(s).isPresent())
+                .max(Comparator.comparing(o -> DeviceLibraryVersion.getVersionOfLibraryAtPath(o).get().getReleaseDate()))
+                .orElse(null);
     }
 
     public static Optional<String> getLibraryPath() {
-        return libraryPaths.stream()
-                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
-                        && Files.exists(Path.of(s, "pin_templates")))
-                .findFirst();
+        return Optional.ofNullable(currentLibraryPath);
+    }
+
+    public static String getUserLibraryPath() {
+        return PathUtility.MP_WORKSPACE + File.separator + "library";
     }
 
     public static String getDeviceDirectoryPath() {

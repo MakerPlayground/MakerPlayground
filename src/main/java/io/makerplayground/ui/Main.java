@@ -34,6 +34,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -62,13 +63,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // TODO: show progress indicator while loading if need
 
-        Map<Path, String> errors = DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+        Map<Path, String> errors = DeviceLibrary.INSTANCE.loadDeviceLibrary();
         if (!errors.isEmpty()) {
             primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
                 DeviceLibraryErrorDialogView dialogView = new DeviceLibraryErrorDialogView(primaryStage, errors);
                 dialogView.showAndWait();
             });
         }
+        DeviceLibraryVersion.reloadCurrentVersion();
 
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();

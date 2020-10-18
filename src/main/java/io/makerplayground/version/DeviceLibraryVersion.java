@@ -28,11 +28,6 @@ public class DeviceLibraryVersion {
     private static final String VERSION_CHECKING_URL = "https://makerplayground.z23.web.core.windows.net/library/version.json";
     private static final String LIB_DOWNLOAD_BASEURL = "https://makerplayground.blob.core.windows.net/release/library/";
 
-    static {
-        // get local library version
-        reloadCurrentVersion();
-    }
-
     public static void reloadCurrentVersion() {
         ObjectMapper mapper = new ObjectMapper();
         if (DeviceLibrary.getLibraryPath().isPresent()) {
@@ -44,6 +39,16 @@ public class DeviceLibraryVersion {
         } else {
             System.err.println("Library directory could not be found");
         }
+    }
+
+    public static Optional<DeviceLibraryVersion> getVersionOfLibraryAtPath(String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            DeviceLibraryVersion version = mapper.readValue(new File(path + "/version.json"), DeviceLibraryVersion.class);
+            return Optional.of(version);
+        } catch (Exception ignored) {
+        }
+        return Optional.empty();
     }
 
     public static Optional<DeviceLibraryVersion> getCurrentVersion() {
