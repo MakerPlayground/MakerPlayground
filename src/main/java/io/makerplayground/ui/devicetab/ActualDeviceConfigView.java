@@ -380,8 +380,7 @@ public class ActualDeviceConfigView extends VBox{
         settingPane.getChildren().clear();
         int currentRow = 0;
         for (ProjectDevice projectDevice : devices) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                    + projectDevice.getGenericDevice().getName() + ".png")));
+            ImageView imageView = new ImageView(new Image(DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice())));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
             GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
@@ -644,8 +643,7 @@ public class ActualDeviceConfigView extends VBox{
             int currentRow = 0;
             cloudPlatformParameterPane.getChildren().clear();
             for (CloudPlatform cloudPlatform : viewModel.getAllCloudPlatforms()) {
-                ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                        + cloudPlatform.getDisplayName() + ".png")));
+                ImageView cloudPlatformIcon = new ImageView(new Image(DeviceLibrary.getCloudPlatformIconAsStream(cloudPlatform)));
                 cloudPlatformIcon.setFitHeight(30.0);
                 cloudPlatformIcon.setFitWidth(30.0);
                 GridPane.setRowIndex(cloudPlatformIcon, currentRow);

@@ -30,6 +30,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,11 +58,11 @@ public enum DeviceLibrary {
 
     public Map<Path, String> loadDeviceFromFiles() {
         Map<Path, String> errors = new HashMap<>();
-        this.genericSensorDevice = loadGenericDeviceFromFile("/yaml/genericsensordevice.yaml", GenericDeviceType.SENSOR);
-        this.genericActuatorDevice = loadGenericDeviceFromFile("/yaml/genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
-        this.genericUtilityDevice = loadGenericDeviceFromFile("/yaml/genericutilitydevice.yaml", GenericDeviceType.UTILITY);
-        this.genericCloudDevice = loadGenericDeviceFromFile("/yaml/genericclouddevice.yaml", GenericDeviceType.CLOUD);
-        this.genericInterfaceDevice = loadGenericDeviceFromFile("/yaml/genericinterfacedevice.yaml", GenericDeviceType.INTERFACE);
+        this.genericSensorDevice = loadGenericDeviceFromFile("genericsensordevice.yaml", GenericDeviceType.SENSOR);
+        this.genericActuatorDevice = loadGenericDeviceFromFile("genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
+        this.genericUtilityDevice = loadGenericDeviceFromFile("genericutilitydevice.yaml", GenericDeviceType.UTILITY);
+        this.genericCloudDevice = loadGenericDeviceFromFile("genericclouddevice.yaml", GenericDeviceType.CLOUD);
+        this.genericInterfaceDevice = loadGenericDeviceFromFile("genericinterfacedevice.yaml", GenericDeviceType.INTERFACE);
         this.allGenericDevice = new ArrayList<>();
         this.allGenericDevice.addAll(genericSensorDevice);
         this.allGenericDevice.addAll(genericActuatorDevice);
@@ -109,18 +110,23 @@ public enum DeviceLibrary {
         return Collections.emptyMap();
     }
 
-    private List<GenericDevice> loadGenericDeviceFromFile(String resourceName, GenericDeviceType type){
+    private List<GenericDevice> loadGenericDeviceFromFile(String filename, GenericDeviceType type){
         ObjectMapper mapper = new YAMLMapper();
         mapper.setInjectableValues(new InjectableValues.Std().addValue(GenericDeviceType.class, type));
-        List<GenericDevice> temp;
-        try {
-            temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Can't load generic devices from " + resourceName);
+        Optional<String> libraryPath = getLibraryPath();
+        if (libraryPath.isPresent()) {
+            Path path = Path.of(libraryPath.get(), "schemas", filename);
+            try{
+                List<GenericDevice> temp = mapper.readValue(path.toFile(), new TypeReference<List<GenericDevice>>() {});
+                temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));
+                return temp;
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new IllegalStateException("Can't load generic devices from " + path.toAbsolutePath());
+            }
+        } else {
+            return Collections.emptyList();
         }
-        temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));
-        return temp;
     }
 
     private static final List<String> libraryPaths = List.of(
@@ -172,6 +178,30 @@ public enum DeviceLibrary {
         } else {
             return getDeviceImagePath(actualDevice);
         }
+    }
+
+    private static InputStream getIconAsStream(String name) {
+        Optional<String> libraryPath = getLibraryPath();
+        if (libraryPath.isPresent()) {
+            Path filePath = Path.of(libraryPath.get(), "icons", name + ".png");
+            if (Files.exists(filePath)) {
+                try {
+                    return Files.newInputStream(filePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new IllegalStateException("Error while loading icon name: " + name);
+                }
+            }
+        }
+        return DeviceLibrary.class.getResourceAsStream("/icons/generic_missing_icon.png");
+    }
+
+    public static InputStream getGenericDeviceIconAsStream(GenericDevice genericDevice) {
+        return getIconAsStream(genericDevice.getName());
+    }
+
+    public static InputStream getCloudPlatformIconAsStream(CloudPlatform cloudPlatform) {
+        return getIconAsStream(cloudPlatform.getDisplayName());
     }
 
     private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate, Map<Path, String> errors){

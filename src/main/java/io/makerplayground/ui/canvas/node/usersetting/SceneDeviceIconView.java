@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.DeviceLibrary;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -55,7 +56,7 @@ public class SceneDeviceIconView extends HBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         action.setText(viewModel.getAction().getName());
         viewModel.actionProperty().addListener((observable, oldValue, newValue) -> action.setText(newValue.getName()));
-        iconImageView.setImage(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + viewModel.getImageName() + ".png" )));
+        iconImageView.setImage(new Image(DeviceLibrary.getGenericDeviceIconAsStream(viewModel.getGenericDevice())));
 
         setOnMouseClicked(e -> {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {

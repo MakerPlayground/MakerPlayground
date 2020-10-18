@@ -40,7 +40,7 @@
                         <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                         <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1"/>
                         <ImageView fx:id="platFormImage" fitHeight="30" fitWidth="30">
-                            <Image url="@../../icons/colorIcons-3/Controller.png"/>
+                            <Image url="@../../../../../library/colorIcons-3/Controller.png"/>
                         </ImageView>
                     </children>
                     <rowConstraints>

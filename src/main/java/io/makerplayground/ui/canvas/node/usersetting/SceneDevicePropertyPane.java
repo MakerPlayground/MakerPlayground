@@ -1,5 +1,6 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
@@ -55,7 +56,7 @@ public class SceneDevicePropertyPane extends VBox {
         GenericDevice genericDevice = userSetting.getDevice().getGenericDevice();
 
         // Create title layout
-        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + genericDevice.getName() + ".png"));
+        Image img = new Image(DeviceLibrary.getGenericDeviceIconAsStream(genericDevice));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

@@ -1,25 +1,18 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
-import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -28,7 +21,6 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -44,7 +36,7 @@ public class DeviceMonitorPane extends VBox {
 
     public DeviceMonitorPane(InteractiveModel interactiveModel, ProjectDevice projectDevice) {
         // Create title layout
-        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + projectDevice.getGenericDevice().getName() + ".png"));
+        Image img = new Image(DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

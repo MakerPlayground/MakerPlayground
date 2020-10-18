@@ -1,12 +1,12 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Record;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
-import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.UserSetting;
@@ -20,7 +20,6 @@ import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericC
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
@@ -65,7 +64,7 @@ public class ConditionDevicePropertyPane extends VBox {
         GenericDevice genericDevice = userSetting.getDevice().getGenericDevice();
 
         // Create title layout
-        Image img = new Image(getClass().getResourceAsStream("/icons/colorIcons-3/" + genericDevice.getName() + ".png"));
+        Image img = new Image(DeviceLibrary.getGenericDeviceIconAsStream(genericDevice));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.GenericDeviceType;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
@@ -135,7 +136,7 @@ public class ProjectDevicePanel extends TabPane {
                 throw new RuntimeException(e);
             }
 
-            try (InputStream imageStream = getClass().getResourceAsStream("/icons/colorIcons-3/" + projectDevice.getGenericDevice().getName() + ".png")) {
+            try (InputStream imageStream = DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice())) {
                 deviceIcon.setImage(new Image(imageStream));
             } catch (NullPointerException | IOException e) {
                 throw new IllegalStateException("Missing icon of " + projectDevice.getGenericDevice().getName());

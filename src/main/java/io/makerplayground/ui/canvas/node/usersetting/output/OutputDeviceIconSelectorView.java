@@ -16,6 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.usersetting.output;
 
+import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.Main;
 import javafx.fxml.FXML;
@@ -44,7 +45,7 @@ public class OutputDeviceIconSelectorView extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Image image = new Image(Main.class.getResourceAsStream("/icons/colorIcons-3/" + projectDevice.getGenericDevice().getName() + ".png"));
+        Image image = new Image(DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
         imv.setImage(image);
 
         name.setText(projectDevice.getName());
