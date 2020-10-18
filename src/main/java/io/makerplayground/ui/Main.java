@@ -329,10 +329,11 @@ public class Main extends Application {
         // install new library to platform default library dir
         Optional<File> updateFilePath = DeviceLibraryVersion.getUpdateFilePath().map(File::new);
         if (updateFilePath.isPresent()) {
+            Map<Path, String> errors = new HashMap<>();
             Task<Void> extractTask  = ZipResourceExtractor.launchExtractTask(updateFilePath.get(), PathUtility.MP_WORKSPACE);
             extractTask.addEventHandler(WORKER_STATE_SUCCEEDED, (event) -> {
                 // reload the library and project
-                DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+                errors.putAll(DeviceLibrary.INSTANCE.loadDeviceLibrary());
                 DeviceLibraryVersion.reloadCurrentVersion();
                 // reload current project from file
                 if (!project.get().getFilePath().isEmpty()) {
@@ -352,7 +353,11 @@ public class Main extends Application {
                 }
             });
             TaskDialogView<Task<Void>> dialogView = new TaskDialogView<>(window, extractTask, "Install Library");
-            dialogView.show();
+            dialogView.showAndWait();
+            if (!errors.isEmpty()) {
+                DeviceLibraryErrorDialogView dialogView1 = new DeviceLibraryErrorDialogView(window, errors);
+                dialogView1.showAndWait();
+            }
         }
     }
 
