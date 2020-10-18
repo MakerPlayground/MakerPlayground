@@ -31,7 +31,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,6 +54,9 @@ public enum DeviceLibrary {
     private List<ActualDevice> actualDevice;
     private List<ActualDevice> actualAndIntegratedDevice;
 
+    private String currentLibraryPath;
+    private DeviceLibraryVersion currentVersion;
+
     DeviceLibrary() {}
 
     public Map<Path, String> loadDeviceLibrary() {
@@ -77,6 +79,40 @@ public enum DeviceLibrary {
                 .flatMap(actualDevice1 -> actualDevice1.getIntegratedDevices().stream()))
                 .collect(Collectors.toList());
         return errors;
+    }
+
+    private static final List<String> libraryPaths = List.of(
+            "library",   // default path when running from the IDE which should override installer path to aid in development
+            PathUtility.getUserLibraryPath(),  // updated library for each user in user's machine
+            PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
+            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
+    );
+
+    private void reloadLibraryPath() {
+        currentLibraryPath = libraryPaths.stream()
+                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
+                        && Files.exists(Path.of(s, "pin_templates")) && DeviceLibraryUpdateHelper.getVersionOfLibraryAtPath(s).isPresent())
+                .max(Comparator.comparing(o -> DeviceLibraryUpdateHelper.getVersionOfLibraryAtPath(o).get().getReleaseDate()))
+                .orElse(null);
+
+        if (currentLibraryPath != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                currentVersion = mapper.readValue(new File(currentLibraryPath + File.separator + "version.json"), DeviceLibraryVersion.class);
+            } catch (Exception e) {
+                System.err.println("Can't open version file at " + currentLibraryPath + File.separator + "version.json");
+            }
+        } else {
+            currentVersion = null;
+        }
+    }
+
+    public Optional<DeviceLibraryVersion> getCurrentVersion() {
+        return Optional.ofNullable(currentVersion);
+    }
+
+    public Optional<String> getLibraryPath() {
+        return Optional.ofNullable(currentLibraryPath);
     }
 
     private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
@@ -129,88 +165,6 @@ public enum DeviceLibrary {
         } else {
             return Collections.emptyList();
         }
-    }
-
-    private static final List<String> libraryPaths = List.of(
-            "library",   // default path when running from the IDE which should override installer path to aid in development
-            getUserLibraryPath(),  // updated library for each user in user's machine
-            PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
-            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
-    );
-
-    private static String currentLibraryPath;
-
-    private static void reloadLibraryPath() {
-        currentLibraryPath = libraryPaths.stream()
-                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
-                        && Files.exists(Path.of(s, "pin_templates")) && DeviceLibraryVersion.getVersionOfLibraryAtPath(s).isPresent())
-                .max(Comparator.comparing(o -> DeviceLibraryVersion.getVersionOfLibraryAtPath(o).get().getReleaseDate()))
-                .orElse(null);
-    }
-
-    public static Optional<String> getLibraryPath() {
-        return Optional.ofNullable(currentLibraryPath);
-    }
-
-    public static String getUserLibraryPath() {
-        return PathUtility.MP_WORKSPACE + File.separator + "library";
-    }
-
-    public static String getDeviceDirectoryPath() {
-        if (getLibraryPath().isEmpty()) {
-            throw new IllegalStateException("Library Path is missing");
-        }
-        return getLibraryPath().get() + File.separator + "devices";
-    }
-
-    public static Path getDeviceImagePath(ActualDevice actualDevice) {
-        String id;
-        if (actualDevice instanceof IntegratedActualDevice) {
-            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
-        } else {
-            id = actualDevice.getId();
-        }
-        // TODO: Should we handle case that the image is missing or let the caller check for path existence?
-        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device.png");
-    }
-
-    public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
-        String id;
-        if (actualDevice instanceof IntegratedActualDevice) {
-            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
-        } else {
-            id = actualDevice.getId();
-        }
-        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device_thumbnail.png");
-        if (Files.exists(thumbnailPath)) {
-            return thumbnailPath;
-        } else {
-            return getDeviceImagePath(actualDevice);
-        }
-    }
-
-    private static InputStream getIconAsStream(String name) {
-        Optional<String> libraryPath = getLibraryPath();
-        if (libraryPath.isPresent()) {
-            Path filePath = Path.of(libraryPath.get(), "icons", name + ".png");
-            if (Files.exists(filePath)) {
-                try {
-                    return Files.newInputStream(filePath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new IllegalStateException("Error while loading icon name: " + name);
-                }
-            }
-        }
-        return DeviceLibrary.class.getResourceAsStream("/icons/generic_missing_icon.png");
-    }
-
-    public static InputStream getGenericDeviceIconAsStream(GenericDevice genericDevice) {
-        return getIconAsStream(genericDevice.getName());
-    }
-
-    public static InputStream getCloudPlatformIconAsStream(CloudPlatform cloudPlatform) {
-        return getIconAsStream(cloudPlatform.getDisplayName());
     }
 
     private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate, Map<Path, String> errors){

@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.util.PathUtility;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -56,7 +56,7 @@ public class ConditionDeviceIconView extends HBox {
         nameIconImageView.textProperty().bindBidirectional(viewModel.nameProperty());
         condition.setText(viewModel.getCondition().getName());
         viewModel.conditionProperty().addListener((observable, oldValue, newValue) -> condition.setText(newValue.getName()));
-        iconImageView.setImage(new Image(DeviceLibrary.getGenericDeviceIconAsStream(viewModel.getGenericDevice())));
+        iconImageView.setImage(new Image(PathUtility.getGenericDeviceIconAsStream(viewModel.getGenericDevice())));
 
         setOnMouseClicked(e -> {
             if (devicePropertyWindow != null && devicePropertyWindow.isShowing()) {

@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.device.shared.*;
@@ -12,6 +11,7 @@ import io.makerplayground.project.expression.*;
 import io.makerplayground.ui.canvas.node.expression.*;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
+import io.makerplayground.util.PathUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -56,7 +56,7 @@ public class SceneDevicePropertyPane extends VBox {
         GenericDevice genericDevice = userSetting.getDevice().getGenericDevice();
 
         // Create title layout
-        Image img = new Image(DeviceLibrary.getGenericDeviceIconAsStream(genericDevice));
+        Image img = new Image(PathUtility.getGenericDeviceIconAsStream(genericDevice));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

@@ -1,6 +1,5 @@
 package io.makerplayground.ui.canvas.node.usersetting;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
@@ -9,6 +8,7 @@ import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConst
 import io.makerplayground.project.InteractiveModel;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.project.expression.*;
+import io.makerplayground.util.PathUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -36,7 +36,7 @@ public class DeviceMonitorPane extends VBox {
 
     public DeviceMonitorPane(InteractiveModel interactiveModel, ProjectDevice projectDevice) {
         // Create title layout
-        Image img = new Image(DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
+        Image img = new Image(PathUtility.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
         ImageView imageView = new ImageView(img);
         imageView.setFitHeight(30);
         imageView.setPreserveRatio(true);

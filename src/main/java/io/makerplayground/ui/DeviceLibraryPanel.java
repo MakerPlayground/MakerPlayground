@@ -18,6 +18,7 @@ package io.makerplayground.ui;
 
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.util.PathUtility;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -164,7 +165,7 @@ public class DeviceLibraryPanel extends TabPane {
                 throw new RuntimeException(e);
             }
 
-            try (InputStream imageStream = DeviceLibrary.getGenericDeviceIconAsStream(genericDevice)) {
+            try (InputStream imageStream = PathUtility.getGenericDeviceIconAsStream(genericDevice)) {
                 imageView.setImage(new Image(imageStream));
             } catch (NullPointerException | IOException e) {
                 throw new IllegalStateException("Missing icon of " + genericDevice.getName());

@@ -19,6 +19,7 @@ package io.makerplayground.generator.diagram;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.project.*;
+import io.makerplayground.util.PathUtility;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -1242,7 +1243,7 @@ class DiagramV1 {
         if (deviceMap.get(projectDevice) instanceof IntegratedActualDevice) {
             return;
         }
-        try (InputStream deviceImageStream = Files.newInputStream(DeviceLibrary.getDeviceImagePath(deviceMap.get(projectDevice)))) {
+        try (InputStream deviceImageStream = Files.newInputStream(PathUtility.getDeviceImagePath(deviceMap.get(projectDevice)))) {
             double deviceAngle = deviceRotationAngle.get(projectDevice);
             Image image = new Image(deviceImageStream);
             ImageView imageView = new ImageView(image);

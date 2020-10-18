@@ -18,6 +18,7 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.DeviceLibraryUpdateHelper;
 import io.makerplayground.generator.source.SourceCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
@@ -26,7 +27,6 @@ import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipResourceExtractor;
-import io.makerplayground.version.DeviceLibraryVersion;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -34,7 +34,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -70,7 +69,6 @@ public class Main extends Application {
                 dialogView.showAndWait();
             });
         }
-        DeviceLibraryVersion.reloadCurrentVersion();
 
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();
@@ -302,7 +300,7 @@ public class Main extends Application {
     }
 
     public void updateDeviceLibrary(Window window) {
-        if (!DeviceLibraryVersion.isUpdateFileAvailable()) {
+        if (!DeviceLibraryUpdateHelper.isUpdateFileAvailable()) {
             return;
         }
 
@@ -317,7 +315,7 @@ public class Main extends Application {
         }
 
         // delete old library
-        File oldLibraryDirectory = new File(DeviceLibrary.getUserLibraryPath());
+        File oldLibraryDirectory = new File(PathUtility.getUserLibraryPath());
         if (oldLibraryDirectory.isDirectory()) {
             try {
                 FileUtils.deleteDirectory(oldLibraryDirectory);
@@ -327,14 +325,13 @@ public class Main extends Application {
         }
 
         // install new library to platform default library dir
-        Optional<File> updateFilePath = DeviceLibraryVersion.getUpdateFilePath().map(File::new);
+        Optional<File> updateFilePath = DeviceLibraryUpdateHelper.getUpdateFilePath().map(File::new);
         if (updateFilePath.isPresent()) {
             Map<Path, String> errors = new HashMap<>();
             Task<Void> extractTask  = ZipResourceExtractor.launchExtractTask(updateFilePath.get(), PathUtility.MP_WORKSPACE);
             extractTask.addEventHandler(WORKER_STATE_SUCCEEDED, (event) -> {
                 // reload the library and project
                 errors.putAll(DeviceLibrary.INSTANCE.loadDeviceLibrary());
-                DeviceLibraryVersion.reloadCurrentVersion();
                 // reload current project from file
                 if (!project.get().getFilePath().isEmpty()) {
                     Optional<Project> p = Project.loadProject(new File(project.get().getFilePath()));

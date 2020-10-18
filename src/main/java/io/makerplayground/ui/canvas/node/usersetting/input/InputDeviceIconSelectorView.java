@@ -16,9 +16,8 @@
 
 package io.makerplayground.ui.canvas.node.usersetting.input;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.Main;
+import io.makerplayground.util.PathUtility;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -46,7 +45,7 @@ public class InputDeviceIconSelectorView extends  VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Image image = new Image(DeviceLibrary.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
+        Image image = new Image(PathUtility.getGenericDeviceIconAsStream(projectDevice.getGenericDevice()));
         imv.setImage(image);
 
         name.setText(projectDevice.getName());

@@ -36,7 +36,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -178,7 +177,7 @@ public class RaspberryPiUploadTask extends UploadTaskBase {
         updateMessage("Generating source files and libraries");
 
         // get path to the library directory
-        Optional<String> libraryPath = DeviceLibrary.getLibraryPath();
+        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
         if (libraryPath.isEmpty()) {
             Platform.runLater(()->updateMessage("Error: Missing library directory"));
             return UploadResult.MISSING_LIBRARY_DIR;

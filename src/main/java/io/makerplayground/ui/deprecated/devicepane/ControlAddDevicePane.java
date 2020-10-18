@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui.deprecated.devicepane;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.generic.GenericDevice;
+import io.makerplayground.util.PathUtility;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -60,7 +60,7 @@ public class ControlAddDevicePane extends VBox {
             throw new RuntimeException(exception);
         }
 
-        InputStream imageStream = DeviceLibrary.getGenericDeviceIconAsStream(genericDevice);
+        InputStream imageStream = PathUtility.getGenericDeviceIconAsStream(genericDevice);
         if (imageStream == null) {
             throw new IllegalStateException("Missing icon of " + genericDevice.getName());
         }
