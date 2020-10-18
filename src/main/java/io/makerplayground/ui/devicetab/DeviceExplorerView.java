@@ -111,8 +111,8 @@ public class DeviceExplorerView extends VBox {
         });
 
         ToggleButton typeToggleButton = new ToggleButton("Type");
+        typeToggleButton.setSelected(true);
         ToggleButton brandToggleButton = new ToggleButton("Brand");
-        brandToggleButton.setSelected(true);
         SegmentedButton segmentedButton = new SegmentedButton(typeToggleButton, brandToggleButton);
         segmentedButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
