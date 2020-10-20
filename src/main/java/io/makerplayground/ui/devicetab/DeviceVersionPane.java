@@ -1,5 +1,7 @@
 package io.makerplayground.ui.devicetab;
 
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.DeviceLibraryUpdateHelper;
 import io.makerplayground.version.DeviceLibraryVersion;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -66,10 +68,10 @@ public class DeviceVersionPane extends HBox {
     }
 
     private void checkUpdate() {
-        if (DeviceLibraryVersion.getCurrentVersion().isEmpty()) {
+        if (DeviceLibrary.INSTANCE.getCurrentVersion().isEmpty()) {
             versionLabel.setText("Version: -");
         } else {
-            DeviceLibraryVersion current = DeviceLibraryVersion.getCurrentVersion().get();
+            DeviceLibraryVersion current = DeviceLibrary.INSTANCE.getCurrentVersion().get();
             versionLabel.setText("Version: " + current.getVersion() + " (" + df.format(current.getReleaseDate()) + ")");
         }
         statusLabel.setText("Checking for update...");
@@ -78,20 +80,20 @@ public class DeviceVersionPane extends HBox {
         installButton.setVisible(false);
         checkUpdateButton.setVisible(true);
         checkUpdateButton.setDisable(true);
-        DeviceLibraryVersion.fetchLatestCompatibleVersion(() -> {
+        DeviceLibraryUpdateHelper.fetchLatestCompatibleVersion(() -> {
             checkUpdateButton.setDisable(false);
             updateState();
         });
     }
 
     private void downloadAndInstallUpdate() {
-        Optional<DeviceLibraryVersion> latestVersion = DeviceLibraryVersion.getLatestCompatibleVersion();
+        Optional<DeviceLibraryVersion> latestVersion = DeviceLibraryUpdateHelper.getLatestCompatibleVersion();
         if (latestVersion.isPresent()) {
             versionLabel.setVisible(false);
             versionLabel.setManaged(false);
             statusLabel.setText("Downloading...");
             downloadButton.setDisable(true);
-            Task<Void> downloadTask = DeviceLibraryVersion.launchDownloadUpdateFileTask();
+            Task<Void> downloadTask = DeviceLibraryUpdateHelper.launchDownloadUpdateFileTask();
             downloadTask.setOnSucceeded((value) -> {
                 versionLabel.setVisible(true);
                 versionLabel.setManaged(true);
@@ -112,11 +114,11 @@ public class DeviceVersionPane extends HBox {
     private void updateState() {
         statusHider.stop();
 
-        if (DeviceLibraryVersion.getCurrentVersion().isEmpty()) {   // no library at all so we should download newest version
+        if (DeviceLibrary.INSTANCE.getCurrentVersion().isEmpty()) {   // no library at all so we should download newest version
             versionLabel.setText("Version: -");
             statusLabel.setText("Can't locate the device library");
             downloadProgress.setVisible(false);
-            if (DeviceLibraryVersion.isUpdateFileAvailable()) {
+            if (DeviceLibraryUpdateHelper.isUpdateFileAvailable()) {
                 downloadButton.setVisible(false);
                 installButton.setVisible(true);
             } else {
@@ -124,9 +126,9 @@ public class DeviceVersionPane extends HBox {
                 installButton.setVisible(false);
             }
             checkUpdateButton.setVisible(false);
-        } else if (DeviceLibraryVersion.getLatestCompatibleVersion().isPresent()) {
-            DeviceLibraryVersion current = DeviceLibraryVersion.getCurrentVersion().get();
-            DeviceLibraryVersion latest = DeviceLibraryVersion.getLatestCompatibleVersion().get();
+        } else if (DeviceLibraryUpdateHelper.getLatestCompatibleVersion().isPresent()) {
+            DeviceLibraryVersion current = DeviceLibrary.INSTANCE.getCurrentVersion().get();
+            DeviceLibraryVersion latest = DeviceLibraryUpdateHelper.getLatestCompatibleVersion().get();
             if (current.getVersion().equals(latest.getVersion())) {     // already up-to-date, do nothing
                 versionLabel.setText("Version: " + current.getVersion() + " (" + df.format(current.getReleaseDate()) + ")");
                 statusLabel.setText("Library is up to date");
@@ -138,7 +140,7 @@ public class DeviceVersionPane extends HBox {
             } else {    // newer version is available
                 versionLabel.setText("Version: " + current.getVersion() + " (" + df.format(current.getReleaseDate()) + ")");
                 downloadProgress.setVisible(false);
-                if (DeviceLibraryVersion.isUpdateFileAvailable()) {
+                if (DeviceLibraryUpdateHelper.isUpdateFileAvailable()) {
                     statusLabel.setText("Update is ready to be installed");
                     downloadButton.setVisible(false);
                     installButton.setVisible(true);
@@ -150,7 +152,7 @@ public class DeviceVersionPane extends HBox {
                 checkUpdateButton.setVisible(false);
             }
         } else {    // check internet connection
-            DeviceLibraryVersion current = DeviceLibraryVersion.getCurrentVersion().get();
+            DeviceLibraryVersion current = DeviceLibrary.INSTANCE.getCurrentVersion().get();
             versionLabel.setText("Version: " + current.getVersion() + " (" + df.format(current.getReleaseDate()) + ")");
             statusLabel.setText("Can't check for update");
             downloadProgress.setVisible(false);

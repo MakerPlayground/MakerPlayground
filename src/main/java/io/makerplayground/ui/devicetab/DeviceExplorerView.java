@@ -28,6 +28,7 @@ import io.makerplayground.generator.devicemapping.DeviceConnectionResultStatus;
 import io.makerplayground.project.DeviceConnection;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.util.PathUtility;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -289,7 +290,7 @@ public class DeviceExplorerView extends VBox {
             imageViewWrapper.setPrefSize(80, 80);
             imageViewWrapper.setMaxSize(80, 80);
             imageViewWrapper.opacityProperty().bind(imageOpacity);
-            Path deviceImagePath = DeviceLibrary.getDeviceThumbnailPath(actualDevice);
+            Path deviceImagePath = PathUtility.getDeviceThumbnailPath(actualDevice);
             if (Files.exists(deviceImagePath)) {
                 ImageView imageView = new ImageView(new Image(deviceImagePath.toUri().toString()));
                 imageView.setFitWidth(80);

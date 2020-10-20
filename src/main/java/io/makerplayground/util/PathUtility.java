@@ -16,10 +16,13 @@
 
 package io.makerplayground.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.actual.ActualDevice;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.IntegratedActualDevice;
+import io.makerplayground.device.generic.GenericDevice;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -73,5 +76,66 @@ public class PathUtility {
         List<String> path = List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "platformio"   // default path for Windows installer
                 , "/Library/Application Support/MakerPlayground/platformio");       // default path for macOS installer
         return path.stream().filter(s -> new File(s).exists()).findFirst();
+    }
+
+    public static String getDeviceDirectoryPath() {
+        if (DeviceLibrary.INSTANCE.getLibraryPath().isEmpty()) {
+            throw new IllegalStateException("Library Path is missing");
+        }
+        return DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "devices";
+    }
+
+    public static Path getDeviceImagePath(ActualDevice actualDevice) {
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        // TODO: Should we handle case that the image is missing or let the caller check for path existence?
+        return Path.of(getDeviceDirectoryPath(), id, "asset", "device.png");
+    }
+
+    public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
+        String id;
+        if (actualDevice instanceof IntegratedActualDevice) {
+            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        } else {
+            id = actualDevice.getId();
+        }
+        Path thumbnailPath = Path.of(getDeviceDirectoryPath(), id, "asset", "device_thumbnail.png");
+        if (Files.exists(thumbnailPath)) {
+            return thumbnailPath;
+        } else {
+            return getDeviceImagePath(actualDevice);
+        }
+    }
+
+    private static InputStream getIconAsStream(String name) {
+        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+        if (libraryPath.isPresent()) {
+            Path filePath = Path.of(libraryPath.get(), "icons", name + ".png");
+            if (Files.exists(filePath)) {
+                try {
+                    return Files.newInputStream(filePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new IllegalStateException("Error while loading icon name: " + name);
+                }
+            }
+        }
+        return DeviceLibrary.class.getResourceAsStream("/icons/generic_missing_icon.png");
+    }
+
+    public static InputStream getGenericDeviceIconAsStream(GenericDevice genericDevice) {
+        return getIconAsStream(genericDevice.getName());
+    }
+
+    public static InputStream getCloudPlatformIconAsStream(CloudPlatform cloudPlatform) {
+        return getIconAsStream(cloudPlatform.getDisplayName());
+    }
+
+    public static String getUserLibraryPath() {
+        return MP_WORKSPACE + File.separator + "library";
     }
 }

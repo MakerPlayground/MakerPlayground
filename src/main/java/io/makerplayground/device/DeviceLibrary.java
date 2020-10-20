@@ -26,6 +26,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.util.PathUtility;
+import io.makerplayground.version.DeviceLibraryVersion;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -53,14 +54,19 @@ public enum DeviceLibrary {
     private List<ActualDevice> actualDevice;
     private List<ActualDevice> actualAndIntegratedDevice;
 
+    private String currentLibraryPath;
+    private DeviceLibraryVersion currentVersion;
+
     DeviceLibrary() {}
 
-    public void loadDeviceFromFiles() {
-        this.genericSensorDevice = loadGenericDeviceFromFile("/yaml/genericsensordevice.yaml", GenericDeviceType.SENSOR);
-        this.genericActuatorDevice = loadGenericDeviceFromFile("/yaml/genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
-        this.genericUtilityDevice = loadGenericDeviceFromFile("/yaml/genericutilitydevice.yaml", GenericDeviceType.UTILITY);
-        this.genericCloudDevice = loadGenericDeviceFromFile("/yaml/genericclouddevice.yaml", GenericDeviceType.CLOUD);
-        this.genericInterfaceDevice = loadGenericDeviceFromFile("/yaml/genericinterfacedevice.yaml", GenericDeviceType.INTERFACE);
+    public Map<Path, String> loadDeviceLibrary() {
+        reloadLibraryPath();
+        Map<Path, String> errors = new HashMap<>();
+        this.genericSensorDevice = loadGenericDeviceFromFile("genericsensordevice.yaml", GenericDeviceType.SENSOR);
+        this.genericActuatorDevice = loadGenericDeviceFromFile("genericactuatordevice.yaml", GenericDeviceType.ACTUATOR);
+        this.genericUtilityDevice = loadGenericDeviceFromFile("genericutilitydevice.yaml", GenericDeviceType.UTILITY);
+        this.genericCloudDevice = loadGenericDeviceFromFile("genericclouddevice.yaml", GenericDeviceType.CLOUD);
+        this.genericInterfaceDevice = loadGenericDeviceFromFile("genericinterfacedevice.yaml", GenericDeviceType.INTERFACE);
         this.allGenericDevice = new ArrayList<>();
         this.allGenericDevice.addAll(genericSensorDevice);
         this.allGenericDevice.addAll(genericActuatorDevice);
@@ -68,10 +74,45 @@ public enum DeviceLibrary {
         this.allGenericDevice.addAll(genericCloudDevice);
         this.allGenericDevice.addAll(genericInterfaceDevice);
         Map<String, Map<String, PinTemplate>> pinTemplate = loadPinTemplateList();
-        this.actualDevice = loadActualDeviceList(pinTemplate);
+        this.actualDevice = loadActualDeviceList(pinTemplate, errors);
         this.actualAndIntegratedDevice = Stream.concat(actualDevice.stream(), actualDevice.stream()
                 .flatMap(actualDevice1 -> actualDevice1.getIntegratedDevices().stream()))
                 .collect(Collectors.toList());
+        return errors;
+    }
+
+    private static final List<String> libraryPaths = List.of(
+            "library",   // default path when running from the IDE which should override installer path to aid in development
+            PathUtility.getUserLibraryPath(),  // updated library for each user in user's machine
+            PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
+            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
+    );
+
+    private void reloadLibraryPath() {
+        currentLibraryPath = libraryPaths.stream()
+                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
+                        && Files.exists(Path.of(s, "pin_templates")) && DeviceLibraryUpdateHelper.getVersionOfLibraryAtPath(s).isPresent())
+                .max(Comparator.comparing(o -> DeviceLibraryUpdateHelper.getVersionOfLibraryAtPath(o).get().getReleaseDate()))
+                .orElse(null);
+
+        if (currentLibraryPath != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                currentVersion = mapper.readValue(new File(currentLibraryPath + File.separator + "version.json"), DeviceLibraryVersion.class);
+            } catch (Exception e) {
+                System.err.println("Can't open version file at " + currentLibraryPath + File.separator + "version.json");
+            }
+        } else {
+            currentVersion = null;
+        }
+    }
+
+    public Optional<DeviceLibraryVersion> getCurrentVersion() {
+        return Optional.ofNullable(currentVersion);
+    }
+
+    public Optional<String> getLibraryPath() {
+        return Optional.ofNullable(currentLibraryPath);
     }
 
     private Map<String, Map<String, PinTemplate>> loadPinTemplateList() {
@@ -107,72 +148,26 @@ public enum DeviceLibrary {
         return Collections.emptyMap();
     }
 
-    private List<GenericDevice> loadGenericDeviceFromFile(String resourceName, GenericDeviceType type){
+    private List<GenericDevice> loadGenericDeviceFromFile(String filename, GenericDeviceType type){
         ObjectMapper mapper = new YAMLMapper();
         mapper.setInjectableValues(new InjectableValues.Std().addValue(GenericDeviceType.class, type));
-        List<GenericDevice> temp;
-        try {
-            temp = mapper.readValue(getClass().getResourceAsStream(resourceName), new TypeReference<List<GenericDevice>>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Can't load generic devices from " + resourceName);
-        }
-        temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));
-        return temp;
-    }
-
-    private static final List<String> libraryPaths = List.of(
-            "library",   // default path when running from the IDE which should override installer path to aid in development
-            getUserLibraryPath(),  // updated library for each user in user's machine
-            PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
-            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
-    );
-
-    public static String getUserLibraryPath() {
-        return PathUtility.MP_WORKSPACE + File.separator + "library";
-    }
-
-    public static Optional<String> getLibraryPath() {
-        return libraryPaths.stream()
-                .filter(s -> Files.exists(Path.of(s, "lib")) && Files.exists(Path.of(s, "lib_ext"))
-                        && Files.exists(Path.of(s, "pin_templates")))
-                .findFirst();
-    }
-
-    public static String getDeviceDirectoryPath() {
-        if (getLibraryPath().isEmpty()) {
-            throw new IllegalStateException("Library Path is missing");
-        }
-        return getLibraryPath().get() + File.separator + "devices";
-    }
-
-    public static Path getDeviceImagePath(ActualDevice actualDevice) {
-        String id;
-        if (actualDevice instanceof IntegratedActualDevice) {
-            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
+        Optional<String> libraryPath = getLibraryPath();
+        if (libraryPath.isPresent()) {
+            Path path = Path.of(libraryPath.get(), "schemas", filename);
+            try{
+                List<GenericDevice> temp = mapper.readValue(path.toFile(), new TypeReference<List<GenericDevice>>() {});
+                temp.sort((device1, device2) -> device1.getName().compareToIgnoreCase(device2.getName()));
+                return temp;
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new IllegalStateException("Can't load generic devices from " + path.toAbsolutePath());
+            }
         } else {
-            id = actualDevice.getId();
-        }
-        // TODO: Should we handle case that the image is missing or let the caller check for path existence?
-        return Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device.png");
-    }
-
-    public static Path getDeviceThumbnailPath(ActualDevice actualDevice) {
-        String id;
-        if (actualDevice instanceof IntegratedActualDevice) {
-            id = ((IntegratedActualDevice) actualDevice).getParent().getId();
-        } else {
-            id = actualDevice.getId();
-        }
-        Path thumbnailPath = Path.of(DeviceLibrary.getDeviceDirectoryPath(), id, "asset", "device_thumbnail.png");
-        if (Files.exists(thumbnailPath)) {
-            return thumbnailPath;
-        } else {
-            return getDeviceImagePath(actualDevice);
+            return Collections.emptyList();
         }
     }
 
-    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate){
+    private List<ActualDevice> loadActualDeviceList(Map<String, Map<String, PinTemplate>> pinTemplate, Map<Path, String> errors){
         List<ActualDevice> temp = new ArrayList<>();
         YAMLMapper mapper = new YAMLMapper();
         SimpleModule simpleModule = new SimpleModule();
@@ -187,11 +182,8 @@ public enum DeviceLibrary {
                         try {
                             ActualDevice actualDevice = mapper.readValue(deviceDefinitionPath.toFile(), ActualDevice.class);
                             temp.add(actualDevice);
-                        } catch (JsonParseException e) {
-                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
-                        } catch (NullPointerException e) {
-                            System.err.println("Found some errors when reading device at " + deviceDefinitionPath.toAbsolutePath());
-                            throw new IllegalStateException(e);
+                        } catch (Exception e) {
+                            errors.put(deviceDefinitionPath, e.getMessage());
                         }
                     }
                 }

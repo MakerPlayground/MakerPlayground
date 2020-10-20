@@ -57,10 +57,6 @@ public class SceneDeviceIconViewModel {
         return name;
     }
 
-    public String getImageName() {
-        return userSetting.getDevice().getGenericDevice().getName();
-    }
-
     public Action getAction() {
         return userSetting.getAction();
     }

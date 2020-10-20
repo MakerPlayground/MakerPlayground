@@ -16,7 +16,6 @@
 
 package io.makerplayground.ui.devicetab;
 
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.*;
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.DataType;
@@ -34,6 +33,7 @@ import io.makerplayground.ui.dialog.AzureSettingDialog;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.util.PathUtility;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -190,7 +190,7 @@ public class ActualDeviceConfigView extends VBox{
                         } else {
                             try {
                                 ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
-                                        DeviceLibrary.getDeviceThumbnailPath(item.getActualDevice()))));
+                                        PathUtility.getDeviceThumbnailPath(item.getActualDevice()))));
                                 deviceImageView.setFitWidth(75);
                                 deviceImageView.setFitHeight(75);
                                 deviceImageView.setSmooth(true);
@@ -288,7 +288,7 @@ public class ActualDeviceConfigView extends VBox{
                             }
                             try {
                                 ImageView deviceImageView = new ImageView(new Image(Files.newInputStream(
-                                        DeviceLibrary.getDeviceThumbnailPath(thumbnailActualDevice))));
+                                        PathUtility.getDeviceThumbnailPath(thumbnailActualDevice))));
                                 deviceImageView.setFitWidth(75);
                                 deviceImageView.setFitHeight(75);
                                 deviceImageView.setSmooth(true);
@@ -380,8 +380,7 @@ public class ActualDeviceConfigView extends VBox{
         settingPane.getChildren().clear();
         int currentRow = 0;
         for (ProjectDevice projectDevice : devices) {
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                    + projectDevice.getGenericDevice().getName() + ".png")));
+            ImageView imageView = new ImageView(new Image(PathUtility.getGenericDeviceIconAsStream(projectDevice.getGenericDevice())));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
             GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
@@ -644,8 +643,7 @@ public class ActualDeviceConfigView extends VBox{
             int currentRow = 0;
             cloudPlatformParameterPane.getChildren().clear();
             for (CloudPlatform cloudPlatform : viewModel.getAllCloudPlatforms()) {
-                ImageView cloudPlatformIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/colorIcons-3/"
-                        + cloudPlatform.getDisplayName() + ".png")));
+                ImageView cloudPlatformIcon = new ImageView(new Image(PathUtility.getCloudPlatformIconAsStream(cloudPlatform)));
                 cloudPlatformIcon.setFitHeight(30.0);
                 cloudPlatformIcon.setFitWidth(30.0);
                 GridPane.setRowIndex(cloudPlatformIcon, currentRow);

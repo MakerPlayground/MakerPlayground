@@ -127,7 +127,7 @@ public class ArduinoExportTask extends ProjectExportTask {
         }
 
         // get path to the library directory
-        Optional<String> libraryPath = DeviceLibrary.getLibraryPath();
+        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
         if (libraryPath.isEmpty()) {
             updateMessage("Error: Missing library directory");
             exportResult = ExportResult.MISSING_LIBRARY_DIR;

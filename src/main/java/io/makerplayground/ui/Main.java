@@ -18,14 +18,15 @@ package io.makerplayground.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.device.DeviceLibrary;
+import io.makerplayground.device.DeviceLibraryUpdateHelper;
 import io.makerplayground.generator.source.SourceCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.ui.dialog.DeviceLibraryErrorDialogView;
 import io.makerplayground.ui.dialog.TaskDialogView;
 import io.makerplayground.ui.dialog.UnsavedDialog;
 import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipResourceExtractor;
-import io.makerplayground.version.DeviceLibraryVersion;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -46,10 +47,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.file.Path;
+import java.util.*;
 
 import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 
@@ -63,7 +62,13 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // TODO: show progress indicator while loading if need
 
-        DeviceLibrary.INSTANCE.loadDeviceFromFiles();
+        Map<Path, String> errors = DeviceLibrary.INSTANCE.loadDeviceLibrary();
+        if (!errors.isEmpty()) {
+            primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                DeviceLibraryErrorDialogView dialogView = new DeviceLibraryErrorDialogView(primaryStage, errors);
+                dialogView.showAndWait();
+            });
+        }
 
         // try to load a project file passed as a command line argument if existed
         List<String> parameters = getParameters().getUnnamed();
@@ -295,7 +300,7 @@ public class Main extends Application {
     }
 
     public void updateDeviceLibrary(Window window) {
-        if (!DeviceLibraryVersion.isUpdateFileAvailable()) {
+        if (!DeviceLibraryUpdateHelper.isUpdateFileAvailable()) {
             return;
         }
 
@@ -310,7 +315,7 @@ public class Main extends Application {
         }
 
         // delete old library
-        File oldLibraryDirectory = new File(DeviceLibrary.getUserLibraryPath());
+        File oldLibraryDirectory = new File(PathUtility.getUserLibraryPath());
         if (oldLibraryDirectory.isDirectory()) {
             try {
                 FileUtils.deleteDirectory(oldLibraryDirectory);
@@ -320,13 +325,13 @@ public class Main extends Application {
         }
 
         // install new library to platform default library dir
-        Optional<File> updateFilePath = DeviceLibraryVersion.getUpdateFilePath().map(File::new);
+        Optional<File> updateFilePath = DeviceLibraryUpdateHelper.getUpdateFilePath().map(File::new);
         if (updateFilePath.isPresent()) {
+            Map<Path, String> errors = new HashMap<>();
             Task<Void> extractTask  = ZipResourceExtractor.launchExtractTask(updateFilePath.get(), PathUtility.MP_WORKSPACE);
             extractTask.addEventHandler(WORKER_STATE_SUCCEEDED, (event) -> {
                 // reload the library and project
-                DeviceLibrary.INSTANCE.loadDeviceFromFiles();
-                DeviceLibraryVersion.reloadCurrentVersion();
+                errors.putAll(DeviceLibrary.INSTANCE.loadDeviceLibrary());
                 // reload current project from file
                 if (!project.get().getFilePath().isEmpty()) {
                     Optional<Project> p = Project.loadProject(new File(project.get().getFilePath()));
@@ -345,7 +350,11 @@ public class Main extends Application {
                 }
             });
             TaskDialogView<Task<Void>> dialogView = new TaskDialogView<>(window, extractTask, "Install Library");
-            dialogView.show();
+            dialogView.showAndWait();
+            if (!errors.isEmpty()) {
+                DeviceLibraryErrorDialogView dialogView1 = new DeviceLibraryErrorDialogView(window, errors);
+                dialogView1.showAndWait();
+            }
         }
     }
 
