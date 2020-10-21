@@ -34,7 +34,7 @@ public class InteractiveModel {
     private final Map<ProjectDevice, UserSetting> conditionUserSettings = new HashMap<>();
     private final LinkedHashMap<ProjectDevice, List<Action>> actionMap = new LinkedHashMap<>();
     private final LinkedHashMap<ProjectDevice, LinkedHashMap<Condition, ReadOnlyBooleanWrapper>> conditionMap = new LinkedHashMap<>();
-    private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyDoubleWrapper>> valueMap = new LinkedHashMap<>();
+    private final LinkedHashMap<ProjectDevice, LinkedHashMap<Value, ReadOnlyStringWrapper>> valueMap = new LinkedHashMap<>();
     private final Project project;
 
     /* Cached device configuration at the time interactive mode is initialized */
@@ -130,11 +130,21 @@ public class InteractiveModel {
         return Optional.of(conditionMap.get(projectDevice).get(condition).getReadOnlyProperty());
     }
 
-    public Optional<ReadOnlyDoubleProperty> getValueProperty(ProjectDevice projectDevice, Value value) {
+    public Optional<ReadOnlyStringProperty> getValueProperty(ProjectDevice projectDevice, Value value) {
         if (!valueMap.containsKey(projectDevice) || !valueMap.get(projectDevice).containsKey(value)) {
             return Optional.empty();
         }
         return Optional.of(valueMap.get(projectDevice).get(value).getReadOnlyProperty());
+    }
+
+    public List<ProjectValue> getProjectValues() {
+        List<ProjectValue> projectValues = new ArrayList<>();
+        for (ProjectDevice pd: valueMap.keySet()) {
+            for(Value value: valueMap.get(pd).keySet()) {
+                projectValues.add(new ProjectValue(pd, value));
+            }
+        }
+        return projectValues;
     }
 
     public boolean isStarted() {
@@ -239,7 +249,7 @@ public class InteractiveModel {
                 if (!values.isEmpty()) {
                     valueMap.put(projectDevice, new LinkedHashMap<>());
                     for (Value value: values) {
-                        valueMap.get(projectDevice).put(value, new ReadOnlyDoubleWrapper(0.0));
+                        valueMap.get(projectDevice).put(value, new ReadOnlyStringWrapper("0"));
                     }
                 }
             }
@@ -250,7 +260,7 @@ public class InteractiveModel {
         conditionMap.put(Memory.projectDevice, new LinkedHashMap<>());
         conditionMap.get(Memory.projectDevice).put(Memory.compare, new ReadOnlyBooleanWrapper(false));
         valueMap.put(Memory.projectDevice, new LinkedHashMap<>());
-        project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyDoubleWrapper(0.0)));
+        project.getUnmodifiableVariable().forEach(projectValue -> valueMap.get(Memory.projectDevice).put(projectValue.getValue(), new ReadOnlyStringWrapper("")));
     }
 
     /*
@@ -415,7 +425,7 @@ public class InteractiveModel {
             VariableExpression expression = (VariableExpression) userSetting.getParameterMap().get(Memory.nameParameter);
             expression.getProjectValue().ifPresent(projectValue ->
                     valueMap.get(Memory.projectDevice).get(projectValue.getValue()).set(
-                            evaluateCustomNumberExpression((CustomNumberExpression) (userSetting.getParameterMap().get(Memory.valueParameter)))
+                            Double.toString(evaluateCustomNumberExpression((CustomNumberExpression) (userSetting.getParameterMap().get(Memory.valueParameter))))
                     )
             );
             return;
@@ -454,6 +464,9 @@ public class InteractiveModel {
                     sb.append(evaluateCustomNumberExpression((CustomNumberExpression) e));
                 } else if (e instanceof SimpleStringExpression) {
                     sb.append(((SimpleStringExpression) e).getString());
+                } else if (e instanceof ProjectValueExpression) {
+                    ProjectValue pv = ((ProjectValueExpression) e).getProjectValue();
+                    this.getValueProperty(pv.getDevice(), pv.getValue()).ifPresent(stringProperty -> sb.append(stringProperty.get()));
                 } else {
                     throw new IllegalStateException();
                 }
@@ -470,7 +483,7 @@ public class InteractiveModel {
                     str += String.valueOf(((NumberWithUnitExpression) recordEntry.getValue()).getNumberWithUnit().getValue());
                 } else if (recordEntry.getValue() instanceof ProjectValueExpression) {
                     ProjectValue projectValue = ((ProjectValueExpression) recordEntry.getValue()).getProjectValue();
-                    ReadOnlyDoubleProperty currentValue = valueMap.get(projectValue.getDevice()).get(projectValue.getValue());
+                    ReadOnlyStringProperty currentValue = valueMap.get(projectValue.getDevice()).get(projectValue.getValue());
                     str += currentValue.get();
                 } else {
                     throw new IllegalStateException();
@@ -504,8 +517,8 @@ public class InteractiveModel {
                 operandStack.push(((NumberWithUnitTerm) term).getValue().getValue());
             } else if (term instanceof ValueTerm) {
                 ProjectValue projectValue = ((ValueTerm) term).getValue();
-                ReadOnlyDoubleProperty currentValue = valueMap.get(projectValue.getDevice()).get(projectValue.getValue());
-                operandStack.push(currentValue.get());
+                ReadOnlyStringProperty currentValue = valueMap.get(projectValue.getDevice()).get(projectValue.getValue());
+                operandStack.push(Double.parseDouble(currentValue.get()));
             } else if (term instanceof OperatorTerm) {
                 Operator operator = ((OperatorTerm) term).getValue();
                 if (operatorStack.isEmpty() || operator == Operator.OPEN_PARENTHESIS || operator == Operator.MULTIPLY
@@ -567,11 +580,11 @@ public class InteractiveModel {
     }
 
     void processInMessage(String message) {
-//        System.out.println(message);
+        System.out.println(message);
         if (!sensorReading.get()) {
             return;
         }
-        List<String> args = Arrays.stream(message.split("[ \"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
+        List<String> args = Arrays.stream(message.split("[\\u0000\"]")).filter(s->!s.isBlank()).collect(Collectors.toList());
         ProjectDevice projectDevice = nameDeviceMap.get(args.get(0));
         if (projectDevice == null) {
             System.err.println("Unknown message : " + args);
@@ -590,7 +603,7 @@ public class InteractiveModel {
             }
             if (valueMap.containsKey(projectDevice)) {
                 for (Value value : valueMap.get(projectDevice).keySet()) {
-                    valueMap.get(projectDevice).get(value).set(Double.parseDouble(args.get(argsIndex)));
+                    valueMap.get(projectDevice).get(value).set(args.get(argsIndex));
                     argsIndex++;
                 }
             }

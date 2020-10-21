@@ -189,7 +189,7 @@ public class SceneDevicePropertyPane extends VBox {
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.TEXTBOX) {
                 StringChipField stringChipField = new StringChipField((ComplexStringExpression) userSetting.getParameterMap().get(p)
-                        , project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
+                        , project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER, DataType.STRING)));
                 stringChipField.expressionProperty().addListener((observableValue, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = stringChipField;
             } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.INTEGER_ENUM) {

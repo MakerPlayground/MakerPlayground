@@ -22,6 +22,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -300,11 +301,11 @@ public class ConditionDevicePropertyPane extends VBox {
             Label valueLabel = new Label();
             valueLabel.setMinHeight(25);  // TODO: find better way to center the label to the height of 1 row control when the control spans to multiple rows
             valueLabel.setStyle("-fx-text-fill: grey;");
-            Optional<ReadOnlyDoubleProperty> valueProperty = project.getInteractiveModel().getValueProperty(userSetting.getDevice(), value);
+            Optional<ReadOnlyStringProperty> valueProperty = project.getInteractiveModel().getValueProperty(userSetting.getDevice(), value);
             if (valueProperty.isPresent()) {
                 BooleanBinding deviceValidBinding = Bindings.createBooleanBinding(() -> project.getInteractiveModel().isDeviceValid(userSetting.getDevice()), valueProperty.get());
                 valueLabel.textProperty().bind(Bindings.when(deviceValidBinding)
-                        .then(Bindings.concat("(value = ").concat(valueProperty.get().asString()).concat(")"))
+                        .then(Bindings.concat("(value = ").concat(valueProperty.get()).concat(")"))
                         .otherwise("(value unavailable)"));
                 Tooltip tooltip = new Tooltip("Restart the interactive mode to see realtime value");
                 tooltip.setShowDelay(Duration.millis(250));

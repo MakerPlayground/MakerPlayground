@@ -272,9 +272,9 @@ public class ArduinoInteractiveCode {
                                     break;
                                 case STRING:
                                     param = "commandArgs[" + (i + 2) + "]";
-                                    builder.append(INDENT).append(INDENT).append(INDENT)
+                                    builder.append(INDENT).append(INDENT).append(INDENT).append("strcpy(")
                                             .append("_").append(projectDevice.getName()).append("_")
-                                            .append("strcpy(").append(condition.getFunctionName()).append("_").append("param").append(i)
+                                            .append(condition.getFunctionName()).append("_").append("param").append(i)
                                             .append(", ").append(param).append(");").append(NEW_LINE);
                                     break;
                                 default:
@@ -328,7 +328,7 @@ public class ArduinoInteractiveCode {
                         if (condition.getName().equals("Compare")) {    // TODO: compare with name is dangerous
                             return;
                         }
-                        builder.append(INDENT).append(INDENT).append("MPSerial.print(F(\" \"));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.write(0);").append(NEW_LINE);
 
                         String params = IntStream.range(0, condition.getParameter().size()).boxed()
                                 .map(integer -> "_" + projectDevice.getName() + "_" + condition.getFunctionName() + "_param" + integer)
@@ -337,7 +337,7 @@ public class ArduinoInteractiveCode {
                     });
                     // value
                     compatibility.getDeviceValue().forEach((value, constraint) -> {
-                        builder.append(INDENT).append(INDENT).append("MPSerial.print(F(\" \"));").append(NEW_LINE);
+                        builder.append(INDENT).append(INDENT).append("MPSerial.write(0);").append(NEW_LINE);
                         builder.append(INDENT).append(INDENT).append("MPSerial.print(").append(variableName).append(".get").append(value.getName().replace(" ", "_").replace(".", "_")).append("());").append(NEW_LINE);
                     });
                     builder.append(INDENT).append(INDENT).append("MPSerial.println();").append(NEW_LINE);
