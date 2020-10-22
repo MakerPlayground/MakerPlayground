@@ -16,13 +16,16 @@
 
 package io.makerplayground.generator.source;
 
-import io.makerplayground.device.actual.*;
-import io.makerplayground.device.shared.*;
+import io.makerplayground.device.actual.CloudPlatform;
+import io.makerplayground.device.actual.Platform;
+import io.makerplayground.device.shared.DataType;
+import io.makerplayground.device.shared.DelayUnit;
+import io.makerplayground.device.shared.Parameter;
+import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
-import io.makerplayground.project.Condition;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.VirtualProjectDevice.TimeElapsed;
 import io.makerplayground.project.expression.*;
@@ -58,7 +61,7 @@ public class ArduinoUploadCode {
         this.projectDeviceGroups = project.getProjectDevicesUsedGroupByActualDevice();
 
         // retrieve all project values
-        this.valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER));
+        this.valueUsed = project.getAllValueUsedMap(EnumSet.of(DataType.DOUBLE, DataType.INTEGER, DataType.STRING));
     }
 
     public static SourceCodeResult generateCode(Project project) {

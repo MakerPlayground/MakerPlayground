@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 
 public class DeviceMonitor extends SplitPane {
 
-    private static final Pattern format = Pattern.compile("(\\[\\[I]]|\\[\\[E]]|\\[\\[V]])?\\s\"(.*)\"\\s(.+)", Pattern.DOTALL); // Regex
+    private static final Pattern format = Pattern.compile("(\\[\\[I]]|\\[\\[E]]|\\[\\[V]])?\\u0000\"(.*)\"\\u0000(.+)", Pattern.DOTALL); // Regex
     private static final Pattern numberRegex = Pattern.compile("^(-?\\d+\\.\\d+)$|^(-?\\d+)$");
 
     private ReadOnlyBooleanWrapper isRunning = new ReadOnlyBooleanWrapper(false);
@@ -180,7 +180,7 @@ public class DeviceMonitor extends SplitPane {
                     }
                     for (LogItem addedItem : c.getAddedSubList()) {
                         if (addedItem.getDeviceName().equals(tag)) {
-                            // assume that the format is "value = 10.5"
+                            // assume that the format is "A=10.5,B=5,C=2.3"
                             String[] valuePairs = addedItem.getMessage().split(",");
                             for (String valuePair : valuePairs) {
                                 String[] tokens = valuePair.split("=");
@@ -219,6 +219,30 @@ public class DeviceMonitor extends SplitPane {
         }
     }
 
+    private void processMessageIn(String message) {
+        Matcher log = format.matcher(message);
+        if (log.find() && log.groupCount() == 3) {
+            LogItem logItem = new LogItem(log.group(1), log.group(2), log.group(3));
+            Platform.runLater(() -> {
+                logData.addAll(logItem);
+                if (!tagListForTable.contains(logItem.getDeviceName())) {
+                    tagListForTable.add(logItem.getDeviceName());
+                    // A hack to make the checkbox tick became visible properly
+                    Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItem.getDeviceName()));
+                }
+                if (autoScrollCheckbox.isSelected()) {
+                    deviceMonitorTable.scrollTo(logItem);
+                }
+
+                if (!tagListForChart.contains(logItem.getDeviceName())) {
+                    tagListForChart.add(logItem.getDeviceName());
+                    // A hack to make the checkbox tick became visible properly
+                    Platform.runLater(() -> plotTagComboBox.getCheckModel().check(logItem.getDeviceName()));
+                }
+            });
+        }
+    }
+
     private boolean startMonitor(String rpiHostName) {
         URI uri = URI.create("ws://" + rpiHostName + ":6213");
         webSocketClient = new WebSocketClient(uri) {
@@ -231,27 +255,7 @@ public class DeviceMonitor extends SplitPane {
             public void onMessage(String message) {
                 String[] lines = message.strip().split("\n");
                 for (String line : lines) {
-                    Matcher log = format.matcher(line);
-                    if (log.find() && log.groupCount() == 3) {
-                        LogItem logItem = new LogItem(log.group(1), log.group(2), log.group(3));
-                        Platform.runLater(() -> {
-                            logData.addAll(logItem);
-                            if (!tagListForTable.contains(logItem.getDeviceName())) {
-                                tagListForTable.add(logItem.getDeviceName());
-                                // A hack to make the checkbox tick became visible properly
-                                Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItem.getDeviceName()));
-                            }
-                            if (autoScrollCheckbox.isSelected()) {
-                                deviceMonitorTable.scrollTo(logItem);
-                            }
-
-                            if (!tagListForChart.contains(logItem.getDeviceName())) {
-                                tagListForChart.add(logItem.getDeviceName());
-                                // A hack to make the checkbox tick became visible properly
-                                Platform.runLater(() -> plotTagComboBox.getCheckModel().check(logItem.getDeviceName()));
-                            }
-                        });
-                    }
+                    processMessageIn(line);
                 }
             }
 
@@ -300,28 +304,7 @@ public class DeviceMonitor extends SplitPane {
 
             @Override
             public void serialEvent(SerialPortEvent event) {
-                String message = new String(event.getReceivedData()).strip();
-                Matcher log = format.matcher(message);
-                if (log.find() && log.groupCount() == 3) {
-                    LogItem logItem = new LogItem(log.group(1), log.group(2), log.group(3));
-                    Platform.runLater(() -> {
-                        logData.addAll(logItem);
-                        if (!tagListForTable.contains(logItem.getDeviceName())) {
-                            tagListForTable.add(logItem.getDeviceName());
-                            // A hack to make the checkbox tick became visible properly
-                            Platform.runLater(() -> checkTagComboBox.getCheckModel().check(logItem.getDeviceName()));
-                        }
-                        if (autoScrollCheckbox.isSelected()) {
-                            deviceMonitorTable.scrollTo(logItem);
-                        }
-
-                        if (!tagListForChart.contains(logItem.getDeviceName())) {
-                            tagListForChart.add(logItem.getDeviceName());
-                            // A hack to make the checkbox tick became visible properly
-                            Platform.runLater(() -> plotTagComboBox.getCheckModel().check(logItem.getDeviceName()));
-                        }
-                    });
-                }
+                processMessageIn(new String(event.getReceivedData()).strip());
             }
         });
         if (!serialPort.openPort()) {
