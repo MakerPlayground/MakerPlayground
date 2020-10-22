@@ -33,14 +33,12 @@ import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MicroPythonUploadTask extends UploadTaskBase {
@@ -277,6 +275,12 @@ public class MicroPythonUploadTask extends UploadTaskBase {
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             p = builder.start();
+            // wait for at most 12 seconds for the process to finish before returning error
+            if (!p.waitFor(12, TimeUnit.SECONDS)) {
+                killProcess(p);
+                updateMessage(errorMessage);
+                return error;
+            }
             try (Scanner s = new Scanner(p.getInputStream())) {
                 while (s.hasNextLine()) {
                     if (isCancelled()) {
@@ -289,7 +293,7 @@ public class MicroPythonUploadTask extends UploadTaskBase {
                     Platform.runLater(() -> log.set(line + "\n"));
                 }
             }
-            int result = p.waitFor();
+            int result = p.exitValue();
             if (!allowError && result != 0) {
                 updateMessage(errorMessage);
                 return error;
