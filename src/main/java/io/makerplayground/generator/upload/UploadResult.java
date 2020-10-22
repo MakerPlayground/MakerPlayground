@@ -28,5 +28,6 @@ public enum UploadResult {
     CANT_WRITE_CODE,
     MISSING_LIBRARY_DIR,
     CANT_FIND_LIBRARY,
-    USER_CANCEL
+    USER_CANCEL,
+    CANT_RESET_BOARD
 }
