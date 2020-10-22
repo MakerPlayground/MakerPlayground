@@ -257,6 +257,14 @@ public class MicroPythonUploadTask extends UploadTaskBase {
             e.printStackTrace();
         }
 
+        updateProgress(0.9, 1);
+        updateMessage("Reset the board");
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "reset")
+                , false, "Error: Can't reset the board", UploadResult.CANT_RESET_BOARD, null);
+        if (result != UploadResult.OK) {
+            return result;
+        }
+
         updateProgress(1, 1);
         updateMessage("Done");
 
