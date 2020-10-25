@@ -33,6 +33,8 @@ javafx {
 
 run {
     doFirst {
+        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-x86.gradle
+        // and the innosetup script for the Windows in the package submodule
         jvmArgs += [
                 '--add-exports', 'javafx.base/com.sun.javafx.runtime=org.controlsfx.controls',
                 '--add-exports', 'javafx.base/com.sun.javafx.collections=org.controlsfx.controls',
