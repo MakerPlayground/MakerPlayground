@@ -292,7 +292,7 @@ public class DeviceExplorerView extends VBox {
             imageViewWrapper.opacityProperty().bind(imageOpacity);
             Path deviceImagePath = PathUtility.getDeviceThumbnailPath(actualDevice);
             if (Files.exists(deviceImagePath)) {
-                ImageView imageView = new ImageView(new Image(deviceImagePath.toUri().toString()));
+                ImageView imageView = new ImageView(new Image(deviceImagePath.toUri().toString(), 160, 160, true, true, true));
                 imageView.setFitWidth(80);
                 imageView.setFitHeight(80);
                 imageView.setPreserveRatio(true);
