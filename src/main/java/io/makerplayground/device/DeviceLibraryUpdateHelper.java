@@ -13,11 +13,9 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import javax.net.ssl.SSLException;
 import java.io.*;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +40,7 @@ public class DeviceLibraryUpdateHelper {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 libraryVersions = mapper.readValue(new URL(VERSION_CHECKING_URL), new TypeReference<List<DeviceLibraryVersion>>(){});
-            } catch (UnknownHostException | ConnectException e) {
+            } catch (UnknownHostException | SSLException | SocketException e) {
                 // exception can normally be thrown when there is no internet connectivity
             } catch (IOException e) {
                 e.printStackTrace();

@@ -22,10 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.util.OSInfo;
 import javafx.scene.control.Alert;
 
+import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -63,7 +65,7 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
         ObjectMapper mapper = new ObjectMapper();
         try {
             latestVersion = mapper.readValue(new URL(URL + "/software_" + getCurrentVersion().getChannel() + ".json"), SoftwareVersion.class);
-        } catch (UnknownHostException|ConnectException e) {
+        } catch (UnknownHostException | SSLException | SocketException e) {
             // exception can normally be thrown when there is no internet connectivity
         } catch (IOException e) {
             e.printStackTrace();
