@@ -70,14 +70,27 @@ public class Main extends Application {
             });
         }
 
-        // try to load a project file passed as a command line argument if existed
+        // try to load a project file passed as a command line argument or event (on macOS) if existed
         List<String> parameters = getParameters().getUnnamed();
+        List<String> filesToBeOpened = FileOpenHelper.getInstance().getAndClearFiles();
         if (!parameters.isEmpty()) {
             File f = new File(parameters.get(parameters.size() - 1));
+            project = new SimpleObjectProperty<>(Project.loadProject(f).orElseGet(Project::new));
+        } else if (!filesToBeOpened.isEmpty()) {
+            File f = new File(filesToBeOpened.get(0));
             project = new SimpleObjectProperty<>(Project.loadProject(f).orElseGet(Project::new));
         } else {
             project = new SimpleObjectProperty<>(new Project());
         }
+
+        FileOpenHelper.getInstance().setCallback(() -> {
+            List<String> files = FileOpenHelper.getInstance().getAndClearFiles();
+            Platform.runLater(() -> {
+                if (!files.isEmpty()) {
+                    loadProjectFromPath(primaryStage.getScene().getWindow(), files.get(0));
+                }
+            });
+        });
 
         toolbar = new Toolbar(project);
         toolbar.setOnNewButtonPressed(event -> newProject(primaryStage.getScene().getWindow()));
@@ -189,6 +202,25 @@ public class Main extends Application {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
                 alert.showAndWait();
             }
+        }
+    }
+
+    public void loadProjectFromPath(Window window, String path) {
+        if (project.get().hasUnsavedModification()) {
+            UnsavedDialog.Response retVal = new UnsavedDialog(window).showAndGetResponse();
+            if (retVal == UnsavedDialog.Response.CANCEL) {
+                return;
+            } else if (retVal == UnsavedDialog.Response.SAVE) {
+                saveProject(window);
+            }
+        }
+
+        Optional<Project> p = Project.loadProject(new File(path));
+        if (p.isPresent()) {
+            project.set(p.get());
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "The program does not support this previous project version.", ButtonType.OK);
+            alert.showAndWait();
         }
     }
 

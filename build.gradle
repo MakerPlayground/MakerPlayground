@@ -78,7 +78,7 @@ jlink {
     }
 }
 
-mainClassName = "$moduleName/io.makerplayground.ui.Main"
+mainClassName = "$moduleName/io.makerplayground.ui.Launcher"
 version = getVersionName()
 
 task createBundle {
