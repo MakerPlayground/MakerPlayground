@@ -17,7 +17,6 @@
 package io.makerplayground.device.actual;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -62,11 +61,9 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         throwIfMissingField(node, "url", id);
         throwIfMissingField(node, "width", id);
         throwIfMissingField(node, "height", id);
-        throwIfMissingField(node, "pin_template", id);
         throwIfFieldIsNotArray(node, "platforms", id);
 
         createArrayNodeIfMissing(node, "cloud_provide");
-        createArrayNodeIfMissing(node, "connection_provide", "connection_consume");
         createArrayNodeIfMissing(node, "property");
         createArrayNodeIfMissing(node, "compatibility");
         createArrayNodeIfMissing(node, "integrated_devices");
@@ -115,103 +112,112 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         /* CloudPlatform */
         CloudPlatform cloudConsume = node.has("cloud_consume") ? CloudPlatform.valueOf(node.get("cloud_consume").asText()) : null;
 
-        String templateName = node.get("pin_template").asText();
-        if (!this.allPinTemplateMap.containsKey(templateName)) {
-            throw new IllegalStateException("There is no pin_template named " + templateName);
-        }
-        Map<String, PinTemplate> devicePinTemplate = this.allPinTemplateMap.get(templateName);
+        List<Connection> connectionProvide = new ArrayList<>();
+        List<Connection> connectionConsume = new ArrayList<>();
+        List<Connection> expandConnectionProvide;
+        List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
+        if (deviceType != DeviceType.CONTROLLER) {
+            if (node.has("connection_provide")) {
+                connectionProvide = loadConnectionProvide(node.get("connection_provide"), Collections.emptyMap());
+            }
+            if (node.has("connection_consume")) {
+                connectionConsume = loadConnectionConsume(node.get("connection_consume"), Collections.emptyMap());
+            }
+            expandConnectionProvide = expandConnection(connectionProvide);
+        } else {
+            throwIfMissingField(node, "pin_template", id);
+            String templateName = node.get("pin_template").asText();
+            if (!this.allPinTemplateMap.containsKey(templateName)) {
+                throw new IllegalStateException("There is no pin_template named " + templateName);
+            }
+            Map<String, PinTemplate> devicePinTemplate = this.allPinTemplateMap.get(templateName);
+            if (node.has("connection_provide")) {
+                connectionProvide = loadConnectionProvide(node.get("connection_provide"), devicePinTemplate);
+            }
+            if (node.has("connection_consume")) {
+                connectionConsume = loadConnectionConsume(node.get("connection_consume"), devicePinTemplate);
+            }
+            expandConnectionProvide = expandConnection(connectionProvide);
 
-        /* Pin, Port, Property */
-        List<Connection> connectionProvide = loadConnection(node.get("connection_provide"), devicePinTemplate);
-        List<Connection> expandConnectionProvide = expandConnection(connectionProvide);
-        List<Connection> connectionConsume = loadConnection(node.get("connection_consume"), devicePinTemplate);
+            /* Integrated Devices */
+            integratedDevices = new ArrayList<>();
+            for (JsonNode inNode : node.get("integrated_devices")) {
+
+                /* Check for name */
+                throwIfMissingField(inNode, "name", id, "integrated_device");
+
+                /* Extract Device Name */
+                String inDeviceName = inNode.get("name").asText();
+                createArrayNodeIfMissing(inNode, "property");
+
+                /* Check for required fields */
+                throwIfMissingField(inNode, "integrated_connection", id, "integrated_device", inDeviceName);
+                throwIfMissingField(inNode, "compatibility", id, "integrated_device", inDeviceName);
+                throwIfMissingField(inNode, "platforms", id, "integrated_device", inDeviceName);
+                throwIfFieldIsNotArray(inNode, "platforms", id, "integrated_device", inDeviceName);
+
+                List<Connection> inConnection = new ArrayList<>();
+                List<Pin> inPins = new ArrayList<>();
+                List<Pin> hostPins = new ArrayList<>();
+                for (JsonNode integratedConnectionNode: inNode.get("integrated_connection")) {
+                    throwIfMissingField(integratedConnectionNode, "pin_function", id, "integrated_device", inDeviceName, "integrated_connection");
+                    throwIfMissingField(integratedConnectionNode, "host_ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
+                    String hostRefTo = integratedConnectionNode.get("host_ref_to").asText();
+                    if (!devicePinTemplate.containsKey(hostRefTo)) {
+                        throw new IllegalStateException("There is no pin named " + hostRefTo + "in " + templateName);
+                    }
+                    PinTemplate hostPinTemplate = devicePinTemplate.get(hostRefTo);
+                    boolean hostHasHwSerial = hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_TX) || hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_RX);
+                    hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), -1, -1, hostPinTemplate.getFunction(), hostHasHwSerial, -1, -1));
+
+                    List<PinFunction> function = List.of(PinFunction.valueOf(integratedConnectionNode.get("pin_function").asText()));
+                    boolean hasHwSerial = function.contains(PinFunction.HW_SERIAL_TX) || function.contains(PinFunction.HW_SERIAL_RX);
+                    inPins.add(new Pin("", "", VoltageLevel.NOT_SPECIFIED, -1, -1, function, hasHwSerial, -1, -1));
+                }
+                inConnection.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, inPins, null));
+                expandConnectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
+
+                /* Extract platformSourceCodeLibrary */
+                Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
+                for (JsonNode platformNode : inNode.get("platforms")) {
+                    Platform platform = Platform.valueOf(platformNode.get("platform").asText());
+                    String classname = platformNode.get("classname").asText();
+                    List<String> externalLibraryList = mapper.readValue(platformNode.get("library_dependency").traverse()
+                            , new TypeReference<List<String>>() {});
+                    inPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+                }
+
+                List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
+
+                /* deallocate the created empty list and set to the shared static empty list instead */
+                if (inProperty.isEmpty()) { inProperty = Collections.emptyList(); }
+
+                /* Compatibility */
+                Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
+
+                IntegratedActualDevice inDevice = new IntegratedActualDevice(inDeviceName,
+                        inProperty,
+                        "",
+                        inConnection,
+                        inCompatibilityMap,
+                        inPlatformSourceCodeLibrary);
+
+                integratedDevices.add(inDevice);
+            }
+
+            List<String> allIntegratedDeviceName = integratedDevices.stream()
+                    .map(IntegratedActualDevice::getId)
+                    .collect(Collectors.toList());
+            if (allIntegratedDeviceName.stream().anyMatch(s -> Collections.frequency(allIntegratedDeviceName, s) > 1)) {
+                throw new IllegalStateException("There is a duplicate integrated device's name.");
+            }
+        }
+
+        /* Property */
         List<Property> property = mapper.readValue(node.get("property").traverse(), new TypeReference<List<Property>>() {});
 
         /* Compatibility */
         Map<GenericDevice, Compatibility> compatibilityMap = loadCompatibility(node);
-
-        List<IntegratedActualDevice> integratedDevices = new ArrayList<>();
-        for (JsonNode inNode : node.get("integrated_devices")) {
-
-            /* Check for name */
-            throwIfMissingField(inNode, "name", id, "integrated_device");
-
-            /* Extract Device Name */
-            String inDeviceName = inNode.get("name").asText();
-            createArrayNodeIfMissing(inNode, "property");
-
-            /* Check for required fields */
-            throwIfMissingField(inNode, "pin_template", id, "integrated_device", inDeviceName);
-            throwIfMissingField(inNode, "integrated_connection", id, "integrated_device", inDeviceName);
-            throwIfMissingField(inNode, "compatibility", id, "integrated_device", inDeviceName);
-            throwIfMissingField(inNode, "platforms", id, "integrated_device", inDeviceName);
-            throwIfFieldIsNotArray(inNode, "platforms", id, "integrated_device", inDeviceName);
-
-            String inTemplateName = inNode.get("pin_template").asText();
-            if (!this.allPinTemplateMap.containsKey(inTemplateName)) {
-                throw new IllegalStateException("There is no pin_template named " + inTemplateName);
-            }
-            Map<String, PinTemplate> inDevicePinTemplate = this.allPinTemplateMap.get(inTemplateName);
-
-            List<Connection> inConnection = new ArrayList<>();
-            List<Pin> inPins = new ArrayList<>();
-            List<Pin> hostPins = new ArrayList<>();
-            for (JsonNode integratedConnectionNode: inNode.get("integrated_connection")) {
-                throwIfMissingField(integratedConnectionNode, "ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
-                throwIfMissingField(integratedConnectionNode, "host_ref_to", id, "integrated_device", inDeviceName, "integrated_connection");
-                String refTo = integratedConnectionNode.get("ref_to").asText();
-                String hostRefTo = integratedConnectionNode.get("host_ref_to").asText();
-                if (!inDevicePinTemplate.containsKey(refTo)) {
-                    throw new IllegalStateException("There is no pin named " + refTo + "in " + inTemplateName);
-                }
-                if (!devicePinTemplate.containsKey(hostRefTo)) {
-                    throw new IllegalStateException("There is no pin named " + hostRefTo + "in " + templateName);
-                }
-                PinTemplate inPinTemplate = inDevicePinTemplate.get(refTo);
-                boolean hasHwSerial = inPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_TX) || inPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_RX);
-                inPins.add(new Pin(refTo, inPinTemplate.getCodingName(), inPinTemplate.getVoltageLevel(), inPinTemplate.getFunction(), hasHwSerial, -1, -1));
-
-                PinTemplate hostPinTemplate = devicePinTemplate.get(hostRefTo);
-                boolean hostHasHwSerial = hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_TX) || hostPinTemplate.getFunction().contains(PinFunction.HW_SERIAL_RX);
-                hostPins.add(new Pin(hostRefTo, hostPinTemplate.getCodingName(), hostPinTemplate.getVoltageLevel(), hostPinTemplate.getFunction(), hostHasHwSerial, -1, -1));
-            }
-            inConnection.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, inPins, null));
-            expandConnectionProvide.add(new Connection(inDeviceName, ConnectionType.INTEGRATED, hostPins, null));
-
-            /* Extract platformSourceCodeLibrary */
-            Map<Platform, SourceCodeLibrary> inPlatformSourceCodeLibrary = new HashMap<>();
-            for (JsonNode platformNode : inNode.get("platforms")) {
-                Platform platform = Platform.valueOf(platformNode.get("platform").asText());
-                String classname = platformNode.get("classname").asText();
-                List<String> externalLibraryList = mapper.readValue(platformNode.get("library_dependency").traverse()
-                        , new TypeReference<List<String>>() {});
-                inPlatformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
-            }
-
-            List<Property> inProperty = mapper.readValue(inNode.get("property").traverse(), new TypeReference<List<Property>>() {});
-
-            /* deallocate the created empty list and set to the shared static empty list instead */
-            if (inProperty.isEmpty()) { inProperty = Collections.emptyList(); }
-
-            /* Compatibility */
-            Map<GenericDevice, Compatibility> inCompatibilityMap = loadCompatibility(inNode);
-
-            IntegratedActualDevice inDevice = new IntegratedActualDevice(inDeviceName,
-                                                                            inProperty,
-                                                                            inTemplateName,
-                                                                            inConnection,
-                                                                            inCompatibilityMap,
-                                                                            inPlatformSourceCodeLibrary);
-
-            integratedDevices.add(inDevice);
-        }
-
-        List<String> allIntegratedDeviceName = integratedDevices.stream()
-                .map(IntegratedActualDevice::getId)
-                .collect(Collectors.toList());
-        if (allIntegratedDeviceName.stream().anyMatch(s -> Collections.frequency(allIntegratedDeviceName, s) > 1)) {
-            throw new IllegalStateException("There is a duplicate integrated device's name.");
-        }
 
         List<String> allConnectionName = Stream.of(connectionProvide.stream(), connectionConsume.stream())
                 .reduce(Stream::concat)
@@ -417,20 +423,32 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
         return compatibilityMap;
     }
 
-    private List<Connection> loadConnection(JsonNode portsNode, Map<String, PinTemplate> pinTemplateMap) throws IOException {
+    private List<Connection> loadConnectionProvide(JsonNode connectionProvideNode, Map<String, PinTemplate> pinTemplateMap) throws IOException {
+        throwIfMissingField(connectionProvideNode, "voltage_level", id, "connection_provide");
+        throwIfMissingField(connectionProvideNode, "items", id, "connection_provide");
+        VoltageLevel connectionVoltageLevel = VoltageLevel.valueOf(connectionProvideNode.get("voltage_level").asText());
+        double operatingVoltage = connectionVoltageLevel.getVoltage();
+        double connectionMinVoltage = connectionProvideNode.has("min_voltage") ? connectionProvideNode.get("min_voltage").asDouble() : 0.7 * operatingVoltage;
+        double connectionMaxVoltage = connectionProvideNode.has("max_voltage") ? connectionProvideNode.get("max_voltage").asDouble() : operatingVoltage;
+        if (connectionMinVoltage > operatingVoltage) {
+            throw new IllegalStateException("connection_provide's min_voltage is higher than operating voltage_level");
+        }
+        if (connectionMaxVoltage < operatingVoltage) {
+            throw new IllegalStateException("connection_provide's max_voltage is higher than operating voltage_level");
+        }
         List<Connection> connectionList = new ArrayList<>();
-        for (JsonNode portNode: portsNode) {
-            throwIfMissingField(portNode, "name", id, "connection");
-            throwIfMissingField(portNode, "type", id, "connection");
-            throwIfMissingField(portNode, "pins", id, "connection");
-            throwIfFieldIsNotArray(portNode, "pins", id, "connection");
+        for (JsonNode portNode: connectionProvideNode.get("items")) {
+            throwIfMissingField(portNode, "name", id, "connection_provide");
+            throwIfMissingField(portNode, "type", id, "connection_provide");
+            throwIfMissingField(portNode, "pins", id, "connection_provide");
+            throwIfFieldIsNotArray(portNode, "pins", id, "connection_provide");
 
             String connectionName = portNode.get("name").asText();
             ConnectionType connectionType = ConnectionType.valueOf(portNode.get("type").asText());
 
             List<Pin> pins = new ArrayList<>();
             for (JsonNode pinNode: portNode.get("pins")) {
-                throwIfMissingField(pinNode, "ref_to", id, "connection","pin");
+                throwIfMissingField(pinNode, "ref_to", id, "connection_provide","pin");
 
                 String refTo = pinNode.get("ref_to").asText();
 
@@ -444,10 +462,18 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 PinTemplate pinTemplate = pinTemplateMap.get(refTo);
                 double x = pinNode.get("x").asDouble();
                 double y = pinNode.get("y").asDouble();
-                VoltageLevel voltageLevel = pinNode.has("voltage_level") ? VoltageLevel.valueOf(pinNode.get("voltage_level").asText()) : pinTemplate.getVoltageLevel();
+                VoltageLevel pinVoltageLevel = pinNode.has("voltage_level") ? VoltageLevel.valueOf(pinNode.get("voltage_level").asText()) : connectionVoltageLevel;
+                double pinOperatingVoltage = pinVoltageLevel.getVoltage();
+                double pinMinVoltage = pinNode.has("min_voltage") ? pinNode.get("min_voltage").asDouble() : (pinNode.has("voltage_level") ? 0.7 * pinOperatingVoltage : connectionMinVoltage);
+                double pinMaxVoltage = pinNode.has("max_voltage") ? pinNode.get("max_voltage").asDouble() : (pinNode.has("voltage_level") ? pinOperatingVoltage : connectionMaxVoltage);
+                if (pinMinVoltage > pinOperatingVoltage) {
+                    throw new IllegalStateException("min_voltage is higher than operating voltage_level '" + pinOperatingVoltage + "' for (" + connectionName + "->" + refTo + ")");
+                }
+                if (pinMaxVoltage < pinOperatingVoltage) {
+                    throw new IllegalStateException("max_voltage is lower than operating voltage_level '" + pinOperatingVoltage + "' for (" + connectionName + "->" + refTo + ")");
+                }
 
                 List<PinFunction> function = pinTemplate.getFunction();
-                boolean hasHwSerial = function.contains(PinFunction.HW_SERIAL_TX) || function.contains(PinFunction.HW_SERIAL_RX);
                 if (pinNode.has("function")) {
                     if (pinNode.get("function").isArray()) {
                         function = mapper.readValue(pinNode.get("function").traverse(), new TypeReference<List<PinFunction>>() {});
@@ -455,8 +481,75 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                         function = List.of(PinFunction.valueOf(pinNode.get("function").asText()));
                     }
                 }
+                boolean hasHwSerial = function.contains(PinFunction.HW_SERIAL_TX) || function.contains(PinFunction.HW_SERIAL_RX);
 
-                pins.add(new Pin(refTo, pinTemplate.getCodingName(), voltageLevel, function, hasHwSerial, x, y));
+                pins.add(new Pin(refTo, pinTemplate.getCodingName(), pinVoltageLevel, pinMinVoltage, pinMaxVoltage, function, hasHwSerial, x, y));
+            }
+
+//            if (connectionType.isSplittable()) {
+//                for (int i=0; i<pins.size(); i++) {
+//                    connectionList.add(new Connection(connectionName+"_"+(i+1), ConnectionType.WIRE, List.of(pins.get(i)), null));
+//                }
+//            }
+
+            connectionList.add(new Connection(connectionName, connectionType, pins, null));
+        }
+        return connectionList;
+    }
+
+    private List<Connection> loadConnectionConsume(JsonNode connectionConsumeNode, Map<String, PinTemplate> pinTemplateMap) throws IOException {
+        throwIfMissingField(connectionConsumeNode, "min_voltage", id, "connection_consume", "");
+        throwIfMissingField(connectionConsumeNode, "max_voltage", id, "connection_consume", "");
+        throwIfMissingField(connectionConsumeNode, "items", id, "connection_consume", "");
+        VoltageLevel connectionVoltageLevel = connectionConsumeNode.has("voltage_level") ? VoltageLevel.valueOf(connectionConsumeNode.get("voltage_level").asText()) : VoltageLevel.NOT_SPECIFIED;
+        double connectionMinVoltage = connectionConsumeNode.get("min_voltage").asDouble();
+        double connectionMaxVoltage = connectionConsumeNode.get("max_voltage").asDouble();
+        if (connectionMinVoltage > connectionMaxVoltage) {
+            throw new IllegalStateException("connection_consume's min_voltage is higher than max_voltage");
+        }
+        if (connectionVoltageLevel != VoltageLevel.NOT_SPECIFIED && connectionMinVoltage > connectionVoltageLevel.getVoltage()) {
+            throw new IllegalStateException("connection_consume's min_voltage is higher than operating voltage_level");
+        }
+        if (connectionVoltageLevel != VoltageLevel.NOT_SPECIFIED && connectionMaxVoltage < connectionVoltageLevel.getVoltage()) {
+            throw new IllegalStateException("connection_consume's max_voltage is higher than operating voltage_level");
+        }
+        List<Connection> connectionList = new ArrayList<>();
+        for (JsonNode portNode: connectionConsumeNode.get("items")) {
+            throwIfMissingField(portNode, "name", id, "connection_consume");
+            throwIfMissingField(portNode, "type", id, "connection_consume");
+            throwIfMissingField(portNode, "pins", id, "connection_consume");
+            throwIfFieldIsNotArray(portNode, "pins", id, "connection_consume");
+
+            String connectionName = portNode.get("name").asText();
+            ConnectionType connectionType = ConnectionType.valueOf(portNode.get("type").asText());
+
+            List<Pin> pins = new ArrayList<>();
+            for (JsonNode pinNode: portNode.get("pins")) {
+                throwIfMissingField(pinNode, "pin_function", id, "connection_consume", connectionName, "pins");
+                double x = pinNode.get("x").asDouble();
+                double y = pinNode.get("y").asDouble();
+                VoltageLevel pinVoltageLevel = pinNode.has("voltage_level") ? VoltageLevel.valueOf(pinNode.get("voltage_level").asText()) : connectionVoltageLevel;
+                double pinOperatingVoltage = pinVoltageLevel.getVoltage();
+                double pinMinVoltage = pinNode.has("min_voltage") ? pinNode.get("min_voltage").asDouble() : connectionMinVoltage;
+                double pinMaxVoltage = pinNode.has("max_voltage") ? pinNode.get("max_voltage").asDouble() : connectionMaxVoltage;
+                if (pinMinVoltage > pinMaxVoltage) {
+                    throw new IllegalStateException("connection_consume's min_voltage is higher than max_voltage");
+                }
+                if (connectionVoltageLevel != VoltageLevel.NOT_SPECIFIED && pinMinVoltage > pinOperatingVoltage) {
+                    throw new IllegalStateException("min_voltage is higher than operating voltage_level for (" + connectionName + "->" + x + "," + y + ")");
+                }
+                if (connectionVoltageLevel != VoltageLevel.NOT_SPECIFIED && pinMaxVoltage < pinOperatingVoltage) {
+                    throw new IllegalStateException("max_voltage is higher than operating voltage_level for (" + connectionName + "->" + x + "," + y + ")");
+                }
+                List<PinFunction> function;
+                if (pinNode.get("pin_function").isArray()) {
+                    function = mapper.readValue(pinNode.get("pin_function").traverse(), new TypeReference<List<PinFunction>>() {});
+                } else {
+                    function = List.of(PinFunction.valueOf(pinNode.get("pin_function").asText()));
+                }
+                boolean hasHwSerial = function.contains(PinFunction.HW_SERIAL_TX) || function.contains(PinFunction.HW_SERIAL_RX);
+
+                pins.add(new Pin("", "", pinVoltageLevel, pinMinVoltage, pinMaxVoltage, function, hasHwSerial, x, y));
             }
 
 //            if (connectionType.isSplittable()) {

@@ -16,21 +16,15 @@
 
 package io.makerplayground.device.actual;
 
+import lombok.Getter;
+
 public enum VoltageLevel {
-    LEVEL_3v3, LEVEL_5, LEVEL_3v3_5, LEVEL_1, LEVEL_12;
+    NOT_SPECIFIED(-1), LEVEL_3v3(3.3), LEVEL_5(5), LEVEL_1(1), LEVEL_12(12);
 
-    public boolean canConsume(VoltageLevel provideVoltageLevel) {
-        if (this == provideVoltageLevel) {
-            return true;
-        }
-        if ((this == LEVEL_3v3_5) && (provideVoltageLevel == LEVEL_5 || provideVoltageLevel == LEVEL_3v3)) {
-            return true;
-        }
+    @Getter
+    private final double voltage;
 
-        // provider can be 3.3 or 5 voltage level supports such as GND.
-        if ((this == LEVEL_3v3 || this == LEVEL_5) && (provideVoltageLevel == LEVEL_3v3_5)) {
-            return true;
-        }
-        return false;
+    VoltageLevel(double voltage) {
+        this.voltage = voltage;
     }
 }

@@ -28,68 +28,75 @@ public class DeviceConnectionLogic {
 
     private static boolean[][] getConnectionMatchingArray(List<Connection> allConnectionConsume,
                                                           List<Connection> remainingConnectionProvide,
-                                                          Map<ProjectDevice, Set<String>> usedRefPin) {
-        /* All device must used the same voltage level */
-        Map<VoltageLevel, Long> countNonPowerPinGroupByVoltageLevel = remainingConnectionProvide.stream()
-                .map(Connection::getPins)
-                .flatMap(Collection::stream)
-                .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
-                .filter(pin -> !pin.getFunction().contains(PinFunction.GND))
-                .collect(Collectors.toSet())
-                .stream()
-                .map(Pin::getVoltageLevel)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        int numNonPowerPinUsed = allConnectionConsume.stream()
-                .map(Connection::getPins)
-                .flatMap(Collection::stream)
-                .filter(pin -> !pin.getFunction().contains(PinFunction.VCC))
-                .filter(pin -> !pin.getFunction().contains(PinFunction.GND))
-                .collect(Collectors.toSet())
-                .size();
-        List<VoltageLevel> possibleVoltageLevels = countNonPowerPinGroupByVoltageLevel.entrySet().stream().filter(entry -> entry.getValue() >= numNonPowerPinUsed).map(Map.Entry::getKey).collect(Collectors.toList());
-
+                                                          Map<ProjectDevice, Set<String>> usedRefPin,
+                                                          VoltageLevel operatingVoltageLevel) {
         boolean[][] connectionMatching = new boolean[allConnectionConsume.size()][];
         for (int i=0; i<connectionMatching.length; i++) {
             connectionMatching[i] = new boolean[remainingConnectionProvide.size()];
             for (int j = 0; j< remainingConnectionProvide.size(); j++) {
+                // Initially set to true
                 connectionMatching[i][j] = true;
                 Connection connectionConsumer = allConnectionConsume.get(i);
                 Connection connectionProvider = remainingConnectionProvide.get(j);
+
+                // Check Connection Type
                 if (!connectionConsumer.getType().canConsume(connectionProvider.getType())) {
                     connectionMatching[i][j] = false;
                     continue;
                 }
-                if (connectionConsumer.getType() == ConnectionType.INTEGRATED
-                        && !connectionConsumer.getName().equals(connectionProvider.getName())) {
-                    connectionMatching[i][j] = false;
-                    continue;
+
+                // Check name of the connection consume of the integrated device
+                if (connectionConsumer.getType() == ConnectionType.INTEGRATED) {
+                    if (!connectionConsumer.getName().equals(connectionProvider.getName())) {
+                        connectionMatching[i][j] = false;
+                        continue;
+                    }
                 }
+
+                // Check the number of pins of the connection.
                 if (connectionProvider.getPins().size() != connectionConsumer.getPins().size()) {
                     connectionMatching[i][j] = false;
                     continue;
                 }
-                if (connectionConsumer.getType() != ConnectionType.INTEGRATED) {
-                    ProjectDevice providerProjectDevice = connectionProvider.getOwnerProjectDevice();
-                    for (int k = 0; k< connectionProvider.getPins().size(); k++) {
-                        Pin pin = connectionProvider.getPins().get(k);
-                        if (usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo()) && !connectionConsumer.getPins().get(k).getFunction().contains(PinFunction.NO_FUNCTION))
-                        {
+
+                ProjectDevice providerProjectDevice = connectionProvider.getOwnerProjectDevice();
+                for (int k = 0; k< connectionProvider.getPins().size(); k++) {
+                    Pin pin = connectionProvider.getPins().get(k);
+                    // Check whether the provider already used that pin refto
+                    if (usedRefPin.containsKey(providerProjectDevice)
+                            && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())
+                            && !connectionConsumer.getPins().get(k).getFunction().contains(PinFunction.NO_FUNCTION))
+                    {
+                        connectionMatching[i][j] = false;
+                        break;
+                    }
+
+                    if (connectionConsumer.getType() == ConnectionType.INTEGRATED) {
+                        continue;
+                    }
+
+                    // Check whether the provider can provide the function for consumer
+                    List<PinFunction> provideFunctions = pin.getFunction();
+                    boolean flag = false;
+                    for (PinFunction consumerFunction: connectionConsumer.getPins().get(k).getFunction()) {
+                        if (consumerFunction.getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
                             connectionMatching[i][j] = false;
+                            flag = true;
                             break;
                         }
-                        List<PinFunction> provideFunctions = pin.getFunction();
-                        boolean flag = false;
-                        for (PinFunction consumerFunction: connectionConsumer.getPins().get(k).getFunction()) {
-                            if (consumerFunction.getPossibleConsume().stream().noneMatch(provideFunctions::contains)) {
-                                connectionMatching[i][j] = false;
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (flag) break;
-                        VoltageLevel consumerVoltageLevel = connectionConsumer.getPins().get(k).getVoltageLevel();
+                    }
+                    if (flag) break;
+
+                    Pin consumerPin = connectionConsumer.getPins().get(k);
+                    if (!consumerPin.getFunction().contains(PinFunction.GND)) {
+                        // Check whether the operating voltage of consumer is compatible to the voltage level of provider.
                         VoltageLevel providerVoltageLevel = connectionProvider.getPins().get(k).getVoltageLevel();
-                        if (!consumerVoltageLevel.canConsume(providerVoltageLevel) || !possibleVoltageLevels.contains(providerVoltageLevel)) {
+                        double providerPinVoltage = connectionProvider.getPins().get(k).getVoltageLevel().getVoltage();
+                        double minConsumerVoltage = consumerPin.getMinVoltage();
+                        double maxConsumerVoltage = consumerPin.getMaxVoltage();
+                        if (minConsumerVoltage > providerPinVoltage
+                                || maxConsumerVoltage < providerPinVoltage
+                                || (operatingVoltageLevel != VoltageLevel.NOT_SPECIFIED && providerVoltageLevel != operatingVoltageLevel)) {
                             connectionMatching[i][j] = false;
                             break;
                         }
@@ -114,40 +121,49 @@ public class DeviceConnectionLogic {
                                                                           Map<ProjectDevice, Set<String>> usedRefPin,
                                                                           ProjectDevice projectDevice,
                                                                           ActualDevice actualDevice,
-                                                                          DeviceConnection currentConnection) {
+                                                                          DeviceConnection currentConnection,
+                                                                          boolean stopOnFirstUnmatched) {
+        DeviceConnectionResultStatus resultStatus = DeviceConnectionResultStatus.OK;
         List<Connection> allConnectionsProvide = new ArrayList<>(remainingConnectionProvide);
         List<Connection> allConnectionsConsume = actualDevice.getConnectionConsumeByOwnerDevice(projectDevice);
         SortedMap<Connection, List<Connection>> possibleConnections = new TreeMap<>(Connection.NAME_TYPE_COMPARATOR);
         for (int i=0; i<allConnectionsConsume.size(); i++) {
             Connection connectionConsume = allConnectionsConsume.get(i);
-            /* In order to check the compatible, the assigned pin/port must be temporary deallocated from the remaining pin/port. */
+            /* In order to check the compatible connection, the assigned connection must be temporary deallocated from the remaining connection. */
             Queue<Connection> deallocatingConnections = new ArrayDeque<>();
-            Map<ProjectDevice, Set<String>> deallcatingRefTo = new HashMap<>();
-            Connection connection = currentConnection.getConsumerProviderConnections().get(connectionConsume);
-            if (connection != null) {
-                if (connection.getType() != ConnectionType.WIRE) {
-                    deallocatingConnections.add(connection);
-                    allConnectionsProvide.add(connection);
-                } else if (connection.getType() == ConnectionType.WIRE &&
-                        connection.getPins().size() == 1 &&
-                        currentConnection.getProviderFunction().get(connection).get(0).isSingleUsed())
+            Map<ProjectDevice, Set<String>> deallocatingRefTo = new HashMap<>();
+            Connection currentConnectionProvide = currentConnection.getConsumerProviderConnections().get(connectionConsume);
+            DeviceConnection deallocatingDeviceConnection = new DeviceConnection(currentConnection);
+
+            if (currentConnectionProvide != null) {
+                if (currentConnectionProvide.getType() != ConnectionType.WIRE) {
+                    deallocatingConnections.add(currentConnectionProvide);
+                    allConnectionsProvide.add(currentConnectionProvide);
+                } else if (currentConnectionProvide.getType() == ConnectionType.WIRE &&
+                        currentConnectionProvide.getPins().size() == 1 &&
+                        currentConnection.getProviderFunction().get(currentConnectionProvide).get(0).isSingleUsed())
                 {
-                    deallocatingConnections.add(connection);
-                    allConnectionsProvide.add(connection);
+                    deallocatingConnections.add(currentConnectionProvide);
+                    allConnectionsProvide.add(currentConnectionProvide);
                 }
-                ProjectDevice providerProjectDevice = connection.getOwnerProjectDevice();
-                connection.getPins().forEach(pin -> {
+                ProjectDevice providerProjectDevice = currentConnectionProvide.getOwnerProjectDevice();
+                currentConnectionProvide.getPins().forEach(pin -> {
                     if (usedRefPin.containsKey(providerProjectDevice) && usedRefPin.get(providerProjectDevice).contains(pin.getRefTo())) {
-                        if (!deallcatingRefTo.containsKey(providerProjectDevice)) {
-                            deallcatingRefTo.put(providerProjectDevice, new HashSet<>());
+                        if (!deallocatingRefTo.containsKey(providerProjectDevice)) {
+                            deallocatingRefTo.put(providerProjectDevice, new HashSet<>());
                         }
-                        deallcatingRefTo.get(providerProjectDevice).add(pin.getRefTo());
+                        deallocatingRefTo.get(providerProjectDevice).add(pin.getRefTo());
                         usedRefPin.get(providerProjectDevice).remove(pin.getRefTo());
                     }
                 });
+                deallocatingDeviceConnection.getProviderFunction().remove(currentConnectionProvide);
             }
+            VoltageLevel consumerOperatingVoltageLevel = deallocatingDeviceConnection.getOperatingVoltageLevel();
 
-            boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin);
+            // Try matching the connection consume and provide.
+            boolean[][] connectionMatching = getConnectionMatchingArray(allConnectionsConsume, allConnectionsProvide, usedRefPin, consumerOperatingVoltageLevel);
+
+            // Create list of matched connection provide.
             List<Connection> connectionProvideList = new ArrayList<>();
             for (int j=0; j<allConnectionsProvide.size(); j++) {
                 if (connectionMatching[i][j]) {
@@ -155,17 +171,45 @@ public class DeviceConnectionLogic {
                     connectionProvideList.add(connectionProvide);
                 }
             }
+
+            // If there is no matched connection.
             if (connectionProvideList.isEmpty()) {
-                return DeviceConnectionResult.ERROR;
+                if (stopOnFirstUnmatched) {
+                    return DeviceConnectionResult.ERROR;
+                } else {
+                    resultStatus = DeviceConnectionResultStatus.ERROR;
+                }
             }
-            connectionProvideList.sort(Connection.LESS_PROVIDER_DEPENDENCY);
+
+            // Sort the matched list
+            VoltageLevel operatingVoltage = connectionProvideList.stream()
+                    .flatMap(connection -> connection.getPins().stream())
+                    .map(Pin::getVoltageLevel)
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse(null);
+
+            connectionProvideList.sort((connection1, connection2) -> {
+                long countCorrect1 = connection1.getPins().stream().filter(pin -> pin.getVoltageLevel() == operatingVoltage).count();
+                long countCorrect2 = connection2.getPins().stream().filter(pin -> pin.getVoltageLevel() == operatingVoltage).count();
+                if (countCorrect1 != countCorrect2) {
+                    return (int) (countCorrect2 - countCorrect1);
+                }
+                return Connection.LESS_PROVIDER_DEPENDENCY.compare(connection1, connection2);
+            });
+
+            // Keep the result in the possibleConnection map.
             possibleConnections.put(connectionConsume, connectionProvideList);
 
-            deallcatingRefTo.forEach((providerProjectDevice, refTo) ->
-                    usedRefPin.get(providerProjectDevice).addAll(deallcatingRefTo.get(providerProjectDevice))
+            // Reallocation the deallocated connection.
+            deallocatingRefTo.forEach((providerProjectDevice, refTo) ->
+                    usedRefPin.get(providerProjectDevice).addAll(deallocatingRefTo.get(providerProjectDevice))
             );
             allConnectionsProvide.removeAll(deallocatingConnections);
         }
-        return new DeviceConnectionResult(DeviceConnectionResultStatus.OK, possibleConnections);
+        return new DeviceConnectionResult(resultStatus, possibleConnections);
     }
 }

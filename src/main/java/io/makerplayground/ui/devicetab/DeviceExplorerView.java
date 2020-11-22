@@ -238,7 +238,7 @@ public class DeviceExplorerView extends VBox {
 
         Set<Connection> allConnectionProvide = new HashSet<>(currentController.getConnectionProvideByOwnerDevice(ProjectDevice.CONTROLLER));
         DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(allConnectionProvide
-                , Collections.emptyMap(), null, actualDevice, DeviceConnection.NOT_CONNECTED);
+                , Collections.emptyMap(), null, actualDevice, DeviceConnection.NOT_CONNECTED, true);
         if (result.getStatus() != DeviceConnectionResultStatus.OK) {
             return false;
         }

@@ -17,10 +17,10 @@
 package io.makerplayground.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.Connection;
 import io.makerplayground.device.actual.Pin;
 import io.makerplayground.device.actual.PinFunction;
+import io.makerplayground.device.actual.VoltageLevel;
 import lombok.*;
 
 import java.util.*;
@@ -79,5 +79,22 @@ public class DeviceConnection {
         }
         consumerProviderConnections.put(consumerConnection, providerConnection);
         providerFunction.put(providerConnection, providerPinFunction);
+    }
+
+    public VoltageLevel getOperatingVoltageLevel() {
+        for (Connection consumerConnection: consumerProviderConnections.keySet()) {
+            Connection providerConnection = consumerProviderConnections.get(consumerConnection);
+            if (providerConnection != null && providerFunction.containsKey(providerConnection)) {
+                List<PinFunction> providerFunctionList = providerFunction.get(providerConnection);
+                for (int i=0; i<providerConnection.getPins().size(); i++) {
+                    Pin providerPin = providerConnection.getPins().get(i);
+                    PinFunction providerPinFunction = providerFunctionList.get(i);
+                    if (providerPinFunction != PinFunction.GND) {
+                        return providerPin.getVoltageLevel();
+                    }
+                }
+            }
+        }
+        return VoltageLevel.NOT_SPECIFIED;
     }
 }

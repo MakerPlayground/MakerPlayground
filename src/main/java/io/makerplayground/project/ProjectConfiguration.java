@@ -38,6 +38,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -382,13 +383,15 @@ public final class ProjectConfiguration {
             for (CompatibleDevice compatibleDevice: selectable.keySet()) {
                 if (compatibleDevice.getActualDevice().isPresent() && selectable.get(compatibleDevice) == DeviceMappingResult.OK) {
                     ActualDevice actualDevice = compatibleDevice.getActualDevice().get();
-                    DeviceConnection currentConnection = deviceConnections.getOrDefault(projectDevice, DeviceConnection.NOT_CONNECTED);
-                    DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice, currentConnection);
-                    if (result.getStatus() == DeviceConnectionResultStatus.ERROR) {
-                        selectable.put(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
-                    } else {
-                        actualDeviceConnectionMap.put(actualDevice, result.getConnections());
+                    DeviceConnection currentConnection = DeviceConnection.NOT_CONNECTED;
+                    if (deviceMap.containsKey(projectDevice) && deviceMap.get(projectDevice) == actualDevice) {
+                        currentConnection = deviceConnections.getOrDefault(projectDevice, DeviceConnection.NOT_CONNECTED);
                     }
+                    DeviceConnectionResult result = DeviceConnectionLogic.generatePossibleDeviceConnection(remainingConnectionProvide, usedRefPin, projectDevice, actualDevice, currentConnection, false);
+                    if (result.getStatus() == DeviceConnectionResultStatus.ERROR) {
+                        selectable.replace(compatibleDevice, DeviceMappingResult.NO_AVAILABLE_PIN_PORT);
+                    }
+                    actualDeviceConnectionMap.put(actualDevice, result.getConnections());
                 }
             }
             deviceConnectionMap.put(projectDevice, actualDeviceConnectionMap);
@@ -926,8 +929,7 @@ public final class ProjectConfiguration {
                     ActualDevice actualDevice = deviceMap.get(projectDevice);
                     List<Connection> allConnectionConsume = new ArrayList<>(actualDevice.getConnectionConsumeByOwnerDevice(projectDevice));
                     while (!allConnectionConsume.isEmpty()) {
-                        allConnectionConsume.sort(getLessChoiceOfConnectionComparator(projectDevice));
-                        Connection connectionConsume = allConnectionConsume.get(0);
+                        Connection connectionConsume = allConnectionConsume.stream().min(getLessChoiceOfConnectionComparator(projectDevice)).orElse(null);
                         // Do not replace the connection that is already assigned by user.
                         if (getConnection(projectDevice, connectionConsume) != null) {
                             allConnectionConsume.remove(connectionConsume);
@@ -941,6 +943,20 @@ public final class ProjectConfiguration {
                         if (possibleDeviceConnection.get(connectionConsume).isEmpty()) {
                             return ProjectMappingResult.CANT_ASSIGN_PORT;
                         } else {
+                            VoltageLevel operatingVoltage = possibleDeviceConnection.get(connectionConsume).stream()
+                                    .flatMap(connection -> connection.getPins().stream())
+                                    .map(Pin::getVoltageLevel)
+                                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                                    .entrySet()
+                                    .stream()
+                                    .max(Map.Entry.comparingByValue())
+                                    .map(Map.Entry::getKey)
+                                    .orElse(null);
+                            possibleDeviceConnection.get(connectionConsume).sort((connection1, connection2) -> {
+                                long countCorrect1 = connection1.getPins().stream().filter(pin -> pin.getVoltageLevel() == operatingVoltage).count();
+                                long countCorrect2 = connection2.getPins().stream().filter(pin -> pin.getVoltageLevel() == operatingVoltage).count();
+                                return (int) (countCorrect2 - countCorrect1);
+                            });
                             setConnection(projectDevice, connectionConsume, possibleDeviceConnection.get(connectionConsume).get(0));
                             allConnectionConsume.remove(connectionConsume);
                         }

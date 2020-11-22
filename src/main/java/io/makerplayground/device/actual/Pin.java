@@ -26,6 +26,8 @@ public class Pin {
     private final String refTo;
     private final String codingName;
     private final VoltageLevel voltageLevel;
+    private final double minVoltage;
+    private final double maxVoltage;
     private final List<PinFunction> function;
     private final boolean hasHwSerial;
     @ToString.Exclude private final double x;

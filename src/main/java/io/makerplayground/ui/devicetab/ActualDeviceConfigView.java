@@ -329,9 +329,6 @@ public class ActualDeviceConfigView extends VBox{
                     setTooltip(null);
                 } else {
                     setText(item.getDisplayString());
-                    if (item.getDeviceMappingResult() != DeviceMappingResult.OK) {
-                        setOpacity(0.5);
-                    }
                 }
             }
         };
@@ -379,11 +376,22 @@ public class ActualDeviceConfigView extends VBox{
     private void initDeviceSettingControl(GridPane settingPane, Set<ProjectDevice> devices) {
         settingPane.getChildren().clear();
         int currentRow = 0;
+
         for (ProjectDevice projectDevice : devices) {
             ImageView imageView = new ImageView(new Image(PathUtility.getGenericDeviceIconAsStream(projectDevice.getGenericDevice())));
             imageView.setFitHeight(30.0);
             imageView.setFitWidth(30.0);
             GridPane.setConstraints(imageView, 0, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+
+            ImageView warningImage = new ImageView(new Image(getClass().getResourceAsStream("/css/warning.png")));
+            warningImage.setFitHeight(25.0);
+            warningImage.setFitWidth(25.0);
+            warningImage.setManaged(false);
+            warningImage.setVisible(false);
+
+            Tooltip warningImageTooltip = new Tooltip("Device cannot connect to microcontroller.");
+            warningImageTooltip.setShowDelay(Duration.ZERO);
+            Tooltip.install(warningImage, warningImageTooltip);
 
             TextField nameTextField = new TextField();
             nameTextField.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
@@ -439,48 +447,53 @@ public class ActualDeviceConfigView extends VBox{
             entireComboBoxDevice.setSpacing(10.0);
             entireComboBoxDevice.setId("entireComboBoxDevice");
             entireComboBoxDevice.getChildren().addAll(deviceComboBox);
-            GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
 
             ImageView removeButton = new ImageView(new Image(getClass().getResourceAsStream("/icons/device-delete.png")));
+            removeButton.setStyle("-fx-cursor: hand;");
             removeButton.setOnMousePressed(event -> viewModel.removeDevice(projectDevice));
             removeButton.setFitHeight(25.0);
             removeButton.setFitWidth(25.0);
-            GridPane.setConstraints(removeButton, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+
+            Tooltip removeButtonTooltip = new Tooltip("Remove this device from the project.");
+            removeButtonTooltip.setShowDelay(Duration.ZERO);
+            Tooltip.install(removeButton, removeButtonTooltip);
 
             if (deviceComboBox.getSelectionModel().getSelectedItem() != null) {
                 CompatibleDevice compatibleDevice = deviceComboBox.getSelectionModel().getSelectedItem().getCompatibleDevice();
-                if (deviceComboBox.getSelectionModel().getSelectedItem().getDeviceMappingResult() == DeviceMappingResult.OK) {
-                    compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
-                        if (actualDevice.getDeviceType() == DeviceType.VIRTUAL) {
-                            return;
+                compatibleDevice.getActualDevice().ifPresent(actualDevice -> {
+                    if (actualDevice.getDeviceType() == DeviceType.VIRTUAL) {
+                        return;
+                    }
+                    FlowPane portListUI = new FlowPane(Orientation.HORIZONTAL, 5.0, 5.0);
+                    Map<Connection, List<Connection>> possibleDeviceConnection = viewModel.getPossibleDeviceConnections(projectDevice, actualDevice);
+                    for (Connection connectionConsume: possibleDeviceConnection.keySet()) {
+                        List<Connection> possibleConnectionProvide = new ArrayList<>(possibleDeviceConnection.get(connectionConsume));
+                        if (possibleConnectionProvide.isEmpty()) {
+                            warningImage.setManaged(true);
+                            warningImage.setVisible(true);
                         }
-                        FlowPane portListUI = new FlowPane(Orientation.HORIZONTAL, 5.0, 5.0);
-                        Map<Connection, List<Connection>> possibleDeviceConnection = viewModel.getPossibleDeviceConnections(projectDevice, actualDevice);
-                        for (Connection connectionConsume: possibleDeviceConnection.keySet()) {
-                            List<Connection> possibleConnectionProvide = new ArrayList<>(possibleDeviceConnection.get(connectionConsume));
-                            possibleConnectionProvide.add(0, null);
-                            ComboBox<Connection> portComboBox = new ComboBox<>(FXCollections.observableList(possibleConnectionProvide));
-                            portComboBox.setCellFactory(newConnectionCellFactory());
-                            portComboBox.setButtonCell(newConnectionListCell());
+                        possibleConnectionProvide.add(0, null);
+                        ComboBox<Connection> portComboBox = new ComboBox<>(FXCollections.observableList(possibleConnectionProvide));
+                        portComboBox.setCellFactory(newConnectionCellFactory());
+                        portComboBox.setButtonCell(newConnectionListCell());
 
-                            Connection connection = viewModel.getSelectedConnection(projectDevice, connectionConsume);
-                            portComboBox.getSelectionModel().select(connection);
-                            portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setConnection(projectDevice, connectionConsume, newValue));
+                        Connection connection = viewModel.getSelectedConnection(projectDevice, connectionConsume);
+                        portComboBox.getSelectionModel().select(connection);
+                        portComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> viewModel.setConnection(projectDevice, connectionConsume, newValue));
 
-                            Label portLabel = new Label(connectionConsume.getType() == ConnectionType.INTEGRATED ? "Connect" : connectionConsume.getName());
-                            Tooltip tooltip = new Tooltip(connectionConsume.getName());
-                            tooltip.setShowDelay(Duration.ZERO);
-                            portLabel.setTooltip(tooltip);
-                            portLabel.setMinWidth(Region.USE_PREF_SIZE);
-                            portListUI.setAlignment(Pos.CENTER_LEFT);
-                            HBox hbox = new HBox(5.0);
-                            hbox.setAlignment(Pos.CENTER_LEFT);
-                            hbox.getChildren().addAll(portLabel, portComboBox);
-                            portListUI.getChildren().addAll(hbox);
-                        }
-                        entireComboBoxDevice.getChildren().add(portListUI);
-                    });
-                }
+                        Label portLabel = new Label(connectionConsume.getType() == ConnectionType.INTEGRATED ? "Connect" : connectionConsume.getName());
+                        Tooltip tooltip = new Tooltip(connectionConsume.getName());
+                        tooltip.setShowDelay(Duration.ZERO);
+                        portLabel.setTooltip(tooltip);
+                        portLabel.setMinWidth(Region.USE_PREF_SIZE);
+                        portListUI.setAlignment(Pos.CENTER_LEFT);
+                        HBox hbox = new HBox(5.0);
+                        hbox.setAlignment(Pos.CENTER_LEFT);
+                        hbox.getChildren().addAll(portLabel, portComboBox);
+                        portListUI.getChildren().addAll(hbox);
+                    }
+                    entireComboBoxDevice.getChildren().add(portListUI);
+                });
             }
 
             // We only show port combobox and property textfield when the device has been selected
@@ -598,7 +611,10 @@ public class ActualDeviceConfigView extends VBox{
                 }
             }
 
-            settingPane.getChildren().addAll(imageView, nameTextField, entireComboBoxDevice, removeButton);
+            GridPane.setConstraints(entireComboBoxDevice, 2, currentRow, 1, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.SOMETIMES);
+            GridPane.setConstraints(removeButton, 3, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+            GridPane.setConstraints(warningImage, 4, currentRow, 1, 1, HPos.LEFT, VPos.TOP);
+            settingPane.getChildren().addAll(imageView, nameTextField, entireComboBoxDevice, removeButton, warningImage);
             currentRow++;
         }
     }

@@ -184,6 +184,8 @@ public enum DeviceLibrary {
                             temp.add(actualDevice);
                         } catch (Exception e) {
                             errors.put(deviceDefinitionPath, e.getMessage());
+                            System.err.println(deviceDefinitionPath.toAbsolutePath());
+                            e.printStackTrace();
                         }
                     }
                 }
