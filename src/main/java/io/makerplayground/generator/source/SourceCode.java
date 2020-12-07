@@ -31,6 +31,8 @@ public class SourceCode {
                     return ArduinoUploadCode.generateCode(project);
                 case RASPBERRYPI:
                     return RpiPythonUploadCode.generateCode(project);
+                case MICROPYTHON:
+                    return MicroPythonUploadCode.generateCode(project);
             }
         } else {
             switch (project.getSelectedPlatform()) {

@@ -146,6 +146,11 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
                         return new RaspberryPiUploadTask(project, uploadTarget, isInteractive);
                     }
                     break;
+                case MICROPYTHON:
+                    if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                        return new MicroPythonUploadTask(project, uploadTarget, isInteractive);
+                    }
+                    break;
             }
             throw new IllegalStateException("No upload method for current platform");
         }
