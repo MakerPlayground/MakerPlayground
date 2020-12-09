@@ -17,9 +17,9 @@ public class VirtualProjectDevice extends ProjectDevice {
     // time elapsed
     public static class TimeElapsed {
         public static final Condition lessThan = new Condition("Less than", "", List.of(new Parameter("value", DataType.DOUBLE,
-                new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
+                new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND), ControlType.SPINBOX)));
         public static final Condition greaterThan = new Condition("More than", "", List.of(new Parameter("value", DataType.DOUBLE,
-                new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
+                new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND), ControlType.SPINBOX)));
         // TODO: should we use type LONG or ULONG instead? (this may require us to update the value system to support other numerical types)
         public static final Value timeSincePowerOn = new Value("Time since power on", DataType.DOUBLE, new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND));
         public static final Value timeSinceLastBlock = new Value("Time since last block", DataType.DOUBLE, new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND));
