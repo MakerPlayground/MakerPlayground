@@ -156,7 +156,7 @@ public class ArduinoUploadCode {
     }
 
     private void appendBeginRecentSceneFinishTime() {
-        project.getBegin().forEach(taskNode -> builder.append("unsigned long ").append(parseBeginRecentSceneFinishTime(taskNode)).append(" = 0;").append(NEW_LINE));
+        project.getBegin().forEach(taskNode -> builder.append("unsigned long ").append(parseBeginRecentBlockFinishTime(taskNode)).append(" = 0;").append(NEW_LINE));
     }
 
     private void appendLoopFunction() {
@@ -285,9 +285,9 @@ public class ArduinoUploadCode {
                         if (Memory.setValue == setting.getAction()) {
                             Map<Parameter, Expression> map = setting.getParameterMap();
                             Parameter nameParam = setting.getAction().getParameter().get(0);
-                            String deviceName = parseExpressionForParameter(nameParam, map.get(nameParam));
+                            String deviceName = parseExpressionForParameter(root, nameParam, map.get(nameParam));
                             Parameter valueParam = setting.getAction().getParameter().get(1);
-                            String expr = parseExpressionForParameter(valueParam, map.get(valueParam));
+                            String expr = parseExpressionForParameter(root, valueParam, map.get(valueParam));
                             builder.append(INDENT).append(deviceName).append(" = ").append(expr).append(";").append(NEW_LINE);
                         } else {
                             throw new IllegalStateException();
@@ -298,7 +298,7 @@ public class ArduinoUploadCode {
                         List<Parameter> parameters = setting.getAction().getParameter();
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(root, p, setting.getParameterMap().get(p)));
                         }
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(");").append(NEW_LINE);
@@ -306,7 +306,7 @@ public class ArduinoUploadCode {
                 }
 
                 // used for time elapsed condition and delay
-                builder.append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = millis();").append(NEW_LINE);
+                builder.append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = millis();").append(NEW_LINE);
 
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                     if (adjacentScene.size() != 1) {
@@ -373,11 +373,14 @@ public class ArduinoUploadCode {
                     } else {
                         throw new IllegalStateException();
                     }
-                    builder.append(INDENT).append("if (millis() > ").append(parseBeginRecentSceneFinishTime(root)).append(" + ").append(delayInMillisecond).append(") {").append(NEW_LINE);
+                    builder.append(INDENT).append("if (millis() > ").append(parseBeginRecentBlockFinishTime(root)).append(" + ").append(delayInMillisecond).append(") {").append(NEW_LINE);
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, currentDelay);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
                     List<Condition> nextCondition = Utility.takeCondition(nextNodes);
                     List<Delay> nextDelay = Utility.takeDelay(nextNodes);
+
+                    // used for time elapsed
+                    builder.append(INDENT).append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = millis();").append(NEW_LINE);
 
                     if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
                         if (nextScene.size() != 1) {
@@ -402,11 +405,11 @@ public class ArduinoUploadCode {
                         } else if (TimeElapsed.projectDevice.equals(setting.getDevice())) {
                             Parameter valueParameter = setting.getCondition().getParameter().get(0);
                             if (setting.getCondition() == TimeElapsed.lessThan) {
-                                booleanExpressions.add("millis() < " + parseBeginRecentSceneFinishTime(root) + " + " +
-                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                                booleanExpressions.add("millis() < " + parseBeginRecentBlockFinishTime(root) + " + " +
+                                        parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)));
                             } else if (setting.getCondition() == TimeElapsed.greaterThan) {
-                                booleanExpressions.add("millis() > " + parseBeginRecentSceneFinishTime(root) + " + " +
-                                        parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)));
+                                booleanExpressions.add("millis() > " + parseBeginRecentBlockFinishTime(root) + " + " +
+                                        parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)));
                             } else {
                                 throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
                             }
@@ -415,7 +418,7 @@ public class ArduinoUploadCode {
                                 for (Value value : setting.getExpression().keySet()) {
                                     if (setting.getExpressionEnable().get(value)) {
                                         Expression expression = setting.getExpression().get(value);
-                                        booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
+                                        booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
                                     }
                                 }
                             }
@@ -428,14 +431,14 @@ public class ArduinoUploadCode {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
                         } else if (!setting.getCondition().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
+                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(root, parameter, setting.getParameterMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(searchGroup(setting.getDevice())) + "." +
                                     setting.getCondition().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
+                                    booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
                                 }
                             }
                         }
@@ -446,8 +449,8 @@ public class ArduinoUploadCode {
                     builder.append(INDENT).append("if").append("(");
                     builder.append(String.join(" && ", booleanExpressions)).append(") {").append(NEW_LINE);
 
-                    // used for time elapsed condition and delay
-                    builder.append(INDENT).append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = millis();").append(NEW_LINE);
+                    // used for time elapsed
+                    builder.append(INDENT).append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = millis();").append(NEW_LINE);
 
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, condition);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
@@ -481,12 +484,12 @@ public class ArduinoUploadCode {
         return projectDeviceOptional.get();
     }
 
-    private String parseExpressionForParameter(Parameter parameter, Expression expression) {
+    private String parseExpressionForParameter(Begin root, Parameter parameter, Expression expression) {
         String returnValue;
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -501,26 +504,26 @@ public class ArduinoUploadCode {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = "constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(searchGroup(projectValue.getDevice())) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ComplexStringExpression) {
             List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
             if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
                 returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
             } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
-                returnValue = "String(" + parseTerms(subExpression.get(0).getTerms()) + ").c_str()";
+                returnValue = "String(" + parseTerms(root, subExpression.get(0).getTerms()) + ").c_str()";
             } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
                 returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
                         .collect(Collectors.joining("", "\"", "\""));
@@ -530,7 +533,7 @@ public class ArduinoUploadCode {
                     if (e instanceof SimpleStringExpression) {
                         subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
                     } else if (e instanceof CustomNumberExpression) {
-                        subExpressionString.add("String(" + parseTerms(e.getTerms()) + ")");
+                        subExpressionString.add("String(" + parseTerms(root, e.getTerms()) + ")");
                     } else {
                         throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
                     }
@@ -551,14 +554,14 @@ public class ArduinoUploadCode {
         return returnValue;
     }
 
-    private String parseBeginRecentSceneFinishTime(Begin begin) {
-        return begin.getName().replace(" ", "_") + "_recentSceneFinishTime";
+    private String parseBeginRecentBlockFinishTime(Begin begin) {
+        return begin.getName().replace(" ", "_") + "_recentBlockFinishTime";
     }
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
 
-    private String parseTerm(Term term) {
+    private String parseTerm(Begin root, Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
@@ -610,14 +613,23 @@ public class ArduinoUploadCode {
         } else if (term instanceof ValueTerm) {
             ValueTerm term1 = (ValueTerm) term;
             ProjectValue value = term1.getValue();
-            if (Memory.projectDevice.equals(value.getDevice())) {
+            if (Memory.projectDevice == value.getDevice()) {
                 return value.getValue().getName();
+            }
+            if (TimeElapsed.projectDevice == value.getDevice()) {
+                if (value.getValue() == TimeElapsed.timeSincePowerOn) {
+                    return "millis()";
+                } else if (value.getValue() == TimeElapsed.timeSinceLastBlock) {
+                    return parseBeginRecentBlockFinishTime(root);
+                } else {
+                    throw new IllegalStateException("TimeElapsed's Value (" + value.getValue().getName() + ") hasn't been implemented");
+                }
             }
             return parseValueVariableTerm(searchGroup(value.getDevice()), value.getValue());
         } else if (term instanceof RecordTerm) {
             RecordTerm term1 = (RecordTerm) term;
             return "Record(" + term1.getValue().getEntryList().stream()
-                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(entry.getValue().getTerms()) + ")")
+                    .map(entry -> "Entry(\"" + entry.getField() + "\", " + parseTerms(root, entry.getValue().getTerms()) + ")")
                     .collect(Collectors.joining(",")) + ")";
         } else if (term instanceof IntegerTerm) {
             return term.toString();
@@ -626,7 +638,7 @@ public class ArduinoUploadCode {
         }
     }
 
-    private String parseTerms(List<Term> expression) {
-        return expression.stream().map(this::parseTerm).collect(Collectors.joining(" "));
+    private String parseTerms(Begin root, List<Term> expression) {
+        return expression.stream().map((t) -> parseTerm(root, t)).collect(Collectors.joining(" "));
     }
 }

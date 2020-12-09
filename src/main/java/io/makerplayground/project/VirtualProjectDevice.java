@@ -7,8 +7,6 @@ import io.makerplayground.device.shared.*;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +20,11 @@ public class VirtualProjectDevice extends ProjectDevice {
                 new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
         public static final Condition greaterThan = new Condition("More than", "", List.of(new Parameter("value", DataType.DOUBLE,
                 new NumberWithUnit(0, Unit.MILLISECOND), new NumericConstraint(0, 1000, Unit.MILLISECOND), ControlType.SPINBOX)));
+        // TODO: should we use type LONG or ULONG instead? (this may require us to update the value system to support other numerical types)
+        public static final Value timeSincePowerOn = new Value("Time since power on", DataType.DOUBLE, new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND));
+        public static final Value timeSinceLastBlock = new Value("Time since last block", DataType.DOUBLE, new NumericConstraint(0, Double.MAX_VALUE, Unit.MILLISECOND));
         public static final GenericDevice timeGenericDevice = new GenericDevice("Time Elapsed", "", GenericDeviceType.UTILITY,
-                Collections.emptyList(), List.of(lessThan, greaterThan), Collections.emptyList());
+                Collections.emptyList(), List.of(lessThan, greaterThan), List.of(timeSincePowerOn, timeSinceLastBlock));
         public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Time Elapsed", timeGenericDevice, false);
     }
 

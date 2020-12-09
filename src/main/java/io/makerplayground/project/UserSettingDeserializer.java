@@ -223,6 +223,14 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                             .findFirst()
                             .orElseThrow(() -> new IllegalStateException("Variable not exist [" + valueName + "]"));
                     term = new ValueTerm(value);
+                } else if (VirtualProjectDevice.TimeElapsed.projectDevice.getName().equals(projectDeviceName)) {
+                    if (valueName.equals(VirtualProjectDevice.TimeElapsed.timeSinceLastBlock.getName())) {
+                        term = new ValueTerm(new ProjectValue(VirtualProjectDevice.TimeElapsed.projectDevice, VirtualProjectDevice.TimeElapsed.timeSinceLastBlock));
+                    } else if (valueName.equals(VirtualProjectDevice.TimeElapsed.timeSincePowerOn.getName())) {
+                        term = new ValueTerm(new ProjectValue(VirtualProjectDevice.TimeElapsed.projectDevice, VirtualProjectDevice.TimeElapsed.timeSincePowerOn));
+                    } else {
+                        throw new IllegalStateException("Found unsupported value in TimeElapsed (" + valueName + ")");
+                    }
                 } else {
                     ProjectDevice device = allProjectDevices.stream()
                             .filter(pd -> pd.getName().equals(projectDeviceName))

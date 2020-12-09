@@ -435,6 +435,14 @@ public class Project {
                         }
                     }
                 }
+                // append with value of every virtual device
+                for (ProjectDevice projectDevice : VirtualProjectDevice.getDevices()) {
+                    for (Value v : projectDevice.getGenericDevice().getValue()) {
+                        if (dataType.contains(v.getType())) {
+                            concatList.add(new ProjectValue(projectDevice, v));
+                        }
+                    }
+                }
                 return concatList;
             }
         };
