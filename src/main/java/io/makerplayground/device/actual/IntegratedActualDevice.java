@@ -51,7 +51,7 @@ public class IntegratedActualDevice extends ActualDevice {
                            Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary) {
         super(name, "", "", "", 0.0, 0.0, "", DeviceType.MODULE, false, pinTemplate,
                 Collections.emptyList(), integratedConnection, property, null, compatibilityMap,
-                Collections.emptyMap(), platformSourceCodeLibrary, Collections.emptyList(), null);
+                Collections.emptyMap(), platformSourceCodeLibrary, Collections.emptyMap(), Collections.emptyList(), null);
         this.parent = null;
     }
 }

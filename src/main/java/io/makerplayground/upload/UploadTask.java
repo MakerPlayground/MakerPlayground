@@ -119,9 +119,26 @@ public abstract class UploadTask extends Task<UploadResult> {
                     return new RaspberryPiUploadTask(project, uploadTarget, isInteractive);
                 }
                 break;
-            case MICROPYTHON:
+            case MICROPYTHON_ESP32:
+            case MICROPYTHON_K210:
                 if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
                     return new MicroPythonUploadTask(project, uploadTarget, isInteractive);
+                }
+                break;
+        }
+        throw new IllegalStateException("No upload method for current platform");
+    }
+
+    public static UploadTask createFirmwareFlashTask(Project project, UploadTarget uploadTarget) {
+        switch (project.getSelectedPlatform()) {
+            case MICROPYTHON_ESP32:
+                if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                    return new ESP32MicroPythonFirmwareFlashTask(project, uploadTarget);
+                }
+                break;
+            case MICROPYTHON_K210:
+                if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                    return new K210MicroPythonFirmwareFlashTask(project, uploadTarget);
                 }
                 break;
         }

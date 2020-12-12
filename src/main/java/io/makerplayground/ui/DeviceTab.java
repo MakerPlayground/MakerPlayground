@@ -4,8 +4,10 @@ import io.makerplayground.device.generic.GenericDevice;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.ui.devicetab.*;
+import io.makerplayground.upload.UploadTarget;
 import javafx.application.HostServices;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,6 +26,7 @@ import java.util.List;
 public class DeviceTab extends SplitPane {
 
     private final Project currentProject;
+    private final ReadOnlyObjectProperty<UploadTarget> uploadConnection;
 
     private final DeviceExplorerView deviceExplorerView;
     private final DeviceVersionPane versionPane;
@@ -34,8 +37,9 @@ public class DeviceTab extends SplitPane {
     private final DoubleProperty deviceDiagramHScrollPosition = new SimpleDoubleProperty(0);
     private final DoubleProperty deviceDiagramVScrollPosition = new SimpleDoubleProperty(0);
 
-    public DeviceTab(Project currentProject, HostServices hostServices) {
+    public DeviceTab(Project currentProject, ReadOnlyObjectProperty<UploadTarget> uploadConnection, HostServices hostServices) {
         this.currentProject = currentProject;
+        this.uploadConnection = uploadConnection;
 
         // device explorer
         deviceExplorerView = new DeviceExplorerView(currentProject, hostServices);
@@ -82,7 +86,7 @@ public class DeviceTab extends SplitPane {
     }
 
     void refreshConfigDevicePane() {
-        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject);
+        ConfigActualDeviceViewModel configActualDeviceViewModel = new ConfigActualDeviceViewModel(currentProject, uploadConnection);
         configActualDeviceViewModel.setConfigChangedCallback(this::refreshDiagramAndExplorer);
         ActualDeviceConfigView actualDeviceConfigView = new ActualDeviceConfigView(configActualDeviceViewModel);
         getItems().setAll(actualDeviceConfigView, deviceTabPane);

@@ -325,7 +325,7 @@ public class Toolbar extends AnchorPane {
     }
 
     private void showUploadDialog() {
-        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadManager.getUploadTask());
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadManager.getUploadTask(), true);
         uploadDialogView.progressProperty().bind(uploadManager.getUploadTask().progressProperty());
         uploadDialogView.descriptionProperty().bind(uploadManager.getUploadTask().messageProperty());
         uploadDialogView.logProperty().bind(uploadManager.uploadLogProperty());

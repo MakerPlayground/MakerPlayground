@@ -89,14 +89,23 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             pioBoardId = node.get("pio_boardid").asText();
         }
 
-        /* Extract platformSourceCodeLibrary */
+        /* Extract platformSourceCodeLibrary and firmware path (if available) */
         Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary = new HashMap<>();
+        Map<Platform, List<String>> firmwarePath = new HashMap<>();
         for (JsonNode platformNode : node.get("platforms")) {
             Platform platform = Platform.valueOf(platformNode.get("platform").asText());
             String classname = platformNode.get("classname").asText();
             List<String> externalLibraryList = mapper.readValue(platformNode.get("library_dependency").traverse()
                     , new TypeReference<List<String>>() {});
             platformSourceCodeLibrary.put(platform, new SourceCodeLibrary(classname, externalLibraryList));
+
+            if (platformNode.has("firmware")) {
+                List<String> firmware = mapper.readValue(platformNode.get("firmware").traverse()
+                        , new TypeReference<List<String>>() {});
+                firmwarePath.put(platform, firmware);
+            } else {
+                firmwarePath.put(platform, Collections.emptyList());
+            }
         }
 
         /* Extract cloudPlatformSourceCodeLibrary */
@@ -244,6 +253,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .width(node.get("width").asDouble())
                 .height(node.get("height").asDouble())
                 .platformSourceCodeLibrary(platformSourceCodeLibrary)
+                .firmwarePath(firmwarePath)
                 .cloudPlatformSourceCodeLibrary(cloudPlatformSourceCodeLibrary)
                 .deviceType(deviceType)
                 .needBreadboard(needBreadboard)

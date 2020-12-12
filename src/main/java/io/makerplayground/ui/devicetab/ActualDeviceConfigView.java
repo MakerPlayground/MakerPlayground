@@ -27,9 +27,11 @@ import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.upload.UploadTask;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
+import io.makerplayground.ui.dialog.UploadDialogView;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
@@ -74,6 +76,7 @@ public class ActualDeviceConfigView extends VBox{
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<ActualDeviceComboItem> controllerComboBox;
+    @FXML private Button firmwareInitButton;
     @FXML private Label controllerName;
     @FXML private CheckBox optionalPropertyCheckbox1;
     @FXML private CheckBox optionalPropertyCheckbox2;
@@ -239,6 +242,24 @@ public class ActualDeviceConfigView extends VBox{
                 .ifPresentOrElse(selectedController -> controllerComboBox.getSelectionModel().select(selectedController), this::initDeviceControl);
         if (viewModel.getSelectedController() == null) {
             warningLabel.setText("Select a controller to get started");
+        }
+
+        if (!viewModel.getSelectedPlatform().isMicroPython()) {
+            firmwareInitButton.setVisible(false);
+            firmwareInitButton.setManaged(false);
+        } else {
+            firmwareInitButton.setVisible(true);
+            firmwareInitButton.setManaged(true);
+            firmwareInitButton.disableProperty().bind(controllerComboBox.getSelectionModel().selectedItemProperty().isNull());
+            firmwareInitButton.setOnAction(event -> {
+                UploadTask exportTask = UploadTask.createFirmwareFlashTask(viewModel.getProject(), viewModel.getUploadConnection().get());
+                UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), exportTask, false);
+                uploadDialogView.progressProperty().bind(exportTask.progressProperty());
+                uploadDialogView.descriptionProperty().bind(exportTask.messageProperty());
+                uploadDialogView.logProperty().bind(exportTask.fullLogProperty());
+                uploadDialogView.show();
+                new Thread(exportTask).start();
+            });
         }
     }
 

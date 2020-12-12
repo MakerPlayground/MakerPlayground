@@ -53,6 +53,8 @@ public class ActualDevice implements Comparable<ActualDevice> {
     /* name of the device implementation class */
     protected final Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary;
 
+    private final Map<Platform, List<String>> firmwarePath;
+
     protected final List<IntegratedActualDevice> integratedDevices;
     protected final BreadboardPlacement breadboardPlacement;
 

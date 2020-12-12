@@ -29,19 +29,21 @@
             <VBox alignment="CENTER" spacing="20">
                 <GridPane hgap="20.0" vgap="10.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>
-                        <ColumnConstraints hgrow="NEVER" minWidth="90.0"/>
+<!--                        <ColumnConstraints hgrow="NEVER" prefWidth="40.0"/>-->
+                        <ColumnConstraints hgrow="NEVER" minWidth="60.0"/>
                         <ColumnConstraints hgrow="SOMETIMES"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="100.0"/>
                     </columnConstraints>
                     <children>
-                        <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="2"
+                        <ComboBox id="controllerComboBox" fx:id="controllerComboBox" GridPane.columnIndex="1"
                                   GridPane.rowIndex="1"/>
-                        <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="2"/>
-                        <Label fx:id="controllerName" text="Controller" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                        <Label fx:id="platformName" text="Platform" GridPane.columnIndex="1"/>
-                        <ImageView fx:id="platFormImage" fitHeight="30" fitWidth="30">
-                            <Image url="@../../../../../library/colorIcons-3/Controller.png"/>
-                        </ImageView>
+                        <Button fx:id="firmwareInitButton" text="Flash Firmware" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                        <ComboBox id="platformComboBox" fx:id="platFormComboBox" GridPane.columnIndex="1"/>
+                        <Label fx:id="controllerName" text="Controller" GridPane.rowIndex="1"/>
+                        <Label fx:id="platformName" text="Platform" />
+<!--                        <ImageView fx:id="platFormImage" fitHeight="30" fitWidth="30">-->
+<!--                            <Image url="@../../icons/Controller.png" />-->
+<!--                        </ImageView>-->
                     </children>
                     <rowConstraints>
                         <RowConstraints/>
