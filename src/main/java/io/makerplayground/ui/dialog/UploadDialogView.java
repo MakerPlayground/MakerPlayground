@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui.dialog;
 
-import io.makerplayground.generator.upload.UploadResult;
-import io.makerplayground.generator.upload.UploadTaskBase;
+import io.makerplayground.upload.UploadResult;
+import io.makerplayground.upload.UploadTaskBase;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;

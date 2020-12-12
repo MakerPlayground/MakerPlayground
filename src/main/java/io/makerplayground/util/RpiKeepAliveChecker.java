@@ -1,6 +1,6 @@
 package io.makerplayground.util;
 
-import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.upload.UploadTarget;
 import javafx.collections.ObservableList;
 
 import java.util.concurrent.Executors;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.upload;
+package io.makerplayground.upload;
 
 public enum UploadResult {
     OK,

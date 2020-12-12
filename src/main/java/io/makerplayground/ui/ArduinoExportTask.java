@@ -6,7 +6,7 @@ import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
-import io.makerplayground.generator.upload.UploadResult;
+import io.makerplayground.upload.UploadResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.util.OSInfo;
 import io.makerplayground.util.PathUtility;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.upload;
+package io.makerplayground.upload;
 
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;

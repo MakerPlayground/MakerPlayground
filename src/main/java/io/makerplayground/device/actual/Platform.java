@@ -16,7 +16,7 @@
 
 package io.makerplayground.device.actual;
 
-import io.makerplayground.generator.upload.UploadMode;
+import io.makerplayground.upload.UploadMode;
 import lombok.Getter;
 
 import java.util.List;

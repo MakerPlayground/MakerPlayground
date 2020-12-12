@@ -16,7 +16,7 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.upload.UploadTarget;
 import io.makerplayground.project.Project;
 import io.makerplayground.ui.canvas.CanvasView;
 import io.makerplayground.ui.canvas.CanvasViewModel;
