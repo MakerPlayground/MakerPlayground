@@ -20,12 +20,11 @@ import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 
-public abstract class UploadTaskBase extends Task<UploadResult> {
+public abstract class UploadTask extends Task<UploadResult> {
 
     protected final Project project;
     protected final ProjectConfiguration configuration;
@@ -38,7 +37,7 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
     protected final UploadTarget uploadTarget;
     protected final boolean interactiveUpload;
 
-    protected UploadTaskBase(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
+    protected UploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
         this.project = project;
         this.configuration = project.getProjectConfiguration();
         this.log = new ReadOnlyStringWrapper();
@@ -84,10 +83,6 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
         Platform.runLater(() -> uploadStatus.set(UploadStatus.UPLOAD_FAILED));
     }
 
-    public ReadOnlyStringProperty logProperty() {
-        return log.getReadOnlyProperty();
-    }
-
     public ReadOnlyStringWrapper fullLogProperty() {
         return fullLog;
     }
@@ -108,51 +103,28 @@ public abstract class UploadTaskBase extends Task<UploadResult> {
         return interactiveUpload;
     }
 
-    public static class Builder {
-        private Project project = null;
-        private UploadTarget uploadTarget = null;
-        private boolean isInteractive = false;
-
-        public Builder setProject(Project project) {
-            this.project = Project.newInstance(project);
-            return this;
+    public static UploadTask createCodeUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractive) {
+        switch (project.getSelectedPlatform()) {
+            case ARDUINO_AVR8:
+            case ARDUINO_ESP32:
+            case ARDUINO_ESP8266:
+            case ARDUINO_ATSAMD21:
+            case ARDUINO_ATSAMD51:
+                if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                    return new ArduinoUploadTask(project, uploadTarget, isInteractive);
+                }
+                break;
+            case RASPBERRYPI:
+                if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.RPI_ON_NETWORK)) {
+                    return new RaspberryPiUploadTask(project, uploadTarget, isInteractive);
+                }
+                break;
+            case MICROPYTHON:
+                if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
+                    return new MicroPythonUploadTask(project, uploadTarget, isInteractive);
+                }
+                break;
         }
-
-        public Builder setUploadTarget(UploadTarget uploadTarget) {
-            this.uploadTarget = uploadTarget;
-            return this;
-        }
-
-        public Builder isInteractive(boolean isInteractive) {
-            this.isInteractive = isInteractive;
-            return this;
-        }
-
-        public UploadTaskBase build() {
-            assert project != null : "project is not set.";
-            assert uploadTarget != null : "uploadTarget is not set.";
-            switch (project.getSelectedPlatform()) {
-                case ARDUINO_AVR8:
-                case ARDUINO_ESP32:
-                case ARDUINO_ESP8266:
-                case ARDUINO_ATSAMD21:
-                case ARDUINO_ATSAMD51:
-                    if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
-                        return new ArduinoUploadTask(project, uploadTarget, isInteractive);
-                    }
-                    break;
-                case RASPBERRYPI:
-                    if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.RPI_ON_NETWORK)) {
-                        return new RaspberryPiUploadTask(project, uploadTarget, isInteractive);
-                    }
-                    break;
-                case MICROPYTHON:
-                    if (project.getSelectedPlatform().getSupportUploadModes().contains(UploadMode.SERIAL_PORT)) {
-                        return new MicroPythonUploadTask(project, uploadTarget, isInteractive);
-                    }
-                    break;
-            }
-            throw new IllegalStateException("No upload method for current platform");
-        }
+        throw new IllegalStateException("No upload method for current platform");
     }
 }

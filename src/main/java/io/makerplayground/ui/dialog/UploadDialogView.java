@@ -17,7 +17,7 @@
 package io.makerplayground.ui.dialog;
 
 import io.makerplayground.upload.UploadResult;
-import io.makerplayground.upload.UploadTaskBase;
+import io.makerplayground.upload.UploadTask;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -45,11 +45,11 @@ public class UploadDialogView extends UndecoratedDialog {
     @FXML private TitledPane detailPane;
 //    @FXML private ImageView closeButton;
 
-    private final UploadTaskBase uploadTask;
+    private final UploadTask uploadTask;
     private final RotateTransition rt;
     private final StringProperty logProperty;
 
-    public UploadDialogView(Window owner, UploadTaskBase uploadTask) {
+    public UploadDialogView(Window owner, UploadTask uploadTask) {
         super(owner);
         this.uploadTask = uploadTask;
 

@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class MicroPythonUploadTask extends UploadTaskBase {
+public class MicroPythonUploadTask extends UploadTask {
 
     protected MicroPythonUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
         super(project, uploadTarget, isInteractiveUpload);

@@ -43,7 +43,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ArduinoUploadTask extends UploadTaskBase {
+public class ArduinoUploadTask extends UploadTask {
 
     protected ArduinoUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
         super(project, uploadTarget, isInteractiveUpload);

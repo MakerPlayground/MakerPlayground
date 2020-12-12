@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RaspberryPiUploadTask extends UploadTaskBase {
+public class RaspberryPiUploadTask extends UploadTask {
 
     protected RaspberryPiUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
         super(project, uploadTarget, isInteractiveUpload);
