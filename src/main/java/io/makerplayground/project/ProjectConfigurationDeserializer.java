@@ -28,6 +28,8 @@ import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.device.shared.Unit;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.device.shared.K210ObjectDetectionModel;
+import io.makerplayground.util.PathUtility;
 
 import java.io.IOException;
 import java.util.*;
@@ -137,6 +139,16 @@ public class ProjectConfigurationDeserializer extends JsonDeserializer<ProjectCo
                     case STRING_INT_ENUM:
                         if (!propertyValueNode.get("value").asText().isEmpty()) {
                             value = propertyValueNode.get("value").asText();
+                        } else {
+                            value = null;
+                        }
+                        break;
+                    case K210_OBJDETECT_MODEL:
+                        if (!propertyValueNode.get("value").asText().isEmpty()) {
+                            List<K210ObjectDetectionModel> model = PathUtility.getDeviceModelPath(actualDevice, K210ObjectDetectionModel.class);
+                            value = model.stream()
+                                    .filter(e -> e.getName().equals(propertyValueNode.get("value").asText()))
+                                    .findFirst().orElseThrow();
                         } else {
                             value = null;
                         }

@@ -23,6 +23,7 @@ import io.makerplayground.device.actual.*;
 import io.makerplayground.device.shared.NumberWithUnit;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.device.shared.K210ObjectDetectionModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -169,6 +170,13 @@ public class ProjectConfigurationSerializer extends JsonSerializer<ProjectConfig
                             jsonGenerator.writeStringField("value", "");
                         } else {
                             jsonGenerator.writeStringField("value", (String) value);
+                        }
+                        break;
+                    case K210_OBJDETECT_MODEL:
+                        if (value == null) {
+                            jsonGenerator.writeStringField("value", "");
+                        } else {
+                            jsonGenerator.writeStringField("value", ((K210ObjectDetectionModel) value).getName());
                         }
                         break;
                     default:

@@ -26,6 +26,7 @@ import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.device.shared.K210ObjectDetectionModel;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,6 +156,22 @@ class MicroPythonCodeUtility extends ArduinoCodeUtility {
                     case STRING_INT_ENUM:
                         Map<String, Integer> map = ((StringIntegerCategoricalConstraint) p.getConstraint()).getMap();
                         args.add(String.valueOf(map.get(value)));
+                        break;
+                    case K210_OBJDETECT_MODEL:
+                        K210ObjectDetectionModel model = (K210ObjectDetectionModel) value;
+                        args.add(String.valueOf(model.getAddress()));
+                        if (model.getModelSize().equals("224x224")) {
+                            args.add("0"); 
+                        } else if (model.getModelSize().equals("320x240")) {
+                            args.add("1");
+                        } else {
+                            throw new IllegalStateException("Found unsupport model size");
+                        }
+                        args.add("\"" + model.getAnchor() + "\"");
+                        args.add(String.valueOf(model.getThreshold()));
+                        args.add(String.valueOf(model.getNmsThreshold()));
+                        args.add(String.valueOf(model.getNumAnchor()));
+                        args.add("\"" + (model.getOutputShape() == null ? "-" : model.getOutputShape()) + "\"");
                         break;
                     default:
                         throw new IllegalStateException("Property (" + value + ") hasn't been supported yet");

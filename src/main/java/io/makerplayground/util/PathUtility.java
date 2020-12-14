@@ -16,21 +16,20 @@
 
 package io.makerplayground.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
 import io.makerplayground.device.actual.IntegratedActualDevice;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.generic.GenericDevice;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class PathUtility {
     // workspace directory for storing generated project folder
@@ -168,6 +167,35 @@ public class PathUtility {
             throw new IllegalStateException("Library Path is missing");
         }
         return DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "firmware";
+    }
+
+    // cache list of path to model to avoid listing and reading model's yaml file every time
+    private static Map<ActualDevice, List> modelPath = new HashMap<>();
+
+    public static <T> List<T> getDeviceModelPath(ActualDevice actualDevice, Class<T> tClass) {
+        if (modelPath.containsKey(actualDevice)) {
+            return modelPath.get(actualDevice);
+        } else {
+            Path modelDir = Path.of(PathUtility.getDeviceDirectoryPath(), actualDevice.getId(), "model");
+            try (Stream<Path> paths = Files.list(modelDir)) {
+                ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                List<T> modelList = new ArrayList<>();
+                paths.filter(path -> path.toString().endsWith(".yaml")).forEach(path -> {
+                    try {
+                        T detectionModel = mapper.readValue(path.toFile(), tClass);
+                        modelList.add(detectionModel);
+                    } catch (IOException e) {
+                        System.err.println("Can't read " + path);
+                        e.printStackTrace();
+                    }
+                });
+                modelPath.put(actualDevice, Collections.unmodifiableList(modelList));
+            } catch (Exception e) {
+                e.printStackTrace();
+                modelPath.put(actualDevice, Collections.emptyList());
+            }
+            return modelPath.get(actualDevice);
+        }
     }
 
     private static InputStream getIconAsStream(String name) {
