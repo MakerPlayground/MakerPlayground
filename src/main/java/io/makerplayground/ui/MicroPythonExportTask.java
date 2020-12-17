@@ -7,11 +7,14 @@ import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
+import io.makerplayground.upload.UploadResult;
 import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipArchiver;
 import io.makerplayground.util.ZipResourceExtractor;
+import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -76,14 +79,8 @@ public class MicroPythonExportTask extends ProjectExportTask {
             externalLibraries.addAll(project.getSelectedController().getCloudPlatformLibraryDependency(cloudPlatform));
         }
 
-//        // SPECIAL CASE: apply fixed for atmega328pb used in MakerPlayground Baseboard
-//        if (project.getSelectedController().getPioBoardId().equals("ATmega328PB")) {
-//            externalLibraries.add("Wire");
-//            externalLibraries.add("SPI");
-//        }
-
         updateProgress(0.4, 1);
-        updateMessage("Generating project code");
+        updateMessage("Generating project code and extracting the libraries");
 
         String projectPath = PathUtility.MP_WORKSPACE + File.separator + "upload";
         try {
@@ -95,25 +92,7 @@ public class MicroPythonExportTask extends ProjectExportTask {
             throw new IllegalStateException("");
         }
 
-//        Optional<List<String>> pioCommand = PathUtility.getPlatformIOCommand();
-//        Optional<String> pioHomeDirPath = PathUtility.getIntegratedPIOHomeDirectory();
-//
-//        UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
-//                , List.of("init", "--board", project.getSelectedController().getPioBoardId())
-//                , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
-//        if (result != UploadResult.OK) {
-//            updateMessage("Error: can't create project directory (permission denied)");
-//            exportResult = ExportResult.CANT_CREATE_PROJECT;
-//            throw new IllegalStateException("");
-//        }
-
-        updateProgress(0.6, 1);
-        updateMessage("Generating PlatformIO project files and extracting the libraries");
-
         try {
-//            FileUtils.forceMkdir(new File(projectPath + File.separator + "src"));
-//            FileUtils.forceMkdir(new File(projectPath + File.separator + "lib"));
-
             // generate source file
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(projectPath + File.separator + "main.py"))){
                 bw.write(sourcecode.getCode());
@@ -132,12 +111,23 @@ public class MicroPythonExportTask extends ProjectExportTask {
             throw new IllegalStateException("");
         }
 
+        // copy board specific files
+        File codeDir = Paths.get(libraryPath.get(), "devices", project.getProjectConfiguration().getController().getId(), "code").toFile();
+        Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        try {
+            FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
+        } catch (IOException e) {
+            updateMessage("Error: Cannot write board specific files to project directory");
+            exportResult = ExportResult.CANT_FIND_LIBRARY;
+            throw new IllegalStateException("CANT_FIND_LIBRARY");
+        }
+
         // copy mp library
         for (String libName: mpLibraries) {
             File source = Paths.get(libraryPath.get(), "lib", project.getSelectedPlatform().getLibFolderName(), libName).toFile();
-            File destination = Paths.get(projectPath, libName).toFile();
+            File destination = new File(projectPath);
             try {
-                FileUtils.copyDirectory(source, destination);
+                FileUtils.copyToDirectory(FileUtils.listFiles(source, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE), destination);
             } catch (IOException e) {
                 updateMessage("Error: Missing some libraries");
                 exportResult = ExportResult.CANT_FIND_LIBRARY;
