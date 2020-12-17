@@ -224,7 +224,7 @@ public class MicroPythonUploadTask extends UploadTask {
             for (Path path : Files.list(uploadingDir).collect(Collectors.toList())) {
                 String sourcePath = uploadingDir.relativize(path).toString();
                 String destPath = prefix.isEmpty() ? sourcePath : prefix + "/" + sourcePath;
-                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "put", sourcePath, destPath)
+                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "put", sourcePath, destPath)
                         , false, "Error: Can't upload file/directory to the board", UploadResult.CANT_FIND_BOARD, null);
                 if (result != UploadResult.OK) {
                     return result;
@@ -236,7 +236,7 @@ public class MicroPythonUploadTask extends UploadTask {
 
         updateProgress(0.9, 1);
         updateMessage("Reset the board");
-        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "reset", "--hard")
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "reset", "--hard")
                 , false, "Error: Can't reset the board", UploadResult.CANT_RESET_BOARD, null);
         if (result != UploadResult.OK) {
             return result;
