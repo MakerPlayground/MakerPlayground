@@ -16,9 +16,7 @@
 
 package io.makerplayground.ui;
 
-import io.makerplayground.device.actual.Platform;
-import io.makerplayground.generator.upload.*;
-import io.makerplayground.project.InteractiveModel;
+import io.makerplayground.upload.*;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfigurationStatus;
 import io.makerplayground.ui.dialog.UploadDialogView;
@@ -327,7 +325,7 @@ public class Toolbar extends AnchorPane {
     }
 
     private void showUploadDialog() {
-        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadManager.getUploadTask());
+        UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), uploadManager.getUploadTask(), true);
         uploadDialogView.progressProperty().bind(uploadManager.getUploadTask().progressProperty());
         uploadDialogView.descriptionProperty().bind(uploadManager.getUploadTask().messageProperty());
         uploadDialogView.logProperty().bind(uploadManager.uploadLogProperty());

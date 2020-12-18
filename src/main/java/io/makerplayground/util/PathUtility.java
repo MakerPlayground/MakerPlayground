@@ -16,6 +16,8 @@
 
 package io.makerplayground.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
@@ -25,9 +27,9 @@ import io.makerplayground.device.generic.GenericDevice;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class PathUtility {
     // workspace directory for storing generated project folder
@@ -35,10 +37,14 @@ public class PathUtility {
     // program installation directory
     static public final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
 
-    private static Optional<List<String>> tryCommand(List<List<String>> command) {
+    private static Optional<List<String>> tryCommand(List<List<String>> command, List<String> args) {
         for (List<String> c : command) {
             try {
-                Process p = new ProcessBuilder(c).redirectErrorStream(true).start();
+                // append command with additional argument use to check for tool availability e.g. 'esptool' return 1 so we need to invoke 'esptool.py version' instead
+                List<String> fullCommand = new ArrayList<>(c);
+                fullCommand.addAll(args);
+
+                Process p = new ProcessBuilder(fullCommand).redirectErrorStream(true).start();
                 // read from an input stream to prevent the child process from stalling
                 try (BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                     String readLine;
@@ -68,7 +74,7 @@ public class PathUtility {
                 List.of("python", "-m", "platformio"),          // default python in user's system path
                 List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
         );
-        return tryCommand(command);
+        return tryCommand(command, Collections.emptyList());
     }
 
     /**
@@ -82,7 +88,35 @@ public class PathUtility {
                 List.of("python", "-m", "ampy.cli"),          // default python in user's system path
                 List.of("/usr/bin/python", "-m", "ampy.cli")  // internal python of macOS and Linux
         );
-        return tryCommand(command);
+        return tryCommand(command, Collections.emptyList());
+    }
+
+    /**
+     * Get command for executing esptool
+     * @return command for executing esptool on the current platform or Optional.empty()
+     */
+    public static Optional<List<String>> getEsptoolCommand() {
+        List<List<String>> command = List.of(
+                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "esptool"),     // integrated python of our windows installer
+                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/esptool.py"),   // virtualenv created by official platformio installation script
+                List.of("python", "-m", "esptool"),          // default python in user's system path
+                List.of("/usr/bin/python", "-m", "esptool")  // internal python of macOS and Linux
+        );
+        return tryCommand(command, List.of("version"));
+    }
+
+    /**
+     * Get command for executing kflash
+     * @return command for executing kflash on the current platform or Optional.empty()
+     */
+    public static Optional<List<String>> getKflashCommand() {
+        List<List<String>> command = List.of(
+                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "kflash"),     // integrated python of our windows installer
+                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/kflash"),   // virtualenv created by official platformio installation script
+                List.of("python", "-m", "kflash"),          // default python in user's system path
+                List.of("/usr/bin/python", "-m", "kflash")  // internal python of macOS and Linux
+        );
+        return tryCommand(command, List.of("-v"));
     }
 
     /**
@@ -125,6 +159,42 @@ public class PathUtility {
             return thumbnailPath;
         } else {
             return getDeviceImagePath(actualDevice);
+        }
+    }
+
+    public static String getDeviceFirmwarePath() {
+        if (DeviceLibrary.INSTANCE.getLibraryPath().isEmpty()) {
+            throw new IllegalStateException("Library Path is missing");
+        }
+        return DeviceLibrary.INSTANCE.getLibraryPath().get() + File.separator + "firmware";
+    }
+
+    // cache list of path to model to avoid listing and reading model's yaml file every time
+    private static Map<ActualDevice, List> modelPath = new HashMap<>();
+
+    public static <T> List<T> getDeviceModelPath(ActualDevice actualDevice, Class<T> tClass) {
+        if (modelPath.containsKey(actualDevice)) {
+            return modelPath.get(actualDevice);
+        } else {
+            Path modelDir = Path.of(PathUtility.getDeviceDirectoryPath(), actualDevice.getId(), "model");
+            try (Stream<Path> paths = Files.list(modelDir)) {
+                ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                List<T> modelList = new ArrayList<>();
+                paths.filter(path -> path.toString().endsWith(".yaml")).forEach(path -> {
+                    try {
+                        T detectionModel = mapper.readValue(path.toFile(), tClass);
+                        modelList.add(detectionModel);
+                    } catch (IOException e) {
+                        System.err.println("Can't read " + path);
+                        e.printStackTrace();
+                    }
+                });
+                modelPath.put(actualDevice, Collections.unmodifiableList(modelList));
+            } catch (Exception e) {
+                e.printStackTrace();
+                modelPath.put(actualDevice, Collections.emptyList());
+            }
+            return modelPath.get(actualDevice);
         }
     }
 

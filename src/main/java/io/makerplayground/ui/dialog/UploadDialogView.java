@@ -16,8 +16,8 @@
 
 package io.makerplayground.ui.dialog;
 
-import io.makerplayground.generator.upload.UploadResult;
-import io.makerplayground.generator.upload.UploadTaskBase;
+import io.makerplayground.upload.UploadResult;
+import io.makerplayground.upload.UploadTask;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -45,11 +46,11 @@ public class UploadDialogView extends UndecoratedDialog {
     @FXML private TitledPane detailPane;
 //    @FXML private ImageView closeButton;
 
-    private final UploadTaskBase uploadTask;
+    private final UploadTask uploadTask;
     private final RotateTransition rt;
     private final StringProperty logProperty;
 
-    public UploadDialogView(Window owner, UploadTaskBase uploadTask) {
+    public UploadDialogView(Window owner, UploadTask uploadTask, boolean allowBackground) {
         super(owner);
         this.uploadTask = uploadTask;
 
@@ -102,6 +103,9 @@ public class UploadDialogView extends UndecoratedDialog {
         });
 
         setContent(anchorPane);
+        if (!allowBackground) {
+            setClosingPredicate(() -> uploadTask.getState() == Worker.State.SUCCEEDED || uploadTask.getState() == Worker.State.FAILED);
+        }
     }
 
     private void updateUI() {

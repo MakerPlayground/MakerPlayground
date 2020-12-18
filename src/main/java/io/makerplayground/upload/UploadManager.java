@@ -1,4 +1,4 @@
-package io.makerplayground.generator.upload;
+package io.makerplayground.upload;
 
 import io.makerplayground.project.Project;
 import javafx.application.Platform;
@@ -15,7 +15,7 @@ public class UploadManager {
     private final ReadOnlyStringWrapper uploadLog = new ReadOnlyStringWrapper();
     private final ReadOnlyDoubleWrapper uploadProgress = new ReadOnlyDoubleWrapper();
 
-    private UploadTaskBase uploadTask;
+    private UploadTask uploadTask;
 
     public UploadManager(ObjectProperty<Project> project) {
         this.project = project;
@@ -24,21 +24,13 @@ public class UploadManager {
     }
 
     public void startInteractiveMode(UploadTarget uploadTarget) {
-        uploadTask = new UploadTaskBase.Builder()
-                .setProject(project.get())
-                .setUploadTarget(uploadTarget)
-                .isInteractive(true)
-                .build();
+        uploadTask = UploadTask.createCodeUploadTask(project.get(), uploadTarget, true);
         bindUploadTaskPropertyAndEvent();
         new Thread(uploadTask).start();
     }
 
     public void startUploadProject(UploadTarget uploadTarget) {
-        uploadTask = new UploadTaskBase.Builder()
-                .setProject(project.get())
-                .setUploadTarget(uploadTarget)
-                .isInteractive(false)
-                .build();
+        uploadTask = UploadTask.createCodeUploadTask(project.get(), uploadTarget, false);
         bindUploadTaskPropertyAndEvent();
         new Thread(uploadTask).start();
     }
@@ -71,7 +63,7 @@ public class UploadManager {
         }
     }
 
-    public UploadTaskBase getUploadTask() {
+    public UploadTask getUploadTask() {
         return uploadTask;
     }
 

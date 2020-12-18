@@ -1,10 +1,9 @@
 package io.makerplayground.util;
 
-import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.upload.UploadTarget;
 import javafx.collections.ObservableList;
 import org.apache.commons.net.util.SubnetUtils;
 
-import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;

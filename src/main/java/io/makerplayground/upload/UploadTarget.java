@@ -1,4 +1,4 @@
-package io.makerplayground.generator.upload;
+package io.makerplayground.upload;
 
 import com.fazecast.jSerialComm.SerialPort;
 

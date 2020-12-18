@@ -23,12 +23,12 @@ import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectConfiguration;
 import io.makerplayground.project.ProjectDevice;
-import io.makerplayground.ui.devicetab.ActualDeviceComboItem;
-import io.makerplayground.ui.devicetab.CompatibleDevice;
-import io.makerplayground.ui.devicetab.CompatibleDeviceComboItem;
+import io.makerplayground.upload.UploadTarget;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
@@ -39,7 +39,8 @@ import java.util.stream.Collectors;
  */
 public class ConfigActualDeviceViewModel {
 
-    private final Project project;
+    @Getter private final Project project;
+    @Getter private final ReadOnlyObjectProperty<UploadTarget> uploadConnection;
     private final ObjectProperty<Map<ProjectDevice, SortedMap<CompatibleDevice, DeviceMappingResult>>> compatibleDeviceMap;
     private final ObjectProperty<Map<ProjectDevice, Map<ActualDevice, SortedMap<Connection, List<Connection>>>>> deviceConnectionList;
 
@@ -50,8 +51,9 @@ public class ConfigActualDeviceViewModel {
     @Setter private Runnable deviceConfigChangedCallback;
     @Setter private Runnable configChangedCallback;
 
-    public ConfigActualDeviceViewModel(Project project) {
+    public ConfigActualDeviceViewModel(Project project, ReadOnlyObjectProperty<UploadTarget> uploadConnection) {
         this.project = project;
+        this.uploadConnection = uploadConnection;
         this.compatibleDeviceMap = new SimpleObjectProperty<>();
         this.deviceConnectionList = new SimpleObjectProperty<>();
         retrieveDeviceMapping();

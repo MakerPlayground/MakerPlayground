@@ -1,6 +1,6 @@
 package io.makerplayground.util;
 
-import io.makerplayground.generator.upload.UploadTarget;
+import io.makerplayground.upload.UploadTarget;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 

@@ -31,7 +31,8 @@ public class SourceCode {
                     return ArduinoUploadCode.generateCode(project);
                 case RASPBERRYPI:
                     return RpiPythonUploadCode.generateCode(project);
-                case MICROPYTHON:
+                case MICROPYTHON_ESP32:
+                case MICROPYTHON_K210:
                     return MicroPythonUploadCode.generateCode(project);
             }
         } else {

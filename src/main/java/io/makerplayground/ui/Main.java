@@ -316,7 +316,7 @@ public class Main extends Application {
                 TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");
                 dialogView.show();
                 new Thread(exportTask).start();
-            } else if (project.get().getProjectConfiguration().getPlatform() == io.makerplayground.device.actual.Platform.MICROPYTHON) {
+            } else if (project.get().getProjectConfiguration().getPlatform().isMicroPython()) {
                 ProjectExportTask exportTask = new MicroPythonExportTask(project.get(), sourceCode, selectedFile.getAbsolutePath());
                 TaskDialogView<ProjectExportTask> dialogView = new TaskDialogView<>(window, exportTask, "Export");
                 dialogView.show();

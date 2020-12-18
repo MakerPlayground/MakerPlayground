@@ -27,12 +27,16 @@ import io.makerplayground.generator.devicemapping.DeviceMappingResult;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.Project;
 import io.makerplayground.project.ProjectDevice;
+import io.makerplayground.ui.control.K210ModelSelector;
+import io.makerplayground.upload.UploadTask;
 import io.makerplayground.ui.canvas.node.expression.numberwithunit.SpinnerWithUnit;
 import io.makerplayground.ui.control.AzurePropertyControl;
 import io.makerplayground.ui.dialog.AzureSettingDialog;
+import io.makerplayground.ui.dialog.UploadDialogView;
 import io.makerplayground.ui.dialog.WarningDialogView;
 import io.makerplayground.util.AzureCognitiveServices;
 import io.makerplayground.util.AzureIoTHubDevice;
+import io.makerplayground.device.shared.K210ObjectDetectionModel;
 import io.makerplayground.util.PathUtility;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -74,6 +78,7 @@ public class ActualDeviceConfigView extends VBox{
     @FXML private Label platformName;
     @FXML private ComboBox<Platform> platFormComboBox;
     @FXML private ComboBox<ActualDeviceComboItem> controllerComboBox;
+    @FXML private Button firmwareInitButton;
     @FXML private Label controllerName;
     @FXML private CheckBox optionalPropertyCheckbox1;
     @FXML private CheckBox optionalPropertyCheckbox2;
@@ -239,6 +244,24 @@ public class ActualDeviceConfigView extends VBox{
                 .ifPresentOrElse(selectedController -> controllerComboBox.getSelectionModel().select(selectedController), this::initDeviceControl);
         if (viewModel.getSelectedController() == null) {
             warningLabel.setText("Select a controller to get started");
+        }
+
+        if (!viewModel.getSelectedPlatform().isMicroPython()) {
+            firmwareInitButton.setVisible(false);
+            firmwareInitButton.setManaged(false);
+        } else {
+            firmwareInitButton.setVisible(true);
+            firmwareInitButton.setManaged(true);
+            firmwareInitButton.disableProperty().bind(controllerComboBox.getSelectionModel().selectedItemProperty().isNull());
+            firmwareInitButton.setOnAction(event -> {
+                UploadTask exportTask = UploadTask.createFirmwareFlashTask(viewModel.getProject(), viewModel.getUploadConnection().get());
+                UploadDialogView uploadDialogView = new UploadDialogView(getScene().getWindow(), exportTask, false);
+                uploadDialogView.progressProperty().bind(exportTask.progressProperty());
+                uploadDialogView.descriptionProperty().bind(exportTask.messageProperty());
+                uploadDialogView.logProperty().bind(exportTask.fullLogProperty());
+                uploadDialogView.show();
+                new Thread(exportTask).start();
+            });
         }
     }
 
@@ -516,8 +539,9 @@ public class ActualDeviceConfigView extends VBox{
                         BooleanBinding showProperty = new SimpleBooleanProperty(p.isOptional()).not().or(showOptionalProperty);
 
                         Label propertyLabel = new Label(p.getName());
-                        GridPane.setRowIndex(propertyLabel, i);
-                        GridPane.setColumnIndex(propertyLabel, 0);
+                        propertyLabel.setMinWidth(USE_PREF_SIZE); // prevent the label from overrun (turn into ...)
+                        propertyLabel.setMinHeight(25); // a hack to center the label to the height of 1 row control when the control spans to multiple rows
+                        GridPane.setConstraints(propertyLabel, 0, i, 1, 1, HPos.LEFT, VPos.TOP);
                         propertyLabel.visibleProperty().bind(showProperty);
                         propertyLabel.managedProperty().bind(showProperty);
                         propertyGridPane.getChildren().add(propertyLabel);
@@ -603,6 +627,14 @@ public class ActualDeviceConfigView extends VBox{
                             comboBox.visibleProperty().bind(showProperty);
                             comboBox.managedProperty().bind(showProperty);
                             propertyGridPane.getChildren().add(comboBox);
+                        } else if (p.getDataType() == DataType.K210_OBJDETECT_MODEL && p.getControlType() == ControlType.K210_OBJDETECT_MODEL_SELECTOR) {
+                            ActualDevice actualDevice = viewModel.getProject().getProjectConfiguration()
+                                    .getActualDeviceOrActualDeviceOfIdenticalDevice(projectDevice).orElseThrow();
+                            K210ModelSelector modelSelector = new K210ModelSelector(viewModel.getProject(), actualDevice, (K210ObjectDetectionModel) currentValue, viewModel.getUploadConnection());
+                            modelSelector.selectedModelProperty().addListener((observable, oldValue, newValue) -> viewModel.setPropertyValue(projectDevice, p, newValue));
+                            GridPane.setRowIndex(modelSelector, i);
+                            GridPane.setColumnIndex(modelSelector, 1);
+                            propertyGridPane.getChildren().add(modelSelector);
                         } else {    // TODO: add support for new property type
                             throw new IllegalStateException("Found unknown property type");
                         }

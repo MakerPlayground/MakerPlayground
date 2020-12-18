@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.makerplayground.generator.upload;
+package io.makerplayground.upload;
 
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RaspberryPiUploadTask extends UploadTaskBase {
+public class RaspberryPiUploadTask extends UploadTask {
 
     protected RaspberryPiUploadTask(Project project, UploadTarget uploadTarget, boolean isInteractiveUpload) {
         super(project, uploadTarget, isInteractiveUpload);

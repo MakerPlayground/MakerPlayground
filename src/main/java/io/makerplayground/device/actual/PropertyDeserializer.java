@@ -79,6 +79,7 @@ public class PropertyDeserializer extends JsonDeserializer<Property> {
                 break;
             case AZURE_COGNITIVE_KEY:
             case AZURE_IOTHUB_KEY:
+            case K210_OBJDETECT_MODEL:
                 defaultValue = null;
                 break;
             default:
