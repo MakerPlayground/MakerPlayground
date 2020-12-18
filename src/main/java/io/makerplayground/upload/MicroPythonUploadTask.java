@@ -197,7 +197,7 @@ public class MicroPythonUploadTask extends UploadTask {
         }
 
         updateProgress(0.6, 1);
-        updateMessage("Erasing board");
+        updateMessage("Uploading to board");
 
         SerialPort serialPort = uploadTarget.getSerialPort();
         String serialPortName = OSInfo.getOs() == OSInfo.OS.WINDOWS ? serialPort.getSystemPortName() : "/dev/" + serialPort.getSystemPortName();
@@ -213,41 +213,18 @@ public class MicroPythonUploadTask extends UploadTask {
         if (result != UploadResult.OK) {
             return result;
         }
-        if (fileList.contains("/flash")) {
+        if (fileList.contains("/sd")) {
+            prefix = "/sd";
+        } else if (fileList.contains("/flash")) {
             prefix = "/flash";
         }
 
-        // list and delete all files and directory
-        fileList = new ArrayList<>();
-        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls", prefix)
-                , false, "Error: Can't list file/directory on the board", UploadResult.CANT_FIND_BOARD, fileList);
-        if (result != UploadResult.OK) {
-            return result;
-        }
-        for (String filePath : fileList) {
-            runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "rmdir", filePath.strip())
-                    , true, "", UploadResult.OK, null);
-        }
-
-        fileList = new ArrayList<>();
-        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "ls", prefix)
-                , false, "Error: Can't list file/directory on the board", UploadResult.CANT_FIND_BOARD, fileList);
-        if (result != UploadResult.OK) {
-            return result;
-        }
-        for (String filePath : fileList) {
-            runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "rm", filePath.strip())
-                    , true, "", UploadResult.OK, null);
-        }
-
-        updateProgress(0.8, 1);
-        updateMessage("Uploading to board");
         try {
             Path uploadingDir = Path.of(projectPath);
             for (Path path : Files.list(uploadingDir).collect(Collectors.toList())) {
                 String sourcePath = uploadingDir.relativize(path).toString();
                 String destPath = prefix.isEmpty() ? sourcePath : prefix + "/" + sourcePath;
-                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "put", sourcePath, destPath)
+                result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "put", sourcePath, destPath)
                         , false, "Error: Can't upload file/directory to the board", UploadResult.CANT_FIND_BOARD, null);
                 if (result != UploadResult.OK) {
                     return result;
@@ -259,7 +236,7 @@ public class MicroPythonUploadTask extends UploadTask {
 
         updateProgress(0.9, 1);
         updateMessage("Reset the board");
-        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", "/dev/" + serialPort.getSystemPortName(), "reset")
+        result = runAmpyCommand(ampyCommand.get(), projectPath, List.of("-p", serialPortName, "reset", "--hard")
                 , false, "Error: Can't reset the board", UploadResult.CANT_RESET_BOARD, null);
         if (result != UploadResult.OK) {
             return result;
@@ -283,8 +260,8 @@ public class MicroPythonUploadTask extends UploadTask {
             builder.directory(new File(projectPath).getAbsoluteFile()); // this is where you set the root folder for the executable to run with
             builder.redirectErrorStream(true);
             p = builder.start();
-            // wait for at most 12 seconds for the process to finish before returning error
-            if (!p.waitFor(12, TimeUnit.SECONDS)) {
+            // wait for at most 30 seconds for the process to finish before returning error
+            if (!p.waitFor(30, TimeUnit.SECONDS)) {
                 killProcess(p);
                 updateMessage(errorMessage);
                 return error;

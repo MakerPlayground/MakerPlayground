@@ -197,8 +197,10 @@ public class MicroPythonUploadCode {
             } else if (!adjacentCondition.isEmpty() || !adjacentDelay.isEmpty()) { // there is a condition so we generate code for that condition
                 builder.append(INDENT).append("global ").append(parsePointerName(begin)).append(NEW_LINE);
                 builder.append(INDENT).append(parsePointerName(begin)).append(" = ").append(parseConditionFunctionName(begin)).append(NEW_LINE);
+            } else {
+                // do nothing if there isn't any scene or condition
+                builder.append(INDENT).append("pass").append(NEW_LINE);
             }
-            // do nothing if there isn't any scene or condition
         });
     }
 
