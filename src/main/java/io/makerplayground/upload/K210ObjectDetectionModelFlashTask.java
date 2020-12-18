@@ -37,7 +37,7 @@ public class K210ObjectDetectionModelFlashTask extends UploadTask {
         String serialPortName = OSInfo.getOs() == OSInfo.OS.WINDOWS ? serialPort.getSystemPortName() : "/dev/" + serialPort.getSystemPortName();
 
         updateProgress(0, 1);
-        updateMessage("Preparing to flash new firmware");
+        updateMessage("Preparing to flash model");
 
         // wait for 500ms so that when the upload failed very early, user can see that the upload has started (progress is at 0%)
         // for a short period of time before seeing the error message
@@ -59,7 +59,7 @@ public class K210ObjectDetectionModelFlashTask extends UploadTask {
         UploadResult result;
 
         updateProgress(0.5, 1);
-        updateMessage("Flashing firmware");
+        updateMessage("Flashing model");
 
         String modelPath = PathUtility.getDeviceDirectoryPath() + File.separator + actualDevice.getId() + File.separator + "model"
                 + File.separator + model.getModelFilename() + ".kfpkg";
@@ -68,7 +68,7 @@ public class K210ObjectDetectionModelFlashTask extends UploadTask {
             updateMessage("Error: Can't locate the model file");
             return UploadResult.CANT_WRITE_CODE;
         }
-        result = runKflashCommand(kflashCommand.get(), List.of("-p", serialPortName, modelPath)
+        result = runKflashCommand(kflashCommand.get(), List.of("-p", serialPortName, "-b", "1500000", "-S", modelPath)
                 , "Error: Can't flash the firmware", UploadResult.CANT_WRITE_CODE);
         if (result != UploadResult.OK) {
             return result;

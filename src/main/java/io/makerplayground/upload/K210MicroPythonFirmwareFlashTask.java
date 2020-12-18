@@ -56,7 +56,7 @@ public class K210MicroPythonFirmwareFlashTask extends UploadTask {
         if (firmwarePath.size() != 1) {
             throw new IllegalStateException("Error: MicroPythonFirmwareFlashTask only support 1 firmware file");
         }
-        result = runKflashCommand(kflashCommand.get(), List.of("-p", serialPortName, PathUtility.getDeviceFirmwarePath() + File.separator + firmwarePath.get(0))
+        result = runKflashCommand(kflashCommand.get(), List.of("-p", serialPortName, "-b", "1500000", "-S", PathUtility.getDeviceFirmwarePath() + File.separator + firmwarePath.get(0))
                 , "Error: Can't flash the firmware", UploadResult.CANT_WRITE_CODE);
         if (result != UploadResult.OK) {
             return result;
