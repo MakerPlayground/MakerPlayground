@@ -16,11 +16,13 @@
 
 package io.makerplayground.upload;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fazecast.jSerialComm.SerialPort;
 import io.makerplayground.device.DeviceLibrary;
 import io.makerplayground.device.actual.ActualDevice;
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.DeviceType;
 import io.makerplayground.generator.devicemapping.ProjectLogic;
 import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.generator.source.ArduinoUploadCode;
@@ -97,6 +99,20 @@ public class ArduinoUploadTask extends UploadTask {
             Platform.runLater(() -> log.set("Using default platformio dependencies folder (~/.platformio) \n"));
         }
 
+        Optional<String> configDirPath = PathUtility.getDeviceLibraryConfigurationPath();
+        if (configDirPath.isEmpty()) {
+            updateMessage("Error: Can't locate device library configuration directory");
+            return UploadResult.CANT_FIND_LIB_CONFIG_DIR;
+        }
+        Platform.runLater(() -> log.set("Using device library configuration directory at " + configDirPath.get() + "\n"));
+        Map<io.makerplayground.device.actual.Platform, String> pioPlatformName;
+        try {
+            pioPlatformName = readPioPlatformMap(configDirPath.get() + File.separator + "pio_platform.yaml");
+        } catch (IOException e) {
+            updateMessage("Error: Can't read platformio platform mapping file");
+            return UploadResult.CANT_READ_PIO_PLATFORM_CONFIG;
+        }
+
         updateProgress(0.20, 1);
 
         updateMessage("Preparing to generate project");
@@ -151,14 +167,9 @@ public class ArduinoUploadTask extends UploadTask {
         Platform.runLater(() -> log.set("Generating project at " + projectPath + "\n"));
         try {
             FileUtils.forceMkdir(new File(projectPath));
-            List<String> params = new ArrayList<>();
-            params.add("init");
-            DeviceLibrary.INSTANCE.getActualDevice(DeviceType.CONTROLLER).stream().map(ActualDevice::getPioBoardId).filter(s -> !s.isBlank()).distinct().forEach(s -> {
-                params.add("--board");
-                params.add(s);
-            });
+            FileUtils.deleteQuietly(new File(iniFilePath));
             UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
-                    , params
+                    , List.of("init", "--board", project.getSelectedController().getPioBoardId(), "--project-option", "platform=" + pioPlatformName.get(project.getSelectedPlatform()))
                     , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
             if (result != UploadResult.OK) {
                 return result;
@@ -241,6 +252,11 @@ public class ArduinoUploadTask extends UploadTask {
         updateMessage("Done");
 
         return UploadResult.OK;
+    }
+
+    private Map<io.makerplayground.device.actual.Platform, String> readPioPlatformMap(String path) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        return mapper.readValue(new File(path), new TypeReference<HashMap<io.makerplayground.device.actual.Platform, String>>() {});
     }
 
     private UploadResult runPlatformIOCommand(List<String> pioCommand, String projectPath, Optional<String> pioHomeDirPath, List<String> args

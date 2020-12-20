@@ -198,6 +198,11 @@ public class PathUtility {
         }
     }
 
+    public static Optional<String> getDeviceLibraryConfigurationPath() {
+        Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
+        return libraryPath.map(s -> s + File.separator + "config");
+    }
+
     private static InputStream getIconAsStream(String name) {
         Optional<String> libraryPath = DeviceLibrary.INSTANCE.getLibraryPath();
         if (libraryPath.isPresent()) {

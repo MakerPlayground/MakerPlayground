@@ -19,6 +19,8 @@ package io.makerplayground.upload;
 public enum UploadResult {
     OK,
     CANT_FIND_PIO,
+    CANT_FIND_LIB_CONFIG_DIR,
+    CANT_READ_PIO_PLATFORM_CONFIG,
     DEVICE_OR_PORT_MISSING,
     CANT_CREATE_PROJECT,
     CANT_GENERATE_CODE,
