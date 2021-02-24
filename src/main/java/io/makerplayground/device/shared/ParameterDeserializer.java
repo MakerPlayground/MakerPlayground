@@ -51,6 +51,7 @@ public class ParameterDeserializer extends JsonDeserializer<Parameter> {
         Object defaultValue = null;
         switch (dataType) {
             case STRING:
+            case STRING_ENUM:
             case STRING_INT_ENUM:
                 defaultValue = node.get("value").asText();
                 break;

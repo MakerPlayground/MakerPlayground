@@ -74,6 +74,12 @@ public class ConstraintDeserializer extends JsonDeserializer<Constraint> {
                 values.put(jn.get("key").asText(), jn.get("value").asInt());
             }
             return Constraint.createStringIntegerCategoricalConstraint(values);
+        } else if (node.isArray() && dataType == DataType.STRING_ENUM) {
+            List<String> values = new ArrayList<>();
+            for (JsonNode jn: node) {
+                values.add(jn.asText());
+            }
+            return Constraint.createCategoricalConstraint(values);
         } else {
             if (dataType == DataType.INTEGER_ENUM) {
                 List<Integer> valueList = new ArrayList<>();

@@ -86,6 +86,8 @@ public abstract class Expression {
                 return new SimpleIntegerExpression((Integer) param.getDefaultValue());
             case STRING:
                 return new ComplexStringExpression((String) param.getDefaultValue());
+            case STRING_ENUM:
+                return new SimpleStringExpression((String) param.getDefaultValue());
             case DATETIME:
                 return new SimpleRTCExpression(RealTimeClock.getDefault());
             case IMAGE:

@@ -62,6 +62,7 @@ public class ProjectLogic {
                 }
                 break;
             case BOOLEAN_ENUM:
+            case STRING_ENUM:
             case STRING:
                 if (expression instanceof SimpleStringExpression) {
                     newConstraint = Constraint.createCategoricalConstraint(((SimpleStringExpression) expression).getString());

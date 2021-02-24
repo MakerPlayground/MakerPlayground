@@ -271,6 +271,7 @@ public class ArduinoInteractiveCode {
                                             .append(" = ").append(param).append(";").append(NEW_LINE);
                                     break;
                                 case STRING:
+                                case STRING_ENUM:
                                     param = "commandArgs[" + (i + 2) + "]";
                                     builder.append(INDENT).append(INDENT).append(INDENT).append("strcpy(")
                                             .append("_").append(projectDevice.getName()).append("_")
