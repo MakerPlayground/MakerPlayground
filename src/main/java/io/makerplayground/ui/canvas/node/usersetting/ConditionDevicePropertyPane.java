@@ -251,7 +251,7 @@ public class ConditionDevicePropertyPane extends VBox {
                 control = expressionControl;
             } else if (p.getControlType() == ControlType.RECORD) {
                 if (userSetting.getParameterMap().get(p) == null) {
-                    userSetting.getParameterMap().put(p, new RecordExpression(new Record()));
+                    userSetting.getParameterMap().put(p, new RecordExpression(new io.makerplayground.device.shared.Record()));
                 }
                 // a fake parameter to make value linking works as expect
                 RecordExpressionControl expressionControl = new RecordExpressionControl(project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
