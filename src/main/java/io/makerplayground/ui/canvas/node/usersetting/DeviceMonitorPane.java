@@ -2,6 +2,7 @@ package io.makerplayground.ui.canvas.node.usersetting;
 
 import io.makerplayground.device.generic.ControlType;
 import io.makerplayground.device.shared.*;
+import io.makerplayground.device.shared.constraint.CategoricalConstraint;
 import io.makerplayground.device.shared.constraint.IntegerCategoricalConstraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.device.shared.constraint.StringIntegerCategoricalConstraint;
@@ -118,6 +119,15 @@ public class DeviceMonitorPane extends VBox {
                         interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, newValue);
                     });
                     control = chipField;
+
+                } else if (p.getControlType() == ControlType.DROPDOWN && p.getDataType() == DataType.STRING_ENUM) {
+                    ObservableList<String> list = FXCollections.observableArrayList(((CategoricalConstraint) p.getConstraint()).getCategories());
+                    ComboBox<String> comboBox = new ComboBox<>(list);
+                    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                        interactiveModel.setAndSendConditionParameterCommand(projectDevice, condition, p, new SimpleStringExpression(newValue));
+                    });
+                    comboBox.getSelectionModel().select(list.get(0));
+                    control = comboBox;
                 } else {
                     throw new IllegalStateException("Found unknown control type " + p);
                 }
