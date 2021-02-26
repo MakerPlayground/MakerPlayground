@@ -72,6 +72,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
     @FXML private StackPane minusChip;
     @FXML private StackPane divideChip;
     @FXML private StackPane moduloChip;
+    @FXML private StackPane divideIntChip;
     @FXML private StackPane openParenthesisChip;
     @FXML private StackPane closeParenthesisChip;
 
@@ -206,6 +207,7 @@ public abstract class ChipField<T extends Expression> extends VBox {
         minusChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.MINUS)));
         divideChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.DIVIDE)));
         moduloChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.MOD)));
+        divideIntChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.DIVIDE_INT)));
         openParenthesisChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.OPEN_PARENTHESIS)));
         closeParenthesisChip.setOnMousePressed(event -> addChip(new OperatorTerm(Operator.CLOSE_PARENTHESIS)));
 

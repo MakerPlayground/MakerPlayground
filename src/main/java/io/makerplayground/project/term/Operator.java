@@ -24,6 +24,7 @@ public enum Operator {
     MULTIPLY(OperatorType.BINARY, "x"),
     DIVIDE(OperatorType.BINARY, "/"),
     MOD(OperatorType.BINARY, "%"),
+    DIVIDE_INT(OperatorType.BINARY, "//"),
     GREATER_THAN(OperatorType.BINARY, ">"),
     LESS_THAN(OperatorType.BINARY, "<"),
     GREATER_THAN_OR_EQUAL(OperatorType.BINARY, "\u2265"),

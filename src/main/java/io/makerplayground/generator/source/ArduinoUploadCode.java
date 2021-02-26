@@ -575,6 +575,7 @@ public class ArduinoUploadCode {
                 case MULTIPLY:
                     return "*";
                 case DIVIDE:
+                case DIVIDE_INT:
                     return "/";
                 case MOD:
                     return "%";
@@ -622,7 +623,7 @@ public class ArduinoUploadCode {
                 } else if (value.getValue() == TimeElapsed.timeSinceLastBlock) {
                     return parseBeginRecentBlockFinishTime(root);
                 } else {
-                    throw new IllegalStateException("TimeElapsed's Value (" + value.getValue().getName() + ") hasn't been implemented");
+                    throw new IllegalStateException("TimeElapsed Value (" + value.getValue().getName() + ") hasn't been implemented");
                 }
             }
             return parseValueVariableTerm(searchGroup(value.getDevice()), value.getValue());
@@ -639,6 +640,30 @@ public class ArduinoUploadCode {
     }
 
     private String parseTerms(Begin root, List<Term> expression) {
-        return expression.stream().map((t) -> parseTerm(root, t)).collect(Collectors.joining(" "));
+        List<Integer> indices = new ArrayList<>();
+        List<String> results = new ArrayList<>();
+        for (int i=0; i<expression.size(); i++) {
+            Term term = expression.get(i);
+            String termStr = parseTerm(root, term);
+            results.add(termStr);
+            if (i>0 && i<expression.size()-1 && (term.getValue() == Operator.MOD || term.getValue() == Operator.DIVIDE_INT)) {
+                indices.add(i);
+            }
+        }
+
+        /* Add int casting for modulo and divide_int operator */
+        for (int i: indices) {
+            String term = results.get(i);
+            if (i > 0 && i < results.size() - 1 && ("%".equals(term))) {
+                String prevTermStr = results.get(i-1);
+                String nextTermStr = results.get(i+1);
+                prevTermStr = "(int)(" + prevTermStr + ")";
+                nextTermStr = "(int)(" + nextTermStr + ")";
+                results.set(i-1, prevTermStr);
+                results.set(i+1, nextTermStr);
+            }
+        }
+
+        return String.join(" ", results);
     }
 }
