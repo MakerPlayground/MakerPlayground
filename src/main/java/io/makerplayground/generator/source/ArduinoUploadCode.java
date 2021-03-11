@@ -489,7 +489,7 @@ public class ArduinoUploadCode {
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            String exprStr = parseTerms(root, expression.getTerms());
+            String exprStr = parseCustomNumberExpressionTerms(root, expression.getTerms());
             returnValue =  "constrain(" + exprStr + ", " + parameter.getMinimumValue() + "," + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -523,7 +523,7 @@ public class ArduinoUploadCode {
             if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
                 returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
             } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
-                returnValue = "String(" + parseTerms(root, subExpression.get(0).getTerms()) + ").c_str()";
+                returnValue = "String(" + parseCustomNumberExpressionTerms(root, subExpression.get(0).getTerms()) + ").c_str()";
             } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
                 returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
                         .collect(Collectors.joining("", "\"", "\""));
@@ -533,7 +533,7 @@ public class ArduinoUploadCode {
                     if (e instanceof SimpleStringExpression) {
                         subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
                     } else if (e instanceof CustomNumberExpression) {
-                        subExpressionString.add("String(" + parseTerms(root, e.getTerms()) + ")");
+                        subExpressionString.add("String(" + parseCustomNumberExpressionTerms(root, e.getTerms()) + ")");
                     } else {
                         throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
                     }
@@ -640,30 +640,35 @@ public class ArduinoUploadCode {
     }
 
     private String parseTerms(Begin root, List<Term> expression) {
-        List<Integer> indices = new ArrayList<>();
-        List<String> results = new ArrayList<>();
-        for (int i=0; i<expression.size(); i++) {
-            Term term = expression.get(i);
-            String termStr = parseTerm(root, term);
-            results.add(termStr);
-            if (i>0 && i<expression.size()-1 && (term.getValue() == Operator.MOD || term.getValue() == Operator.DIVIDE_INT)) {
-                indices.add(i);
-            }
-        }
+        return expression.stream().map((t) -> parseTerm(root, t)).collect(Collectors.joining(" "));
+    }
 
-        /* Add int casting for modulo and divide_int operator */
-        for (int i: indices) {
-            String term = results.get(i);
-            if (i > 0 && i < results.size() - 1 && ("%".equals(term))) {
-                String prevTermStr = results.get(i-1);
-                String nextTermStr = results.get(i+1);
-                prevTermStr = "(int)(" + prevTermStr + ")";
-                nextTermStr = "(int)(" + nextTermStr + ")";
-                results.set(i-1, prevTermStr);
-                results.set(i+1, nextTermStr);
-            }
-        }
+    private String parseCustomNumberExpressionTerms(Begin root, List<Term> expression) {
+        NumberExpressionTreeNode tree = NumberExpressionParser.parseExpression(expression);
+        StringBuilder sb = new StringBuilder();
+        parseCustomNumberExpressionTermsImpl(root, tree, sb);
+        return sb.toString();
+    }
 
-        return String.join(" ", results);
+    private void parseCustomNumberExpressionTermsImpl(Begin root, NumberExpressionTreeNode current, StringBuilder sb) {
+        if (current.hasChildren()) {
+            Operator op = ((OperatorTerm) current.getRoot()).getValue();
+            if (op == Operator.DIVIDE_INT) {
+                sb.append("(int)");
+            }
+            sb.append("(");
+            if (op == Operator.MOD) {
+                sb.append("(int)");
+            }
+            parseCustomNumberExpressionTermsImpl(root, current.getLeftChild(), sb);
+            sb.append(parseTerm(root, current.getRoot()));
+            if (op == Operator.MOD) {
+                sb.append("(int)");
+            }
+            parseCustomNumberExpressionTermsImpl(root, current.getRightChild(), sb);
+            sb.append(")");
+        } else {
+            sb.append(parseTerm(root, current.getRoot()));
+        }
     }
 }
