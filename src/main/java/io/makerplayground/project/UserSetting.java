@@ -19,11 +19,9 @@ package io.makerplayground.project;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.*;
-import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
-import io.makerplayground.project.expression.ConditionalExpression;
+import io.makerplayground.project.expression.ProjectValueConditionalExpression;
 import io.makerplayground.project.expression.Expression;
-import io.makerplayground.project.expression.NumberInRangeExpression;
 import io.makerplayground.project.expression.RecordExpression;
 import io.makerplayground.project.term.Term;
 import io.makerplayground.project.term.ValueTerm;
@@ -105,7 +103,7 @@ public class UserSetting {
         for (Value v : device.getGenericDevice().getValue()) {
             expressionEnable.put(v, false);
             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                expression.put(v, new ConditionalExpression(device, v));
+                expression.put(v, new ProjectValueConditionalExpression(device, v));
             }
         }
 
@@ -114,7 +112,7 @@ public class UserSetting {
                 Value v = pv.getValue();
                 expressionEnable.put(v, false);
                 if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                    expression.put(v, new ConditionalExpression(device, v));
+                    expression.put(v, new ProjectValueConditionalExpression(device, v));
                 }
             }
 
@@ -128,7 +126,7 @@ public class UserSetting {
                             }
                             expressionEnable.put(v, false);
                             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                                expression.put(v, new ConditionalExpression(device, v));
+                                expression.put(v, new ProjectValueConditionalExpression(device, v));
                             }
                         });
                     }
@@ -188,7 +186,7 @@ public class UserSetting {
                             }
                             expressionEnable.put(v, false);
                             if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                                this.expression.put(v, new ConditionalExpression(u.device, v));
+                                this.expression.put(v, new ProjectValueConditionalExpression(u.device, v));
                             }
                         });
                     }
