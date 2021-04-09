@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class DeviceTab extends SplitPane {
+public class DeviceTabPane extends SplitPane {
 
     private final Project currentProject;
     private final ReadOnlyObjectProperty<UploadTarget> uploadConnection;
@@ -37,7 +37,7 @@ public class DeviceTab extends SplitPane {
     private final DoubleProperty deviceDiagramHScrollPosition = new SimpleDoubleProperty(0);
     private final DoubleProperty deviceDiagramVScrollPosition = new SimpleDoubleProperty(0);
 
-    public DeviceTab(Project currentProject, ReadOnlyObjectProperty<UploadTarget> uploadConnection, HostServices hostServices) {
+    public DeviceTabPane(Project currentProject, ReadOnlyObjectProperty<UploadTarget> uploadConnection, HostServices hostServices) {
         this.currentProject = currentProject;
         this.uploadConnection = uploadConnection;
 
