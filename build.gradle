@@ -2,8 +2,9 @@ import groovy.json.JsonOutput
 
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'org.beryx.jlink' version '2.21.0'
+    id 'org.beryx.jlink' version '2.23.6'
+    id "com.dua3.javafxgradle7plugin" version "0.0.9"
+    id "io.freefair.lombok" version "5.3.3.3"
 }
 
 repositories {
@@ -11,31 +12,49 @@ repositories {
 }
 
 dependencies {
-    compile 'com.fazecast:jSerialComm:2.6.1'
-    compile 'org.controlsfx:controlsfx:11.0.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
-    compile 'commons-io:commons-io:2.6'
+    // https://mvnrepository.com/artifact/com.fazecast/jSerialComm
+    // implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.6.2'
+    // use custom jSerialComm library until Apple Silicon support is merged to upstream
+    implementation files('libs/jSerialComm-2.6.2.jar')
+    // https://mvnrepository.com/artifact/org.controlsfx/controlsfx
+    implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.0'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.2'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.14'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.9'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    compileOnly 'org.projectlombok:lombok:1.18.8'
-    annotationProcessor 'org.projectlombok:lombok:1.18.8'
-    compile "org.java-websocket:Java-WebSocket:1.4.0"
-    compile 'commons-net:commons-net:3.6'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.2'
+    // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
+    implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.2'
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
 }
 
 javafx {
-    version = '14'
+    version = '16'
     modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
+}
+
+mainClassName = "io.makerplayground.ui.Launcher"
+version = getVersionName()
+application.mainModule = 'io.makerplayground.frontend'
+
+compileJava {
+    options.compilerArgs += [
+            '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED'
+    ]
 }
 
 run {
     doFirst {
-        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-x86.gradle
+        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-jdk-fx.gradle
         // and the innosetup script for the Windows in the package submodule
         jvmArgs += [
+                '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED',
                 '--add-exports', 'javafx.base/com.sun.javafx.runtime=org.controlsfx.controls',
                 '--add-exports', 'javafx.base/com.sun.javafx.collections=org.controlsfx.controls',
                 '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls',
@@ -51,17 +70,17 @@ jlink {
     launcher {
         name = project.name
         jvmArgs = ["--add-modules",
-                "javafx.controls",
-                "--add-modules",
-                "javafx.fxml",
-                "--add-reads",
-                "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
-                "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
-                "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
-                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
-                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
+                   "javafx.controls",
+                   "--add-modules",
+                   "javafx.fxml",
+                   "--add-reads",
+                   "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+                   "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+                   "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+                   "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
     }
     mergedModule {
         requires 'java.sql'
@@ -69,17 +88,29 @@ jlink {
     jpackage {
         imageName = 'Maker Playground'
         def os = System.getProperty("os.name").toLowerCase()
+        // jpackage doesn't allow app version to start with 0 or contain any alphabet so we manually set it in the installer of each platform
+        appVersion = '1.0'
         if (os.contains("win")) {
             resourceDir = file("package\\windows\\assets")
         } else if (os.contains("mac")) {
-            imageOptions = ["--file-associations", "package/macosx/file-association.properties"]
+            // manually set CFBundleVersion/CFBundleShortVersionString in the custom Info.plist file
+            def tmp = "${versionName}".split('-')
+            def versionString = tmp[0]
+            if (tmp.length > 1) {
+                versionString += "." + tmp[1]
+            }
+            exec {
+                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleShortVersionString ${versionString}", 'package/macosx/assets/Info.plist'
+            }
+            exec {
+                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleVersion ${versionString}", 'package/macosx/assets/Info.plist'
+            }
+            // uncomment to regenerate Info.plist
+            // imageOptions = ["--file-associations", "package/macosx/file-association.properties"]
             resourceDir = file("package/macosx/assets")
         }
     }
 }
-
-mainClassName = "$moduleName/io.makerplayground.ui.Launcher"
-version = getVersionName()
 
 task createBundle {
     description 'Build the installable bundle'
@@ -125,12 +156,12 @@ def getVersionName() {
             version: versionName,
             channel: 'nightly', // stable, nightly, internal
             release_date: new Date().format('yyyy-MM-dd')])
-    def file = new File('src/main/resources/version.json')
+    def file = new File("${projectDir}/src/main/resources/version.json")
     file.write versionInfo
 
     // generate version.json for the library submodule
     // (we check for its existence first to avoid error when it hasn't been initialized)
-    if (new File('library').isDirectory()) {
+    if (new File("${projectDir}/library").isDirectory()) {
         // get library's version number from git hash
         stdout = new ByteArrayOutputStream()
         def os = System.getProperty("os.name").toLowerCase()
@@ -147,7 +178,7 @@ def getVersionName() {
         }
         def libraryVersion = stdout.toString().trim()
         // write version.json file
-        def libVersionFile = new File('library/version.json')
+        def libVersionFile = new File("${projectDir}/library/version.json")
         libVersionFile.write "{\"version\": \"${libraryVersion}\", \"min_mp_version\": \"${versionName}\", \"release-date\": \"${new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))}\"}"
     }
 

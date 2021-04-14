@@ -45,16 +45,16 @@ compileJava {
 
 run {
     doFirst {
-        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-x86.gradle
+        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-jdk-fx.gradle
         // and the innosetup script for the Windows in the package submodule
         jvmArgs += [
                 '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED',
-                '--add-exports', 'javafx.base/com.sun.javafx.runtime=ALL-UNNAMED',
-                '--add-exports', 'javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
-                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED',
-                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED',
-                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED',
-                '--add-exports', 'javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED'
+                '--add-exports', 'javafx.base/com.sun.javafx.runtime=org.controlsfx.controls',
+                '--add-exports', 'javafx.base/com.sun.javafx.collections=org.controlsfx.controls',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls',
+                '--add-exports', 'javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls'
         ]
     }
 }
@@ -82,11 +82,12 @@ jlink {
     jpackage {
         imageName = 'Maker Playground'
         def os = System.getProperty("os.name").toLowerCase()
+        // jpackage doesn't allow app version to start with 0 or contain any alphabet so we manually set it in the installer of each platform
+        appVersion = '1.0'
         if (os.contains("win")) {
             resourceDir = file("package\\windows\\assets")
         } else if (os.contains("mac")) {
-            // macOS appVersion can't start with 0 and can include only digits so we set it to 1.0 and manually set CFBundleVersion in the custom Info.plist file
-            appVersion = '1.0'
+            // manually set CFBundleVersion/CFBundleShortVersionString in the custom Info.plist file
             def tmp = "${versionName}".split('-')
             def versionString = tmp[0]
             if (tmp.length > 1) {
