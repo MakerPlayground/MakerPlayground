@@ -33,9 +33,29 @@ import java.util.stream.Stream;
 
 public class PathUtility {
     // workspace directory for storing generated project folder
-    static public final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
+    public static final String MP_WORKSPACE = System.getProperty("user.home") + File.separator + ".makerplayground";
     // program installation directory
-    static public final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
+    public static final String MP_INSTALLDIR = new File("").getAbsoluteFile().getPath();
+    // possible path to python interpreter for all platforms
+    public static final List<String> PYTHON_INTERPRETER = List.of(
+            // integrated python of our windows installer
+            MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python",
+            // integrated python of our macOS installer
+            "/Library/Application Support/MakerPlayground/python-portable-darwin_x86_64/bin/python3",
+            // virtualenv created by official platformio installation script
+            System.getProperty("user.home") + File.separator + ".platformio" + File.separator + "penv" + File.separator + "bin" + File.separator + "python",
+            // default python in user's system path
+            "python",
+            // internal python of macOS and Linux
+            "/usr/bin/python"
+    );
+    // possible path to the integrated python interpreter
+    public static final List<String> INTEGRATED_PYTHON_INTERPRETER = List.of(
+            // integrated python of our windows installer
+            MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python",
+            // integrated python of our macOS installer
+            "/Library/Application Support/MakerPlayground/python-portable-darwin_x86_64/bin/python3"
+    );
 
     private static Optional<List<String>> tryCommand(List<List<String>> command, List<String> args) {
         for (List<String> c : command) {
@@ -63,18 +83,20 @@ public class PathUtility {
         return Optional.empty();
     }
 
+    public static List<List<String>> getPythonModuleCommand(List<String> interpreterPath, String moduleName) {
+        return interpreterPath.stream().map(s -> List.of(s, "-m", moduleName)).toList();
+    }
+
     /**
      * Get command for executing platformio
      * @return command for executing platformio on the current platform or Optional.empty()
      */
     public static Optional<List<String>> getPlatformIOCommand() {
-        List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "platformio"),     // integrated python of our windows installer
-                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/platformio"),   // virtualenv created by official platformio installation script
-                List.of("python", "-m", "platformio"),          // default python in user's system path
-                List.of("/usr/bin/python", "-m", "platformio")  // internal python of macOS and Linux
-        );
-        return tryCommand(command, Collections.emptyList());
+        return tryCommand(getPythonModuleCommand(PYTHON_INTERPRETER, "platformio"), Collections.emptyList());
+    }
+
+    public static boolean isUsingIntegratedPlatformIO() {
+        return tryCommand(getPythonModuleCommand(INTEGRATED_PYTHON_INTERPRETER, "platformio"), Collections.emptyList()).isPresent();
     }
 
     /**
@@ -82,13 +104,7 @@ public class PathUtility {
      * @return command for executing ampy on the current platform or Optional.empty()
      */
     public static Optional<List<String>> getAmpyCommand() {
-        List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "ampy.cli"),     // integrated python of our windows installer
-                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/ampy"),   // virtualenv created by official platformio installation script
-                List.of("python", "-m", "ampy.cli"),          // default python in user's system path
-                List.of("/usr/bin/python", "-m", "ampy.cli")  // internal python of macOS and Linux
-        );
-        return tryCommand(command, Collections.emptyList());
+        return tryCommand(getPythonModuleCommand(PYTHON_INTERPRETER, "ampy.cli"), Collections.emptyList());
     }
 
     /**
@@ -96,13 +112,7 @@ public class PathUtility {
      * @return command for executing esptool on the current platform or Optional.empty()
      */
     public static Optional<List<String>> getEsptoolCommand() {
-        List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "esptool"),     // integrated python of our windows installer
-                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/esptool.py"),   // virtualenv created by official platformio installation script
-                List.of("python", "-m", "esptool"),          // default python in user's system path
-                List.of("/usr/bin/python", "-m", "esptool")  // internal python of macOS and Linux
-        );
-        return tryCommand(command, List.of("version"));
+        return tryCommand(getPythonModuleCommand(PYTHON_INTERPRETER, "esptool"), List.of("version"));
     }
 
     /**
@@ -110,13 +120,7 @@ public class PathUtility {
      * @return command for executing kflash on the current platform or Optional.empty()
      */
     public static Optional<List<String>> getKflashCommand() {
-        List<List<String>> command = List.of(
-                List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "python-3.7.7" + File.separator + "python", "-m", "kflash"),     // integrated python of our windows installer
-                List.of(System.getProperty("user.home") + "/.platformio/penv/bin/kflash"),   // virtualenv created by official platformio installation script
-                List.of("python", "-m", "kflash"),          // default python in user's system path
-                List.of("/usr/bin/python", "-m", "kflash")  // internal python of macOS and Linux
-        );
-        return tryCommand(command, List.of("-v"));
+        return tryCommand(getPythonModuleCommand(PYTHON_INTERPRETER, "kflash"), List.of("-v"));
     }
 
     /**
@@ -124,9 +128,14 @@ public class PathUtility {
      * @return path to the integrated platformio home directory or Optional.empty()
      */
     public static Optional<String> getIntegratedPIOHomeDirectory() {
-        List<String> path = List.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "platformio"   // default path for Windows installer
-                , "/Library/Application Support/MakerPlayground/platformio");       // default path for macOS installer
-        return path.stream().filter(s -> new File(s).exists()).findFirst();
+        if (isUsingIntegratedPlatformIO()) {
+            if (OSInfo.getOs() == OSInfo.OS.WINDOWS) {
+                return Optional.of(MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "platformio");
+            } else if (OSInfo.getOs() == OSInfo.OS.MAC) {
+                return Optional.of("/Library/Application Support/MakerPlayground/platformio");
+            }
+        }
+        return Optional.empty();
     }
 
     public static String getDeviceDirectoryPath() {

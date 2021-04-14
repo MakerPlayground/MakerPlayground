@@ -115,6 +115,14 @@ task createBundle {
             exec {
                 commandLine 'cmd', '/c', "cd .\\package\\windows && create-installer.bat ${version}"
             }
+        } else if (os.contains("linux")) {
+            copy {
+                from "${buildDir}/jpackage/Maker Playground"
+                into "package/linux/Maker Playground"
+            }
+            exec {
+                commandLine '/bin/sh', '-c', "cd package/linux && ./createAppImage.sh ${version}"
+            }
         } else if (os.contains("mac")) {
             // copy the app bundle to the package directory
             copy {
