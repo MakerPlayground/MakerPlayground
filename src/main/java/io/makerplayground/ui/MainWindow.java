@@ -39,7 +39,7 @@ public class MainWindow extends BorderPane {
     private ReadOnlyObjectProperty<UploadTarget> uploadConnection;
 
     private Node diagramEditor;
-    private DeviceTab deviceTab;
+    private DeviceTabPane deviceTab;
     private DeviceMonitor deviceMonitor;
 
     private final BooleanProperty diagramEditorShowing;
@@ -54,7 +54,7 @@ public class MainWindow extends BorderPane {
         this.hostServices = hostServices;
 
         diagramEditor = initDiagramEditor();
-        deviceTab = new DeviceTab(project.get(), uploadConnection, hostServices);
+        deviceTab = new DeviceTabPane(project.get(), uploadConnection, hostServices);
         deviceMonitor = new DeviceMonitor();
 
         diagramEditorShowing = new SimpleBooleanProperty();
@@ -85,7 +85,7 @@ public class MainWindow extends BorderPane {
             currentProject = newValue;
 
             diagramEditor = initDiagramEditor();
-            deviceTab = new DeviceTab(project.get(), uploadConnection, hostServices);
+            deviceTab = new DeviceTabPane(project.get(), uploadConnection, hostServices);
             deviceTab.setOnLibraryUpdateButtonPressed(eventHandler);
             deviceMonitor.stopMonitor();
             deviceMonitor = new DeviceMonitor();

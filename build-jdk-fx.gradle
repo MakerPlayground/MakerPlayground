@@ -3,7 +3,6 @@ import groovy.json.JsonOutput
 plugins {
     id 'application'
     id 'org.beryx.jlink' version '2.23.6'
-    id "com.dua3.javafxgradle7plugin" version "0.0.9"
     id "io.freefair.lombok" version "5.3.3.3"
 }
 
@@ -34,18 +33,13 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
 }
 
-javafx {
-    version = '16'
-    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
-}
-
 mainClassName = "io.makerplayground.ui.Launcher"
 version = getVersionName()
 application.mainModule = 'io.makerplayground.frontend'
 
 compileJava {
     options.compilerArgs += [
-            '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED'
+       '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED'
     ]
 }
 
@@ -70,17 +64,17 @@ jlink {
     launcher {
         name = project.name
         jvmArgs = ["--add-modules",
-                   "javafx.controls",
-                   "--add-modules",
-                   "javafx.fxml",
-                   "--add-reads",
-                   "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
-                   "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
-                   "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
-                   "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
-                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
-                   "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
-                   "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
+                "javafx.controls",
+                "--add-modules",
+                "javafx.fxml",
+                "--add-reads",
+                "org.controlsfx.controls=javafx.base,javafx.graphics,javafx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls",
+                "--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=org.controlsfx.controls",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=org.controlsfx.controls",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls"]
     }
     mergedModule {
         requires 'java.sql'

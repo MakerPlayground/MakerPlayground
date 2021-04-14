@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'makerplayground'
-// rootProject.buildFileName = 'build-x86.gradle'
+//rootProject.buildFileName = 'build-jdk-fx.gradle'
