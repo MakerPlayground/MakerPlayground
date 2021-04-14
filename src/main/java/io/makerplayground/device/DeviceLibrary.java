@@ -85,7 +85,8 @@ public enum DeviceLibrary {
             "library",   // default path when running from the IDE which should override installer path to aid in development
             PathUtility.getUserLibraryPath(),  // updated library for each user in user's machine
             PathUtility.MP_INSTALLDIR + File.separator + "dependencies" + File.separator + "library",    // default path for Windows installer (fallback)
-            "/Library/Application Support/MakerPlayground/library"   // default path for macOS installer (fallback)
+            "/Library/Application Support/MakerPlayground/library",                     // default path for macOS installer (fallback)
+            System.getenv().getOrDefault("APPDIR", "") + File.separator + "library"     // default path for linux AppImage (fallback)
     );
 
     private void reloadLibraryPath() {
