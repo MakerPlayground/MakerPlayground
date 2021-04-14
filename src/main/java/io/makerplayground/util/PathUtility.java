@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathUtility {
@@ -84,7 +85,7 @@ public class PathUtility {
     }
 
     public static List<List<String>> getPythonModuleCommand(List<String> interpreterPath, String moduleName) {
-        return interpreterPath.stream().map(s -> List.of(s, "-m", moduleName)).toList();
+        return interpreterPath.stream().map(s -> List.of(s, "-m", moduleName)).collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -181,10 +182,9 @@ public class PathUtility {
     // cache list of path to model to avoid listing and reading model's yaml file every time
     private static Map<ActualDevice, List> modelPath = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public static <T> List<T> getDeviceModelPath(ActualDevice actualDevice, Class<T> tClass) {
-        if (modelPath.containsKey(actualDevice)) {
-            return modelPath.get(actualDevice);
-        } else {
+        if (!modelPath.containsKey(actualDevice)) {
             Path modelDir = Path.of(PathUtility.getDeviceDirectoryPath(), actualDevice.getId(), "model");
             try (Stream<Path> paths = Files.list(modelDir)) {
                 ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -203,8 +203,8 @@ public class PathUtility {
                 e.printStackTrace();
                 modelPath.put(actualDevice, Collections.emptyList());
             }
-            return modelPath.get(actualDevice);
         }
+        return modelPath.get(actualDevice);
     }
 
     public static Optional<String> getDeviceLibraryConfigurationPath() {
