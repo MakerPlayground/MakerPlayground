@@ -11,10 +11,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.ProjectValueConditionalExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
-import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.*;
 import io.makerplayground.ui.canvas.node.expression.custom.MultiFunctionNumericControl;
 import io.makerplayground.ui.canvas.node.expression.custom.StringChipField;
 import io.makerplayground.util.PathUtility;
@@ -256,6 +253,11 @@ public class ConditionDevicePropertyPane extends VBox {
                 // a fake parameter to make value linking works as expect
                 RecordExpressionControl expressionControl = new RecordExpressionControl(project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER))
                         , (RecordExpression) userSetting.getParameterMap().get(p));
+                expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
+                control = expressionControl;
+            } else if (p.getControlType() == ControlType.BOOLEAN_EXPRESSION) {
+                BooleanExpressionControl expressionControl = new BooleanExpressionControl((BooleanExpression) userSetting.getParameterMap().get(p)
+                        , project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)));
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getParameterMap().put(p, newValue));
                 control = expressionControl;
             } else {

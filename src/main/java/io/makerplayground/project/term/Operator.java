@@ -69,10 +69,18 @@ public enum Operator {
         return COMPARISON_OPERATORS;
     }
 
+    public static boolean isComparisonOperator(Operator operator) {
+        return COMPARISON_OPERATORS.contains(operator);
+    }
+
     private static final List<Operator> ARITHMETIC_OPERATORS = List.of(PLUS, MINUS, MULTIPLY, DIVIDE, MOD, OPEN_PARENTHESIS, CLOSE_PARENTHESIS);
 
     public static List<Operator> getArithmeticOperator() {
         return ARITHMETIC_OPERATORS;
+    }
+
+    public static boolean isArithmeticOperator(Operator operator) {
+        return ARITHMETIC_OPERATORS.contains(operator);
     }
 
     @Override
