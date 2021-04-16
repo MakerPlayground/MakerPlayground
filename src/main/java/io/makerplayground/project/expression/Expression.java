@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public abstract class Expression {
 
     public enum Type {
-        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, VARIABLE, RECORD, STRING_INT, DOT_MATRIX;
+        SIMPLE_INTEGER, SIMPLE_STRING, COMPLEX_STRING, PROJECT_VALUE, NUMBER_WITH_UNIT, NUMBER_IN_RANGE, CONDITIONAL, CUSTOM_NUMBER, DATETIME, VALUE_LINKING, IMAGE, VARIABLE, RECORD, STRING_INT, DOT_MATRIX, BOOLEAN;
     }
 
     public enum RefreshInterval {
@@ -102,6 +102,8 @@ public abstract class Expression {
                 return new DotMatrixExpression(new RGBDotMatrix());
             case VARIABLE_NAME:
                 return VariableExpression.NO_VARIABLE_SELECTED;
+            case BOOLEAN_EXPRESSION:
+                return new BooleanExpression();
             default:
                 throw new IllegalStateException("Cannot create expression from default parameter: " + param);
         }

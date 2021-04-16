@@ -129,6 +129,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 } else {
                     expression = new VariableExpression(((ValueTerm)(terms.get(0))).getValue());
                 }
+            } else if (BooleanExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new BooleanExpression(terms);
             } else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }

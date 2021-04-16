@@ -8,7 +8,6 @@ import io.makerplayground.device.shared.Condition;
 import io.makerplayground.device.shared.constraint.Constraint;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,14 +33,21 @@ public class VirtualProjectDevice extends ProjectDevice {
         public static final Parameter nameParameter = new Parameter("Name", DataType.VARIABLE_NAME, "x", Constraint.NONE, ControlType.VARIABLE);
         public static final Parameter valueParameter = new Parameter("Value", DataType.DOUBLE, new NumberWithUnit(0.0, Unit.NOT_SPECIFIED), Constraint.createNumericConstraint(-Double.MAX_VALUE, Double.MAX_VALUE, Unit.NOT_SPECIFIED), ControlType.SPINBOX);
         public static final Action setValue = new Action("Set Value", "setValue", List.of(nameParameter, valueParameter));
-        public static final GenericDevice memoryGenericDevice = new GenericDevice("Memory", "", GenericDeviceType.UTILITY, List.of(setValue), List.of(compare), new ArrayList<>());
+        public static final GenericDevice memoryGenericDevice = new GenericDevice("Memory", "", GenericDeviceType.UTILITY, List.of(setValue), List.of(compare), Collections.emptyList());
         public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Memory", memoryGenericDevice, true);
+    }
+
+    public static class Equation {
+        public static final Condition evaluateEquation = new Condition("Evaluate", "", List.of(new Parameter("Equation", DataType.BOOLEAN_EXPRESSION,
+                null, Constraint.NONE, ControlType.BOOLEAN_EXPRESSION)));
+        public static final GenericDevice equationGenericDevice = new GenericDevice("Equation", "", GenericDeviceType.UTILITY, Collections.emptyList(), List.of(evaluateEquation), Collections.emptyList());
+        public static final VirtualProjectDevice projectDevice = new VirtualProjectDevice("Equation", equationGenericDevice, true);
     }
 
     // other virtual device such as the statistic calculator etc. should be defined here
 
     public static List<ProjectDevice> getDevices() {
-        return List.of(TimeElapsed.projectDevice, Memory.projectDevice);
+        return List.of(TimeElapsed.projectDevice, Memory.projectDevice, Equation.projectDevice);
     }
 
     public static List<ProjectDevice> getDevicesWithAction() {
