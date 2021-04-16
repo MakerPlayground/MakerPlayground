@@ -29,21 +29,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ConditionalExpression extends Expression {
+public class ProjectValueConditionalExpression extends Expression {
 
     private final ProjectDevice projectDevice;
     private final Value value;
     private final List<Entry> entries;
 
-    public ConditionalExpression(ProjectDevice projectDevice, Value value) {
+    public ProjectValueConditionalExpression(ProjectDevice projectDevice, Value value) {
         super(Type.CONDITIONAL);
         this.projectDevice = projectDevice;
         this.value = value;
         this.entries = new ArrayList<>();
-        this.entries.add(new ConditionalExpression.Entry(Operator.GREATER_THAN, new CustomNumberExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED))));
+        this.entries.add(new ProjectValueConditionalExpression.Entry(Operator.GREATER_THAN, new CustomNumberExpression(new NumberWithUnit(0.0, Unit.NOT_SPECIFIED))));
     }
 
-    public ConditionalExpression(ProjectDevice projectDevice, Value value, List<Term> terms) {
+    public ProjectValueConditionalExpression(ProjectDevice projectDevice, Value value, List<Term> terms) {
         super(Type.CONDITIONAL);
         this.projectDevice = projectDevice;
         this.value = value;
@@ -61,7 +61,7 @@ public class ConditionalExpression extends Expression {
         }
     }
 
-    ConditionalExpression(ConditionalExpression e) {
+    ProjectValueConditionalExpression(ProjectValueConditionalExpression e) {
         super(e);
         this.projectDevice = e.projectDevice;
         this.value = e.value;
@@ -169,7 +169,7 @@ public class ConditionalExpression extends Expression {
     }
 
     @Override
-    public ConditionalExpression deepCopy() {
-        return new ConditionalExpression(this);
+    public ProjectValueConditionalExpression deepCopy() {
+        return new ProjectValueConditionalExpression(this);
     }
 }
