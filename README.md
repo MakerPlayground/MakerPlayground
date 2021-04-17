@@ -16,15 +16,15 @@ This instruction is for those who prefer to build Maker Playground from source o
 
 ### Prerequisite
 
-OS            | JDK Version     | Gradle's Build Script
---------------|-----------------|------------------------------------
-Windows (x86) | JDK11-14*       | build-jdk-fx.gradle**
-Windows (x64) | JDK11 or higher | build.gradle or build-jdk-fx.gradle
-macOS (x64)   | JDK11 or higher | build.gradle or build-jdk-fx.gradle
-macOS (arm64) | JDK11 or higher | build-jdk-fx.gradle**
-Linux (x64)   | JDK11 or higher | build.gradle or build-jdk-fx.gradle
+OS            | JDK Version      | Gradle's Build Script
+--------------|------------------|------------------------------------
+Windows (x86) | JDK11 or higher* | build-jdk-fx.gradle**
+Windows (x64) | JDK11 or higher  | build.gradle or build-jdk-fx.gradle
+macOS (x64)   | JDK11 or higher  | build.gradle or build-jdk-fx.gradle
+macOS (arm64) | JDK11 or higher  | build-jdk-fx.gradle**
+Linux (x64)   | JDK11 or higher  | build.gradle or build-jdk-fx.gradle
 
-\* JDK15 and 16 is not supported on Windows 32-bit due to this jpackage [bug](https://bugs.openjdk.java.net/browse/JDK-8258755) which will be fixed in JDK17
+\* JDK15 and 16 are not supported when creating Windows 32-bit installer due to this jpackage [bug](https://bugs.openjdk.java.net/browse/JDK-8258755) which will be fixed in JDK17
 
 ** Tested on Azul JDK FX and Bellsoft Liberica Full JDK
 
