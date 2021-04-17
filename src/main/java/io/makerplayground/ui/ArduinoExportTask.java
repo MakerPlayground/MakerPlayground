@@ -99,6 +99,13 @@ public class ArduinoExportTask extends ProjectExportTask {
 
         Optional<List<String>> pioCommand = PathUtility.getPlatformIOCommand();
         Optional<String> pioHomeDirPath = PathUtility.getIntegratedPIOHomeDirectory();
+        if(pioCommand.isEmpty())
+        {
+            //Optional is empty
+            updateMessage("Error : Missing platformio");
+            exportResult = ExportResult.MISSING_PLATFORMIO;
+            throw new IllegalStateException("");
+        }
 
         UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
                 , List.of("init", "--board", project.getSelectedController().getPioBoardId())
@@ -108,6 +115,7 @@ public class ArduinoExportTask extends ProjectExportTask {
             exportResult = ExportResult.CANT_CREATE_PROJECT;
             throw new IllegalStateException("");
         }
+
 
         updateProgress(0.6, 1);
         updateMessage("Generating PlatformIO project files and extracting the libraries");
@@ -211,6 +219,10 @@ public class ArduinoExportTask extends ProjectExportTask {
             return UploadResult.UNKNOWN_ERROR;
         } catch (IOException e) {
             updateMessage("Unknown error (I/O) has occurred. Please try again.");
+            return UploadResult.UNKNOWN_ERROR;
+        } catch (Exception e)
+        {
+            e.printStackTrace();
             return UploadResult.UNKNOWN_ERROR;
         }
         return UploadResult.OK;
