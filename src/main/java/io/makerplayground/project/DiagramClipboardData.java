@@ -56,7 +56,7 @@ public class DiagramClipboardData {
                             }
                         }
                     }
-                    Map<ProjectDevice, Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
+                    Map<ProjectDevice, Set<Value>> deviceSetMap = userSetting.getNonVirtualProjectDevicesValueUsed();
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
                     devices.addAll(keys);
                 }
@@ -70,7 +70,7 @@ public class DiagramClipboardData {
                     if (!VirtualProjectDevice.getDevices().contains(projectDevice)) {
                         devices.add(projectDevice);
                     }
-                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getAllValueUsedByActualProjectDevice();
+                    Map<ProjectDevice,Set<Value>> deviceSetMap = userSetting.getNonVirtualProjectDevicesValueUsed();
                     Set<ProjectDevice> keys = deviceSetMap.keySet();
                     devices.add(userSetting.getDevice());
                     devices.addAll(keys);
