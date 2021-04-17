@@ -162,13 +162,15 @@ public class MicroPythonUploadTask extends UploadTask {
 
         // copy board specific files
         File codeDir = Paths.get(libraryPath.get(), "devices", project.getProjectConfiguration().getController().getId(), "code").toFile();
-        Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        Platform.runLater(() -> log.set("Board specific files found : " + boardSpecificFiles + "\n"));
-        try {
-            FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
-        } catch (IOException e) {
-            updateMessage("Error: Cannot write code to project directory");
-            return UploadResult.CANT_WRITE_CODE;
+        if (codeDir.isDirectory()) {
+            Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+            Platform.runLater(() -> log.set("Board specific files found : " + boardSpecificFiles + "\n"));
+            try {
+                FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
+            } catch (IOException e) {
+                updateMessage("Error: Cannot write code to project directory");
+                return UploadResult.CANT_WRITE_CODE;
+            }
         }
 
         // copy mp library
