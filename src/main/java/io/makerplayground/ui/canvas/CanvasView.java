@@ -26,16 +26,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -334,6 +333,13 @@ public class CanvasView extends AnchorPane {
     @FXML
     private void zoomDefaultHandler() {
         mainPane.setScale(1);
+    }
+
+    @FXML
+    private void screenCapture() {
+        Bounds bounds = mainPane.getContent().getBoundsInLocal();
+        Bounds screenBounds = mainPane.getContent().localToScreen(bounds);
+        CaptureSelection screenShot = new CaptureSelection(mainPane.getGroup(),screenBounds,mainPane);
     }
 
     private void addConnectionEvent(InteractiveNode node) {

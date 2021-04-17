@@ -323,4 +323,18 @@ public class InteractivePane extends ScrollPane {
         double extraHeight = group.getLayoutBounds().getHeight() - viewportHeight;
         return getVvalue() * extraHeight + group.getLayoutBounds().getMinY();
     }
+
+    public void setCapture() {
+        groupSelectionArea.setStroke(Color.TRANSPARENT);
+        groupSelectionArea.setFill(Color.TRANSPARENT);
+    }
+
+    public void resetCapture() {
+        groupSelectionArea.setStroke(Color.web("#1F414B"));
+        groupSelectionArea.setFill(Color.web("#1F414B", 0.2));
+    }
+
+    public Group getGroup() {
+        return group;
+    }
 }
