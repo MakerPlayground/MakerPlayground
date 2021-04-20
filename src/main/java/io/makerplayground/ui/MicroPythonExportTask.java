@@ -113,13 +113,15 @@ public class MicroPythonExportTask extends ProjectExportTask {
 
         // copy board specific files
         File codeDir = Paths.get(libraryPath.get(), "devices", project.getProjectConfiguration().getController().getId(), "code").toFile();
-        Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        try {
-            FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
-        } catch (IOException e) {
-            updateMessage("Error: Cannot write board specific files to project directory");
-            exportResult = ExportResult.CANT_FIND_LIBRARY;
-            throw new IllegalStateException("CANT_FIND_LIBRARY");
+        if (codeDir.isDirectory()) {
+            Collection<File> boardSpecificFiles = FileUtils.listFiles(codeDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+            try {
+                FileUtils.copyToDirectory(boardSpecificFiles, new File(projectPath));
+            } catch (IOException e) {
+                updateMessage("Error: Cannot write board specific files to project directory");
+                exportResult = ExportResult.CANT_FIND_LIBRARY;
+                throw new IllegalStateException("CANT_FIND_LIBRARY");
+            }
         }
 
         // copy mp library

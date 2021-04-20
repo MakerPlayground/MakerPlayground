@@ -17,7 +17,6 @@
 package io.makerplayground.generator.source;
 
 import io.makerplayground.device.actual.CloudPlatform;
-import io.makerplayground.device.actual.Platform;
 import io.makerplayground.device.shared.DataType;
 import io.makerplayground.device.shared.DelayUnit;
 import io.makerplayground.device.shared.Parameter;
@@ -119,7 +118,7 @@ public class MicroPythonUploadCode {
     }
 
     private void appendBeginRecentSceneFinishTime() {
-        project.getBegin().forEach(taskNode -> builder.append(parseBeginRecentSceneFinishTime(taskNode)).append(" = 0").append(NEW_LINE));
+        project.getBegin().forEach(taskNode -> builder.append(parseBeginRecentBlockFinishTime(taskNode)).append(" = 0").append(NEW_LINE));
     }
 
     private void appendLoopFunction() {
@@ -245,9 +244,9 @@ public class MicroPythonUploadCode {
                         if (Memory.setValue == setting.getAction()) {
                             Map<Parameter, Expression> map = setting.getParameterMap();
                             Parameter nameParam = setting.getAction().getParameter().get(0);
-                            String deviceName = parseExpressionForParameter(nameParam, map.get(nameParam));
+                            String deviceName = parseExpressionForParameter(root, nameParam, map.get(nameParam));
                             Parameter valueParam = setting.getAction().getParameter().get(1);
-                            String expr = parseExpressionForParameter(valueParam, map.get(valueParam));
+                            String expr = parseExpressionForParameter(root, valueParam, map.get(valueParam));
                             builder.append(INDENT).append(deviceName).append(" = ").append(expr).append(NEW_LINE);
                         } else {
                             throw new IllegalStateException();
@@ -258,7 +257,7 @@ public class MicroPythonUploadCode {
                         List<Parameter> parameters = setting.getAction().getParameter();
                         // generate code to perform the action
                         for (Parameter p : parameters) {
-                            taskParameter.add(parseExpressionForParameter(p, setting.getParameterMap().get(p)));
+                            taskParameter.add(parseExpressionForParameter(root, p, setting.getParameterMap().get(p)));
                         }
                         builder.append(INDENT).append(deviceName).append(".").append(setting.getAction().getFunctionName())
                                 .append("(").append(String.join(", ", taskParameter)).append(")").append(NEW_LINE);
@@ -266,8 +265,8 @@ public class MicroPythonUploadCode {
                 }
 
                 // used for time elapsed condition and delay
-                builder.append(INDENT).append("global ").append(parseBeginRecentSceneFinishTime(root)).append(NEW_LINE);
-                builder.append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = utime.ticks_ms()").append(NEW_LINE);
+                builder.append(INDENT).append("global ").append(parseBeginRecentBlockFinishTime(root)).append(NEW_LINE);
+                builder.append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = utime.ticks_ms()").append(NEW_LINE);
 
                 builder.append(INDENT).append("global ").append(parsePointerName(root)).append(NEW_LINE);
                 if (!adjacentScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
@@ -334,12 +333,15 @@ public class MicroPythonUploadCode {
                     } else {
                         throw new IllegalStateException();
                     }
-                    builder.append(INDENT).append("global ").append(parseBeginRecentSceneFinishTime(root)).append(NEW_LINE);
-                    builder.append(INDENT).append("if utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(").append(parseBeginRecentSceneFinishTime(root)).append(", int(").append(delayInMillisecond).append("))) > 0:").append(NEW_LINE);
+                    builder.append(INDENT).append("global ").append(parseBeginRecentBlockFinishTime(root)).append(NEW_LINE);
+                    builder.append(INDENT).append("if utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(").append(parseBeginRecentBlockFinishTime(root)).append(", int(").append(delayInMillisecond).append("))) > 0:").append(NEW_LINE);
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, currentDelay);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
                     List<Condition> nextCondition = Utility.takeCondition(nextNodes);
                     List<Delay> nextDelay = Utility.takeDelay(nextNodes);
+
+                    // used for time elapsed
+                    builder.append(INDENT).append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = millis();").append(NEW_LINE);
 
                     builder.append(INDENT).append(INDENT).append("global ").append(parsePointerName(root)).append(NEW_LINE);
                     if (!nextScene.isEmpty()) { // if there is any adjacent scene, move to that scene and ignore condition (short circuit)
@@ -363,11 +365,11 @@ public class MicroPythonUploadCode {
                         } else if (TimeElapsed.projectDevice.equals(setting.getDevice())) {
                             Parameter valueParameter = setting.getCondition().getParameter().get(0);
                             if (setting.getCondition() == TimeElapsed.lessThan) {
-                                booleanExpressions.add("utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(" + parseBeginRecentSceneFinishTime(root)
-                                        + ", int(" + parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)) + "))) < 0");
+                                booleanExpressions.add("utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(" + parseBeginRecentBlockFinishTime(root)
+                                        + ", int(" + parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)) + "))) < 0");
                             } else if (setting.getCondition() == TimeElapsed.greaterThan) {
-                                booleanExpressions.add("utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(" + parseBeginRecentSceneFinishTime(root)
-                                        + ", int(" + parseExpressionForParameter(valueParameter, setting.getParameterMap().get(valueParameter)) + "))) > 0");
+                                booleanExpressions.add("utime.ticks_diff(utime.ticks_ms(), utime.ticks_add(" + parseBeginRecentBlockFinishTime(root)
+                                        + ", int(" + parseExpressionForParameter(root, valueParameter, setting.getParameterMap().get(valueParameter)) + "))) > 0");
                             } else {
                                 throw new IllegalStateException("Found unsupported user setting {" + setting + "} / condition {" + setting.getCondition() + "}");
                             }
@@ -376,7 +378,7 @@ public class MicroPythonUploadCode {
                                 for (Value value : setting.getExpression().keySet()) {
                                     if (setting.getExpressionEnable().get(value)) {
                                         Expression expression = setting.getExpression().get(value);
-                                        booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
+                                        booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
                                     }
                                 }
                             }
@@ -389,14 +391,14 @@ public class MicroPythonUploadCode {
                             throw new IllegalStateException("UserSetting {" + setting + "}'s condition must be set ");
                         } else if (!setting.getCondition().getName().equals("Compare")) {
                             List<String> params = new ArrayList<>();
-                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(parameter, setting.getParameterMap().get(parameter))));
+                            setting.getCondition().getParameter().forEach(parameter -> params.add(parseExpressionForParameter(root, parameter, setting.getParameterMap().get(parameter))));
                             booleanExpressions.add(parseDeviceVariableName(searchGroup(setting.getDevice())) + "." +
                                     setting.getCondition().getFunctionName() + "(" + String.join(",", params) + ")");
                         } else {
                             for (Value value : setting.getExpression().keySet()) {
                                 if (setting.getExpressionEnable().get(value)) {
                                     Expression expression = setting.getExpression().get(value);
-                                    booleanExpressions.add("(" + parseTerms(expression.getTerms()) + ")");
+                                    booleanExpressions.add("(" + parseTerms(root, expression.getTerms()) + ")");
                                 }
                             }
                         }
@@ -404,12 +406,12 @@ public class MicroPythonUploadCode {
                     if (booleanExpressions.isEmpty()) {
                         throw new IllegalStateException("Found an empty condition block: " + condition);
                     }
-                    builder.append(INDENT).append("global ").append(parseBeginRecentSceneFinishTime(root)).append(NEW_LINE);
+                    builder.append(INDENT).append("global ").append(parseBeginRecentBlockFinishTime(root)).append(NEW_LINE);
                     builder.append(INDENT).append("if ").append("(");
                     builder.append(String.join(" and ", booleanExpressions)).append("):").append(NEW_LINE);
 
                     // used for time elapsed condition and delay
-                    builder.append(INDENT).append(INDENT).append(parseBeginRecentSceneFinishTime(root)).append(" = utime.ticks_ms()").append(NEW_LINE);
+                    builder.append(INDENT).append(INDENT).append(parseBeginRecentBlockFinishTime(root)).append(" = utime.ticks_ms()").append(NEW_LINE);
 
                     List<NodeElement> nextNodes = Utility.findAdjacentNodes(project, condition);
                     List<Scene> nextScene = Utility.takeScene(nextNodes);
@@ -449,12 +451,12 @@ public class MicroPythonUploadCode {
         return projectDeviceOptional.get();
     }
 
-    private String parseExpressionForParameter(Parameter parameter, Expression expression) {
+    private String parseExpressionForParameter(Begin root, Parameter parameter, Expression expression) {
         String returnValue;
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue =  "mp.constrain(" + exprStr + ", " + parameter.getMinimumValue() + ", " + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -469,26 +471,26 @@ public class MicroPythonUploadCode {
             ProjectValueExpression projectValueExpression = (ProjectValueExpression) expression;
             NumericConstraint valueConstraint = (NumericConstraint) projectValueExpression.getProjectValue().getValue().getConstraint();
             NumericConstraint resultConstraint = valueConstraint.intersect(parameter.getConstraint(), Function.identity());
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = "mp.constrain(" + exprStr + ", " + resultConstraint.getMin() + ", " + resultConstraint.getMax() + ")";
         } else if (expression instanceof SimpleStringExpression) {
             returnValue = "\"" + ((SimpleStringExpression) expression).getString() + "\"";
         } else if (expression instanceof SimpleRTCExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ImageExpression) {
             ProjectValue projectValue = ((ImageExpression) expression).getProjectValue();
             returnValue = parseDeviceVariableName(searchGroup(projectValue.getDevice())) + ".get"
                     + projectValue.getValue().getName().replace(" ", "_") + "()";
         } else if (expression instanceof RecordExpression) {
-            String exprStr = parseTerms(expression.getTerms());
+            String exprStr = parseTerms(root, expression.getTerms());
             returnValue = exprStr;
         } else if (expression instanceof ComplexStringExpression) {
             List<Expression> subExpression = ((ComplexStringExpression) expression).getSubExpressions();
             if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
                 returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
             } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
-                returnValue = "str(" + parseTerms(subExpression.get(0).getTerms()) + ")";
+                returnValue = "str(" + parseTerms(root, subExpression.get(0).getTerms()) + ")";
             } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
                 returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
                         .collect(Collectors.joining("", "\"", "\""));
@@ -498,7 +500,7 @@ public class MicroPythonUploadCode {
                     if (e instanceof SimpleStringExpression) {
                         subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
                     } else if (e instanceof CustomNumberExpression) {
-                        subExpressionString.add("str(" + parseTerms(e.getTerms()) + ")");
+                        subExpressionString.add("str(" + parseTerms(root, e.getTerms()) + ")");
                     } else {
                         throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
                     }
@@ -519,14 +521,14 @@ public class MicroPythonUploadCode {
         return returnValue;
     }
 
-    private String parseBeginRecentSceneFinishTime(Begin begin) {
-        return begin.getName().replace(" ", "_") + "_recentSceneFinishTime";
+    private String parseBeginRecentBlockFinishTime(Begin begin) {
+        return begin.getName().replace(" ", "_") + "_recentBlockFinishTime";
     }
 
     // The required digits is at least 6 for GPS's lat, lon values.
     private static final DecimalFormat NUMBER_WITH_UNIT_DF = new DecimalFormat("0.0#####");
 
-    private String parseTerm(Term term) {
+    private String parseTerm(Begin root, Term term) {
         if (term instanceof NumberWithUnitTerm) {
             NumberWithUnitTerm term1 = (NumberWithUnitTerm) term;
             return NUMBER_WITH_UNIT_DF.format(term1.getValue().getValue());
@@ -581,6 +583,15 @@ public class MicroPythonUploadCode {
             if (Memory.projectDevice.equals(value.getDevice())) {
                 return value.getValue().getName();
             }
+            if (TimeElapsed.projectDevice == value.getDevice()) {
+                if (value.getValue() == TimeElapsed.timeSincePowerOn) {
+                    return "utime.ticks_ms()";
+                } else if (value.getValue() == TimeElapsed.timeSinceLastBlock) {
+                    return parseBeginRecentBlockFinishTime(root);
+                } else {
+                    throw new IllegalStateException("TimeElapsed Value (" + value.getValue().getName() + ") hasn't been implemented");
+                }
+            }
             return parseValueVariableTerm(searchGroup(value.getDevice()), value.getValue());
         } else if (term instanceof RecordTerm) {
 //            RecordTerm term1 = (RecordTerm) term;
@@ -596,7 +607,7 @@ public class MicroPythonUploadCode {
         }
     }
 
-    private String parseTerms(List<Term> expression) {
-        return expression.stream().map(this::parseTerm).collect(Collectors.joining(" "));
+    private String parseTerms(Begin root, List<Term> expression) {
+        return expression.stream().map(t -> parseTerm(root, t)).collect(Collectors.joining(" "));
     }
 }
