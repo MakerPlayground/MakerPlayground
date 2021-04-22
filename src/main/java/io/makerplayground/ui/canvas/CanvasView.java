@@ -26,6 +26,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -335,6 +337,92 @@ public class CanvasView extends AnchorPane {
     private void zoomDefaultHandler() {
         mainPane.setScale(1);
     }
+
+    Bounds getNodeBound(NodeElement nodeElement) {
+        List<Node> nodes = mainPane.getPane().getChildren();
+        Bounds bound = null;
+        for (Node node : nodes) {
+            if (node instanceof SceneView) {
+                if (((SceneView) node).getSceneViewModel().getScene().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            } else if (node instanceof ConditionView) {
+                if (((ConditionView) node).getConditionViewModel().getCondition().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            } else if (node instanceof DelayView) {
+                if (((DelayView) node).getDelayViewModel().getDelay().equals(nodeElement)) {
+                    bound = node.getBoundsInParent();
+                    break;
+                }
+            }
+        }
+        return bound;
+    }
+
+    void setTopElement(NodeElement element, double upperbound,double joint,List<Line> lines,double totalHeight) {
+        int sizeText;
+        int imageSize;
+        if (element instanceof Begin) {
+            sizeText = 8;
+            if (lines.size() == 1) {
+                element.setTop(lines.get(0).getDestination().getTop()+sizeText);
+            } else if (lines.size() != 0){
+                element.setTop(((totalHeight)/2)+upperbound-75);
+            } else {
+                element.setTop(upperbound);
+            }
+        } else if (element instanceof Delay) {
+            imageSize = 6;
+            element.setTop(upperbound-joint-imageSize);
+        } else {
+            element.setTop(upperbound-joint);
+        }
+
+    }
+
+    double setDiagram (NodeElement element, double upperbound,double maxHeighUserSetting,double joint) {
+        double heightJoint = 0;
+        double totalHeight = 0;
+        List<Line> lineList = new ArrayList<>();
+        for (Line line : canvasViewModel.getProject().getUnmodifiableLine()) {
+            if (line.getSource().equals(element)) {
+                lineList.add(line);
+            }
+        }
+        if (lineList.size() != 0) {
+            int heightUserSetting;
+            for (Line line : lineList) {
+                line.getDestination().setLeft(line.getSource().getLeft()+220);
+                Bounds bounds = getNodeBound(line.getDestination());
+                heightJoint = (bounds.getHeight())/2;
+                heightUserSetting = (int) bounds.getHeight();
+                if (heightUserSetting < maxHeighUserSetting) {
+                    heightUserSetting = (int) maxHeighUserSetting;
+                }
+                totalHeight = totalHeight + setDiagram(line.getDestination(),upperbound+totalHeight,heightUserSetting,heightJoint);
+            }
+        } else {
+            totalHeight = 30 ;
+            setTopElement(element,upperbound,joint,lineList,totalHeight);
+            return totalHeight + maxHeighUserSetting;
+        }
+        setTopElement(element,upperbound,joint,lineList,totalHeight);
+        return totalHeight;
+    }
+
+     @FXML
+     private void autoDiagramHandler() {
+         double upperbound = 150;
+         double subHeightDiagram;
+         for (Begin begin : canvasViewModel.getProject().getBegin()) {
+             begin.setLeft(20);
+             subHeightDiagram = setDiagram(begin,upperbound,0,0);
+             upperbound = upperbound + subHeightDiagram + 40;
+         }
+     }
 
     private void addConnectionEvent(InteractiveNode node) {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
