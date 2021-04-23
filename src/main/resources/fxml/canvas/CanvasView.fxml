@@ -59,12 +59,11 @@
       <Button id="addDelayBtn" fx:id="addDelayBtn" text="+ Add Delay" onAction="#addDelayButtonHandler"/>
       <Button id="addBeginBtn" fx:id="addBeginBtn" text="+ Add Begin" onAction="#addBeginButtonHandler"/>
    </HBox>
-   <VBox id="zoomControl" fx:id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
+   <VBox id="zoomControl" fx:id="zoomControl" spacing="2.5" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
+      <Button id="autoDiagramButton" fx:id="autoDiagramButton" prefHeight="25" prefWidth="25" onAction="#autoDiagramHandler"/>
+      <Pane prefHeight="5" />
       <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25" onAction="#zoomInHandler"/>
       <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25" onAction="#zoomOutHandler"/>
-      <Pane prefHeight="9" />
-      <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25"
-              onAction="#zoomDefaultHandler"/>
-      <Button id="autoDiagramButton" fx:id="autoDiagramButton" prefHeight="25" prefWidth="25" onAction="#autoDiagramHandler"/>
+      <Button id="zoomDefaultButton" fx:id="zoomDefaultButton" prefHeight="25" prefWidth="25" onAction="#zoomDefaultHandler"/>
    </VBox>
 </fx:root>
