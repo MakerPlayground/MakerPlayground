@@ -172,10 +172,10 @@ public class UserSetting {
         for (var entry: u.parameterMap.entrySet()) {
             this.parameterMap.put(entry.getKey(), entry.getValue().deepCopy());
         }
+        this.expressionEnable.putAll(u.expressionEnable);
         for (var entry : u.expression.entrySet()) {
             this.expression.put(entry.getKey(), entry.getValue().deepCopy());
         }
-        this.expressionEnable.putAll(u.expressionEnable);
 
         if (Memory.projectDevice.equals(u.device)) {
             project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
