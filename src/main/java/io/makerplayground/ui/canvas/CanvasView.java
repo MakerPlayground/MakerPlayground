@@ -26,8 +26,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -38,10 +36,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -338,91 +333,74 @@ public class CanvasView extends AnchorPane {
         mainPane.setScale(1);
     }
 
-    Bounds getNodeBound(NodeElement nodeElement) {
-        List<Node> nodes = mainPane.getPane().getChildren();
-        Bounds bound = null;
-        for (Node node : nodes) {
-            if (node instanceof SceneView) {
-                if (((SceneView) node).getSceneViewModel().getScene().equals(nodeElement)) {
-                    bound = node.getBoundsInParent();
-                    break;
-                }
-            } else if (node instanceof ConditionView) {
-                if (((ConditionView) node).getConditionViewModel().getCondition().equals(nodeElement)) {
-                    bound = node.getBoundsInParent();
-                    break;
-                }
-            } else if (node instanceof DelayView) {
-                if (((DelayView) node).getDelayViewModel().getDelay().equals(nodeElement)) {
-                    bound = node.getBoundsInParent();
-                    break;
-                }
-            }
-        }
-        return bound;
-    }
+    private static final double AUTO_ARRANGE_SPACE_X = 50;
+    private static final double AUTO_ARRANGE_SPACE_Y = 150;
+    private static final double AUTO_ARRANGE_START_X = 50;
+    private static final double AUTO_ARRANGE_MIN_Y = 125;
 
-    void setTopElement(NodeElement element, double upperbound,double joint,List<Line> lines,double totalHeight) {
-        int sizeText;
-        int imageSize;
-        if (element instanceof Begin) {
-            sizeText = 8;
-            if (lines.size() == 1) {
-                element.setTop(lines.get(0).getDestination().getTop()+sizeText);
-            } else if (lines.size() != 0){
-                element.setTop(((totalHeight)/2)+upperbound-75);
-            } else {
-                element.setTop(upperbound);
-            }
-        } else if (element instanceof Delay) {
-            imageSize = 6;
-            element.setTop(upperbound-joint-imageSize);
+    private double setChildrenPosition(NodeElement node, double currentX, double currentY, Set<NodeElement> visitedNode) {
+        node.setLeft(currentX);
+        node.setTop(node.getTop() + currentY - node.getDestPortY());
+        currentX = node.getDestPortX() + AUTO_ARRANGE_SPACE_X;
+
+        List<Line> lines = canvasViewModel.getProject().getLinesFromSource(node).stream()
+                .filter(l -> !visitedNode.contains(l.getDestination()))
+                .sorted(Comparator.comparingDouble(l -> l.getDestination().getTop()))   // retain original node order vertically
+                .collect(Collectors.toUnmodifiableList());
+        if (lines.isEmpty()) {
+            visitedNode.add(node);
+            return AUTO_ARRANGE_SPACE_Y;
         } else {
-            element.setTop(upperbound-joint);
+            int offsetY = 0;
+            // use two loops to handle the case when the node has connections from both node in the upper and lower level
+            // (count as number of intermediate node to the begin node) in this case we treat this node as it is in the
+            // upper level not as a child of node in the lower level and align it with it's sibling in the upper level
+            for (Line l : lines) {
+                visitedNode.add(l.getDestination());
+            }
+            for (Line l : lines) {
+                offsetY += setChildrenPosition(l.getDestination(), currentX, currentY + offsetY, visitedNode);
+            }
+            return offsetY;
         }
-
     }
 
-    double setDiagram (NodeElement element, double upperbound,double maxHeighUserSetting,double joint) {
-        double heightJoint = 0;
-        double totalHeight = 0;
-        List<Line> lineList = new ArrayList<>();
-        for (Line line : canvasViewModel.getProject().getUnmodifiableLine()) {
-            if (line.getSource().equals(element)) {
-                lineList.add(line);
-            }
-        }
-        if (lineList.size() != 0) {
-            int heightUserSetting;
-            for (Line line : lineList) {
-                line.getDestination().setLeft(line.getSource().getLeft()+220);
-                Bounds bounds = getNodeBound(line.getDestination());
-                heightJoint = (bounds.getHeight())/2;
-                heightUserSetting = (int) bounds.getHeight();
-                if (heightUserSetting < maxHeighUserSetting) {
-                    heightUserSetting = (int) maxHeighUserSetting;
-                }
-                totalHeight = totalHeight + setDiagram(line.getDestination(),upperbound+totalHeight,heightUserSetting,heightJoint);
-            }
+    private double getLeafNodeCount(NodeElement current, Set<NodeElement> visitedNode) {
+        List<Line> lines = canvasViewModel.getProject().getLinesFromSource(current).stream()
+                .filter(l -> !visitedNode.contains(l.getDestination()))
+                .collect(Collectors.toUnmodifiableList());
+        if (lines.isEmpty()) {
+            visitedNode.add(current);
+            return 1;
         } else {
-            totalHeight = 30 ;
-            setTopElement(element,upperbound,joint,lineList,totalHeight);
-            return totalHeight + maxHeighUserSetting;
+            int count = 0;
+            // use two loop to avoid visiting node multiple times (in case that the node is also a child of some node in the lower level)
+            for (Line l : lines) {
+                visitedNode.add(l.getDestination());
+            }
+            for (Line l : lines) {
+                count += getLeafNodeCount(l.getDestination(), visitedNode);
+            }
+            return count;
         }
-        setTopElement(element,upperbound,joint,lineList,totalHeight);
-        return totalHeight;
     }
 
-     @FXML
-     private void autoDiagramHandler() {
-         double upperbound = 150;
-         double subHeightDiagram;
-         for (Begin begin : canvasViewModel.getProject().getBegin()) {
-             begin.setLeft(20);
-             subHeightDiagram = setDiagram(begin,upperbound,0,0);
-             upperbound = upperbound + subHeightDiagram + 40;
-         }
-     }
+    @FXML
+    private void autoDiagramHandler() {
+        List<Begin> beginList = new ArrayList<>(canvasViewModel.getProject().getBegin());
+        beginList.sort(Comparator.comparingDouble(NodeElement::getTop));
+
+        double diagramHeight = 0;
+        for (Begin begin : beginList) {
+            diagramHeight += (getLeafNodeCount(begin, new HashSet<>()) - 1) * AUTO_ARRANGE_SPACE_Y;
+        }
+
+        double canvasHeight = mainPane.getBoundsInParent().getHeight();
+        double startY = Math.max((canvasHeight - diagramHeight) / 2, AUTO_ARRANGE_MIN_Y);
+        for (Begin begin : beginList) {
+            startY += setChildrenPosition(begin, AUTO_ARRANGE_START_X, startY, new HashSet<>());
+        }
+    }
 
     private void addConnectionEvent(InteractiveNode node) {
         node.addEventFilter(InteractiveNodeEvent.CONNECTION_DONE, event ->
