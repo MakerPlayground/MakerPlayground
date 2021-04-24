@@ -94,14 +94,14 @@ jlink {
                 versionString += "." + tmp[1]
             }
             exec {
-                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleShortVersionString ${versionString}", 'package/macosx/assets/Info.plist'
+                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleShortVersionString ${versionString}", 'package/macos/assets/Info.plist'
             }
             exec {
-                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleVersion ${versionString}", 'package/macosx/assets/Info.plist'
+                commandLine '/usr/libexec/PlistBuddy', '-c', "Set :CFBundleVersion ${versionString}", 'package/macos/assets/Info.plist'
             }
-            // uncomment to regenerate Info.plist
-            // imageOptions = ["--file-associations", "package/macosx/file-association.properties"]
-            resourceDir = file("package/macosx/assets")
+            // we still need to specified --file-associations even though we use custom Info.plist otherwise project file's icon won't be copied to the app bundle
+            imageOptions = ["--file-associations", "package/macos/file-association.properties"]
+            resourceDir = file("package/macos/assets")
         }
     }
 }
@@ -127,11 +127,11 @@ task createBundle {
             // copy the app bundle to the package directory
             copy {
                 from "${buildDir}/jpackage/Maker Playground.app"
-                into "package/macosx/Maker Playground.app"
+                into "package/macos/Maker Playground.app"
             }
             // create the app bundle and pkg installer
             exec {
-                commandLine '/bin/sh', '-c', "cd package/macosx && ./createappbundle.sh ${version}"
+                commandLine '/bin/sh', '-c', "cd package/macos && ./createappbundle.sh ${version}"
             }
         } else {
             throw new GradleException("Found unsupported operating system: ${os}")
