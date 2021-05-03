@@ -73,7 +73,7 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
         return Optional.ofNullable(latestVersion);
     }
 
-    private enum Platform {windows, macos}
+    private enum Platform { windows, @JsonProperty("windows-full") windows_full, linux, macos, @JsonProperty("macos-full") macos_full }
     private enum Channel {stable, nightly, internal}
 
     private String buildName;
