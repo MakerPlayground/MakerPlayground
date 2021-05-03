@@ -369,6 +369,10 @@ public class Project {
         return lines.stream().anyMatch(line1 -> (line1.getSource() == source) && (line1.getDestination() == destination));
     }
 
+    public List<Line> getLinesFromSource(NodeElement source) {
+        return lines.stream().filter(line -> line.getSource() == source).collect(Collectors.toUnmodifiableList());
+    }
+
     // TODO: need to get again after set
     public String getCloudPlatformParameter(CloudPlatform cloudPlatform, String parameterName) {
         var parameter = projectConfiguration.getUnmodifiableCloudParameterMap();

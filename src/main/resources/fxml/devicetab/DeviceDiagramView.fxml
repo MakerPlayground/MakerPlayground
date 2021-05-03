@@ -46,12 +46,11 @@
         <AnchorPane VBox.vgrow="ALWAYS">
             <ScrollPane id="diagramScrollPane" fx:id="diagramScrollPane" pannable="true" AnchorPane.bottomAnchor="0"
                         AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
-            <VBox id="zoomControl" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+            <VBox id="zoomControl" spacing="2.5" AnchorPane.rightAnchor="15.0" AnchorPane.bottomAnchor="15.0">
                 <Button id="zoomInButton" fx:id="zoomInButton" prefHeight="25" prefWidth="25"/>
                 <Button id="zoomOutButton" fx:id="zoomOutButton" prefHeight="25" prefWidth="25"/>
-                <Pane prefHeight="9"/>
-                <Button id="zoomFitButton" fx:id="zoomFitButton" prefHeight="25"
-                        prefWidth="25"/>
+                <Pane prefHeight="2.5"/>
+                <Button id="zoomFitButton" fx:id="zoomFitButton" prefHeight="25" prefWidth="25"/>
             </VBox>
         </AnchorPane>
     </VBox>
