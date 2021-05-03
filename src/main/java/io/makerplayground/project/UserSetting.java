@@ -47,26 +47,97 @@ import java.util.*;
 public class UserSetting {
     private final Project project;
     @Getter private final ProjectDevice device;
-    private final ReadOnlyObjectWrapper<Action> action;
-    private final ReadOnlyObjectWrapper<Condition> condition;
+    private final ReadOnlyObjectWrapper<Action> action = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Condition> condition = new ReadOnlyObjectWrapper<>();
+
+    @Getter private final ObservableMap<Parameter, Expression> parameterMap = FXCollections.observableHashMap();
+    @Getter private final ObservableMap<Value, Expression> expression = FXCollections.observableHashMap();
+    @Getter private final ObservableMap<Value, Boolean> expressionEnable = FXCollections.observableHashMap();
 
     // TODO: previous implementation of allValueUsed ignore value from Memory device which is confusing and incorrect when the caller expect all values so we create a new property and retain old one for compatibility before refactoring in the future
     private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allNonVirtualProjectDeviceValueUsed = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
     private ReadOnlyObjectWrapper<Map<ProjectDevice, Set<Value>>> allValueUsed = new ReadOnlyObjectWrapper<>(Collections.emptyMap());
 
-    @Getter private final ObservableMap<Parameter, Expression> parameterMap;
-    @Getter private final ObservableMap<Value, Expression> expression;
-    @Getter private final ObservableMap<Value, Boolean> expressionEnable;
-
-    private UserSetting(Project project, ProjectDevice device) {
+    public UserSetting(Project project, ProjectDevice device, Action supportingAction) {
         this.project = project;
         this.device = device;
-        this.action = new ReadOnlyObjectWrapper<>();
-        this.condition = new ReadOnlyObjectWrapper<>();
-        this.parameterMap = FXCollections.observableHashMap();
-        this.expression = FXCollections.observableHashMap();
-        this.expressionEnable = FXCollections.observableHashMap();
+        this.action.set(supportingAction);
+        for (Parameter param : supportingAction.getParameter()) {
+            parameterMap.put(param, Expression.fromDefaultParameter(param));
+        }
+        initEvent();
+    }
 
+    public UserSetting(Project project, ProjectDevice device, Condition supportingCondition) {
+        this.project = project;
+        this.device = device;
+        this.condition.set(supportingCondition);
+
+        for (Parameter param : supportingCondition.getParameter()) {
+            parameterMap.put(param, Expression.fromDefaultParameter(param));
+        }
+
+        for (Value v : device.getGenericDevice().getValue()) {
+            expressionEnable.put(v, false);
+            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                expression.put(v, new ConditionalExpression(device, v));
+            }
+        }
+
+        if (Memory.projectDevice.equals(device)) {
+            for (ProjectValue pv : project.getUnmodifiableVariable()) {
+                Value v = pv.getValue();
+                expressionEnable.put(v, false);
+                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
+                    expression.put(v, new ConditionalExpression(device, v));
+                }
+            }
+        }
+
+        initEvent();
+    }
+
+    UserSetting(Project project, ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, action, null, parameterMap, expression, enable);
+    }
+
+    UserSetting(Project project, ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this(project, device, null, condition, parameterMap, expression, enable);
+    }
+
+    private UserSetting(Project project, ProjectDevice device, Action action, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
+        this.project = project;
+        this.device = device;
+        this.action.set(action);
+        this.condition.set(condition);
+
+        // replace all default map values with these maps
+        this.parameterMap.putAll(parameterMap);
+        this.expression.putAll(expression);
+        this.expressionEnable.putAll(enable);
+
+        initEvent();
+    }
+
+    UserSetting(UserSetting u) {
+        this.project = u.project;
+        this.device = u.device;
+        this.action.set(u.action.get());
+        this.condition.set(u.condition.get());
+
+        // replace values by the deepCopy version
+        for (var entry: u.parameterMap.entrySet()) {
+            this.parameterMap.put(entry.getKey(), entry.getValue().deepCopy());
+        }
+        this.expressionEnable.putAll(u.expressionEnable);
+        for (var entry : u.expression.entrySet()) {
+            this.expression.put(entry.getKey(), entry.getValue().deepCopy());
+        }
+
+        initEvent();
+    }
+
+    private void initEvent() {
         this.action.addListener((observable, oldValue, newValue) -> {
             parameterMap.clear();
             for (Parameter param : newValue.getParameter()) {
@@ -81,43 +152,8 @@ public class UserSetting {
             }
         });
 
-        parameterMap.addListener((InvalidationListener) observable -> updateAllValueUsed());
-        expression.addListener((InvalidationListener) observable -> updateAllValueUsed());
-        expressionEnable.addListener((InvalidationListener) observable -> updateAllValueUsed());
-        updateAllValueUsed();
-    }
-
-    private void updateAllValueUsed() {
-        allNonVirtualProjectDeviceValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), false));
-        allValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), true));
-    }
-
-    public UserSetting(Project project, ProjectDevice device, Action supportingAction) {
-        this(project, device);
-        this.action.set(supportingAction);
-    }
-
-    public UserSetting(Project project, ProjectDevice device, Condition supportingCondition) {
-        this(project, device);
-        this.condition.set(supportingCondition);
-
-        // Initialize expression list
-        for (Value v : device.getGenericDevice().getValue()) {
-            expressionEnable.put(v, false);
-            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                expression.put(v, new ConditionalExpression(device, v));
-            }
-        }
-
         if (Memory.projectDevice.equals(device)) {
-            for (ProjectValue pv: project.getUnmodifiableVariable()) {
-                Value v = pv.getValue();
-                expressionEnable.put(v, false);
-                if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                    expression.put(v, new ConditionalExpression(device, v));
-                }
-            }
-
+            // TODO: this may be unsafe as list can be permuted or updated
             project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
                 while (c.next()) {
                     if (c.wasAdded()) {
@@ -142,66 +178,16 @@ public class UserSetting {
                 }
             });
         }
+
+        parameterMap.addListener((InvalidationListener) observable -> updateAllValueUsed());
+        expression.addListener((InvalidationListener) observable -> updateAllValueUsed());
+        expressionEnable.addListener((InvalidationListener) observable -> updateAllValueUsed());
+        updateAllValueUsed();
     }
 
-    UserSetting(Project project, ProjectDevice device, Action action, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(project, device, action);
-
-        // replace all default map values with these maps
-        this.parameterMap.putAll(parameterMap);
-        this.expression.putAll(expression);
-        this.expressionEnable.putAll(enable);
-    }
-
-    UserSetting(Project project, ProjectDevice device, Condition condition, Map<Parameter, Expression> parameterMap, Map<Value, Expression> expression, Map<Value, Boolean> enable) {
-        this(project, device, condition);
-
-        // replace all default map values with these maps
-        this.parameterMap.putAll(parameterMap);
-        this.expression.putAll(expression);
-        this.expressionEnable.putAll(enable);
-    }
-
-    UserSetting(UserSetting u) {
-        this(u.project, u.device);
-
-        this.action.set(u.action.get());
-        this.condition.set(u.condition.get());
-
-        // replace values by the deepCopy version
-        for (var entry: u.parameterMap.entrySet()) {
-            this.parameterMap.put(entry.getKey(), entry.getValue().deepCopy());
-        }
-        this.expressionEnable.putAll(u.expressionEnable);
-        for (var entry : u.expression.entrySet()) {
-            this.expression.put(entry.getKey(), entry.getValue().deepCopy());
-        }
-
-        if (Memory.projectDevice.equals(u.device)) {
-            project.getUnmodifiableVariable().addListener((ListChangeListener<? super ProjectValue>) c -> {
-                while (c.next()) {
-                    if (c.wasAdded()) {
-                        c.getAddedSubList().forEach(o -> {
-                            Value v = o.getValue();
-                            if (this.expression.containsKey(v)) {
-                                return;
-                            }
-                            expressionEnable.put(v, false);
-                            if (v.getType() == DataType.DOUBLE || v.getType() == DataType.INTEGER) {
-                                this.expression.put(v, new ConditionalExpression(u.device, v));
-                            }
-                        });
-                    }
-                    if (c.wasRemoved()) {
-                        c.getRemoved().forEach(o -> {
-                            Value v = o.getValue();
-                            this.expression.remove(v);
-                            this.expressionEnable.remove(v);
-                        });
-                    }
-                }
-            });
-        }
+    private void updateAllValueUsed() {
+        allNonVirtualProjectDeviceValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), false));
+        allValueUsed.setValue(calculateAllValueUsed(EnumSet.allOf(DataType.class), true));
     }
 
     private void initValueMap() {
