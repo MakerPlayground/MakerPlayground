@@ -9,9 +9,9 @@ import java.util.List;
 
 public class NumberExpressionParser {
     // support +, - , *, /, %
-    private static boolean isHigherPrecedence(Operator op1, Operator op2) {
-        return (op1 == Operator.MULTIPLY || op1 == Operator.DIVIDE || op1 == Operator.DIVIDE_INT || op1 == Operator.MOD)
-            && (op2 == Operator.PLUS || op2 == Operator.MINUS);
+    private static boolean isLowerPrecedence(Operator op1, Operator op2) {
+        return (op1 == Operator.PLUS || op1 == Operator.MINUS)
+            && (op2 == Operator.MULTIPLY || op2 == Operator.DIVIDE || op2 == Operator.DIVIDE_INT || op2 == Operator.MOD);
     }
 
     public static NumberExpressionTreeNode parseExpression(List<Term> terms) {
@@ -36,7 +36,7 @@ public class NumberExpressionParser {
                     operatorStack.removeFirst();
                 } else {
                     while (!operatorStack.isEmpty() && operatorStack.peekFirst().getValue() != Operator.OPEN_PARENTHESIS
-                            && isHigherPrecedence(operatorStack.peekFirst().getValue(), current)) {
+                            && !isLowerPrecedence(operatorStack.peekFirst().getValue(), current)) {
                         postfixExpression.add(operatorStack.removeFirst());
                     }
                     operatorStack.addFirst((OperatorTerm) t);
