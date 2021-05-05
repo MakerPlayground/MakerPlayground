@@ -456,7 +456,7 @@ public class MicroPythonUploadCode {
         if (expression instanceof NumberWithUnitExpression) {
             returnValue = String.valueOf(((NumberWithUnitExpression) expression).getNumberWithUnit().getValue());
         } else if (expression instanceof CustomNumberExpression) {
-            String exprStr = parseTerms(root, expression.getTerms());
+            String exprStr = parseCustomNumberExpressionTerms(root, expression.getTerms());
             returnValue =  "mp.constrain(" + exprStr + ", " + parameter.getMinimumValue() + ", " + parameter.getMaximumValue() + ")";
         } else if (expression instanceof ValueLinkingExpression) {
             ValueLinkingExpression valueLinkingExpression = (ValueLinkingExpression) expression;
@@ -490,7 +490,7 @@ public class MicroPythonUploadCode {
             if (subExpression.size() == 1 && subExpression.get(0) instanceof SimpleStringExpression) {  // only one string, generate normal C string
                 returnValue = "\"" + ((SimpleStringExpression) subExpression.get(0)).getString() + "\"";
             } else if (subExpression.size() == 1 && subExpression.get(0) instanceof CustomNumberExpression) {  // only one number expression
-                returnValue = "str(" + parseTerms(root, subExpression.get(0).getTerms()) + ")";
+                returnValue = "str(" + parseCustomNumberExpressionTerms(root, subExpression.get(0).getTerms()) + ")";
             } else if (subExpression.stream().allMatch(e -> e instanceof SimpleStringExpression)) {     // every expression is a string so we join them
                 returnValue = subExpression.stream().map(e -> ((SimpleStringExpression) e).getString())
                         .collect(Collectors.joining("", "\"", "\""));
@@ -500,7 +500,7 @@ public class MicroPythonUploadCode {
                     if (e instanceof SimpleStringExpression) {
                         subExpressionString.add("\"" + ((SimpleStringExpression) e).getString() + "\"");
                     } else if (e instanceof CustomNumberExpression) {
-                        subExpressionString.add("str(" + parseTerms(root, e.getTerms()) + ")");
+                        subExpressionString.add("str(" + parseCustomNumberExpressionTerms(root, e.getTerms()) + ")");
                     } else {
                         throw new IllegalStateException(e.getClass().getName() + " is not supported in ComplexStringExpression");
                     }
@@ -543,6 +543,8 @@ public class MicroPythonUploadCode {
                     return "*";
                 case DIVIDE:
                     return "/";
+                case DIVIDE_INT:
+                    return "//";
                 case MOD:
                     return "%";
                 case GREATER_THAN:
@@ -609,5 +611,37 @@ public class MicroPythonUploadCode {
 
     private String parseTerms(Begin root, List<Term> expression) {
         return expression.stream().map(t -> parseTerm(root, t)).collect(Collectors.joining(" "));
+    }
+
+    private String parseCustomNumberExpressionTerms(Begin root, List<Term> expression) {
+        NumberExpressionTreeNode tree = NumberExpressionParser.parseExpression(expression);
+        StringBuilder sb = new StringBuilder();
+        parseCustomNumberExpressionTermsImpl(root, tree, sb);
+        return sb.toString();
+    }
+
+    private void parseCustomNumberExpressionTermsImpl(Begin root, NumberExpressionTreeNode current, StringBuilder sb) {
+        if (current.hasChildren()) {
+            Operator op = ((OperatorTerm) current.getRoot()).getValue();
+            sb.append("(");
+            if (op == Operator.MOD) {
+                sb.append("int(");
+            }
+            parseCustomNumberExpressionTermsImpl(root, current.getLeftChild(), sb);
+            if (op == Operator.MOD) {
+                sb.append(")");
+            }
+            sb.append(parseTerm(root, current.getRoot()));
+            if (op == Operator.MOD) {
+                sb.append("int(");
+            }
+            parseCustomNumberExpressionTermsImpl(root, current.getRightChild(), sb);
+            if (op == Operator.MOD) {
+                sb.append(")");
+            }
+            sb.append(")");
+        } else {
+            sb.append(parseTerm(root, current.getRoot()));
+        }
     }
 }

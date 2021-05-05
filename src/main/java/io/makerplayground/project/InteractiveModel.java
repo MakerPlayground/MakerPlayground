@@ -573,7 +573,7 @@ public class InteractiveModel {
         } else if (operator == Operator.DIVIDE) {
             return leftOperand / rightOperand;
         } else if (operator == Operator.MOD) {
-            return leftOperand % rightOperand;
+            return (int) leftOperand % (int) rightOperand;
         } else {
             throw new IllegalStateException();
         }
