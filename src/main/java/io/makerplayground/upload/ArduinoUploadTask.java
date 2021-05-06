@@ -242,7 +242,8 @@ public class ArduinoUploadTask extends UploadTask {
 
         updateProgress(0.8, 1);
         updateMessage("Uploading to board");
-        result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId(), "-t", "upload"),
+        String serialPortName = OSInfo.getOs() == OSInfo.OS.WINDOWS ? serialPort.getSystemPortName() : "/dev/" + serialPort.getSystemPortName();
+        result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath, List.of("run", "-e", project.getSelectedController().getPioBoardId(), "-t", "upload", "--upload-port", serialPortName),
                 "Error: Can't find board. Please check connection.", UploadResult.CANT_FIND_BOARD);
         if (result != UploadResult.OK) {
             return result;
