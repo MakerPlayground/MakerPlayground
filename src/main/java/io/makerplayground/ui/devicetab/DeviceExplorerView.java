@@ -228,7 +228,7 @@ public class DeviceExplorerView extends VBox {
     }
 
     private boolean isSupportByController(ActualDevice actualDevice) {
-        if (!actualDevice.getPlatformSourceCodeLibrary().keySet().containsAll(currentController.getPlatformSourceCodeLibrary().keySet())) {
+        if (!actualDevice.getPlatformSourceCodeLibrary().containsKey(currentProject.getSelectedPlatform())) {
             return false;
         }
 
