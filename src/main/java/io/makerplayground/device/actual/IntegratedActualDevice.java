@@ -49,7 +49,7 @@ public class IntegratedActualDevice extends ActualDevice {
                            List<Connection> integratedConnection,
                            Map<GenericDevice, Compatibility> compatibilityMap,
                            Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary) {
-        super(name, "", "", "", 0.0, 0.0, "", DeviceType.MODULE, false, pinTemplate,
+        super(name, "", "", "", 0.0, 0.0, "", Collections.emptyMap(), DeviceType.MODULE, false, pinTemplate,
                 Collections.emptyList(), integratedConnection, property, null, compatibilityMap,
                 Collections.emptyMap(), platformSourceCodeLibrary, Collections.emptyMap(), Collections.emptyList(), null);
         this.parent = null;

@@ -36,6 +36,7 @@ public class ActualDevice implements Comparable<ActualDevice> {
     protected final double width;
     protected final double height;
     protected final String pioBoardId;
+    protected final Map<String, String> pioCustomConfig;
     protected final DeviceType deviceType;
     protected final boolean needBreadboard;
     protected final String pinTemplate;

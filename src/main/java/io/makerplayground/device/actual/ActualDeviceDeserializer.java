@@ -89,6 +89,12 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
             pioBoardId = node.get("pio_boardid").asText();
         }
 
+        /* pio_custom_config */
+        Map<String, String> pioCustomConfig = Collections.emptyMap();
+        if (node.has("pio_custom_config")) {
+            pioCustomConfig = mapper.readValue(node.get("pio_custom_config").traverse(), new TypeReference<HashMap<String, String>>() {});
+        }
+
         /* Extract platformSourceCodeLibrary and firmware path (if available) */
         Map<Platform, SourceCodeLibrary> platformSourceCodeLibrary = new HashMap<>();
         Map<Platform, List<String>> firmwarePath = new HashMap<>();
@@ -259,6 +265,7 @@ public class ActualDeviceDeserializer extends JsonDeserializer<ActualDevice> {
                 .needBreadboard(needBreadboard)
                 .breadboardPlacement(breadboardPlacement)
                 .pioBoardId(pioBoardId)
+                .pioCustomConfig(pioCustomConfig)
                 .cloudConsume(cloudConsume)
                 .connectionConsume(connectionConsume)
                 .connectionProvide(expandConnectionProvide)

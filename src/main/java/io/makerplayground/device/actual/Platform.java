@@ -28,6 +28,7 @@ public enum Platform {
     ARDUINO_ESP32("Arduino (Espressif ESP32)", "arduino", List.of(UploadMode.SERIAL_PORT)),
     ARDUINO_ATSAMD21("Arduino (Atmel SAMD21)", "arduino", List.of(UploadMode.SERIAL_PORT)),
     ARDUINO_ATSAMD51("Arduino (Atmel SAMD51)", "arduino", List.of(UploadMode.SERIAL_PORT)),
+    ARDUINO_K210("Arduino (K210)", "arduino", List.of(UploadMode.SERIAL_PORT)),
     MICROPYTHON_ESP32("MicroPython (ESP32)", "micropython", List.of(UploadMode.SERIAL_PORT)),
     MICROPYTHON_K210("MicroPython (K210)", "micropython", List.of(UploadMode.SERIAL_PORT)),
     RASPBERRYPI("Raspberry Pi", "raspberrypi", List.of(UploadMode.RPI_ON_NETWORK));
@@ -43,7 +44,7 @@ public enum Platform {
     private List<UploadMode> supportUploadModes;
 
     public boolean isArduino() {
-        return this == ARDUINO_AVR8 || this == ARDUINO_ESP32 || this == ARDUINO_ESP8266 || this == ARDUINO_ATSAMD21 || this == ARDUINO_ATSAMD51;
+        return this == ARDUINO_AVR8 || this == ARDUINO_ESP32 || this == ARDUINO_ESP8266 || this == ARDUINO_ATSAMD21 || this == ARDUINO_ATSAMD51 || this == ARDUINO_K210;
     }
 
     public boolean isMicroPython() {

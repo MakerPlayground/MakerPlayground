@@ -28,6 +28,7 @@ public class SourceCode {
                 case ARDUINO_ESP32:
                 case ARDUINO_ATSAMD21:
                 case ARDUINO_ATSAMD51:
+                case ARDUINO_K210:
                     return ArduinoUploadCode.generateCode(project);
                 case RASPBERRYPI:
                     return RpiPythonUploadCode.generateCode(project);
@@ -42,6 +43,7 @@ public class SourceCode {
                 case ARDUINO_ESP32:
                 case ARDUINO_ATSAMD21:
                 case ARDUINO_ATSAMD51:
+                case ARDUINO_K210:
                     return ArduinoInteractiveCode.generateCode(project);
                 case RASPBERRYPI:
                     return RpiPythonInteractiveCode.generateCode(project);

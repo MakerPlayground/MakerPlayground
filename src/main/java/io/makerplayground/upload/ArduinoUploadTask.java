@@ -168,8 +168,15 @@ public class ArduinoUploadTask extends UploadTask {
         try {
             FileUtils.forceMkdir(new File(projectPath));
             FileUtils.deleteQuietly(new File(iniFilePath));
-            UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath
-                    , List.of("init", "--board", project.getSelectedController().getPioBoardId(), "--project-option", "platform=" + pioPlatformName.get(project.getSelectedPlatform()))
+            List<String> options = new ArrayList<>(Arrays.asList("init", "--board", project.getSelectedController().getPioBoardId()
+                    , "--project-option", "platform=" + pioPlatformName.get(project.getSelectedPlatform())
+                    , "--project-option", "framework=arduino"));
+            Map<String, String> customConfig = project.getProjectConfiguration().getController().getPioCustomConfig();
+            for (Map.Entry<String, String> entry : customConfig.entrySet()) {
+                options.add("--project-option");
+                options.add(entry.getKey() + "=" + entry.getValue());
+            }
+            UploadResult result = runPlatformIOCommand(pioCommand.get(), projectPath, pioHomeDirPath, options
                     , "Error: Can't create project directory (permission denied)", UploadResult.CANT_CREATE_PROJECT);
             if (result != UploadResult.OK) {
                 return result;
