@@ -10,6 +10,8 @@ open module io.makerplayground.frontend {
     requires com.fasterxml.jackson.core;
     requires org.apache.commons.io;
     requires org.apache.commons.codec;
+    requires org.java_websocket;
+    requires org.apache.commons.net;
     requires java.net.http;
     requires static lombok;
     requires java.desktop;

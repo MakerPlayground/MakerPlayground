@@ -2,9 +2,9 @@ import groovy.json.JsonOutput
 
 plugins {
     id 'application'
-    id 'org.beryx.jlink' version '2.23.6'
-    id "com.dua3.javafxgradle7plugin" version "0.0.9"
-    id "io.freefair.lombok" version "5.3.3.3"
+    id 'org.beryx.jlink' version '3.0.0'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id "io.freefair.lombok" version "8.4"
 }
 
 repositories {
@@ -13,30 +13,35 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.fazecast/jSerialComm
-    // implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.6.2'
-    // use custom jSerialComm library until Apple Silicon support is merged to upstream
-    implementation files('libs/jSerialComm-2.6.2.jar')
+    implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.10.3'
     // https://mvnrepository.com/artifact/org.controlsfx/controlsfx
-    implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.0'
+    implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.2'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.3'
     // https://mvnrepository.com/artifact/commons-io/commons-io
-    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
-    implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.16.0'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.15.3'
     // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
-    implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.2'
+    implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.4'
     // https://mvnrepository.com/artifact/commons-net/commons-net
-    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
+    implementation group: 'commons-net', name: 'commons-net', version: '3.10.0'
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
+}
+
+java {
+    // Set the toolchain for building which might be different from the one use to run Gradle itself
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 javafx {
-    version = '16'
-    modules = ['javafx.controls', 'javafx.graphics', 'javafx.fxml']
+    version = '21'
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 mainClassName = "io.makerplayground.ui.Launcher"
