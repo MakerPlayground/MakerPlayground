@@ -11,7 +11,7 @@ import io.makerplayground.project.ProjectValue;
 import io.makerplayground.project.UserSetting;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.expression.*;
-import io.makerplayground.ui.canvas.node.expression.ConditionalExpressionControl;
+import io.makerplayground.ui.canvas.node.expression.ProjectValueConditionalExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RTCExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.RecordExpressionControl;
 import io.makerplayground.ui.canvas.node.expression.StringExpressionControl;
@@ -294,7 +294,7 @@ public class ConditionDevicePropertyPane extends VBox {
         GridPane.setRowIndex(enableCheckbox, i+1);
         GridPane.setColumnIndex(enableCheckbox, 0);
 
-        ConditionalExpressionControl expressionControl = new ConditionalExpressionControl(userSetting.getDevice()
+        ProjectValueConditionalExpressionControl expressionControl = new ProjectValueConditionalExpressionControl(userSetting.getDevice()
                 , value, project.getAvailableValue(EnumSet.of(DataType.DOUBLE, DataType.INTEGER)), expression/*, viewModel.isExpressionEnable(value)*/);
         expressionControl.disableProperty().bind(enableCheckbox.selectedProperty().not());
         expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> userSetting.getExpression().put(value, newValue));

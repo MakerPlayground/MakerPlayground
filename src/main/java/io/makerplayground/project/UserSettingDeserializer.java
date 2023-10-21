@@ -159,8 +159,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             Expression expression;
             if (NumberInRangeExpression.class.getName().contains(type)) {
                 expression = deserializeNumberInRangeExpression(valueNode.get("expression"), projectDevice, value);
-            } else if (ConditionalExpression.class.getName().contains(type)) {
-                expression = new ConditionalExpression(projectDevice, value, terms);
+            } else if (ProjectValueConditionalExpression.class.getName().contains(type)) {
+                expression = new ProjectValueConditionalExpression(projectDevice, value, terms);
             } else {
                 throw new IllegalStateException("Unknown expression type");
             }

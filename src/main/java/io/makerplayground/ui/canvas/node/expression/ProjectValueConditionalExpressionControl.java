@@ -35,7 +35,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-public class ConditionalExpressionControl extends HBox {
+public class ProjectValueConditionalExpressionControl extends HBox {
     private final ProjectDevice projectDevice;
     private final Value value;
     private final Unit unit;
@@ -43,7 +43,7 @@ public class ConditionalExpressionControl extends HBox {
     private final ReadOnlyObjectWrapper<Expression> expression = new ReadOnlyObjectWrapper<>();
     private final boolean customExpressionOnly;
 
-    public ConditionalExpressionControl(ProjectDevice projectDevice, Value v, ObservableList<ProjectValue> projectValues, Expression expression) {
+    public ProjectValueConditionalExpressionControl(ProjectDevice projectDevice, Value v, ObservableList<ProjectValue> projectValues, Expression expression) {
         this.projectDevice = projectDevice;
         this.value = v;
         this.unit = ((NumericConstraint) v.getConstraint()).getUnit();
@@ -58,8 +58,8 @@ public class ConditionalExpressionControl extends HBox {
     private void initView() {
         getChildren().clear();
         if (this.customExpressionOnly) {
-            if (getExpression() instanceof ConditionalExpression) {
-                CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues, unit);
+            if (getExpression() instanceof ProjectValueConditionalExpression) {
+                CustomProjectValueConditionalExpressionControl expressionControl = new CustomProjectValueConditionalExpressionControl((ProjectValueConditionalExpression) getExpression(), projectValues, unit);
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
                 getChildren().addAll(expressionControl);
                 setSpacing(5);
@@ -90,8 +90,8 @@ public class ConditionalExpressionControl extends HBox {
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
                 toggleGroup.selectToggle(rangeRadioMenuItem);
                 control = expressionControl;
-            } else if (getExpression() instanceof ConditionalExpression) {
-                CustomConditionalExpressionControl expressionControl = new CustomConditionalExpressionControl((ConditionalExpression) getExpression(), projectValues, unit);
+            } else if (getExpression() instanceof ProjectValueConditionalExpression) {
+                CustomProjectValueConditionalExpressionControl expressionControl = new CustomProjectValueConditionalExpressionControl((ProjectValueConditionalExpression) getExpression(), projectValues, unit);
                 expressionControl.expressionProperty().addListener((observable, oldValue, newValue) -> expression.set(newValue));
                 toggleGroup.selectToggle(basicRadioMenuItem);
                 control = expressionControl;
@@ -106,7 +106,7 @@ public class ConditionalExpressionControl extends HBox {
                 if (newValue == rangeRadioMenuItem) {
                     expression.set(new NumberInRangeExpression(projectDevice, value));
                 } else if (newValue == basicRadioMenuItem) {
-                    expression.set(new ConditionalExpression(projectDevice, value));
+                    expression.set(new ProjectValueConditionalExpression(projectDevice, value));
                 }
                 initView();
             });

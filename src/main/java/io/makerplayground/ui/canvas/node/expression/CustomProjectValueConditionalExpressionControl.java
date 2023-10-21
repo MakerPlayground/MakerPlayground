@@ -20,7 +20,7 @@ import io.makerplayground.device.shared.Unit;
 import io.makerplayground.device.shared.Value;
 import io.makerplayground.device.shared.constraint.NumericConstraint;
 import io.makerplayground.project.ProjectValue;
-import io.makerplayground.project.expression.ConditionalExpression;
+import io.makerplayground.project.expression.ProjectValueConditionalExpression;
 import io.makerplayground.project.expression.CustomNumberExpression;
 import io.makerplayground.project.term.Operator;
 import io.makerplayground.ui.canvas.node.expression.custom.NumericChipField;
@@ -42,15 +42,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomConditionalExpressionControl extends VBox {
+public class CustomProjectValueConditionalExpressionControl extends VBox {
 
-    private final ReadOnlyObjectWrapper<ConditionalExpression> expression = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<ProjectValueConditionalExpression> expression = new ReadOnlyObjectWrapper<>();
     private final ObservableList<ProjectValue> projectValues;
     private final List<EntryView> entryViewList;
     private final ImageView addImageView;
     private final Unit unit;
 
-    public CustomConditionalExpressionControl(ConditionalExpression expression, ObservableList<ProjectValue> projectValues, Unit unit) {
+    public CustomProjectValueConditionalExpressionControl(ProjectValueConditionalExpression expression, ObservableList<ProjectValue> projectValues, Unit unit) {
         this.expression.set(expression);
         this.projectValues = projectValues;
         this.entryViewList = new ArrayList<>();
@@ -61,12 +61,12 @@ public class CustomConditionalExpressionControl extends VBox {
         addImageView.setFitWidth(25);
         addImageView.setPreserveRatio(true);
         addImageView.setOnMousePressed(event -> {
-            ConditionalExpression.Entry entry = new ConditionalExpression.Entry(Operator.GREATER_THAN, new CustomNumberExpression());
+            ProjectValueConditionalExpression.Entry entry = new ProjectValueConditionalExpression.Entry(Operator.GREATER_THAN, new CustomNumberExpression());
             expression.getEntries().add(entry);
             createExpressionRowControl(entry);
         });
 
-        for (ConditionalExpression.Entry entry : expression.getEntries()) {
+        for (ProjectValueConditionalExpression.Entry entry : expression.getEntries()) {
             createExpressionRowControl(entry);
         }
 
@@ -74,7 +74,7 @@ public class CustomConditionalExpressionControl extends VBox {
         invalidateView();
     }
 
-    private void createExpressionRowControl(ConditionalExpression.Entry entry) {
+    private void createExpressionRowControl(ProjectValueConditionalExpression.Entry entry) {
         EntryView entryView = new EntryView(entry, projectValues, expression.getValue().getValue(), unit);
         entryView.setOnRemoveButtonPressed(event -> {
             expression.get().getEntries().remove(entry);
@@ -103,11 +103,11 @@ public class CustomConditionalExpressionControl extends VBox {
         entryViewList.get(entryViewList.size() - 1).getChildren().add(addImageView);
     }
 
-    public ConditionalExpression getExpression() {
+    public ProjectValueConditionalExpression getExpression() {
         return expression.get();
     }
 
-    public ReadOnlyObjectProperty<ConditionalExpression> expressionProperty() {
+    public ReadOnlyObjectProperty<ProjectValueConditionalExpression> expressionProperty() {
         return expression.getReadOnlyProperty();
     }
 
@@ -116,7 +116,7 @@ public class CustomConditionalExpressionControl extends VBox {
         private ImageView removeImageView;
         private Label operatorLabel;
 
-        public EntryView(ConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues, Value value, Unit unit) {
+        public EntryView(ProjectValueConditionalExpression.Entry entry, ObservableList<ProjectValue> projectValues, Value value, Unit unit) {
             ComboBox<Operator> operatorComboBox = new ComboBox<>(FXCollections.observableArrayList(Operator.getComparisonOperator()));
             if (entry.getOperator() != null) {
                 operatorComboBox.setValue(entry.getOperator());
