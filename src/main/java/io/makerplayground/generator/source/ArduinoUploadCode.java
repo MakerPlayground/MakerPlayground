@@ -28,6 +28,7 @@ import io.makerplayground.generator.devicemapping.ProjectMappingResult;
 import io.makerplayground.project.*;
 import io.makerplayground.project.VirtualProjectDevice.Memory;
 import io.makerplayground.project.VirtualProjectDevice.TimeElapsed;
+import io.makerplayground.project.VirtualProjectDevice.Equation;
 import io.makerplayground.project.expression.*;
 import io.makerplayground.project.term.*;
 
@@ -422,6 +423,12 @@ public class ArduinoUploadCode {
                                     }
                                 }
                             }
+                        } else if (Equation.projectDevice.equals(setting.getDevice())) {
+                            if (setting.getCondition() == Equation.evaluateEquation) {
+                                Parameter parameter = setting.getCondition().getParameter().get(0);
+                                Expression expression = setting.getParameterMap().get(parameter);
+                                booleanExpressions.add("(" + parseExpressionForParameter(root, parameter, expression)  + ")");
+                            }
                         } else {
                             throw new IllegalStateException("Found unsupported user setting {" + setting + "}");
                         }
@@ -548,6 +555,20 @@ public class ArduinoUploadCode {
             returnValue = "\"" + ((DotMatrixExpression) expression).getDotMatrix().getDataAsString() + "\"";
         } else if (expression instanceof VariableExpression) {
             returnValue = ((VariableExpression) expression).getVariableName();
+        } else if (expression instanceof BooleanExpression) {
+            StringBuilder sb = new StringBuilder();
+            List<BooleanExpression.Entry> entry = ((BooleanExpression) expression).getEntries();
+            for (int i=0; i<entry.size(); i++) {
+                if (i != 0) {
+                    sb.append(" && ");
+                }
+                sb.append("(");
+                sb.append(parseCustomNumberExpressionTerms(root, entry.get(i).getFirstOperand().getTerms()));
+                sb.append(parseTerm(root, new OperatorTerm(entry.get(i).getOperator())));
+                sb.append(parseCustomNumberExpressionTerms(root, entry.get(i).getSecondOperand().getTerms()));
+                sb.append(")");
+            }
+            returnValue = sb.toString();
         } else {
             throw new IllegalStateException(expression.getClass().getSimpleName());
         }

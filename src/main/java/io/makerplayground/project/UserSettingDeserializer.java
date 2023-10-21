@@ -129,6 +129,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
                 } else {
                     expression = new VariableExpression(((ValueTerm)(terms.get(0))).getValue());
                 }
+            } else if (BooleanExpression.class.getSimpleName().equals(expressionType)) {
+                expression = new BooleanExpression(terms);
             } else {
                 throw new IllegalStateException("expression type [" + expressionType + "] is not supported");
             }
@@ -159,8 +161,8 @@ public class UserSettingDeserializer extends JsonDeserializer<UserSetting> {
             Expression expression;
             if (NumberInRangeExpression.class.getName().contains(type)) {
                 expression = deserializeNumberInRangeExpression(valueNode.get("expression"), projectDevice, value);
-            } else if (ConditionalExpression.class.getName().contains(type)) {
-                expression = new ConditionalExpression(projectDevice, value, terms);
+            } else if (ProjectValueConditionalExpression.class.getName().contains(type)) {
+                expression = new ProjectValueConditionalExpression(projectDevice, value, terms);
             } else {
                 throw new IllegalStateException("Unknown expression type");
             }
