@@ -9,8 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-#        os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +66,7 @@ jobs:
         with:
           name: ${{ matrix.os }}
           path: |
-            package/macos/*.app
+            package/macos/build/*.app
             package/macos/build/*.pkg
           retention-days: 1
           if-no-files-found: error
