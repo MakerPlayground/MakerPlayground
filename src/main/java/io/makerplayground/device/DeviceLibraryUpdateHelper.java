@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class DeviceLibraryUpdateHelper {
-    public static final String VERSION_CHECKING_URL = "https://makerplayground.z23.web.core.windows.net/library/version.json";
-    public static final String LIB_DOWNLOAD_BASEURL = "https://makerplayground.blob.core.windows.net/release/library/";
+    public static final String VERSION_CHECKING_URL = "https://github.com/MakerPlayground/MakerPlayground_Library/releases/latest/download/version.json";
+    public static final String LIB_DOWNLOAD_BASEURL = "https://github.com/MakerPlayground/MakerPlayground_Library/releases/latest/download/";
     private static DeviceLibraryVersion lastestCompatibleVersion;
 
     public static Optional<DeviceLibraryVersion> getVersionOfLibraryAtPath(String path) {
