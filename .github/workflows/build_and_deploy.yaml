@@ -1,0 +1,85 @@
+name: Build and Deploy MakerPlayground
+
+on:
+  push:
+    tags:
+    - '**'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          lfs: true
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - if: matrix.os == 'ubuntu-latest'  # libfuse2 is needed to run AppImage in the linux build script
+        name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle build
+        run: ./gradlew createBundle
+#      - name: Extract version from version.json
+#        id: get-version
+#        uses: notiz-dev/github-action-json-property@release
+#        with:
+#          path: 'src/main/resources/version.json'
+#          prop_path: 'version'
+      - if: matrix.os == 'windows-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: package/windows/Output/*.exe
+          retention-days: 1
+          if-no-files-found: error
+      - if: matrix.os == 'ubuntu-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: |
+            package/linux/*.tar.gz
+            package/linux/*.AppImage
+          retention-days: 1
+          if-no-files-found: error
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - uses: nowsprinting/check-version-format-action@v3
+        id: check-version
+        with:
+          prefix: 'v'
+#      - name: Push tag
+#        id: push-commit-tag
+#        uses: mathieudutour/github-tag-action@v6.1
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          custom_tag: ${{ steps.get-version.outputs.prop }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+#          tag_name: ${{ steps.push-commit-tag.outputs.new_tag }}
+          prerelease: ${{ !steps.version.outputs.is_stable }}
+          body: ${{ github.event.head_commit.message }}
+          fail_on_unmatched_files: true
+          files: |
+            windows-latest/*
+            ubuntu-latest/*
