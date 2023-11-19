@@ -1,0 +1,115 @@
+name: Build and Deploy MakerPlayground
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  check-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
+    - name: Validate version in the tag
+      uses: nowsprinting/check-version-format-action@v3
+      id: version
+      with:
+        prefix: 'v'
+    - name: Log version
+      run: |
+        echo "Is valid? = ${{ steps.version.outputs.is_valid }}"
+        echo "Is pre-release? = ${{ steps.version.outputs.is_stable == 'false' }}"
+        echo "Version = ${{ steps.version.outputs.full_without_prefix }}"
+    - uses: nick-fields/assert-action@v1
+      with:
+        expected: true
+        actual: ${{ steps.version.outputs.is_valid }}
+  build:
+    needs: check-tag
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - if: matrix.os == 'ubuntu-latest'  # libfuse2 is needed to run AppImage in the linux build script
+        name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+      - if: matrix.os == 'macos-latest'
+        name: Install deployment certificate
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CODESIGN_CERT_P12 }}
+          p12-password: ${{ secrets.APPLE_CODESIGN_CERT_PASS }}
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle build
+        env:
+          APPLE_APP_SPECIFIC_PASS: ${{ secrets.APPLE_CODESIGN_APPSPECIFIC_PASS }}
+        run: ./gradlew createBundle
+      - if: matrix.os == 'windows-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: package/windows/Output/*.exe
+          retention-days: 1
+          if-no-files-found: error
+      - if: matrix.os == 'ubuntu-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: |
+            package/linux/*.tar.gz
+            package/linux/*.AppImage
+          retention-days: 1
+          if-no-files-found: error
+      - if: matrix.os == 'macos-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: |
+            package/macos/build/*
+          retention-days: 1
+          if-no-files-found: error
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+      - uses: actions/download-artifact@v3
+      - uses: nowsprinting/check-version-format-action@v3
+        id: version
+        with:
+          prefix: 'v'
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ steps.version.outputs.is_stable == 'false' }}
+          body: ${{ github.event.head_commit.message }}
+          fail_on_unmatched_files: true
+          files: |
+            windows-latest/*
+            ubuntu-latest/*
+            macos-latest/*

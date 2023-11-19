@@ -32,12 +32,12 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
 }
 
-java {
-    // Set the toolchain for building which might be different from the one use to run Gradle itself
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
+//java {
+//    // Set the toolchain for building which might be different from the one use to run Gradle itself
+//    toolchain {
+//        languageVersion = JavaLanguageVersion.of(21)
+//    }
+//}
 
 javafx {
     version = '21'
@@ -89,6 +89,8 @@ jlink {
     }
     mergedModule {
         requires 'java.sql'
+        // jpackage doesn't allow app version to start with 0 or contain any alphabet so we manually set it in the installer of each platform
+        version = '1.0.0'
     }
     jpackage {
         imageName = 'Maker Playground'
