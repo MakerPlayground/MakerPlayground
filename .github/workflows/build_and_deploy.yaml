@@ -9,7 +9,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+#        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -30,9 +31,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libfuse2
+      - if: matrix.os == 'macos-latest'
+        name: Install deployment certificate
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CODESIGN_CERT_P12 }}
+          p12-password: ${{ secrets.APPLE_CODESIGN_CERT_PASS }}
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Execute Gradle build
+        env:
+          APPLE_APP_SPECIFIC_PASS: ${{ secrets.APPLE_CODESIGN_APPSPECIFIC_PASS }}
         run: ./gradlew createBundle
       - if: matrix.os == 'windows-latest'
         name: Upload build artifact
@@ -50,6 +59,16 @@ jobs:
           path: |
             package/linux/*.tar.gz
             package/linux/*.AppImage
+          retention-days: 1
+          if-no-files-found: error
+      - if: matrix.os == 'macos-latest'
+        name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: |
+            package/macos/*.app
+            package/macos/build/*.pkg
           retention-days: 1
           if-no-files-found: error
   deploy:
@@ -70,3 +89,4 @@ jobs:
           files: |
             windows-latest/*
             ubuntu-latest/*
+            macos-latest/*
