@@ -58,4 +58,4 @@ jobs:
           body: ${{ github.event.head_commit.message }}
           fail_on_unmatched_files: true
           files: |
-            package/windows/Output/*.zip
+            package/windows/Output/*.exe
