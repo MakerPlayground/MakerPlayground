@@ -34,12 +34,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Execute Gradle build
         run: ./gradlew createBundle
-#      - name: Extract version from version.json
-#        id: get-version
-#        uses: notiz-dev/github-action-json-property@release
-#        with:
-#          path: 'src/main/resources/version.json'
-#          prop_path: 'version'
       - if: matrix.os == 'windows-latest'
         name: Upload build artifact
         uses: actions/upload-artifact@v3
@@ -67,17 +61,10 @@ jobs:
         id: check-version
         with:
           prefix: 'v'
-#      - name: Push tag
-#        id: push-commit-tag
-#        uses: mathieudutour/github-tag-action@v6.1
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          custom_tag: ${{ steps.get-version.outputs.prop }}
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-#          tag_name: ${{ steps.push-commit-tag.outputs.new_tag }}
-          prerelease: ${{ !steps.version.outputs.is_stable }}
+          prerelease: ${{ !steps.check-version.outputs.is_stable }}
           body: ${{ github.event.head_commit.message }}
           fail_on_unmatched_files: true
           files: |
