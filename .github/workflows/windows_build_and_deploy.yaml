@@ -32,19 +32,6 @@ jobs:
         with:
           path: 'src/main/resources/version.json'
           prop_path: 'version'
-      - run: echo ${{ steps.get-version.outputs.prop }}
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install pyyaml
-#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#      - name: Build the library
-#        run: |
-#          python build.py
-#      - name: Get the version number
-#        id: get-version-string
-#        run: |
-#          echo "VERSION_STRING=$(ls *.zip | sed -e 's/\.zip$//')" >> "$GITHUB_OUTPUT"
       - name: Push tag
         id: push-commit-tag
         uses: mathieudutour/github-tag-action@v6.1
