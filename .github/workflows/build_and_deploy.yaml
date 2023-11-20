@@ -6,7 +6,29 @@ on:
     - '**'
 
 jobs:
+  check-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
+    - name: Validate version in the tag
+      uses: nowsprinting/check-version-format-action@v3
+      id: check-version
+      with:
+        prefix: 'v'
+    - name: Log version
+      run: |
+        echo "Valid? : steps.check-version.outputs.is_valid"
+        echo "Pre-release? : ${{ !steps.check-version.outputs.is_stable }}"
+        echo "Version : ${{ steps.check-version.outputs.full_without_prefix }}"
+    - uses: nick-fields/assert-action@v1
+      with:
+        expected: true
+        actual: ${{ steps.check-version.outputs.is_valid }}
   build:
+    needs: check-tag
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -14,7 +36,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           submodules: recursive
           lfs: true
       - uses: actions/setup-java@v3
@@ -66,14 +87,17 @@ jobs:
         with:
           name: ${{ matrix.os }}
           path: |
-            package/macos/build/*.app
-            package/macos/build/*.pkg
+            package/macos/build/*
           retention-days: 1
           if-no-files-found: error
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
       - uses: actions/download-artifact@v3
       - uses: nowsprinting/check-version-format-action@v3
         id: check-version
