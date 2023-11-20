@@ -28,6 +28,8 @@ dependencies {
     implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.4'
     // https://mvnrepository.com/artifact/commons-net/commons-net
     implementation group: 'commons-net', name: 'commons-net', version: '3.10.0'
+    // https://mvnrepository.com/artifact/org.semver4j/semver4j
+    implementation group: 'org.semver4j', name: 'semver4j', version: '5.2.2'
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
 }
@@ -56,7 +58,7 @@ compileJava {
 
 run {
     doFirst {
-        // do not forget to edit the corresponding jvmArgs in the jlink section of this file and the build-jdk-fx.gradle
+        // do not forget to edit the corresponding jvmArgs in the jlink section of this file
         // and the innosetup script for the Windows in the package submodule
         jvmArgs += [
                 '--add-reads', 'io.makerplayground.frontend=ALL-UNNAMED',
@@ -169,7 +171,6 @@ def getVersionName() {
     def versionInfo = JsonOutput.toJson([
             build_name: 'Maker Playground ' + versionName,
             version: versionName,
-            channel: 'nightly', // stable, nightly, internal
             release_date: new Date().format('yyyy-MM-dd')])
     def file = new File("${projectDir}/src/main/resources/version.json")
     file.write versionInfo

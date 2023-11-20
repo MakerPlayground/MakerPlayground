@@ -13,6 +13,7 @@ open module io.makerplayground.frontend {
     requires org.java_websocket;
     requires org.apache.commons.net;
     requires java.net.http;
+    requires org.semver4j;
     requires static lombok;
     requires java.desktop;
 }

@@ -18,35 +18,35 @@ package io.makerplayground.version;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.util.OSInfo;
 import javafx.scene.control.Alert;
+import lombok.Getter;
+import org.semver4j.Semver;
 
 import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.Date;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class SoftwareVersion implements Comparable<SoftwareVersion> {
     private static SoftwareVersion currentVersion;
-    private static final String URL = "https://makerplayground.z23.web.core.windows.net/version";
+    private static final String URL = "https://api.github.com/repos/MakerPlayground/MakerPlayground/releases";
 
     public static SoftwareVersion getCurrentVersion() {
         if (currentVersion == null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(SoftwareVersion.class.getResourceAsStream("/version.json")))) {
                 ObjectMapper mapper = new ObjectMapper();
-                try {
-                    currentVersion = mapper.readValue(reader, SoftwareVersion.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                currentVersion = mapper.readValue(reader, SoftwareVersion.class);
+                currentVersion.channel = currentVersion.version.isStable() ? Channel.stable : Channel.nightly;
             } catch (Exception e) {
                 e.printStackTrace();
                 // it may be better to return an optional and alert user outside of this method but this error should
@@ -63,82 +63,75 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
     public static Optional<SoftwareVersion> getLatestVersionInfo() {
         SoftwareVersion latestVersion = null;
         ObjectMapper mapper = new ObjectMapper();
+
         try {
-            latestVersion = mapper.readValue(new URL(URL + "/software_" + getCurrentVersion().getChannel() + ".json"), SoftwareVersion.class);
+            JsonNode root = mapper.readTree(new URL(URL));
+            boolean allowPrerelease = getCurrentVersion().getChannel() != Channel.stable;
+            if (root.isArray()) {
+                // find the latest release based on the prerelease field and our current release channel
+                for (int i = 0; i < root.size(); i++) {
+                    JsonNode n = root.get(i);
+                    if (n.hasNonNull("prerelease") && n.get("prerelease").asBoolean() == allowPrerelease) {
+                        try {
+                            String version = n.get("tag_name").asText();
+                            Channel channel = allowPrerelease ? Channel.stable : Channel.nightly;
+                            Date releaseDate = Date.from(Instant.parse(n.get("published_at").asText()));
+                            latestVersion = new SoftwareVersion("Maker Playground " + version, version, channel, releaseDate);
+                        } catch (Exception e) {
+                            continue;
+                        }
+                        break;
+                    }
+                }
+            }
         } catch (UnknownHostException | SSLException | SocketException e) {
             // exception can normally be thrown when there is no internet connectivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println(latestVersion.versionString);
         return Optional.ofNullable(latestVersion);
     }
 
-    private enum Platform { windows, @JsonProperty("windows-full") windows_full, linux, macos, @JsonProperty("macos-full") macos_full }
     private enum Channel {stable, nightly, internal}
 
+    @Getter
     private String buildName;
-    private String version;
+    @Getter
+    private String versionString;
+    @Getter
+    private Semver version;
+    @Getter
     private Channel channel;
-    private Map<Platform, DownloadInfo> downloadInfo;
+    @Getter
     private Date releaseDate;
 
     @JsonCreator
-    private SoftwareVersion(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version, @JsonProperty("channel") Channel channel
-            , @JsonProperty("download_url") Map<Platform, DownloadInfo> downloadInfo, @JsonProperty("release_date") java.util.Date releaseDate) {
+    private SoftwareVersion(@JsonProperty("build_name") String buildName, @JsonProperty("version") String version
+            , @JsonProperty("channel") Channel channel, @JsonProperty("release_date") java.util.Date releaseDate) {
         this.buildName = buildName;
-        this.version = version;
+        this.versionString = version;
+        this.version = version.startsWith("v") ? Semver.parse(version.substring(1)) : Semver.parse(version);
+        Objects.requireNonNull(this.version);
         this.channel = channel;
-        this.downloadInfo = downloadInfo;
         this.releaseDate = releaseDate;
-    }
-
-    public String getBuildName() {
-        return buildName;
-    }
-
-    public String getVersionString() {
-        return version;
-    }
-
-    public Channel getChannel() {
-        return channel;
     }
 
     public String getDownloadURL() {
         if (OSInfo.getOs() == OSInfo.OS.WINDOWS) {
-            return downloadInfo.get(Platform.windows).getUrl();
+            return "https://github.com/MakerPlayground/MakerPlayground/releases/download/" + versionString + "/MakerPlayground-" + versionString + ".exe";
         } else if (OSInfo.getOs() == OSInfo.OS.MAC) {
-            return downloadInfo.get(Platform.macos).getUrl();
+            return "https://github.com/MakerPlayground/MakerPlayground/releases/download/" + versionString + "/MakerPlayground-" + versionString + ".app.zip";
+        } else if (OSInfo.getOs() == OSInfo.OS.UNIX) {
+            return "https://github.com/MakerPlayground/MakerPlayground/releases/download/" + versionString + "/MakerPlayground-" + versionString + ".AppImage";
         } else {
             return "https://www.makerplayground.io";
         }
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
-
     @Override
     public int compareTo(SoftwareVersion o) {
-        return new ComparableVersion(version).compareTo(new ComparableVersion(o.version));
-    }
-
-    public static class DownloadInfo {
-        private final String url;
-        private final String checksum;
-
-        @JsonCreator
-        public DownloadInfo(@JsonProperty("url") String url, @JsonProperty("checksum") String checksum) {
-            this.url = url;
-            this.checksum = checksum;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getChecksum() {
-            return checksum;
-        }
+        return version.compareTo(o.version);
     }
 }

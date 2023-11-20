@@ -3,7 +3,6 @@ package io.makerplayground.device;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.makerplayground.util.PathUtility;
-import io.makerplayground.version.ComparableVersion;
 import io.makerplayground.version.DeviceLibraryVersion;
 import io.makerplayground.version.SoftwareVersion;
 import javafx.application.Platform;
@@ -12,6 +11,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.semver4j.Semver;
 
 import javax.net.ssl.SSLException;
 import java.io.*;
@@ -47,9 +47,9 @@ public class DeviceLibraryUpdateHelper {
             }
 
             if (libraryVersions != null) {
-                ComparableVersion currentMPVersion = new ComparableVersion(SoftwareVersion.getCurrentVersion().getVersionString());
                 for (var version : libraryVersions) {
-                    if (currentMPVersion.compareTo(new ComparableVersion(version.getMinimumMPVersion())) >= 0) {
+                    Semver minRequiredVersion = Semver.parse(version.getMinimumMPVersion());
+                    if (minRequiredVersion != null && SoftwareVersion.getCurrentVersion().getVersion().isGreaterThanOrEqualTo(minRequiredVersion)) {
                         lastestCompatibleVersion = version;
                         break;
                     }
