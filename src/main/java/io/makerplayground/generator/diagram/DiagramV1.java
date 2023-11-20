@@ -26,6 +26,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
@@ -1298,10 +1299,12 @@ class DiagramV1 {
                 drawingPane.getChildren().add(text);
             } else if (deviceNeedBreadboard.contains(projectDevice)) {
                 Text text = new Text(deviceName);
-                text.setX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
-                text.setY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * projectDeviceList.size())  + GLOBAL_TOP_MARGIN);
                 text.setStyle("-fx-font-size: " + DEVICE_NAME_FONT_SIZE);
-                drawingPane.getChildren().add(text);
+                StackPane pane = new StackPane(text);
+                pane.setLayoutX(coordinate.getX() - 0.5 * sizeAfterRotation.getWidth() + GLOBAL_LEFT_MARGIN);
+                pane.setLayoutY(coordinate.getY() - 0.5 * sizeAfterRotation.getHeight() - (DEVICE_NAME_FONT_SIZE * (projectDeviceList.size() + 1))  + GLOBAL_TOP_MARGIN);
+                pane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.75)");
+                drawingPane.getChildren().add(pane);
             }
         } catch (IOException e) {
             throw new IllegalStateException("Image not found for : " + deviceMap.get(projectDevice).getId());
