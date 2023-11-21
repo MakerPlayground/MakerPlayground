@@ -22,9 +22,9 @@ import io.makerplayground.device.DeviceLibraryUpdateHelper;
 import io.makerplayground.generator.source.SourceCode;
 import io.makerplayground.generator.source.SourceCodeResult;
 import io.makerplayground.project.Project;
-import io.makerplayground.ui.dialog.DeviceLibraryErrorDialogView;
-import io.makerplayground.ui.dialog.TaskDialogView;
-import io.makerplayground.ui.dialog.UnsavedDialog;
+import io.makerplayground.ui.dialog.*;
+import io.makerplayground.util.AutoProjectBackupThread;
+import io.makerplayground.util.AutoProjectBackupUtil;
 import io.makerplayground.util.PathUtility;
 import io.makerplayground.util.ZipResourceExtractor;
 import io.makerplayground.version.SoftwareVersion;
@@ -57,6 +57,7 @@ public class Main extends Application {
     private Toolbar toolbar;
     private ObjectProperty<Project> project;
     private File latestProjectDirectory;
+    private AutoProjectBackupThread autoProjectBackupThread;
 
     @Override
     public void start(Stage primaryStage) {
@@ -138,6 +139,14 @@ public class Main extends Application {
                 }
             }
 
+            try {
+                autoProjectBackupThread.stopThread();
+                autoProjectBackupThread.join(5000);
+            } catch (InterruptedException e) {
+                // do nothing and continue exit the program
+            }
+            AutoProjectBackupUtil.deleteAllBackupFile();
+
             primaryStage.close();
             Platform.exit();
             System.exit(0);
@@ -156,6 +165,24 @@ public class Main extends Application {
         primaryStage.setMinHeight(primaryStage.getHeight());
 
         new UpdateNotifier(scene.getWindow(), getHostServices()).start();
+
+        autoProjectBackupThread = new AutoProjectBackupThread(project);
+
+        Optional<Path> backupFilePath = AutoProjectBackupUtil.getLatestBackupFilePath();
+        if (backupFilePath.isPresent()) {
+            Platform.runLater(() -> {
+                var response = new RestoreBackupProjectDialog(scene.getWindow()).showAndGetResponse();
+                if (response == RestoreBackupProjectDialog.Response.OPEN) {
+                    loadProjectFromPath(scene.getWindow(), backupFilePath.get().toString());
+                    while (!saveProjectAs(scene.getWindow())) {
+                        new WarningDialogView(scene.getWindow(), "Please save the recovered file before continuing").showAndWait();
+                    }
+                }
+                autoProjectBackupThread.start();
+            });
+        } else {
+            autoProjectBackupThread.start();
+        }
     }
 
     private void updatePath(Stage stage, String path) {
@@ -262,7 +289,7 @@ public class Main extends Application {
         }
     }
 
-    public void saveProjectAs(Window window) {
+    public boolean saveProjectAs(Window window) {
         toolbar.setStatusMessage("Saving...");
         try {
             File selectedFile;
@@ -287,6 +314,7 @@ public class Main extends Application {
                         Platform.runLater(() -> toolbar.setStatusMessage(""));
                     }
                 }, 3000);
+                return true;
             } else {
                 toolbar.setStatusMessage("");
             }
@@ -294,6 +322,8 @@ public class Main extends Application {
             toolbar.setStatusMessage("");
             e.printStackTrace();
         }
+
+        return false;
     }
 
     private void exportProject(Window window) {

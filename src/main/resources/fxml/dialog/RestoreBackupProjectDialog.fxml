@@ -24,17 +24,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<fx:root id="unsaved-dialog" alignment="TOP_CENTER" stylesheets="@../../css/dialog/UnsavedDialog.css" type="VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="unsaved-dialog" alignment="TOP_CENTER" stylesheets="@../../css/dialog/UnsavedDialog.css" type="VBox" spacing="15" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="HBox-header" prefHeight="20.0" prefWidth="200.0">
          <children>
-            <Text id="unsaved-text" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirmation" wrappingWidth="500.0" />
-            <ImageView id="cancel-button" fx:id="closeButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../css/cancel-button.png"/>
-               </image>
-            </ImageView>
+            <Text id="unsaved-text" strokeType="OUTSIDE" strokeWidth="0.0" text="Project Recovery" wrappingWidth="500.0" textAlignment="CENTER" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" />
@@ -43,26 +37,20 @@
       <ImageView fitHeight="108.0" fitWidth="87.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../css/dialog/warning.png" />
-         </image></ImageView>
-      <Label id="unsaved-message" text="You have unsaved changes. Are you sure want to leave this page?" textAlignment="CENTER" />
+         </image>
+      </ImageView>
+      <Label id="unsaved-message" text="Do you want to recover the latest unsaved project?" textAlignment="CENTER" />
       <HBox id="HBox" alignment="TOP_CENTER" prefHeight="50.0" prefWidth="525.0">
          <children>
-            <Button id="unsaved-button" fx:id="saveButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Save">
-               <HBox.margin>
-                  <Insets left="10.0" right="5.0" />
-               </HBox.margin></Button>
-            <Button id="unsaved-button" fx:id="notSaveButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Don't save">
-               <HBox.margin>
-                  <Insets left="5.0" right="5.0" />
-               </HBox.margin></Button>
-            <Button id="unsaved-button" fx:id="cancelButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Cancel">
+            <Button id="unsaved-button" fx:id="skipButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Skip">
                <HBox.margin>
                   <Insets left="5.0" right="10.0" />
                </HBox.margin></Button>
+            <Button id="unsaved-button" fx:id="openButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Recover">
+               <HBox.margin>
+                  <Insets left="10.0" right="5.0" />
+               </HBox.margin></Button>
          </children>
-         <VBox.margin>
-            <Insets top="15.0" />
-         </VBox.margin>
       </HBox>
    </children>
 </fx:root>

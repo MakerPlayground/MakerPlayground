@@ -19,30 +19,27 @@ package io.makerplayground.ui.dialog;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
 import java.io.IOException;
 
-public class UnsavedDialog extends UndecoratedDialog {
+public class RestoreBackupProjectDialog extends UndecoratedDialog {
 
     public enum Response {
-        SAVE, DONT_SAVE, CANCEL
+        OPEN, SKIP
     }
 
     private VBox mainPane = new VBox();
-    @FXML private Button saveButton;
-    @FXML private Button notSaveButton;
-    @FXML private Button cancelButton;
-    @FXML private ImageView closeButton;
+    @FXML private Button openButton;
+    @FXML private Button skipButton;
 
-    private Response response = Response.CANCEL;
+    private Response response;
 
-    public UnsavedDialog(Window owner/*, String error*/) {
+    public RestoreBackupProjectDialog(Window owner/*, String error*/) {
         super(owner);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/UnsavedDialog.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/dialog/RestoreBackupProjectDialog.fxml"));
         fxmlLoader.setRoot(mainPane);
         fxmlLoader.setController(this);
         try {
@@ -51,27 +48,18 @@ public class UnsavedDialog extends UndecoratedDialog {
             throw new RuntimeException(exception);
         }
 
-        saveButton.setOnAction(event -> {
-            response = Response.SAVE;
+        openButton.setOnAction(event -> {
+            response = Response.OPEN;
             hide();
         });
 
-        notSaveButton.setOnAction(event -> {
-            response = Response.DONT_SAVE;
-            hide();
-        });
-
-        cancelButton.setOnAction(event -> {
-            response = Response.CANCEL;
-            hide();
-        });
-
-        closeButton.setOnMouseReleased(event -> {
-            response = Response.CANCEL;
+        skipButton.setOnAction(event -> {
+            response = Response.SKIP;
             hide();
         });
 
         setContent(mainPane);
+        setClosingPredicate(() -> false);
     }
 
     public Response showAndGetResponse() {
