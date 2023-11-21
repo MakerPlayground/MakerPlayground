@@ -90,7 +90,6 @@ public class SoftwareVersion implements Comparable<SoftwareVersion> {
             e.printStackTrace();
         }
 
-        System.out.println(latestVersion.versionString);
         return Optional.ofNullable(latestVersion);
     }
 
