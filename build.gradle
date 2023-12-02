@@ -169,7 +169,7 @@ def getVersionName() {
     // write version.json file
     def versionName = stdout.toString().trim()
     def versionInfo = JsonOutput.toJson([
-            build_name: 'Maker Playground ' + versionName,
+            build_name: 'ALLI/O ' + versionName,
             version: versionName,
             release_date: new Date().format('yyyy-MM-dd')])
     def file = new File("${projectDir}/src/main/resources/version.json")

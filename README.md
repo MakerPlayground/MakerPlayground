@@ -1,10 +1,10 @@
-# Maker Playground
+# ALLI/O
 
-Maker Playground is an integrated development platform for creating electronics project, developing device's firmware, getting your circuit designed and programming your micro-controller board.
+ALLI/O (formerly known as Maker Playground) is an integrated development platform for creating electronics project, developing device's firmware, getting your circuit designed and programming your micro-controller board.
 
 ## Quickstart
 
-See how Maker Playground works on [youtube](https://youtu.be/H7rkG30609k) and follow our [documentation](https://docs.makerplayground.io/th) to start building your own project.
+See how ALLI/O works on [youtube](https://youtu.be/H7rkG30609k) and follow our [documentation](https://docs.makerplayground.io/th) to start building your own project.
 
 ## Installation
 
@@ -12,7 +12,7 @@ Latest releases for major operating systems can be downloaded on our [website](h
 
 ## Build Instruction
 
-This instruction is for those who prefer to build Maker Playground from source or to contribute to this project. Most users should download and install the pre-built version of Maker Playground available on our [website](https://www.makerplayground.io/#installer-section).
+This instruction is for those who prefer to build ALLI/O from source or to contribute to this project. Most users should download and install the pre-built version of ALLI/O available on our [website](https://www.makerplayground.io/#installer-section).
 
 ### Prerequisite
 
