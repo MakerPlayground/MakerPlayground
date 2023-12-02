@@ -1,6 +1,0 @@
-[submodule "library"]
-	path = library
-	url = https://github.com/MakerPlayground/MakerPlayground_Library
-[submodule "package"]
-	path = package
-	url = https://github.com/MakerPlayground/MakerPlayground_Installer
