@@ -16,4 +16,5 @@ open module io.makerplayground.frontend {
     requires org.semver4j;
     requires static lombok;
     requires java.desktop;
+    requires jdk.crypto.ec; // need for supporting SSL connection (See: https://stackoverflow.com/q/62238883)
 }
