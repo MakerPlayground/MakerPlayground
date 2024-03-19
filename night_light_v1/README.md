@@ -1,5 +1,7 @@
 # Night Light V1
 
+An automatic nightlight system that automatically turns the light on or off based on ambient light.
+
 ## Implementations
 
 1. [C++/Arduino](arduino/README.md)
