@@ -2,13 +2,9 @@
 
 ## ALLI/O Diagram
 
-View/Download overview diagram image in [png](diagram/whack_a_mole_small.png) or [svg](diagram/whack_a_mole_small.svg).
+View/Download full diagram image in [png](diagram/whack_a_mole.png) or [svg](diagram/whack_a_mole.svg).
 
-<img src="diagram/whack_a_mole_small.png" width=50% height=50%>
-
-View/Download full diagram image in [png](diagram/whack_a_mole_large.png) or [svg](diagram/whack_a_mole_large.svg).
-
-<img src="diagram/whack_a_mole_large.png">
+<img src="diagram/whack_a_mole.png">
 
 ## Prerequisite
 
