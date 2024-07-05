@@ -40,7 +40,7 @@ jobs:
           lfs: true
       - uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: 'liberica'
           java-version: 17
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
