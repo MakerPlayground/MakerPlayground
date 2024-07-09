@@ -41,7 +41,8 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'liberica'
-          java-version: 17
+          java-version: 21
+          java-package: 'jdk+fx'
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
         with:
@@ -62,7 +63,7 @@ jobs:
       - name: Execute Gradle build
         env:
           APPLE_APP_SPECIFIC_PASS: ${{ secrets.APPLE_CODESIGN_APPSPECIFIC_PASS }}
-        run: ./gradlew createBundle
+        run: ./gradlew -b build-jdk-fx.gradle createBundle
       - if: matrix.os == 'windows-2022'
         name: Upload build artifact
         uses: actions/upload-artifact@v3
