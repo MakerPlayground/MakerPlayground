@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ssc:StateChart xmlns:ssc="http://www.sinelabore.com/SSC/1_0" Version="1.0">
+  <!--Command line options: -p ssc -E -->
+  <!--This file is generated - do not edit manually-->
+  <!--Generated on: Sat Apr 27 10:45:16 EDT 2024 / Version 6.3.2.1.4114-->
+  <ssc:Dimensions H="1056" W="1936" BA="56" DW="1354" NO="655" TV="242" />
+  <ssc:Header />
+  <ssc:Action />
+  <ssc:StateHeader />
+  <ssc:AdditionalIncludesStates />
+  <ssc:State Name="TopLevel">
+    <ssc:Region Name="FrontWiper">
+      <Note>Front Wiper</Note>
+      <ssc:InitState Id="ca837741-5969-4c6b-a600-8945dad8aa3b">
+        <ssc:Transition ToState="FrontIdle" FromState="ca837741-5969-4c6b-a600-8945dad8aa3b" />
+      </ssc:InitState>
+      <ssc:State Name="FrontIdle">
+        <DoCode>motor1_off();</DoCode>
+        <ssc:Transition Event="digitalRead(0)" IsConditional="true" ToState="FrontForward" FromState="FrontIdle" />
+      </ssc:State>
+      <ssc:State Name="FrontForward">
+        <DoCode>motor1_cw(100);</DoCode>
+        <ssc:Transition Event="digitalRead(1)" IsConditional="true" ToState="FrontReverse" FromState="FrontForward" />
+      </ssc:State>
+      <ssc:State Name="FrontReverse">
+        <DoCode>motor1_ccw(100);</DoCode>
+        <ssc:Transition Event="digitalRead(2)" IsConditional="true" ToState="FrontWait2sec" FromState="FrontReverse" />
+      </ssc:State>
+      <ssc:State Name="FrontWait2sec">
+        <DoCode>front_end_waitms = millis() + 2000;
+motor1_off();</DoCode>
+        <ssc:Transition Event="millis() &gt; front_end_waitms" IsConditional="true" ToState="FrontForward" FromState="FrontWait2sec" />
+        <ssc:Transition Event=" !digitalRead(0)" IsConditional="true" ToState="FrontIdle" FromState="FrontWait2sec" />
+      </ssc:State>
+    </ssc:Region>
+    <ssc:Region Name="RearWiper">
+      <Note>Rear Wiper</Note>
+      <ssc:InitState Id="47ff2857-7b74-429c-89ed-e2677b74dd74">
+        <ssc:Transition ToState="RearIdle" FromState="47ff2857-7b74-429c-89ed-e2677b74dd74" />
+      </ssc:InitState>
+      <ssc:State Name="RearIdle">
+        <DoCode>motor2_off();</DoCode>
+        <ssc:Transition Event="digitalRead(3)" IsConditional="true" ToState="RearForward" FromState="RearIdle" />
+      </ssc:State>
+      <ssc:State Name="RearForward">
+        <DoCode>motor2_cw(100);</DoCode>
+        <ssc:Transition Event="digitalRead(4)" IsConditional="true" ToState="RearReverse" FromState="RearForward" />
+      </ssc:State>
+      <ssc:State Name="RearReverse">
+        <DoCode>motor2_ccw(100);</DoCode>
+        <ssc:Transition Event="digitalRead(5)" IsConditional="true" ToState="ReadWait2sec" FromState="RearReverse" />
+      </ssc:State>
+      <ssc:State Name="ReadWait2sec">
+        <DoCode>rear_end_waitms= millis() + 2000;
+motor2_off();</DoCode>
+        <ssc:Transition Event="millis() &gt; rear_end_waitms" IsConditional="true" ToState="RearForward" FromState="ReadWait2sec" />
+        <ssc:Transition Event=" !digitalRead(5)" IsConditional="true" ToState="RearIdle" FromState="ReadWait2sec" />
+      </ssc:State>
+    </ssc:Region>
+  </ssc:State>
+  <ssc:InitState Id="f9d21a13-37b8-4163-b4ee-35eecc821996">
+    <ssc:Transition ToState="TopLevel" FromState="f9d21a13-37b8-4163-b4ee-35eecc821996" />
+  </ssc:InitState>
+</ssc:StateChart>
