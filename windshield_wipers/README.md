@@ -8,6 +8,7 @@
 4. [MakeCode](makecode/README.md)
 5. [SinelaboreRT](sinelaborert/README.md)
 6. [Visuino](visuino/README.md)
+7. [XOD](xod/README.md)
 
 ## Evaluation Results
 
