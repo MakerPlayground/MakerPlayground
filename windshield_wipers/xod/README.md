@@ -1,6 +1,6 @@
 # Windshield Wipers (XOD)
 
-Follow the installation instruction for XOD at [link](https://xod.io). Note that the diagram represents only the front wiper. The diagram can be simply duplicated for the rear wiper due to the parallel execution of the XOD program.
+Follow the installation instruction for XOD at [link](https://xod.io). Note the XOD implementations only include the fast wipe mode, as implementing all three modes is too complex. Additionally, only the front wiper diagram is provided, but it can be easily duplicated for the rear wiper due to the parallel execution nature of XOD.
 
 ## Diagram
 
