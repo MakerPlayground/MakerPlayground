@@ -6,5 +6,5 @@ Follow the installation instruction for XOD at [link](https://xod.io). Note that
 
 View/Download the diagram image in [png](diagram/windshield_wiper.png).
 
-<img src="diagram/windshield_wiper.png" width=100%>
+<img src="diagram/windshield_wiper.png" width=50%>
 
