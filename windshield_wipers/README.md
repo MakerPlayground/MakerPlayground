@@ -1,5 +1,11 @@
 #  Windshield Wipers
 
+A car windshield wiper simulation with independent front and rear wiper controls. Each windshield has three modes selected by a button: slow wipe, fast wipe, and spray-and-wipe. In slow/fast wipe mode, the motor drives the wiper from its start position to its end position (detected by limit switches), then reverses back, pausing at the rest position before the next sweep — slow mode pauses 1 second between sweeps while fast mode pauses 2 seconds. In spray-and-wipe mode, the washer pump runs for 2 seconds first, then the wiper performs a single sweep. Both front and rear wipers operate as independently and can run simultaneously.
+
+> **Note:** The Visuino and XOD implementations only include the fast wipe mode, as implementing all three modes is too complex on these platforms. Additionally, only the front wiper diagram is provided, but it can be easily duplicated for the rear wiper due to the parallel execution nature of these platforms.
+
+> **Note:** The SinelaboreRT and Ardublockly implementations only include the fast wipe mode for both front and rear wipers in order to keep the diagram size manageable.
+
 ## Implementations
 
 1. [C++/Arduino](arduino/README.md)
