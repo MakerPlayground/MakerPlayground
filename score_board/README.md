@@ -1,5 +1,7 @@
 # Scoreboard
 
+A two-team scoreboard that tracks and displays scores for a red team and a blue team on separate 7-segment displays. Pressing the red or blue team button increments that team's score by one, and pressing the reset button resets both scores back to zero.
+
 ## Implementations
 
 1. [C++/Arduino](arduino/README.md)

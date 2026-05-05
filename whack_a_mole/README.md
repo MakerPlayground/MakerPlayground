@@ -1,5 +1,7 @@
 # Whack-A-Mole
 
+A two-player competitive Whack-A-Mole game. Each player has 5 holes with servo-driven moles and 5 corresponding buttons. Press the Start button to begin a 60-second round: a mole randomly pops up in one of the 5 holes and the player must press the matching button within 1 second to score a point, after which a new mole immediately pops up. If the player misses, the mole retreats and a new one pops up anyway. Both players play simultaneously on their own set of holes. At the end of the round, all moles hide and the winner's display shows "WIN"; if both players have the same score, both displays show "DRAW".
+
 ## Implementations
 
 1. [C++/Arduino](arduino/README.md)

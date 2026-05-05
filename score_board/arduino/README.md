@@ -1,4 +1,4 @@
-# Whack-A-Mole (C++/Arduino)
+# Scoreboard (C++/Arduino)
 
 ## Prerequisite
 
